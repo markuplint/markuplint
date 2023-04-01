@@ -57,7 +57,7 @@ export function attributesToDebugMaps(
 function tokenDebug<N extends MLToken>(n: N, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
 		// @ts-ignore
-		n.potentialName || n.nodeName || n.name || n.type || type
+		n.potentialName ?? n.nodeName ?? n.name ?? n.type ?? type
 	}: ${visibleWhiteSpace(n.raw)}`;
 }
 

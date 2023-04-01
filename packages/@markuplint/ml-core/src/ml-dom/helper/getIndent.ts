@@ -101,16 +101,15 @@ class MLDOMIndentation {
 	fix(raw: string) {
 		const current = this.#fixed;
 		this.#fixed = raw;
-		if (this.#node) {
-			const node = this.#node;
-			const line = node.startLine;
-			const lines = node.raw.split(/\r?\n/);
-			const index = this.line - line;
-			if (lines[index] != null) {
-				lines[index] = lines[index]!.replace(current, this.#fixed);
-			}
-			node.fix(lines.join('\n'));
+
+		const node = this.#node;
+		const line = node.startLine;
+		const lines = node.raw.split(/\r?\n/);
+		const index = this.line - line;
+		if (lines[index] != null) {
+			lines[index] = lines[index]!.replace(current, this.#fixed);
 		}
+		node.fix(lines.join('\n'));
 	}
 }
 

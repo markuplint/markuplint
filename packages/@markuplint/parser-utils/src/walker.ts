@@ -12,7 +12,7 @@ export function walk(
 			if (node.type === 'endtag') {
 				continue;
 			}
-			if (node.childNodes && node.childNodes.length) {
+			if (node.childNodes && node.childNodes.length > 0) {
 				walk(node.childNodes, walker, depth + 1);
 			}
 			if ('pearNode' in node && node.pearNode) {

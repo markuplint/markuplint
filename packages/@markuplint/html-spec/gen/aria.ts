@@ -52,12 +52,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const text = $li.text();
 		const isDeprecated = /deprecated/i.test(text) || undefined;
 		const $a = $li.find('a');
-		const name = $a.length
-			? $a
-					.text()
-					.replace(/\s*\(\s*state\s*\)\s*/i, '')
-					.trim()
-			: text.trim();
+		const name =
+			$a.length > 0
+				? $a
+						.text()
+						.replace(/\s*\(\s*state\s*\)\s*/i, '')
+						.trim()
+				: text.trim();
 		return {
 			name,
 			deprecated: isDeprecated,
@@ -66,7 +67,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
-		const name = $el.find('.role-name').attr('title')?.trim() || '';
+		const name = $el.find('.role-name').attr('title')?.trim() ?? '';
 		const description = $el
 			.find('.role-description p')
 			.toArray()
@@ -79,7 +80,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.map(a => $(a).text().trim());
 		const isAbstract = $features.find('.role-abstract').text().trim().toLowerCase() === 'true' || undefined;
 		let $ownedRequiredProps = $features.find('.role-required-properties li').toArray();
-		if (!$ownedRequiredProps.length) {
+		if ($ownedRequiredProps.length === 0) {
 			$ownedRequiredProps = $features.find('.role-required-properties').toArray();
 		}
 		const ownedRequiredProps = $ownedRequiredProps.map(getAttr).map(p => ({ ...p, required: true as const }));
@@ -218,7 +219,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 
 			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
 			const implicitOwnProps = implicitProps.filter(p => p.name === name);
-			if (implicitOwnProps.length) {
+			if (implicitOwnProps.length > 0) {
 				equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
 					htmlAttrName: attr.htmlAttrName,
 					value: attr.value,
@@ -234,7 +235,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 				defaultValue,
 				isGlobal,
 				equivalentHtmlAttrs,
-				valueDescriptions: Object.keys(valueDescriptions).length ? valueDescriptions : undefined,
+				valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
 			};
 
 			// Conditional Value
@@ -286,7 +287,7 @@ async function getAriaInHtml() {
 			continue;
 		}
 
-		const value = _value?.replace(/"|'/g, '').trim() || null;
+		const value = _value?.replace(/"|'/g, '').trim() ?? null;
 		const data = {
 			name: name,
 			value: value === '...' ? null : value,
@@ -307,7 +308,7 @@ function $$(
 	let $found = $el;
 	for (const selector of selectors) {
 		$found = $el.find(selector);
-		if ($found.length) {
+		if ($found.length > 0) {
 			return $found;
 		}
 	}

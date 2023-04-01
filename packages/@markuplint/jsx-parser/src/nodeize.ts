@@ -58,7 +58,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 			return node;
 		}
@@ -144,15 +144,13 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
 
-			if (originNode.children) {
-				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
-			}
+			startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 
 			return startTag;
 		}
@@ -163,40 +161,37 @@ export function nodeize(
 				originNode.openingFragment.range[1],
 			);
 
-			let endTag: MLASTElementCloseTag | null = null;
-			if (originNode.closingFragment) {
-				const endTagLocation = sliceFragment(
-					rawHtml,
-					originNode.closingFragment.range[0],
-					originNode.closingFragment.range[1],
-				);
-				const endTagRaw = endTagLocation.raw;
-				const endTagStartOffset = endTagLocation.startOffset;
-				const endTagEndOffset = endTagLocation.endOffset;
-				endTag = {
-					uuid: uuid(),
-					raw: endTagRaw,
-					startOffset: endTagStartOffset,
-					endOffset: endTagEndOffset,
-					startLine: endTagLocation.startLine,
-					endLine: endTagLocation.endLine,
-					startCol: endTagLocation.startCol,
-					endCol: endTagLocation.endCol,
-					nodeName: '#jsx-fragment',
-					type: 'endtag',
-					namespace: parentNamespace,
-					attributes: [],
-					parentNode,
-					prevNode,
-					nextNode,
-					pearNode: null,
-					isFragment: false,
-					isGhost: false,
-					tagOpenChar: '</',
-					tagCloseChar: '>',
-					__parentId: originNode.__parentId || null,
-				};
-			}
+			const endTagLocation = sliceFragment(
+				rawHtml,
+				originNode.closingFragment.range[0],
+				originNode.closingFragment.range[1],
+			);
+			const endTagRaw = endTagLocation.raw;
+			const endTagStartOffset = endTagLocation.startOffset;
+			const endTagEndOffset = endTagLocation.endOffset;
+			const endTag: MLASTElementCloseTag = {
+				uuid: uuid(),
+				raw: endTagRaw,
+				startOffset: endTagStartOffset,
+				endOffset: endTagEndOffset,
+				startLine: endTagLocation.startLine,
+				endLine: endTagLocation.endLine,
+				startCol: endTagLocation.startCol,
+				endCol: endTagLocation.endCol,
+				nodeName: '#jsx-fragment',
+				type: 'endtag',
+				namespace: parentNamespace,
+				attributes: [],
+				parentNode,
+				prevNode,
+				nextNode,
+				pearNode: null,
+				isFragment: false,
+				isGhost: false,
+				tagOpenChar: '</',
+				tagCloseChar: '>',
+				__parentId: originNode.__parentId ?? null,
+			};
 
 			const startTag: MLASTTag = {
 				uuid: uuid(),
@@ -216,15 +211,12 @@ export function nodeize(
 				isGhost: false,
 				tagOpenChar: '<',
 				tagCloseChar: '>',
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
-			if (endTag) {
-				endTag.pearNode = startTag;
-			}
 
-			if (originNode.children) {
-				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
-			}
+			endTag.pearNode = startTag;
+
+			startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 
 			return startTag;
 		}
@@ -250,7 +242,7 @@ export function nodeize(
 				nextNode,
 				isFragment: false,
 				isGhost: false,
-				__parentId: originNode.__parentId || null,
+				__parentId: originNode.__parentId ?? null,
 			};
 		}
 	}

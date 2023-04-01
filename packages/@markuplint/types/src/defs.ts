@@ -124,7 +124,7 @@ export const types: Defs = {
 					reason: 'unexpected-space',
 				});
 			}
-			if (!tokens.length) {
+			if (tokens.length === 0) {
 				return unmatched(value, 'empty-token');
 			}
 			return matched();
@@ -457,7 +457,7 @@ export const types: Defs = {
 			if (!height) {
 				return sep.unmatched({ reason: 'unexpected-token' });
 			}
-			if (tail && tail[0]) {
+			if (tail[0]) {
 				return tail[0].unmatched({ reason: 'extra-token' });
 			}
 			if (!isUint(width.value)) {

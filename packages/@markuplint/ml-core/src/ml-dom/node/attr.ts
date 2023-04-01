@@ -65,8 +65,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.isDynamicValue = this._astToken.isDynamicValue;
 			this.isDirective = this._astToken.isDirective;
 			this.candidate = this._astToken.candidate;
-			this.#potentialName = this._astToken.potentialName || this.nameNode?.raw || '';
-			this.#potentialValue = this._astToken.value.raw || '';
+			this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
+			this.#potentialValue = this._astToken.value.raw ?? '';
 		} else {
 			this.valueType = this._astToken.valueType;
 			this.isDuplicatable = this._astToken.isDuplicatable;

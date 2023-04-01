@@ -15,7 +15,7 @@ function c(html: string, version: ARIAVersion, selector?: string) {
 		el.localName,
 		el.namespaceURI,
 		version,
-		selector => !!createSelector(selector, specs).match(el),
+		selector => createSelector(selector, specs).match(el) !== false,
 	);
 	if (Array.isArray(roles)) {
 		return roles.map(r => r.name);

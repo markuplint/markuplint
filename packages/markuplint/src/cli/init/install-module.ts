@@ -39,7 +39,7 @@ export async function installModule(module: readonly string[], dev = false): Pro
 		// void
 	}
 
-	if (!uninstallMods.length) {
+	if (uninstallMods.length === 0) {
 		return {
 			success: true,
 			alreadyExists: true,

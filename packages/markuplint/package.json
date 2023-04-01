@@ -38,6 +38,7 @@
 		"@markuplint/ml-core": "3.5.0",
 		"@markuplint/ml-spec": "3.5.0",
 		"@markuplint/rules": "3.5.0",
+		"@markuplint/shared": "3.4.0",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",

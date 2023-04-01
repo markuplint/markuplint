@@ -81,16 +81,16 @@ export function getPermittedRoles(
 		);
 	}
 
-	if (implicitRole) {
-		const implicitRoles =
-			implicitRole === 'presentation' || implicitRole === 'none' ? ['none', 'presentation'] : [implicitRole];
-		return mergeArray(
-			implicitRoles.map(r => ({ name: r })),
-			permittedRoleList,
-		);
+	if (implicitRole === false) {
+		return permittedRoleList;
 	}
 
-	return permittedRoleList;
+	const implicitRoles: string[] =
+		implicitRole === 'presentation' || implicitRole === 'none' ? ['none', 'presentation'] : [implicitRole];
+	return mergeArray(
+		implicitRoles.map(r => ({ name: r })),
+		permittedRoleList,
+	);
 }
 
 function isAAMInfo(permittedRoles: ReadonlyDeep<PermittedRoles>): permittedRoles is ReadonlyDeep<PermittedARIAAAMInfo> {

@@ -21,7 +21,7 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 		}
 	}
 
-	if (!out.length) {
+	if (out.length === 0) {
 		return;
 	}
 
@@ -29,7 +29,7 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 	msg = options.color ? msg : stripAnsi(msg);
 
 	// If it has errors, Write to `stderr` and failure and exit.
-	if (results.violations.length) {
+	if (results.violations.length > 0) {
 		process.stderr.write(msg);
 		process.exitCode = 1;
 		return;

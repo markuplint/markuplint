@@ -107,4 +107,11 @@ describe('Issues', () => {
 	test('#593', async () => {
 		expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
 	});
+
+	test('#775', async () => {
+		expect((await mlRuleTest(rule, '<pre>text</pre>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<pre>\n\ttext</pre>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
+	});
 });

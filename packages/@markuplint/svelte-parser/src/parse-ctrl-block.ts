@@ -34,11 +34,10 @@ export function parseCtrlBlock(
 		);
 	}
 
-	const children = originNode.children || [];
+	const children = originNode.children ?? [];
 	const reEndTag = new RegExp('{/each}$', 'i');
-	const startTagEndOffset = children.length
-		? children[0]?.start ?? 0
-		: raw.replace(reEndTag, '').length + startOffset;
+	const startTagEndOffset =
+		children.length > 0 ? children[0]?.start ?? 0 : raw.replace(reEndTag, '').length + startOffset;
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
 
 	const tag: MLASTPreprocessorSpecificBlock = {
@@ -60,9 +59,8 @@ export function parseCtrlBlock(
 	let elseTag: MLASTPreprocessorSpecificBlock | null = null;
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset = children.length
-			? children[children.length - 1]?.end ?? 0
-			: startTagLocation.endOffset;
+		const elseTagStartOffset =
+			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		elseTag = {
@@ -134,7 +132,7 @@ function parseIfBlock(
 	nextNode: MLASTNode | null,
 	options?: ParserOptions,
 ) {
-	const children = originNode.children || [];
+	const children = originNode.children ?? [];
 	const startTagEndOffset = children[0]?.start ?? tokenStartOffset;
 	const startTagLocation = sliceFragment(rawHtml, tokenStartOffset, startTagEndOffset);
 
@@ -157,9 +155,8 @@ function parseIfBlock(
 	const elseOrElseIfTags: MLASTPreprocessorSpecificBlock[] = [];
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset = children.length
-			? children[children.length - 1]?.end ?? 0
-			: startTagLocation.endOffset;
+		const elseTagStartOffset =
+			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		if (elseNode.children) {

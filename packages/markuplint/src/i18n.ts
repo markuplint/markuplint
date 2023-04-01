@@ -12,11 +12,11 @@ async function getLocale() {
 }
 
 export async function i18n(locale?: string): Promise<LocaleSet> {
-	locale = locale || (await getLocale()) || 'en';
+	locale = locale ?? (await getLocale()) ?? 'en';
 	const langCode = locale.split('-')[0] ?? locale;
 	const loadLocaleSet: LocaleSet | null = await import(`@markuplint/i18n/locales/${langCode}`).catch(() => null);
 	const localeSet: LocaleSet =
-		loadLocaleSet ||
+		loadLocaleSet ??
 		// @ts-ignore
 		(await import('@markuplint/i18n/locales/en'));
 	return {

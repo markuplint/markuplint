@@ -1,4 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
+import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { match } from '../helpers';
 
@@ -9,10 +10,7 @@ export default createRule<Value>({
 	defaultValue: null,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (!el.rule.value) {
-				return;
-			}
-			const classPatterns = (Array.isArray(el.rule.value) ? el.rule.value : [el.rule.value]).filter(
+			const classPatterns = toNoEmptyStringArrayFromStringOrArray(el.rule.value).filter(
 				className => className && typeof className === 'string',
 			);
 			const attrs = el.getAttributeToken('class');

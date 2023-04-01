@@ -83,7 +83,7 @@ export class Token {
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
 			const b = caseInsensitive ? value.toLowerCase() : value;
-			return a.indexOf(b) !== -1;
+			return a.includes(b);
 		}
 		if (value instanceof RegExp) {
 			const pattern = new RegExp(value, caseInsensitive ? 'i' : '');
@@ -121,7 +121,8 @@ export class Token {
 	}
 
 	toNumber() {
-		return parseFloat(this.value);
+		const num = parseFloat(this.value);
+		return isNaN(num) ? 0 : num;
 	}
 
 	unmatched(
@@ -133,7 +134,7 @@ export class Token {
 		return {
 			...options,
 			matched: false,
-			ref: options?.ref || null,
+			ref: options?.ref ?? null,
 			raw: this.value,
 			offset: this.offset,
 			length: this.value.length,

@@ -15,7 +15,7 @@ function c(html: string, version: ARIAVersion) {
 		el.localName,
 		el.namespaceURI,
 		version,
-		selector => !!createSelector(selector, specs).match(el),
+		selector => createSelector(selector, specs).match(el) !== false,
 	);
 }
 

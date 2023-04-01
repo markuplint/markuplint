@@ -1,6 +1,5 @@
-import type { ASTAttribute, ASTNode, ASTStyleNode } from './astro-parser';
+import type { Node, ElementNode, ComponentNode, FragmentNode, CustomElementNode, AttributeNode } from './astro-parser';
 import type {
-	MLASTElement,
 	MLASTElementCloseTag,
 	MLASTNode,
 	MLASTParentNode,
@@ -12,49 +11,34 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { parseRawTag } from '@markuplint/html-parser';
+import { parseRawTag, parse as htmlParse } from '@markuplint/html-parser';
 import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { AstroCompileError, astroParse } from './astro-parser';
+import { astroParse } from './astro-parser';
 import { attrTokenizer } from './attr-tokenizer';
 
-export const parse: Parse = (rawCode, options) => {
+export const parse: Parse = (rawCode, options = {}) => {
 	const ast = astroParse(rawCode);
 
-	if (ast instanceof AstroCompileError) {
-		return {
-			nodeList: [],
-			isFragment: true,
-			parseError: ast.stack || ast.message,
-		};
-	}
+	const htmlRawNodeList = traverse(ast, null, 'http://www.w3.org/1999/xhtml', rawCode, 0, options);
 
-	if (!ast.html) {
-		return {
-			nodeList: [],
-			isFragment: false,
-		};
-	}
+	const firstOffset = htmlRawNodeList[0]?.startOffset ?? 0;
+	if (firstOffset > 0) {
+		const head = rawCode.slice(0, firstOffset);
 
-	const htmlRawNodeList = traverse(ast.html, null, 'http://www.w3.org/1999/xhtml', rawCode);
-	if (ast.style) {
-		const styleNodes = parseStyle(ast.style, 'http://www.w3.org/1999/xhtml', rawCode, 0, options);
-		htmlRawNodeList.push(...styleNodes);
+		const ast = htmlParse(head, {
+			...options,
+			ignoreFrontMatter: true,
+		});
+
+		const headNodes = ast.nodeList.filter(node => {
+			return !node.isGhost;
+		});
+
+		htmlRawNodeList.unshift(...headNodes);
 	}
 
 	const nodeList: MLASTNode[] = flattenNodes(htmlRawNodeList, rawCode);
-
-	// Remove `</template>`
-	const templateEndTagIndex = nodeList.findIndex(node => /\s*<\/\s*template\s*>\s*/i.test(node.raw));
-	if (templateEndTagIndex !== -1) {
-		const templateEndTag = nodeList[templateEndTagIndex];
-		for (const node of nodeList) {
-			if (node.nextNode && node.nextNode.uuid === templateEndTag?.uuid) {
-				node.nextNode = null;
-			}
-		}
-		nodeList.splice(templateEndTagIndex, 1);
-	}
 
 	return {
 		nodeList,
@@ -64,22 +48,27 @@ export const parse: Parse = (rawCode, options) => {
 
 function traverse(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	rootNode: ASTNode,
+	rootNode: Node,
 	parentNode: MLASTParentNode | null = null,
 	scopeNS: NamespaceURI,
 	rawHtml: string,
-	offset?: number,
-	options?: ParserOptions,
+	offset: number,
+	options: ParserOptions,
+	inExpression?: boolean,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
 
-	if (!rootNode.children) {
+	if (!('children' in rootNode)) {
+		return nodeList;
+	}
+
+	if (rootNode.children.length === 0) {
 		return nodeList;
 	}
 
 	let prevNode: MLASTNode | null = null;
 	for (const astNode of rootNode.children) {
-		const node = nodeize(astNode, prevNode, parentNode, scopeNS, rawHtml, offset, options);
+		const node = nodeize(astNode, prevNode, parentNode, scopeNS, rawHtml, offset, options, inExpression);
 		if (!node) {
 			continue;
 		}
@@ -100,7 +89,7 @@ function traverse(
 
 function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	originNode: ASTNode,
+	originNode: Node,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	prevNode: MLASTNode | null,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -108,16 +97,21 @@ function nodeize(
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	offset = 0,
-	options?: ParserOptions,
+	options: ParserOptions,
+	inExpression?: boolean,
 ): MLASTNode | MLASTNode[] | null {
+	if (!originNode.position) {
+		throw new TypeError("Node doesn't have position");
+	}
+
 	const nextNode = null;
-	const startOffset = originNode.start + offset;
-	const endOffset = originNode.end + offset;
+	const startOffset = originNode.position.start.offset + offset;
+	const endOffset = (originNode.position.end?.offset ?? originNode.position.start.offset) + offset;
 	const { startLine, endLine, startCol, endCol, raw } = sliceFragment(rawHtml, startOffset, endOffset);
 
 	if (
 		scopeNS === 'http://www.w3.org/1999/xhtml' &&
-		originNode.type === 'Element' &&
+		originNode.type === 'element' &&
 		originNode.name?.toLowerCase() === 'svg'
 	) {
 		scopeNS = 'http://www.w3.org/2000/svg';
@@ -126,7 +120,10 @@ function nodeize(
 	}
 
 	switch (originNode.type) {
-		case 'Text': {
+		case 'text': {
+			if (inExpression) {
+				return null;
+			}
 			const node: MLASTText = {
 				uuid: uuid(),
 				raw,
@@ -146,18 +143,40 @@ function nodeize(
 			};
 			return node;
 		}
-		case 'MustacheTag': {
-			if (!originNode.expression.children || originNode.expression.children.length === 0) {
-				return {
+		case 'expression': {
+			let _endOffset = endOffset;
+			let _startLine = startLine;
+			let _endLine = endLine;
+			let _startCol = startCol;
+			let _endCol = endCol;
+			let _raw = raw;
+			let closeExpression: MLASTPreprocessorSpecificBlock | null = null;
+
+			const firstChild = originNode.children[0];
+			const lastChild = originNode.children[originNode.children.length - 1];
+			if (firstChild && lastChild && firstChild !== lastChild) {
+				_endOffset = firstChild.position?.end?.offset ?? endOffset;
+				const startLoc = sliceFragment(rawHtml, startOffset, _endOffset);
+
+				_startLine = startLoc.startLine;
+				_endLine = startLoc.endLine;
+				_startCol = startLoc.startCol;
+				_endCol = startLoc.endCol;
+				_raw = startLoc.raw;
+
+				const closeStartOffset = lastChild.position?.start.offset ?? startOffset;
+				const closeLoc = sliceFragment(rawHtml, closeStartOffset, endOffset);
+
+				closeExpression = {
 					uuid: uuid(),
-					raw,
-					startOffset,
-					endOffset,
-					startLine,
-					endLine,
-					startCol,
-					endCol,
-					nodeName: originNode.type,
+					raw: closeLoc.raw,
+					startOffset: closeStartOffset,
+					endOffset: closeLoc.endOffset,
+					startLine: closeLoc.startLine,
+					endLine: closeLoc.endLine,
+					startCol: closeLoc.startCol,
+					endCol: closeLoc.endCol,
+					nodeName: 'MustacheTag',
 					type: 'psblock',
 					parentNode,
 					prevNode,
@@ -166,52 +185,36 @@ function nodeize(
 					isGhost: false,
 				};
 			}
-			// console.log(originNode, originNode.expression);
-			let stub = raw;
-			const blocks: MLASTPreprocessorSpecificBlock[] = [];
-			const [, codeStart, , codeEnd] = raw.match(/(^{\s*)((?:.|\s)*)(}$)/m) || [];
-			const chunks = (originNode.expression.codeChunks as string[]).map((chunk, i) => {
-				if (i === 0) {
-					return `${codeStart}${chunk}`;
-				} else if (i === originNode.expression.codeChunks.length - 1) {
-					return `${chunk}${codeEnd}`;
-				}
-				return chunk;
-			});
-			for (const chunk of chunks) {
-				const i = stub.indexOf(chunk);
-				if (i === -1) {
-					throw new Error(`Invalid chunk: "${chunk}" from ${raw}`);
-				}
-				const prevBlock: MLASTPreprocessorSpecificBlock | undefined = blocks[blocks.length - 1];
-				const prevBlockEndOffset = prevBlock ? prevBlock.endOffset : originNode.start;
-				const loc = sliceFragment(rawHtml, prevBlockEndOffset + i, prevBlockEndOffset + i + chunk.length);
-				blocks.push({
-					uuid: uuid(),
-					raw: chunk,
-					startOffset: loc.startOffset,
-					endOffset: loc.endOffset,
-					startLine: loc.startLine,
-					endLine: loc.endLine,
-					startCol: loc.startCol,
-					endCol: loc.endCol,
-					nodeName: originNode.type,
-					type: 'psblock',
-					parentNode,
-					prevNode,
-					nextNode,
-					isFragment: false,
-					isGhost: false,
-				});
-				stub = stub.slice(i + chunk.length);
+
+			const node: MLASTPreprocessorSpecificBlock = {
+				uuid: uuid(),
+				raw: _raw,
+				startOffset,
+				endOffset: _endOffset,
+				startLine: _startLine,
+				endLine: _endLine,
+				startCol: _startCol,
+				endCol: _endCol,
+				nodeName: 'MustacheTag',
+				type: 'psblock',
+				parentNode,
+				prevNode,
+				nextNode,
+				isFragment: false,
+				isGhost: false,
+			};
+
+			if (originNode.children.length > 0) {
+				node.childNodes = traverse(originNode, parentNode, scopeNS, rawHtml, offset, options, true);
 			}
-			if (blocks[0]) {
-				const childNodes = traverse(originNode.expression, blocks[0], scopeNS, rawHtml, blocks[0].endOffset);
-				blocks[0].childNodes = childNodes;
+
+			if (closeExpression) {
+				return [node, closeExpression];
 			}
-			return blocks;
+
+			return node;
 		}
-		case 'Comment': {
+		case 'comment': {
 			return {
 				uuid: uuid(),
 				raw,
@@ -230,8 +233,10 @@ function nodeize(
 				isGhost: false,
 			};
 		}
-		case 'InlineComponent':
-		case 'Element': {
+		case 'component':
+		case 'custom-element':
+		case 'fragment':
+		case 'element': {
 			if (originNode.name?.toLowerCase() === '!doctype') {
 				return {
 					uuid: uuid(),
@@ -255,7 +260,6 @@ function nodeize(
 				};
 			}
 			return parseElement(
-				originNode.name,
 				originNode,
 				scopeNS,
 				rawHtml,
@@ -269,9 +273,6 @@ function nodeize(
 				options,
 			);
 		}
-		case 'Fragment': {
-			return originNode.children ? traverse(originNode, parentNode, scopeNS, rawHtml, offset) : null;
-		}
 		default: {
 			return null;
 		}
@@ -279,9 +280,8 @@ function nodeize(
 }
 
 function parseElement(
-	nodeName: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	originNode: ASTNode | ASTStyleNode,
+	originNode: ElementNode | ComponentNode | FragmentNode | CustomElementNode,
 	scopeNS: NamespaceURI,
 	rawHtml: string,
 	startLine: number,
@@ -294,34 +294,47 @@ function parseElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nextNode: MLASTNode | null,
 	offset: number,
-	options?: ParserOptions,
+	options: ParserOptions,
 ) {
-	const { raw } = sliceFragment(rawHtml, originNode.start + offset, originNode.end + offset);
+	if (!originNode.position) {
+		throw new TypeError("Node doesn't have position");
+	}
+
 	let childrenStart: number;
 	let childrenEnd: number;
-	if (originNode.children && originNode.children[0]) {
-		childrenStart = originNode.children[0].start + offset;
-		childrenEnd = (originNode.children[originNode.children.length - 1]?.end ?? 0) + offset;
-	} else if (originNode.content) {
-		childrenStart = originNode.content.start + offset;
-		childrenEnd = originNode.content.end + offset;
-	} else if (/\/>$/.test(raw)) {
-		childrenStart = originNode.end + offset;
-		childrenEnd = originNode.end + offset;
+	if (originNode.children[0]) {
+		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
+		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
 	} else {
-		const expectedEndTag = `</${nodeName}>`;
-		const endTagStart = originNode.end + offset - expectedEndTag.length;
-		childrenStart = endTagStart;
-		childrenEnd = endTagStart;
+		childrenStart = offset + (originNode.position.end?.offset ?? nextNode?.endOffset ?? rawHtml.length - offset);
+		childrenEnd = childrenStart;
+		const startTagStartOffset = originNode.position.start.offset + offset;
+		const startTagEndOffset = childrenStart;
+		const tag = rawHtml.slice(startTagStartOffset, startTagEndOffset);
+		const expectedCloseTag = `</${originNode.name}>`;
+		if (tag.includes(expectedCloseTag)) {
+			childrenStart -= expectedCloseTag.length;
+			childrenEnd = childrenStart;
+		}
+
+		// console.log({
+		// 	tag,
+		// 	startTagStartOffset,
+		// 	startTagEndOffset,
+		// 	expectedCloseTag,
+		// 	childrenStart,
+		// 	childrenEnd,
+		// });
 	}
-	const startTagStartOffset = originNode.start + offset;
+	const startTagStartOffset = originNode.position.start.offset + offset;
 	const startTagEndOffset = childrenStart;
 	const startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
+
 	const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
 	const tagName = tagTokens.tagName;
 	let endTag: MLASTElementCloseTag | null = null;
-	if (childrenEnd < originNode.end + offset) {
-		const endTagLoc = sliceFragment(rawHtml, childrenEnd, originNode.end + offset);
+	if (childrenEnd < (originNode.position.end?.offset ?? 0) + offset) {
+		const endTagLoc = sliceFragment(rawHtml, childrenEnd, (originNode.position.end?.offset ?? 0) + offset);
 		const endTagTokens = parseRawTag(endTagLoc.raw, endTagLoc.startLine, endTagLoc.startCol, endTagLoc.startOffset);
 		const endTagName = endTagTokens.tagName;
 		endTag = {
@@ -364,8 +377,16 @@ function parseElement(
 		attributes: originNode.attributes.map(
 			(
 				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-				attr: ASTAttribute,
-			) => attrTokenizer(attr, rawHtml, offset),
+				attr: AttributeNode,
+				i,
+			) =>
+				attrTokenizer(
+					attr,
+					originNode.attributes[i + 1] ?? null,
+					rawHtml,
+					startTagRaw,
+					startOffset + startTagRaw.length,
+				),
 		),
 		hasSpreadAttr: false,
 		parentNode,
@@ -382,36 +403,8 @@ function parseElement(
 	if (endTag) {
 		endTag.pearNode = startTag;
 	}
-	startTag.childNodes = traverse(originNode, startTag, scopeNS, rawHtml, offset);
+	startTag.childNodes = ['style', 'script'].includes(tagName)
+		? undefined
+		: traverse(originNode, startTag, scopeNS, rawHtml, offset, options);
 	return startTag;
-}
-
-function parseStyle(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodes: readonly ASTStyleNode[],
-	scopeNS: NamespaceURI,
-	rawHtml: string,
-	offset: number,
-	options?: ParserOptions,
-) {
-	const result: MLASTElement[] = [];
-	for (const node of nodes) {
-		const { startLine, startCol, startOffset } = sliceFragment(rawHtml, node.start, node.end);
-		const styleEl = parseElement(
-			'style',
-			node,
-			scopeNS,
-			rawHtml,
-			startLine,
-			startCol,
-			startOffset,
-			null,
-			null,
-			null,
-			offset,
-			options,
-		);
-		result.push(styleEl);
-	}
-	return result;
 }

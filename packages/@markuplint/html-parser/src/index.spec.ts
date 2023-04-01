@@ -1213,3 +1213,36 @@ describe('parser', () => {
 		]);
 	});
 });
+
+describe('Issues', () => {
+	test('#775', () => {
+		expect(nodeListToDebugMaps(parse('<pre>text</pre>').nodeList)).toStrictEqual([
+			'[1:1]>[1:6](0,5)pre: <pre>',
+			'[1:6]>[1:10](5,9)#text: text',
+			'[1:10]>[1:16](9,15)pre: </pre>',
+		]);
+
+		const nodes = parse('<pre>\ntext</pre>').nodeList;
+
+		expect(nodeListToDebugMaps(nodes)).toStrictEqual([
+			'[1:1]>[1:6](0,5)pre: <pre>',
+			'[1:6]>[2:5](5,10)#text: ⏎text',
+			'[2:5]>[2:11](10,16)pre: </pre>',
+		]);
+
+		expect(nodes[0].childNodes?.[0]?.raw).toBe('\ntext');
+
+		/**
+		 * Test for `<textarea>`
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/syntax.html#element-restrictions
+		 */
+		const textarea = parse('<textarea>\ntext</textarea>').nodeList;
+		expect(nodeListToDebugMaps(textarea)).toStrictEqual([
+			'[1:1]>[1:11](0,10)textarea: <textarea>',
+			'[1:11]>[2:5](10,15)#text: ⏎text',
+			'[2:5]>[2:16](15,26)textarea: </textarea>',
+		]);
+		expect(textarea[0].childNodes?.[0]?.raw).toBe('\ntext');
+	});
+});

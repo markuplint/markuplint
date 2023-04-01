@@ -30,7 +30,7 @@ for (const file of files) {
 
 	const name = filename.replace(/^preset\.|\.json/g, '');
 	presets.push(name);
-	extended[name] = (json['extends'] || []).map(name => name.replace('markuplint:', ''));
+	extended[name] = (json['extends'] ?? []).map(name => name.replace('markuplint:', ''));
 
 	visit(
 		code,
@@ -43,7 +43,7 @@ for (const file of files) {
 					.map(section => cleanComment(section))
 					.filter(s => !/^@see\s/.test(s));
 				const text = line.map(line => cleanComment(line)).filter(s => s);
-				const url = (text.find(t => /^@see\s/i.test(t)) || '').replace(/^@see\s/i, '');
+				const url = (text.find(t => /^@see\s/i.test(t)) ?? '').replace(/^@see\s/i, '');
 
 				if (!heading) {
 					return;

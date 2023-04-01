@@ -354,7 +354,7 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[0].attributes[3].isDirective).toBeFalsy();
 		// @ts-ignore
-		expect(doc.nodeList[0].attributes[4].isDirective).toBeTruthy();
+		expect(doc.nodeList[0].attributes[4].isDirective).toBeFalsy();
 	});
 
 	it('namespace', () => {
@@ -420,6 +420,48 @@ describe('parser', () => {
 			'[4:33]>[5:3](53,56)#text: ⏎→→',
 			'[5:3]>[5:9](56,62)div: </div>',
 			'[5:9]>[6:2](62,64)#text: ⏎→',
+		]);
+	});
+});
+
+describe('Issues', () => {
+	test('#783', () => {
+		const doc = parse(`
+	<template>
+		<button @click.stop="foo" v-on:click.stop="bar">...</button>
+	</template>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:51](15,63)button: <button␣@click.stop="foo"␣v-on:click.stop="bar">',
+			'[3:11]>[3:28](23,40)onclick: @click.stop="foo"',
+			'  [3:10]>[3:11](22,23)bN: ␣',
+			'  [3:11]>[3:22](23,34)name: @click.stop',
+			'  [3:22]>[3:22](34,34)bE: ',
+			'  [3:22]>[3:23](34,35)equal: =',
+			'  [3:23]>[3:23](35,35)aE: ',
+			'  [3:23]>[3:24](35,36)sQ: "',
+			'  [3:24]>[3:27](36,39)value: foo',
+			'  [3:27]>[3:28](39,40)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  potentialName: onclick',
+			'[3:29]>[3:50](41,62)onclick: v-on:click.stop="bar"',
+			'  [3:28]>[3:29](40,41)bN: ␣',
+			'  [3:29]>[3:44](41,56)name: v-on:click.stop',
+			'  [3:44]>[3:44](56,56)bE: ',
+			'  [3:44]>[3:45](56,57)equal: =',
+			'  [3:45]>[3:45](57,57)aE: ',
+			'  [3:45]>[3:46](57,58)sQ: "',
+			'  [3:46]>[3:49](58,61)value: bar',
+			'  [3:49]>[3:50](61,62)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  potentialName: onclick',
+			'[3:51]>[3:54](63,66)#text: ...',
+			'[3:54]>[3:63](66,75)button: </button>',
+			'[3:63]>[4:2](75,77)#text: ⏎→',
 		]);
 	});
 });

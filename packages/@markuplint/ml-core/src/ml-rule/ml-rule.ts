@@ -75,7 +75,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		if (isRuleConfig(configSettings)) {
 			return {
 				disabled: false,
-				severity: configSettings.severity || this.defaultSeverity,
+				severity: configSettings.severity ?? this.defaultSeverity,
 				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
 				options: mergeOptions(this.defaultOptions, configSettings.options),
 				reason: configSettings.reason,
@@ -96,10 +96,6 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		locale: LocaleSet,
 		fix: boolean,
 	): Promise<Violation[]> {
-		if (!this.#v) {
-			return [];
-		}
-
 		document.setRule(this);
 
 		const context = new MLRuleContext(document, locale);
@@ -127,7 +123,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 					col,
 					raw,
 					ruleId: this.name,
-					reason: report.scope.rule.reason || document.rule.reason,
+					reason: report.scope.rule.reason ?? document.rule.reason,
 				};
 				deleteUndefProp(violation);
 				return violation;

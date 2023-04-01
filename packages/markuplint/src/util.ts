@@ -1,14 +1,8 @@
-import type { Nullable } from './types';
-
 import c from 'cli-color';
 // @ts-ignore
 import eastasianwidth from 'eastasianwidth';
 import stripAnsi from 'strip-ansi';
 import { v4 } from 'uuid';
-
-export function nonNullableFilter<T>(item: Nullable<T>): item is T {
-	return !!item;
-}
 
 export function uuid() {
 	return v4();

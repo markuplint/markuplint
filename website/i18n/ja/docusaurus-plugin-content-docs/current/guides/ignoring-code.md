@@ -27,6 +27,8 @@
 }
 ```
 
+`[[target-rule-id]]`の部分は無効化したい[ルールID](/docs/rules/)に適宜変えてください。
+
 ### ルールを上書きして無効化 {#overriding-to-disable-rules}
 
 設定の[`overrides`](/docs/configuration/properties#overrides)プロパティを使います。
@@ -45,3 +47,5 @@
   }
 }
 ```
+
+`[[target-rule-id]]`の部分は無効化したい[ルールID](/docs/rules/)に適宜変えてください。

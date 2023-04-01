@@ -23,7 +23,7 @@ export function matchSelector(
 	el: Node,
 	selector: string | RegexSelector | undefined,
 ): SelectorMatches {
-	if (!selector) {
+	if (selector == null || selector === '') {
 		return {
 			matched: false,
 		};
@@ -32,7 +32,7 @@ export function matchSelector(
 	if (typeof selector === 'string') {
 		const sel = new Selector(selector);
 		const specificity = sel.match(el);
-		if (specificity) {
+		if (specificity !== false) {
 			return {
 				matched: true,
 				selector,

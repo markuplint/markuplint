@@ -29,7 +29,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			'File list: %O',
 			fileList.map(f => f.path),
 		);
-		log('Config: %s', configFile || 'N/A');
+		log('Config: %s', configFile ?? 'N/A');
 		log('Fix option: %s', fix);
 	}
 
@@ -54,7 +54,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		if (!result) {
 			continue;
 		}
-		if (!hasError && result.violations.length) {
+		if (!hasError && result.violations.length > 0) {
 			hasError = true;
 		}
 		if (fix) {

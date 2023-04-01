@@ -40,10 +40,10 @@ export function isPalpableElement(
 		readonly extendsExposableElements?: boolean;
 	},
 ) {
-	const conditions = [specs.def['#contentModels']['#palpable']?.join(',') || ''];
+	const conditions = [specs.def['#contentModels']['#palpable']?.join(',') ?? ''];
 
 	if (options?.extendsSvg !== false /* default true */) {
-		conditions.push(specs.def['#contentModels']['#SVGRenderable']?.join(',') || '');
+		conditions.push(specs.def['#contentModels']['#SVGRenderable']?.join(',') ?? '');
 	}
 
 	if (options?.extendsExposableElements /* default false */) {

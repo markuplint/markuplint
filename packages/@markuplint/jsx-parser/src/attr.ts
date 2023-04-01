@@ -12,7 +12,7 @@ export function attr(
 	rawHTML: string,
 ): MLASTAttr {
 	const beforeHtml = rawHTML.substr(0, attr.range[0]);
-	const spacesBeforeNameStr = (beforeHtml.match(/\s+$/) || [''])[0];
+	const spacesBeforeNameStr = (beforeHtml.match(/\s+$/) ?? [''])[0];
 	const startOffset = attr.range[0] - spacesBeforeNameStr.length;
 	const endOffset = attr.range[1];
 	const attrLoc = sliceFragment(rawHTML, startOffset, endOffset);
@@ -21,7 +21,7 @@ export function attr(
 	if (attr.value === null || attr.value.type === 'Literal') {
 		ast = attrTokenizer(attrLoc.raw, attrLoc.startLine, attrLoc.startCol, attrLoc.startOffset);
 	} else {
-		const spacesBeforeNameLine = attr.loc.start.line - (spacesBeforeNameStr.match(/\n/g) || []).length;
+		const spacesBeforeNameLine = attr.loc.start.line - (spacesBeforeNameStr.match(/\n/g) ?? []).length;
 		const spacesBeforeNameLastBreakIndex = spacesBeforeNameStr.lastIndexOf('\n');
 		const spacesBeforeNameColumn =
 			spacesBeforeNameLastBreakIndex === -1

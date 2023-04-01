@@ -46,7 +46,7 @@ export function getComputedRole(
 	 * However, the presentational role behaves transparently
 	 * according to the sample code in WAI-ARIA specification.
 	 */
-	if (computedRole.role?.requiredContextRole.length) {
+	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
 		if (!nonPresentationalAncestor.role) {
 			return {
@@ -122,7 +122,7 @@ export function getComputedRole(
 	 */
 	if (explicitRole.role) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-		if (nonPresentationalAncestor.role?.requiredOwnedElements.length) {
+		if (nonPresentationalAncestor.role && nonPresentationalAncestor.role?.requiredOwnedElements.length > 0) {
 			if (
 				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
 					// const ancestor = nonPresentationalAncestor.el;

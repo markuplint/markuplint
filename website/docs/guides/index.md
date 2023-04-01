@@ -34,7 +34,7 @@ Add a command to the `scripts` option on `package.json`:
 ```json title="package.json"
 {
   "scripts": {
-    "html:lint": "markuplint \"**/*.html\""
+    "lint:html": "markuplint \"**/*.html\""
   }
 }
 ```
@@ -44,7 +44,7 @@ If you want to change the target path, you can change it for your project.
 Execute the script:
 
 ```shell npm2yarn
-npm run html:lint
+npm run lint:html
 ```
 
 ## Using with Visual Studio Code

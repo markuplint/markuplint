@@ -92,6 +92,7 @@ export async function fetchHTMLElement(link: string) {
 	let deprecated: true | undefined;
 	let nonStandard: true | undefined;
 
+	/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 	if (isBcTableIsAvailable) {
 		experimental = !!$bcTableFirstRow.find('.ic-experimental').length || undefined;
 		obsolete = !!$bcTableFirstRow.find('.ic-obsolete').length || undefined;
@@ -113,6 +114,7 @@ export async function fetchHTMLElement(link: string) {
 			undefined;
 		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
 	}
+	/* eslint-enable @typescript-eslint/strict-boolean-expressions */
 
 	const categories: Category[] = [];
 	const cat = getProperty($, 'Content categories');
@@ -167,7 +169,7 @@ function getProperty(
 	$: cheerio.Root,
 	prop: string,
 ) {
-	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') || $('#Technical_summary').next('table tr');
+	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') ?? $('#Technical_summary').next('table tr');
 	const $th = $(
 		$tr
 			.find('th')
@@ -199,6 +201,7 @@ function getAttributes(
 			if (!name) {
 				return null;
 			}
+			/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 			const $myHeading = getItsHeading($dt);
 			const experimental =
 				!!$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length || undefined;
@@ -220,6 +223,7 @@ function getAttributes(
 				.join('')
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
+			/* eslint-enable @typescript-eslint/strict-boolean-expressions */
 
 			const current = attributes[name];
 			if (!current) {
@@ -259,7 +263,7 @@ function getItsHeading(
 	$start: cheerio.Cheerio,
 ) {
 	let $needle = upToPrevOrParent($start);
-	while ($needle.length) {
+	while ($needle.length > 0) {
 		if (isHeading($needle)) {
 			return $needle;
 		}
@@ -273,7 +277,7 @@ function upToPrevOrParent(
 	$start: cheerio.Cheerio,
 ) {
 	let $needle = $start.prev();
-	if (!$needle.length) {
+	if ($needle.length === 0) {
 		$needle = $start.parent();
 	}
 	return $needle;

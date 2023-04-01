@@ -31,7 +31,7 @@ export default createRule<RequiredAttributes>({
 
 			if (attrSpec && el.elementType === 'html') {
 				for (const spec of attrSpec) {
-					if (spec.required || spec.requiredEither || spec.condition) {
+					if (spec.required != null || spec.requiredEither || spec.condition != null) {
 						attributeSpecs[spec.name] = {
 							...spec,
 							values: [],
@@ -72,7 +72,7 @@ export default createRule<RequiredAttributes>({
 					invalid = !candidate.some(attrName => el.hasAttribute(attrName));
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
-				} else if (spec.required) {
+				} else if (spec.required != null && spec.required !== false) {
 					const selector = typeof spec.required === 'string' ? spec.required : spec.required.join(',');
 					invalid = el.matches(selector) && didntHave;
 				}
@@ -91,14 +91,14 @@ export default createRule<RequiredAttributes>({
 
 				const value = el.getAttribute(spec.name);
 
-				if (spec.values.length && value) {
+				if (spec.values.length > 0 && value) {
 					const matched = spec.values.some(pattern => match(value, pattern));
 					if (!matched) {
 						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
 						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = el.getAttributeToken(spec.name);
 						const valueToken = attrToken[0]?.valueNode;
-						const token = valueToken || attrToken[0];
+						const token = valueToken ?? attrToken[0];
 						if (token) {
 							report({
 								scope: {

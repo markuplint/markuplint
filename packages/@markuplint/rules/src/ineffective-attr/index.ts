@@ -1,4 +1,5 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
+import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 export default createRule({
 	defaultSeverity: 'warning',
@@ -16,11 +17,7 @@ export default createRule({
 				return;
 			}
 
-			const ineffectiveConditions = spec.ineffective
-				? Array.isArray(spec.ineffective)
-					? spec.ineffective
-					: [spec.ineffective]
-				: [];
+			const ineffectiveConditions = toNoEmptyStringArrayFromStringOrArray(spec.ineffective);
 
 			if (ineffectiveConditions.some(selector => attr.ownerElement.matches(selector))) {
 				report({

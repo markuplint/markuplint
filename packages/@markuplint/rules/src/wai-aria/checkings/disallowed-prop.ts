@@ -26,7 +26,7 @@ export const checkingDisallowedProp: AttrChecker<
 			attr.rule.options.version,
 			attr.ownerElement.matches.bind(attr.ownerElement),
 		);
-		if (elAriaSpec?.properties && elAriaSpec?.properties?.without) {
+		if (elAriaSpec?.properties !== false && elAriaSpec?.properties?.without) {
 			for (const ignore of elAriaSpec.properties.without) {
 				if (ignore.name === attr.name) {
 					return {

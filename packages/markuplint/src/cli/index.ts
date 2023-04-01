@@ -39,7 +39,7 @@ import search from './search';
 	}
 
 	const files = cli.input;
-	if (files.length) {
+	if (files.length > 0) {
 		if (cli.flags.search) {
 			await search(files, cli.flags, cli.flags.search).catch(err => {
 				process.stderr.write(err + '\n');

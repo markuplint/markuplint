@@ -3,8 +3,8 @@
 type HasName = { readonly name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
-	const nameA = typeof a === 'string' ? a : a.name?.toUpperCase() || String(a);
-	const nameB = typeof b === 'string' ? b : b.name?.toUpperCase() || String(b);
+	const nameA = typeof a === 'string' ? a : a.name?.toUpperCase() ?? String(a);
+	const nameB = typeof b === 'string' ? b : b.name?.toUpperCase() ?? String(b);
 	if (nameA < nameB) {
 		return -1;
 	}
@@ -49,7 +49,7 @@ export function getThisOutline(
 	const $container = $('<div></div>');
 	let $next = $start.next();
 	const els = [$start.clone()];
-	while (!!$next.length && !$next.filter('h2').length) {
+	while ($next.length > 0 && $next.filter('h2').length === 0) {
 		els.push($next.clone());
 		$next = $next.next();
 	}
@@ -70,7 +70,7 @@ export function keys<T, K = keyof T>(object: T): K[] {
 }
 
 export function getName(origin: string) {
-	const [, ns, localName] = origin.match(/^(?:(svg)_)?([a-z0-9_]+)/i) || [];
+	const [, ns, localName] = origin.match(/^(?:(svg)_)?([a-z0-9_]+)/i) ?? [];
 	const name = localName ?? origin;
 	const ml = ns === 'svg' ? 'SVG' : 'HTML';
 	const namespace: 'http://www.w3.org/2000/svg' | undefined = ns === 'svg' ? 'http://www.w3.org/2000/svg' : undefined;

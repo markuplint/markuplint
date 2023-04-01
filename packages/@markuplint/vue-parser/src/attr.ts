@@ -18,7 +18,7 @@ export function attr(
 		/**
 		 * `v-on`
 		 */
-		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-on:|@)([^.]+)(?:\.([^.]))?$/i) || [];
+		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-on:|@)([^.]+)(?:\.([^.]+))?$/i) ?? [];
 		if (directive && potentialName) {
 			return {
 				...attr,
@@ -34,7 +34,7 @@ export function attr(
 		/**
 		 * `v-bind`
 		 */
-		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]))?$/i) || [];
+		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]+))?$/i) ?? [];
 		if (directive && potentialName) {
 			if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
 				attr.isDuplicatable = true;
@@ -79,7 +79,7 @@ export function attr(
 		/**
 		 * `v-model`
 		 */
-		const [, directive, modifier] = attr.name.raw.match(/^(v-model)(?:\.([^.]))?$/i) || [];
+		const [, directive, modifier] = attr.name.raw.match(/^(v-model)(?:\.([^.]+))?$/i) ?? [];
 		if (directive) {
 			// TODO: Supporting for `v-model` https://github.com/markuplint/markuplint/pull/681
 			return {
@@ -95,7 +95,7 @@ export function attr(
 		/**
 		 * `v-slot`
 		 */
-		const [, , slotName] = attr.name.raw.match(/^(v-slot:|#)(.+)$/i) || [];
+		const [, , slotName] = attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [];
 		const name = `v-slot:${slotName}`;
 		if (slotName) {
 			return {

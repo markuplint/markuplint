@@ -1,4 +1,5 @@
-import type { Config, Nullable, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Config, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
 import deepmerge from 'deepmerge';
@@ -77,10 +78,10 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {
-		return b || undefined;
+		return b ?? undefined;
 	}
 	if (b == null) {
-		return a || undefined;
+		return a ?? undefined;
 	}
 	const res = deepmerge<T>(a, b);
 	deleteUndefProp(res);
@@ -158,7 +159,7 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 		return b && optimizeRules(b);
 	}
 	if (b == null) {
-		return a && optimizeRules(a);
+		return optimizeRules(a);
 	}
 	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {

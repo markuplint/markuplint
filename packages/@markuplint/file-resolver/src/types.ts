@@ -1,8 +1,6 @@
 import type { Config } from '@markuplint/ml-config';
 import type { Plugin } from '@markuplint/ml-core';
 
-export type Nullable<T> = T | null | undefined;
-
 export interface ConfigSet {
 	readonly config: Config;
 	readonly plugins: readonly Plugin[];

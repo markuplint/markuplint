@@ -1,10 +1,4 @@
-import type { Nullable } from './types';
-
 import fs from 'fs';
-
-export function nonNullableFilter<T>(item: Nullable<T>): item is T {
-	return !!item;
-}
 
 let uuidNum = 0;
 

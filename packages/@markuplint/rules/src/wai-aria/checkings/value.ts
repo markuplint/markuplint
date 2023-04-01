@@ -30,7 +30,9 @@ export const checkingValue: AttrChecker<
 					t('{0} is {1:c}', t('the "{0}"', attr.value), 'disallowed'),
 					t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
 				) +
-				('enum' in result && result.enum.length ? t('. ') + t('Allowed values are: {0}', t(result.enum)) : ''),
+				('enum' in result && result.enum.length > 0
+					? t('. ') + t('Allowed values are: {0}', t(result.enum))
+					: ''),
 		};
 	};
 

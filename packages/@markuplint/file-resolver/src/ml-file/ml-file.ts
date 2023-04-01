@@ -30,8 +30,8 @@ export class MLFile {
 			this.#basename = path.basename(target.name);
 			this.#dirname = path.dirname(target.name);
 		} else {
-			this.#basename = target.name || '<AnonymousFile>';
-			this.#dirname = target.workspace || process.cwd();
+			this.#basename = target.name ?? '<AnonymousFile>';
+			this.#dirname = target.workspace ?? process.cwd();
 		}
 		this.#code = target.sourceCode;
 		this.#type = 'code-base';

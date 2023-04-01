@@ -28,7 +28,7 @@ export default async function (files: readonly string[], options: CLIOptions, se
 							locations.push(
 								...Array.from(nodes).map(node => {
 									return {
-										file: document.filename || '_NO_FILE_',
+										file: document.filename ?? '_NO_FILE_',
 										line: node.startLine,
 										col: node.startCol,
 									};

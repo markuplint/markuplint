@@ -157,9 +157,9 @@ export const datetimeTokenCheck: Record<
 		}
 
 		// Set the leap year if _year is null
-		const year = this._year || 2000;
+		const year = this._year ?? 2000;
 		const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-		const month = this._month || 1;
+		const month = this._month ?? 1;
 		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeap ? 1 : 0);
 		const _date = date.toNumber();
 
@@ -354,7 +354,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		const maxweek = getMaxWeekNum(this._year || 0);
+		const maxweek = getMaxWeekNum(this._year ?? 0);
 		const _week = week.toNumber();
 
 		if (!(1 <= _week && _week <= maxweek)) {
@@ -586,9 +586,10 @@ const daysOfMonth = [
 
 export function getMaxWeekNum(year: number) {
 	let date = 31;
-	while (date) {
+	while (date > 0) {
 		const d = new Date(Date.UTC(year, 11, date, 0, 0, 0, 0));
-		d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+		const day = d.getDay();
+		d.setDate(d.getDate() + 4 - (day > 0 ? day : 7));
 		const yearStart = new Date(d.getFullYear(), 0, 1);
 		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86400000 + 1) / 7);
 		if (weekNo !== 1) {

@@ -117,7 +117,7 @@ function isValidAriaValue(spec: ARIAProperty, role: string, value: string | unde
 		}
 		case 'token':
 		case 'token list': {
-			if (!enumList.length) {
+			if (enumList.length === 0) {
 				throw new Error('Need an enum list in token and token list types');
 			}
 			return enumList.includes(value.toLowerCase());

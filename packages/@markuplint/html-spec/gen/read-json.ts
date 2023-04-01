@@ -14,7 +14,7 @@ export function readJson<T = Record<string, any>>(filePath: string, fallBackCont
 		});
 	} catch (error) {
 		// console.warn(error);
-		if (fallBackContext) {
+		if (fallBackContext != null) {
 			json = JSON.stringify(fallBackContext);
 		} else {
 			throw error;

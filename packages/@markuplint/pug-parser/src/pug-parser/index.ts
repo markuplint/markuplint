@@ -32,7 +32,7 @@ function mergeTextNode(
 ) {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
-		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] || null;
+		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] ?? null;
 		if (prevNode && prevNode.type === 'Text' && node.type === 'Text') {
 			prevNode.raw = pug.slice(prevNode.offset, node.endOffset);
 			prevNode.endColumn = node.endColumn;
@@ -64,7 +64,7 @@ function optimizeAST(
 		const line = node.line;
 		const column = node.column;
 		const offsets = getOffsetsFromLines(pug);
-		const lineOffset = Math.max(offsets[line - 2] ?? 0, 0) || 0;
+		const lineOffset = Math.max(offsets[line - 2] ?? 0, 0);
 		const offset = lineOffset + column - 1;
 
 		const { endLine, endColumn, endOffset } = getLocationFromToken(offset, line, column, tokens);
@@ -384,7 +384,7 @@ function optimizeASTOfConditionalNode(
 
 	if (tokenOfCurrentNode) {
 		// console.log(JSON.stringify(node, null, 2));
-		const lineOffset = Math.max(offsets[node.line - 2] ?? 0, 0) || 0;
+		const lineOffset = Math.max(offsets[node.line - 2] ?? 0, 0);
 		const offset = lineOffset + node.column - 1;
 
 		const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
@@ -421,7 +421,7 @@ function optimizeASTOfConditionalNode(
 					return [];
 				}
 
-				const lineOffset = Math.max(offsets[tokenOfCurrentNode.loc.start.line - 2] ?? 0, 0) || 0;
+				const lineOffset = Math.max(offsets[tokenOfCurrentNode.loc.start.line - 2] ?? 0, 0);
 				const offset = lineOffset + tokenOfCurrentNode.loc.start.column - 1;
 				const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
 				const endOffset = offset + length;
@@ -458,16 +458,13 @@ function getLocationFromToken(
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly PugLexToken[],
-	tokenType: string | string[] = '',
+	tokenType?: string | readonly string[],
 ) {
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType !== '' ? [tokenType] : null) : tokenType ?? null;
 	let tokenOfCurrentNode: PugLexToken | null = null;
 	for (const token of tokens) {
 		if (
-			(tokenType
-				? Array.isArray(tokenType)
-					? tokenType.includes(token.type)
-					: tokenType === token.type
-				: true) &&
+			(tokenTypes == null || tokenTypes.includes(token.type)) &&
 			token.loc.start.line === line &&
 			token.loc.start.column === column
 		) {
@@ -501,7 +498,7 @@ function getAttrs(
 	const attrs: ASTAttr[] = [];
 
 	for (const attr of originalAttrs) {
-		const attrLineOffset = offsets[attr.line - 2] || 0;
+		const attrLineOffset = offsets[attr.line - 2] ?? 0;
 		const attrOffset = attrLineOffset + attr.column - 1;
 
 		let tokenOfCurrentAttr: PugLexToken | null = null;
@@ -558,7 +555,7 @@ function getEndAttributeLocation(
 			token.type !== 'id' &&
 			token.type !== 'class'
 		) {
-			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0) || 0;
+			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0);
 			const endAttrOffset = endAttrLineOffset + beforeNewlineToken.loc.end.column - 1;
 			return {
 				endOffset: endAttrOffset,
@@ -638,7 +635,7 @@ function getRawTextAndLocationEnd(
 			token.type !== 'indent' &&
 			token.type !== 'outdent'
 		) {
-			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0) || 0;
+			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0);
 			const endAttrOffset = endAttrLineOffset + beforeNewlineToken.loc.end.column - 1;
 			return {
 				endOffset: endAttrOffset,

@@ -50,7 +50,7 @@ export class TokenCollection extends Array<Token> {
 					if (res.index !== 0) {
 						value = strings.slice(res.index + res[0].length);
 					} else {
-						value = res[0] || '';
+						value = res[0] ?? '';
 					}
 				}
 
@@ -88,13 +88,13 @@ export class TokenCollection extends Array<Token> {
 	constructor(value?: string | number, typeOptions?: ReadonlyDeep<TokenCollectionOptions>) {
 		super();
 
-		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces || false;
-		this.allowEmpty = typeOptions?.allowEmpty || true;
-		this.ordered = typeOptions?.ordered || false;
-		this.unique = typeOptions?.unique || false;
-		this.caseInsensitive = typeOptions?.caseInsensitive || true;
+		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces ?? false;
+		this.allowEmpty = typeOptions?.allowEmpty ?? true;
+		this.ordered = typeOptions?.ordered ?? false;
+		this.unique = typeOptions?.unique ?? false;
+		this.caseInsensitive = typeOptions?.caseInsensitive ?? true;
 		this.number = typeOptions?.number;
-		this.separator = typeOptions?.separator || 'space';
+		this.separator = typeOptions?.separator ?? 'space';
 
 		if (typeof value === 'number') {
 			this.length = value;
@@ -110,7 +110,7 @@ export class TokenCollection extends Array<Token> {
 			separators.push(',');
 		}
 
-		if (typeOptions?.specificSeparator) {
+		if (typeOptions?.specificSeparator != null) {
 			if (typeof typeOptions.specificSeparator === 'string') {
 				separators.push(typeOptions.specificSeparator);
 			} else {
@@ -242,7 +242,7 @@ export class TokenCollection extends Array<Token> {
 	chunk(split: number) {
 		const chunks: TokenCollection[] = [];
 		const tokens = this.slice();
-		while (tokens.length) {
+		while (tokens.length > 0) {
 			const chunkTokens = tokens.splice(0, split);
 			const chunk = TokenCollection._new(chunkTokens, this);
 			chunks.push(chunk);
@@ -288,10 +288,10 @@ export class TokenCollection extends Array<Token> {
 			wait--;
 			const result = callback.call(this, head, tail);
 			if (result && !result.matched) {
-				passCount += result.passCount || 0;
+				passCount += result.passCount ?? 0;
 				if (prev && result.offset === 0 && result.length === 0) {
 					const { offset, line, column } = Token.shiftLocation(prev, cumulativeOffset);
-					firstUnmatched = firstUnmatched || {
+					firstUnmatched = firstUnmatched ?? {
 						...result,
 						offset,
 						line,
@@ -299,7 +299,7 @@ export class TokenCollection extends Array<Token> {
 					};
 				}
 				if (!prev && this.value.length === 0) {
-					firstUnmatched = firstUnmatched || {
+					firstUnmatched = firstUnmatched ?? {
 						...result,
 						reason: 'empty-token',
 						expects: undefined,
@@ -316,7 +316,7 @@ export class TokenCollection extends Array<Token> {
 						}
 					}
 				}
-				firstUnmatched = firstUnmatched || result;
+				firstUnmatched = firstUnmatched ?? result;
 			} else if (result && !firstUnmatched && result.matched) {
 				return result;
 			} else {
@@ -324,7 +324,7 @@ export class TokenCollection extends Array<Token> {
 					passCount += 4 * wait;
 				}
 			}
-			cumulativeOffset = head?.length || 0;
+			cumulativeOffset = head?.length ?? 0;
 			headAndTail = tail.headAndTail();
 			prev = head;
 			head = headAndTail.head;
@@ -352,7 +352,7 @@ export class TokenCollection extends Array<Token> {
 				return current;
 			}
 		});
-		return resultToken || null;
+		return resultToken ?? null;
 	}
 
 	getDuplicated() {
@@ -393,7 +393,7 @@ export class TokenCollection extends Array<Token> {
 		const copy = this.slice();
 		const head = copy.shift();
 		if (!head) {
-			return { head: head || null, tail: TokenCollection._new([], this) };
+			return { head: head ?? null, tail: TokenCollection._new([], this) };
 		}
 		const tail = TokenCollection._new(copy, this);
 		return { head, tail };
