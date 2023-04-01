@@ -70,3 +70,24 @@ export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 export function decodeEntities(text: string) {
 	return decodeHtmlEntities(text, { level: 'html5' });
 }
+
+/**
+ * Decodes the provided URL string (href) using
+ * the `decodeURIComponent` function.
+ *
+ * If a `URIError` is encountered,
+ * the original href is returned. Any other errors are propagated.
+ *
+ * @param href The URL string to be decoded.
+ * @returns The decoded URL string or the original href if a `URIError` occurs.
+ */
+export function decodeHref(href: string) {
+	try {
+		return decodeURIComponent(href);
+	} catch (e: unknown) {
+		if (e instanceof URIError) {
+			return href;
+		}
+		throw e;
+	}
+}
