@@ -6,7 +6,6 @@ import type { Attribute } from '@markuplint/ml-spec';
 
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
-import { decode as decodeHtmlEntities } from 'html-entities';
 
 import { attrCheck } from './attr-check';
 
@@ -173,10 +172,6 @@ export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	}
 
 	return ownedLabel;
-}
-
-export function decodeCharRef(characterReference: string) {
-	return decodeHtmlEntities(characterReference);
 }
 
 export class Collection<T> {

@@ -1,5 +1,7 @@
 import type { Nullable } from './types';
 
+import { decode as decodeHtmlEntities } from 'html-entities';
+
 /**
  * Converts a given value of string, string array, null, or undefined
  * into an array of non-empty strings.
@@ -52,4 +54,19 @@ export function noEmptyFilter(item: string): item is string {
  */
 export function nonNullableFilter<T>(item: Nullable<T>): item is T {
 	return item != null;
+}
+
+/**
+ * Decodes the provided text by replacing HTML entities
+ * with their corresponding characters.
+ *
+ * The decoding process uses the 'html5' (HTML Standard) level.
+ *
+ * Unknown entities are left as they are.
+ *
+ * @param text The input text containing HTML entities to be decoded.
+ * @returns The decoded text with HTML entities replaced by their corresponding characters.
+ */
+export function decodeEntities(text: string) {
+	return decodeHtmlEntities(text, { level: 'html5' });
 }
