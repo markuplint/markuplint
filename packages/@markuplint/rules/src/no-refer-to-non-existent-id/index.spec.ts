@@ -226,4 +226,31 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#776', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					/* cSpell:disable */
+					`
+						<a href="#apple%3Aorange">apple:orange</a>
+						<p id="apple:orange">apple:orange</p>
+
+						<a href="#apple%26orange">apple&amp;orange</a>
+						<p id="apple&amp;orange">apple&amp;orange</p>
+
+						<a href="#apple%26lemon">apple&amp;lemon</a>
+						<p id="apple&lemon">apple&amp;lemon</p>
+					`,
+					/* cSpell:enable */
+					{
+						parser: {
+							'.*': '@markuplint/php-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
