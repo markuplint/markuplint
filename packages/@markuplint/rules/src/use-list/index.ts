@@ -1,6 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-
-import { decodeCharRef } from '../helpers';
+import { decodeEntities } from '@markuplint/shared';
 
 type Bullets = readonly string[];
 
@@ -66,7 +65,7 @@ export default createRule<Bullets, Options>({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', textNode => {
-			const text = decodeCharRef(textNode.raw.trim());
+			const text = decodeEntities(textNode.raw.trim());
 
 			if (!text) {
 				// empty

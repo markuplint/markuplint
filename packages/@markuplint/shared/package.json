@@ -17,5 +17,8 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"html-entities": "^2.3.3"
 	}
 }
