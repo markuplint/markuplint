@@ -20,6 +20,8 @@
 		"cli": "./packages/markuplint/bin/markuplint",
 		"vscode:build": "cd packages/vscode/; yarn --ignore-engines vscode:build",
 		"vscode:dev": "cd packages/vscode/; yarn --ignore-engines vscode:dev",
+		"vscode:login": "cd packages/vscode/; yarn --ignore-engines vscode:login",
+		"vscode:release": "cd packages/vscode/; yarn --ignore-engines vscode:release",
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
