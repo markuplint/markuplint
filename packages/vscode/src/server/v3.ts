@@ -1,4 +1,5 @@
 import type { Config, Log } from '../types';
+import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
 import type {
@@ -25,6 +26,7 @@ export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
 	log: Log,
+	diagnosticsLog: Log,
 	sendDiagnostics: (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		params: PublishDiagnosticsParams,
@@ -32,20 +34,20 @@ export async function onDidOpen(
 	notFoundParserError: (e: unknown) => void,
 ) {
 	const key = opened.document.uri;
-	log(`Opened: ${key}`);
+	log(`Opened: ${key}`, 'debug');
 	const currentEngine = engines.get(key);
 	if (currentEngine) {
 		return;
 	}
 
 	const filePath = getFilePath(opened.document.uri, opened.document.languageId);
-	log(`${filePath.dirname}/${filePath.basename}`);
+	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
 	const sourceCode = opened.document.getText();
 	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
 
 	if (!file) {
-		log(`File not found: ${filePath.basename}`);
+		log(`File not found: ${filePath.basename}`, 'warn');
 		return;
 	}
 
@@ -55,40 +57,67 @@ export async function onDidOpen(
 		watch: true,
 	});
 
+	let configSet: ConfigSet | null = null;
+
 	engines.set(key, engine);
 
-	engine.on('config', (filePath, configSet) => {
-		log(`get config: ${filePath}` /*, configSet*/);
+	engine.on('config', (_, _configSet) => {
+		configSet = _configSet;
 	});
 
 	engine.on('log', (phase, message) => {
-		log(`${phase}: ${message}`);
+		log(`[${phase}]: ${message}`, 'trace');
 	});
 
 	engine.on('lint-error', (_filePath, _sourceCode, error) => {
-		log(`❌: ${error.message}`);
+		diagnosticsLog(error.message, 'error');
 	});
 
 	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug) => {
-		if (debug) {
-			log(debug.join('\n'));
-		}
+		diagnosticsLog('', 'clear');
 
-		const date = new Date().toLocaleDateString();
-		const time = new Date().toLocaleTimeString();
+		debounceTimer = setTimeout(() => {
+			diagnosticsLog(`Lint: ${opened.document.uri}`);
+			if (debug) {
+				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
+			}
+			if (configSet) {
+				if (configSet.files.size > 0) {
+					diagnosticsLog('  Used configs:');
+					for (const files of configSet.files.values()) {
+						diagnosticsLog(`    ${files}`);
+					}
+				} else {
+					diagnosticsLog('  No use configs');
+				}
+				if (configSet.plugins.length > 0) {
+					diagnosticsLog('  Used plugins:');
+					for (const plugin of configSet.plugins.values()) {
+						diagnosticsLog(`    ${plugin.name}`);
+					}
+				} else {
+					diagnosticsLog('  No use plugins');
+				}
+			}
 
-		log(`Linted(${date} ${time}): ${opened.document.uri}`);
+			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
+			sendDiagnostics({
+				uri: opened.document.uri,
+				diagnostics,
+			});
 
-		const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
-		sendDiagnostics({
-			uri: opened.document.uri,
-			diagnostics,
-		});
-
-		log(`diagnostics: ${diagnostics.length}`);
+			if (diagnostics.length > 0) {
+				diagnosticsLog(`  Violations(${diagnostics.length}):`);
+				for (const d of diagnostics) {
+					diagnosticsLog(`    [${d.line}:${d.col}] ${d.code}`);
+				}
+			} else {
+				diagnosticsLog('  ✔ No violations');
+			}
+		}, 300);
 	});
 
-	log('exec (onDidOpen)');
+	log('Run `engine.exec()` in `onDidOpen`', 'debug');
 
 	engine.exec().catch((e: unknown) => notFoundParserError(e));
 }
@@ -114,14 +143,14 @@ export function onDidChangeContent(
 		const code = change.document.getText();
 		try {
 			await engine.setCode(code);
-			log('exec (onDidChangeContent)');
+			log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
 			engine.exec().catch((e: unknown) => notFoundParserError(e));
 		} catch (e: unknown) {
 			if (e instanceof Error) {
-				log(e.message);
+				log(e.message, 'error');
 				return;
 			}
-			log(`${e}`);
+			log(`UnknownError: ${e}`, 'error');
 		}
 	}, 300);
 }

@@ -1,4 +1,4 @@
-import type { LangConfigs } from '../types';
+import type { LangConfigs, Log } from '../types';
 import type { InitializeResult, PublishDiagnosticsParams } from 'vscode-languageserver/node';
 
 import { satisfies } from 'semver';
@@ -13,7 +13,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { ID } from '../const';
-import { configs, errorToPopup, infoToPopup, logToPrimaryChannel, ready } from '../lsp';
+import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, ready } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -42,12 +42,17 @@ export function bootServer() {
 		initUI: () => void;
 	}>();
 
+	const log: Log = (message, type = 'debug') => {
+		void connection.sendNotification(logToPrimaryChannel, [message, type]);
+	};
+
+	const diagnosticsLog: Log = (message, type = 'info') => {
+		void connection.sendNotification(logToDiagnosticsChannel, [message, type]);
+	};
+
 	connection.onInitialized(async () => {
-		await connection.sendNotification(logToPrimaryChannel, `Search Markuplint on: ${modPath}`);
-		await connection.sendNotification(
-			logToPrimaryChannel,
-			`Found version: ${version} (isLocalModule: ${isLocalModule})`,
-		);
+		log(`Search Markuplint on: ${modPath}`, 'debug');
+		log(`Found version: ${version} (isLocalModule: ${isLocalModule})`, 'debug');
 
 		const langConfigs = await new Promise<LangConfigs>(resolve => {
 			connection.onRequest(configs, langConfigs => {
@@ -80,10 +85,6 @@ export function bootServer() {
 		});
 	});
 
-	const log = (message: string) => {
-		void connection.sendNotification(logToPrimaryChannel, message);
-	};
-
 	function sendDiagnostics(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		params: PublishDiagnosticsParams,
@@ -112,11 +113,17 @@ export function bootServer() {
 		const config = langConfigs[languageId] ?? null;
 
 		if (!config?.enable) {
-			void connection.sendNotification(logToPrimaryChannel, `markuplint is disabled (languageId: ${languageId})`);
+			void connection.sendNotification(logToPrimaryChannel, [
+				`Disabled for languageId:${languageId} according to VS Code settings.`,
+				'warn',
+			]);
 			return;
 		}
 
-		void connection.sendNotification(logToPrimaryChannel, `markuplint is enabled (languageId: ${languageId})`);
+		void connection.sendNotification(logToPrimaryChannel, [
+			`Enabled for languageId:${languageId} according to VS Code settings.`,
+		]);
+
 		initUI();
 
 		if (satisfies(version, '1.x')) {
@@ -128,7 +135,15 @@ export function bootServer() {
 			return;
 		}
 
-		void v3.onDidOpen(e, markuplint.MLEngine, config, log, sendDiagnostics, notFoundParserError(languageId));
+		void v3.onDidOpen(
+			e,
+			markuplint.MLEngine,
+			config,
+			log,
+			diagnosticsLog,
+			sendDiagnostics,
+			notFoundParserError(languageId),
+		);
 	});
 
 	documents.onDidChangeContent(async e => {

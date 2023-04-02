@@ -6,7 +6,7 @@ import { DiagnosticSeverity } from 'vscode-languageserver/node';
 import { NAME, WEBSITE_URL_RULE_PAGE } from '../const';
 
 export function convertDiagnostics(result: MLResultInfo | null) {
-	const diagnostics: Diagnostic[] = [];
+	const diagnostics: (Diagnostic & { line: number; col: number })[] = [];
 
 	if (!result) {
 		return diagnostics;
@@ -20,6 +20,8 @@ export function convertDiagnostics(result: MLResultInfo | null) {
 					: violation.severity === 'warning'
 					? DiagnosticSeverity.Warning
 					: DiagnosticSeverity.Information,
+			line: violation.line,
+			col: violation.col,
 			range: {
 				start: {
 					line: Math.max(violation.line - 1, 0),

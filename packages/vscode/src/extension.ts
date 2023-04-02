@@ -5,17 +5,27 @@ import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient
 import path from 'node:path';
 
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
-import { LanguageClient, TransportKind } from 'vscode-languageclient/node';
+import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
+import { Logger } from './Logger';
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
 	ID,
 	LANGUAGE_LIST,
 	NAME,
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
+	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
-import { configs, errorToPopup, infoToPopup, logToPrimaryChannel, ready, warningToPopup } from './lsp';
+import {
+	configs,
+	errorToPopup,
+	infoToPopup,
+	logToDiagnosticsChannel,
+	logToPrimaryChannel,
+	ready,
+	warningToPopup,
+} from './lsp';
 
 let client: LanguageClient;
 
@@ -23,6 +33,11 @@ export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
 ) {
+	const logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
+	const dignosticslogger = new Logger(
+		window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }),
+	);
+
 	const serverModule = context.asAbsolutePath(path.join('out', 'server', 'index.js'));
 
 	const debugOptions = {
@@ -55,9 +70,12 @@ export function activate(
 			configurationSection: ID,
 			fileEvents: workspace.createFileSystemWatcher(WATCHING_CONFIGURATION_GLOB),
 		},
+		outputChannel: logger.outputChannel,
+		revealOutputChannelOn: RevealOutputChannelOn.Error,
 	};
 
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);
+
 	void client.start().then(() => {
 		void client.sendRequest(configs, langConfigs);
 
@@ -69,8 +87,12 @@ export function activate(
 			statusBar.command = COMMAND_NAME_OPEN_LOG_COMMAND;
 		});
 
-		client.onNotification(logToPrimaryChannel, message => {
-			client.outputChannel.appendLine(message);
+		client.onNotification(logToPrimaryChannel, ([message, type]) => {
+			logger.log(message, type);
+		});
+
+		client.onNotification(logToDiagnosticsChannel, ([message, type]) => {
+			dignosticslogger.log(message, type);
 		});
 
 		client.onNotification(errorToPopup, message => {
@@ -87,7 +109,7 @@ export function activate(
 	});
 
 	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
-		client.outputChannel.show();
+		logger.show();
 	});
 	context.subscriptions.push(openLogCommand);
 }

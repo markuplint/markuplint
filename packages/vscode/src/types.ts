@@ -14,4 +14,8 @@ export type Config = {
 
 export type LangConfigs = Record<string, Config>;
 
-export type Log = (message: string) => void;
+export type Log = (...args: LogArg) => void;
+
+export type LogType = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'clear';
+
+export type LogArg = readonly [message: string, type?: LogType];
