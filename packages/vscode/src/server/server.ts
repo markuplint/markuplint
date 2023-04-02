@@ -13,7 +13,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { ID } from '../const';
-import { configs, error, info, ready } from '../types';
+import { configs, errorToPopup, infoToPopup, ready } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -69,7 +69,7 @@ export function bootServer() {
 							msg = `Since markuplint could not be found in the node_modules of the workspace, this use the version (v${version}) installed in VS Code Extension.`;
 						}
 					}
-					void connection.sendNotification(info, `<${ID}> ${msg}`);
+					void connection.sendNotification(infoToPopup, `<${ID}> ${msg}`);
 				}
 			},
 		});
@@ -88,7 +88,7 @@ export function bootServer() {
 				const { groups } = /Cannot find module.+(?<parser>@markuplint\/[a-z]+-parser)/.exec(e.message) || {};
 				const parser = groups?.parser;
 				void connection.sendNotification(
-					error,
+					errorToPopup,
 					`Parser not found. You probably need to install ${parser} because it detected languageId: ${languageId}.`,
 				);
 				return;

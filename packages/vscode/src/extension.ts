@@ -15,7 +15,7 @@ import {
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
-import { configs, error, info, ready, warning } from './types';
+import { configs, errorToPopup, infoToPopup, ready, warningToPopup } from './lsp';
 
 let client: LanguageClient;
 
@@ -69,15 +69,15 @@ export function activate(
 			statusBar.command = COMMAND_NAME_OPEN_LOG_COMMAND;
 		});
 
-		client.onNotification(error, message => {
+		client.onNotification(errorToPopup, message => {
 			void window.showErrorMessage(message);
 		});
 
-		client.onNotification(warning, message => {
+		client.onNotification(warningToPopup, message => {
 			void window.showWarningMessage(message);
 		});
 
-		client.onNotification(info, message => {
+		client.onNotification(infoToPopup, message => {
 			void window.showInformationMessage(message);
 		});
 	});
