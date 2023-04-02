@@ -1,0 +1,9 @@
+{
+	"extends": ["../../.eslintrc"],
+	"globals": {
+		"NodeJS": true
+	},
+	"rules": {
+		"no-console": "off"
+	}
+}
