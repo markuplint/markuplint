@@ -1,0 +1,17 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"module": "commonjs",
+		"target": "es2022",
+		"outDir": "./out",
+		"rootDir": "./src"
+	},
+	"references": [
+		{
+			"path": "../markuplint"
+		}
+	],
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "out"]
+}

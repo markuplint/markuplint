@@ -1,0 +1,14 @@
+{
+	"extends": ["../../.eslintrc"],
+	"globals": {
+		"NodeJS": true
+	},
+	"overrides": [
+		{
+			"files": ["./src/server/v1.ts", "./src/server/v2.ts"],
+			"rules": {
+				"no-console": "off"
+			}
+		}
+	]
+}
