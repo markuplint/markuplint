@@ -7,6 +7,14 @@ import path from 'node:path';
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
+import {
+	COMMAND_NAME_OPEN_LOG_COMMAND,
+	ID,
+	LANGUAGE_LIST,
+	NAME,
+	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
+	WATCHING_CONFIGURATION_GLOB,
+} from './const';
 import { configs, error, info, ready, warning } from './types';
 
 let client: LanguageClient;
@@ -33,49 +41,23 @@ export function activate(
 		},
 	};
 
-	const languageList = [
-		'html',
-		'vue',
-		'jade',
-		'svelte',
-		'astro',
-		'nunjucks',
-		'liquid',
-		'handlebars',
-		'mustache',
-		'ejs',
-		'haml',
-		'jstl',
-		'php',
-		'smarty',
-		'ruby',
-		'javascript',
-		'javascriptreact',
-		'typescript',
-		'typescriptreact',
-	] as const;
-
 	const langConfigs: LangConfigs = {};
-	languageList.forEach(languageId => {
-		langConfigs[languageId] = JSON.parse(
-			JSON.stringify(workspace.getConfiguration('', { languageId }).get('markuplint')),
-		);
+	LANGUAGE_LIST.forEach(languageId => {
+		langConfigs[languageId] = JSON.parse(JSON.stringify(workspace.getConfiguration('', { languageId }).get(ID)));
 	});
 
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
-			...languageList.map(language => ({ language, scheme: 'file' })),
-			...languageList.map(language => ({ language, scheme: 'untitled' })),
+			...LANGUAGE_LIST.map(language => ({ language, scheme: 'file' })),
+			...LANGUAGE_LIST.map(language => ({ language, scheme: 'untitled' })),
 		],
 		synchronize: {
-			configurationSection: 'markuplint',
-			fileEvents: workspace.createFileSystemWatcher(
-				'**/{.markuplintrc,markuplintrc.json,markuplint.config.json,markuplint.json,markuplint.config.js}',
-			),
+			configurationSection: ID,
+			fileEvents: workspace.createFileSystemWatcher(WATCHING_CONFIGURATION_GLOB),
 		},
 	};
 
-	client = new LanguageClient('markuplint', 'Markuplint', serverOptions, clientOptions);
+	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);
 	void client.start().then(() => {
 		void client.sendRequest(configs, langConfigs);
 
@@ -83,8 +65,8 @@ export function activate(
 
 		client.onRequest(ready, data => {
 			statusBar.show();
-			statusBar.text = `$(check)Markuplint[v${data.version}]`;
-			statusBar.command = 'markuplint.openLog';
+			statusBar.text = `$(check)${NAME}[v${data.version}]`;
+			statusBar.command = COMMAND_NAME_OPEN_LOG_COMMAND;
 		});
 
 		client.onNotification(error, message => {
@@ -100,7 +82,7 @@ export function activate(
 		});
 	});
 
-	const openLogCommand = commands.registerCommand('markuplint.openLog', () => {
+	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
 		client.outputChannel.show();
 	});
 	context.subscriptions.push(openLogCommand);

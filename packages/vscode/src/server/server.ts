@@ -12,6 +12,7 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
+import { ID } from '../const';
 import { configs, error, info, ready } from '../types';
 import Deferred from '../utils/deferred';
 
@@ -68,7 +69,7 @@ export function bootServer() {
 							msg = `Since markuplint could not be found in the node_modules of the workspace, this use the version (v${version}) installed in VS Code Extension.`;
 						}
 					}
-					void connection.sendNotification(info, `<markuplint> ${msg}`);
+					void connection.sendNotification(info, `<${ID}> ${msg}`);
 				}
 			},
 		});

@@ -3,6 +3,8 @@ import type { Diagnostic } from 'vscode-languageserver/node';
 
 import { DiagnosticSeverity } from 'vscode-languageserver/node';
 
+import { NAME, WEBSITE_URL_RULE_PAGE } from '../const';
+
 export function convertDiagnostics(result: MLResultInfo | null) {
 	const diagnostics: Diagnostic[] = [];
 
@@ -29,10 +31,10 @@ export function convertDiagnostics(result: MLResultInfo | null) {
 				},
 			},
 			message: violation.message + (violation.reason ? ' - ' + violation.reason : ''),
-			source: 'markuplint',
+			source: NAME,
 			code: violation.ruleId,
 			codeDescription: {
-				href: `https://markuplint.dev/rules/${violation.ruleId}`,
+				href: `${WEBSITE_URL_RULE_PAGE}${violation.ruleId}`,
 			},
 		});
 	}
