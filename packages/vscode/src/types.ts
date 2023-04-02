@@ -13,3 +13,5 @@ export type Config = {
 };
 
 export type LangConfigs = Record<string, Config>;
+
+export type Log = (message: string) => void;

@@ -1,4 +1,4 @@
-import type { Config } from '../types';
+import type { Config, Log } from '../types';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
 import type {
@@ -24,6 +24,7 @@ export async function onDidOpen(
 	MLEngine: typeof _MLEngine,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
+	log: Log,
 	sendDiagnostics: (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		params: PublishDiagnosticsParams,
@@ -31,22 +32,20 @@ export async function onDidOpen(
 	notFoundParserError: (e: unknown) => void,
 ) {
 	const key = opened.document.uri;
-	console.log(`Opened: ${key}`);
+	log(`Opened: ${key}`);
 	const currentEngine = engines.get(key);
 	if (currentEngine) {
 		return;
 	}
 
 	const filePath = getFilePath(opened.document.uri, opened.document.languageId);
-	if (config.debug) {
-		console.log(filePath);
-	}
+	log(`${filePath.dirname}/${filePath.basename}`);
 
 	const sourceCode = opened.document.getText();
 	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
 
 	if (!file) {
-		console.warn(`File not found: ${filePath.basename}`);
+		log(`File not found: ${filePath.basename}`);
 		return;
 	}
 
@@ -59,32 +58,26 @@ export async function onDidOpen(
 	engines.set(key, engine);
 
 	engine.on('config', (filePath, configSet) => {
-		if (config.debug) {
-			console.log(`get config: ${filePath}`, configSet);
-		}
+		log(`get config: ${filePath}` /*, configSet*/);
 	});
 
 	engine.on('log', (phase, message) => {
-		if (config.debug) {
-			console.log(phase, message);
-		}
+		log(`${phase}: ${message}`);
 	});
 
 	engine.on('lint-error', (_filePath, _sourceCode, error) => {
-		if (config.debug) {
-			console.log('❌', { error });
-		}
+		log(`❌: ${error.message}`);
 	});
 
 	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug) => {
-		if (config.debug && debug) {
-			console.log(debug.join('\n'));
+		if (debug) {
+			log(debug.join('\n'));
 		}
 
 		const date = new Date().toLocaleDateString();
 		const time = new Date().toLocaleTimeString();
 
-		console.log(`Linted(${date} ${time}): ${opened.document.uri}`);
+		log(`Linted(${date} ${time}): ${opened.document.uri}`);
 
 		const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
 		sendDiagnostics({
@@ -92,10 +85,10 @@ export async function onDidOpen(
 			diagnostics,
 		});
 
-		console.log(`diagnostics: ${diagnostics.length}`);
+		log(`diagnostics: ${diagnostics.length}`);
 	});
 
-	console.log('exec (onDidOpen)');
+	log('exec (onDidOpen)');
 
 	engine.exec().catch((e: unknown) => notFoundParserError(e));
 }
@@ -105,6 +98,7 @@ let debounceTimer: NodeJS.Timer;
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	change: TextDocumentChangeEvent<TextDocument>,
+	log: Log,
 	notFoundParserError: (e: unknown) => void,
 ) {
 	clearTimeout(debounceTimer);
@@ -120,11 +114,14 @@ export function onDidChangeContent(
 		const code = change.document.getText();
 		try {
 			await engine.setCode(code);
-			console.log('exec (onDidChangeContent)');
+			log('exec (onDidChangeContent)');
 			engine.exec().catch((e: unknown) => notFoundParserError(e));
-		} catch (e) {
-			console.log(e);
-			// continue;
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				log(e.message);
+				return;
+			}
+			log(`${e}`);
 		}
 	}, 300);
 }

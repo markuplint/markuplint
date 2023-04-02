@@ -1,12 +1,12 @@
 import path from 'node:path';
 
 export function getModule() {
+	let modPath: string | undefined;
 	let markuplint: any;
 	let version: string;
 	let isLocalModule = true;
 	try {
-		const modPath = path.resolve(process.cwd(), 'node_modules', 'markuplint');
-		console.log(`Search Markuplint on: ${modPath}`);
+		modPath = path.resolve(process.cwd(), 'node_modules', 'markuplint');
 		markuplint = require(modPath);
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		version = require(`${modPath}/package.json`).version;
@@ -17,6 +17,7 @@ export function getModule() {
 		isLocalModule = false;
 	}
 	return {
+		modPath,
 		markuplint,
 		version,
 		isLocalModule,

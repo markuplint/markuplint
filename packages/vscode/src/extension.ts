@@ -15,7 +15,7 @@ import {
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
-import { configs, errorToPopup, infoToPopup, ready, warningToPopup } from './lsp';
+import { configs, errorToPopup, infoToPopup, logToPrimaryChannel, ready, warningToPopup } from './lsp';
 
 let client: LanguageClient;
 
@@ -67,6 +67,10 @@ export function activate(
 			statusBar.show();
 			statusBar.text = `$(check)${NAME}[v${data.version}]`;
 			statusBar.command = COMMAND_NAME_OPEN_LOG_COMMAND;
+		});
+
+		client.onNotification(logToPrimaryChannel, message => {
+			client.outputChannel.appendLine(message);
 		});
 
 		client.onNotification(errorToPopup, message => {

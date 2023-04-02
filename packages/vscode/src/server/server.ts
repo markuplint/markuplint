@@ -13,7 +13,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { ID } from '../const';
-import { configs, errorToPopup, infoToPopup, ready } from '../lsp';
+import { configs, errorToPopup, infoToPopup, logToPrimaryChannel, ready } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -22,8 +22,7 @@ import * as v2 from './v2';
 import * as v3 from './v3';
 
 export function bootServer() {
-	const { markuplint, version, isLocalModule } = getModule();
-	console.log(`Found version: ${version} (isLocalModule: ${isLocalModule})`);
+	const { modPath, markuplint, version, isLocalModule } = getModule();
 
 	const connection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
 	const documents = new TextDocuments(TextDocument);
@@ -44,6 +43,12 @@ export function bootServer() {
 	}>();
 
 	connection.onInitialized(async () => {
+		await connection.sendNotification(logToPrimaryChannel, `Search Markuplint on: ${modPath}`);
+		await connection.sendNotification(
+			logToPrimaryChannel,
+			`Found version: ${version} (isLocalModule: ${isLocalModule})`,
+		);
+
 		const langConfigs = await new Promise<LangConfigs>(resolve => {
 			connection.onRequest(configs, langConfigs => {
 				resolve(langConfigs);
@@ -75,6 +80,10 @@ export function bootServer() {
 		});
 	});
 
+	const log = (message: string) => {
+		void connection.sendNotification(logToPrimaryChannel, message);
+	};
+
 	function sendDiagnostics(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		params: PublishDiagnosticsParams,
@@ -103,11 +112,11 @@ export function bootServer() {
 		const config = langConfigs[languageId] ?? null;
 
 		if (!config?.enable) {
-			console.log(`markuplint is disabled (languageId: ${languageId})`);
+			void connection.sendNotification(logToPrimaryChannel, `markuplint is disabled (languageId: ${languageId})`);
 			return;
 		}
 
-		console.log(`markuplint is enabled (languageId: ${languageId})`);
+		void connection.sendNotification(logToPrimaryChannel, `markuplint is enabled (languageId: ${languageId})`);
 		initUI();
 
 		if (satisfies(version, '1.x')) {
@@ -119,7 +128,7 @@ export function bootServer() {
 			return;
 		}
 
-		void v3.onDidOpen(e, markuplint.MLEngine, config, sendDiagnostics, notFoundParserError(languageId));
+		void v3.onDidOpen(e, markuplint.MLEngine, config, log, sendDiagnostics, notFoundParserError(languageId));
 	});
 
 	documents.onDidChangeContent(async e => {
@@ -141,7 +150,7 @@ export function bootServer() {
 			return;
 		}
 
-		v3.onDidChangeContent(e, notFoundParserError(languageId));
+		v3.onDidChangeContent(e, log, notFoundParserError(languageId));
 	});
 
 	connection.onHover(async params => {
