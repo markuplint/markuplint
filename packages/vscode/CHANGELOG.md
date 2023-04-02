@@ -1,6 +1,9 @@
 # Change Log
 
-## [Unreleased]
+## 3.0.1
+
+- Change: Move its repository
+- Change: Improve logging
 
 ## 3.0.0
 

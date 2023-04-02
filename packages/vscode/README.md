@@ -12,10 +12,20 @@
 
 ## Release Notes
 
+### 3.0.1
+
+- Change: Move its repository
+- Change: Improve logging
+
 ### 3.0.0
 
 - Change: Support for **Markuplint** `v3.x`
 - Change: Add the feature that **popup Accessibility Object**
+
+### Before 2.x
+
+<details>
+<summary>History</summary>
 
 ### 2.2.1
 
@@ -147,3 +157,5 @@
 ### 0.1.0
 
 Trial release
+
+</details>
