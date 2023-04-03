@@ -1,0 +1,101 @@
+{
+	"name": "vscode-markuplint",
+	"displayName": "Markuplint",
+	"description": "Markuplint for VS Code",
+	"version": "3.1.0",
+	"publisher": "yusukehirao",
+	"license": "MIT",
+	"private": true,
+	"repository": "https://github.com/markuplint/markuplint.git",
+	"icon": "media/icon.png",
+	"galleryBanner": {
+		"color": "#1572eb",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.77.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Linters"
+	],
+	"activationEvents": [
+		"onLanguage:html",
+		"onLanguage:vue",
+		"onLanguage:jade",
+		"onLanguage:svelte",
+		"onLanguage:astro",
+		"onLanguage:nunjucks",
+		"onLanguage:liquid",
+		"onLanguage:handlebars",
+		"onLanguage:mustache",
+		"onLanguage:ejs",
+		"onLanguage:haml",
+		"onLanguage:jstl",
+		"onLanguage:php",
+		"onLanguage:smarty",
+		"onLanguage:ruby",
+		"onLanguage:javascript",
+		"onLanguage:javascriptreact",
+		"onLanguage:typescript",
+		"onLanguage:typescriptreact"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Markuplint configuration",
+			"properties": {
+				"markuplint.enable": {
+					"type": "boolean",
+					"description": "Control whether Markuplint is enabled for HTML files or not.",
+					"scope": "language-overridable",
+					"default": true
+				},
+				"markuplint.debug": {
+					"type": "boolean",
+					"description": "Enable debug mode.",
+					"default": false
+				},
+				"markuplint.defaultConfig": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json",
+					"description": "It's the configuration specified if configuration files do not exist.",
+					"default": {
+						"extends": [
+							"markuplint:recommended"
+						]
+					}
+				}
+			}
+		},
+		"jsonValidation": [
+			{
+				"fileMatch": "**/{.markuplintrc,markuplintrc.json,markuplint.config.json,markuplint.json}",
+				"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "yarn --ignore-engines; yarn --ignore-engines vscode:build",
+		"vscode:build": "tsc -p ./",
+		"vscode:dev": "tsc -watch -p ./",
+		"vscode:login": "vsce login yusukehirao",
+		"vscode:package": "vsce package",
+		"vscode:release": "vsce publish"
+	},
+	"devDependencies": {
+		"@types/node": "16",
+		"@types/semver": "^7.3.13",
+		"@types/vscode": "^1.77.0",
+		"typescript": "^5.0.3"
+	},
+	"dependencies": {
+		"@markuplint/i18n": "3.6.0",
+		"@markuplint/ml-spec": "3.6.0",
+		"markuplint": "3.6.0",
+		"semver": "^7.3.8",
+		"vscode-languageclient": "^8.1.0",
+		"vscode-languageserver": "^8.1.0",
+		"vscode-languageserver-textdocument": "^1.0.8"
+	}
+}

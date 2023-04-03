@@ -158,7 +158,7 @@
 			}
 		},
 		{
-			"files": ["packages/@markuplint/**/*.ts", "packages/markuplint/**/*.ts"],
+			"files": ["packages/**/*.ts", "vscode/**/*.ts"],
 			"excludedFiles": ["**/*.spec.ts"],
 			"rules": {
 				"@typescript-eslint/prefer-readonly-parameter-types": [
