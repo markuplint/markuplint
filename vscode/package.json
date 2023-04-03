@@ -90,6 +90,7 @@
 		"typescript": "^5.0.3"
 	},
 	"dependencies": {
+		"@markuplint/i18n": "3.6.0",
 		"@markuplint/ml-spec": "3.6.0",
 		"markuplint": "3.6.0",
 		"semver": "^7.3.8",

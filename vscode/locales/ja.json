@@ -1,0 +1,5 @@
+{
+	"sentences": {
+		"since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in vs code extension": "ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v{0})を利用します"
+	}
+}

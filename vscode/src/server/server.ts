@@ -13,6 +13,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { ID } from '../const';
+import { t } from '../i18n';
 import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, ready } from '../lsp';
 import Deferred from '../utils/deferred';
 
@@ -66,19 +67,11 @@ export function bootServer() {
 				void connection.sendRequest(ready, { version });
 
 				if (!isLocalModule) {
-					const locale = process.env.VSCODE_NLS_CONFIG
-						? JSON.parse(process.env.VSCODE_NLS_CONFIG).locale
-						: '';
-					let msg: string;
-					switch (locale) {
-						case 'ja': {
-							msg = `ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v${version})を利用します。`;
-							break;
-						}
-						default: {
-							msg = `Since markuplint could not be found in the node_modules of the workspace, this use the version (v${version}) installed in VS Code Extension.`;
-						}
-					}
+					const msg =
+						t(
+							'since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in VS Code Extension',
+						version,
+					);
 					void connection.sendNotification(infoToPopup, `<${ID}> ${msg}`);
 				}
 			},
