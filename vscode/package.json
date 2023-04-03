@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -76,18 +76,18 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn vscode:build",
+		"vscode:prepublish": "yarn --ignore-engines; yarn --ignore-engines vscode:build",
 		"vscode:build": "tsc -p ./",
 		"vscode:dev": "tsc -watch -p ./",
 		"vscode:login": "vsce login yusukehirao",
-		"vscode:package": "vsce package --no-dependencies",
-		"vscode:release": "vsce publish --no-dependencies"
+		"vscode:package": "vsce package",
+		"vscode:release": "vsce publish"
 	},
 	"devDependencies": {
 		"@types/node": "16",
 		"@types/semver": "^7.3.13",
 		"@types/vscode": "^1.77.0",
-		"@vscode/vsce": "^2.18.0"
+		"typescript": "^5.0.3"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "3.6.0",
