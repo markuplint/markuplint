@@ -12,10 +12,32 @@
 
 ## Release Notes
 
+### 3.1.0
+
+- Change: Update **Markuplint** to `v3.6.0`
+- Change: Improve logging
+  - Support for the log level according to VS Code settings
+  - Divide output channels `Markuplint` and `Markuplint Diagnostics`
+- Change: Move the warning message about using the module installed in this extension to the tooltip on the status bar instead of the popover
+
+### 3.0.2
+
+Revert to `v3.0.0`
+
+### 3.0.1
+
+- :warning: This version is unavailable because the inner files are broken
+- Change: Move its repository
+
 ### 3.0.0
 
 - Change: Support for **Markuplint** `v3.x`
 - Change: Add the feature that **popup Accessibility Object**
+
+### Before 2.x
+
+<details>
+<summary>History</summary>
 
 ### 2.2.1
 
@@ -147,3 +169,5 @@
 ### 0.1.0
 
 Trial release
+
+</details>

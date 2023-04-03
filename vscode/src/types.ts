@@ -12,6 +12,12 @@ export type Config = {
 		  };
 };
 
+export type Status = {
+	readonly version: string;
+	readonly isLocalModule: boolean;
+	readonly message: string | null;
+};
+
 export type LangConfigs = Record<string, Config>;
 
 export type Log = (...args: LogArg) => void;

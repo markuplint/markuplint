@@ -12,8 +12,9 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { ID } from '../const';
-import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, ready } from '../lsp';
+import { NO_INSTALL_WARNING } from '../const';
+import { t } from '../i18n';
+import { configs, errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -63,23 +64,11 @@ export function bootServer() {
 		initialized.resolve({
 			langConfigs,
 			initUI() {
-				void connection.sendRequest(ready, { version });
+				const message = isLocalModule ? null : t(NO_INSTALL_WARNING, version) + t('. ');
+				void connection.sendRequest(status, { version, isLocalModule, message });
 
-				if (!isLocalModule) {
-					const locale = process.env.VSCODE_NLS_CONFIG
-						? JSON.parse(process.env.VSCODE_NLS_CONFIG).locale
-						: '';
-					let msg: string;
-					switch (locale) {
-						case 'ja': {
-							msg = `ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v${version})を利用します。`;
-							break;
-						}
-						default: {
-							msg = `Since markuplint could not be found in the node_modules of the workspace, this use the version (v${version}) installed in VS Code Extension.`;
-						}
-					}
-					void connection.sendNotification(infoToPopup, `<${ID}> ${msg}`);
+				if (message) {
+					void connection.sendNotification(logToPrimaryChannel, [message, 'warn']);
 				}
 			},
 		});

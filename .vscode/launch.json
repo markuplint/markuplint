@@ -9,9 +9,9 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}/packages/vscode/"],
+			"args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode/"],
 			"sourceMaps": true,
-			"outFiles": ["${workspaceRoot}/packages/vscode/out/**/*.js"],
+			"outFiles": ["${workspaceRoot}/vscode/out/**/*.js"],
 			"preLaunchTask": "vscode-watch"
 		}
 	]

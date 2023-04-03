@@ -8,11 +8,11 @@ import { window, workspace, StatusBarAlignment, commands } from 'vscode';
 import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
 import { Logger } from './Logger';
+import { StatusBar } from './StatusBar';
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
 	ID,
 	LANGUAGE_LIST,
-	NAME,
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
@@ -23,7 +23,7 @@ import {
 	infoToPopup,
 	logToDiagnosticsChannel,
 	logToPrimaryChannel,
-	ready,
+	status,
 	warningToPopup,
 } from './lsp';
 
@@ -79,12 +79,13 @@ export function activate(
 	void client.start().then(() => {
 		void client.sendRequest(configs, langConfigs);
 
-		const statusBar = window.createStatusBarItem(StatusBarAlignment.Right, 0);
+		const statusBar = new StatusBar(
+			window.createStatusBarItem(StatusBarAlignment.Right, 0),
+			COMMAND_NAME_OPEN_LOG_COMMAND,
+		);
 
-		client.onRequest(ready, data => {
-			statusBar.show();
-			statusBar.text = `$(check)${NAME}[v${data.version}]`;
-			statusBar.command = COMMAND_NAME_OPEN_LOG_COMMAND;
+		client.onRequest(status, data => {
+			statusBar.set(data);
 		});
 
 		client.onNotification(logToPrimaryChannel, ([message, type]) => {
