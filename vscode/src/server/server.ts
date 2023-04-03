@@ -12,9 +12,9 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { ID, NO_INSTALL_WARNING } from '../const';
+import { NO_INSTALL_WARNING } from '../const';
 import { t } from '../i18n';
-import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
+import { configs, errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -68,7 +68,7 @@ export function bootServer() {
 				void connection.sendRequest(status, { version, isLocalModule, message });
 
 				if (message) {
-					void connection.sendNotification(infoToPopup, `<${ID}> ${message}`);
+					void connection.sendNotification(logToPrimaryChannel, [message, 'warn']);
 				}
 			},
 		});
