@@ -1,10 +1,10 @@
-import type { LangConfigs, LogArg } from './types';
+import type { LangConfigs, LogArg, Status } from './types';
 
 import { NotificationType, RequestType } from 'vscode-languageserver';
 
 import { ID } from './const';
 
-export const ready = new RequestType<{ version: string }, void, void>(`${ID}/ready`);
+export const status = new RequestType<Status, void, void>(`${ID}/ready`);
 export const configs = new RequestType<LangConfigs, void, void>(`${ID}/configs`);
 export const logToPrimaryChannel = new NotificationType<LogArg>(`${ID}/log-primary-channel`);
 export const logToDiagnosticsChannel = new NotificationType<LogArg>(`${ID}/log-diagnostics-channel`);

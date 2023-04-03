@@ -33,3 +33,7 @@ export const WATCHING_CONFIGURATION_GLOB =
 // URI
 export const WEBSITE_URL = 'https://markuplint.dev';
 export const WEBSITE_URL_RULE_PAGE = `${WEBSITE_URL}/docs/rules/` as const;
+
+// Messages
+export const NO_INSTALL_WARNING =
+	'since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in VS Code Extension';

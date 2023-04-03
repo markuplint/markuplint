@@ -12,9 +12,9 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { ID } from '../const';
+import { ID, NO_INSTALL_WARNING } from '../const';
 import { t } from '../i18n';
-import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, ready } from '../lsp';
+import { configs, errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
 import Deferred from '../utils/deferred';
 
 import { getModule } from './get-module';
@@ -64,15 +64,11 @@ export function bootServer() {
 		initialized.resolve({
 			langConfigs,
 			initUI() {
-				void connection.sendRequest(ready, { version });
+				const message = isLocalModule ? null : t(NO_INSTALL_WARNING, version) + t('. ');
+				void connection.sendRequest(status, { version, isLocalModule, message });
 
-				if (!isLocalModule) {
-					const msg =
-						t(
-							'since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in VS Code Extension',
-						version,
-					);
-					void connection.sendNotification(infoToPopup, `<${ID}> ${msg}`);
+				if (message) {
+					void connection.sendNotification(infoToPopup, `<${ID}> ${message}`);
 				}
 			},
 		});
