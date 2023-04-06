@@ -1,3 +1,3 @@
 import { bootServer } from './server';
 
-bootServer();
+void bootServer();

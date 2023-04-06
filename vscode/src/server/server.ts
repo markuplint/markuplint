@@ -22,10 +22,19 @@ import * as v1 from './v1';
 import * as v2 from './v2';
 import * as v3 from './v3';
 
-export function bootServer() {
-	const { modPath, markuplint, version, isLocalModule } = getModule();
-
+export async function bootServer() {
 	const connection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
+
+	const log: Log = (message, type = 'debug') => {
+		void connection.sendNotification(logToPrimaryChannel, [message, type]);
+	};
+
+	const diagnosticsLog: Log = (message, type = 'info') => {
+		void connection.sendNotification(logToDiagnosticsChannel, [message, type]);
+	};
+
+	const { modPath, markuplint, version, isLocalModule } = await getModule(log);
+
 	const documents = new TextDocuments(TextDocument);
 	documents.listen(connection);
 
@@ -42,14 +51,6 @@ export function bootServer() {
 		langConfigs: LangConfigs;
 		initUI: () => void;
 	}>();
-
-	const log: Log = (message, type = 'debug') => {
-		void connection.sendNotification(logToPrimaryChannel, [message, type]);
-	};
-
-	const diagnosticsLog: Log = (message, type = 'info') => {
-		void connection.sendNotification(logToDiagnosticsChannel, [message, type]);
-	};
 
 	connection.onInitialized(async () => {
 		log(`Search Markuplint on: ${modPath}`, 'debug');
