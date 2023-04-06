@@ -1,15 +1,20 @@
+import type { Log } from '../types';
+
 import path from 'node:path';
 
-export function getModule() {
+import { Files } from 'vscode-languageserver/node';
+
+export async function getModule(log: Log) {
 	let modPath: string | undefined;
 	let markuplint: any;
 	let version: string;
 	let isLocalModule = true;
 	try {
-		modPath = path.resolve(process.cwd(), 'node_modules', 'markuplint');
+		modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
 		markuplint = require(modPath);
+		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		version = require(`${modPath}/package.json`).version;
+		version = require(packageJsonPath).version;
 	} catch (_e) {
 		markuplint = require('markuplint');
 		// eslint-disable-next-line @typescript-eslint/no-var-requires

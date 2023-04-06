@@ -83,3 +83,9 @@ test('Non-exist types', () => {
 	// @ts-ignore
 	expect(check('abc', '').matched).toBe(true);
 });
+
+test('ItemProp', () => {
+	expect(check('itemListElement', 'ItemProp').matched).toBe(true);
+	expect(check('item', 'ItemProp').matched).toBe(true);
+	expect(check('position', 'ItemProp').matched).toBe(true);
+});

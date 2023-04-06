@@ -119,7 +119,10 @@ export async function onDidOpen(
 
 	log('Run `engine.exec()` in `onDidOpen`', 'debug');
 
-	engine.exec().catch((e: unknown) => notFoundParserError(e));
+	engine.exec().catch((e: unknown) => {
+		log(String(e), 'error');
+		notFoundParserError(e);
+	});
 }
 
 let debounceTimer: NodeJS.Timer;
