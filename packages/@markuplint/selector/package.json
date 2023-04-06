@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "3.6.0",
+	"version": "3.6.1",
 	"description": "Extended W3C Selectors matcher",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -25,7 +25,7 @@
 		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.6.0",
+		"@markuplint/ml-spec": "3.6.1",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "16",
 		"jsdom": "19",
