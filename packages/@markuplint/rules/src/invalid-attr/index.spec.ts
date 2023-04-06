@@ -1009,4 +1009,38 @@ describe('Issues', () => {
 			(await mlRuleTest(rule, '<template><button @click.stop="foo"></button></template>', vue)).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#800', async () => {
+		const pug = {
+			parser: {
+				'.*': '@markuplint/pug-parser',
+			},
+		};
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+ol(itemscope itemtype="https://schema.org/BreadcrumbList")
+	li(itemscope itemprop="itemListElement" itemtype="https://schema.org/ListItem" data-breadcrumb="home")
+		a(href="/" itemscope itemprop="item" itemtype="https://schema.org/WebPage" itemid="/")
+			span(itemprop="name") Home
+		meta(itemprop="position" content="1")
+		span.c-nav-breadcrumb__separetor
+	li(itemscope itemprop="itemListElement" itemtype="https://schema.org/ListItem")
+		a(href="/first/" itemscope itemprop="item" itemtype="https://schema.org/WebPage" itemid="/first/")
+			span(itemprop="name") Parent
+		meta(itemprop="position" content="2")
+		span.c-nav-breadcrumb__separetor
+	li(itemscope itemprop="itemListElement" itemtype="https://schema.org/ListItem" data-breadcrumb="current")
+		a(href="/first/about" itemscope itemprop="item" itemtype="https://schema.org/WebPage" itemid="/first/about")
+			span(itemprop="name") Current
+		meta(itemprop="position" content="3")
+			`,
+					pug,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
