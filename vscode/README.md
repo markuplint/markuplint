@@ -12,6 +12,11 @@
 
 ## Release Notes
 
+### 3.1.1
+
+- Depends: `markuplint@3.6.1`
+- Fix: Fixed module search to include parent directories [#802](https://github.com/markuplint/markuplint/pull/802)
+
 ### 3.1.0
 
 - Change: Update **Markuplint** to `v3.6.0`
