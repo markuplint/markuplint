@@ -357,4 +357,131 @@ describe('Issue', () => {
 			'[22:7]>[23:1](391,392)#text: ⏎',
 		]);
 	});
+
+	test('#803', () => {
+		const ast = parse(`<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Title</title>
+		<meta name="viewport" content="width=device-width" />
+	</head>
+</html>`);
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:17](0,16)html: <html␣lang="en">',
+			'[1:7]>[1:16](6,15)lang: lang="en"',
+			'  [1:7]>[1:7](6,6)bN: ',
+			'  [1:7]>[1:11](6,10)name: lang',
+			'  [1:11]>[1:11](10,10)bE: ',
+			'  [1:11]>[1:12](10,11)equal: =',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:13](11,12)sQ: "',
+			'  [1:13]>[1:15](12,14)value: en',
+			'  [1:15]>[1:16](14,15)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[1:17]>[2:2](16,18)#text: ⏎→',
+			'[2:2]>[2:8](18,24)head: <head>',
+			'[2:8]>[3:3](24,27)#text: ⏎→→',
+			'[3:3]>[3:27](27,51)meta: <meta␣charset="utf-8"␣/>',
+			'[3:9]>[3:25](33,49)charset: charset="utf-8"␣',
+			'  [3:9]>[3:9](33,33)bN: ',
+			'  [3:9]>[3:16](33,40)name: charset',
+			'  [3:16]>[3:16](40,40)bE: ',
+			'  [3:16]>[3:17](40,41)equal: =',
+			'  [3:17]>[3:17](41,41)aE: ',
+			'  [3:17]>[3:18](41,42)sQ: "',
+			'  [3:18]>[3:23](42,47)value: utf-8',
+			'  [3:23]>[3:24](47,48)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[3:27]>[4:3](51,54)#text: ⏎→→',
+			'[4:3]>[4:10](54,61)title: <title>',
+			'[4:10]>[4:15](61,66)#text: Title',
+			'[4:15]>[4:23](66,74)title: </title>',
+			'[4:23]>[5:3](74,77)#text: ⏎→→',
+			'[5:3]>[5:56](77,130)meta: <meta␣name="viewport"␣content="width=device-width"␣/>',
+			'[5:9]>[5:24](83,98)name: name="viewport"',
+			'  [5:9]>[5:9](83,83)bN: ',
+			'  [5:9]>[5:13](83,87)name: name',
+			'  [5:13]>[5:13](87,87)bE: ',
+			'  [5:13]>[5:14](87,88)equal: =',
+			'  [5:14]>[5:14](88,88)aE: ',
+			'  [5:14]>[5:15](88,89)sQ: "',
+			'  [5:15]>[5:23](89,97)value: viewport',
+			'  [5:23]>[5:24](97,98)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[5:25]>[5:54](99,128)content: content="width=device-width"␣',
+			'  [5:25]>[5:25](99,99)bN: ',
+			'  [5:25]>[5:32](99,106)name: content',
+			'  [5:32]>[5:32](106,106)bE: ',
+			'  [5:32]>[5:33](106,107)equal: =',
+			'  [5:33]>[5:33](107,107)aE: ',
+			'  [5:33]>[5:34](107,108)sQ: "',
+			'  [5:34]>[5:52](108,126)value: width=device-width',
+			'  [5:52]>[5:53](126,127)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[5:56]>[6:2](130,132)#text: ⏎→',
+			'[6:2]>[6:9](132,139)head: </head>',
+			'[6:9]>[7:1](139,140)#text: ⏎',
+		]);
+
+		const ast2 = parse(`<html>
+	<head>
+		<meta attr=">" />
+		<meta attr={a>b} />
+		<meta attr={<tag>text</tag>} />
+	</head>
+</html>`);
+		const map2 = nodeListToDebugMaps(ast2.nodeList, true);
+		expect(map2).toEqual([
+			'[1:1]>[1:7](0,6)html: <html>',
+			'[1:7]>[2:2](6,8)#text: ⏎→',
+			'[2:2]>[2:8](8,14)head: <head>',
+			'[2:8]>[3:3](14,17)#text: ⏎→→',
+			'[3:3]>[3:20](17,34)meta: <meta␣attr=">"␣/>',
+			'[3:9]>[3:18](23,32)attr: attr=">"␣',
+			'  [3:9]>[3:9](23,23)bN: ',
+			'  [3:9]>[3:13](23,27)name: attr',
+			'  [3:13]>[3:13](27,27)bE: ',
+			'  [3:13]>[3:14](27,28)equal: =',
+			'  [3:14]>[3:14](28,28)aE: ',
+			'  [3:14]>[3:15](28,29)sQ: "',
+			'  [3:15]>[3:16](29,30)value: >',
+			'  [3:16]>[3:17](30,31)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[3:20]>[4:3](34,37)#text: ⏎→→',
+			'[4:3]>[4:22](37,56)meta: <meta␣attr={a>b}␣/>',
+			'[4:9]>[4:20](43,54)attr: attr={a>b}␣',
+			'  [4:9]>[4:9](43,43)bN: ',
+			'  [4:9]>[4:13](43,47)name: attr',
+			'  [4:13]>[4:13](47,47)bE: ',
+			'  [4:13]>[4:14](47,48)equal: =',
+			'  [4:14]>[4:14](48,48)aE: ',
+			'  [4:14]>[4:15](48,49)sQ: {',
+			'  [4:15]>[4:18](49,52)value: a>b',
+			'  [4:18]>[4:19](52,53)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[4:22]>[5:3](56,59)#text: ⏎→→',
+			'[5:3]>[5:34](59,90)meta: <meta␣attr={<tag>text</tag>}␣/>',
+			'[5:9]>[5:32](65,88)attr: attr={<tag>text</tag>}␣',
+			'  [5:9]>[5:9](65,65)bN: ',
+			'  [5:9]>[5:13](65,69)name: attr',
+			'  [5:13]>[5:13](69,69)bE: ',
+			'  [5:13]>[5:14](69,70)equal: =',
+			'  [5:14]>[5:14](70,70)aE: ',
+			'  [5:14]>[5:15](70,71)sQ: {',
+			'  [5:15]>[5:30](71,86)value: <tag>text</tag>',
+			'  [5:30]>[5:31](86,87)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[5:34]>[6:2](90,92)#text: ⏎→',
+			'[6:2]>[6:9](92,99)head: </head>',
+			'[6:9]>[7:1](99,100)#text: ⏎',
+		]);
+	});
 });
