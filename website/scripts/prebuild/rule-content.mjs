@@ -61,8 +61,8 @@ function type(value, escape = false) {
     return value.enum.map(e => `"${e}"`).join(verticalBar);
   }
 
-  if (value.type === 'object' && value._type) {
-    return value._type;
+  if (value.type === 'object') {
+    return value._type ?? 'Object';
   }
 
   return value.type;
