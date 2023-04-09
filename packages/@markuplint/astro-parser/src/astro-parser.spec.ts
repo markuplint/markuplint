@@ -269,3 +269,178 @@ it('Attr and Template Directive', () => {
 		]),
 	);
 });
+
+test('Greater-than sign in attribute value', () => {
+	const ast = astroParse('<div attr="a>b"></div>');
+	expect(ast.children?.[0].attributes).toStrictEqual(
+		expect.objectContaining([
+			{
+				kind: 'quoted',
+				name: 'attr',
+				position: { start: { column: 6, line: 1, offset: 5 } },
+				type: 'attribute',
+				value: 'a>b',
+			},
+		]),
+	);
+});
+
+describe('Issues', () => {
+	test('#803', () => {
+		const code = `<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Title</title>
+		<meta name="viewport" content="width=device-width" />
+	</head>
+</html>
+`;
+		const ast = astroParse(code);
+		expect(ast).toStrictEqual(
+			expect.objectContaining({
+				type: 'root',
+				children: [
+					{
+						type: 'element',
+						name: 'html',
+						position: { start: { line: 1, column: 2, offset: 0 } },
+						attributes: [
+							{
+								type: 'attribute',
+								kind: 'quoted',
+								name: 'lang',
+								value: 'en',
+								position: { start: { line: 1, column: 7, offset: 6 } },
+							},
+						],
+						children: [
+							{
+								type: 'text',
+								value: '\n\t',
+								position: {
+									start: { line: 1, column: 17, offset: 16 },
+									end: { line: 2, column: 2, offset: 18 },
+								},
+							},
+							{
+								type: 'element',
+								name: 'head',
+								attributes: [],
+								position: {
+									start: { line: 2, column: 2, offset: 18 },
+									end: { line: 6, column: 9, offset: 139 },
+								},
+								children: [
+									{
+										type: 'text',
+										value: '\n\t\t',
+										position: {
+											start: { line: 2, column: 8, offset: 24 },
+											end: { line: 3, column: 3, offset: 27 },
+										},
+									},
+									{
+										type: 'element',
+										name: 'meta',
+										position: { start: { line: 3, column: 4, offset: 27 } },
+										attributes: [
+											{
+												type: 'attribute',
+												kind: 'quoted',
+												name: 'charset',
+												value: 'utf-8',
+												position: { start: { line: 3, column: 9, offset: 33 } },
+											},
+										],
+										children: [],
+									},
+									{
+										type: 'text',
+										value: '\n\t\t',
+										position: {
+											start: { line: 3, column: 27, offset: 51 },
+											end: { line: 4, column: 3, offset: 54 },
+										},
+									},
+									{
+										type: 'element',
+										name: 'title',
+										position: {
+											start: { line: 4, column: 3, offset: 54 },
+											end: { line: 4, column: 23, offset: 74 },
+										},
+										attributes: [],
+										children: [
+											{
+												type: 'text',
+												value: 'Title',
+												position: {
+													start: { line: 4, column: 10, offset: 61 },
+													end: { line: 4, column: 15, offset: 66 },
+												},
+											},
+										],
+									},
+									{
+										type: 'text',
+										value: '\n\t\t',
+										position: {
+											start: { line: 4, column: 23, offset: 74 },
+											end: { line: 5, column: 3, offset: 77 },
+										},
+									},
+									{
+										type: 'element',
+										name: 'meta',
+										attributes: [
+											{
+												type: 'attribute',
+												kind: 'quoted',
+												name: 'name',
+												value: 'viewport',
+												position: { start: { line: 5, column: 9, offset: 83 } },
+											},
+											{
+												type: 'attribute',
+												kind: 'quoted',
+												name: 'content',
+												value: 'width=device-width',
+												position: { start: { line: 5, column: 25, offset: 99 } },
+											},
+										],
+										position: { start: { line: 5, column: 4, offset: 77 } },
+										children: [],
+									},
+									{
+										type: 'text',
+										value: '\n\t',
+										position: {
+											start: { line: 5, column: 56, offset: 130 },
+											end: { line: 6, column: 2, offset: 132 },
+										},
+									},
+								],
+							},
+							{
+								type: 'text',
+								value: '\n',
+								position: {
+									start: { line: 6, column: 9, offset: 139 },
+									end: { line: 7, column: 1, offset: 140 },
+								},
+							},
+							{
+								type: 'text',
+								value: '',
+								position: {
+									start: { line: 7, column: 8, offset: 140 },
+									end: { line: 8, column: 1, offset: 140 },
+								},
+							},
+						],
+					},
+				],
+			}),
+		);
+	});
+});

@@ -300,25 +300,41 @@ function parseElement(
 		throw new TypeError("Node doesn't have position");
 	}
 
+	let startTagRaw: string;
 	let childrenStart: number;
 	let childrenEnd: number;
 	if (originNode.children[0]) {
 		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
 		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
+		const startTagStartOffset = originNode.position.start.offset + offset;
+		const startTagEndOffset = childrenStart;
+		startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 	} else {
 		childrenStart = offset + (originNode.position.end?.offset ?? nextNode?.endOffset ?? rawHtml.length - offset);
 		childrenEnd = childrenStart;
 		const startTagStartOffset = originNode.position.start.offset + offset;
-		const startTagEndOffset = childrenStart;
-		const tag = rawHtml.slice(startTagStartOffset, startTagEndOffset);
+		let startTagEndOffset = childrenStart;
+		startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 		const expectedCloseTag = `</${originNode.name}>`;
-		if (tag.includes(expectedCloseTag)) {
+		if (startTagRaw.includes(expectedCloseTag)) {
 			childrenStart -= expectedCloseTag.length;
 			childrenEnd = childrenStart;
+			startTagRaw = startTagRaw.replace(expectedCloseTag, '');
+		} else {
+			let startTagRawMasked = startTagRaw;
+			for (const attr of originNode.attributes) {
+				startTagRawMasked = startTagRawMasked.replace(attr.value, ' '.repeat(attr.value.length));
+			}
+			const closeChars = '>';
+			const closeOffset = startTagRawMasked.indexOf(closeChars) + closeChars.length;
+			startTagEndOffset = startTagStartOffset + closeOffset;
+			startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 		}
 
 		// console.log({
-		// 	tag,
+		// 	originNode,
+		// 	attrs: originNode.attributes,
+		// 	startTagRaw,
 		// 	startTagStartOffset,
 		// 	startTagEndOffset,
 		// 	expectedCloseTag,
@@ -326,9 +342,6 @@ function parseElement(
 		// 	childrenEnd,
 		// });
 	}
-	const startTagStartOffset = originNode.position.start.offset + offset;
-	const startTagEndOffset = childrenStart;
-	const startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
 
 	const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
 	const tagName = tagTokens.tagName;

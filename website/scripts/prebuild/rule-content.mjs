@@ -40,14 +40,14 @@ export function rewriteRuleContent(content, name, value, options, severity, lang
 }
 
 function type(value, escape = false) {
-  const verticalBar = escape ? '&#x7C;<wbr />' : '|';
+  const verticalBar = escape ? ' &#x7C;<wbr /> ' : ' | ';
 
   if (value.oneOf) {
     return value.oneOf.map(v => type(v, escape)).join(verticalBar);
   }
 
   if (value.type === 'array') {
-    const needWrap = !!value.items.enum;
+    const needWrap = !!value.items.enum || !!value.items.oneOf;
     return (
       (needWrap ? '(' : '') +
       // Recursive
@@ -61,8 +61,8 @@ function type(value, escape = false) {
     return value.enum.map(e => `"${e}"`).join(verticalBar);
   }
 
-  if (value.type === 'object' && value._type) {
-    return value._type;
+  if (value.type === 'object') {
+    return value._type ?? 'Object';
   }
 
   return value.type;
@@ -129,9 +129,13 @@ function optionDoc(name, options, lang) {
     return `\`${k}\`|<code>${type(v, true)}</code>|<code>${code(v.default, true)}</code>|${desc}`;
   });
 
+  const additionalDescription = options[`description:${lang}`] ?? options.description ?? '';
+
   return [
     //
+    '',
     '### Options',
+    '',
     '```ts',
     '{',
     `  "${name}": {`,
@@ -141,6 +145,9 @@ function optionDoc(name, options, lang) {
     '  }',
     '}',
     '```',
+    '',
+    additionalDescription,
+    '',
     'Property|Type|Default Value|Description',
     '---|---|---|---',
     ...table,

@@ -32,6 +32,30 @@
 					}
 				}
 			}
+		},
+		{
+			"selector": ".invalid-attr",
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"allowAttrs": ["hoge"],
+						"disallowAttrs": [
+							{
+								"name": "hoge2",
+								"value": {
+									"pattern": "/^[a-z]+$/"
+								}
+							},
+							{
+								"name": "hoge3",
+								"value": {
+									"enum": ["apple", "orange"]
+								}
+							}
+						]
+					}
+				}
+			}
 		}
 	],
 	"childNodeRules": [
