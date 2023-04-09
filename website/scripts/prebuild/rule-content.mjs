@@ -47,7 +47,7 @@ function type(value, escape = false) {
   }
 
   if (value.type === 'array') {
-    const needWrap = !!value.items.enum;
+    const needWrap = !!value.items.enum || !!value.items.oneOf;
     return (
       (needWrap ? '(' : '') +
       // Recursive
