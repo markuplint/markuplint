@@ -9,12 +9,42 @@ import { isValidAttr, match } from '../helpers';
 const log = ruleLog.extend('invalid-attr');
 
 type Option = {
-	attrs?: Record<string, Rule>;
+	/**
+	 * @since 3.7.0
+	 */
+	allowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
+
+	/**
+	 * @since 3.7.0
+	 */
+	disallowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
+
 	ignoreAttrNamePrefix?: string | string[];
 	allowToAddPropertiesForPretender?: boolean;
+
+	/**
+	 * @deprecated Since version 3.7.0. Use `allowAttrs` or `disallowAttrs` instead.
+	 * This option (`attr`) is now considered ambiguous and may lead to confusion.
+	 * Please use the more explicit `allowAttrs` or `disallowAttrs` option
+	 * to specify allowed attributes for the `invalid-attr` rule.
+	 * @see {@link Option.allowAttrs}
+	 * @see {@link Option.disallowAttrs}
+	 */
+	attrs?: Record<
+		string,
+		| ValueRule
+		| {
+				disallowed: true;
+		  }
+	>;
 };
 
-type Rule =
+type Attr = {
+	name: string;
+	value: AttributeType | ValueRule;
+};
+
+type ValueRule =
 	| {
 			enum: [string, ...string[]];
 	  }
@@ -23,9 +53,6 @@ type Rule =
 	  }
 	| {
 			type: AttributeType;
-	  }
-	| {
-			disallowed: true;
 	  };
 
 export default createRule<boolean, Option>({
@@ -72,35 +99,137 @@ export default createRule<boolean, Option>({
 			}
 
 			let invalid: ReturnType<typeof attrCheck> = false;
-			const customRule = attr.rule.options.attrs ? attr.rule.options.attrs[name] : null;
+			const allowAttrs: Record<string, ValueRule> = {};
+			const disallowAttrs: Record<string, ValueRule> = {};
 
-			if (customRule) {
-				if ('enum' in customRule) {
+			if (attr.rule.options.allowAttrs) {
+				if (Array.isArray(attr.rule.options.allowAttrs)) {
+					for (const allowAttr of attr.rule.options.allowAttrs) {
+						if (typeof allowAttr === 'string') {
+							allowAttrs[allowAttr] = { type: 'Any' };
+							continue;
+						}
+						if (isValueRule(allowAttr.value)) {
+							allowAttrs[allowAttr.name] = allowAttr.value;
+							continue;
+						}
+						allowAttrs[allowAttr.name] = { type: allowAttr.value };
+					}
+				} else {
+					for (const [attrName, valueRule] of Object.entries(attr.rule.options.allowAttrs)) {
+						allowAttrs[attrName] = valueRule;
+					}
+				}
+			}
+
+			if (attr.rule.options.disallowAttrs) {
+				if (Array.isArray(attr.rule.options.disallowAttrs)) {
+					for (const disallowAttr of attr.rule.options.disallowAttrs) {
+						if (typeof disallowAttr === 'string') {
+							disallowAttrs[disallowAttr] = { type: 'Any' };
+							continue;
+						}
+						if (isValueRule(disallowAttr.value)) {
+							disallowAttrs[disallowAttr.name] = disallowAttr.value;
+							continue;
+						}
+						disallowAttrs[disallowAttr.name] = { type: disallowAttr.value };
+					}
+				} else {
+					for (const [attrName, valueRule] of Object.entries(attr.rule.options.disallowAttrs)) {
+						disallowAttrs[attrName] = valueRule;
+					}
+				}
+			}
+
+			if (attr.rule.options.attrs) {
+				for (const [attrName, valueRule] of Object.entries(attr.rule.options.attrs)) {
+					if ('disallowed' in valueRule) {
+						disallowAttrs[attrName] = { type: 'Any' };
+					} else {
+						allowAttrs[attrName] = valueRule;
+					}
+				}
+			}
+
+			const allowValue = allowAttrs[name] ?? null;
+			const disallowValue = disallowAttrs[name] ?? null;
+
+			if (allowValue) {
+				if ('enum' in allowValue) {
 					invalid = attrCheck(t, name.toLowerCase(), value, true, {
 						name,
 						type: {
-							enum: customRule.enum,
+							enum: allowValue.enum,
 						},
 						description: '',
 					});
-				} else if ('pattern' in customRule) {
-					if (!match(value, customRule.pattern)) {
+				} else if ('pattern' in allowValue) {
+					if (!match(value, allowValue.pattern)) {
 						invalid = {
 							invalidType: 'invalid-value',
 							message: t(
 								'{0} is unmatched with the below patterns: {1}',
 								t('the "{0*}" {1}', name, 'attribute'),
-								customRule.pattern,
+								allowValue.pattern,
 							),
 						};
 					}
-				} else if ('type' in customRule) {
-					invalid = attrCheck(t, name, value, true, { name, type: customRule.type, description: '' });
-				} else if ('disallowed' in customRule && customRule.disallowed) {
-					invalid = {
-						invalidType: 'non-existent',
-						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
-					};
+				} else if ('type' in allowValue) {
+					invalid = attrCheck(t, name, value, true, { name, type: allowValue.type, description: '' });
+				}
+			} else if (disallowValue) {
+				if ('enum' in disallowValue) {
+					const checkResult = attrCheck(t, name.toLowerCase(), value, true, {
+						name,
+						type: {
+							enum: disallowValue.enum,
+						},
+						description: '',
+					});
+					if (checkResult === false) {
+						invalid = {
+							invalidType: 'invalid-value',
+							message: t(
+								'{0} is disallowed to accept the following values: {1}',
+								t('the "{0*}" {1}', name, 'attribute'),
+								t(disallowValue.enum),
+							),
+						};
+					}
+				} else if ('pattern' in disallowValue) {
+					if (match(value, disallowValue.pattern)) {
+						invalid = {
+							invalidType: 'invalid-value',
+							message: t(
+								'{0} is matched with the below disallowed patterns: {1}',
+								t('the "{0*}" {1}', name, 'attribute'),
+								disallowValue.pattern,
+							),
+						};
+					}
+				} else if ('type' in disallowValue) {
+					if (disallowValue.type === 'Any') {
+						invalid = {
+							invalidType: 'non-existent',
+							message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
+						};
+					} else {
+						const checkResult = attrCheck(t, name, value, true, {
+							name,
+							type: disallowValue.type,
+							description: '',
+						});
+						if (checkResult === false) {
+							invalid = {
+								invalidType: 'invalid-value',
+								message: t(
+									'{0} is disallowed',
+									t('{0} of {1}', t('the {0}', 'type'), t('the "{0*}" {1}', name, 'attribute')),
+								),
+							};
+						}
+					}
 				}
 			} else if (attr.ownerElement.elementType === 'html' && attrSpecs) {
 				log('Checking %s[%s="%s"]', attr.nodeName, name, value);
@@ -155,3 +284,31 @@ export default createRule<boolean, Option>({
 		});
 	},
 });
+
+function isValueRule(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	value: AttributeType | ValueRule,
+): value is ValueRule {
+	if (typeof value === 'string') {
+		return false;
+	}
+	if ('enum' in value) {
+		if (Object.keys(value).length > 1) {
+			return false;
+		}
+		return true;
+	}
+	if ('token' in value) {
+		return false;
+	}
+	if ('pattern' in value) {
+		return true;
+	}
+	if (value.type === 'integer' || value.type === 'float') {
+		return false;
+	}
+	if (Object.keys(value).length > 1) {
+		return false;
+	}
+	return true;
+}
