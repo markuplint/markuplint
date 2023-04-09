@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "3.6.1",
+	"version": "3.7.0",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -27,7 +27,7 @@
 		"@markuplint/html-parser": "3.6.1",
 		"@markuplint/ml-ast": "3.1.0",
 		"@markuplint/ml-config": "3.6.1",
-		"@markuplint/ml-core": "3.6.1",
+		"@markuplint/ml-core": "3.7.0",
 		"@markuplint/ml-spec": "3.6.1",
 		"@markuplint/shared": "3.5.0",
 		"cosmiconfig": "^8.0.0",
