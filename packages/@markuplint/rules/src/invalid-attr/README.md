@@ -7,7 +7,7 @@ description: Warn if an attribute is a non-existent attribute or an invalid type
 
 Warn if an attribute is a non-existent attribute or an invalid type value due to the specifications (or the custom rule).
 
-This rule refers the [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/attributes).
+This rule according to [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
 ❌ Examples of **incorrect** code for this rule
 
@@ -43,7 +43,147 @@ const Component = (props) => {
 
 ## Details
 
-### Setting `attrs` option
+### Setting `allowAttrs` option {#setting-allow-attrs-option}
+
+It accepts an **array** or an **object**.
+
+#### Array format {#allow-attrs-array-format}
+
+The array can contain elements of both **string** and **object** types.
+
+For strings, you can specify allowed attribute names, with attribute values being unrestricted. In the case of Objects, they should have both `name` and `value` properties, allowing you to specify more precise constraints for the attribute values.
+
+```json
+{
+  "invalid-attr": {
+    "options": {
+      "allowAttrs": [
+        "x-attr",
+        {
+          "name": "x-attr2",
+          "value": "Int"
+        },
+        {
+          "name": "x-attr3",
+          "value": {
+            "enum": ["apple", "orange"]
+          }
+        },
+        {
+          "name": "x-attr4",
+          "value": {
+            "pattern": "/^[a-z]+$/"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+You can use the types defined in [The types API](/docs/api/types) for the `value` property. Additionally, you can specify an `enum` property to limit the allowed values or use the `pattern` property to define a pattern for the values using regular expressions.
+
+You can also specify [The types API](/docs/api/types) using an Object type with a `type` property. This is just an alias with a different syntax but conveys the same meaning.
+
+```json
+[
+  {
+    "name": "x-attr",
+    "value": "<'color-profile'>"
+  },
+  // The above and below are equivalent
+  {
+    "name": "x-attr",
+    "value": {
+      "type": "<'color-profile'>"
+    }
+  }
+]
+```
+
+:::caution
+In case of duplicate attribute names within the array, the one specified later will take precedence.
+:::
+
+#### Object format
+
+The Object format follows the same structure as [the deprecated `attrs` property](#setting-attrs-option). It accepts objects with property names corresponding to **attribute names** and with object includes `type`, `enum`, and `pattern` properties. These properties have the same meaning as described earlier in [the Array format](#allow-attrs-array-format).
+
+:::note
+Note that objects with the `disallow` property are not accepted. Instead, please use the newly introduced [`disallowAttrs`](#setting-disallow-attrs-option) option, which will be discussed in the following section.
+:::
+
+```json
+{
+  "invalid-attr": {
+    "options": {
+      "allowAttrs": {
+        "x-attr": {
+          "type": "Any"
+        },
+        "x-attr2": {
+          "type": "Int"
+        },
+        "x-attr3": {
+          "enum": ["apple", "orange"]
+        },
+        "x-attr4": {
+          "pattern": "/^[a-z]+$/"
+        }
+      }
+    }
+  }
+}
+```
+
+### Setting `disallowAttrs` option {#setting-disallow-attrs-option}
+
+The format for specifying disallowed attributes is the same as for [`allowAttrs`](#setting-allow-attrs-option), **but the meanings are reversed**.
+
+```json
+{
+  "invalid-attr": {
+    "options": {
+      "disallowAttrs": [
+        // Disallow `x-attr` attribute.
+        "x-attr",
+
+        // Disallow `x-attr2` attribute when the value is an integer.
+        // If the value is not an integer, the attribute itself is allowed.
+        {
+          "name": "x-attr2",
+          "value": "Int"
+        },
+
+        // Disallow `x-attr3` attribute when the value is "apple" or "orange".
+        // If the value is not "apple" and "orange", the attribute itself is allowed.
+        {
+          "name": "x-attr3",
+          "value": {
+            "enum": ["apple", "orange"]
+          }
+        },
+
+        // Disallow `x-attr4` attribute when the value matches the pattern.
+        // If the value doesn't match the pattern, the attribute itself is allowed.
+        {
+          "name": "x-attr4",
+          "value": {
+            "pattern": "/^[a-z]+$/"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Setting `attrs` option {#setting-attrs-option}
+
+This option is deprecated since `v3.7.0`.
+
+<details>
+<summary>Details of this option</summary>
 
 #### `enum`
 
@@ -125,6 +265,8 @@ Type: `boolean`
 }
 ```
 
+</details>
+
 ### Setting `ignoreAttrNamePrefix` option
 
 ```json
@@ -157,14 +299,7 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
       "rules": {
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "property": {
-                "type": "Any"
-              },
-              "content": {
-                "type": "Any"
-              }
-            }
+            "allowAttrs": ["property", "content"]
           }
         }
       }
@@ -180,23 +315,16 @@ _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ ar
   "rules": {
     "invalid-attr": {
       "options": {
-        "attrs": {
-          "vocab": {
-            "type": "URL"
+        "allowAttrs": [
+          {
+            "name": "vocab",
+            "value": "URL"
           },
-          "typeof": {
-            "type": "Any"
-          },
-          "property": {
-            "type": "Any"
-          },
-          "resource": {
-            "type": "Any"
-          },
-          "prefix": {
-            "type": "Any"
-          }
-        }
+          "typeof",
+          "property",
+          "resource",
+          "prefix"
+        ]
       }
     }
   }
