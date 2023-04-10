@@ -10,14 +10,20 @@
 			"rules": {
 				"invalid-attr": {
 					"options": {
-						"attrs": {
-							"property": {
-								"type": "NoEmptyAny"
+						"allowAttrs": [
+							{
+								"name": "property",
+								"value": {
+									"type": "NoEmptyAny"
+								}
 							},
-							"content": {
-								"type": "NoEmptyAny"
+							{
+								"name": "content",
+								"value": {
+									"type": "NoEmptyAny"
+								}
 							}
-						}
+						]
 					}
 				},
 				"required-attr": false

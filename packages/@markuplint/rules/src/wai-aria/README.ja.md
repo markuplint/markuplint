@@ -76,11 +76,14 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
         // role属性の値をimgのみとする
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "role": {
-                "enum": ["img"]
+            "allowAttrs": [
+              {
+                "name": "role",
+                "value": {
+                  "enum": ["img"]
+                }
               }
-            }
+            ]
           }
         }
       }

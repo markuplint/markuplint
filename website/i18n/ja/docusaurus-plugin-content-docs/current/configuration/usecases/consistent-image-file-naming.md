@@ -54,12 +54,15 @@ img要素とsource要素のファイル名を一致させたい場合。
       "rules": {
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "srcset": {
-                // ファイル名と拡張子をMustache形式で展開します
-                "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
+            "allowAttrs": [
+              {
+                "name": "srcset",
+                "value": {
+                  // ファイル名と拡張子をMustache形式で展開します
+                  "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
+                }
               }
-            }
+            ]
           }
         }
       }

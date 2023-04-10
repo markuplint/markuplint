@@ -54,12 +54,15 @@ Use [`invalid-attr`](/docs/rules/invalid-attr) rule with [`regexSelector`](/docs
       "rules": {
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "srcset": {
-                // Expand a file name and its extension by Mustache format
-                "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
+            "allowAttrs": [
+              {
+                "name": "srcset",
+                "value": {
+                  // Expand a file name and its extension by Mustache format
+                  "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
+                }
               }
-            }
+            ]
           }
         }
       }

@@ -76,11 +76,14 @@ Below is an example of disabling `disallowSetImplicitRole` when the `img` elemen
         // Allow only img value for the role attribute:
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "role": {
-                "enum": ["img"]
+            "allowAttrs": [
+              {
+                "name": "role",
+                "value": {
+                  "enum": ["img"]
+                }
               }
-            }
+            ]
           }
         }
       }
