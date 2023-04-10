@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "3.1.1",
+	"version": "3.2.0",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -87,12 +87,12 @@
 		"@types/node": "16",
 		"@types/semver": "^7.3.13",
 		"@types/vscode": "^1.77.0",
-		"typescript": "^5.0.3"
+		"typescript": "^5.0.4"
 	},
 	"dependencies": {
-		"@markuplint/i18n": "3.6.0",
+		"@markuplint/i18n": "3.7.0",
 		"@markuplint/ml-spec": "3.6.1",
-		"markuplint": "3.6.1",
+		"markuplint": "3.7.0",
 		"semver": "^7.3.8",
 		"vscode-languageclient": "^8.1.0",
 		"vscode-languageserver": "^8.1.0",
