@@ -1,17 +1,20 @@
 # The types API
 
 **The types API** are you can specify to the rule for attributes and more.
-For example, determine the type to `attrs.[any-attr-name].type` option on the `invalid-attr` rule.
+For example, determine the type to [`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option) and [`disallowAttrs`](/docs/rules/invalid-attr#setting-disallow-attrs-option) options on the `invalid-attr` rule.
 
 ```json
 {
   "invalid-attr": {
     "options": {
-      "attrs": {
-        "any-attr-name": {
-          "type": "Boolean"
+      "allowAttrs": [
+        {
+          "name": "any-attr-name",
+          "value": {
+            "type": "Boolean"
+          }
         }
-      }
+      ]
     }
   }
 }

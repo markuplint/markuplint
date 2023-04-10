@@ -300,14 +300,7 @@ const Component = (props) => {
       "rules": {
         "invalid-attr": {
           "options": {
-            "attrs": {
-              "property": {
-                "type": "Any"
-              },
-              "content": {
-                "type": "Any"
-              }
-            }
+            "allowAttrs": ["property", "content"]
           }
         }
       }
@@ -323,23 +316,16 @@ const Component = (props) => {
   "rules": {
     "invalid-attr": {
       "options": {
-        "attrs": {
-          "vocab": {
-            "type": "URL"
+        "allowAttrs": [
+          {
+            "name": "vocab",
+            "value": "URL"
           },
-          "typeof": {
-            "type": "Any"
-          },
-          "property": {
-            "type": "Any"
-          },
-          "resource": {
-            "type": "Any"
-          },
-          "prefix": {
-            "type": "Any"
-          }
-        }
+          "typeof",
+          "property",
+          "resource",
+          "prefix"
+        ]
       }
     }
   }
