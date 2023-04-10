@@ -11,25 +11,27 @@
 
 		"invalid-attr": {
 			"options": {
-				"attrs": {
+				"disallowAttrs": [
 					/**
 					 * Disallow `accesskey` attr
 					 *
 					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
 					 */
-					"accesskey": {
-						"disallowed": true
-					},
-
-					/**
-					 * `tabindex` attr only `-1` or `0`
-					 *
-					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
-					 */
-					"tabindex": {
-						"enum": ["-1", "0"]
+					"disallowed"
+				],
+				"allowAttrs": [
+					{
+						/**
+						 * `tabindex` attr only `-1` or `0`
+						 *
+						 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
+						 */
+						"name": "tabindex",
+						"value": {
+							"enum": ["-1", "0"]
+						}
 					}
-				}
+				]
 			}
 		},
 
@@ -123,14 +125,7 @@
 			"rules": {
 				"invalid-attr": {
 					"options": {
-						"attrs": {
-							"colspan": {
-								"disallowed": true
-							},
-							"rowspan": {
-								"disallowed": true
-							}
-						}
+						"disallowAttrs": ["colspan", "rowspan"]
 					}
 				}
 			}
@@ -159,7 +154,7 @@
 			"rules": {
 				"invalid-attr": {
 					"options": {
-						"attrs": {
+						"disallowAttrs": [
 							/**
 							 * Disallow `autofocus` attr to except in the dialog scope
 							 *
@@ -167,10 +162,8 @@
 							 *
 							 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
 							 */
-							"autofocus": {
-								"disallowed": true
-							}
-						}
+							"autofocus"
+						]
 					}
 				}
 			}

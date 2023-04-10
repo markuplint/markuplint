@@ -16,7 +16,7 @@
 							{
 								"type": "object",
 								"_type": "Attr",
-								"required": ["name", "value"],
+								"required": ["name"],
 								"properties": {
 									"name": { "type": "string" },
 									"value": {
@@ -37,7 +37,7 @@
 					}
 				}
 			],
-			"description": "```ts\ntype Attr = {\n  name: string;\n  value: string | string[];\n};\n```"
+			"description": "```ts\ntype Attr = {\n  name: string;\n  value?: string | string[];\n};\n```"
 		}
 	},
 	"oneOf": [
