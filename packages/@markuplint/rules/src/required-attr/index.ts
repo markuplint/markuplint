@@ -8,7 +8,7 @@ type RequiredAttributes = string | (string | Attr)[];
 
 type Attr = {
 	name: string;
-	value: string | string[];
+	value?: string | string[];
 };
 
 export default createRule<RequiredAttributes>({
@@ -50,7 +50,7 @@ export default createRule<RequiredAttributes>({
 					name = req.name;
 					if (Array.isArray(req.value)) {
 						values.push(...req.value);
-					} else {
+					} else if (req.value) {
 						values.push(req.value);
 					}
 				}
