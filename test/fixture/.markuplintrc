@@ -17,14 +17,14 @@
 			"selector": "img[src$=.svg]",
 			"rules": {
 				"wai-aria": {
-					"option": {
+					"options": {
 						"disallowSetImplicitRole": false
 					}
 				},
 				"required-attr": "role",
 				"invalid-attr": {
-					"option": {
-						"attrs": {
+					"options": {
+						"allowAttrs": {
 							"role": {
 								"enum": ["img"]
 							}
