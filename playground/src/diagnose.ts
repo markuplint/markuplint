@@ -1,5 +1,5 @@
 import type { LocaleSet } from '@markuplint/i18n';
-import type { Violation } from '@markuplint/ml-config';
+import type { PlainData, RuleConfigValue, Violation } from '@markuplint/ml-config';
 import type { Ruleset } from '@markuplint/ml-core';
 import type { editor } from 'monaco-editor';
 
@@ -23,7 +23,7 @@ export const createLinter = async (ruleset: Ruleset) => {
 		parser: HTMLParser,
 		sourceCode: '',
 		ruleset,
-		rules: Object.entries(rules).map(([name, seed]) => new MLRule({ name, ...seed })),
+		rules: Object.entries(rules).map(([name, seed]) => new MLRule<RuleConfigValue, PlainData>({ name, ...seed })),
 		locale: localSet,
 		schemas: [spec],
 		parserOptions: {},
