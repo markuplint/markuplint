@@ -30,7 +30,8 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string }) {
 		this.name = o.name;
 		this.defaultSeverity = o.defaultSeverity ?? 'error';
-		this.defaultValue = (o.defaultValue ?? true) as T;
+		// TODO: https://github.com/markuplint/markuplint/issues/808
+		this.defaultValue = (o.defaultValue !== undefined ? o.defaultValue : true) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;
