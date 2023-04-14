@@ -6,9 +6,14 @@ export function t(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	...args: Parameters<Translator>
 ) {
-	const locale = process.env.VSCODE_NLS_CONFIG ? JSON.parse(process.env.VSCODE_NLS_CONFIG).locale : 'en';
+	const locale = getLocale();
 	const localeSet = i18n(locale);
 	return translator(localeSet)(...args);
+}
+
+export function getLocale() {
+	const locale: string = JSON.parse(process.env.VSCODE_NLS_CONFIG ?? '{}').locale ?? 'en';
+	return locale;
 }
 
 function i18n(locale: string): LocaleSet {

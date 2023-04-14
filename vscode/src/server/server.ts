@@ -13,7 +13,7 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { NO_INSTALL_WARNING } from '../const';
-import { t } from '../i18n';
+import { t, getLocale } from '../i18n';
 import { configs, errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
 import Deferred from '../utils/deferred';
 
@@ -53,8 +53,11 @@ export async function bootServer() {
 	}>();
 
 	connection.onInitialized(async () => {
+		const locale = getLocale();
+
 		log(`Search Markuplint on: ${modPath}`, 'debug');
-		log(`Found version: ${version} (isLocalModule: ${isLocalModule})`, 'debug');
+		log(`Found version: ${version} (isLocalModule: ${isLocalModule})`, 'info');
+		log(`Locale: ${locale}`, 'info');
 
 		const langConfigs = await new Promise<LangConfigs>(resolve => {
 			connection.onRequest(configs, langConfigs => {
@@ -98,6 +101,7 @@ export async function bootServer() {
 	}
 
 	documents.onDidOpen(async e => {
+		const locale = getLocale();
 		const { langConfigs, initUI } = await initialized;
 		const languageId = e.document.languageId;
 		const config = langConfigs[languageId] ?? null;
@@ -121,7 +125,7 @@ export async function bootServer() {
 		}
 
 		if (satisfies(version, '2.x')) {
-			void v2.onDidOpen(e, markuplint.MLEngine, config, sendDiagnostics, notFoundParserError(languageId));
+			void v2.onDidOpen(e, markuplint.MLEngine, config, locale, sendDiagnostics, notFoundParserError(languageId));
 			return;
 		}
 
@@ -129,6 +133,7 @@ export async function bootServer() {
 			e,
 			markuplint.MLEngine,
 			config,
+			locale,
 			log,
 			diagnosticsLog,
 			sendDiagnostics,
