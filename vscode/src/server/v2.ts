@@ -16,6 +16,7 @@ export async function onDidOpen(
 	MLEngine: typeof _MLEngine,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
+	locale: string,
 	sendDiagnostics: (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		params: PublishDiagnosticsParams,
@@ -43,6 +44,7 @@ export async function onDidOpen(
 	}
 
 	const engine = new MLEngine(file, {
+		locale,
 		debug: config.debug,
 		defaultConfig: config.defaultConfig,
 		watch: true,
