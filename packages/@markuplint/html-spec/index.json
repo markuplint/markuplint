@@ -25028,8 +25028,7 @@
 					"description": "The height of the frame in CSS pixels. Default is 150."
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the iframe: eager: Load the iframe immediately, regardless if it is outside the visible viewport (this is the default value). lazy: Defer loading of the iframe until it reaches a calculated distance from the viewport, as defined by the browser.",
-					"experimental": true
+					"description": "Indicates how the browser should load the iframe: eager: Load the iframe immediately, regardless if it is outside the visible viewport (this is the default value). lazy: Defer loading of the iframe until it reaches a calculated distance from the viewport, as defined by the browser."
 				},
 				"longdesc": {
 					"description": "A URL of a long description of the frame's content. Due to widespread misuse, this is not helpful for non-visual browsers.",
