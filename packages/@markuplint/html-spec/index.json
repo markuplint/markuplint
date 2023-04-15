@@ -23792,7 +23792,8 @@
 			},
 			"attributes": {
 				"value": {
-					"type": "Any"
+					"type": "Any",
+					"required": true
 				}
 			}
 		},
