@@ -17,7 +17,8 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#attr-data-value
 		"value": {
-			"type": "Any"
+			"type": "Any",
+			"required": true
 		}
 	},
 	"aria": {
