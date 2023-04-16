@@ -20,11 +20,17 @@ function c(html: string, version: ARIAVersion, selector?: string) {
 }
 
 function tree(html: string, version: ARIAVersion) {
+	type Result = [tagName: string, roleName: string | null, reason?: string];
 	const el = _(html);
-	const tree: [string, string | null][] = [];
+	const tree: Result[] = [];
 	let current: Element | null = el;
 	while (current) {
-		tree.push([current.localName, getComputedRole(specs, current, version).role?.name ?? null]);
+		const role = getComputedRole(specs, current, version);
+		const result = [current.localName, role.role?.name ?? null];
+		if (role.errorType) {
+			result.push(role.errorType);
+		}
+		tree.push(result);
 		current = current.children.item(0);
 	}
 	return tree;
@@ -116,9 +122,31 @@ describe('1.2', () => {
 		]);
 		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.2')).toStrictEqual([
 			['table', 'none'],
-			['tbody', null],
-			['tr', null],
-			['td', null],
+			['tbody', null, 'NO_OWNER'],
+			['tr', null, 'NO_OWNER'],
+			['td', null /* NOT MATCHING THE CONDITIONS */],
+		]);
+		expect(
+			tree(
+				'<table role="table"><tbody role="rowgroup"><tr role="row"><td role="gridcell"></td></tr></tbody></table>',
+				'1.2',
+			),
+		).toStrictEqual([
+			['table', 'table'],
+			['tbody', 'rowgroup'],
+			['tr', 'row'],
+			['td', 'cell', 'NO_PERMITTED'],
+		]);
+		expect(
+			tree(
+				'<table role="grid"><tbody role="rowgroup"><tr role="row"><td role="gridcell"></td></tr></tbody></table>',
+				'1.2',
+			),
+		).toStrictEqual([
+			['table', 'grid'],
+			['tbody', 'rowgroup'],
+			['tr', 'row'],
+			['td', 'gridcell'],
 		]);
 	});
 
@@ -221,9 +249,31 @@ describe('1.3', () => {
 		]);
 		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.3')).toStrictEqual([
 			['table', 'none'],
-			['tbody', null],
-			['tr', null],
-			['td', null],
+			['tbody', null, 'NO_OWNER'],
+			['tr', null, 'INVALID_REQUIRED_CONTEXT_ROLE'],
+			['td', null /* NOT MATCHING THE CONDITIONS */],
+		]);
+		expect(
+			tree(
+				'<table role="table"><tbody role="rowgroup"><tr role="row"><td role="gridcell"></td></tr></tbody></table>',
+				'1.3',
+			),
+		).toStrictEqual([
+			['table', 'table'],
+			['tbody', 'rowgroup'],
+			['tr', 'row'],
+			['td', 'cell', 'NO_PERMITTED'],
+		]);
+		expect(
+			tree(
+				'<table role="grid"><tbody role="rowgroup"><tr role="row"><td role="gridcell"></td></tr></tbody></table>',
+				'1.3',
+			),
+		).toStrictEqual([
+			['table', 'grid'],
+			['tbody', 'rowgroup'],
+			['tr', 'row'],
+			['td', 'gridcell'],
 		]);
 	});
 
@@ -237,5 +287,12 @@ describe('1.3', () => {
 		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.3').role?.name).toBe(
 			'presentation',
 		);
+	});
+});
+
+describe('Issues', () => {
+	test('#778', () => {
+		expect(c('<td role="gridcell"></td>', '1.2').role?.name).toBe('gridcell');
+		expect(c('<td role="gridcell"></td>', '1.3').role?.name).toBe('gridcell');
 	});
 });
