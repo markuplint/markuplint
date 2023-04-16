@@ -85,13 +85,13 @@ describe('getComputedRole', () => {
 		expect(c('<div role="none"></div>', '1.2').role?.name).toBe('none');
 		expect(c('<div tabindex="0"></div>', '1.2').role?.name).toBe('generic');
 		expect(c('<div tabindex="0" role="none"></div>', '1.2').role?.name).toBe('generic');
-		expect(c('<div><span></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div><span></span></div>', '1.2', 'span').role?.name).toBe('generic');
 		expect(c('<div><span role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
-		expect(c('<div><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
-		expect(c('<div><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
-		expect(c('<div hidden><span></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe('generic');
+		expect(c('<div><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe('generic');
+		expect(c('<div hidden><span></span></div>', '1.2', 'span').role?.name).toBe('generic');
 		expect(c('<div hidden><span role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
-		expect(c('<div hidden><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe(undefined);
+		expect(c('<div hidden><span tabindex="0"></span></div>', '1.2', 'span').role?.name).toBe('generic');
 		expect(c('<div hidden><span tabindex="0" role="none"></span></div>', '1.2', 'span').role?.name).toBe('none');
 	});
 
