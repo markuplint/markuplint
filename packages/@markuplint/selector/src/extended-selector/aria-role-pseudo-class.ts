@@ -1,7 +1,7 @@
 import type { SelectorResult } from '../types';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
-import { getComputedRole } from '@markuplint/ml-spec';
+import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
 
 export function ariaRolePseudoClass(specs: MLMLSpec) {
 	return (content: string) =>
@@ -11,7 +11,7 @@ export function ariaRolePseudoClass(specs: MLMLSpec) {
 		): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
 
-			const computed = getComputedRole(specs, el, aria.version ?? '1.2');
+			const computed = getComputedRole(specs, el, aria.version ?? ARIA_RECOMMENDED_VERSION);
 
 			if (computed.role?.name === aria.role) {
 				return {
@@ -34,7 +34,11 @@ function ariaPseudoClassParser(syntax: string): {
 	version?: ARIAVersion;
 } {
 	const [roleName, _version] = syntax.split('|');
-	const version = _version === '1.1' ? '1.1' : '1.2';
+	const version = _version ?? ARIA_RECOMMENDED_VERSION;
+
+	if (!validateAriaVersion(version)) {
+		throw new SyntaxError(`Unsupported ARIA version: ${version}`);
+	}
 
 	return {
 		role: roleName?.trim().toLowerCase() ?? syntax.trim().toLowerCase(),

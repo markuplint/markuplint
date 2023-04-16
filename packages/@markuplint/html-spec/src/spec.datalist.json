@@ -29,9 +29,6 @@
 	"aria": {
 		"implicitRole": "listbox",
 		"permittedRoles": false,
-		"properties": {
-			"global": true,
-			"role": "listbox"
-		}
+		"properties": false
 	}
 }

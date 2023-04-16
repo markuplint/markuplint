@@ -8,6 +8,7 @@ import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
 import { isRequiredOwnedElement } from './has-required-owned-elements';
+import { matchesContextRole } from './matches-context-role';
 import { mayBeFocusable } from './may-be-focusable';
 
 export function getComputedRole(
@@ -15,10 +16,23 @@ export function getComputedRole(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,
+	assumeSingleNode = false,
 ): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
-	const computedRole = explicitRole.role ? explicitRole : implicitRole;
+	const computedRole = explicitRole.role
+		? explicitRole
+		: {
+				...implicitRole,
+				errorType: explicitRole.errorType === 'NO_EXPLICIT' ? undefined : explicitRole.errorType,
+		  };
+
+	if (assumeSingleNode) {
+		return {
+			...computedRole,
+			errorType: 'NO_OWNER',
+		};
+	}
 
 	/**
 	 * Presentational Roles Conflict Resolution
@@ -47,6 +61,20 @@ export function getComputedRole(
 	 * according to the sample code in WAI-ARIA specification.
 	 */
 	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
+		/**
+		 * An element fragment that serves as the root without a parent element
+		 * cannot satisfy the "Required Context Role" condition.
+		 * Therefore, under normal circumstances, the `role` will disappear.
+		 * However, in this specific case, it will fall back to both explicit
+		 * and implicit roles. Note that the explicit role takes precedence.
+		 */
+		if (el.parentElement === null) {
+			return {
+				...computedRole,
+				errorType: 'NO_OWNER',
+			};
+		}
+
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
 		if (!nonPresentationalAncestor.role) {
 			return {
@@ -55,7 +83,7 @@ export function getComputedRole(
 				errorType: 'NO_OWNER',
 			};
 		}
-		if (!computedRole.role?.requiredContextRole.includes(nonPresentationalAncestor.role.name)) {
+		if (!matchesContextRole(computedRole.role.requiredContextRole, el, specs, version)) {
 			return {
 				el,
 				role: null,

@@ -17,10 +17,6 @@
 	"attributes": {},
 	"aria": {
 		"implicitRole": "search",
-		"permittedRoles": ["form", "group", "none", "presentation", "region"],
-		"properties": {
-			"global": true,
-			"role": "search"
-		}
+		"permittedRoles": ["form", "group", "none", "presentation", "region"]
 	}
 }

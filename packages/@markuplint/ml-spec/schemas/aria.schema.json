@@ -193,6 +193,36 @@
 						}
 					}
 				},
+				"1.3": {
+					"type": "object",
+					"additionalProperties": false,
+					"minProperties": 1,
+					"properties": {
+						"implicitRole": { "$ref": "#/definitions/ImplicitRole" },
+						"permittedRoles": { "$ref": "#/definitions/PermittedRoles" },
+						"namingProhibited": { "type": "boolean", "enum": [true] },
+						"implicitProperties": { "$ref": "#/definitions/ImplicitProperties" },
+						"properties": { "$ref": "#/definitions/PermittedARIAProperties" },
+						"conditions": {
+							"type": "object",
+							"minProperties": 1,
+							"patternProperties": {
+								".+": {
+									"type": "object",
+									"minProperties": 1,
+									"additionalProperties": false,
+									"properties": {
+										"implicitRole": { "$ref": "#/definitions/ImplicitRole" },
+										"permittedRoles": { "$ref": "#/definitions/PermittedRoles" },
+										"namingProhibited": { "type": "boolean", "enum": [true] },
+										"implicitProperties": { "$ref": "#/definitions/ImplicitProperties" },
+										"properties": { "$ref": "#/definitions/PermittedARIAProperties" }
+									}
+								}
+							}
+						}
+					}
+				},
 				"1.2": {
 					"type": "object",
 					"additionalProperties": false,

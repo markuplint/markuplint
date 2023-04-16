@@ -52,18 +52,24 @@
 		}
 	},
 	"aria": {
-		"implicitRole": "option",
+		"implicitRole": false,
 		"permittedRoles": false,
-		"properties": {
-			"global": true,
-			"role": "option",
-			// Authors SHOULD NOT use the aria-selected attribute on the option element.
-			"without": [
-				{
-					"type": "should-not",
-					"name": "aria-selected"
+		"properties": false,
+		"conditions": {
+			"datalist > option": {
+				"implicitRole": "option",
+				"properties": {
+					"global": true,
+					"role": "option",
+					// Authors SHOULD NOT use the aria-selected attribute on the option element.
+					"without": [
+						{
+							"type": "should-not",
+							"name": "aria-selected"
+						}
+					]
 				}
-			]
+			}
 		}
 	}
 }

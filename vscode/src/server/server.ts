@@ -1,6 +1,7 @@
 import type { LangConfigs, Log } from '../types';
 import type { InitializeResult, PublishDiagnosticsParams } from 'vscode-languageserver/node';
 
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { satisfies } from 'semver';
 import {
 	createConnection,
@@ -171,7 +172,8 @@ export async function bootServer() {
 			return;
 		}
 
-		const ariaVersion = typeof showAccessibility === 'boolean' ? '1.2' : showAccessibility.ariaVersion;
+		const ariaVersion =
+			typeof showAccessibility === 'boolean' ? ARIA_RECOMMENDED_VERSION : showAccessibility.ariaVersion;
 
 		const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
 

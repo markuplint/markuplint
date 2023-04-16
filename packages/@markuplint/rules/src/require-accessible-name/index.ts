@@ -1,7 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
-import { isExposed } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
 import { accnameMayBeMutable } from '../helpers';
 
@@ -11,7 +11,7 @@ type Option = {
 
 export default createRule<boolean, Option>({
 	defaultOptions: {
-		ariaVersion: '1.2',
+		ariaVersion: ARIA_RECOMMENDED_VERSION,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

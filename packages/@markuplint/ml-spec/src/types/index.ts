@@ -1,6 +1,7 @@
 import type { ARIA } from './aria';
 import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes';
 import type { ContentModel, Category } from './permitted-structures';
+import type { ariaVersions } from '../constant/aria-version';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -34,6 +35,7 @@ export type SpecDefs = {
 		readonly [category: string]: Readonly<Record<string, Partial<Attribute>>>;
 	};
 	readonly '#aria': {
+		readonly '1.3': ARIASpec;
 		readonly '1.2': ARIASpec;
 		readonly '1.1': ARIASpec;
 	};
@@ -221,7 +223,7 @@ export type ARIAAttributeValue =
 	| 'token list'
 	| 'URI';
 
-export type ARIAVersion = '1.1' | '1.2';
+export type ARIAVersion = (typeof ariaVersions)[number];
 
 export type EquivalentHtmlAttr = {
 	readonly htmlAttrName: string;

@@ -1,3 +1,4 @@
+export * from './constant/aria-version';
 export * from './dom-traverse/accname-computation';
 export * from './dom-traverse/get-attr-specs';
 export * from './dom-traverse/get-computed-aria-props';
@@ -23,3 +24,4 @@ export * from './types/aria';
 export * from './types/attributes';
 export * from './types/permitted-structures';
 export * from './utils/resolve-namespace';
+export * from './utils/validateAriaVersion';

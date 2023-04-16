@@ -1,6 +1,7 @@
 import type { Options } from './types';
 
 import { createRule, getAttrSpecs, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { Collection } from '../helpers';
 
@@ -30,7 +31,7 @@ export default createRule<boolean, Options>({
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
-		version: '1.2',
+		version: ARIA_RECOMMENDED_VERSION,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
