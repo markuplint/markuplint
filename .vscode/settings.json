@@ -48,5 +48,8 @@
 			"fileMatch": ["/packages/*markuplint/i18n/locales/*.json"],
 			"url": "/packages/@markuplint/i18n/$schema.json"
 		}
-	]
+	],
+	"github.copilot.enable": {
+		"*": true
+	}
 }
