@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "3.6.1",
+	"version": "3.7.0",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -31,7 +31,7 @@
 		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "3.1.0",
+		"@markuplint/test-tools": "3.2.0",
 		"@markuplint/types": "3.5.1",
 		"json-schema-to-typescript": "11.0.2",
 		"type-fest": "^3.6.1"
