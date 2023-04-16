@@ -1,13 +1,14 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { decodeEntities, decodeHref } from '@markuplint/shared';
 
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
 export default createRule({
 	defaultOptions: {
-		ariaVersion: '1.2' as ARIAVersion,
+		ariaVersion: ARIA_RECOMMENDED_VERSION as ARIAVersion,
 		fragmentRefersNameAttr: false,
 	},
 	async verify({ document, report, t }) {

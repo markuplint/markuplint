@@ -20,12 +20,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
+		"@markuplint/ml-spec": "3.6.1",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.11",
 		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.6.1",
 		"@types/debug": "^4.1.7",
 		"@types/jsdom": "16",
 		"jsdom": "19",

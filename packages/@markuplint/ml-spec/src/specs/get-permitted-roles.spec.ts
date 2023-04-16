@@ -127,7 +127,7 @@ describe('getPermittedRoles', () => {
 	});
 
 	test('the area element', () => {
-		expect(c('<area></area>', '1.2')).toStrictEqual(['button', 'link']);
+		expect(c('<area></area>', '1.2')).toStrictEqual(['generic', 'button', 'link']);
 		expect(c('<area></area>', '1.1')).toStrictEqual([]);
 		expect(c('<area href="path/to"></area>', '1.2')).toStrictEqual(['link']);
 	});

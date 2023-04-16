@@ -29,8 +29,8 @@ describe('getImplicitRole', () => {
 	});
 
 	test('the area element', () => {
-		expect(c('<area />', '1.2')).toBe(false);
-		expect(c('<area shape="rect" />', '1.2')).toBe(false);
+		expect(c('<area />', '1.2')).toBe('generic');
+		expect(c('<area shape="rect" />', '1.2')).toBe('generic');
 		expect(c('<area href />', '1.2')).toBe('link');
 		expect(c('<area href="" />', '1.2')).toBe('link');
 		expect(c('<area href="path/to" />', '1.2')).toBe('link');

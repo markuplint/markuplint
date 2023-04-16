@@ -46,7 +46,7 @@
 		},
 		"conditions": {
 			":not([href])": {
-				"implicitRole": false,
+				"implicitRole": "generic",
 				"permittedRoles": ["button", "link"],
 				"namingProhibited": true
 			}

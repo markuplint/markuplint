@@ -44,6 +44,14 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 							extendedSpec.def['#aria']['1.2'].graphicsRoles,
 						),
 					},
+					'1.3': {
+						roles: mergeArray(def['#aria']['1.3'].roles, extendedSpec.def['#aria']['1.3'].roles),
+						props: mergeArray(def['#aria']['1.3'].props, extendedSpec.def['#aria']['1.3'].props),
+						graphicsRoles: mergeArray(
+							def['#aria']['1.3'].graphicsRoles,
+							extendedSpec.def['#aria']['1.3'].graphicsRoles,
+						),
+					},
 				};
 			}
 			if (extendedSpec.def['#contentModels']) {

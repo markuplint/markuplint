@@ -1,7 +1,7 @@
 import type { SelectorResult } from '../types';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { getAccname } from '@markuplint/ml-spec';
+import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
 
 /**
  * Version Syntax is not support yet.
@@ -53,7 +53,11 @@ function ariaPseudoClassParser(syntax: string): {
 } {
 	const [_query, _version] = syntax.split('|');
 	const query = _query?.replace(/\s+/g, '').toLowerCase();
-	const version = _version === '1.1' ? '1.1' : '1.2';
+	const version = _version ?? ARIA_RECOMMENDED_VERSION;
+
+	if (!validateAriaVersion(version)) {
+		throw new SyntaxError(`Unsupported ARIA version: ${version}`);
+	}
 
 	switch (query) {
 		case 'hasname': {

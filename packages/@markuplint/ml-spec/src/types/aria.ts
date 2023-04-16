@@ -102,6 +102,26 @@ export interface ARIA {
 			properties?: PermittedARIAProperties;
 		};
 	};
+	'1.3'?: {
+		implicitRole?: ImplicitRole;
+		permittedRoles?: PermittedRoles;
+		namingProhibited?: true;
+		implicitProperties?: ImplicitProperties;
+		properties?: PermittedARIAProperties;
+		conditions?: {
+			/**
+			 * This interface was referenced by `undefined`'s JSON-Schema definition
+			 * via the `patternProperty` ".+".
+			 */
+			[k: string]: {
+				implicitRole?: ImplicitRole;
+				permittedRoles?: PermittedRoles;
+				namingProhibited?: true;
+				implicitProperties?: ImplicitProperties;
+				properties?: PermittedARIAProperties;
+			};
+		};
+	};
 	'1.2'?: {
 		implicitRole?: ImplicitRole;
 		permittedRoles?: PermittedRoles;
