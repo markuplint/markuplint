@@ -34,6 +34,7 @@ export type SpecDefs = {
 		readonly [category: string]: Readonly<Record<string, Partial<Attribute>>>;
 	};
 	readonly '#aria': {
+		readonly '1.3': ARIASpec;
 		readonly '1.2': ARIASpec;
 		readonly '1.1': ARIASpec;
 	};
@@ -221,7 +222,7 @@ export type ARIAAttributeValue =
 	| 'token list'
 	| 'URI';
 
-export type ARIAVersion = '1.1' | '1.2';
+export type ARIAVersion = '1.1' | '1.2' | '1.3';
 
 export type EquivalentHtmlAttr = {
 	readonly htmlAttrName: string;
