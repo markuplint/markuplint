@@ -1134,4 +1134,42 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#778', async () => {
+		const jsx = {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		};
+
+		const sourceCode = '<td role="gridcell" aria-selected="true"></td>';
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, sourceCode, jsx)).violations).toStrictEqual([]);
+
+		const sourceCode2 = '<div role="rowgroup"><div role="row"><div role="gridcell"></div></div></div>';
+		expect((await mlRuleTest(rule, sourceCode2)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, sourceCode2, jsx)).violations).toStrictEqual([]);
+
+		const sourceCode3 = '<table><tbody><tr><td role="gridcell"></td></tr></tbody></table>';
+		expect((await mlRuleTest(rule, sourceCode3)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message:
+					'Cannot overwrite the "gridcell" role to the "td" element according to ARIA in HTML specification',
+				raw: 'gridcell',
+			},
+		]);
+		expect((await mlRuleTest(rule, sourceCode3, jsx)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message:
+					'Cannot overwrite the "gridcell" role to the "td" element according to ARIA in HTML specification',
+				raw: 'gridcell',
+			},
+		]);
+	});
 });

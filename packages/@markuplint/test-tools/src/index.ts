@@ -32,9 +32,13 @@ export function createJSDOMElement(
 			return matches.call(this, selector);
 		};
 	}
-	const fragment = dom.window.document.createElement('div');
-	fragment.innerHTML = html;
-	dom.window.document.body.appendChild(fragment);
+
+	const containerTag = html.indexOf('<td') === 0 ? 'tr' : 'div';
+
+	const fragment = dom.window.document.createDocumentFragment();
+	const container = dom.window.document.createElement(containerTag);
+	container.innerHTML = html;
+	fragment.append(...Array.from(container.childNodes));
 	if (selector) {
 		const el = fragment.querySelector(selector);
 		if (!el) {

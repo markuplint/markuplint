@@ -20,10 +20,18 @@ export function getComputedRole(
 ): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
-	const computedRole = explicitRole.role ? explicitRole : implicitRole;
+	const computedRole = explicitRole.role
+		? explicitRole
+		: {
+				...implicitRole,
+				errorType: explicitRole.errorType === 'NO_EXPLICIT' ? undefined : explicitRole.errorType,
+		  };
 
 	if (assumeSingleNode) {
-		return computedRole;
+		return {
+			...computedRole,
+			errorType: 'NO_OWNER',
+		};
 	}
 
 	/**
@@ -53,6 +61,20 @@ export function getComputedRole(
 	 * according to the sample code in WAI-ARIA specification.
 	 */
 	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
+		/**
+		 * An element fragment that serves as the root without a parent element
+		 * cannot satisfy the "Required Context Role" condition.
+		 * Therefore, under normal circumstances, the `role` will disappear.
+		 * However, in this specific case, it will fall back to both explicit
+		 * and implicit roles. Note that the explicit role takes precedence.
+		 */
+		if (el.parentElement === null) {
+			return {
+				...computedRole,
+				errorType: 'NO_OWNER',
+			};
+		}
+
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
 		if (!nonPresentationalAncestor.role) {
 			return {
