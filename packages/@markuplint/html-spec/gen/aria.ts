@@ -14,10 +14,16 @@ import fetch from './fetch';
 import { arrayUnique, nameCompare } from './utils';
 
 export async function getAria() {
+	const roles13 = await getRoles('1.3');
 	const roles12 = await getRoles('1.2');
 	const roles11 = await getRoles('1.1');
 
 	return {
+		'1.3': {
+			roles: roles13,
+			props: await getProps('1.3', roles13),
+			graphicsRoles: await getRoles('1.3', true),
+		},
 		'1.2': {
 			roles: roles12,
 			props: await getProps('1.2', roles12),
@@ -31,17 +37,31 @@ export async function getAria() {
 	};
 }
 
-async function getRoles(version: ARIAVersion, graphicsAria = false) {
-	const $ = await fetch(
-		(() => {
+function getARIASpecURLByVersion(version: ARIAVersion, graphicsAria = false) {
+	switch (version) {
+		case '1.3': {
 			if (!graphicsAria) {
-				return `https://www.w3.org/TR/wai-aria-${version}/`;
+				return 'https://w3c.github.io/aria/';
 			}
-			return version === '1.1'
-				? 'https://www.w3.org/TR/graphics-aria-1.0/'
-				: 'https://w3c.github.io/graphics-aria/';
-		})(),
-	);
+			return 'https://w3c.github.io/graphics-aria/';
+		}
+		case '1.2': {
+			if (!graphicsAria) {
+				return 'https://www.w3.org/TR/wai-aria-1.2/';
+			}
+			return 'https://w3c.github.io/graphics-aria/';
+		}
+		case '1.1': {
+			if (!graphicsAria) {
+				return 'https://www.w3.org/TR/wai-aria-1.1/';
+			}
+			return 'https://www.w3.org/TR/graphics-aria-1.0/';
+		}
+	}
+}
+
+async function getRoles(version: ARIAVersion, graphicsAria = false) {
+	const $ = await fetch(getARIASpecURLByVersion(version, graphicsAria));
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIARoleInSchema[] = [];
 	const getAttr = (
@@ -92,7 +112,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const ownedProps = $features.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
 		const requiredContextRole = $$($features, ['.role-scope li', '.role-scope a'])
 			.toArray()
-			.map(el => $(el).text().trim());
+			.map(el => {
+				const text = $(el).text().trim();
+				if (text.includes('owned by')) {
+					return text.replace(/([a-z]+)\s+owned\s+by\s+([a-z]+)/gim, '$2 > $1');
+				}
+				return text;
+			});
 		const requiredOwnedElements = $$($features, ['.role-mustcontain li', '.role-mustcontain a'])
 			.toArray()
 			.map(el =>
@@ -161,7 +187,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 }
 
 async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]) {
-	const $ = await fetch(`https://www.w3.org/TR/wai-aria-${version}/`);
+	const $ = await fetch(getARIASpecURLByVersion(version));
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
