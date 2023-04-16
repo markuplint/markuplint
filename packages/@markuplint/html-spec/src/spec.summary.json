@@ -27,6 +27,9 @@
 	},
 	"attributes": {},
 	"aria": {
+		// ⚠ "ARIA in HTML" says "No corresponding role", but Markuplint presets the role.
+		// Because the spec says:
+		// > Many, but not all, user agents expose the summary element with an implicit ARIA role=button role.
 		"implicitRole": "button",
 		"permittedRoles": false,
 		"properties": {

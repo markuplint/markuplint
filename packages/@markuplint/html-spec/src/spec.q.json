@@ -21,8 +21,11 @@
 		}
 	},
 	"aria": {
-		"implicitRole": false,
+		"implicitRole": "generic",
 		"permittedRoles": true,
-		"namingProhibited": true
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }
