@@ -8,6 +8,7 @@ import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
 import { isRequiredOwnedElement } from './has-required-owned-elements';
+import { matchesContextRole } from './matches-context-role';
 import { mayBeFocusable } from './may-be-focusable';
 
 export function getComputedRole(
@@ -15,10 +16,15 @@ export function getComputedRole(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 	version: ARIAVersion,
+	assumeSingleNode = false,
 ): ComputedRole {
 	const implicitRole = getImplicitRole(specs, el, version);
 	const explicitRole = getExplicitRole(specs, el, version);
 	const computedRole = explicitRole.role ? explicitRole : implicitRole;
+
+	if (assumeSingleNode) {
+		return computedRole;
+	}
 
 	/**
 	 * Presentational Roles Conflict Resolution
@@ -55,7 +61,7 @@ export function getComputedRole(
 				errorType: 'NO_OWNER',
 			};
 		}
-		if (!computedRole.role?.requiredContextRole.includes(nonPresentationalAncestor.role.name)) {
+		if (!matchesContextRole(computedRole.role.requiredContextRole, el, specs, version)) {
 			return {
 				el,
 				role: null,
