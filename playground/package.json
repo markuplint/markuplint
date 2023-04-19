@@ -53,7 +53,7 @@
 		"@markuplint/parser-utils": "3.6.1",
 		"@markuplint/rules": "3.8.0",
 		"monaco-editor": "0.34.1",
-		"svelte": "3.55.0",
+		"svelte": "3.58.0",
 		"tslib": "2.4.1"
 	}
 }
