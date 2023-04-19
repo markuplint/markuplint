@@ -3556,9 +3556,9 @@ chrome-trace-event@^1.0.2:
   integrity sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==
 
 chrono-node@^2.5.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/chrono-node/-/chrono-node-2.6.0.tgz#c6f8272b2cd95852faef31c67506ecce56377375"
-  integrity sha512-6QADXcSv7V29LvGeaoXP2wWS95Bf1+IKRblJzFxYEXNKeQF3e5CAyk+HoJxD071b2D0W/AUEVYcWpXmmkOvy2w==
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/chrono-node/-/chrono-node-2.6.3.tgz#fa257cffb2dfc33fa5a01b26bd86f93741ca6dc5"
+  integrity sha512-VkWaaZnNulqzNH9i4XCdyI05OX6MFEnCMNKdZOR4w//wS5/E2qkwAss/O5sj6SfTZK84fX4SSOG4pzqjqIseiA==
   dependencies:
     dayjs "^1.10.0"
 
