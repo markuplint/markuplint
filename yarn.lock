@@ -8161,7 +8161,7 @@ loader-runner@^4.2.0:
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.3.0.tgz#c1b4a163b99f614830353b16755e7149ac2314e1"
   integrity sha512-3R/1M+yS3j5ou80Me59j7F9IMs4PXs3VqRrm0TU3AbKPxlmpoY1TNscJV/oGJXo8qCatFGTfDbY6W6ipGOYXfg==
 
-loader-utils@^2.0.0, loader-utils@^2.0.2, loader-utils@^2.0.3:
+loader-utils@^2.0.0, loader-utils@^2.0.2, loader-utils@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-2.0.4.tgz#8b5cb38b5c34a9a018ee1fc0e6a066d1dfcc528c"
   integrity sha512-xXqpXoINfFhgua9xiqD8fPFHgkoq1mmmpE92WlDbm9rNRd/EbRb+Gqf908T2DMfuHjjJlksiK2RbHVOdD/MqSw==
@@ -11963,12 +11963,12 @@ svelte-hmr@^0.14.2:
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.14.12.tgz#a127aec02f1896500b10148b2d4d21ddde39973f"
   integrity sha512-4QSW/VvXuqVcFZ+RhxiR8/newmwOCTlbYIezvkeN6302YFRE8cXy0naamHcjz8Y9Ce3ITTZtrHrIL0AGfyo61w==
 
-svelte-loader@3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/svelte-loader/-/svelte-loader-3.1.4.tgz#69af360b816dddc11d2d0847dc1a91516a67974e"
-  integrity sha512-DtgVPb03UWhPW0GGlWx+1w6+LeCSnFijpX+4NCUNlRQjuzy8fcjBWaC+Q5cMCrk8JDB8YBqHt+SijDmAz1A/Ww==
+svelte-loader@3.1.7:
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/svelte-loader/-/svelte-loader-3.1.7.tgz#b6acc02380b3cfe08340a08fe6831474fe4d56cb"
+  integrity sha512-YVg5gQaUdV26uaA5SEGj1VOUX0YQicD9PezKvVlkQ2JI644silWtJZ3hkxHtXSfjnlFr0OTNoyOgeINIODdT+A==
   dependencies:
-    loader-utils "^2.0.3"
+    loader-utils "^2.0.4"
     svelte-dev-helper "^1.1.9"
     svelte-hmr "^0.14.2"
 
