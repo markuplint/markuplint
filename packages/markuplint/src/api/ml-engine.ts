@@ -7,7 +7,7 @@ import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@mark
 import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
-import { StrictEventEmitter } from 'strict-event-emitter';
+import { Emitter } from 'strict-event-emitter';
 
 import { log as coreLog, verbosely } from '../debug';
 import { i18n } from '../i18n';
@@ -21,7 +21,7 @@ type MLEngineOptions = {
 	readonly watch?: boolean;
 };
 
-export default class MLEngine extends StrictEventEmitter<MLEngineEventMap> {
+export default class MLEngine extends Emitter<MLEngineEventMap> {
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
 		return files[0];
