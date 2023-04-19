@@ -91,7 +91,7 @@
 	},
 	"dependencies": {
 		"@markuplint/i18n": "3.7.0",
-		"@markuplint/ml-spec": "3.6.1",
+		"@markuplint/ml-spec": "3.7.0",
 		"markuplint": "3.7.0",
 		"semver": "^7.4.0",
 		"vscode-languageclient": "^8.1.0",
