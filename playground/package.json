@@ -28,7 +28,7 @@
 		"postcss-calc": "8.2.4",
 		"postcss-custom-media": "9.0.1",
 		"postcss-gap-properties": "3.0.5",
-		"postcss-loader": "7.0.2",
+		"postcss-loader": "7.2.4",
 		"postcss-math": "0.0.10",
 		"sass": "1.57.0",
 		"sass-loader": "13.2.0",
