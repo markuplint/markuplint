@@ -112,7 +112,7 @@
 		"eslint-import-resolver-typescript": "^3.5.3",
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-jsdoc": "^39.6.4",
+		"eslint-plugin-jsdoc": "^43.0.0",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-sort-class-members": "^1.16.0",
 		"heapdump": "^0.3.15",
