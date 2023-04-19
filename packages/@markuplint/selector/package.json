@@ -27,8 +27,8 @@
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.7",
-		"@types/jsdom": "16",
-		"jsdom": "19",
+		"@types/jsdom": "21",
+		"jsdom": "21",
 		"type-fest": "^3.6.1"
 	}
 }
