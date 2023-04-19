@@ -22,7 +22,7 @@
 		"html-loader": "4.2.0",
 		"html-webpack-plugin": "5.5.0",
 		"json-loader": "0.5.7",
-		"mini-css-extract-plugin": "2.7.2",
+		"mini-css-extract-plugin": "2.7.5",
 		"monaco-editor-webpack-plugin": "7.0.1",
 		"postcss-base64": "0.7.1",
 		"postcss-calc": "8.2.4",
