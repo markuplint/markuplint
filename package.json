@@ -34,7 +34,8 @@
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
 		"prerelease": "yarn build; yarn test",
 		"prepare": "husky install",
-		"spellcheck": "cspell --no-progress --show-suggestions \"**\""
+		"spellcheck": "cspell --no-progress --show-suggestions \"**\"",
+		"up": "yarn upgrade-interactive --latest"
 	},
 	"lint-staged": {
 		"./{packages,website,playground}/**/*.{ts,tsx,json}": [
