@@ -5183,9 +5183,9 @@ eslint-plugin-node@^11.1.0:
     semver "^6.1.0"
 
 eslint-plugin-sort-class-members@^1.16.0:
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-sort-class-members/-/eslint-plugin-sort-class-members-1.16.0.tgz#e47596d867a57713571f040024c03fe674dec3fc"
-  integrity sha512-8l0IqUmoupk9PvO5D4I5zJqirVe9sax5Hpfv9xQmnrSpLYkc8BSYGnUjuHGMSSe4jKuC73NIr38kQv1tPbO+Xg==
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-sort-class-members/-/eslint-plugin-sort-class-members-1.17.1.tgz#bf76796953dc0711854a322f5203fb1ba829ffa0"
+  integrity sha512-qLUeVJDGRUAww4ndgyTux07b1NGSeyYo/tA6/jD66U9LDoQsvZ/n+Yd/as7lc6NVT2wDfFh9256k9ktOnE6iQA==
 
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
