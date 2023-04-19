@@ -21,7 +21,7 @@
 	"devDependencies": {
 		"@types/cosmiconfig": "^6.0.0",
 		"@types/glob": "^8.0.0",
-		"@types/node": "latest"
+		"@types/node": "18.15.11"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "3.6.1",
@@ -33,7 +33,7 @@
 		"cosmiconfig": "^8.0.0",
 		"glob": "^8.0.3",
 		"jsonc": "^2.0.0",
-		"minimatch": "^5.1.1",
+		"minimatch": "8",
 		"tslib": "^2.4.1"
 	}
 }
