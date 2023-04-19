@@ -133,7 +133,7 @@
 		"textlint-rule-preset-jtf-style": "^2.3.13",
 		"ts-jest": "^29.0.5",
 		"ts-node": "^10.9.1",
-		"typedoc": "^0.23.24",
+		"typedoc": "^0.24.0",
 		"typedoc-plugin-mdn-links": "^2.0.2",
 		"typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
 		"typescript": "^5.0.2"
