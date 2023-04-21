@@ -182,6 +182,7 @@ describe('Config Priority', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/jsx/003.jsx');
 		const engine = new MLEngine(file, {
+			locale: 'en',
 			config: {
 				parserOptions: {
 					authoredElementName: ['authoredcomponent2', /^[A-Z]|\./],

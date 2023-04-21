@@ -1,15 +1,10 @@
 import { sep } from 'node:path';
-import util from 'node:util';
 
-import syncGlob from 'glob';
+import { glob as origin } from 'glob';
 
-const glob = async (
-	pattern: string,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	options?: syncGlob.IOptions,
-) => {
+const glob = async (pattern: string) => {
 	const normalized = pattern.split(sep).join('/');
-	return await util.promisify(syncGlob)(normalized, options);
+	return await origin(normalized);
 };
 
 export default glob;

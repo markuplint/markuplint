@@ -22,8 +22,8 @@
 		"cheerio": "^1.0.0-rc.12",
 		"cli-progress": "^3.11.2",
 		"fast-xml-parser": "^4.2.2",
-		"glob": "^9.2.1",
-		"node-fetch": "2",
+		"glob": "^10.2.1",
+		"node-fetch": "3.3.1",
 		"strip-json-comments": "3",
 		"type-fest": "^3.8.0"
 	},
