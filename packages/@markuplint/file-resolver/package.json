@@ -31,7 +31,7 @@
 		"@markuplint/ml-spec": "3.7.0",
 		"@markuplint/shared": "3.5.0",
 		"cosmiconfig": "^8.0.0",
-		"glob": "^8.0.3",
+		"glob": "^10.0.0",
 		"jsonc": "^2.0.0",
 		"minimatch": "8",
 		"tslib": "^2.4.1"
