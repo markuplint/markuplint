@@ -27,7 +27,7 @@
 		"@markuplint/ml-core": "3.8.0",
 		"@textlint/kernel": "13.3.2",
 		"textlint": "12",
-		"textlint-plugin-html": "0.3.0",
+		"textlint-plugin-html": "1.0.0",
 		"tslib": "^2.4.1"
 	}
 }
