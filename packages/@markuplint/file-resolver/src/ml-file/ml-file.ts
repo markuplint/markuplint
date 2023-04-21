@@ -4,7 +4,7 @@ import type { Stats } from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 
 export class MLFile {
 	#basename: string;
