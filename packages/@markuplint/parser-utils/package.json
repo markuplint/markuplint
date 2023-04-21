@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@types/uuid": "^9.0.0",
-		"type-fest": "^3.7.0"
+		"type-fest": "^3.8.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "3.1.0",

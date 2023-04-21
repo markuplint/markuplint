@@ -20,28 +20,23 @@ export type APIOptions = {
 };
 
 export type MLEngineEventMap = {
-	log: (phase: string, message: string) => void;
-	config: (
-		filePath: string,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		config: ConfigSet,
-		message?: string,
-	) => void;
-	exclude: (filePath: string, setting: string, message?: string) => void;
-	parser: (filePath: string, parser: string, message?: string) => void;
-	ruleset: (filePath: string, ruleset: Ruleset, message?: string) => void;
-	schemas: (filePath: string, schemas: MLSchema, message?: string) => void;
-	rules: (filePath: string, rules: readonly Readonly<AnyMLRule>[], message?: string) => void;
-	i18n: (filePath: string, locale: LocaleSet, message?: string) => void;
-	code: (filePath: string, sourceCode: string, message?: string) => void;
-	lint: (
+	log: [phase: string, message: string];
+	config: [filePath: string, config: ConfigSet, message?: string];
+	exclude: [filePath: string, setting: string, message?: string];
+	parser: [filePath: string, parser: string, message?: string];
+	ruleset: [filePath: string, ruleset: Ruleset, message?: string];
+	schemas: [filePath: string, schemas: MLSchema, message?: string];
+	rules: [filePath: string, rules: readonly Readonly<AnyMLRule>[], message?: string];
+	i18n: [filePath: string, locale: LocaleSet, message?: string];
+	code: [filePath: string, sourceCode: string, message?: string];
+	lint: [
 		filePath: string,
 		sourceCode: string,
 		violations: readonly Violation[],
 		fixedCode: string,
 		debug: readonly string[] | null,
 		message?: string,
-	) => void;
-	'lint-error': (filePath: string, sourceCode: string, error: Readonly<Error>) => void;
-	'config-errors': (filePath: string, errors: readonly Readonly<Error>[]) => void;
+	];
+	'lint-error': [filePath: string, sourceCode: string, error: Readonly<Error>];
+	'config-errors': [filePath: string, errors: readonly Readonly<Error>[]];
 };

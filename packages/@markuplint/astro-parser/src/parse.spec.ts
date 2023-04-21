@@ -2,7 +2,7 @@
 
 import type { MLASTElement } from '@markuplint/ml-ast';
 
-import { nodeListToDebugMaps } from '../../parser-utils/lib';
+import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 
 import { parse } from './parse';
 

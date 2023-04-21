@@ -26,6 +26,6 @@
 		"tslib": "^2.4.1"
 	},
 	"devDependencies": {
-		"type-fest": "^3.7.0"
+		"type-fest": "^3.8.0"
 	}
 }
