@@ -24,7 +24,7 @@
 		"typescript": "^5.0.4"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^9.0.13",
+		"@types/fs-extra": "^11.0.0",
 		"fs-extra": "^11.1.1"
 	}
 }
