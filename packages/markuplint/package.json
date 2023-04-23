@@ -47,7 +47,7 @@
 		"enquirer": "^2.3.6",
 		"get-stdin": "8",
 		"gray-matter": "^4.0.3",
-		"has-yarn": "2",
+		"has-yarn": "3",
 		"meow": "9",
 		"node-fetch": "2",
 		"os-locale": "5",
