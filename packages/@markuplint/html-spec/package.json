@@ -24,7 +24,7 @@
 		"fast-xml-parser": "^4.2.2",
 		"glob": "^10.2.2",
 		"node-fetch": "3.3.1",
-		"strip-json-comments": "3",
+		"strip-json-comments": "5",
 		"type-fest": "^3.8.0"
 	},
 	"dependencies": {
