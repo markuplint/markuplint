@@ -20,7 +20,7 @@
 		"schema": "ts-node './gen/types.ts'; json2ts './types.schema.json' > './src/types.schema.ts'; prettier './src/types.schema.ts' './types.schema.json' --write; eslint './src/types.schema.ts' --fix; tsc;"
 	},
 	"dependencies": {
-		"bcp-47": "1",
+		"bcp-47": "2",
 		"css-tree": "^2.3.1",
 		"debug": "^4.3.4",
 		"leven": "3",
