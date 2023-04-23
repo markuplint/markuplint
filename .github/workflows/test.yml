@@ -31,7 +31,7 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - uses: actions/cache@v2
+            - uses: actions/cache@v3
               id: cache
               with:
                   path: |
