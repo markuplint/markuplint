@@ -2,7 +2,6 @@
   "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
   "plugins": ["stylelint-order"],
   "rules": {
-    "string-quotes": "single",
     "declaration-colon-newline-after": null,
     "selector-class-pattern": null,
     "value-keyword-case": [
@@ -10,6 +9,7 @@
       {
         "camelCaseSvgKeywords": true
       }
-    ]
+    ],
+    "media-feature-range-notation": null
   }
 }
