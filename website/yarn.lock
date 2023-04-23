@@ -5660,6 +5660,11 @@ nanoid@^3.3.4:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
+nanoid@^3.3.6:
+  version "3.3.6"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
+  integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
+
 negotiator@0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
@@ -6371,15 +6376,15 @@ postcss-sort-media-queries@^4.2.1:
   dependencies:
     sort-css-media-queries "2.1.0"
 
-postcss-sorting@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/postcss-sorting/-/postcss-sorting-7.0.1.tgz#923b5268451cf2d93ebf8835e17a6537757049a5"
-  integrity sha512-iLBFYz6VRYyLJEJsBJ8M3TCqNcckVzz4wFounSc5Oez35ogE/X+aoC5fFu103Ot7NyvjU3/xqIXn93Gp3kJk4g==
-
 postcss-sorting@^8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/postcss-sorting/-/postcss-sorting-8.0.1.tgz#d03852914979ac0a1ef3ca6e517bf4b53c045f35"
   integrity sha512-go9Zoxx7KQH+uLrJ9xa5wRErFeXu01ydA6O8m7koPXkmAN7Ts//eRcIqjo0stBR4+Nir2gMYDOWAOx7O5EPUZA==
+
+postcss-sorting@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/postcss-sorting/-/postcss-sorting-8.0.2.tgz#6393385ece272baf74bee9820fb1b58098e4eeca"
+  integrity sha512-M9dkSrmU00t/jK7rF6BZSZauA5MAaBW4i5EnJXspMwt4iqTh/L9j6fgMnbElEOfyRyfLfVbIHj/R52zHzAPe1Q==
 
 postcss-svgo@^5.1.0:
   version "5.1.0"
@@ -6421,6 +6426,15 @@ postcss@^8.4.19, postcss@^8.4.20:
   integrity sha512-tP7u/Sn/dVxK2NnruI4H9BG+x+Wxz6oeZ1cJ8P6G/PZY0IKk4k/63TDsQf2kQq3+qoJeLm2kIBUNlZe3zgb4Zg==
   dependencies:
     nanoid "^3.3.4"
+    picocolors "^1.0.0"
+    source-map-js "^1.0.2"
+
+postcss@^8.4.21:
+  version "8.4.23"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.23.tgz#df0aee9ac7c5e53e1075c24a3613496f9e6552ab"
+  integrity sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==
+  dependencies:
+    nanoid "^3.3.6"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
@@ -7607,12 +7621,12 @@ stylehacks@^5.1.1:
     browserslist "^4.21.4"
     postcss-selector-parser "^6.0.4"
 
-stylelint-config-recess-order@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-3.1.0.tgz#aeeddd658f726c1252d95efe54e79d246667ae1f"
-  integrity sha512-LXR6zD5O9cS1a9gbLbuKvWLs7qmHj4xm5MQ5KhhwZPMhtQP9da3F6Jsp/NAUdsAwDQEnT1ShU16YVdgN6p4a/w==
+stylelint-config-recess-order@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-4.0.0.tgz#819b4b8f9bf83d23a0bc918a9bf834f42f87b12a"
+  integrity sha512-sOb+OofMryBR91CbzgV2FavpONqiIeAE7cfrgyUHqePblWBKsYzoUuWThI5EjPRA7KKeovm6ykr7twWYLeafPQ==
   dependencies:
-    stylelint-order "5.x"
+    stylelint-order "6.x"
 
 stylelint-config-recommended@^9.0.0:
   version "9.0.0"
@@ -7626,13 +7640,13 @@ stylelint-config-standard@^29.0.0:
   dependencies:
     stylelint-config-recommended "^9.0.0"
 
-stylelint-order@5.x:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/stylelint-order/-/stylelint-order-5.0.0.tgz#abd20f6b85ac640774cbe40e70d3fe9c6fdf4400"
-  integrity sha512-OWQ7pmicXufDw5BlRqzdz3fkGKJPgLyDwD1rFY3AIEfIH/LQY38Vu/85v8/up0I+VPiuGRwbc2Hg3zLAsJaiyw==
+stylelint-order@6.x:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/stylelint-order/-/stylelint-order-6.0.3.tgz#160b78650bd90463241b992581efee7159baefc2"
+  integrity sha512-1j1lOb4EU/6w49qZeT2SQVJXm0Ht+Qnq9GMfUa3pMwoyojIWfuA+JUDmoR97Bht1RLn4ei0xtLGy87M7d29B1w==
   dependencies:
-    postcss "^8.3.11"
-    postcss-sorting "^7.0.1"
+    postcss "^8.4.21"
+    postcss-sorting "^8.0.2"
 
 stylelint-order@^6.0.1:
   version "6.0.1"
