@@ -52,7 +52,7 @@
 		"node-fetch": "2",
 		"os-locale": "5",
 		"strict-event-emitter": "^0.5.0",
-		"strip-ansi": "6",
+		"strip-ansi": "7",
 		"tslib": "^2.4.1",
 		"type-fest": "^3.8.0",
 		"uuid": "^9.0.0"
