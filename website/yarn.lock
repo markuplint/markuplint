@@ -1648,13 +1648,13 @@
     "@hapi/hoek" "^9.0.0"
 
 "@imgix/js-core@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@imgix/js-core/-/js-core-3.7.0.tgz#9bbfc26c5eb144594b9962d8872ecbbc493e7e8f"
-  integrity sha512-TjRohuczdpamoR+YWQpUTQvw59L4lOKIeWd9agAlEVoZo6PQx8LVsmCLANY4cZEmrfJqGfi3ijf4SdUvU3UYoQ==
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@imgix/js-core/-/js-core-3.8.0.tgz#630bc4fba8cb968d8c0e8298a2be71e39d75b8b8"
+  integrity sha512-kvLmsODQq7W17UuhDIffimlKN+AUTgtQCgD8kpPN0gglvaqR1VZKXl4gB5eAUXgrwNgi5hRDl5XYAMFRPIUztw==
   dependencies:
     js-base64 "~3.7.0"
     md5 "^2.2.1"
-    ufo "^0.8.0"
+    ufo "^1.0.0"
 
 "@jest/schemas@^29.0.0":
   version "29.0.0"
@@ -5174,9 +5174,9 @@ joi@^17.6.0:
     "@sideway/pinpoint" "^2.0.0"
 
 js-base64@~3.7.0:
-  version "3.7.3"
-  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.3.tgz#2e784bb0851636bf1e99ef12e4f3a8a8c9b7639f"
-  integrity sha512-PAr6Xg2jvd7MCR6Ld9Jg3BmTcjYsHEBx1VlwEwULb/qowPf5VD9kEMagj23Gm7JRnSvE/Da/57nChZjnvL8v6A==
+  version "3.7.5"
+  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
+  integrity sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -7917,10 +7917,10 @@ ua-parser-js@^0.7.30:
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.33.tgz#1d04acb4ccef9293df6f70f2c3d22f3030d8b532"
   integrity sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==
 
-ufo@^0.8.0:
-  version "0.8.6"
-  resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.8.6.tgz#c0ec89bc0e0c9fa59a683680feb0f28b55ec323b"
-  integrity sha512-fk6CmUgwKCfX79EzcDQQpSCMxrHstvbLswFChHS0Vump+kFkw7nJBfTZoC1j0bOGoY9I7R3n2DGek5ajbcYnOw==
+ufo@^1.0.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ufo/-/ufo-1.1.1.tgz#e70265e7152f3aba425bd013d150b2cdf4056d7c"
+  integrity sha512-MvlCc4GHrmZdAllBc0iUDowff36Q9Ndw/UzqmEKyrfSzokTd9ZCy1i+IIk5hrYKkjoYVQyNbrw7/F8XJ2rEwTg==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
