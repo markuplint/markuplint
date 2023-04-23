@@ -45,7 +45,7 @@
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
 		"enquirer": "^2.3.6",
-		"get-stdin": "8",
+		"get-stdin": "9",
 		"gray-matter": "^4.0.3",
 		"has-yarn": "2",
 		"meow": "9",
