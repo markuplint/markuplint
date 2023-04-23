@@ -7,7 +7,8 @@
     "site:start": "yarn site:prebuild; docusaurus start",
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node scripts/prebuild/index.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
-    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; stylelint './**/*.css'; textlint --fix './website/i18n/ja'; cd ../; yarn cli './website/**/*.tsx'"
+    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; stylelint './**/*.css'; textlint --fix './website/i18n/ja'; cd ../; yarn cli './website/**/*.tsx'",
+    "site:up": "yarn upgrade-interactive --latest"
   },
   "author": "Yusuke Hirao",
   "license": "MIT",
@@ -26,15 +27,15 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^2.4.0",
-    "@imgix/js-core": "^3.7.0",
+    "@imgix/js-core": "^3.8.0",
     "@tsconfig/docusaurus": "^1.0.5",
-    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "stylelint": "^14.16.1",
     "stylelint-config-recess-order": "^3.1.0",
     "stylelint-config-standard": "^29.0.0",
-    "stylelint-order": "^6.0.1",
-    "typescript": "^4.7.4"
+    "stylelint-order": "^6.0.3",
+    "typescript": "^5.0.4"
   },
   "resolutions": {
     "@docsearch/css": "^3.3.3"
