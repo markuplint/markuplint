@@ -49,7 +49,7 @@ The priority applied names are:
 
 ```json
 {
-	"extends": ["markuplint:recommended"]
+  "extends": ["markuplint:recommended"]
 }
 ```
 #### YAML
@@ -63,7 +63,7 @@ extends:
 
 ```js
 module.exports = {
-	extends: ['markuplint:recommended']
+  extends: ['markuplint:recommended']
 };
 ```
 
@@ -73,7 +73,7 @@ module.exports = {
 import type { Config } from '@markuplint/ml-config';
 
 const config: Config = {
-	extends: ['markuplint:recommended']
+  extends: ['markuplint:recommended']
 };
 
 export default config;
