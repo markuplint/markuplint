@@ -16,18 +16,18 @@ And returns `1` if the result has problems one or more.
 
 ## Options
 
-| Long Option                | Short Option | Argument                       | Default    | Description                                                         |
-| -------------------------- | ------------ | ------------------------------ | ---------- | ------------------------------------------------------------------- |
-| `--config`                 | `-c`         | File path                      | none       | A configuration file path                                           |
-| `--fix`                    | none         | none                           | false      | Fix target files if the rule supports.                              |
-| `--format`                 | `-f`         | `JSON`, `Simple` or `Standard` | `Standard` | Select output format.                                               |
-| `--no-search-config`       | none         | none                           | false      | No search a configure file automatically.                           |
-| `--ignore-ext`             | none         | none                           | false      | Evaluate files that are received even though the type of extension. |
-| `--no-import-preset-rules` | none         | none                           | false      | No import preset rules.                                             |
-| `--locale`                 | none         | none                           | OS setting | Locale of the message of violation.                                 |
-| `--no-color`               | none         | none                           | false      | Output no color.                                                    |
-| `--problem-only`           | `-p`         | none                           | false      | Output only problems.                                               |
-| `--verbose`                | none         | none                           | false      | Output with detailed information.                                   |
+| Long Option                | Short Option | Argument                                 | Default    | Description                                                         |
+| -------------------------- | ------------ | ---------------------------------------- | ---------- | ------------------------------------------------------------------- |
+| `--config`                 | `-c`         | File path                                | none       | A configuration file path                                           |
+| `--fix`                    | none         | none                                     | false      | Fix target files if the rule supports.                              |
+| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard` | Select output format.                                               |
+| `--no-search-config`       | none         | none                                     | false      | No search a configure file automatically.                           |
+| `--ignore-ext`             | none         | none                                     | false      | Evaluate files that are received even though the type of extension. |
+| `--no-import-preset-rules` | none         | none                                     | false      | No import preset rules.                                             |
+| `--locale`                 | none         | none                                     | OS setting | Locale of the message of violation.                                 |
+| `--no-color`               | none         | none                                     | false      | Output no color.                                                    |
+| `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                               |
+| `--verbose`                | none         | none                                     | false      | Output with detailed information.                                   |
 
 ## Particular run
 
