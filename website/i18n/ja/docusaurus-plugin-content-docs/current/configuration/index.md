@@ -40,7 +40,9 @@
 - `.markuplintrc.yml`
 - `.markuplintrc.js`
 - `.markuplintrc.cjs`
+- `.markuplintrc.ts`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
+- `markuplint.config.ts`
 
 `.markuplintrc`のフォーマットはJSON（コメント対応）かYAML形式となります。

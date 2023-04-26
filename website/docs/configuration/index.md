@@ -38,7 +38,9 @@ The priority applied names are:
 - `.markuplintrc.yml`
 - `.markuplintrc.js`
 - `.markuplintrc.cjs`
+- `.markuplintrc.ts`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
+- `markuplint.config.ts`
 
 `.markuplintrc`'s format is JSON (with comment) and also YAML.
