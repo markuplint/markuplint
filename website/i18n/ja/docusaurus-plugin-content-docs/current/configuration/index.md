@@ -49,21 +49,21 @@
 
 #### JSON
 
-```json
+```json class=config
 {
   "extends": ["markuplint:recommended"]
 }
 ```
 #### YAML
 
-```yaml
+```yaml class=config
 extends:
   - markuplint:recommended
 ```
 
 #### JavaScript
 
-```js
+```js class=config
 module.exports = {
   extends: ['markuplint:recommended']
 };
@@ -71,7 +71,7 @@ module.exports = {
 
 #### TypeScript
 
-```ts
+```ts class=config
 import type { Config } from '@markuplint/ml-config';
 
 const config: Config = {
