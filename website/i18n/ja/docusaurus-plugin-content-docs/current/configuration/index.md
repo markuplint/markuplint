@@ -46,3 +46,37 @@
 - `markuplint.config.ts`
 
 `.markuplintrc`のフォーマットはJSON（コメント対応）かYAML形式となります。
+
+#### JSON
+
+```json
+{
+	"extends": ["markuplint:recommended"]
+}
+```
+#### YAML
+
+```yaml
+extends:
+  - markuplint:recommended
+```
+
+#### JavaScript
+
+```js
+module.exports = {
+	extends: ['markuplint:recommended']
+};
+```
+
+#### TypeScript
+
+```ts
+import type { Config } from '@markuplint/ml-config';
+
+const config: Config = {
+	extends: ['markuplint:recommended']
+};
+
+export default config;
+```
