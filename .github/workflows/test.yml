@@ -28,16 +28,6 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - uses: actions/cache@v3
-              id: cache
-              with:
-                  path: |
-                      node_modules
-                      **/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-yarn-
-
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@v3
               with:
