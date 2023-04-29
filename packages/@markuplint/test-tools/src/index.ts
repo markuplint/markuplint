@@ -1,3 +1,5 @@
+export * from './exports';
+
 import { JSDOM } from 'jsdom';
 
 export function createJSDOMElement(
