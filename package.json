@@ -57,42 +57,31 @@
 	"jest": {
 		"verbose": true,
 		"moduleFileExtensions": [
-			"ts",
-			"tsx",
 			"js",
-			"cjs",
-			"jsx",
 			"json",
 			"node"
 		],
 		"collectCoverageFrom": [
-			"packages/markuplint/src/**/*.ts",
-			"packages/@markuplint/*/src/**/*.ts",
-			"!**/*.spec.ts?(x)",
-			"!**/*.test.ts?(x)"
+			"packages/markuplint/src/**/*.js",
+			"packages/@markuplint/*/src/**/*.js",
+			"!**/*.spec.js"
 		],
 		"projects": [
 			{
 				"displayName": "node",
-				"testRegex": "(\\.|/)(spec|test)\\.tsx?$",
+				"testRegex": "(\\.|/)spec\\.js$",
 				"testPathIgnorePatterns": [
-					"(\\.|/)browser\\.(spec|test)\\.tsx?$"
+					"(\\.|/)browser\\.spec\\.js$"
 				],
-				"testEnvironment": "node",
-				"transform": {
-					"^.+\\.tsx?$": "ts-jest"
-				}
+				"testEnvironment": "node"
 			},
 			{
 				"displayName": "browser",
-				"testRegex": "(\\.|/)browser\\.(spec|test)\\.tsx?$",
+				"testRegex": "(\\.|/)browser\\.spec\\.js?$",
 				"resolver": "<rootDir>/test/browser-resolver.js",
 				"setupFiles": [
 					"<rootDir>/test/browser-setup.js"
-				],
-				"transform": {
-					"^.+\\.tsx?$": "ts-jest"
-				}
+				]
 			}
 		]
 	},
