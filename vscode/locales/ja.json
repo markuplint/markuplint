@@ -1,4 +1,14 @@
 {
+	"keywords": {
+		"computed accessibility properties": "計算済みアクセシビリティプロパティ",
+		"hidden element": "非表示要素",
+		"no corresponding role": "対応するロールなし",
+		"no exposed to accessibility tree": "アクセシビリティツリーに公開されません",
+		"none": "なし",
+		"prohibited": "禁止",
+		"required": "必須",
+		"undefined": "未定義"
+	},
 	"sentences": {
 		"since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in vs code extension": "ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v{0})を利用します"
 	}

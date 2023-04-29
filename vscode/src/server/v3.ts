@@ -12,6 +12,7 @@ import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
 
+import { t } from '../i18n';
 import { getFilePath } from '../utils/get-file-path';
 
 import { convertDiagnostics } from './convert-diagnostics';
@@ -203,14 +204,14 @@ export function getNodeWithAccessibilityProps(
 	const nameRequired = role.role?.accessibleNameRequired ?? false;
 	const nameProhibited = role.role?.accessibleNameProhibited ?? false;
 
-	const requiredLabel = '\u26A0\uFE0F**Required**';
+	const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
 
-	aria.role = role.role?.name ? `\`${role.role.name}\`` : 'No corresponding role';
+	aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
 	aria.name = nameProhibited
-		? '**Prohibited**'
+		? `**${t('Prohibited')}**`
 		: name
-		? `\`${name}\``
-		: `None${nameRequired ? ` ${requiredLabel}` : ''}`;
+		? `\`"${name}"\``
+		: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
 	aria.focusable = `\`${focusable}\``;
 
 	Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
@@ -220,7 +221,9 @@ export function getNodeWithAccessibilityProps(
 			}
 		}
 		aria[prop.name.replace('aria-', '')] =
-			prop.value === undefined ? 'Undefined' + (prop.required ? ` ${requiredLabel}` : '') : `\`${prop.value}\``;
+			prop.value === undefined
+				? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
+				: `\`${prop.value}\``;
 	});
 
 	return {
