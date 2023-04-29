@@ -33,6 +33,10 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
+            - name: Create .yarnrc for Windows
+              if: runner.os == 'Windows'
+              run: echo "network-timeout 600000" > .yarnrc
+
             - name: Install dependencies
               run: yarn install
 
