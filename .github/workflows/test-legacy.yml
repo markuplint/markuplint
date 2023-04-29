@@ -1,4 +1,4 @@
-name: Test on legacy environments
+name: Legacy Test
 
 on:
     push:
