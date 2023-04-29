@@ -22,6 +22,7 @@ jobs:
                     - node: 20
                       os: ubuntu-latest
                       experimental: true
+                shard: [1/4, 2/4, 3/4, 4/4]
         steps:
             - uses: actions/checkout@v3
               with:
@@ -33,6 +34,12 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
+            - name: Cache node_modules
+              uses: actions/cache@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-${{ matrix.os }}-node-${{ matrix.node }}-${{ hashFiles('**/yarn.lock') }}
+
             - name: Install dependencies
               run: yarn install
 
@@ -43,4 +50,4 @@ jobs:
               run: yarn build
 
             - name: Test
-              run: yarn test:coverage
+              run: yarn test:coverage --shard=${{ matrix.shard }}
