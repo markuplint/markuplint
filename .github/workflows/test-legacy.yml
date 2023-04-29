@@ -21,7 +21,7 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Install for build
+            - name: Install for build on Node.js v18
               uses: actions/setup-node@v3
               with:
                   node-version: 18
@@ -33,5 +33,5 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node }}
-            - run: yarn install
+            - run: yarn install --production
             - run: yarn test:coverage
