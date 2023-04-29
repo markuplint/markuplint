@@ -1,10 +1,6 @@
-// @ts-nocheck
+const { attributesToDebugMaps, nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import type { MLASTElement } from '@markuplint/ml-ast';
-
-import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './parse';
+const { parse } = require('../lib/parse');
 
 describe('parse', () => {
 	it('parse error', () => {
@@ -464,34 +460,34 @@ const Component3 = memo(() => <div>Component3</div>);`);
 	it('namespace', () => {
 		const doc = parse('<div><svg><text /></svg></div>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
-		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 		expect(doc.nodeList[1].nodeName).toBe('svg');
-		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
-		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
 	it('namespace', () => {
 		const doc = parse('<div><svg><feBlend /></svg></div>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
-		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 		expect(doc.nodeList[1].nodeName).toBe('svg');
-		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('feBlend');
-		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
-		expect((doc.nodeList[2] as MLASTElement).elementType).toBe('html');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].elementType).toBe('html');
 	});
 
 	it('isCustomElement', () => {
-		expect((parse('<div/>').nodeList[0] as MLASTElement).elementType).toBe('html');
-		expect((parse('<Div/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<x-div/>').nodeList[0] as MLASTElement).elementType).toBe('web-component');
-		expect((parse('<foo/>').nodeList[0] as MLASTElement).elementType).toBe('html');
-		expect((parse('<Foo/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<named.foo/>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<div><Foo/></div>').nodeList[1] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<div><Component/></div>').nodeList[1] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<svg><Component/></svg>').nodeList[1] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<svg><feBlend/></svg>').nodeList[1] as MLASTElement).elementType).toBe('html');
+		expect(parse('<div/>').nodeList[0].elementType).toBe('html');
+		expect(parse('<Div/>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<x-div/>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<foo/>').nodeList[0].elementType).toBe('html');
+		expect(parse('<Foo/>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<named.foo/>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<div><Foo/></div>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<div><Component/></div>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<svg><Component/></svg>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
 	});
 });

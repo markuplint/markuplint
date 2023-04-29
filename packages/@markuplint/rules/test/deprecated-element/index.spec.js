@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/deprecated-element').default;
 
 test('normal', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div><p><span></span></p>');

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const path = require('path');
 
-import path from 'path';
-
-import { resolvePlugins } from './resolve-plugins';
+const { resolvePlugins } = require('../lib/resolve-plugins');
 
 test('resolvePlugins', async () => {
 	const plugins = await resolvePlugins([path.resolve(__dirname, '..', 'test', 'plugins', '001.js')]);

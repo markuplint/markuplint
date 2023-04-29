@@ -1,26 +1,23 @@
-// @ts-nocheck
+const { rm, readdir } = require('node:fs/promises');
+const { resolve } = require('node:path');
 
-import { rm, readdir } from 'node:fs/promises';
-import { resolve } from 'node:path';
+const { createRuleToCore, getRulesDir } = require('../lib/create-rule-to-core');
 
-import { createRuleToCore, getRulesDir } from './create-rule-to-core';
+const sandboxDirName = '__foo';
 
-const testDirName1 = '__foo';
-const testDirName2 = '__bar';
-
-async function getTestDir(testDirName: string) {
+async function getTestDir(testDirName) {
 	const rulesDir = await getRulesDir();
 	return resolve(rulesDir, testDirName);
 }
 
 async function removeTestDir() {
-	const testDir1 = await getTestDir(testDirName1);
-	const testDir2 = await getTestDir(testDirName2);
-	await rm(testDir1, { recursive: true, force: true });
-	await rm(testDir2, { recursive: true, force: true });
+	const sandboxDir = await getTestDir(sandboxDirName);
+	const sandboxDirTest = sandboxDir.replace('/src/', '/test/');
+	await rm(sandboxDir, { recursive: true, force: true });
+	await rm(sandboxDirTest, { recursive: true, force: true });
 }
 
-async function delay(ms: number) {
+async function delay(ms) {
 	await new Promise(r => setTimeout(r, ms));
 }
 
@@ -46,28 +43,15 @@ test('error', async () => {
 	).rejects.toThrow('A new rule "wai-aria" already exists');
 });
 
-test('TS', async () => {
+test('create', async () => {
 	await createRuleToCore({
 		pluginName: '',
-		ruleName: testDirName1,
+		ruleName: sandboxDirName,
 		lang: 'TYPESCRIPT',
 		needTest: true,
 		core: { description: 'Desc', category: 'cat', severity: 'error' },
 	});
-	const testDir = await getTestDir(testDirName1);
+	const testDir = await getTestDir(sandboxDirName);
 	const fileList = await readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList.sort()).toEqual(['README.ja.md', 'README.md', 'index.spec.ts', 'index.ts', 'schema.json']);
-});
-
-test('JS', async () => {
-	await createRuleToCore({
-		pluginName: '',
-		ruleName: testDirName2,
-		lang: 'JAVASCRIPT',
-		needTest: false,
-		core: { description: 'Desc', category: 'cat', severity: 'error' },
-	});
-	const testDir = await getTestDir(testDirName2);
-	const fileList = await readdir(testDir, { encoding: 'utf-8' });
-	expect(fileList.sort()).toEqual(['README.ja.md', 'README.md', 'index.js', 'schema.json']);
+	expect(fileList.sort()).toEqual(['README.ja.md', 'README.md', 'index.ts', 'schema.json']);
 });

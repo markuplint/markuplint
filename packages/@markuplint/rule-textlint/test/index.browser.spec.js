@@ -1,12 +1,10 @@
-// @ts-nocheck
+const path = require('path');
 
-import path from 'path';
-
-import { mlTest, mlTestFile } from 'markuplint';
+const { mlTest, mlTestFile } = require('markuplint');
 // @ts-ignore This has not types
-import Prh from 'textlint-rule-prh';
+const Prh = require('textlint-rule-prh');
 
-import { text } from './test-utils';
+const { text } = require('../lib/test-utils');
 
 test('is test 1', async () => {
 	const { violations } = await mlTest(
@@ -46,7 +44,7 @@ test('is test 1', async () => {
 /* eslint-disable no-console */
 const originalErrorLogger = console.error;
 
-let errorLogger: jest.Mock;
+let errorLogger;
 
 beforeEach(() => {
 	errorLogger = console.error = jest.fn();

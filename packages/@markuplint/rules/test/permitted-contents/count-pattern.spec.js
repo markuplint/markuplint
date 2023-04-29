@@ -1,13 +1,9 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import type { PermittedContentPattern } from '@markuplint/ml-spec';
+const { countPattern } = require('../../lib/permitted-contents/count-pattern');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
-
-import { countPattern } from './count-pattern';
-
-function c(models: Parameters<typeof countPattern>[0], innerHtml: string) {
+function c(models, innerHtml) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
 	return countPattern(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
 }
@@ -180,7 +176,7 @@ it('min/max', () => {
 });
 
 it('the dl element', () => {
-	const models: PermittedContentPattern = {
+	const models = {
 		oneOrMore: [
 			{
 				zeroOrMore: ':model(script-supporting)',
@@ -209,7 +205,7 @@ it('the dl element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern = {
+	const models = {
 		// 1. One or the other of the following:
 		oneOrMore: [
 			// - Phrasing content, but with no ruby elements and with no ruby element descendants
@@ -231,7 +227,7 @@ it('part of the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern = {
+	const models = {
 		// The content model of ruby elements consists of one or more of the following sequences:
 		oneOrMore: [
 			{
@@ -291,7 +287,7 @@ it('part of the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern = {
+	const models = {
 		// followed by one or more rt elements, each of which is itself followed by an rp element
 		oneOrMore: [
 			{

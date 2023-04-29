@@ -1,6 +1,7 @@
-// @ts-nocheck
-
-import { isStartsHeadTagOrBodyTag, optimizeStartsHeadTagOrBodyTagSetup } from './optimize-starts-head-or-body';
+const {
+	isStartsHeadTagOrBodyTag,
+	optimizeStartsHeadTagOrBodyTagSetup,
+} = require('../lib/optimize-starts-head-or-body');
 
 test('isStartsHeadTagOrBodyTag', () => {
 	expect(isStartsHeadTagOrBodyTag('<head>')).toBeTruthy();

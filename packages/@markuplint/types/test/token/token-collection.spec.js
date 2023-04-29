@@ -1,8 +1,5 @@
-// @ts-nocheck
-
-import { TokenCollection } from './token-collection';
-
-import { Token } from '.';
+const { Token } = require('../../lib/token/token');
+const { TokenCollection } = require('../../lib/token/token-collection');
 
 test('parse', () => {
 	expect(new TokenCollection(' a  b   c    ').toJSON()).toStrictEqual([

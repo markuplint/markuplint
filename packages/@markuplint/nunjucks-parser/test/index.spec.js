@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { parse } from './';
+const { parse } = require('../lib/');
 
 describe('Tags', () => {
 	it('nunjucks-block', () => {

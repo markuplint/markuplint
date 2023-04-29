@@ -1,12 +1,10 @@
-import type { ARIAVersion } from '../types';
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
+const { matchesContextRole } = require('../../lib/dom-traverse/matches-context-role');
 
-import { matchesContextRole } from './matches-context-role';
-
-function _(html: string, selector?: string) {
+function _(html, selector) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
@@ -14,7 +12,7 @@ function _(html: string, selector?: string) {
 }
 
 describe('1.2', () => {
-	const version: ARIAVersion = '1.2';
+	const version = '1.2';
 
 	test('rowgroup', () => {
 		const el = _('<table><tbody><tr><td></td></tr></tbody></table>', 'tr');
@@ -38,7 +36,7 @@ describe('1.2', () => {
 });
 
 describe('1.3', () => {
-	const version: ARIAVersion = '1.3';
+	const version = '1.3';
 
 	test('rowgroup', () => {
 		const el = _('<table><tbody><tr><td></td></tr></tbody></table>', 'tr');

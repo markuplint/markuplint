@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { i18n } from './i18n';
+const { i18n } = require('../lib/i18n');
 
 test('ja', async () => {
 	const locale = await i18n('ja');

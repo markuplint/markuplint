@@ -1,10 +1,10 @@
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import { getImplicitRole } from './get-implicit-role';
+const { getImplicitRole } = require('../../lib/dom-traverse/get-implicit-role');
 
-function _(html: string, selector?: string) {
+function _(html, selector) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;

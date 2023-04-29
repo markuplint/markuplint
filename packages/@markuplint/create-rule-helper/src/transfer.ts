@@ -16,11 +16,16 @@ type TransferOptions = {
 	readonly replacer?: Readonly<Record<string, string | void>>;
 };
 
-export async function transfer(baseDir: string, destDir: string, options?: TransferOptions) {
+export async function transfer(
+	scaffoldType: 'core' | 'project' | 'package',
+	baseDir: string,
+	destDir: string,
+	options?: TransferOptions,
+) {
 	const files = await scan(baseDir, destDir);
 	const results: File[] = [];
 	for (const file of files) {
-		const result = await transferFile(file, options);
+		const result = await transferFile(scaffoldType, file, options);
 		if (result) {
 			results.push(result);
 		}
@@ -28,7 +33,7 @@ export async function transfer(baseDir: string, destDir: string, options?: Trans
 	return results;
 }
 
-async function transferFile(file: File, options?: TransferOptions) {
+async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: File, options?: TransferOptions) {
 	if (!(await fsExists(file.filePath))) {
 		return null;
 	}
@@ -60,6 +65,15 @@ async function transferFile(file: File, options?: TransferOptions) {
 	contents = contents.replace(/\n\s*<!-- prettier-ignore(?:-(?:start|end))? -->/, '');
 
 	const newFile = { ...file };
+
+	if (scaffoldType === 'core' && file.test) {
+		const name = options?.replacer?.ruleName;
+		if (!name) {
+			throw new Error('Rule name is empty');
+		}
+		newFile.destDir = newFile.destDir.replace('/rules/src/', '/rules/test/');
+		contents = contents.replace("require('./').default", `require('../../lib/${name}').default`);
+	}
 
 	// TypeScript transpiles to JS
 	if (newFile.ext === '.ts' && options?.transpile) {

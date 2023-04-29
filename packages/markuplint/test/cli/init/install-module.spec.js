@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { selectModules } from './install-module';
+const { selectModules } = require('../../../lib/cli/init/install-module');
 
 test('selectModules', () => {
 	expect(selectModules(['jsx'])).toStrictEqual(['markuplint', '@markuplint/jsx-parser', '@markuplint/react-spec']);

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import attrTokenizer from './attr-tokenizer';
+const attrTokenizer = require('../lib/attr-tokenizer').default;
 
 it('void attribute', () => {
 	expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({

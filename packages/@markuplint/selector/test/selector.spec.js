@@ -1,21 +1,17 @@
-// @ts-nocheck
+const { JSDOM } = require('jsdom');
 
-import type { SelectorMatchedResult } from './types';
-
-import { JSDOM } from 'jsdom';
-
-import { InvalidSelectorError } from './invalid-selector-error';
-import { Selector } from './selector';
+const { InvalidSelectorError } = require('../lib/invalid-selector-error');
+const { Selector } = require('../lib/selector');
 
 beforeEach(() => {
 	const dom = new JSDOM();
 	global.Element = dom.window.Element;
 });
 
-function createTestElement(html: string, selector?: string) {
+function createTestElement(html, selector) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
-		return dom.window.document.querySelector('html') as Element;
+		return dom.window.document.querySelector('html');
 	}
 	const fragment = JSDOM.fragment(html);
 	if (selector) {
@@ -28,10 +24,10 @@ function createTestElement(html: string, selector?: string) {
 	if (!fragment.firstChild) {
 		throw new Error('An element is not created');
 	}
-	return fragment.firstChild as Element;
+	return fragment.firstChild;
 }
 
-function createSelector(selector: string) {
+function createSelector(selector) {
 	return new Selector(selector);
 }
 
@@ -283,8 +279,6 @@ describe('specificity', () => {
 describe('search', () => {
 	it('search', () => {
 		const el = createTestElement('<a><div><button></button></div></a>');
-		expect(
-			(createSelector(':has(button)').search(el)[0] as SelectorMatchedResult).has?.[0].nodes?.[0].nodeName,
-		).toBe('BUTTON');
+		expect(createSelector(':has(button)').search(el)[0].has?.[0].nodes?.[0].nodeName).toBe('BUTTON');
 	});
 });

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { taggedTemplateTranslator, translator } from './translator';
+const { taggedTemplateTranslator, translator } = require('../lib/translator');
 
 const ja = {
 	locale: 'ja',

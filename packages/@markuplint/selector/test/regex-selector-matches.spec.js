@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { regexSelectorMatches } from './regex-selector-matches';
+const { regexSelectorMatches } = require('../lib/regex-selector-matches');
 
 it('regexSelectorMatches', () => {
 	expect(regexSelectorMatches('/^data-([a-z]+)/', 'data-hoge', true)).toStrictEqual({

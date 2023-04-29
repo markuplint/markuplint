@@ -1,10 +1,6 @@
-// @ts-nocheck
+const { attributesToDebugMaps, nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import type { MLASTElement } from '@markuplint/ml-ast';
-
-import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './';
+const { parse } = require('../lib/');
 
 describe('parser', () => {
 	test('syntax error', () => {
@@ -182,7 +178,7 @@ describe('parser', () => {
 
 	test('attribute', () => {
 		const r = parse('<el attr-name="value" />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:22](4,21)attr-name: attr-name="value"',
@@ -202,7 +198,7 @@ describe('parser', () => {
 
 	test('event directive', () => {
 		const r = parse('<el on:eventname={ `abc${def}ghi` } />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:36](4,35)on:eventname: on:eventname={␣`abc${def}ghi`␣}',
@@ -222,7 +218,7 @@ describe('parser', () => {
 
 	test('event directive 2', () => {
 		const r = parse('<el on:eventname|modifiers = {handler} />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:39](4,38)on:eventname|modifiers: on:eventname|modifiers␣=␣{handler}',
@@ -242,7 +238,7 @@ describe('parser', () => {
 
 	test('event directive 3', () => {
 		const r = parse('<el on:eventname />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:17](4,16)on:eventname: on:eventname',
@@ -262,7 +258,7 @@ describe('parser', () => {
 
 	test('bind directive', () => {
 		const r = parse('<el bind:property={variable} />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:29](4,28)property: bind:property={variable}',
@@ -283,7 +279,7 @@ describe('parser', () => {
 
 	test('bind directive 2', () => {
 		const r = parse('<el bind:property />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:18](4,17)property: bind:property',
@@ -323,13 +319,13 @@ describe('parser', () => {
 	animate:name
 	animate:name2={params}
 />`);
-		const attrs = (r.nodeList[0] as MLASTElement).attributes;
+		const attrs = r.nodeList[0].attributes;
 		expect(attrs.every(attr => (attr.type === 'html-attr' ? attr.isDirective : false))).toBe(true);
 	});
 
 	test('multiple class directives', () => {
 		const r = parse('<el class:selected="{isSelected}" class:focused="{isFocused}" />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:34](4,33)class: class:selected="{isSelected}"',
@@ -364,7 +360,7 @@ describe('parser', () => {
 
 	test('shorthand', () => {
 		const r = parse('<el {items} />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:12](4,11)items: {items}',
@@ -385,7 +381,7 @@ describe('parser', () => {
 
 	test('spread attributes', () => {
 		const r = parse('<el { ... attrs} />');
-		const attr = attributesToDebugMaps((r.nodeList[0] as MLASTElement).attributes);
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([]);
 		// @ts-ignore
 		expect(r.nodeList[0].hasSpreadAttr).toBeTruthy();
@@ -394,18 +390,18 @@ describe('parser', () => {
 	test('namespace', () => {
 		const doc = parse('<div><svg><text /></svg></div>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
-		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 		expect(doc.nodeList[1].nodeName).toBe('svg');
-		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
-		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });
 
 describe('Issues', () => {
 	test('#444', () => {
 		parse(`<script lang="ts">
-  let count: number = 0
+  let count= 0
   const increment = () => {
     count += 1
   }

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/no-refer-to-non-existent-id').default;
 
 test('label[for]', async () => {
 	const { violations } = await mlRuleTest(rule, '<label for="foo"></label>');

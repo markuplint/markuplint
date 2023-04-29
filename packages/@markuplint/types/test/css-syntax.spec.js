@@ -1,8 +1,4 @@
-// @ts-nocheck
-
-import type { CustomCssSyntax } from './types';
-
-import { cssSyntaxMatch } from './css-syntax';
+const { cssSyntaxMatch } = require('../lib/css-syntax');
 
 test('CSS Standard', () => {
 	expect(cssSyntaxMatch('10px', '<length>').matched).toBe(true);
@@ -11,7 +7,7 @@ test('CSS Standard', () => {
 });
 
 test('Extends', () => {
-	const sourceSizeList: CustomCssSyntax = {
+	const sourceSizeList = {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
 		syntax: {
 			apply: '<source-size-list>',
@@ -36,7 +32,7 @@ test('Extends', () => {
 		}).matched,
 	).toBe(true);
 
-	const keyTimes: CustomCssSyntax = {
+	const keyTimes = {
 		ref: 'https://svgwg.org/specs/animations/#KeyTimesAttribute',
 		syntax: {
 			apply: '<key-times>',
@@ -50,7 +46,7 @@ test('Extends', () => {
 	expect(cssSyntaxMatch('20; 20; abc;', keyTimes).matched).toBe(false);
 	expect(cssSyntaxMatch('20; 20; ;', keyTimes).matched).toBe(false);
 
-	const SVGViewBox: CustomCssSyntax = {
+	const SVGViewBox = {
 		ref: 'https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute',
 		syntax: {
 			apply: '<view-box>',
@@ -67,7 +63,7 @@ test('Extends', () => {
 	expect(cssSyntaxMatch('0 0, 30, 10', SVGViewBox).matched).toBe(true);
 	expect(cssSyntaxMatch('0 0, 30', SVGViewBox).matched).toBe(false);
 
-	const percentageList: CustomCssSyntax = {
+	const percentageList = {
 		ref: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#percentage',
 		syntax: {
 			apply: '<percentage-list>',
@@ -81,7 +77,7 @@ test('Extends', () => {
 	expect(cssSyntaxMatch('0', percentageList).matched).toBe(true);
 	expect(cssSyntaxMatch('', percentageList).matched).toBe(false);
 
-	const custom: CustomCssSyntax = {
+	const custom = {
 		ref: 'n/a',
 		syntax: {
 			apply: '<custom>',
@@ -98,7 +94,7 @@ test('Extends', () => {
 });
 
 test('custom-type-checking', () => {
-	const custom: CustomCssSyntax = {
+	const custom = {
 		ref: 'n/a',
 		caseSensitive: true,
 		syntax: {
@@ -119,7 +115,7 @@ test('custom-type-checking', () => {
 });
 
 test('case-sensitive', () => {
-	const custom: CustomCssSyntax = {
+	const custom = {
 		ref: 'n/a',
 		caseSensitive: true,
 		syntax: {

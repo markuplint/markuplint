@@ -1,10 +1,8 @@
-// @ts-nocheck
+const { rm } = require('node:fs/promises');
+const { resolve, relative, sep } = require('node:path');
 
-import { rm } from 'node:fs/promises';
-import { resolve, relative, sep } from 'node:path';
-
-import glob from './glob';
-import { transfer } from './transfer';
+const glob = require('../lib/glob').default;
+const { transfer } = require('../lib/transfer');
 
 const SCAFFOLD = resolve(__dirname, '..', 'scaffold');
 const TEST_SANDBOX = resolve(__dirname, '..', '__test_sandbox__');
@@ -13,7 +11,7 @@ async function removeTestDir() {
 	await rm(TEST_SANDBOX, { recursive: true, force: true });
 }
 
-async function delay(ms: number) {
+async function delay(ms) {
 	await new Promise(r => setTimeout(r, ms));
 }
 
@@ -27,8 +25,8 @@ afterAll(async () => {
 	await removeTestDir();
 });
 
-test('', async () => {
-	await transfer(SCAFFOLD, TEST_SANDBOX, {
+test('transfer', async () => {
+	await transfer('package', SCAFFOLD, TEST_SANDBOX, {
 		replacer: {
 			pluginName: 'apple',
 			ruleName: 'banana',

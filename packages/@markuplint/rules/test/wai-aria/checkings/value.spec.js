@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { checkAriaValue } from './value';
+const { checkAriaValue } = require('../../../lib/wai-aria/checkings/value');
 
 describe('checkAriaValue', () => {
 	test('token', () => {

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { toNoEmptyStringArrayFromStringOrArray, decodeEntities } from './functions';
+const { toNoEmptyStringArrayFromStringOrArray, decodeEntities } = require('../lib/functions');
 
 test('toArrayFromStringOrArray', () => {
 	expect(toNoEmptyStringArrayFromStringOrArray('')).toStrictEqual([]);

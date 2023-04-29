@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/ineffective-attr').default;
 
 test('script[defer]', async () => {
 	const { violations } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>');

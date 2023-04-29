@@ -11,7 +11,7 @@
 		"test:clear": "jest --clearCache",
 		"test:unit": "jest",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix './packages/**/*.ts'; yarn spellcheck; prettier --write './packages/**/*{ts,tsx,json,rc,md}';",
+		"lint": "eslint --fix './packages/**/{*.ts,*.spec.js}'; yarn spellcheck; prettier --write './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}';",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
@@ -62,8 +62,8 @@
 			"node"
 		],
 		"collectCoverageFrom": [
-			"packages/markuplint/src/**/*.js",
-			"packages/@markuplint/*/src/**/*.js",
+			"packages/markuplint/lib/**/*.js",
+			"packages/@markuplint/*/lib/**/*.js",
 			"!**/*.spec.js"
 		],
 		"projects": [
@@ -71,6 +71,7 @@
 				"displayName": "node",
 				"testRegex": "(\\.|/)spec\\.js$",
 				"testPathIgnorePatterns": [
+					"scaffold",
 					"(\\.|/)browser\\.spec\\.js$"
 				],
 				"testEnvironment": "node"

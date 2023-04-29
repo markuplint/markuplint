@@ -1,29 +1,25 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import type { ARIAVersion } from '../types';
+const { getComputedRole } = require('../../lib/dom-traverse/get-computed-role');
 
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
-
-import { getComputedRole } from './get-computed-role';
-
-function _(html: string, selector?: string) {
+function _(html, selector) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 
-function c(html: string, version: ARIAVersion, selector?: string) {
+function c(html, version, selector) {
 	return getComputedRole(specs, _(html, selector), version);
 }
 
-function tree(html: string, version: ARIAVersion) {
-	type Result = [tagName: string, roleName: string | null, reason?: string];
+function tree(html, version) {
 	const el = _(html);
-	const tree: Result[] = [];
-	let current: Element | null = el;
+	const tree = [];
+	let current = el;
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 	while (current) {
 		const role = getComputedRole(specs, current, version);
 		const result = [current.localName, role.role?.name ?? null];

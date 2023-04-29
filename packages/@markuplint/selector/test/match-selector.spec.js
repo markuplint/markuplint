@@ -1,16 +1,14 @@
-// @ts-nocheck
+const { JSDOM } = require('jsdom');
 
-import { JSDOM } from 'jsdom';
+const { matchSelector } = require('../lib/match-selector');
 
-import { matchSelector } from './match-selector';
-
-function createTestElement(html: string) {
+function createTestElement(html) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
-		return dom.window.document.querySelector('html') as Element;
+		return dom.window.document.querySelector('html');
 	}
 	const fragment = JSDOM.fragment(html);
-	return fragment.firstChild as Element;
+	return fragment.firstChild;
 }
 
 test('CSS Selector', () => {

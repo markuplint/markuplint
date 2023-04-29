@@ -1,21 +1,17 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import type { ARIAVersion } from '../types';
+const { getComputedAriaProps } = require('../../lib/dom-traverse/get-computed-aria-props');
 
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
-
-import { getComputedAriaProps } from './get-computed-aria-props';
-
-function _(html: string, selector?: string) {
+function _(html, selector) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 
-function c(html: string, version: ARIAVersion, selector?: string) {
+function c(html, version, selector) {
 	return getComputedAriaProps(specs, _(html, selector), version);
 }
 

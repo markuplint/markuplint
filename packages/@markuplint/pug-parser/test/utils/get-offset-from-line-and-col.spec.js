@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { getOffsetFromLineAndCol } from './get-offset-from-line-and-col';
+const { getOffsetFromLineAndCol } = require('../../lib/utils/get-offset-from-line-and-col');
 
 const text = `a
 b   c

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { getDefaultRules } from './get-default-rules';
+const { getDefaultRules } = require('../../../lib/cli/init/get-default-rules');
 
 test('v3.0.0', async () => {
 	const defaultRules = await getDefaultRules('3.0.0');

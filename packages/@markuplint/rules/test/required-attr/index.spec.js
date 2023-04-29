@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/required-attr').default;
 
 test('warns if specified attribute is not appeared', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/path/to/image.png">', {

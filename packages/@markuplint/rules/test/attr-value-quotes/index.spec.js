@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/attr-value-quotes').default;
 
 describe('verify', () => {
 	test('default', async () => {

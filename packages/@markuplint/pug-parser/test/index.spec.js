@@ -1,10 +1,6 @@
-// @ts-nocheck
+const { nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import type { MLASTElement, MLASTHTMLAttr, MLASTPreprocessorSpecificAttr } from '@markuplint/ml-ast';
-
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './';
+const { parse } = require('../lib/');
 
 describe('parser', () => {
 	it('syntax error', () => {
@@ -38,9 +34,9 @@ describe('parser', () => {
 		expect(doc.nodeList[0].nodeName).toBe('div');
 		expect(doc.nodeList[0].raw).toBe('div(data-attr="value")');
 		expect(doc.nodeList.length).toBe(1);
-		expect((doc.nodeList[0] as MLASTElement).attributes.length).toBe(1);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).name.raw).toBe('data-attr');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('value');
+		expect(doc.nodeList[0].attributes.length).toBe(1);
+		expect(doc.nodeList[0].attributes[0].name.raw).toBe('data-attr');
+		expect(doc.nodeList[0].attributes[0].value.raw).toBe('value');
 	});
 
 	it('with dynamic attribute', () => {
@@ -52,41 +48,25 @@ describe('parser', () => {
 			'div(data-attr= variable + variable2 data-attr2 = variable3 + variable4 data-attr3 data-attr4 = `${variable5}`)',
 		);
 		expect(doc.nodeList.length).toBe(1);
-		expect((doc.nodeList[0] as MLASTElement).attributes.length).toBe(4);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).name.raw).toBe('data-attr');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
-			'variable + variable2',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTHTMLAttr).name.raw).toBe('data-attr2');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTHTMLAttr).value.raw).toBe(
-			'variable3 + variable4',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTHTMLAttr).name.raw).toBe('data-attr3');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTHTMLAttr).value.raw).toBe('');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[3] as MLASTHTMLAttr).name.raw).toBe('data-attr4');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[3] as MLASTHTMLAttr).value.raw).toBe('${variable5}');
+		expect(doc.nodeList[0].attributes.length).toBe(4);
+		expect(doc.nodeList[0].attributes[0].name.raw).toBe('data-attr');
+		expect(doc.nodeList[0].attributes[0].value.raw).toBe('variable + variable2');
+		expect(doc.nodeList[0].attributes[1].name.raw).toBe('data-attr2');
+		expect(doc.nodeList[0].attributes[1].value.raw).toBe('variable3 + variable4');
+		expect(doc.nodeList[0].attributes[2].name.raw).toBe('data-attr3');
+		expect(doc.nodeList[0].attributes[2].value.raw).toBe('');
+		expect(doc.nodeList[0].attributes[3].name.raw).toBe('data-attr4');
+		expect(doc.nodeList[0].attributes[3].value.raw).toBe('${variable5}');
 	});
 
 	it('ID and Classes', () => {
 		const doc = parse('div#the-id.the-class.the-class2');
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
-			'id',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[0] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
-			'the-id',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
-			'class',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[1] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
-			'the-class',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialName).toBe(
-			'class',
-		);
-		expect(((doc.nodeList[0] as MLASTElement).attributes[2] as MLASTPreprocessorSpecificAttr).potentialValue).toBe(
-			'the-class2',
-		);
+		expect(doc.nodeList[0].attributes[0].potentialName).toBe('id');
+		expect(doc.nodeList[0].attributes[0].potentialValue).toBe('the-id');
+		expect(doc.nodeList[0].attributes[1].potentialName).toBe('class');
+		expect(doc.nodeList[0].attributes[1].potentialValue).toBe('the-class');
+		expect(doc.nodeList[0].attributes[2].potentialName).toBe('class');
+		expect(doc.nodeList[0].attributes[2].potentialValue).toBe('the-class2');
 	});
 
 	it('HTML in Pug', () => {
@@ -99,11 +79,11 @@ describe('parser', () => {
 		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 
-		expect((doc.nodeList[0] as MLASTElement).nodeName).toBe('div');
-		expect((doc.nodeList[1] as MLASTElement).nodeName).toBe('span');
-		expect(((doc.nodeList[1] as MLASTElement).attributes[0] as MLASTHTMLAttr).name.raw).toBe('data-hoge');
-		expect(((doc.nodeList[1] as MLASTElement).attributes[1] as MLASTHTMLAttr).name.raw).toBe('hoge');
-		expect(((doc.nodeList[0] as MLASTElement).childNodes![0] as MLASTElement).nodeName).toBe('span');
+		expect(doc.nodeList[0].nodeName).toBe('div');
+		expect(doc.nodeList[1].nodeName).toBe('span');
+		expect(doc.nodeList[1].attributes[0].name.raw).toBe('data-hoge');
+		expect(doc.nodeList[1].attributes[1].name.raw).toBe('hoge');
+		expect(doc.nodeList[0].childNodes[0].nodeName).toBe('span');
 	});
 
 	it('standard code', () => {
@@ -380,9 +360,9 @@ else
 			'[2:10]>[2:29](14,33)#text: ␣var␣a␣=␣"<aaaa>";␣',
 			'[2:29]>[2:38](33,42)script: </script>',
 		]);
-		const code = (doc.nodeList[1] as MLASTElement).childNodes![0];
+		const code = doc.nodeList[1].childNodes[0];
 		expect(code.raw).toBe(' var a = "<aaaa>"; ');
-		expect(code.parentNode!.nodeName).toBe('script');
+		expect(code.parentNode.nodeName).toBe('script');
 	});
 
 	it('block-in-tag attr', () => {
@@ -398,8 +378,8 @@ else
 			'[2:23]>[3:2](27,29)#text: ⏎→',
 			'[3:2]>[3:27](29,50)input: <input␣invalid-attr/>',
 		]);
-		const input1 = doc.nodeList[2] as MLASTElement;
-		const input2 = doc.nodeList[4] as MLASTElement;
+		const input1 = doc.nodeList[2];
+		const input2 = doc.nodeList[4];
 		expect(input1.startOffset).toBe(6);
 		expect(input1.startLine).toBe(2);
 		expect(input1.startCol).toBe(2);
@@ -425,11 +405,11 @@ else
 			'[22:23]>[23:2](47,49)#text: ⏎→',
 			'[23:2]>[23:41](49,84)input: <input␣invalid-attr␣invalid-attr2/>',
 		]);
-		const input1 = doc.nodeList[2] as MLASTElement;
-		const input2 = doc.nodeList[4] as MLASTElement;
-		const attr1 = input1.attributes[0] as MLASTHTMLAttr;
-		const attr2 = input2.attributes[0] as MLASTHTMLAttr;
-		const attr3 = input2.attributes[1] as MLASTHTMLAttr;
+		const input1 = doc.nodeList[2];
+		const input2 = doc.nodeList[4];
+		const attr1 = input1.attributes[0];
+		const attr2 = input2.attributes[0];
+		const attr3 = input2.attributes[1];
 		expect(attr1.startLine).toBe(22);
 		expect(attr1.startCol).toBe(9);
 		expect(attr1.name.startLine).toBe(22);
@@ -450,10 +430,10 @@ else
 	// 	const map = nodeListToDebugMaps(doc.nodeList);
 	// 	expect(doc.parseError).toBeUndefined();
 	// 	expect(map).toStrictEqual(['[1:1]>[1:4](0,3)div: div', '[2:1]>[2:22](4,25)input: <input␣invalid-attr/>']);
-	// 	const input1 = doc.nodeList[1] as MLASTElement;
-	// 	const input2 = doc.nodeList[2] as MLASTElement;
-	// 	const attr1 = input1.attributes[0] as MLASTHTMLAttr;
-	// 	const attr2 = input2.attributes[0] as MLASTHTMLAttr;
+	// 	const input1 = doc.nodeList[1];
+	// 	const input2 = doc.nodeList[2];
+	// 	const attr1 = input1.attributes[0];
+	// 	const attr2 = input2.attributes[0];
 	// 	expect(attr1.startLine).toBe(2);
 	// 	expect(attr1.startCol).toBe(8);
 	// 	expect(attr1.name.startLine).toBe(2);
@@ -466,7 +446,7 @@ else
 
 	it('attribute', () => {
 		const doc = parse('div(data-hoge="content")');
-		const attr = (doc.nodeList[0] as MLASTElement).attributes[0];
+		const attr = doc.nodeList[0].attributes[0];
 		if (attr.type !== 'html-attr') {
 			return;
 		}
@@ -480,7 +460,7 @@ else
 
 	it('attribute 2', () => {
 		const doc = parse("div(data-hoge='content')");
-		const attr = (doc.nodeList[0] as MLASTElement).attributes[0];
+		const attr = doc.nodeList[0].attributes[0];
 		if (attr.type !== 'html-attr') {
 			return;
 		}
@@ -496,7 +476,7 @@ else
 		const doc = parse(`div.
 	<span data-attr="value">`);
 		// console.log(doc.nodeList);
-		const attr = (doc.nodeList[1] as MLASTElement).attributes[0];
+		const attr = doc.nodeList[1].attributes[0];
 		if (attr.type !== 'html-attr') {
 			return;
 		}
@@ -567,10 +547,10 @@ html
 	it('namespace', () => {
 		const doc = parse('div: svg: text');
 		expect(doc.nodeList[0].nodeName).toBe('div');
-		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 		expect(doc.nodeList[1].nodeName).toBe('svg');
-		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
-		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });

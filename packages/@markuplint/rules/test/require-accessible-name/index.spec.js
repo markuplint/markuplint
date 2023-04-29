@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/require-accessible-name').default;
 
 it('has accessible name', async () => {
 	const { violations } = await mlRuleTest(rule, '<button>Label</button>');

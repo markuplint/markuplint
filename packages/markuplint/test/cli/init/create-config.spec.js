@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { createConfig } from './create-config';
+const { createConfig } = require('../../../lib/cli/init/create-config');
 
 test('none', () => {
 	const result = createConfig(

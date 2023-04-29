@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import svelteParse from './';
+const svelteParse = require('../../lib/svelte-parser').default;
 
 describe('parser', () => {
 	test('if', () => {

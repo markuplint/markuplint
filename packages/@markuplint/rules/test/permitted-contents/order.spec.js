@@ -1,19 +1,15 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import type { PermittedContentPattern } from '@markuplint/ml-spec';
+const { order } = require('../../lib/permitted-contents/order');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
-
-import { order } from './order';
-
-function c(models: Parameters<typeof order>[0], innerHtml: string) {
+function c(models, innerHtml) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
 	return order(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
 }
 
 it('ordered requires', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		//
 		{ require: 'a' },
 		{ require: 'b' },
@@ -27,7 +23,7 @@ it('ordered requires', () => {
 });
 
 it('ordered requires with #flow', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		//
 		{ require: '#flow' },
 		{ require: 'a' },
@@ -42,7 +38,7 @@ it('ordered requires with #flow', () => {
 });
 
 it('ordered requires and optionals', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		//
 		{ require: 'a' },
 		{ optional: 'b' },
@@ -58,7 +54,7 @@ it('ordered requires and optionals', () => {
 });
 
 it('ordered requires and optionals with #flow', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		//
 		{ require: 'a' },
 		{ optional: 'b' },
@@ -75,7 +71,7 @@ it('ordered requires and optionals with #flow', () => {
 });
 
 it('ordered zeroOrMore combination', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		//
 		{ zeroOrMore: 'a' },
 		{ zeroOrMore: 'b' },
@@ -89,7 +85,7 @@ it('ordered zeroOrMore combination', () => {
 });
 
 it('the dl element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			zeroOrMore: ':model(script-supporting)',
 		},
@@ -115,7 +111,7 @@ it('the dl element', () => {
 });
 
 it('the dl element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			oneOrMore: [
 				{
@@ -147,7 +143,7 @@ it('the dl element', () => {
 });
 
 it('the dl element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			choice: [
 				[
@@ -199,7 +195,7 @@ it('the dl element', () => {
 });
 
 it('the ruby element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			oneOrMore: [
 				{
@@ -245,7 +241,7 @@ it('the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			require: ':model(phrasing):not(ruby, :has(ruby))',
 		},
@@ -287,7 +283,7 @@ it('part of the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			oneOrMore: [
 				{
@@ -318,7 +314,7 @@ it('part of the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			oneOrMore: [
 				{
@@ -340,7 +336,7 @@ it('part of the ruby element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentPattern[] = [
+	const models = [
 		{
 			require: 'rt',
 		},

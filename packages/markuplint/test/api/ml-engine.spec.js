@@ -1,18 +1,13 @@
-// @ts-nocheck
+const fs = require('fs/promises');
+const path = require('path');
 
-import type { ConfigSet } from '@markuplint/file-resolver';
-import type { Config, Violation } from '@markuplint/ml-config';
-
-import { promises as fs } from 'fs';
-import path from 'path';
-
-import MLEngine from './ml-engine';
+const MLEngine = require('../../lib/api/ml-engine').default;
 
 describe('Event notification', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file);
-		const configPromise = new Promise<string[]>(resolve => {
+		const configPromise = new Promise(resolve => {
 			engine.on('config', (_, configSet) => {
 				resolve(Array.from(configSet.files));
 			});
@@ -38,7 +33,7 @@ describe.skip('Watcher', () => {
 		const engine = new MLEngine(file, {
 			watch: true,
 		});
-		const configPromise = new Promise<string[]>(resolve => {
+		const configPromise = new Promise(resolve => {
 			engine.on('config', (_, configSet) => {
 				resolve(Array.from(configSet.files));
 			});
@@ -50,14 +45,14 @@ describe.skip('Watcher', () => {
 		engine.removeAllListeners();
 		const targetFile = files[files.length - 1];
 		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
-		const config: Config = JSON.parse(targetFileOriginData);
-		const result2ndPromise = new Promise<Violation[]>(resolve => {
+		const config = JSON.parse(targetFileOriginData);
+		const result2ndPromise = new Promise(resolve => {
 			engine.on('lint', (_, __, violations) => {
 				resolve(violations);
 			});
 		});
 		// Disable rules
-		const config2: Config = {
+		const config2 = {
 			...config,
 			rules: {},
 		};
@@ -120,7 +115,7 @@ describe('Config Priority', () => {
 			},
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});
@@ -142,7 +137,7 @@ describe('Config Priority', () => {
 			},
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});
@@ -165,7 +160,7 @@ describe('Config Priority', () => {
 			noSearchConfig: true,
 		});
 
-		let configSet: ConfigSet | null = null;
+		let configSet = null;
 		engine.once('config', (_, _configSet) => {
 			configSet = _configSet;
 		});

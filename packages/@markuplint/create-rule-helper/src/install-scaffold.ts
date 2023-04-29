@@ -20,7 +20,7 @@ export async function installScaffold(
 
 	const scaffoldDir = resolve(__dirname, '..', 'scaffold', scaffoldType);
 
-	const transferred = await transfer(scaffoldDir, dest, {
+	const transferred = await transfer(scaffoldType, scaffoldDir, dest, {
 		transpile: params.lang === 'JAVASCRIPT',
 		test: params.needTest,
 		replacer: {

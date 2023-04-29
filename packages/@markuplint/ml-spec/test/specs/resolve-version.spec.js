@@ -1,9 +1,7 @@
-import type { ARIA } from '../types/aria';
+const { resolveVersion } = require('../../lib/specs/resolve-version');
 
-import { resolveVersion } from './resolve-version';
-
-test('output as is', () => {
-	const aria: ARIA = {
+test('output', () => {
+	const aria = {
 		implicitRole: 'button',
 		permittedRoles: false,
 	};
@@ -12,10 +10,10 @@ test('output as is', () => {
 });
 
 test('output the specified version', () => {
-	const aria: ARIA = {
+	const aria = {
 		implicitRole: 'button',
 		permittedRoles: false,
-		'1.1': {
+		1.1: {
 			implicitRole: 'link',
 		},
 	};
@@ -24,10 +22,10 @@ test('output the specified version', () => {
 });
 
 test('output the latest undefined version', () => {
-	const aria: ARIA = {
+	const aria = {
 		implicitRole: 'button',
 		permittedRoles: false,
-		'1.1': {
+		1.1: {
 			implicitRole: 'link',
 		},
 	};

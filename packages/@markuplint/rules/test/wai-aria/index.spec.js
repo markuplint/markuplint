@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/wai-aria').default;
 
 describe("Use the role that doesn't exist in the spec", () => {
 	test('[role=hoge]', async () => {

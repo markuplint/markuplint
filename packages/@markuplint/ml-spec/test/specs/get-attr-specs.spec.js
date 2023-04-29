@@ -1,8 +1,6 @@
-// @ts-nocheck
+const htmlSpec = require('@markuplint/html-spec');
 
-import htmlSpec from '@markuplint/html-spec';
-
-import { getAttrSpecs } from './get-attr-specs';
+const { getAttrSpecs } = require('../../lib/specs/get-attr-specs');
 
 describe('getSpec', () => {
 	test('svg:image[x]', () => {

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { ignoreFrontMatter } from './ignore-front-matter';
+const { ignoreFrontMatter } = require('../lib/ignore-front-matter');
 
 describe('ignoreFrontMatter', () => {
 	it('basic', () => {

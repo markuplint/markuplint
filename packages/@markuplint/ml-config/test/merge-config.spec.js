@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { mergeConfig, mergeRule } from './merge-config';
+const { mergeConfig, mergeRule } = require('../lib/merge-config');
 
 it('test', () => {
 	expect(mergeConfig({}, {})).toStrictEqual({});

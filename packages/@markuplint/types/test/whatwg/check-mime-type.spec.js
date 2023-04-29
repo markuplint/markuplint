@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { checkMIMEType } from './check-mime-type';
+const { checkMIMEType } = require('../../lib/whatwg/check-mime-type');
 
 const check = checkMIMEType();
 const checkNoParam = checkMIMEType({ withoutParameters: true });

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('./').default;
 
 it('is test', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>');

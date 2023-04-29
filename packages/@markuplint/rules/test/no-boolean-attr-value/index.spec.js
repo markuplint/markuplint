@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/no-boolean-attr-value').default;
 
 test('input[required]', async () => {
 	const { violations } = await mlRuleTest(

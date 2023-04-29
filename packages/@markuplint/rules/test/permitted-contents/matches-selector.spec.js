@@ -1,13 +1,9 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import type { TransparentModel } from './types';
+const { matchesSelector } = require('../../lib/permitted-contents/matches-selector');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
-
-import { matchesSelector } from './matches-selector';
-
-function c(model: string, innerHtml: string, tp?: string) {
+function c(model, innerHtml, tp) {
 	const el = createTestElement(`<div>${innerHtml}</div>`, { specs });
 	const child = Array.from(el.childNodes)[0];
 	if (tp) {
@@ -15,7 +11,7 @@ function c(model: string, innerHtml: string, tp?: string) {
 		child.__transparentModel = {
 			el,
 			additionalCondition: tp,
-		} as TransparentModel;
+		};
 	}
 	return matchesSelector(model, child, specs, { ignoreHasMutableChildren: true }, 0);
 }

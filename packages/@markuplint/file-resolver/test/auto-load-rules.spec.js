@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { Ruleset } = require('@markuplint/ml-core');
 
-import { Ruleset } from '@markuplint/ml-core';
-
-import { autoLoadRules } from './auto-load-rules';
+const { autoLoadRules } = require('../lib/auto-load-rules');
 
 test('built-in-rules', async () => {
 	const r = await autoLoadRules(

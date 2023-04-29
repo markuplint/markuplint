@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/invalid-attr').default;
 
 test('warns if specified attribute value is invalid', async () => {
 	const { violations } = await mlRuleTest(

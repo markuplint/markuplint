@@ -1,21 +1,17 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import type { ARIAVersion } from '../types';
+const { hasRequiredOwnedElement } = require('../../lib/dom-traverse/has-required-owned-elements');
 
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
-
-import { hasRequiredOwnedElement } from './has-required-owned-elements';
-
-function _(html: string, selector?: string) {
+function _(html, selector) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 
-function m(html: string, version: ARIAVersion, selector?: string) {
+function m(html, version, selector) {
 	const el = _(html, selector);
 	return hasRequiredOwnedElement(el, specs, version);
 }

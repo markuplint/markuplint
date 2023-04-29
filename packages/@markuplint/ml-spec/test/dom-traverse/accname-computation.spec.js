@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { createJSDOMElement: c } = require('@markuplint/test-tools');
 
-import { createJSDOMElement as c } from '@markuplint/test-tools';
-
-import { getAccname } from './accname-computation';
+const { getAccname } = require('../../lib/dom-traverse/accname-computation');
 
 test('Get accessible name', () => {
 	expect(getAccname(c('<button>label</button>'))).toBe('label');

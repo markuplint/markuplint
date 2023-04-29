@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/label-has-control').default;
 
 it('No control', async () => {
 	const { violations } = await mlRuleTest(rule, '<label>foo</label>');

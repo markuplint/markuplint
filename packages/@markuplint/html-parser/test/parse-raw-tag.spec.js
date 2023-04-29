@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import parseRawTag from './parse-raw-tag';
+const parseRawTag = require('../lib/parse-raw-tag').default;
 
 test('tag only', () => {
 	expect(parseRawTag('<div>', 1, 1, 0)).toMatchObject({

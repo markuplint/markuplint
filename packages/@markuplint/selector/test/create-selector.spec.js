@@ -1,11 +1,9 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import specs from '@markuplint/html-spec';
-import { createJSDOMElement } from '@markuplint/test-tools';
+const { createSelector } = require('../lib/create-selector');
 
-import { createSelector } from './create-selector';
-
-function c(selector: string, html: string) {
+function c(selector, html) {
 	return createSelector(selector, specs).match(createJSDOMElement(html));
 }
 

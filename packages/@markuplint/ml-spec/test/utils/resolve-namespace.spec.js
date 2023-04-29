@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { resolveNamespace } from './resolve-namespace';
+const { resolveNamespace } = require('../../lib/utils/resolve-namespace');
 
 test('tag', () => {
 	expect(resolveNamespace('a')).toStrictEqual({

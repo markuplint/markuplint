@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/character-reference').default;
 
 test('character-reference', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>');

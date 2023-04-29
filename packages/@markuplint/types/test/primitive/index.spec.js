@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { isInt, isUint, isFloat, isNonZeroUint, isQuantity } from '.';
+const { isInt, isUint, isFloat, isNonZeroUint, isQuantity } = require('../../lib/primitive');
 
 test('int', () => {
 	expect(isInt('0')).toBe(true);

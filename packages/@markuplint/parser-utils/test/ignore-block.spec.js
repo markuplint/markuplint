@@ -1,11 +1,7 @@
-// @ts-nocheck
+const { parse } = require('@markuplint/html-parser');
 
-import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
-
-import { parse } from '@markuplint/html-parser';
-
-import { nodeListToDebugMaps } from './debugger';
-import { ignoreBlock, restoreNode } from './ignore-block';
+const { nodeListToDebugMaps } = require('../lib/debugger');
+const { ignoreBlock, restoreNode } = require('../lib/ignore-block');
 
 const tags = [
 	{
@@ -206,9 +202,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
-			'<% attr %><% attr2 %>',
-		);
+		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %><% attr2 %>');
 	});
 
 	it('attr', () => {
@@ -216,9 +210,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
-			'<% attr %> <% attr2 %>',
-		);
+		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %> <% attr2 %>');
 	});
 
 	it('attr', () => {
@@ -226,9 +218,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(
-			'<% attr %>A<% attr2 %>',
-		);
+		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %>A<% attr2 %>');
 	});
 
 	it('before space', () => {
@@ -236,7 +226,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(' <% attr %>');
+		expect(restoredAst[0].attributes[0].value.raw).toBe(' <% attr %>');
 	});
 
 	it('after space', () => {
@@ -244,7 +234,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe(' <% attr %> ');
+		expect(restoredAst[0].attributes[0].value.raw).toBe(' <% attr %> ');
 	});
 
 	it('before char', () => {
@@ -252,7 +242,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>');
+		expect(restoredAst[0].attributes[0].value.raw).toBe('A<% attr %>');
 	});
 
 	it('after char', () => {
@@ -260,7 +250,7 @@ describe('restoreNode', () => {
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
-		expect(((restoredAst[0] as MLASTElement).attributes[0] as MLASTHTMLAttr).value.raw).toBe('A<% attr %>B');
+		expect(restoredAst[0].attributes[0].value.raw).toBe('A<% attr %>B');
 	});
 
 	it('unexpected parsing', () => {

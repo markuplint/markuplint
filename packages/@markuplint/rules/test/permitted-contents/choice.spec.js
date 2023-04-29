@@ -1,19 +1,15 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import type { PermittedContentChoice } from '@markuplint/ml-spec';
+const { choice } = require('../../lib/permitted-contents/choice');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
-
-import { choice } from './choice';
-
-function c(models: PermittedContentChoice, innerHtml: string) {
+function c(models, innerHtml) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
 	return choice(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
 }
 
 it('ordered requires', () => {
-	const models: PermittedContentChoice = {
+	const models = {
 		choice: [
 			//
 			[{ require: 'a' }],
@@ -32,7 +28,7 @@ it('ordered requires', () => {
 });
 
 test('optional', () => {
-	const models: PermittedContentChoice = {
+	const models = {
 		choice: [
 			[
 				{
@@ -60,7 +56,7 @@ test('optional', () => {
 });
 
 test('interleave', () => {
-	const models: PermittedContentChoice = {
+	const models = {
 		choice: [
 			[
 				{
@@ -90,7 +86,7 @@ test('interleave', () => {
 });
 
 test('the dl element', () => {
-	const models: PermittedContentChoice = {
+	const models = {
 		choice: [
 			[
 				{
@@ -137,7 +133,7 @@ test('the dl element', () => {
 });
 
 it('part of the ruby element', () => {
-	const models: PermittedContentChoice = {
+	const models = {
 		// 2. One or the other of the following:
 		choice: [
 			[

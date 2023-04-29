@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import jsxParser, { getName } from './jsx';
+const { default: jsxParser, getName } = require('../lib/jsx');
 
 describe('jsxParser', () => {
 	it('spreadAttribute', () => {

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './';
+const { parse } = require('../lib/');
 
 describe('Node list', () => {
 	it('a code', () => {
@@ -89,7 +87,7 @@ describe('Node list', () => {
 		]);
 
 		const el = doc.nodeList[3];
-		const el2 = doc.nodeList[3].parentNode!.childNodes![0];
+		const el2 = doc.nodeList[3].parentNode.childNodes[0];
 		expect(el.nodeName).toBe(el2.nodeName);
 		expect(el.uuid).toBe(el2.uuid);
 	});

@@ -1,14 +1,10 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createSelector } = require('@markuplint/selector');
+const { createJSDOMElement } = require('@markuplint/test-tools');
 
-import type { ARIAVersion } from '../types';
+const { getImplicitRole } = require('../../lib/specs/get-implicit-role');
 
-import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
-
-import { getImplicitRole } from './get-implicit-role';
-
-function c(html: string, version: ARIAVersion) {
+function c(html, version) {
 	const el = createJSDOMElement(html);
 	return getImplicitRole(
 		specs,

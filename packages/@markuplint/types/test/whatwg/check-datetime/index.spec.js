@@ -1,18 +1,21 @@
-// @ts-nocheck
-
-import { checkDateString } from './date-string';
-import { getMaxWeekNum } from './datetime-tokens';
-import { checkDurationISO8601LikeString, checkDurationComponentListString } from './duration-string';
-import { checkGlobalDateAndTimeString } from './global-date-and-time-string';
-import { checkLocalDateAndTimeString, checkNormalizedLocalDateAndTimeString } from './local-date-and-time-string';
-import { checkMonthString } from './month-string';
-import { checkTimeString } from './time-string';
-import { checkTimeZoneOffsetString } from './time-zone-offset-string';
-import { checkWeekString } from './week-string';
-import { checkYearString } from './year-string';
-import { checkYearlessDateString } from './yearless-date-string';
-
-import { checkDateTime } from '.';
+const { checkDateTime } = require('../../../lib/whatwg/check-datetime');
+const { checkDateString } = require('../../../lib/whatwg/check-datetime/date-string');
+const { getMaxWeekNum } = require('../../../lib/whatwg/check-datetime/datetime-tokens');
+const {
+	checkDurationISO8601LikeString,
+	checkDurationComponentListString,
+} = require('../../../lib/whatwg/check-datetime/duration-string');
+const { checkGlobalDateAndTimeString } = require('../../../lib/whatwg/check-datetime/global-date-and-time-string');
+const {
+	checkLocalDateAndTimeString,
+	checkNormalizedLocalDateAndTimeString,
+} = require('../../../lib/whatwg/check-datetime/local-date-and-time-string');
+const { checkMonthString } = require('../../../lib/whatwg/check-datetime/month-string');
+const { checkTimeString } = require('../../../lib/whatwg/check-datetime/time-string');
+const { checkTimeZoneOffsetString } = require('../../../lib/whatwg/check-datetime/time-zone-offset-string');
+const { checkWeekString } = require('../../../lib/whatwg/check-datetime/week-string');
+const { checkYearString } = require('../../../lib/whatwg/check-datetime/year-string');
+const { checkYearlessDateString } = require('../../../lib/whatwg/check-datetime/yearless-date-string');
 
 const isMonth = checkMonthString();
 const isDate = checkDateString();

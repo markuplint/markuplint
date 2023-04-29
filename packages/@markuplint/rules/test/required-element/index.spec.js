@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from '.';
+const rule = require('../../lib/required-element').default;
 
 describe('static', () => {
 	it('specifies to global rule', async () => {

@@ -1,13 +1,9 @@
-// @ts-nocheck
+const { translator } = require('@markuplint/i18n');
+const { i18n } = require('markuplint');
 
-import type { Translator } from '@markuplint/i18n';
+const { valueCheck } = require('../lib/attr-check');
 
-import { translator } from '@markuplint/i18n';
-import { i18n } from 'markuplint';
-
-import { valueCheck } from './attr-check';
-
-let t: Translator;
+let t;
 
 beforeAll(async () => {
 	const locale = await i18n('en');

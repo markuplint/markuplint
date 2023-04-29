@@ -1,4 +1,4 @@
-import { tokenize, defaultValueDelimiters } from './parse-attr';
+const { tokenize, defaultValueDelimiters } = require('../lib/parse-attr');
 
 describe('tokenize', () => {
 	test('name', () => {

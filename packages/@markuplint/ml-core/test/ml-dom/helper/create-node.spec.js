@@ -1,12 +1,9 @@
-// @ts-nocheck
+const { parse } = require('@markuplint/html-parser');
 
-import { parse } from '@markuplint/html-parser';
-
-import { Document } from '../';
-import { convertRuleset } from '../../';
-import { dummySchemas } from '../../test';
-
-import { createNode } from './create-node';
+const { convertRuleset } = require('../../../');
+const { Document } = require('../../../lib/ml-dom/');
+const { createNode } = require('../../../lib/ml-dom/helper/create-node');
+const { dummySchemas } = require('../../../lib/test');
 
 describe('create Node', () => {
 	it('Element', () => {

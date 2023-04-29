@@ -1,11 +1,5 @@
-// @ts-nocheck
-
-import type { MLElement } from './node/element';
-
-import { createRule } from '../ml-rule/create-test-rule';
-import { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } from '../test';
-
-type Element = MLElement<any, any>;
+const { createRule } = require('../../lib/ml-rule/create-test-rule');
+const { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } = require('../../lib/test');
 
 describe('AST', () => {
 	test('node count', () => {
@@ -17,7 +11,7 @@ describe('AST', () => {
 		const nodeList = createTestNodeList('<div>text</div>');
 		expect(nodeList[0].raw).toBe('<div>');
 		expect(nodeList[1].raw).toBe('text');
-		expect((nodeList[0] as Element).closeTag?.raw).toBe('</div>');
+		expect(nodeList[0].closeTag?.raw).toBe('</div>');
 	});
 
 	test('raw', () => {
@@ -40,11 +34,11 @@ describe('AST', () => {
 		expect(tokens[1].raw).toBe('<div>');
 		expect(tokens[2].raw).toBe('\n        text\n    ');
 		expect(tokens[3].raw).toBe('</div>');
-		expect((tokens[0] as Element).prevToken).toBe(null);
-		expect((tokens[1] as Element).prevToken?.raw).toBe('\n    ');
-		expect((tokens[2] as Element).prevToken?.raw).toBe('<div>');
-		expect((tokens[1] as Element).prevToken?.uuid).toBe(tokens[0].uuid);
-		expect((tokens[2] as Element).prevToken?.uuid).toBe(tokens[1].uuid);
+		expect(tokens[0].prevToken).toBe(null);
+		expect(tokens[1].prevToken?.raw).toBe('\n    ');
+		expect(tokens[2].prevToken?.raw).toBe('<div>');
+		expect(tokens[1].prevToken?.uuid).toBe(tokens[0].uuid);
+		expect(tokens[2].prevToken?.uuid).toBe(tokens[1].uuid);
 	});
 
 	test('raw', () => {
@@ -100,18 +94,18 @@ describe('AST', () => {
 	<a></a>
 </div>
 `);
-		expect((tokens[0] as Element).nodeName).toBe('DIV');
-		expect((tokens[0] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
-		expect((tokens[2] as Element).nodeName).toBe('svg');
-		expect((tokens[2] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
-		expect((tokens[4] as Element).nodeName).toBe('a');
-		expect((tokens[4] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
-		expect((tokens[7] as Element).nodeName).toBe('foreignObject');
-		expect((tokens[7] as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
-		expect((tokens[9] as Element).nodeName).toBe('DIV');
-		expect((tokens[9] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
-		expect((tokens[16] as Element).nodeName).toBe('A');
-		expect((tokens[16] as Element).namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+		expect(tokens[0].nodeName).toBe('DIV');
+		expect(tokens[0].namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+		expect(tokens[2].nodeName).toBe('svg');
+		expect(tokens[2].namespaceURI).toBe('http://www.w3.org/2000/svg');
+		expect(tokens[4].nodeName).toBe('a');
+		expect(tokens[4].namespaceURI).toBe('http://www.w3.org/2000/svg');
+		expect(tokens[7].nodeName).toBe('foreignObject');
+		expect(tokens[7].namespaceURI).toBe('http://www.w3.org/2000/svg');
+		expect(tokens[9].nodeName).toBe('DIV');
+		expect(tokens[9].namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+		expect(tokens[16].nodeName).toBe('A');
+		expect(tokens[16].namespaceURI).toBe('http://www.w3.org/1999/xhtml');
 	});
 
 	test('toString', () => {
@@ -142,7 +136,7 @@ describe('AST', () => {
 	});
 
 	test('rule', () => {
-		const document = createTestDocument<'foo', any>('<div><span>text</span></div>', {
+		const document = createTestDocument('<div><span>text</span></div>', {
 			config: {
 				rules: {
 					ruleA: true,
@@ -203,7 +197,7 @@ div#hoge.foo.bar
 			},
 		);
 		// @ts-ignore
-		const a: Element = el.childNodes[0].childNodes[0];
+		const a = el.childNodes[0].childNodes[0];
 		expect(el.matches('*')).toBeTruthy();
 		expect(el.matches('div')).toBeTruthy();
 		expect(el.matches('div#hoge')).toBeTruthy();
@@ -340,9 +334,9 @@ describe('Rule', () => {
 			},
 		});
 
-		expect((document.nodeList[0] as Element).nodeName).toBe('SPAN');
-		expect((document.nodeList[1] as Element).nodeName).toBe('DIV');
-		expect((document.nodeList[2] as Element).nodeName).toBe('SPAN');
+		expect(document.nodeList[0].nodeName).toBe('SPAN');
+		expect(document.nodeList[1].nodeName).toBe('DIV');
+		expect(document.nodeList[2].nodeName).toBe('SPAN');
 
 		const ruleA = createRule({
 			name: 'ruleA',

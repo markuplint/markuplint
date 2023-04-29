@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { getEndCol, getEndLine } from './get-location';
+const { getEndCol, getEndLine } = require('../lib/get-location');
 
 describe('getEndLine', () => {
 	it('empty', () => {

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { isBCP47 } from './is-bcp-47';
+const { isBCP47 } = require('../../lib/rfc/is-bcp-47');
 
 const is = isBCP47();
 

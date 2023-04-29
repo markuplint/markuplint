@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { tokenizer } from './create-token';
+const { tokenizer } = require('../lib/create-token');
 
 describe('tokenizer', () => {
 	it('empty', () => {

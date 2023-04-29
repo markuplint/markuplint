@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { attributesToDebugMaps, nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { isDocumentFragment, parse } from './';
+const { isDocumentFragment, parse } = require('../lib/');
 
 describe('isDocumentFragment', () => {
 	it('<!doctype>', () => {
@@ -1113,7 +1111,7 @@ describe('parser', () => {
 		// console.log(map);
 
 		expect(doc.nodeList[0].parentNode).toEqual(null);
-		expect(doc.nodeList[1].parentNode!.parentNode).toEqual(null);
+		expect(doc.nodeList[1].parentNode.parentNode).toEqual(null);
 	});
 
 	it('code in script', () => {

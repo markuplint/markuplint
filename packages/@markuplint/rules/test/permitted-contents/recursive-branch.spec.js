@@ -1,11 +1,9 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
+const { recursiveBranch } = require('../../lib/permitted-contents/recursive-branch');
 
-import { recursiveBranch } from './recursive-branch';
-
-function c(models: Parameters<typeof recursiveBranch>[0], innerHtml: string) {
+function c(models, innerHtml) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
 	return recursiveBranch(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
 }

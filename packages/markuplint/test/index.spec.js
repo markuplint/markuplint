@@ -1,9 +1,7 @@
-// @ts-nocheck
+const { MLRule } = require('@markuplint/ml-core');
 
-import { MLRule } from '@markuplint/ml-core';
-
-import { setGlobal } from './global-settings';
-import { mlTest, mlTestFile } from './testing-tool';
+const { setGlobal } = require('../lib/global-settings');
+const { mlTest, mlTestFile } = require('../lib/testing-tool');
 
 setGlobal({
 	locale: 'en',

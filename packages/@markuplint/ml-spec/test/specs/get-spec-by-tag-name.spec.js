@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { specs } = require('@markuplint/html-spec');
 
-import { specs } from '@markuplint/html-spec';
-
-import { getSpecByTagName } from './get-spec-by-tag-name';
+const { getSpecByTagName } = require('../../lib/specs/get-spec-by-tag-name');
 
 const divSpec = {
 	conditional: [

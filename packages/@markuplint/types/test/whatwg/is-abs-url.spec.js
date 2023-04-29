@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { isAbsURL } from './is-abs-url';
+const { isAbsURL } = require('../../lib/whatwg/is-abs-url');
 
 const is = isAbsURL();
 

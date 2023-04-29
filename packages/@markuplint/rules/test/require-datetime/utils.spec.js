@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { parseADatetime, getCandidateDatetimeString } from './utils';
+const { parseADatetime, getCandidateDatetimeString } = require('../../lib/require-datetime/utils');
 
 test('parseADatetime', () => {
 	expect(parseADatetime('2000/1/1', ['en'])).toStrictEqual({

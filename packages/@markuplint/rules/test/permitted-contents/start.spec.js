@@ -1,15 +1,13 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
+const { getContentModel } = require('@markuplint/ml-spec');
 
-import specs, { specs as elements } from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
-import { getContentModel } from '@markuplint/ml-spec';
+const { start } = require('../../lib/permitted-contents/start');
 
-import { start } from './start';
-
-function c(html: string, target?: string) {
-	const root = createTestElement(html, { specs });
+function c(html, target) {
+	const root = createTestElement(html, specs);
 	const el = target ? root.querySelector(target) : root;
-	return start(getContentModel(el!, elements)!, el!, specs, { ignoreHasMutableChildren: true });
+	return start(getContentModel(el, specs.specs), el, specs, { ignoreHasMutableChildren: true });
 }
 
 it('transparent: <a>', () => {

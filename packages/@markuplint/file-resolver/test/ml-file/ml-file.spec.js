@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { MLFile } from './ml-file';
+const { MLFile } = require('../../lib/ml-file/ml-file');
 
 it('file path', () => {
 	const file = new MLFile('/dir/file');

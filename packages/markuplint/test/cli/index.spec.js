@@ -1,14 +1,12 @@
-// @ts-nocheck
+const path = require('path');
 
-import path from 'path';
+const execa = require('execa');
 
-import execa from 'execa';
-
-import { cli } from './bootstrap';
+const { cli } = require('../../lib/cli/bootstrap');
 
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 
-const escape = (path: string) => path.replace(/\\/g, '\\\\'); // For Windows
+const escape = path => path.replace(/\\/g, '\\\\'); // For Windows
 
 describe('STDOUT Test', () => {
 	it('empty', async () => {

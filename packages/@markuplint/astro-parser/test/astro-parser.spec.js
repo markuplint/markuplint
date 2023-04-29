@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { astroParse } from './astro-parser';
+const { astroParse } = require('../lib/astro-parser');
 
 it('Basic', () => {
 	const ast = astroParse(`---

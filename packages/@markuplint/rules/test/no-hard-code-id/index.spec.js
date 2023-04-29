@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/no-hard-code-id').default;
 
 it('is hard-coded', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="foo"></div>');

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/deprecated-attr').default;
 
 test('deprecated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img align="top">');

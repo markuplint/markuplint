@@ -1,10 +1,6 @@
-// @ts-nocheck
+const { nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import type { MLASTElement } from '@markuplint/ml-ast';
-
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './parse';
+const { parse } = require('../lib/parse');
 
 it('Basic', () => {
 	const ast = parse(`---
@@ -202,19 +198,19 @@ it('Doctype', () => {
 it('namespace', () => {
 	const doc = parse('<div><svg><text /></svg></div>');
 	expect(doc.nodeList[0].nodeName).toBe('div');
-	expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+	expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 	expect(doc.nodeList[1].nodeName).toBe('svg');
-	expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 	expect(doc.nodeList[2].nodeName).toBe('text');
-	expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 
 	const doc2 = parse('<svg><foreignObject><div></div></foreignObject></svg>');
 	expect(doc2.nodeList[0].nodeName).toBe('svg');
-	expect((doc2.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc2.nodeList[0].namespace).toBe('http://www.w3.org/2000/svg');
 	expect(doc2.nodeList[1].nodeName).toBe('foreignObject');
-	expect((doc2.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+	expect(doc2.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 	expect(doc2.nodeList[2].nodeName).toBe('div');
-	expect((doc2.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+	expect(doc2.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
 });
 
 describe('Issue', () => {

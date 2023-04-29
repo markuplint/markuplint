@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { getNamespace } from './get-namespace';
+const { getNamespace } = require('../lib/get-namespace');
 
 describe('getNamespace', () => {
 	it('div', () => {

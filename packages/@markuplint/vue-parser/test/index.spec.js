@@ -1,10 +1,6 @@
-// @ts-nocheck
+const { nodeListToDebugMaps } = require('@markuplint/parser-utils');
 
-import type { MLASTElement } from '@markuplint/ml-ast';
-
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
-
-import { parse } from './';
+const { parse } = require('../lib/');
 
 describe('parser', () => {
 	it('empty', () => {
@@ -360,35 +356,27 @@ describe('parser', () => {
 	it('namespace', () => {
 		const doc = parse('<template><div><svg><text /></svg></div></template>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
-		expect((doc.nodeList[0] as MLASTElement).namespace).toBe('http://www.w3.org/1999/xhtml');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
 		expect(doc.nodeList[1].nodeName).toBe('svg');
-		expect((doc.nodeList[1] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].nodeName).toBe('text');
-		expect((doc.nodeList[2] as MLASTElement).namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
 	it('elementType', () => {
-		expect((parse('<template><div/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
-		expect((parse('<template><Div/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<template><x-div/></template>').nodeList[0] as MLASTElement).elementType).toBe('web-component');
-		expect((parse('<template><foo/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
-		expect((parse('<template><Foo/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<template><div><Foo/></div></template>').nodeList[1] as MLASTElement).elementType).toBe(
-			'authored',
-		);
-		expect((parse('<template><div><Component/></div></template>').nodeList[1] as MLASTElement).elementType).toBe(
-			'authored',
-		);
-		expect((parse('<template><svg><Component/></svg></template>').nodeList[1] as MLASTElement).elementType).toBe(
-			'authored',
-		);
-		expect((parse('<template><svg><feBlend/></svg></template>').nodeList[1] as MLASTElement).elementType).toBe(
-			'html',
-		);
-		expect((parse('<template><component/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<template><slot/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<template><Transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('authored');
-		expect((parse('<template><transition/></template>').nodeList[0] as MLASTElement).elementType).toBe('html');
+		expect(parse('<template><div/></template>').nodeList[0].elementType).toBe('html');
+		expect(parse('<template><Div/></template>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<template><x-div/></template>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<template><foo/></template>').nodeList[0].elementType).toBe('html');
+		expect(parse('<template><Foo/></template>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<template><div><Foo/></div></template>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<template><div><Component/></div></template>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<template><svg><Component/></svg></template>').nodeList[1].elementType).toBe('authored');
+		expect(parse('<template><svg><feBlend/></svg></template>').nodeList[1].elementType).toBe('html');
+		expect(parse('<template><component/></template>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<template><slot/></template>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<template><Transition/></template>').nodeList[0].elementType).toBe('authored');
+		expect(parse('<template><transition/></template>').nodeList[0].elementType).toBe('html');
 	});
 
 	it('Directives', () => {

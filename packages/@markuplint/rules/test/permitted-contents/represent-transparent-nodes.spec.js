@@ -1,11 +1,12 @@
-// @ts-nocheck
+const specs = require('@markuplint/html-spec');
+const { createTestElement } = require('@markuplint/ml-core');
 
-import specs from '@markuplint/html-spec';
-import { createTestElement } from '@markuplint/ml-core';
+const {
+	representTransparentNodes,
+	transparentMode,
+} = require('../../lib/permitted-contents/represent-transparent-nodes');
 
-import { representTransparentNodes, transparentMode } from './represent-transparent-nodes';
-
-function c(html: string) {
+function c(html) {
 	const el = createTestElement(`<div>${html}</div>`);
 	const { nodes } = representTransparentNodes(Array.from(el.children), specs, { ignoreHasMutableChildren: true });
 	return nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : ''));

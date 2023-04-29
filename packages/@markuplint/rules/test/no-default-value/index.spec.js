@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/no-default-value').default;
 
 test('canvas', async () => {
 	const { violations } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>');

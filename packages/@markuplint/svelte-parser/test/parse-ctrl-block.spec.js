@@ -1,7 +1,5 @@
-// @ts-nocheck
-
-import { parseCtrlBlock } from './parse-ctrl-block';
-import svelteParse from './svelte-parser';
+const { parseCtrlBlock } = require('../lib/parse-ctrl-block');
+const svelteParse = require('../lib/svelte-parser').default;
 
 describe('parser', () => {
 	test('if', () => {

@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { pugParse } from '.';
+const { pugParse } = require('../../lib/pug-parser');
 
 describe('parser', () => {
 	it('basic code', () => {

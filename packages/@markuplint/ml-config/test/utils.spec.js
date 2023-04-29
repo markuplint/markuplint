@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { exchangeValueOnRule, provideValue } from './utils';
+const { exchangeValueOnRule, provideValue } = require('../lib/utils');
 
 it('provideValue', () => {
 	expect(

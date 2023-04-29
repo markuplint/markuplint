@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { check } from './check';
+const { check } = require('../lib/check');
 
 test('Any', () => {
 	expect(check('', 'Any').matched).toBe(true);

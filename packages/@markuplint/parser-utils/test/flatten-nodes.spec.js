@@ -1,10 +1,8 @@
-// @ts-nocheck
+const { isDocumentFragment, createTree } = require('@markuplint/html-parser');
 
-import { isDocumentFragment, createTree } from '@markuplint/html-parser';
+const { flattenNodes } = require('../lib/flatten-nodes');
 
-import { flattenNodes } from './flatten-nodes';
-
-function toTree(rawCode: string) {
+function toTree(rawCode) {
 	const isFragment = isDocumentFragment(rawCode);
 	return createTree(rawCode, isFragment, 0, 0, 0);
 }

@@ -1,8 +1,6 @@
-// @ts-nocheck
+const { mlRuleTest } = require('markuplint');
 
-import { mlRuleTest } from 'markuplint';
-
-import rule from './';
+const rule = require('../../lib/attr-duplication').default;
 
 test('is test 1', async () => {
 	const { violations } = await mlRuleTest(

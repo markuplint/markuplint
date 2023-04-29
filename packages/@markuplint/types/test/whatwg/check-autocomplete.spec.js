@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import { checkAutoComplete } from './check-autocomplete';
+const { checkAutoComplete } = require('../../lib/whatwg/check-autocomplete');
 
 const check = checkAutoComplete();
 
