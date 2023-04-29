@@ -3,7 +3,7 @@ import type { MLResultInfo } from '../types';
 
 import stripAnsi from 'strip-ansi';
 
-import { simpleReporter, standardReporter } from '../reporter';
+import { simpleReporter, standardReporter, githubReporter } from '../reporter';
 
 export function output(results: MLResultInfo, options: CLIOptions) {
 	const format = options.format ?? 'Standard';
@@ -14,6 +14,10 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 		}
 		case 'simple': {
 			out = simpleReporter(results, options);
+			break;
+		}
+		case 'github': {
+			out = githubReporter(results);
 			break;
 		}
 		default: {
