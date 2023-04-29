@@ -152,7 +152,7 @@
 	},
 	"overrides": [
 		{
-			"files": ["**/*.spec.js"],
+			"files": ["**/*.spec.{js,ts}"],
 			"rules": {
 				"import/no-extraneous-dependencies": 0,
 				"@typescript-eslint/no-var-requires": 0
