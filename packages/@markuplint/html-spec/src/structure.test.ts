@@ -3,8 +3,8 @@ import path from 'path';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { getAttrSpecs } from '@markuplint/ml-spec/lib/specs/get-attr-specs';
+import { glob } from '@markuplint/test-tools';
 import Ajv, { type ValidateFunction } from 'ajv';
-import { glob } from 'glob';
 import strip from 'strip-json-comments';
 
 import htmlSpec, { specs } from '../index';
