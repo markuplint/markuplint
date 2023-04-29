@@ -31,6 +31,7 @@
 		"@markuplint/ml-spec": "3.7.0",
 		"@markuplint/shared": "3.5.0",
 		"cosmiconfig": "^8.0.0",
+		"cosmiconfig-typescript-loader": "^4.3.0",
 		"glob": "^10.2.2",
 		"jsonc": "^2.0.0",
 		"minimatch": "^9.0.0",
