@@ -3,6 +3,7 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
+import type { WritableDeep } from 'type-fest';
 
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
@@ -199,7 +200,6 @@ export class Collection<T> {
 	}
 }
 
-type Writeable<T> = { -readonly [P in keyof T]: T[P] };
-export function deepCopy<T>(value: T): Writeable<T> {
-	return structuredClone(value);
+export function deepCopy<T>(value: T): WritableDeep<T> {
+	return structuredClone(value as any) as WritableDeep<T>;
 }
