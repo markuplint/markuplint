@@ -2,7 +2,7 @@ import type { File } from './types';
 
 import { statSync } from 'node:fs';
 import fs from 'node:fs/promises';
-import { resolve, extname, basename, relative, dirname } from 'node:path';
+import { resolve, extname, basename, relative, dirname, sep } from 'node:path';
 
 import { format } from 'prettier';
 import { transpile, ScriptTarget } from 'typescript';
@@ -71,7 +71,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		if (!name) {
 			throw new Error('Rule name is empty');
 		}
-		newFile.destDir = newFile.destDir.replace('/rules/src/', '/rules/test/');
+		newFile.destDir = newFile.destDir.replace(`${sep}rules${sep}src${sep}`, `${sep}rules${sep}test${sep}`);
 		contents = contents.replace("require('./').default", `require('../../lib/${name}').default`);
 	}
 

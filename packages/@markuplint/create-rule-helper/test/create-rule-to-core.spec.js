@@ -1,5 +1,5 @@
 const { rm, readdir } = require('node:fs/promises');
-const { resolve } = require('node:path');
+const { resolve, sep } = require('node:path');
 
 const { createRuleToCore, getRulesDir } = require('../lib/create-rule-to-core');
 
@@ -12,7 +12,7 @@ async function getTestDir(testDirName) {
 
 async function removeTestDir() {
 	const sandboxDir = await getTestDir(sandboxDirName);
-	const sandboxDirTest = sandboxDir.replace('/src/', '/test/');
+	const sandboxDirTest = sandboxDir.replace(`${sep}src${sep}`, `${sep}test${sep}`);
 	await rm(sandboxDir, { recursive: true, force: true });
 	await rm(sandboxDirTest, { recursive: true, force: true });
 }
