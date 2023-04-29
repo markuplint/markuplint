@@ -181,13 +181,13 @@ export async function bootServer() {
 			return;
 		}
 
-		const heading = `\`<${node.nodeName}>\` **Computed Accessibility Properties**:\n`;
+		const heading = `\`<${node.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
 
 		const props = node.exposed
 			? `${Object.entries(node.aria)
 					.map(([key, value]) => `- ${key}: ${value}`)
 					.join('\n')}`
-			: '\n**No exposed to accessibility tree** (hidden element)';
+			: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
 
 		return {
 			contents: {
