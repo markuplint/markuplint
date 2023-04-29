@@ -50,4 +50,4 @@ jobs:
               run: yarn build
 
             - name: Test
-              run: yarn test:coverage --shard=${{ matrix.shard }}
+              run: yarn jest --useStderr --coverage --shard=${{ matrix.shard }} && cat ./coverage/lcov.info | yarn coveralls # `jest:coverage` + shard option
