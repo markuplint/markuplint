@@ -3,15 +3,12 @@ name: Test
 on:
     push:
         branches:
-            - main
             - dev
             - next
     pull_request:
         branches:
-            - main
             - dev
             - next
-            - v3
 
 jobs:
     test:
@@ -19,10 +16,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-2019]
-                node: [14]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                node: [18]
                 include:
-                    - node: 18
+                    - node: 20
                       os: ubuntu-latest
                       experimental: true
         steps:
@@ -47,7 +44,7 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Install dependencies
-              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-2019'
+              if: steps.cache.outputs.cache-hit != 'true' || matrix.os == 'windows-latest'
               run: yarn install
 
             - name: Bootstrap
