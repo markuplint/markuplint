@@ -1,12 +1,13 @@
 name: Lint
 
 on:
-    push:
-        branches:
-            - dev
     pull_request:
         branches:
             - dev
+        paths:
+            - '**'
+            - '!vscode/**'
+            - '!website/**'
 
 jobs:
     lint:

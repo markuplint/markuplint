@@ -1,14 +1,14 @@
 name: Test
 
 on:
-    push:
-        branches:
-            - dev
-            - next
     pull_request:
         branches:
             - dev
             - next
+        paths:
+            - '**'
+            - '!vscode/**'
+            - '!website/**'
 
 jobs:
     test:
