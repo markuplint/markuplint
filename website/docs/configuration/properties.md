@@ -264,7 +264,7 @@ You can specify it as Array or string, but it's **deprecated**.
 
 It can exclude files if you need them.
 The values require the **relative path from the configuration file** or the absolute path.
-Paths can be glob format.
+Paths can be glob format in [minimatch](https://www.npmjs.com/package/minimatch) syntax.
 
 ```json class=config
 {
@@ -833,7 +833,7 @@ type OriginalNode = {
 ### `overrides`
 
 You can override configurations to specific files if you specify the `overrides` option.
-It applies to **glob format paths** specified to a key.
+It applies to **glob format paths** specified to a key. They are evaluated by [minimatch](https://www.npmjs.com/package/minimatch).
 
 ```json class=config
 {
