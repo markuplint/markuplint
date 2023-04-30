@@ -54,9 +54,13 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		if (!result) {
 			continue;
 		}
-		if (!hasError && result.violations.length > 0) {
+		const errorCount = result.violations.filter(v => v.severity === 'error').length;
+		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
+
+		if (!hasError && (errorCount > 0 || (warningCount > 0 && !options.allowWarnings))) {
 			hasError = true;
 		}
+
 		if (fix) {
 			log('Overwrite file: %s', result.filePath);
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });

@@ -49,8 +49,18 @@ describe('STDOUT Test', () => {
 			reject: false,
 		});
 		expect(stdout).toBe('');
-		expect(stderr.split('\n').length).toBe(34);
+		expect(stderr.split('\n').length).toBe(30);
 		expect(exitCode).toBe(1);
+	});
+
+	it('allow warnings', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
+		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--allow-warnings', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(stdout).toBe('');
+		expect(stderr.split('\n').length).toBe(24);
+		expect(exitCode).toBe(0);
 	});
 
 	it('format', async () => {

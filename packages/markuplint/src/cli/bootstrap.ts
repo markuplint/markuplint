@@ -17,6 +17,7 @@ Options
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
+	--allow-warnings                       Return status code 0 even if there are warnings.
 	--verbose                              Output with detailed information.
 
 	--init                                 Initialize settings interactively.
@@ -67,6 +68,11 @@ export const cli = meow(help, {
 		problemOnly: {
 			type: 'boolean',
 			alias: 'p',
+			default: false,
+		},
+		allowWarnings: {
+			type: 'boolean',
+			// TODO: It will be changed to `true` in the next major version.
 			default: false,
 		},
 		verbose: {
