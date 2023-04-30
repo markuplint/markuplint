@@ -1,0 +1,12 @@
+{
+	"extends": ["markuplint:recommended"],
+	"parser": {
+		"\\.njk$": "@markuplint/nunjucks-parser",
+		"\\.ejs$": "@markuplint/ejs-parser",
+		"\\.mustache$": "@markuplint/mustache-parser",
+		"\\.liquid": "@markuplint/liquid-parser"
+	},
+	"parserOptions": {
+		"ignoreFrontMatter": true
+	}
+}
