@@ -78,6 +78,11 @@
   resolved "https://registry.yarnpkg.com/@markuplint/i18n/-/i18n-3.7.0.tgz#cb83c39620afe31dd1403ba2046de51ddc98adfb"
   integrity sha512-4LLittRpY+gERXVJdlK8knGpZuKysCeiTCSqSlEydx+nTCUFQMPB6e1/3p2EAbn3k/wU8QJVYzMGherfrx6rMw==
 
+"@markuplint/i18n@3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/i18n/-/i18n-3.8.0.tgz#b9ecc8c36c419e1bdfef11d9e3c7b09b40caa058"
+  integrity sha512-xcWHRKviM52T8gli0wqojTaKZpWFYTOmi3BSN/p4Uk8eh9bIKV3o2qgJUYMEABWyxYewZv7ZpaptMt7WmxiDwA==
+
 "@markuplint/ml-ast@3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-3.1.0.tgz#ce2847a48c2e71a78f12ab2cf7a43c817d362d86"

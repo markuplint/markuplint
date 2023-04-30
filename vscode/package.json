@@ -92,7 +92,7 @@
 		"typescript": "^5.0.4"
 	},
 	"dependencies": {
-		"@markuplint/i18n": "3.7.0",
+		"@markuplint/i18n": "3.8.0",
 		"@markuplint/ml-spec": "3.7.0",
 		"markuplint": "3.8.0",
 		"semver": "^7.5.0",
