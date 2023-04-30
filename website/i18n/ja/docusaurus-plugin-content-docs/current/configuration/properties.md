@@ -251,7 +251,7 @@ interface Config {
 
 ### `excludeFiles`
 
-必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。
+必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
 
 ```json class=config
 {
@@ -812,10 +812,7 @@ type OriginalNode = {
 
 ### `overrides`
 
-You can override configurations to specific files if you specify the `overrides` option.
-It applies to **glob format paths** specified to a key.
-
-`overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。
+`overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
 
 ```json class=config
 {
