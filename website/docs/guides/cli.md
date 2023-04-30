@@ -28,6 +28,7 @@ And returns `1` if the result has problems one or more.
 | `--no-color`               | none         | none                                     | false      | Output no color.                                                    |
 | `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                               |
 | `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                    |
+| `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.              |
 | `--verbose`                | none         | none                                     | false      | Output with detailed information.                                   |
 
 ## Particular run

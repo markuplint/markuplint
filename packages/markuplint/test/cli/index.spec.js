@@ -68,4 +68,35 @@ describe('STDOUT Test', () => {
 		const { stdout } = await execa(entryFilePath, ['--format', 'JSON', escape(targetFilePath)]);
 		expect(stdout).toBe('[]');
 	});
+
+	it('no files', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/xxx/*');
+		const { stdout, exitCode } = await execa(entryFilePath, ['--format', 'JSON', escape(targetFilePath)]);
+		expect(stdout).toBe('[]');
+		expect(exitCode).toBe(0);
+	});
+
+	it('no files --allow-empty-input="true"', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/xxx/*');
+		const { exitCode } = await execa(entryFilePath, ['--allow-empty-input="true"', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(0);
+	});
+
+	it('no files --allow-empty-input="false"', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/xxx/*');
+		const { exitCode } = await execa(entryFilePath, ['--allow-empty-input="false"', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(1);
+	});
+
+	it('no files --no-allow-empty-input', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/xxx/*');
+		const { exitCode } = await execa(entryFilePath, ['--no-allow-empty-input', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(1);
+	});
 });

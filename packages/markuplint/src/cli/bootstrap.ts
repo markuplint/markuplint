@@ -18,6 +18,7 @@ Options
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
 	--allow-warnings                       Return status code 0 even if there are warnings.
+	--allow-empty-input                    Return status code 1 even if there are no input files.
 	--verbose                              Output with detailed information.
 
 	--init                                 Initialize settings interactively.
@@ -74,6 +75,10 @@ export const cli = meow(help, {
 			type: 'boolean',
 			// TODO: It will be changed to `true` in the next major version.
 			default: false,
+		},
+		allowEmptyInput: {
+			type: 'boolean',
+			default: true,
 		},
 		verbose: {
 			type: 'boolean',

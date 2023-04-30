@@ -24,6 +24,12 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 
 	const fileList = await resolveFiles(files);
 
+	if (fileList.length === 0 && !options.allowEmptyInput) {
+		process.stderr.write('Markuplint: No target files.\n');
+		// Error
+		return true;
+	}
+
 	if (log.enabled) {
 		log(
 			'File list: %O',
