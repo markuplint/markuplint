@@ -76,7 +76,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn --ignore-engines; yarn --ignore-engines vscode:build",
+		"vscode:prepublish": "yarn --ignore-engines vscode:build",
 		"vscode:build": "tsc -p ./",
 		"vscode:dev": "tsc -watch -p ./",
 		"vscode:login": "vsce login yusukehirao",
