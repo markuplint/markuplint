@@ -76,7 +76,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn --ignore-engines; yarn --ignore-engines vscode:build",
+		"vscode:prepublish": "yarn --ignore-engines vscode:build",
 		"vscode:build": "tsc -p ./",
 		"vscode:dev": "tsc -watch -p ./",
 		"vscode:login": "vsce login yusukehirao",
@@ -88,6 +88,7 @@
 		"@types/node": "16",
 		"@types/semver": "^7.3.13",
 		"@types/vscode": "^1.77.0",
+		"@vscode/vsce": "^2.19.0",
 		"typescript": "^5.0.4"
 	},
 	"dependencies": {
@@ -96,7 +97,7 @@
 		"markuplint": "3.8.0",
 		"semver": "^7.5.0",
 		"vscode-languageclient": "^8.1.0",
-		"vscode-languageserver": "^8.1.0",
-		"vscode-languageserver-textdocument": "^1.0.8"
+		"vscode-languageserver-textdocument": "^1.0.8",
+		"vscode-languageserver": "^8.1.0"
 	}
 }

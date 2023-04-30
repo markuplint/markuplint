@@ -1,18 +1,23 @@
 {
-	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"composite": true,
 		"module": "commonjs",
 		"target": "es2022",
 		"importHelpers": false,
 		"outDir": "./out",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"strict": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"allowSyntheticDefaultImports": true,
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"noUncheckedIndexedAccess": true,
+		"declaration": true,
+		"lib": ["esnext"],
+		"skipLibCheck": true,
+		"baseUrl": "."
 	},
-	"references": [
-		{
-			"path": "../packages/markuplint"
-		}
-	],
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "out"]
 }
