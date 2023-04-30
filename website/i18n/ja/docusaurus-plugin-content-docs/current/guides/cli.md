@@ -25,6 +25,7 @@ CLIはターゲットとなるHTMLファイルを可変長引数として受け�
 | `--locale`                 | なし             | なし                                         | OS設定による | メッセージの言語                                     |
 | `--no-color`               | なし             | なし                                         | false        | 出力をカラーリングしません                           |
 | `--problem-only`           | `-p`             | なし                                         | false        | 違反結果のみ出力します                               |
+| `--allow-warnings`         | none             | none                                         | false        | `warning`ではステータスコード`0`を返します           |
 | `--verbose`                | なし             | なし                                         | false        | 詳細な情報も同時に出力します                         |
 
 ## Particular run

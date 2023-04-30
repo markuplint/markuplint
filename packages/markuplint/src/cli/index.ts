@@ -50,7 +50,6 @@ import search from './search';
 
 		const hasError = await command(files, cli.flags).catch(err => {
 			throw err;
-			// process.exit(1);
 		});
 		process.exit(hasError ? 1 : 0);
 	}
