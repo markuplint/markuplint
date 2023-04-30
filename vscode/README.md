@@ -12,6 +12,11 @@
 
 ## Release Notes
 
+### 3.4.0
+
+- Depends: `markuplint@3.9.0`
+- Change: Improve the interface to translate **Japanese**.
+
 ### 3.3.0
 
 - Depends: `markuplint@3.8.0`

@@ -1,7 +1,7 @@
 {
 	"name": "@markuplint/playground",
 	"description": "https://playground.markuplint.dev",
-	"version": "2.1.0-alpha.10",
+	"version": "2.1.0-alpha.11",
 	"private": true,
 	"scripts": {
 		"pg:dev": "yarn; webpack-dev-server --progress",
@@ -43,15 +43,15 @@
 		"webpack-dev-server": "4.13.3"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "3.6.1",
-		"@markuplint/html-spec": "3.7.0",
-		"@markuplint/i18n": "3.7.0",
+		"@markuplint/html-parser": "3.7.0",
+		"@markuplint/html-spec": "3.8.0",
+		"@markuplint/i18n": "3.8.0",
 		"@markuplint/ml-ast": "3.1.0",
-		"@markuplint/ml-config": "3.7.0",
-		"@markuplint/ml-core": "3.8.0",
-		"@markuplint/ml-spec": "3.7.0",
-		"@markuplint/parser-utils": "3.6.1",
-		"@markuplint/rules": "3.8.0",
+		"@markuplint/ml-config": "3.8.0",
+		"@markuplint/ml-core": "3.9.0",
+		"@markuplint/ml-spec": "3.8.0",
+		"@markuplint/parser-utils": "3.7.0",
+		"@markuplint/rules": "3.9.0",
 		"monaco-editor": "0.37.1",
 		"svelte": "3.58.0",
 		"tslib": "2.5.0"
