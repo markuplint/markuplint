@@ -15,9 +15,6 @@
 		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@astrojs/parser": "0.22.2"
-	},
 	"dependencies": {
 		"@astrojs/parser": "0.22.2",
 		"@markuplint/html-parser": "3.6.1",

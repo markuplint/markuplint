@@ -19,13 +19,6 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@types/cli-color": "^2.0.2",
-		"@types/debug": "^4.1.7",
-		"@types/has-yarn": "^1.0.1",
-		"@types/meow": "^6.0.0",
-		"@types/uuid": "^9.0.0"
-	},
 	"dependencies": {
 		"@markuplint/create-rule-helper": "3.8.0",
 		"@markuplint/file-resolver": "3.8.0",
@@ -38,6 +31,11 @@
 		"@markuplint/ml-spec": "3.7.0",
 		"@markuplint/rules": "3.8.0",
 		"@markuplint/shared": "3.5.0",
+		"@types/cli-color": "^2.0.2",
+		"@types/debug": "^4.1.7",
+		"@types/has-yarn": "^1.0.1",
+		"@types/meow": "^6.0.0",
+		"@types/uuid": "^9.0.0",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
