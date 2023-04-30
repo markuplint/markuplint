@@ -6,7 +6,7 @@ description: 許可されていない要素もしくはテキストノードを�
 
 許可されていない要素もしくはテキストノードを子要素にもつ場合、警告します。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json)に設定値を持っています。
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
 オプションに独自のルールを設けることができます。カスタム要素やVueなどのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にできます。
 
