@@ -18,14 +18,12 @@
 		"build": "tsc",
 		"clean": "tsc --build --clean"
 	},
-	"devDependencies": {
-		"@types/uuid": "^9.0.0",
-		"type-fest": "^3.8.0"
-	},
 	"dependencies": {
 		"@markuplint/ml-ast": "3.1.0",
 		"@markuplint/types": "3.5.1",
+		"@types/uuid": "^9.0.0",
 		"tslib": "^2.4.1",
+		"type-fest": "^3.8.0",
 		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {
