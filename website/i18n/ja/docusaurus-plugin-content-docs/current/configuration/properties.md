@@ -36,7 +36,7 @@
 
 <!-- textlint-disable ja-technical-writing/max-comma -->
 
-[`extends`](#extends)、[`plugins`](#plugins)、[`specs`](#specs)、[`specs`](#specs)、[`excludeFiles`](#exclude-files)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
+[`extends`](#extends)、[`plugins`](#plugins)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#exclude-files)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
 
 <!-- textlint-enable  ja-technical-writing/max-comma -->
 
@@ -45,8 +45,6 @@
 ## 各プロパティの詳細
 
 ### `extends`
-
-If you specify other config file [paths](#resolving-specified-paths), it merges the current setting with them.
 
 他の設定ファイルへの[パス](#resolving-specified-paths)を指定した場合、その設定をマージします。
 
