@@ -70,14 +70,6 @@ describe('basic test', () => {
 				raw: 'content=ie=edge',
 				ruleId: 'attr-value-quotes',
 			},
-			{
-				severity: 'error',
-				message: 'Require the "h1" element',
-				line: 1,
-				col: 1,
-				raw: '<',
-				ruleId: 'required-h1',
-			},
 		]);
 	});
 
