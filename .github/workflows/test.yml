@@ -1,14 +1,14 @@
 name: Test
 
 on:
-    push:
-        branches:
-            - dev
-            - next
     pull_request:
         branches:
             - dev
             - next
+        paths:
+            - '**'
+            - '!vscode/**'
+            - '!website/**'
 
 jobs:
     test:
@@ -33,6 +33,10 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node }}
+
+            - name: Create .yarnrc for Windows
+              if: runner.os == 'Windows'
+              run: echo "network-timeout 600000" > .yarnrc
 
             - name: Cache node_modules
               uses: actions/cache@v3

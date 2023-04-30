@@ -1,16 +1,14 @@
-name: Lint
+name: VS Code Extension Packaging Test
 
 on:
     pull_request:
         branches:
             - dev
         paths:
-            - '**'
-            - '!vscode/**'
-            - '!website/**'
+            - 'vscode/**'
 
 jobs:
-    lint:
+    build:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -21,13 +19,7 @@ jobs:
             - name: Install Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: 18
+                  node-version: 16
 
             - name: Install dependencies
-              run: yarn install
-
-            - name: Bootstrap
-              run: yarn bootstrap
-
-            - name: Lint
-              run: yarn lint
+              run: yarn vscode:package
