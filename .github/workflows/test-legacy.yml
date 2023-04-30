@@ -6,6 +6,7 @@ on:
             - dev
         paths:
             - '**'
+            - '!**/*.md'
             - '!vscode/**'
             - '!website/**'
 
