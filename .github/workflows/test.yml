@@ -5,11 +5,10 @@ on:
         branches:
             - dev
             - next
-        paths:
-            - '**'
-            - '!**/*.md'
-            - '!vscode/**'
-            - '!website/**'
+        paths-ignore:
+            - '**/*.md'
+            - 'vscode/**'
+            - 'website/**'
 
 jobs:
     test:

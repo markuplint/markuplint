@@ -4,11 +4,10 @@ on:
     pull_request:
         branches:
             - dev
-        paths:
-            - '**'
-            - '!**/*.md'
-            - '!vscode/**'
-            - '!website/**'
+        paths-ignore:
+            - '**/*.md'
+            - 'vscode/**'
+            - 'website/**'
 
 jobs:
     test:
