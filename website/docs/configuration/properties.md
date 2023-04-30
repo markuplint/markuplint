@@ -36,10 +36,10 @@ The configuration has the following properties:
 
 [`extends`](#extends),
 [`plugins`](#plugins),
-[`specs`](#specs),
+[`parser`](#parser),
 [`specs`](#specs),
 and [`excludeFiles`](#exclude-files) can specify paths.
-In `extends`, `plugins`, `parser`, and `specs` four, it can specify a npm package instead of a path.
+In `extends`, `plugins`, `parser`, and `specs` , it can specify a npm package instead of a path.
 
 First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
