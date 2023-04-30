@@ -1,21 +1,20 @@
 import { readFile, rm, writeFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import glob from 'glob';
-import { promisify } from 'util';
+import { glob } from 'glob';
 import { stripComments, visit } from 'jsonc-parser';
 import mustache from 'mustache';
-
-const asyncGlob = promisify(glob);
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.resolve(dirname, 'src');
 
-const currents = await asyncGlob('preset.*.json,!preset.___json');
+const currents = await glob('preset.*.json,!preset.___json');
 await Promise.all(currents.map(current => rm(current)));
 
-const files = await asyncGlob('*.json', { cwd: srcDir });
+const files = await glob('*.json', { cwd: srcDir });
 const md = await readFile(path.resolve(srcDir, 'README.md'), { encoding: 'utf-8' });
+
+files.sort();
 
 const presets = [];
 const rules = {};

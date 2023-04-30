@@ -14,13 +14,13 @@
 ```json class=config
 {
   "rules": {
-    "any-rule": true
+    "[[target-rule-id]]": true
   },
   "nodeRules": [
     {
       "selector": ".ignore",
       "rules": {
-        "any-rule": false
+        "[[target-rule-id]]": false
       }
     }
   ]
@@ -36,7 +36,7 @@
 ```json class=config
 {
   "rules": {
-    "any-rule": true
+    "[[target-rule-id]]": true
   },
   "overrides": {
     "./path/to/**/*": {

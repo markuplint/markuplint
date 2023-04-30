@@ -19,6 +19,14 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"jsdom": "19"
+		"browser-resolve": "^2.0.0",
+		"coveralls": "^3.1.1",
+		"execa": "5",
+		"glob": "^10.2.2",
+		"jest": "^29.5.0",
+		"jsdom": "21.1.1",
+		"textlint-rule-prh": "^5.3.0",
+		"type-fest": "^3.8.0",
+		"typescript": "^5.0.4"
 	}
 }

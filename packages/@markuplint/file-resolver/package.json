@@ -19,9 +19,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/cosmiconfig": "^6.0.0",
-		"@types/glob": "^8.0.0",
-		"@types/node": "latest"
+		"@types/node": "18.16.3"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "3.6.1",
@@ -30,10 +28,12 @@
 		"@markuplint/ml-core": "3.8.0",
 		"@markuplint/ml-spec": "3.7.0",
 		"@markuplint/shared": "3.5.0",
+		"@types/cosmiconfig": "^6.0.0",
 		"cosmiconfig": "^8.0.0",
-		"glob": "^8.0.3",
+		"cosmiconfig-typescript-loader": "^4.3.0",
+		"glob": "^10.2.2",
 		"jsonc": "^2.0.0",
-		"minimatch": "^5.1.1",
+		"minimatch": "^9.0.0",
 		"tslib": "^2.4.1"
 	}
 }

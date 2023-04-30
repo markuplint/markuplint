@@ -36,10 +36,10 @@ The configuration has the following properties:
 
 [`extends`](#extends),
 [`plugins`](#plugins),
-[`specs`](#specs),
+[`parser`](#parser),
 [`specs`](#specs),
 and [`excludeFiles`](#exclude-files) can specify paths.
-In `extends`, `plugins`, `parser`, and `specs` four, it can specify a npm package instead of a path.
+In `extends`, `plugins`, `parser`, and `specs` , it can specify a npm package instead of a path.
 
 First, it tries to import it as a package.
 If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
@@ -264,7 +264,7 @@ You can specify it as Array or string, but it's **deprecated**.
 
 It can exclude files if you need them.
 The values require the **relative path from the configuration file** or the absolute path.
-Paths can be glob format.
+Paths can be glob format in [minimatch](https://www.npmjs.com/package/minimatch) syntax.
 
 ```json class=config
 {
@@ -833,7 +833,7 @@ type OriginalNode = {
 ### `overrides`
 
 You can override configurations to specific files if you specify the `overrides` option.
-It applies to **glob format paths** specified to a key.
+It applies to **glob format paths** specified to a key. They are evaluated by [minimatch](https://www.npmjs.com/package/minimatch).
 
 ```json class=config
 {

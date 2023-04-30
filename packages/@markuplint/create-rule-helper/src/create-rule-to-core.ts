@@ -9,12 +9,7 @@ import { searchCoreRepository } from './search-core-repository';
 
 const rulesRelDir = ['packages', '@markuplint', 'rules', 'src'];
 
-export async function createRuleToCore({
-	ruleName,
-	lang,
-	needTest,
-	core,
-}: CreateRuleCreatorParams): Promise<CreateRuleHelperResult> {
+export async function createRuleToCore({ ruleName, core }: CreateRuleCreatorParams): Promise<CreateRuleHelperResult> {
 	if (!core) {
 		throw new CreateRuleHelperError('Core options are not defined');
 	}
@@ -30,8 +25,8 @@ export async function createRuleToCore({
 	return await installScaffold('core', newRuleDir, {
 		pluginName: '',
 		ruleName,
-		lang,
-		needTest,
+		lang: 'TYPESCRIPT',
+		needTest: true,
 		core,
 	});
 }

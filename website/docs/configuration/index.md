@@ -38,7 +38,43 @@ The priority applied names are:
 - `.markuplintrc.yml`
 - `.markuplintrc.js`
 - `.markuplintrc.cjs`
+- `.markuplintrc.ts`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
+- `markuplint.config.ts`
 
 `.markuplintrc`'s format is JSON (with comment) and also YAML.
+
+#### JSON
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"]
+}
+```
+#### YAML
+
+```yaml class=config
+extends:
+  - markuplint:recommended
+```
+
+#### JavaScript
+
+```js class=config
+module.exports = {
+  extends: ['markuplint:recommended']
+};
+```
+
+#### TypeScript
+
+```ts class=config
+import type { Config } from '@markuplint/ml-config';
+
+const config: Config = {
+  extends: ['markuplint:recommended']
+};
+
+export default config;
+```

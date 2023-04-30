@@ -36,7 +36,7 @@
 
 <!-- textlint-disable ja-technical-writing/max-comma -->
 
-[`extends`](#extends)、[`plugins`](#plugins)、[`specs`](#specs)、[`specs`](#specs)、[`excludeFiles`](#exclude-files)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
+[`extends`](#extends)、[`plugins`](#plugins)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#exclude-files)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
 
 <!-- textlint-enable  ja-technical-writing/max-comma -->
 
@@ -45,8 +45,6 @@
 ## 各プロパティの詳細
 
 ### `extends`
-
-If you specify other config file [paths](#resolving-specified-paths), it merges the current setting with them.
 
 他の設定ファイルへの[パス](#resolving-specified-paths)を指定した場合、その設定をマージします。
 
@@ -253,7 +251,7 @@ interface Config {
 
 ### `excludeFiles`
 
-必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。
+必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
 
 ```json class=config
 {
@@ -814,10 +812,7 @@ type OriginalNode = {
 
 ### `overrides`
 
-You can override configurations to specific files if you specify the `overrides` option.
-It applies to **glob format paths** specified to a key.
-
-`overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。
+`overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
 
 ```json class=config
 {

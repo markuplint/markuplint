@@ -6,7 +6,7 @@ description: 設定された属性もしくは仕様上必須となっている�
 
 設定された属性もしくは仕様上必須となっている属性が要素上に存在しない場合、警告をします。
 
-[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src/attributes)に設定値を持っています。
+[HTML Living Standard](https://momdo.github.io/html/)を基準として[MDN Web docs](https://developer.mozilla.org/ja/docs/Web/HTML)から最新情報を確認しています。 [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
 `<img>` 要素の `src` 属性は[HTML Living Standard](https://momdo.github.io/html/)では必須となります。
 

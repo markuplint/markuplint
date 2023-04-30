@@ -21,14 +21,14 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "3.7.0",
+		"@types/debug": "^4.1.7",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.11",
-		"tslib": "^2.4.1"
+		"tslib": "^2.4.1",
+		"type-fest": "^3.8.0"
 	},
 	"devDependencies": {
-		"@types/debug": "^4.1.7",
-		"@types/jsdom": "16",
-		"jsdom": "19",
-		"type-fest": "^3.6.1"
+		"@types/jsdom": "21.1.1",
+		"jsdom": "21.1.1"
 	}
 }

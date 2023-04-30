@@ -15,17 +15,18 @@
 		"gen": "ts-node gen/index.ts; prettier --write index.json"
 	},
 	"devDependencies": {
+		"@markuplint/test-tools": "3.2.0",
 		"@types/cheerio": "^0.22.31",
 		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "2",
 		"ajv": "^8.11.2",
 		"cheerio": "^1.0.0-rc.12",
 		"cli-progress": "^3.11.2",
-		"fast-xml-parser": "^4.0.12",
-		"glob": "^9.2.1",
-		"node-fetch": "2",
+		"fast-xml-parser": "^4.2.2",
+		"glob": "^10.2.2",
+		"node-fetch": "3.3.1",
 		"strip-json-comments": "3",
-		"type-fest": "^3.7.0"
+		"type-fest": "^3.8.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "3.7.0"

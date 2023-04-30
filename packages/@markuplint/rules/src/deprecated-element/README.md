@@ -7,7 +7,7 @@ description: Warns when there is an element defined as deprecated or obsolete or
 
 Warns when there is an element defined as **deprecated** or **obsolete** or **non-standard**.
 
-This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/blob/main/packages/%40markuplint/html-spec/index.json).
+This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
 ❌ Examples of **incorrect** code for this rule
 

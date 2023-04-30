@@ -74,7 +74,7 @@ Usage
 Options
 	--config,                -c FILE_PATH  A configuration file path.
 	--fix,                                 Fix HTML.
-	--format,                -f FORMAT     Output format. Support "JSON", "Simple" and "Standard". Default: "Standard".
+	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
 	--no-import-preset-rules               No import preset rules.
