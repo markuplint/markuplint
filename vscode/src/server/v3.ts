@@ -125,6 +125,7 @@ export async function onDidOpen(
 	engine.exec().catch((e: unknown) => {
 		log(String(e), 'error');
 		notFoundParserError(e);
+		throw e;
 	});
 }
 
