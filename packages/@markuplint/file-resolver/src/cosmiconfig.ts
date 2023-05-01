@@ -7,6 +7,19 @@ import { TypeScriptLoader } from 'cosmiconfig-typescript-loader';
 import { jsonc } from 'jsonc';
 
 const explorer = cosmiconfig('markuplint', {
+	searchPlaces: [
+		'package.json',
+		'.markuplintrc',
+		'.markuplintrc.json',
+		'.markuplintrc.yaml',
+		'.markuplintrc.yml',
+		'.markuplintrc.js',
+		'.markuplintrc.cjs',
+		'.markuplintrc.ts',
+		'markuplint.config.js',
+		'markuplint.config.cjs',
+		'markuplint.config.ts',
+	],
 	loaders: {
 		'.ts': TypeScriptLoader(),
 		noExt: ((path, content) => {
