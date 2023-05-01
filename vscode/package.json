@@ -76,12 +76,12 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn --ignore-engines vscode:build",
+		"vscode:prepublish": "npm run vscode:build",
 		"vscode:build": "tsc -p ./",
 		"vscode:dev": "tsc -watch -p ./",
 		"vscode:login": "vsce login yusukehirao",
-		"vscode:package": "vsce package",
-		"vscode:release": "vsce publish",
+		"vscode:package": "vsce package --no-yarn",
+		"vscode:release": "vsce publish --no-yarn",
 		"vscode:up": "yarn upgrade-interactive --latest"
 	},
 	"devDependencies": {
