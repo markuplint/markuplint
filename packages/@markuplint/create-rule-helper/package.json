@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/create-rule-helper",
-	"version": "3.9.0",
+	"version": "3.9.1",
 	"description": "Create rule helper",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,8 +20,8 @@
 		"@markuplint/ml-core": "3.9.0",
 		"glob": "^10.2.2",
 		"prettier": "^2.8.8",
-		"tslib": "^2.4.1",
 		"ts-node": "^10.9.1",
+		"tslib": "^2.4.1",
 		"typescript": "^5.0.4"
 	},
 	"devDependencies": {

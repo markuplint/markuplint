@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "3.9.0",
+	"version": "3.9.1",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -20,7 +20,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/create-rule-helper": "3.9.0",
+		"@markuplint/create-rule-helper": "3.9.1",
 		"@markuplint/file-resolver": "3.9.0",
 		"@markuplint/html-parser": "3.7.0",
 		"@markuplint/html-spec": "3.8.0",
