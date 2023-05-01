@@ -1,8 +1,7 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
-import { getAttrSpecs } from '@markuplint/ml-spec/lib/specs/get-attr-specs';
+import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
 import { glob } from '@markuplint/test-tools';
 import Ajv, { type ValidateFunction } from 'ajv';
 import strip from 'strip-json-comments';
@@ -40,7 +39,7 @@ test('structure', () => {
 	specs.forEach(el => {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
 		try {
-			getAttrSpecs(localName, namespaceURI, htmlSpec);
+			getAttrSpecsByNames(localName, namespaceURI, htmlSpec);
 		} catch (e: unknown) {
 			throw el;
 		}

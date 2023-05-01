@@ -27,9 +27,18 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18
-            - run: yarn bootstrap
-            - run: yarn install
-            - run: yarn build
+
+            - name: Cache devDependencies
+              uses: actions/cache@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile --check-files
+
+            - name: Build
+              run: yarn build
 
             - name: Test on Node.js ${{ matrix.node }}
               uses: actions/setup-node@v3

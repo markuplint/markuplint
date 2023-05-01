@@ -1,3 +1,4 @@
+export { getAttrSpecs as getAttrSpecsByNames } from './specs/get-attr-specs';
 export * from './constant/aria-version';
 export * from './dom-traverse/accname-computation';
 export * from './dom-traverse/get-attr-specs';
