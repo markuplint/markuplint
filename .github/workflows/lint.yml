@@ -12,6 +12,8 @@ on:
 jobs:
     lint:
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
         steps:
             - uses: actions/checkout@v3
               with:
@@ -23,11 +25,14 @@ jobs:
               with:
                   node-version: 18
 
+            - name: Cache devDependencies
+              uses: actions/cache@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-ubuntu-latest-node18-dev-${{ hashFiles('yarn.lock') }}
+
             - name: Install dependencies
               run: yarn install
 
-            - name: Bootstrap
-              run: yarn bootstrap
-
             - name: Lint
-              run: yarn lint
+              run: yarn lint:check
