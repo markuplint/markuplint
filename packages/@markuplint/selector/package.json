@@ -29,6 +29,6 @@
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.1",
-		"jsdom": "21.1.1"
+		"jsdom": "21.1.2"
 	}
 }
