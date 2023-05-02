@@ -1,0 +1,4 @@
+{
+	"markuplint": "latest",
+	"@markuplint/html-parser": "latest"
+}

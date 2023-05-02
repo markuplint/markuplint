@@ -1,0 +1,44 @@
+{
+	"root": true,
+	"extends": ["../.eslintrc", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+	"plugins": ["react", "react-refresh"],
+	"env": {
+		"browser": true
+	},
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		},
+		"import/resolver": {
+			"typescript": []
+		}
+	},
+	"rules": {
+		"react/display-name": 0,
+		"react/prop-types": 0,
+		"react-refresh/only-export-components": "warn"
+	},
+	"globals": {
+		"React": true,
+		"JSX": true
+	},
+	"overrides": [
+		{
+			"files": ["./*.js"],
+			"rules": {
+				"@typescript-eslint/no-var-requires": 0
+			}
+		},
+		{
+			"files": ["./*.mjs"],
+			"rules": {
+				"import/no-named-as-default-member": 0
+			}
+		}
+	]
+}

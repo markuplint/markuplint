@@ -1,0 +1,5 @@
+{
+	"markuplint": "latest",
+	"@markuplint/jsx-parser": "latest",
+	"@markuplint/react-spec": "latest"
+}
