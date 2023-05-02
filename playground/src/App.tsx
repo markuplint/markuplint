@@ -35,6 +35,7 @@ function App() {
 	const [serverReady, setServerReady] = useState(false);
 	const [installedPackages, setInstalledPackages] = useState<Record<string, string>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
+	const [selectedOutputTab, setSelectedOutputTab] = useState(0);
 
 	useEffect(() => {
 		if (!boot) {
@@ -63,6 +64,7 @@ function App() {
 		);
 		const newViolations: Violations = JSON.parse(data.replaceAll(ansiRegex(), ''));
 		setViolations(newViolations);
+		setSelectedOutputTab(1);
 	};
 
 	const saveCurrentValues = () => {
@@ -140,6 +142,10 @@ function App() {
 											void lintCode();
 											saveCurrentValues();
 										}}
+										onChangeFilename={() => {
+											void lintCode();
+											saveCurrentValues();
+										}}
 									/>
 								</Tab.Panel>
 								<Tab.Panel unmount={false}>
@@ -148,12 +154,27 @@ function App() {
 										onChangeValue={code => {
 											void (async () => {
 												if (configEditorRef.current) {
+													setSelectedOutputTab(0);
 													await containerServer.updateConfig(
 														configEditorRef.current.getFilename(),
 														code,
 													);
 												}
 												void lintCode();
+												saveCurrentValues();
+											})();
+										}}
+										onChangeFilename={filename => {
+											void (async () => {
+												if (configEditorRef.current) {
+													setSelectedOutputTab(0);
+													await containerServer.updateConfig(
+														filename,
+														configEditorRef.current.getValue(),
+													);
+												}
+												void lintCode();
+												saveCurrentValues();
 											})();
 										}}
 									/>
@@ -166,6 +187,7 @@ function App() {
 										onChangeValue={value => {
 											if (value) {
 												void (async () => {
+													setSelectedOutputTab(0);
 													setDepsStatus('loading');
 													const installed = await containerServer.updateDeps(value);
 													setInstalledPackages(installed);
@@ -187,7 +209,7 @@ function App() {
 						</Tab.Group>
 					</section>
 					<section className="grid grid-rows-[auto_minmax(0,1fr)]">
-						<Tab.Group>
+						<Tab.Group selectedIndex={selectedOutputTab} onChange={setSelectedOutputTab}>
 							<Tab.List className="bg-slate-100 pt-2 overflow-hidden flex gap-2 px-2">
 								<Tab
 									className={({ selected }) =>
