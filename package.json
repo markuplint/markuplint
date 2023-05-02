@@ -88,8 +88,7 @@
 	},
 	"workspaces": [
 		"packages/*",
-		"packages/@markuplint/*",
-		"playground"
+		"packages/@markuplint/*"
 	],
 	"devDependencies": {
 		"@types/jest": "^29.5.1",
