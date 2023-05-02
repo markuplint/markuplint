@@ -45,10 +45,11 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 	);
 
 	return (
-		<>
-			<label>
+		<div className="h-full grid grid-rows-[auto,minmax(0,1fr)]">
+			<label className="p-2 grid grid-flow-col gap-1 justify-start items-center">
 				Filename:
 				<select
+					className="border border-gray-400 rounded-md p-1"
 					value={filenameState}
 					onChange={e => {
 						setFilenameState(e.target.value);
@@ -78,6 +79,6 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 					}
 				}, 500)}
 			/>
-		</>
+		</div>
 	);
 });

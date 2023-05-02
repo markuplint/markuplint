@@ -56,10 +56,11 @@ export const CodeEditor = forwardRef<CodeEditorRef, Props>(({ violations, onChan
 	}, [violations]);
 
 	return (
-		<>
-			<label>
+		<div className="h-full grid grid-rows-[auto,minmax(0,1fr)]">
+			<label className="p-2 grid grid-flow-col gap-1 justify-start items-center">
 				Filename:
 				<input
+					className="border border-gray-400 rounded-md p-1"
 					type="text"
 					value={filenameState}
 					onChange={e => {
@@ -85,6 +86,6 @@ export const CodeEditor = forwardRef<CodeEditorRef, Props>(({ violations, onChan
 					}
 				}, 200)}
 			/>
-		</>
+		</div>
 	);
 });

@@ -48,5 +48,5 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 		[],
 	);
 
-	return <pre style={{ whiteSpace: 'pre-wrap' }}>{log}</pre>;
+	return <pre className="whitespace-pre-wrap p-2">{log}</pre>;
 });

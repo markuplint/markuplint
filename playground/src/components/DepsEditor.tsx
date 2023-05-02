@@ -35,7 +35,10 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 	);
 
 	return (
-		<>
+		<div className="h-full grid grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)]">
+			<p className="p-3">
+				<code>package.json</code> &gt; <code>devDependencies</code>
+			</p>
 			<MonacoEditor
 				language="json"
 				theme="vs-dark"
@@ -52,8 +55,18 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 					}
 				}, 500)}
 			/>
-			<p>{status}</p>
-			<pre>{JSON.stringify(installedPackages, null, 2)}</pre>
-		</>
+			<div className="p-2">
+				{status === 'loading' ? (
+					<p>Loading...</p>
+				) : status === 'error' ? (
+					<p>Error loading packages</p>
+				) : status === 'success' ? (
+					<>
+						<p>Installed:</p>
+						<pre>{JSON.stringify(installedPackages, null, 2)}</pre>
+					</>
+				) : null}
+			</div>
+		</div>
 	);
 });

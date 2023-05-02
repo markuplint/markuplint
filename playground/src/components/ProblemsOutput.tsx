@@ -3,30 +3,51 @@ import type { FC } from 'react';
 
 export const ProblemsOutput: FC<{ violations: Violations }> = ({ violations }) => {
 	return (
-		<div style={{ maxHeight: '100%', overflowY: 'auto' }}>
-			<p>{violations.length}</p>
-			<ul>
-				{violations.map((violation, i) => (
+		<ul className="grid gap-1 p-2">
+			{[...violations]
+				.sort((a, b) => {
+					const lineDiff = a.line - b.line;
+					const colDiff = a.col - b.col;
+					if (lineDiff !== 0) {
+						return lineDiff;
+					} else {
+						return colDiff;
+					}
+				})
+				.map((violation, i) => (
 					<li key={i}>
-						<span>{icon(violation.severity)}</span>
-						<span>{violation.message}</span>
+						{icon(violation.severity)}
+						<span>
+							{violation.message} ({violation.ruleId}) [{violation.line}:{violation.col}]
+						</span>
 					</li>
 				))}
-			</ul>
-		</div>
+		</ul>
 	);
 };
 
 const icon = (severity: Violations[number]['severity']) => {
 	switch (severity) {
 		case 'info': {
-			return 'ℹ️';
+			return (
+				<span className="inline-block font-bold rounded px-1 min-w-[9ch] mr-2 text-center bg-sky-200 text-sky-900 ">
+					Info
+				</span>
+			);
 		}
 		case 'warning': {
-			return '\u26A0\uFE0F';
+			return (
+				<span className="inline-block font-bold rounded px-1 min-w-[9ch] mr-2 text-center bg-yellow-200 text-yellow-900 ">
+					Warning
+				</span>
+			);
 		}
 		case 'error': {
-			return '❌';
+			return (
+				<span className="inline-block font-bold rounded px-1 min-w-[9ch] mr-2 text-center bg-red-200 text-red-900 ">
+					Error
+				</span>
+			);
 		}
 	}
 };
