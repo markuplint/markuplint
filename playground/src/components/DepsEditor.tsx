@@ -36,7 +36,7 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 
 	return (
 		<div className="h-full grid grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)]">
-			<p className="p-3">
+			<p className="p-2">
 				<code>package.json</code> &gt; <code>devDependencies</code>
 			</p>
 			<MonacoEditor

@@ -79,7 +79,7 @@ function App() {
 
 	return (
 		<>
-			<header className="border-b border-b-slate-300 p-4">
+			<header className="border-b border-b-slate-300 px-4 py-2">
 				<h1 className="text-2xl leading-normal font-bold">
 					<img src={logo} alt="Markuplint" className="h-[1.2em] mt-[-0.2em] inline-block" /> Playground
 				</h1>
@@ -101,11 +101,11 @@ function App() {
 				<div className="grid grid-rows-[1fr_33vb]">
 					<section className="grid grid-rows-[auto_minmax(0,1fr)]">
 						<Tab.Group>
-							<Tab.List className="bg-slate-100 pt-2 overflow-hidden flex gap-2 px-2">
+							<Tab.List className="bg-slate-100 pt-1 overflow-hidden flex gap-2 px-2">
 								<Tab
 									className={({ selected }) =>
 										classNames(
-											'h-full px-6 py-2 text-lg leading-tight rounded-t-lg',
+											'h-full px-6 py-2 leading-tight rounded-t-lg',
 											selected ? 'bg-white shadow border-b-2 border-blue-500' : 'hover:bg-white',
 										)
 									}
@@ -115,7 +115,7 @@ function App() {
 								<Tab
 									className={({ selected }) =>
 										classNames(
-											'h-full px-6 py-2 text-lg leading-tight rounded-t-lg',
+											'h-full px-6 py-2 leading-tight rounded-t-lg',
 											selected ? 'bg-white shadow border-b-2 border-blue-500' : 'hover:bg-white',
 										)
 									}
@@ -125,7 +125,7 @@ function App() {
 								<Tab
 									className={({ selected }) =>
 										classNames(
-											'h-full px-6 py-2 text-lg leading-tight rounded-t-lg',
+											'h-full px-6 py-2 leading-tight rounded-t-lg',
 											selected ? 'bg-white shadow border-b-2 border-blue-500' : 'hover:bg-white',
 										)
 									}
@@ -210,11 +210,11 @@ function App() {
 					</section>
 					<section className="grid grid-rows-[auto_minmax(0,1fr)]">
 						<Tab.Group selectedIndex={selectedOutputTab} onChange={setSelectedOutputTab}>
-							<Tab.List className="bg-slate-100 pt-2 overflow-hidden flex gap-2 px-2">
+							<Tab.List className="bg-slate-100 pt-1 overflow-hidden flex gap-2 px-2">
 								<Tab
 									className={({ selected }) =>
 										classNames(
-											'h-full px-6 py-2 text-lg leading-tight rounded-t-lg',
+											'h-full px-6 py-2 leading-tight rounded-t-lg',
 											selected ? 'bg-white shadow border-b-2 border-blue-500' : 'hover:bg-white',
 										)
 									}
@@ -224,7 +224,7 @@ function App() {
 								<Tab
 									className={({ selected }) =>
 										classNames(
-											'h-full px-6 py-2 text-lg leading-tight rounded-t-lg',
+											'h-full px-6 py-2 leading-tight rounded-t-lg',
 											selected ? 'bg-white shadow border-b-2 border-blue-500' : 'hover:bg-white',
 										)
 									}

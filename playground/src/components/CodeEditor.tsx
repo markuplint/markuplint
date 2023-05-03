@@ -60,7 +60,7 @@ export const CodeEditor = forwardRef<CodeEditorRef, Props>(({ violations, onChan
 			<label className="p-2 grid grid-flow-col gap-1 justify-start items-center">
 				Filename:
 				<input
-					className="border border-gray-400 rounded-md p-1"
+					className="border border-gray-400 rounded-md px-1"
 					type="text"
 					value={filenameState}
 					onChange={e => {
