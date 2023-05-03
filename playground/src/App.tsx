@@ -85,7 +85,7 @@ function App() {
 				</h1>
 			</header>
 			<div className="grid grid-cols-[max-content_minmax(0,1fr)] items-stretch">
-				<section className="border-r border-r-slate-300 shadow">
+				<section className="border-r border-r-slate-300 overflow-y-auto">
 					<h2 className="text-xl font-bold px-8 py-3 bg-slate-100">Examples</h2>
 					<ExampleSelector
 						disabled={!serverReady}

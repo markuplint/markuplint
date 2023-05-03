@@ -12,3 +12,16 @@ body,
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
 }
+
+.external-link::after {
+	display: inline-block;
+	content: '';
+	width: 0.8em;
+	height: 0.8em;
+	margin-left: 0.25em;
+	mask-size: contain;
+	mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z" /></svg>');
+	mask-repeat: no-repeat;
+	mask-position: center;
+	background-color: currentColor;
+}

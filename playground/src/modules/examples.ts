@@ -5,6 +5,8 @@ const exampleFiles = import.meta.glob(['../examples/**/*', '../examples/**/.mark
 type Metadata = {
 	title: string;
 	description?: string;
+	docLink?: string;
+	docText?: string;
 };
 
 export type ExampleData = {

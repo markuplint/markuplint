@@ -1,6 +1,0 @@
-{
-	"extends": ["markuplint:recommended"],
-	"rules": {
-		"no-empty-palpable-content": true
-	}
-}

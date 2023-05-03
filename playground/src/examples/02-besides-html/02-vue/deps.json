@@ -1,0 +1,5 @@
+{
+	"markuplint": "latest",
+	"@markuplint/vue-parser": "latest",
+	"@markuplint/vue-spec": "latest"
+}

@@ -7,15 +7,15 @@ type Props = { onSelect?: (files: ExampleData) => void; disabled?: boolean };
 
 export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 	return (
-		<ul className="grid gap-8 px-8 py-4">
+		<ul className="grid gap-12 px-8 pt-4 pb-12">
 			{Object.keys(examples)
 				.sort()
 				.map(categoryKey => {
 					const category = examples[categoryKey];
 					return (
 						<li key={categoryKey}>
-							<h3 className="text-lg font-bold mb-2">{category.metadata.title}</h3>
-							<ul className="grid gap-2">
+							<h3 className="text-lg font-bold mb-4">{category.metadata.title}</h3>
+							<ul className="grid gap-3">
 								{Object.keys(category.examples)
 									.sort()
 									.map(exampleKey => {
@@ -35,6 +35,18 @@ export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 										);
 									})}
 							</ul>
+							{category.metadata.docLink && (
+								<p className="mt-4">
+									<a
+										href={category.metadata.docLink}
+										target="_blank"
+										rel="noreferrer"
+										className="text-ml-blue-darker underline external-link"
+									>
+										{category.metadata.docText}
+									</a>
+								</p>
+							)}
 						</li>
 					);
 				})}
