@@ -1,9 +1,9 @@
 import type { ExtendedElementSpec } from '@markuplint/ml-spec';
 
-import { readJsons } from './read-json';
-import { fetchHTMLElement, fetchObsoleteElements } from './scraping';
-import { getSVGElementList } from './svg';
-import { getName, nameCompare, sortObjectByKey } from './utils';
+import { readJsons } from './read-json.js';
+import { fetchHTMLElement, fetchObsoleteElements } from './scraping.js';
+import { getSVGElementList } from './svg.js';
+import { getName, nameCompare, sortObjectByKey } from './utils.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
@@ -40,8 +40,8 @@ const obsoleteList = [
 	'tt',
 ];
 
-export async function getElements() {
-	let specs = await readJsons<ExtendedElementSpec>('../src/spec.*.json', (file, body) => {
+export async function getElements(filePattern: string) {
+	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body) => {
 		const name = file.replace(/^.+spec\.([a-z0-9_-]+)+\.json$/i, '$1');
 		return {
 			// @ts-ignore

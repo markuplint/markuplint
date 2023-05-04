@@ -10,8 +10,8 @@ import type {
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import fetch from './fetch';
-import { arrayUnique, nameCompare } from './utils';
+import fetch from './fetch.js';
+import { arrayUnique, nameCompare } from './utils.js';
 
 export async function getAria() {
 	const roles13 = await getRoles('1.3');
