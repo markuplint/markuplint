@@ -108,7 +108,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 				throw new Error('Installation failed');
 			}
 
-			const result = await linterServer.request(path, () => true); // TODO: lint結果かどうかチェックする
+			const result = await linterServer.request(path, () => true);
 			return result;
 		},
 		restart: async () => {
