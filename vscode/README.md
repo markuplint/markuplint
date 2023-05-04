@@ -12,6 +12,11 @@
 
 ## Release Notes
 
+### 3.4.1
+
+- Fix: Failed packaging.
+- Depends: `markuplint@3.9.1`
+
 ### 3.4.0
 
 - Depends: `markuplint@3.9.0`

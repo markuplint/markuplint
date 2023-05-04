@@ -39,20 +39,53 @@ jobs:
               if: runner.os == 'Windows'
               run: echo "network-timeout 600000" > .yarnrc
 
-            - name: Cache node_modules
-              uses: actions/cache@v3
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@v3
               with:
                   path: '**/node_modules'
-                  key: os-${{ matrix.os }}-node-${{ matrix.node }}-${{ hashFiles('**/yarn.lock') }}
+                  key: os-${{ matrix.os }}-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
 
             - name: Install dependencies
-              run: yarn install
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              run: yarn install --frozen-lockfile --check-files
 
-            - name: Bootstrap
-              run: yarn bootstrap
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              id: cache-save-dev-depends
+              uses: actions/cache/save@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-${{ matrix.os }}-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
 
             - name: Build
               run: yarn build
+
+            - name: Cache Restore productionDependencies
+              id: cache-restore-prod-depends
+              uses: actions/cache/restore@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-${{ matrix.os }}-node${{ matrix.node }}-prod-${{ hashFiles('yarn.lock') }}
+
+            - name: Clean modules
+              if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: npx rimraf "./**/node_modules"
+
+            - name: Clean modules (Windows)
+              if: runner.os == 'Windows' && steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: npx rimraf --glob ".\**\node_modules"
+
+            - name: Install prodcution dependencies
+              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: yarn install --production --frozen-lockfile --check-files
+
+            - name: Cache Save productionDependencies
+              id: cache-save-prod-depends
+              uses: actions/cache/save@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-${{ matrix.os }}-node${{ matrix.node }}-prod-${{ hashFiles('yarn.lock') }}
 
             - name: Test
               run: yarn jest --useStderr --coverage --shard=${{ matrix.shard }} && cat ./coverage/lcov.info | yarn coveralls # `jest:coverage` + shard option

@@ -1,4 +1,4 @@
-name: Lint
+name: Playground Building Test
 
 on:
     pull_request:
@@ -6,33 +6,39 @@ on:
             - dev
         paths:
             - '**'
+            - '!**/*.md'
             - '!vscode/**'
             - '!website/**'
 
 jobs:
-    lint:
+    test:
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
+            matrix:
+                node: [18]
         steps:
             - uses: actions/checkout@v3
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Install Node.js
+            - name: Install for build on Node.js v${{ matrix.node }}
               uses: actions/setup-node@v3
               with:
-                  node-version: 18
+                  node-version: ${{ matrix.node }}
 
             - name: Cache devDependencies
               uses: actions/cache@v3
               with:
                   path: '**/node_modules'
-                  key: os-ubuntu-latest-node18-dev-${{ hashFiles('yarn.lock') }}
+                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
 
             - name: Install dependencies
-              run: yarn install
+              run: yarn install --frozen-lockfile --check-files
 
-            - name: Lint
-              run: yarn lint:check
+            - name: Build Markuplint Packages
+              run: yarn build
+
+            - name: Playground Building Test
+              run: yarn pg:build
