@@ -5206,7 +5206,7 @@
 						"description": "A composite widget containing a collection of one or more rows with one or more cells where some or all cells in the grid are focusable by using methods of two-dimensional navigation, such as directional arrow keys.\n\nThe grid role does not imply a specific visual, e.g., tabular, presentation. It describes relationships among elements. It can be used for purposes as simple as grouping a collection of checkboxes or navigation links or as complex as creating a full-featured spreadsheet application.\n\nThe cell elements of a grid have role gridcell. Authors MAY designate a cell as a row or column header by using either the rowheader or columnheader role in lieu of the gridcell role. Authors MUST ensure elements with role gridcell, columnheader, or rowheader are owned by elements with role row, which are in turn owned by an element with role rowgroup, or grid.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants of a grid as described in Managing Focus. When a user is navigating the grid content with a keyboard, authors SHOULD set focus as follows:\n\nAuthors SHOULD provide a mechanism for changing to an interaction or edit mode that allows users to navigate and interact with content contained inside a focusable cell if that focusable cell contains any of the following:\n\nFor example, if a cell in a spreadsheet contains a combobox or editable text, the Enter key might be used to activate a cell interaction or editing mode when that cell has focus so the directional arrow keys can be used to operate the contained combobox or textbox. Depending on the implementation, pressing Enter again, Tab, Escape, or another key might switch the application back to the grid navigation mode.\n\nAuthors MAY use a gridcell to display the result of a formula, which could be editable by the user. In a spreadsheet application, for example, a gridcell might show a value calculated from a formula until the user activates the gridcell for editing when a textbox appears in the gridcell containing the formula in an editable state.\n\nIf aria-readonly is set on an element with role grid, user agents MUST propagate the value to all gridcell elements owned by the grid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nIn a grid that provides cell content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, the value of aria-readonly, whether specified for a grid or individual cells, only indicates whether the content contained in cells is editable. It does not represent availability of functions for navigating or manipulating the grid itself.\n\nAn unspecified value for aria-readonly does not imply that a grid or a gridcell contains editable content. For example, if a grid presents a collection of elements that are not editable, such as a collection of link elements representing dates in a datepicker, it is not necessary for the author to specify a value for aria-readonly.\n\nAuthors MAY indicate that a focusable gridcell is selectable as the object of an action with the aria-selected attribute. If the grid allows multiple gridcells to be selected, the author SHOULD set aria-multiselectable to true on the element with role grid.\n\nSince WAI-ARIA can augment an element of the host language, a grid can reuse the elements and attributes of a native table, such as an HTML table element. For example, if an author applies the grid role to an HTML table element, the author does not need to apply the row and gridcell roles to the descendant HTML tr and td elements because the user agent will automatically make the appropriate translations. When the author is reusing a native host language table element and needs a gridcell element to span multiple rows or columns, the author SHOULD apply the appropriate host language attributes instead of WAI-ARIA aria-rowspan or aria-colspan properties.\n\nSee the WAI-ARIA Authoring Practices for additional details on implementing grid design patterns.",
 						"generalization": ["composite", "table"],
 						"requiredContextRole": [],
-						"requiredOwnedElements": ["row", "rowgroup > row"],
+						"requiredOwnedElements": ["caption", "row", "rowgroup > row"],
 						"accessibleNameRequired": true,
 						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
@@ -7218,7 +7218,8 @@
 							"group > menuitemcheckbox",
 							"menuitem",
 							"menuitemcheckbox",
-							"menuitemradio"
+							"menuitemradio",
+							"separator"
 						],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": true,
@@ -7346,7 +7347,8 @@
 							"group > menuitemcheckbox",
 							"menuitem",
 							"menuitemcheckbox",
-							"menuitemradio"
+							"menuitemradio",
+							"separator"
 						],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": true,
@@ -8903,7 +8905,7 @@
 						"description": "A group of radio buttons.\n\nA radiogroup is a type of select list that can only have a single entry checked at any one time. Authors SHOULD enforce that only one radio button in a group can be checked at the same time. When one item in the group is checked, the previously checked item becomes unchecked (its aria-checked attribute becomes false).",
 						"generalization": ["select"],
 						"requiredContextRole": [],
-						"requiredOwnedElements": ["radio"],
+						"requiredOwnedElements": [],
 						"accessibleNameRequired": true,
 						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
@@ -11790,10 +11792,10 @@
 					},
 					{
 						"name": "table",
-						"description": "A section containing data arranged in rows and columns. See related grid.\n\nThe table role is intended for tabular containers which are not interactive. If the tabular container maintains a selection state, provides its own two-dimensional navigation, or allows the user to rearrange or otherwise manipulate its contents or the display thereof, authors SHOULD use grid or treegrid instead.\n\nAuthors SHOULD prefer the use of the host language's semantics for table whenever possible, such as the <table> element in [HTML].",
+						"description": "A section containing data arranged in rows and columns. See related grid.\n\nThe table role is intended for tabular containers which are not interactive. If the tabular container maintains a selection state, provides its own two-dimensional navigation, or allows the user to rearrange or otherwise manipulate its contents or the display thereof, authors SHOULD use grid or treegrid instead.\n\nAuthors SHOULD prefer the use of the host language's semantics for table whenever possible, such as the <table> element in HTML.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
-						"requiredOwnedElements": ["row", "rowgroup > row"],
+						"requiredOwnedElements": ["caption", "row", "rowgroup > row"],
 						"accessibleNameRequired": true,
 						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
@@ -12378,7 +12380,7 @@
 					},
 					{
 						"name": "time",
-						"description": "An element that represents a specific point in time.\n\nAt the present time, there are no WAI-ARIA properties corresponding to the datetime attribute supported on <time> in [HTML]. The addition of this property will be considered for ARIA version 1.3.\n\nAuthors SHOULD limit text contents to a valid date- or time-related string, or apply this future datetime-equivalent property to the element which has role time.\n\nExamples of valid date- or time-related strings as text contents of an element with the time role:",
+						"description": "An element that represents a specific point in time.\n\nAt the present time, there are no WAI-ARIA properties corresponding to the datetime attribute supported on <time> in HTML. The addition of this property will be considered for ARIA version 1.3.\n\nAuthors SHOULD limit text contents to a valid date- or time-related string, or apply this future datetime-equivalent property to the element which has role time.\n\nExamples of valid date- or time-related strings as text contents of an element with the time role:",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -12958,7 +12960,7 @@
 						"description": "A grid whose rows can be expanded and collapsed in the same manner as for a tree.\n\nIf aria-readonly is set on an element with role treegrid, user agents MUST propagate the value to all gridcell elements owned by the treegrid and expose the value in the accessibility API. An author MAY override the propagated value of aria-readonly for an individual gridcell element.\n\nWhen the aria-readonly attribute is applied to a focusable gridcell, it indicates whether the content contained in the gridcell is editable. The aria-readonly attribute does not represent availability of functions for navigating or manipulating the treegrid itself.\n\nIn a treegrid that provides content editing functions, if the content of a focusable gridcell element is not editable, authors MAY set aria-readonly to true on the gridcell element. However, if a treegrid presents a collection of elements that do not support aria-readonly, such as a collection of link elements, it is not necessary for the author to specify a value for aria-readonly.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.",
 						"generalization": ["grid", "tree"],
 						"requiredContextRole": [],
-						"requiredOwnedElements": ["row", "rowgroup > row"],
+						"requiredOwnedElements": ["caption", "row", "rowgroup > row"],
 						"accessibleNameRequired": true,
 						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
