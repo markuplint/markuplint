@@ -1,33 +1,33 @@
-import { readFile } from 'fs/promises';
-import path from 'path';
+const { readFile } = require('node:fs/promises');
+const path = require('node:path');
 
-import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
-import { glob } from '@markuplint/test-tools';
-import Ajv, { type ValidateFunction } from 'ajv';
-import strip from 'strip-json-comments';
+const { resolveNamespace, getAttrSpecsByNames } = require('@markuplint/ml-spec');
+const { glob } = require('@markuplint/test-tools');
+const Ajv = require('ajv');
+const strip = require('strip-json-comments');
 
-import htmlSpec, { specs } from '../index';
+const htmlSpec = require('../index');
 
 const schemas = {
 	element: {
 		$id: '@markuplint/ml-spec/schemas/element.schema.json',
-		...require('../../ml-spec/schemas/element.schema.json'),
+		...require('@markuplint/ml-spec/schemas/element.schema.json'),
 	},
 	aria: {
 		$id: '@markuplint/ml-spec/schemas/aria.schema.json',
-		...require('../../ml-spec/schemas/aria.schema.json'),
+		...require('@markuplint/ml-spec/schemas/aria.schema.json'),
 	},
 	contentModels: {
 		$id: '@markuplint/ml-spec/schemas/content-models.schema.json',
-		...require('../../ml-spec/schemas/content-models.schema.json'),
+		...require('@markuplint/ml-spec/schemas/content-models.schema.json'),
 	},
 	globalAttributes: {
 		$id: '@markuplint/ml-spec/schemas/global-attributes.schema.json',
-		...require('../../ml-spec/schemas/global-attributes.schema.json'),
+		...require('@markuplint/ml-spec/schemas/global-attributes.schema.json'),
 	},
 	attributes: {
 		$id: '@markuplint/ml-spec/schemas/attributes.schema.json',
-		...require('../../ml-spec/schemas/attributes.schema.json'),
+		...require('@markuplint/ml-spec/schemas/attributes.schema.json'),
 	},
 	types: {
 		$id: '@markuplint/types/types.schema.json',
@@ -36,18 +36,18 @@ const schemas = {
 };
 
 test('structure', () => {
-	specs.forEach(el => {
+	htmlSpec.specs.forEach(el => {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
 		try {
 			getAttrSpecsByNames(localName, namespaceURI, htmlSpec);
-		} catch (e: unknown) {
+		} catch (e) {
 			throw el;
 		}
 	});
 });
 
 describe('schema', () => {
-	const map: [name: string, validator: ValidateFunction, targetFiles: string][] = [
+	const map = [
 		[
 			'spec.*.json',
 			new Ajv({
@@ -59,14 +59,14 @@ describe('schema', () => {
 					schemas.attributes,
 					schemas.types,
 				],
-			}).getSchema(schemas.element.$id)!,
+			}).getSchema(schemas.element.$id),
 			path.resolve(__dirname, 'spec.*.json'),
 		],
 		[
 			'spec-common.attributes.json',
 			new Ajv({
 				schemas: [schemas.globalAttributes, schemas.attributes, schemas.types],
-			}).getSchema(schemas.globalAttributes.$id)!,
+			}).getSchema(schemas.globalAttributes.$id),
 			path.resolve(__dirname, 'spec-common.attributes.json'),
 		],
 	];

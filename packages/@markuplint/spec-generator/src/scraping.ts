@@ -2,8 +2,8 @@
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
-import fetch from './fetch';
-import { getThisOutline, sortObjectByKey } from './utils';
+import fetch from './fetch.js';
+import { getThisOutline, sortObjectByKey } from './utils.js';
 
 const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
 
