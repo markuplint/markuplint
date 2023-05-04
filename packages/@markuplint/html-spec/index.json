@@ -40754,7 +40754,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": ["option", "optgroup", "#script-supporting"]
+						"zeroOrMore": ["option", "optgroup", "hr", "#script-supporting"]
 					}
 				]
 			},
