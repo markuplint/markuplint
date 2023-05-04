@@ -13,15 +13,47 @@ body,
 	grid-template-rows: auto minmax(0, 1fr);
 }
 
-.external-link::after {
-	display: inline-block;
-	content: '';
-	width: 0.8em;
-	height: 0.8em;
-	margin-left: 0.25em;
-	mask-size: contain;
-	mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z" /></svg>');
-	mask-repeat: no-repeat;
-	mask-position: center;
-	background-color: currentColor;
+@layer utilities {
+	.icon-open-in-new {
+		line-height: 1;
+	}
+	.icon-open-in-new::after {
+		display: inline-block;
+		content: '';
+		width: 1em;
+		height: 1em;
+		mask-size: contain;
+		mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24"><path d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z" /></svg>');
+		mask-repeat: no-repeat;
+		mask-position: center;
+		background-color: currentColor;
+	}
+	.icon-close {
+		line-height: 1;
+	}
+	.icon-close::after {
+		display: block;
+		content: '';
+		width: 1em;
+		height: 1em;
+		mask-size: contain;
+		mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 13.2 13.2"><path d="M12.9,0.3c-0.4-0.4-1-0.4-1.4,0L6.6,5.2L1.7,0.3c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l4.9,4.9l-4.9,4.9c-0.4,0.4-0.4,1,0,1.4  s1,0.4,1.4,0L6.6,8l4.9,4.9c0.4,0.4,1,0.4,1.4,0s0.4-1,0-1.4L8,6.6l4.9-4.9C13.3,1.3,13.3,0.7,12.9,0.3z" /></svg>');
+		mask-repeat: no-repeat;
+		mask-position: center;
+		background-color: currentColor;
+	}
+	.icon-menu {
+		line-height: 1;
+	}
+	.icon-menu::after {
+		display: block;
+		content: '';
+		width: 1em;
+		height: 1em;
+		mask-size: contain;
+		mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 18 18"><path d="M1,15h16c0.5,0,1-0.5,1-1s-0.5-1-1-1H1c-0.5,0-1,0.5-1,1S0.5,15,1,15z M1,10h16c0.5,0,1-0.4,1-1s-0.5-1-1-1H1   C0.5,8,0,8.4,0,9S0.5,10,1,10z M0,4c0,0.6,0.5,1,1,1h16c0.5,0,1-0.4,1-1s-0.5-1-1-1H1C0.5,3,0,3.4,0,4z" /></svg>');
+		mask-repeat: no-repeat;
+		mask-position: center;
+		background-color: currentColor;
+	}
 }

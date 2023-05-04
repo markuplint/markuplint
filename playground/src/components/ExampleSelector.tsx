@@ -23,7 +23,7 @@ export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 										return (
 											<li key={exampleKey}>
 												<button
-													className="px-4 py-2 shadow rounded border border-gray-300 hover:shadow-md focus:shadow-md"
+													className="px-4 py-2 shadow text-start rounded border border-gray-300 hover:shadow-md focus:shadow-md"
 													disabled={disabled}
 													onClick={() => {
 														onSelect?.(example);
@@ -41,9 +41,10 @@ export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 										href={category.metadata.docLink}
 										target="_blank"
 										rel="noreferrer"
-										className="text-ml-blue-darker underline external-link"
+										className="text-ml-blue-darker underline"
 									>
 										{category.metadata.docText}
+										<span className="icon-open-in-new ml-1 text-xs"></span>
 									</a>
 								</p>
 							)}

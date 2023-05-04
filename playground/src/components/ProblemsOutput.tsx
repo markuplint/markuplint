@@ -3,26 +3,28 @@ import type { FC } from 'react';
 
 export const ProblemsOutput: FC<{ violations: Violations }> = ({ violations }) => {
 	return (
-		<ul className="grid gap-1 p-2">
-			{[...violations]
-				.sort((a, b) => {
-					const lineDiff = a.line - b.line;
-					const colDiff = a.col - b.col;
-					if (lineDiff !== 0) {
-						return lineDiff;
-					} else {
-						return colDiff;
-					}
-				})
-				.map((violation, i) => (
-					<li key={i}>
-						{icon(violation.severity)}
-						<span>
-							{violation.message} ({violation.ruleId}) [{violation.line}:{violation.col}]
-						</span>
-					</li>
-				))}
-		</ul>
+		<div className="overflow-y-auto h-full">
+			<ul className="grid gap-1 p-3 pb-6">
+				{[...violations]
+					.sort((a, b) => {
+						const lineDiff = a.line - b.line;
+						const colDiff = a.col - b.col;
+						if (lineDiff !== 0) {
+							return lineDiff;
+						} else {
+							return colDiff;
+						}
+					})
+					.map((violation, i) => (
+						<li key={i}>
+							{icon(violation.severity)}
+							<span>
+								{violation.message} ({violation.ruleId}) [{violation.line}:{violation.col}]
+							</span>
+						</li>
+					))}
+			</ul>
+		</div>
 	);
 };
 

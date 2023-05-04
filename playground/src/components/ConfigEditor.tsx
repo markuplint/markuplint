@@ -45,8 +45,8 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 	);
 
 	return (
-		<div className="h-full grid grid-rows-[auto,minmax(0,1fr)]">
-			<label className="p-2 grid grid-flow-col gap-1 justify-start items-center">
+		<div className="h-full grid grid-rows-[auto,minmax(0,1fr)] grid-cols-[minmax(0,auto)]">
+			<label className="py-2 px-4 grid grid-flow-col gap-1 justify-start items-center">
 				Filename:
 				<select
 					className="border border-gray-400 rounded-md px-1"

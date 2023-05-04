@@ -35,8 +35,8 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 	);
 
 	return (
-		<div className="h-full grid grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)]">
-			<p className="p-2">
+		<div className="h-full grid grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)] grid-cols-[minmax(0,auto)]">
+			<p className="py-2 px-4">
 				<code>package.json</code> &gt; <code>devDependencies</code>
 			</p>
 			<MonacoEditor
@@ -55,7 +55,7 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 					}
 				}, 500)}
 			/>
-			<div className="p-2">
+			<div className="py-2 px-4 overflow-y-auto">
 				{status === 'loading' ? (
 					<p>Loading...</p>
 				) : status === 'error' ? (
