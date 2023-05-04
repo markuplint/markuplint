@@ -28,21 +28,58 @@ jobs:
               with:
                   node-version: 18
 
-            - name: Cache devDependencies
-              uses: actions/cache@v3
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@v3
               with:
                   path: '**/node_modules'
-                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
+                  key: os-ubuntu-latest-node18-dev-${{ hashFiles('yarn.lock') }}
 
-            - name: Install dependencies
+            - name: Install devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               run: yarn install --frozen-lockfile --check-files
+
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              id: cache-save-dev-depends
+              uses: actions/cache/save@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-ubuntu-latest-node18-dev-${{ hashFiles('yarn.lock') }}
 
             - name: Build
               run: yarn build
 
-            - name: Test on Node.js ${{ matrix.node }}
+            - name: Switch Node.js ${{ matrix.node }}
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node }}
-            - run: yarn install --production --ignore-engines
-            - run: yarn test:coverage
+
+            - name: Cache Restore productionDependencies
+              id: cache-restore-prod-depends
+              uses: actions/cache/restore@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-ubuntu-latest-node${{ matrix.node }}-prod-${{ hashFiles('yarn.lock') }}
+
+            - name: Clean modules
+              if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: npx rimraf "./**/node_modules"
+
+            - name: Clean modules (Windows)
+              if: runner.os == 'Windows' && steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: npx rimraf --glob ".\**\node_modules"
+
+            - name: Install prodcution dependencies
+              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+              run: yarn install --production --frozen-lockfile --check-files --ignore-engines
+
+            - name: Cache Save productionDependencies
+              id: cache-save-prod-depends
+              uses: actions/cache/save@v3
+              with:
+                  path: '**/node_modules'
+                  key: os-ubuntu-latest-node${{ matrix.node }}-prod-${{ hashFiles('yarn.lock') }}
+
+            - name: Test on Node.js v${{ matrix.node }}
+              run: yarn test:coverage
