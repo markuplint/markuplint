@@ -52,7 +52,7 @@
 			"actionlint"
 		],
 		"**": [
-			"cspell --no-progress --show-suggestions"
+			"cspell --no-must-find-files --no-progress --show-suggestions"
 		]
 	},
 	"jest": {
