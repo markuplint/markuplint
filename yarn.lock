@@ -2492,9 +2492,9 @@
     eslint-visitor-keys "^3.3.0"
 
 "@ungap/structured-clone@^1.0.1":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.1.0.tgz#b0a0c84346777b0c62054ced8f2302df03987457"
-  integrity sha512-STuj8TmTgsylkA5A1ZGRhxDuewFY+duPp9l+TUZxENsGVMkb+b7U6KVCIPED6Ny8RWOgSreZhywzfz0OPMQWqQ==
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.1.2.tgz#251224107402bde1f70b3e96634ac9fc39a871da"
+  integrity sha512-eBZk6Gdvzt2nPs797retPUWURx+WXBFHgEgJbXi1jrv0Vvqv3SsoLv47L0KRJEIHN3/uFV+Rmtgfvam54i/vLw==
 
 "@webassemblyjs/ast@1.11.5", "@webassemblyjs/ast@^1.11.5":
   version "1.11.5"
