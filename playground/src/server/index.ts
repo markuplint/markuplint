@@ -26,7 +26,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 	});
 	const serverFiles: FileSystemTree = {
 		linter: { directory: linterDir },
-		src: { directory: {} },
+		code: { directory: {} },
 	};
 	await webContainer.mount(serverFiles);
 
@@ -100,7 +100,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			}
 		},
 		lint: async (filename: string, contents: string) => {
-			const path = `src/${filename}`;
+			const path = `code/${filename}`;
 			await webContainer.fs.writeFile(path, contents, 'utf-8');
 
 			await Promise.all([updatingDeps, updatingConfig, restartingServer]);
