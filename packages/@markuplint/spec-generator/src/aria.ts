@@ -10,8 +10,8 @@ import type {
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import fetch from './fetch';
-import { arrayUnique, nameCompare } from './utils';
+import fetch from './fetch.js';
+import { arrayUnique, nameCompare } from './utils.js';
 
 export async function getAria() {
 	const roles13 = await getRoles('1.3');
@@ -114,8 +114,8 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(el => {
 				const text = $(el).text().trim();
-				if (text.includes('owned by')) {
-					return text.replace(/([a-z]+)\s+owned\s+by\s+([a-z]+)/gim, '$2 > $1');
+				if (text.match(/owned\s+by|with\s+parent/i)) {
+					return text.replace(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gim, '$2 > $1');
 				}
 				return text;
 			});
@@ -125,7 +125,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				$(el)
 					.text()
 					.trim()
-					.replace(/\s+(owning|→)\s+/gi, ' > '),
+					.replace(/\s+(owning|→|with\s+child)\s+/gi, ' > '),
 			);
 		const accessibleNameRequired = !!$features.find('.role-namerequired').text().match(/true/i);
 		const accessibleNameFromAuthor = !!$features
