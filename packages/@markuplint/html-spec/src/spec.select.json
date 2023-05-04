@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": ["option", "optgroup"]
+				"zeroOrMore": ["option", "optgroup", "#script-supporting"]
 			}
 		]
 	},
