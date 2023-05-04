@@ -1,7 +1,7 @@
-import type { ExampleData } from '../modules/examples';
+import type { ExampleData } from '../examples';
 import type { FC } from 'react';
 
-import { examples } from '../modules/examples';
+import { examples } from '../examples';
 
 type Props = { onSelect?: (files: ExampleData) => void; disabled?: boolean };
 

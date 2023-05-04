@@ -16,7 +16,7 @@ import { ConsoleOutput } from './components/ConsoleOutput';
 import { DepsEditor } from './components/DepsEditor';
 import { ExampleSelector } from './components/ExampleSelector';
 import { ProblemsOutput } from './components/ProblemsOutput';
-import { examples } from './modules/examples';
+import { examples } from './examples';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
 

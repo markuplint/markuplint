@@ -1,6 +1,6 @@
-import { configFormats } from './config-formats';
+import { configFormats } from '../modules/config-formats';
 
-const exampleFiles = import.meta.glob(['../examples/**/*', '../examples/**/.markuplintrc'], { as: 'raw', eager: true });
+const exampleFiles = import.meta.glob(['./files/**/*', './files/**/.markuplintrc'], { as: 'raw', eager: true });
 
 type Metadata = {
 	title: string;
