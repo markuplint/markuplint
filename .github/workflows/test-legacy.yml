@@ -72,7 +72,7 @@ jobs:
 
             - name: Install prodcution dependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: yarn install --production --frozen-lockfile --check-files
+              run: yarn install --production --frozen-lockfile --check-files --ignore-engines
 
             - name: Cache Save productionDependencies
               id: cache-save-prod-depends
