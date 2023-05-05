@@ -20,7 +20,7 @@ Its purpose is all developers are able to better markup and fit each of diverse 
 
 You need:
 
-- Node.js v14.6 or later.
+- Node.js v18 or later.
 - Yarn
 
 After cloning this repository, you can also install them through [Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile).

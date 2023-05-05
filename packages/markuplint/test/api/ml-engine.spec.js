@@ -3,6 +3,8 @@ const path = require('path');
 
 const MLEngine = require('../../lib/api/ml-engine').default;
 
+jest.setTimeout(10000);
+
 describe('Event notification', () => {
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');

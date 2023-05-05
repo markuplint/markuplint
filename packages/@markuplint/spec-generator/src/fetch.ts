@@ -1,6 +1,5 @@
 import cheerio from 'cheerio';
 import { Bar, Presets } from 'cli-progress';
-import fetch from 'node-fetch';
 
 const cache = new Map<string, string>();
 const domCache = new Map<string, cheerio.Root>();

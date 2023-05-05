@@ -1,0 +1,25 @@
+{
+	"name": "@markuplint/isolated-env-test-esm",
+	"version": "3.0.0",
+	"main": "index.js",
+	"author": "yusukehirao",
+	"license": "MIT",
+	"private": true,
+	"scripts": {
+		"test": "npm-run-all --parallel test:*",
+		"test:build": "tsc --build",
+		"test:esnext": "tsc --lib esnext --target esnext --module esnext --moduleResolution nodenext --skipLibCheck index.ts",
+		"test:commonjs": "tsc --lib esnext --target es5 --module commonjs --moduleResolution nodenext --skipLibCheck index.ts",
+		"test:ts-node01": "ts-node index.ts",
+		"test:ts-node02": "ts-node --skipProject index.ts",
+		"test:ts-node03": "ts-node index.ts -O '{\"module\":\"esnext\"}'",
+		"test:ts-node04": "ts-node index.ts -O '{\"target\":\"es3\",\"module\":\"commonjs\"}'"
+	},
+	"dependencies": {
+		"typescript": "latest",
+		"ts-node": "latest"
+	},
+	"devDependencies": {
+		"npm-run-all": "latest"
+	}
+}
