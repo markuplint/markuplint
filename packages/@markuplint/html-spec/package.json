@@ -12,7 +12,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "node build.mjs; prettier --write index.json"
+		"gen": "npm-run-all gen:*",
+		"gen:build": "node build.mjs",
+		"gen:prettier": "prettier --write index.json"
 	},
 	"devDependencies": {
 		"@markuplint/spec-generator": "3.8.0",
