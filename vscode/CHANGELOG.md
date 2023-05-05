@@ -1,5 +1,9 @@
 # Change Log
 
+## 3.5.0
+
+- Depends: `markuplint@3.10.0`
+
 ## 3.4.1
 
 - Fix: Failed packaging.
