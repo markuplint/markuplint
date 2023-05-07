@@ -5,40 +5,21 @@ on:
         branches:
             - dev
         paths:
-            - '**'
-            - '!**/*.md'
-            - '!vscode/**'
-            - '!website/**'
+            - 'playground/**'
 
 jobs:
     test:
         runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                node: [18]
         steps:
             - uses: actions/checkout@v3
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Install for build on Node.js v${{ matrix.node }}
+            - name: Install Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node }}
+                  node-version: 18
 
-            - name: Cache devDependencies
-              uses: actions/cache@v3
-              with:
-                  path: '**/node_modules'
-                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile --check-files
-
-            - name: Build Markuplint Packages
-              run: yarn build
-
-            - name: Playground Building Test
+            - name: Install dependencies and build playground
               run: yarn pg:build
