@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/test-tools",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"description": "A private package for testing in this repository",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,10 +24,9 @@
 		"execa": "5",
 		"glob": "^10.2.2",
 		"jest": "^29.5.0",
-		"jsdom": "21.1.2",
+		"jsdom": "21",
 		"strip-json-comments": "3",
 		"textlint-rule-prh": "^5.3.0",
-		"type-fest": "^3.8.0",
-		"typescript": "^5.0.4"
+		"type-fest": "^3.10.0"
 	}
 }
