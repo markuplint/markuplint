@@ -27,6 +27,8 @@
 		"@markuplint/ml-config": "3.9.0",
 		"@markuplint/ml-core": "3.10.0",
 		"@markuplint/ml-spec": "3.9.0",
+		"@markuplint/parser-utils": "3.8.0",
+		"@markuplint/selector": "3.9.0",
 		"@markuplint/shared": "3.6.0",
 		"cosmiconfig": "^8.1.3",
 		"cosmiconfig-typescript-loader": "^4.3.0",

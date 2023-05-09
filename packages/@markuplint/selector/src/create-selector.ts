@@ -7,17 +7,22 @@ import { Selector } from './selector';
 
 const caches = new Map<string, Selector>();
 
-export function createSelector(selector: string, specs: MLMLSpec) {
+export function createSelector(selector: string, specs?: MLMLSpec) {
 	let instance = caches.get(selector);
 	if (instance) {
 		return instance;
 	}
 
-	instance = new Selector(selector, {
-		model: contentModelPseudoClass(specs),
-		aria: ariaPseudoClass(),
-		role: ariaRolePseudoClass(specs),
-	});
+	instance = new Selector(
+		selector,
+		specs
+			? {
+					model: contentModelPseudoClass(specs),
+					aria: ariaPseudoClass(),
+					role: ariaRolePseudoClass(specs),
+			  }
+			: undefined,
+	);
 	caches.set(selector, instance);
 	return instance;
 }
