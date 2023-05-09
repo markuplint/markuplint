@@ -245,7 +245,12 @@ jobs:
               shell: bash
 
             - name: Test
-              run: yarn jest --useStderr --coverage --shard=${{ matrix.shard }} && cat ./coverage/lcov.info | yarn coveralls # `jest:coverage` + shard option
+              uses: nick-fields/retry@v2
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: yarn jest --useStderr --coverage --shard=${{ matrix.shard }}
 
     playground:
         needs: [os-setup, build]

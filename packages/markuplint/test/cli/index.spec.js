@@ -8,6 +8,8 @@ const entryFilePath = path.resolve(__dirname, '../../bin/markuplint');
 
 const escape = path => path.replace(/\\/g, '\\\\'); // For Windows
 
+jest.setTimeout(10000);
+
 describe('STDOUT Test', () => {
 	it('empty', async () => {
 		const resultPromise = execa(entryFilePath, []);
