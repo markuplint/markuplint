@@ -106,6 +106,8 @@ jobs:
     lint:
         needs: dev-setup
         runs-on: ${{ matrix.os }}
+        if: |
+            !contains(github.event.pull_request.labels.*.name, 'Renovate')
         strategy:
             fail-fast: false
             matrix:
@@ -133,6 +135,14 @@ jobs:
 
     os-setup:
         runs-on: ${{ matrix.os }}
+
+        # For PRs from Renovate, update production dependencies only and then run tests.
+        # For PRs not from Renovate, proceed with the usual setup and tests.
+        if: |
+            !contains(github.event.pull_request.labels.*.name, 'Renovate')
+            ||
+            contains(github.event.pull_request.labels.*.name, 'Dependencies: Production')
+
         strategy:
             fail-fast: false
             matrix:
