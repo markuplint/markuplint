@@ -22,8 +22,8 @@
 		"vscode:dev": "cd vscode; yarn --ignore-engines vscode:dev",
 		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn spellcheck; prettier --write './vscode/**/*{ts,tsx,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
-		"vscode:package": "cd vscode; npm install; npm run vscode:package",
-		"vscode:release": "cd vscode; npm install; npm run vscode:release",
+		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; cd ..; mv package.json.bak package.json;",
+		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; cd ..; mv package.json.bak package.json;",
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
@@ -90,7 +90,8 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"playground"
+		"playground",
+		"vscode"
 	],
 	"devDependencies": {
 		"@types/jest": "^29.5.1",
