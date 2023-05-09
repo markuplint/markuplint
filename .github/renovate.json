@@ -12,6 +12,10 @@
 		{
 			"matchDepTypes": ["dependencies"],
 			"addLabels": ["Dependencies: Production"]
+		},
+		{
+			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+			"automerge": true
 		}
 	]
 }
