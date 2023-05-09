@@ -65,7 +65,7 @@ class Ruleset {
 			}).processSync(selector);
 		} catch (e: unknown) {
 			if (e instanceof Error) {
-				throw new Error(`${e.message} At the selector: "${selector}"`);
+				throw new InvalidSelectorError(selector);
 			}
 			throw e;
 		}
@@ -82,7 +82,10 @@ class Ruleset {
 
 		if (this.headCombinator) {
 			if (depth <= 0) {
-				throw new InvalidSelectorError(`'${this.#selectorGroup[0]?.selector}' is not a valid selector`);
+				if (this.#selectorGroup[0]?.selector) {
+					throw new InvalidSelectorError(this.#selectorGroup[0]?.selector);
+				}
+				throw new Error('Combinated selector depth is not expected');
 			}
 		}
 	}

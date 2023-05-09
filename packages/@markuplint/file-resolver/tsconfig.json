@@ -19,6 +19,12 @@
 			"path": "../ml-spec"
 		},
 		{
+			"path": "../parser-utils"
+		},
+		{
+			"path": "../selector"
+		},
+		{
 			"path": "../shared"
 		}
 	],

@@ -3,7 +3,7 @@ import type { MappedNode } from './types';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { ParserError } from '@markuplint/parser-utils';
+import { TargetParserError } from '@markuplint/parser-utils';
 
 import { log } from '../../debug';
 
@@ -27,7 +27,7 @@ class NodeStore {
 					name: node.nodeName,
 				})),
 			);
-			throw new ParserError('Broke mapping nodes.', {
+			throw new TargetParserError('Broke mapping nodes.', {
 				line: astNode.startLine,
 				col: astNode.startCol,
 				raw: astNode.raw,
