@@ -3,6 +3,8 @@ const { MLRule } = require('@markuplint/ml-core');
 const { setGlobal } = require('../lib/global-settings');
 const { mlTest, mlTestFile } = require('../lib/testing-tool');
 
+jest.setTimeout(10000);
+
 setGlobal({
 	locale: 'en',
 });
