@@ -1,0 +1,17 @@
+{
+	"labels": ["Dependencies", "Renovate"],
+	"packageRules": [
+		{
+			"matchDepTypes": ["optionalDependencies"],
+			"addLabels": ["Dependencies: Optional"]
+		},
+		{
+			"matchDepTypes": ["devDependencies"],
+			"addLabels": ["Dependencies: Development"]
+		},
+		{
+			"matchDepTypes": ["dependencies"],
+			"addLabels": ["Dependencies: Production"]
+		}
+	]
+}
