@@ -245,7 +245,7 @@ jobs:
               shell: bash
 
             - name: Test
-              run: yarn jest --useStderr --coverage --shard=${{ matrix.shard }} && cat ./coverage/lcov.info | yarn coveralls # `jest:coverage` + shard option
+              run: yarn jest --useStderr --coverage --shard=${{ matrix.shard }}
 
     playground:
         needs: [os-setup, build]
