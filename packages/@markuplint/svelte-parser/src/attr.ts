@@ -1,10 +1,14 @@
 import type { SvelteDirective } from './svelte-parser';
-import type { MLASTAttr } from '@markuplint/ml-ast';
+import type { MLASTAttr, MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-import { attrTokenizer } from '@markuplint/html-parser';
-import { sliceFragment } from '@markuplint/parser-utils';
+import { defaultValueDelimiters, parseAttr, sliceFragment } from '@markuplint/parser-utils';
 
 import directiveTokenizer from './directive-tokenizer';
+
+const mustacheTag = {
+	start: '{',
+	end: '}',
+};
 
 const specificBindDirective = ['bind:group', 'bind:this'];
 
@@ -26,19 +30,22 @@ export function attr(
 		};
 	}
 
-	if (attr.type === 'Attribute' && !isShorthand) {
-		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
-		const token = attrTokenizer(raw, startLine, startCol, startOffset);
-		return token;
-	}
-	const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
-	const valueToken = isShorthand
-		? attr.name
-		: attr.expression && 'start' in attr.expression && 'end' in attr.expression
-		? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
-		: '';
+	let token: MLASTHTMLAttr;
 
-	const token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
+	if (attr.type === 'Attribute' && !isShorthand) {
+		const { raw } = sliceFragment(rawHTML, start, end);
+		token = parseAttr(raw, start, rawHTML, {
+			valueDelimiters: [...defaultValueDelimiters, mustacheTag],
+		});
+	} else {
+		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
+		const valueToken = isShorthand
+			? attr.name
+			: attr.expression && 'start' in attr.expression && 'end' in attr.expression
+			? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
+			: '';
+		token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
+	}
 
 	if (!specificBindDirective.includes(token.name.raw) && /^bind:/i.test(token.name.raw)) {
 		// Remove "bind:"
@@ -61,6 +68,10 @@ export function attr(
 			token.potentialName = 'class';
 			token.isDynamicValue = true;
 		}
+	}
+
+	if (token.startQuote.raw === '{' && token.endQuote.raw === '}') {
+		token.isDynamicValue = true;
 	}
 
 	return {
