@@ -541,4 +541,16 @@ describe('Issues', () => {
 			'[1:17]>[1:23](16,22)div: </div>',
 		]);
 	});
+
+	test('#991-3', () => {
+		const r = parse('<div>\n<!-- It is a comment node -->\n</div>');
+		const map = nodeListToDebugMaps(r.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[2:1](5,6)#text: ⏎',
+			'[2:1]>[2:30](6,35)Comment: <!--␣It␣is␣a␣comment␣node␣-->',
+			'[2:30]>[3:1](35,36)#text: ⏎',
+			'[3:1]>[3:7](36,42)div: </div>',
+		]);
+	});
 });
