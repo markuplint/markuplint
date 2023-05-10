@@ -15,7 +15,8 @@
 		},
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"automerge": true
+			"automerge": true,
+			"autoApprove": true
 		}
 	]
 }
