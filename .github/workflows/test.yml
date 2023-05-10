@@ -106,8 +106,6 @@ jobs:
     lint:
         needs: dev-setup
         runs-on: ${{ matrix.os }}
-        if: |
-            !contains(github.event.pull_request.labels.*.name, 'Renovate')
         strategy:
             fail-fast: false
             matrix:
