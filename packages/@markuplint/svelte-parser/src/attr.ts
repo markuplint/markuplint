@@ -20,14 +20,12 @@ export function attr(
 
 	const { start, end } = attr;
 
-	// @ts-ignore
 	if (attr.type === 'Spread') {
 		return {
 			__spreadAttr: true,
 		};
 	}
 
-	// @ts-ignore TODO solve type
 	if (attr.type === 'Attribute' && !isShorthand) {
 		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
 		const token = attrTokenizer(raw, startLine, startCol, startOffset);
@@ -36,12 +34,8 @@ export function attr(
 	const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
 	const valueToken = isShorthand
 		? attr.name
-		: // @ts-ignore TODO solve type
-		attr.type === 'Spread'
-		? raw.slice(1).slice(0, -1)
 		: attr.expression && 'start' in attr.expression && 'end' in attr.expression
-		? // @ts-ignore
-		  sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
+		? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
 		: '';
 
 	const token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
