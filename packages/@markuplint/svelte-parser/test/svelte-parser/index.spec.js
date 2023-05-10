@@ -107,3 +107,35 @@ describe('parser', () => {
 		]);
 	});
 });
+
+describe('Issues', () => {
+	test('#991', () => {
+		expect(svelteParse("<CustomElement><div>Evaluation doesn't work</div></CustomElement>")).toEqual([
+			{
+				type: 'InlineComponent',
+				name: 'CustomElement',
+				start: 0,
+				end: 65,
+				attributes: [],
+				children: [
+					{
+						type: 'Element',
+						name: 'div',
+						start: 15,
+						end: 49,
+						attributes: [],
+						children: [
+							{
+								type: 'Text',
+								start: 20,
+								end: 43,
+								data: "Evaluation doesn't work",
+								raw: "Evaluation doesn't work",
+							},
+						],
+					},
+				],
+			},
+		]);
+	});
+});

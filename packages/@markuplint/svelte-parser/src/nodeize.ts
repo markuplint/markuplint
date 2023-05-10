@@ -76,6 +76,7 @@ export function nodeize(
 				isGhost: false,
 			};
 		}
+		case 'InlineComponent':
 		case 'Element': {
 			const children = originNode.children ?? [];
 			const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');

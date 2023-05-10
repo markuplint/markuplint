@@ -505,4 +505,20 @@ describe('Issues', () => {
 		expect(r.nodeList[0].childNodes[4].raw).toBe(r.nodeList[11].raw);
 		expect(r.nodeList[0].childNodes[4].uuid).toBe(r.nodeList[11].uuid);
 	});
+
+	test('#991', () => {
+		const r = parse(`<CustomElement>
+	<div>Evaluation doesn't work</div>
+</CustomElement>`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:16](0,15)CustomElement: <CustomElement>',
+			'[1:16]>[2:2](15,17)#text: ⏎→',
+			'[2:2]>[2:7](17,22)div: <div>',
+			"[2:7]>[2:30](22,45)#text: Evaluation␣doesn't␣work",
+			'[2:30]>[2:36](45,51)div: </div>',
+			'[2:36]>[3:1](51,52)#text: ⏎',
+			'[3:1]>[3:17](52,68)CustomElement: </CustomElement>',
+		]);
+	});
 });
