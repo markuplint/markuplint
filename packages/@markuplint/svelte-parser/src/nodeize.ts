@@ -76,6 +76,7 @@ export function nodeize(
 				isGhost: false,
 			};
 		}
+		case 'InlineComponent':
 		case 'Element': {
 			const children = originNode.children ?? [];
 			const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
@@ -300,7 +301,7 @@ export function nodeize(
 			return tags;
 		}
 		default: {
-			return {
+			const startTag: MLASTPreprocessorSpecificBlock = {
 				uuid: uuid(),
 				raw,
 				startOffset,
@@ -317,6 +318,42 @@ export function nodeize(
 				isFragment: false,
 				isGhost: false,
 			};
+			let endTag: MLASTPreprocessorSpecificBlock | null = null;
+			if (originNode.children) {
+				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
+				const firstChild = startTag.childNodes[0];
+				if (firstChild) {
+					startTag.endOffset = firstChild.startOffset;
+					startTag.endLine = firstChild.startLine;
+					startTag.endCol = firstChild.startCol;
+					startTag.raw = rawHtml.slice(startTag.startOffset, startTag.endOffset);
+				}
+				const lastChild = startTag.childNodes[startTag.childNodes.length - 1];
+				if (lastChild && lastChild.endOffset > startTag.endOffset) {
+					const startOffset = lastChild.endOffset;
+					const startLine = lastChild.endLine;
+					const startCol = lastChild.endCol;
+					const raw = rawHtml.slice(startOffset, endOffset);
+					endTag = {
+						uuid: uuid(),
+						raw,
+						startOffset,
+						endOffset,
+						startLine,
+						endLine,
+						startCol,
+						endCol,
+						nodeName: originNode.name || originNode.type,
+						type: 'psblock',
+						parentNode,
+						prevNode,
+						nextNode,
+						isFragment: false,
+						isGhost: false,
+					};
+				}
+			}
+			return endTag != null ? [startTag, endTag] : startTag;
 		}
 	}
 }

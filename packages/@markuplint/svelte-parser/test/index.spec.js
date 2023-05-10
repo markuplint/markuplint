@@ -211,7 +211,7 @@ describe('parser', () => {
 				'  [1:19]>[1:35](18,34)value: ␣`abc${def}ghi`␣',
 				'  [1:35]>[1:36](34,35)eQ: }',
 				'  isDirective: true',
-				'  isDynamicValue: false',
+				'  isDynamicValue: true',
 			],
 		]);
 	});
@@ -231,7 +231,7 @@ describe('parser', () => {
 				'  [1:31]>[1:38](30,37)value: handler',
 				'  [1:38]>[1:39](37,38)eQ: }',
 				'  isDirective: true',
-				'  isDynamicValue: false',
+				'  isDynamicValue: true',
 			],
 		]);
 	});
@@ -504,5 +504,53 @@ describe('Issues', () => {
 		expect(r.nodeList[11].raw).toBe('{/if}');
 		expect(r.nodeList[0].childNodes[4].raw).toBe(r.nodeList[11].raw);
 		expect(r.nodeList[0].childNodes[4].uuid).toBe(r.nodeList[11].uuid);
+	});
+
+	test('#991', () => {
+		const r = parse(`<CustomElement>
+	<div>Evaluation doesn't work</div>
+</CustomElement>`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:16](0,15)CustomElement: <CustomElement>',
+			'[1:16]>[2:2](15,17)#text: ⏎→',
+			'[2:2]>[2:7](17,22)div: <div>',
+			"[2:7]>[2:30](22,45)#text: Evaluation␣doesn't␣work",
+			'[2:30]>[2:36](45,51)div: </div>',
+			'[2:36]>[3:1](51,52)#text: ⏎',
+			'[3:1]>[3:17](52,68)CustomElement: </CustomElement>',
+		]);
+	});
+
+	test('#991-2', () => {
+		const r = parse('<div id={uid()}></div>');
+		const map = nodeListToDebugMaps(r.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:17](0,16)div: <div␣id={uid()}>',
+			'[1:6]>[1:16](5,15)id: id={uid()}',
+			'  [1:6]>[1:6](5,5)bN: ',
+			'  [1:6]>[1:8](5,7)name: id',
+			'  [1:8]>[1:8](7,7)bE: ',
+			'  [1:8]>[1:9](7,8)equal: =',
+			'  [1:9]>[1:9](8,8)aE: ',
+			'  [1:9]>[1:10](8,9)sQ: {',
+			'  [1:10]>[1:15](9,14)value: uid()',
+			'  [1:15]>[1:16](14,15)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:17]>[1:23](16,22)div: </div>',
+		]);
+	});
+
+	test('#991-3', () => {
+		const r = parse('<div>\n<!-- It is a comment node -->\n</div>');
+		const map = nodeListToDebugMaps(r.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			'[1:6]>[2:1](5,6)#text: ⏎',
+			'[2:1]>[2:30](6,35)Comment: <!--␣It␣is␣a␣comment␣node␣-->',
+			'[2:30]>[3:1](35,36)#text: ⏎',
+			'[3:1]>[3:7](36,42)div: </div>',
+		]);
 	});
 });
