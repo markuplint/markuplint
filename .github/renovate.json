@@ -1,4 +1,5 @@
 {
+	"autoApprove": true,
 	"labels": ["Dependencies", "Renovate"],
 	"packageRules": [
 		{
@@ -15,8 +16,7 @@
 		},
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"automerge": true,
-			"autoApprove": true
+			"automerge": true
 		}
 	]
 }
