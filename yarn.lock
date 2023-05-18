@@ -14041,9 +14041,9 @@ vscode-uri@^3.0.7:
   integrity sha512-eOpPHogvorZRobNqJGhapa0JdwaxpjVvyBp0QIUMRMSf8ZAlqOdEquKuRmw9Qwu0qXtJIWqFtMkmvJjUZmMjVA==
 
 vue-eslint-parser@^9.2.0:
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-9.2.1.tgz#b011a5520ea7c24cadc832c8552122faaccfd2e6"
-  integrity sha512-tPOex4n6jit4E7h68auOEbDMwE58XiP4dylfaVTCOVCouR45g+QFDBjgIdEU52EXJxKyjgh91dLfN2rxUcV0bQ==
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-9.3.0.tgz#775a974a0603c9a73d85fed8958ed9e814a4a816"
+  integrity sha512-48IxT9d0+wArT1+3wNIy0tascRoywqSUe2E1YalIC1L8jsUGe5aJQItWfRok7DVFGz3UYvzEI7n5wiTXsCMAcQ==
   dependencies:
     debug "^4.3.4"
     eslint-scope "^7.1.1"
