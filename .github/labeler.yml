@@ -1,0 +1,28 @@
+v3.x:
+    - packages/**/*
+Command Line Interface:
+    - packages/@markuplint/create-rule-helper/src/**/*
+    - packages/markuplint/src/cli/**/*
+Config Presets:
+    - packages/@markuplint/config-presets/**/*
+Core API:
+    - packages/markuplint/src/**/*
+    - '!packages/@markuplint/config-presets/**/*'
+Documentation:
+    - website/**/*
+    - '!website/package.json'
+    - '!website/yarn.lock'
+    - packages/@markuplint/rules/src/**/*.md
+GitHub Actions:
+    - .github/workflows/**/*
+Parser:
+    - packages/@markuplint/*-parser/src/**/*
+    - packages/@markuplint/parser-utils/src/**/*
+Rule:
+    - packages/@markuplint/rules/src/**/*
+Specs:
+    - packages/@markuplint/html-spec/src/**/*
+VS Code Extension:
+    - vscode/**/*
+    - '!website/package.json'
+    - '!website/package-lock.json'
