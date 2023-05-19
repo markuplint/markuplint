@@ -29,7 +29,7 @@
 		"@markuplint/types": "3.7.0",
 		"dom-accessibility-api": "^0.6.0",
 		"is-plain-object": "^5.0.0",
-		"tslib": "^2.5.0",
+		"tslib": "^2.5.2",
 		"type-fest": "^3.10.0"
 	},
 	"devDependencies": {

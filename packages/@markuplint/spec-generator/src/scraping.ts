@@ -81,6 +81,12 @@ export async function fetchHTMLElement(link: string) {
 			.find('> p:first-of-type')
 			.text()
 			.trim()
+			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+		$article
+			.find('.section-content:eq(0)')
+			.find('> p:eq(0)')
+			.text()
+			.trim()
 			.replace(/(?:\r?\n|\s)+/gi, ' ');
 
 	const $bcTable = $article.find('.bc-table');
