@@ -7,7 +7,8 @@ assignees: '@YusukeHirao'
 ---
 
 - Markuplint version: `X.X.X`
-- Parser lang: HTML or JSX and more...
+- VS Code Extension version: `X.X.X`
+- Parser: HTML or JSX and more...
 - Node.js version: `X.X.X`
 - OS: macOS or Windows
 
