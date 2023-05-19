@@ -13473,7 +13473,6 @@
 						"type": "property",
 						"value": "true/false",
 						"enum": [],
-						"defaultValue": "false",
 						"isGlobal": true,
 						"valueDescriptions": {
 							"false": "Assistive technologies will present only the changed node or nodes.",

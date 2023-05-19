@@ -370,7 +370,7 @@ describe('1.3', () => {
 		expect(c('<a href></a>', '1.3')).toStrictEqual({
 			'aria-atomic': {
 				name: 'aria-atomic',
-				value: 'false',
+				value: undefined,
 				deprecated: false,
 				required: false,
 				from: 'default',
@@ -550,7 +550,7 @@ describe('1.3', () => {
 		expect(c('<h1></h1>', '1.3')).toStrictEqual({
 			'aria-atomic': {
 				name: 'aria-atomic',
-				value: 'false',
+				value: undefined,
 				deprecated: false,
 				required: false,
 				from: 'default',
