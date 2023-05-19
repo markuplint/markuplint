@@ -4,12 +4,12 @@ Fixes #???
 
 - [ ] Fix bug
 - [ ] Fix typo
+- [ ] Update dependencies
 - [ ] Update specs
 - [ ] Add new rule
 - [ ] Add new parser
-- [ ] Improve or refactor rules
-- [ ] Add a new core feature
-- [ ] Improve or refactor core features
+- [ ] Add a new feature
+- [ ] Improve or refactor features
 - [ ] Update documents
 - [ ] Others
 
