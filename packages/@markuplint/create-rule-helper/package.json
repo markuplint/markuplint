@@ -18,10 +18,10 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "3.10.0",
-		"glob": "^10.2.2",
+		"glob": "^10.2.5",
 		"prettier": "^2.8.8",
 		"ts-node": "^10.9.1",
-		"tslib": "^2.5.0",
+		"tslib": "^2.5.2",
 		"typescript": "^5.0.4"
 	},
 	"devDependencies": {

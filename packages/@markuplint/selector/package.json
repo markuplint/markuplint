@@ -23,8 +23,8 @@
 		"@markuplint/ml-spec": "3.9.0",
 		"@types/debug": "^4.1.7",
 		"debug": "^4.3.4",
-		"postcss-selector-parser": "^6.0.12",
-		"tslib": "^2.5.0",
+		"postcss-selector-parser": "^6.0.13",
+		"tslib": "^2.5.2",
 		"type-fest": "^3.10.0"
 	},
 	"devDependencies": {

@@ -50,7 +50,7 @@
 		"os-locale": "5",
 		"strict-event-emitter": "^0.5.0",
 		"strip-ansi": "6",
-		"tslib": "^2.5.0",
+		"tslib": "^2.5.2",
 		"type-fest": "^3.10.0",
 		"uuid": "^9.0.0"
 	}

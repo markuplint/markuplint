@@ -95,7 +95,7 @@
 		"@markuplint/i18n": "3.8.0",
 		"@markuplint/ml-spec": "3.9.0",
 		"markuplint": "3.10.0",
-		"semver": "^7.5.0",
+		"semver": "^7.5.1",
 		"vscode-languageclient": "^8.1.0",
 		"vscode-languageserver": "^8.1.0",
 		"vscode-languageserver-textdocument": "^1.0.8"
