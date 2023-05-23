@@ -21,11 +21,11 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "3.9.0",
-		"@types/debug": "^4.1.7",
+		"@types/debug": "^4.1.8",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.13",
 		"tslib": "^2.5.2",
-		"type-fest": "^3.10.0"
+		"type-fest": "^3.11.0"
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.1",
