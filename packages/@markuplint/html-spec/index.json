@@ -42852,7 +42852,7 @@
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-			"description": "The <discard> SVG element allows authors to specify the time at which particular elements are to be discarded, thereby reducing the resources required by an SVG user agent. This is particularly useful to help SVG viewers conserve memory while displaying long-running documents.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": [
