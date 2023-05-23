@@ -35904,7 +35904,7 @@
 		{
 			"name": "blink",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <blink> HTML element is a non-standard element which causes the enclosed text to flash slowly.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
