@@ -145,9 +145,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyph",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphDef",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphItem",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
@@ -42229,92 +42226,6 @@
 					"deprecated": true
 				}
 			}
-		},
-		{
-			"name": "svg:altGlyph",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyph> SVG element allows sophisticated selection of the glyphs used to render its child character data.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {
-				"dx": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"dy": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"format": {
-					"description": "The format of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"glyphRef": {
-					"description": "The glyph identifier, the format of which is dependent on the format defined by the format attribute of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"rotate": {
-					"description": "This attribute defines the supplemental rotation that will be applied to the element. Value type: <list-of-numbers> ; Default value: none; Animatable: yes (non-additive)",
-					"deprecated": true
-				},
-				"x": {
-					"description": "This attribute defines the corresponding absolute x-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"xlink:href": {
-					"description": "An <iri> reference either to a <glyph> element in an SVG document or to an <altGlyphDef> element. If the reference is to a <glyph> element and that glyph is available, then that glyph is rendered instead of the character(s) that are inside of the <altGlyph> element. If the reference is to an <altGlyphDef> element, then if an appropriate set of alternate glyphs is located from processing the <altGlyphDef> element, then those alternate glyphs are rendered instead of the character(s) that are inside of the <altGlyph> element. Value type: <iri> ; Default value: none; Animatable: no"
-				},
-				"y": {
-					"description": "This attribute defines the corresponding absolute y-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				}
-			}
-		},
-		{
-			"name": "svg:altGlyphDef",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphDef> SVG element defines a substitution representation for glyphs.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:altGlyphItem",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphItem> element provides a set of candidates for glyph substitution by the <altGlyph> element.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
 		},
 		{
 			"name": "svg:animate",
