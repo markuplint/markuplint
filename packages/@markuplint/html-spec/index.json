@@ -40868,7 +40868,7 @@
 		{
 			"name": "spacer",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> is no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40880,23 +40880,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"align": {
-					"description": "This attribute determines alignment of spacer. Possible values are left, right and center."
-				},
-				"height": {
-					"description": "This attribute can be used for defining height of spacer in pixels when type is block."
-				},
-				"size": {
-					"description": "This attribute can be used for defining size of spacer in pixels when type is horizontal or vertical."
-				},
-				"type": {
-					"description": "This attribute determines type of spacer. Possible values are horizontal, vertical and block."
-				},
-				"width": {
-					"description": "This attribute can be used for defining width of spacer in pixels when type is block."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "span",
