@@ -411,6 +411,10 @@ export const types: Defs = {
 		},
 	},
 
+	/**
+	 * TODO: #1052 The below items are unsupported yet:
+	 * - Percentages are not allowed in a `<source-size-value>`
+	 */
 	SourceSizeList: {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
 		expects: [
@@ -423,8 +427,8 @@ export const types: Defs = {
 			apply: '<source-size-list>',
 			def: {
 				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value>',
-				'source-size-value': '<length>',
+				'source-size': '<media-condition> <source-size-value> | auto',
+				'source-size-value': '<length> | auto',
 			},
 		},
 	},
