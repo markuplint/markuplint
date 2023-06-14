@@ -1,3 +1,5 @@
+/* global StylePropertyMap, StylePropertyMapReadOnly */
+
 import type { MLDocument } from './document';
 import type { MLNamedNodeMap } from './named-node-map';
 import type { MLText } from './text';
@@ -576,6 +578,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get assignedSlot(): HTMLSlotElement | null {
 		throw new UnexpectedCallError('Not supported "assignedSlot" property');
+	}
+
+	get attributeStyleMap(): StylePropertyMap {
+		throw new UnexpectedCallError('Not supported "attributeStyleMap" property');
 	}
 
 	/**
@@ -2982,6 +2988,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		} while (el !== null && el.is(el.ELEMENT_NODE));
 
 		return null;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	computedStyleMap(): StylePropertyMapReadOnly {
+		throw new UnexpectedCallError('Not supported "computedStyleMap" method');
 	}
 
 	fixNodeName(name: string) {

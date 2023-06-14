@@ -2641,7 +2641,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	createNSResolver(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		nodeResolver: Node,
-	): XPathNSResolver {
+	): Node {
 		throw new UnexpectedCallError('Not supported "createNSResolver" method');
 	}
 

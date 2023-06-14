@@ -278,7 +278,7 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let ancestor = el.parentElement;
-				let specificity: Specificity | void;
+				let specificity: Specificity | undefined = undefined;
 				while (ancestor) {
 					const res = target.match(ancestor, scope, count + 1);
 					if (!specificity) {
@@ -413,7 +413,7 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let prev = el.previousElementSibling;
-				let specificity: Specificity | void;
+				let specificity: Specificity | undefined = undefined;
 				while (prev) {
 					const res = target.match(prev, scope, count + 1);
 					if (!specificity) {
@@ -900,7 +900,7 @@ function getSpecificity(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	results: readonly SelectorResult[],
 ) {
-	let specificity: Specificity | void;
+	let specificity: Specificity | undefined = undefined;
 	for (const result of results) {
 		if (specificity) {
 			const order = compareSpecificity(specificity, result.specificity);
