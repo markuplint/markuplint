@@ -23,7 +23,7 @@
 		"@markuplint/types": "3.7.0",
 		"@types/uuid": "^9.0.1",
 		"tslib": "^2.5.2",
-		"type-fest": "^3.10.0",
+		"type-fest": "^3.11.0",
 		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {

@@ -32,10 +32,10 @@
 		"@markuplint/ml-spec": "3.9.0",
 		"@markuplint/parser-utils": "3.8.0",
 		"@markuplint/selector": "3.9.0",
-		"@types/debug": "^4.1.7",
+		"@types/debug": "^4.1.8",
 		"debug": "^4.3.4",
 		"is-plain-object": "^5.0.0",
 		"tslib": "^2.5.2",
-		"type-fest": "^3.10.0"
+		"type-fest": "^3.11.0"
 	}
 }

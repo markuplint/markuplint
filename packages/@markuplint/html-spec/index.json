@@ -145,9 +145,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyph",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphDef",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphItem",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
@@ -35456,7 +35453,7 @@
 		{
 			"name": "applet",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The obsolete HTML Applet Element (<applet>) embeds a Java applet into the document; this element has been deprecated in favor of <object>.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35468,68 +35465,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"align": {
-					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop.",
-					"deprecated": true
-				},
-				"alt": {
-					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text.",
-					"deprecated": true
-				},
-				"archive": {
-					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time.",
-					"deprecated": true
-				},
-				"code": {
-					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute.",
-					"deprecated": true
-				},
-				"codebase": {
-					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored.",
-					"deprecated": true
-				},
-				"datafld": {
-					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet.",
-					"deprecated": true
-				},
-				"datasrc": {
-					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet.",
-					"deprecated": true
-				},
-				"height": {
-					"description": "This attribute specifies the height, in pixels, that the applet needs.",
-					"deprecated": true
-				},
-				"hspace": {
-					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet.",
-					"deprecated": true
-				},
-				"mayscript": {
-					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document.",
-					"deprecated": true
-				},
-				"name": {
-					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts.",
-					"deprecated": true
-				},
-				"object": {
-					"description": "This attribute specifies the URL of a serialized representation of an applet.",
-					"deprecated": true
-				},
-				"src": {
-					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard.",
-					"deprecated": true
-				},
-				"vspace": {
-					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet.",
-					"deprecated": true
-				},
-				"width": {
-					"description": "This attribute specifies in pixels the width that the applet needs.",
-					"deprecated": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "area",
@@ -35900,7 +35836,7 @@
 		{
 			"name": "bgsound",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <bgsound> HTML element is deprecated. It sets up a sound file to play in the background while the page is used; use <audio> instead.",
+			"description": "The <audio> HTML element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35913,17 +35849,35 @@
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
-				"balance": {
-					"description": "This attribute defines a number between -10,000 and +10,000 that determines how the volume will be divided between the speakers."
+				"autoplay": {
+					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay."
+				},
+				"controls": {
+					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
+				},
+				"controlslist": {
+					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback.",
+					"experimental": true,
+					"nonStandard": true
+				},
+				"crossorigin": {
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+				},
+				"disableremoteplayback": {
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"experimental": true
 				},
 				"loop": {
-					"description": "This attribute indicates the number of times a sound is to be played and either has a numeric value or the keyword infinite."
+					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
+				},
+				"muted": {
+					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
+				},
+				"preload": {
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
 				},
 				"src": {
-					"description": "This attribute specifies the URL of the sound file to be played, which must be one of the following types: .wav, .au, or .mid."
-				},
-				"volume": {
-					"description": "This attribute defines a number between -10,000 and 0 that determines the loudness of a page's background sound."
+					"description": "The URL of the audio to embed. This is subject to HTTP access controls. This is optional; you may instead use the <source> element within the audio block to specify the audio to embed."
 				}
 			}
 		},
@@ -35947,7 +35901,7 @@
 		{
 			"name": "blink",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <blink> HTML element is a non-standard element which causes the enclosed text to flash slowly.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -38943,7 +38897,7 @@
 		{
 			"name": "keygen",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <keygen> HTML element exists to facilitate generation of key material, and submission of the public key as part of an HTML form. This mechanism is designed for use with Web-based certificate management systems. It is expected that the <keygen> element will be used in an HTML form along with other information needed to construct a certificate request, and that the result of the process will be a signed certificate.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -38955,26 +38909,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"autofocus": {
-					"description": "This Boolean attribute lets you specify that the control should have input focus when the page loads, unless the user overrides it, for example by typing in a different control. Only one form element in a document can have the autofocus attribute, which is a Boolean."
-				},
-				"challenge": {
-					"description": "A challenge string that is submitted along with the public key. Defaults to an empty string if not specified."
-				},
-				"disabled": {
-					"description": "This Boolean attribute indicates that the form control is not available for interaction."
-				},
-				"form": {
-					"description": "The form element that this element is associated with (its form owner). The value of the attribute must be an id of a <form> element in the same document. If this attribute is not specified, this element must be a descendant of a <form> element. This attribute enables you to place <keygen> elements anywhere within a document, not just as descendants of their form elements."
-				},
-				"keytype": {
-					"description": "The type of key generated. The default value is RSA."
-				},
-				"name": {
-					"description": "The name of the control, which is submitted with the form data."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "label",
@@ -40930,7 +40865,7 @@
 		{
 			"name": "spacer",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> is no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40942,23 +40877,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"align": {
-					"description": "This attribute determines alignment of spacer. Possible values are left, right and center."
-				},
-				"height": {
-					"description": "This attribute can be used for defining height of spacer in pixels when type is block."
-				},
-				"size": {
-					"description": "This attribute can be used for defining size of spacer in pixels when type is horizontal or vertical."
-				},
-				"type": {
-					"description": "This attribute determines type of spacer. Possible values are horizontal, vertical and block."
-				},
-				"width": {
-					"description": "This attribute can be used for defining width of spacer in pixels when type is block."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "span",
@@ -42309,92 +42228,6 @@
 			}
 		},
 		{
-			"name": "svg:altGlyph",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyph> SVG element allows sophisticated selection of the glyphs used to render its child character data.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {
-				"dx": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"dy": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"format": {
-					"description": "The format of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"glyphRef": {
-					"description": "The glyph identifier, the format of which is dependent on the format defined by the format attribute of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"rotate": {
-					"description": "This attribute defines the supplemental rotation that will be applied to the element. Value type: <list-of-numbers> ; Default value: none; Animatable: yes (non-additive)",
-					"deprecated": true
-				},
-				"x": {
-					"description": "This attribute defines the corresponding absolute x-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"xlink:href": {
-					"description": "An <iri> reference either to a <glyph> element in an SVG document or to an <altGlyphDef> element. If the reference is to a <glyph> element and that glyph is available, then that glyph is rendered instead of the character(s) that are inside of the <altGlyph> element. If the reference is to an <altGlyphDef> element, then if an appropriate set of alternate glyphs is located from processing the <altGlyphDef> element, then those alternate glyphs are rendered instead of the character(s) that are inside of the <altGlyph> element. Value type: <iri> ; Default value: none; Animatable: no"
-				},
-				"y": {
-					"description": "This attribute defines the corresponding absolute y-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				}
-			}
-		},
-		{
-			"name": "svg:altGlyphDef",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphDef> SVG element defines a substitution representation for glyphs.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:altGlyphItem",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphItem> element provides a set of candidates for glyph substitution by the <altGlyph> element.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
 			"name": "svg:animate",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
@@ -43019,7 +42852,7 @@
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-			"description": "The <discard> SVG element allows authors to specify the time at which particular elements are to be discarded, thereby reducing the resources required by an SVG user agent. This is particularly useful to help SVG viewers conserve memory while displaying long-running documents.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": [

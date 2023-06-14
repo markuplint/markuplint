@@ -22,13 +22,13 @@
 	"dependencies": {
 		"@types/bcp-47": "1",
 		"@types/css-tree": "^2.0.1",
-		"@types/debug": "^4.1.7",
+		"@types/debug": "^4.1.8",
 		"@types/whatwg-mimetype": "3.0.0",
 		"bcp-47": "1",
 		"css-tree": "^2.3.1",
 		"debug": "^4.3.4",
 		"leven": "3",
-		"type-fest": "^3.10.0",
+		"type-fest": "^3.11.0",
 		"whatwg-mimetype": "^3.0.0"
 	}
 }
