@@ -3275,7 +3275,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (attr && child.hasMutableAttributes()) {
 					return true;
 				}
-				if (child.hasMutableChildren()) {
+				if (child.hasMutableChildren(attr)) {
+					return true;
+				}
+				if (child.localName === 'slot') {
 					return true;
 				}
 			}
