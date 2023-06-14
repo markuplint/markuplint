@@ -35,7 +35,7 @@
 		"@types/debug": "^4.1.8",
 		"@types/has-yarn": "^1.0.1",
 		"@types/meow": "^6.0.0",
-		"@types/uuid": "^9.0.1",
+		"@types/uuid": "^9.0.2",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
@@ -50,8 +50,8 @@
 		"os-locale": "5",
 		"strict-event-emitter": "^0.5.0",
 		"strip-ansi": "6",
-		"tslib": "^2.5.2",
-		"type-fest": "^3.11.0",
+		"tslib": "^2.5.3",
+		"type-fest": "^3.11.1",
 		"uuid": "^9.0.0"
 	}
 }
