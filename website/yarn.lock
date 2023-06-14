@@ -6509,10 +6509,19 @@ postcss@^8.3.11:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-postcss@^8.4.14, postcss@^8.4.17, postcss@^8.4.19, postcss@^8.4.21, postcss@^8.4.23:
+postcss@^8.4.14, postcss@^8.4.17, postcss@^8.4.19, postcss@^8.4.23:
   version "8.4.23"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.23.tgz#df0aee9ac7c5e53e1075c24a3613496f9e6552ab"
   integrity sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==
+  dependencies:
+    nanoid "^3.3.6"
+    picocolors "^1.0.0"
+    source-map-js "^1.0.2"
+
+postcss@^8.4.21:
+  version "8.4.24"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.24.tgz#f714dba9b2284be3cc07dbd2fc57ee4dc972d2df"
+  integrity sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
@@ -7699,9 +7708,9 @@ stylehacks@^5.1.1:
     postcss-selector-parser "^6.0.4"
 
 stylelint-config-recess-order@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-4.0.0.tgz#819b4b8f9bf83d23a0bc918a9bf834f42f87b12a"
-  integrity sha512-sOb+OofMryBR91CbzgV2FavpONqiIeAE7cfrgyUHqePblWBKsYzoUuWThI5EjPRA7KKeovm6ykr7twWYLeafPQ==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-4.2.0.tgz#bc64e2d164f39c9830452d5e6da0061749caeea9"
+  integrity sha512-cWC66tUx74OgurUQaTAH4iJ4JbyisMwlJH8BO/oxglDLZBUNFggjwPFVtgsmd8rS+bUfm7sPlRrF00iAihESwA==
   dependencies:
     stylelint-order "6.x"
 
