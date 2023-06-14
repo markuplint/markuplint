@@ -24,7 +24,7 @@
 		"execa": "5",
 		"glob": "^10.2.5",
 		"jest": "^29.5.0",
-		"jsdom": "^22.0.0",
+		"jsdom": "21",
 		"strip-json-comments": "3",
 		"textlint-rule-prh": "^5.3.0",
 		"type-fest": "^3.10.0"
