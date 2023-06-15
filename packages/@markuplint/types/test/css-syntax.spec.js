@@ -26,6 +26,7 @@ test('Extends', () => {
 	expect(cssSyntaxMatch('auto', sourceSizeList).matched).toBe(true);
 	expect(cssSyntaxMatch('auto, auto', sourceSizeList).matched).toBe(true);
 	expect(cssSyntaxMatch('auto, 100vw', sourceSizeList).matched).toBe(true);
+	expect(cssSyntaxMatch('auto, 100%', sourceSizeList).matched).toBe(false);
 	expect(
 		cssSyntaxMatch('(max-width: 600px) 200px', {
 			...sourceSizeList,

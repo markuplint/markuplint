@@ -411,10 +411,6 @@ export const types: Defs = {
 		},
 	},
 
-	/**
-	 * TODO: #1052 The below items are unsupported yet:
-	 * - Percentages are not allowed in a `<source-size-value>`
-	 */
 	SourceSizeList: {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
 		expects: [
@@ -428,6 +424,14 @@ export const types: Defs = {
 			def: {
 				'source-size-list': '[ <source-size># , ]? <source-size-value>',
 				'source-size': '<media-condition> <source-size-value> | auto',
+				/**
+				 * > Percentages are not allowed in a `<source-size-value>`,
+				 * > to avoid confusion about what it would be relative to.
+				 * > The 'vw' unit can be used for sizes relative to the viewport width.
+				 *
+				 * `<length>` doesn't allow percentages.
+				 * @see https://csstree.github.io/docs/syntax/#Type:length
+				 */
 				'source-size-value': '<length> | auto',
 			},
 		},
