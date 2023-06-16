@@ -7,6 +7,8 @@ import path from 'path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
+import { ConfigParserError } from '@markuplint/parser-utils';
+import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig';
@@ -35,6 +37,15 @@ export class ConfigProvider {
 			return currentConfig;
 		}
 		let configSet = await this._mergeConfigs(keys, cache);
+
+		const filePath = Array.from(configSet.files).reverse()[0];
+		if (!filePath) {
+			throw new ConfigParserError('Config file not found', {
+				filePath: targetFile.path,
+			});
+		}
+		const errors = this._validateConfig(configSet.config, filePath);
+		configSet.errs.push(...errors);
 
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
@@ -220,6 +231,27 @@ export class ConfigProvider {
 
 		stack.add(key);
 		return { stack, errs };
+	}
+
+	private _validateConfig(config: Config, filePath: string) {
+		const errors: ConfigParserError[] = [];
+		config.nodeRules?.forEach(rule => {
+			if (rule.selector) {
+				try {
+					createSelector(rule.selector);
+				} catch (error: unknown) {
+					if (error instanceof InvalidSelectorError) {
+						errors.push(
+							new ConfigParserError(error.message, {
+								filePath,
+								raw: rule.selector,
+							}),
+						);
+					}
+				}
+			}
+		});
+		return errors;
 	}
 }
 

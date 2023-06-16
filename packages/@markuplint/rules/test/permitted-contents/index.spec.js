@@ -1368,4 +1368,28 @@ describe('Issues', () => {
 				.violations,
 		).toStrictEqual([]);
 	});
+
+	test('#1046', async () => {
+		const sourceCode = '<span><div></div></span>';
+		expect(
+			(
+				await mlRuleTest(rule, sourceCode, {
+					rule: {
+						severity: 'warning',
+					},
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 7,
+				message: 'The "div" element is not allowed in the "span" element in this context',
+				raw: '<div>',
+			},
+		]);
+	});
 });

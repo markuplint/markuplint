@@ -443,4 +443,25 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(1);
 		expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(1);
 	});
+
+	test('#1018', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<button><slot /></button>', {
+					parser: {
+						'.*': '@markuplint/svelte-parser',
+					},
+				})
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<button></button>', {
+					parser: {
+						'.*': '@markuplint/svelte-parser',
+					},
+				})
+			).violations.length,
+		).toBe(1);
+	});
 });

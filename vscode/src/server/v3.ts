@@ -76,6 +76,13 @@ export async function onDidOpen(
 		diagnosticsLog(error.message, 'error');
 	});
 
+	engine.on('config-errors', (_filePath, errors) => {
+		for (const error of errors) {
+			diagnosticsLog('ConfigError: ' + error.message, 'error');
+			log('ConfigError: ' + error.message, 'warn');
+		}
+	});
+
 	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug) => {
 		diagnosticsLog('', 'clear');
 

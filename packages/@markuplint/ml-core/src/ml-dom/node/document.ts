@@ -16,7 +16,8 @@ import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import { schemaToSpec } from '@markuplint/ml-spec';
-import { matchSelector } from '@markuplint/selector';
+import { ConfigParserError } from '@markuplint/parser-utils';
+import { InvalidSelectorError, matchSelector } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug';
 import { createNode } from '../helper/create-node';
@@ -163,7 +164,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		);
 
 		this._pretending(options?.pretenders);
-		this._ruleMapping(ruleset);
+
+		try {
+			this._ruleMapping(ruleset);
+		} catch (error: unknown) {
+			if (error instanceof InvalidSelectorError) {
+				throw new ConfigParserError(error.message, {
+					filePath: 'the configuration',
+				});
+			}
+			throw error;
+		}
 	}
 
 	/**
@@ -2630,7 +2641,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	createNSResolver(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		nodeResolver: Node,
-	): XPathNSResolver {
+	): Node {
 		throw new UnexpectedCallError('Not supported "createNSResolver" method');
 	}
 

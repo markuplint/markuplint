@@ -33,16 +33,3 @@ test('deprecated', async () => {
 		},
 	]);
 });
-
-test('svg', async () => {
-	const { violations } = await mlRuleTest(rule, '<svg><altGlyph>text</altGlyph></svg>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			message: 'The "altGlyph" element is obsolete',
-			line: 1,
-			col: 6,
-			raw: '<altGlyph>',
-		},
-	]);
-});

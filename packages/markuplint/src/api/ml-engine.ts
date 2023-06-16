@@ -181,7 +181,23 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	private async provide(cache = true): Promise<MLFabric | null> {
-		const configSet = await this.resolveConfig(cache);
+		let configSet: ConfigSet;
+
+		try {
+			configSet = await this.resolveConfig(cache);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				configSet = {
+					config: {},
+					plugins: [],
+					files: new Set(),
+					errs: [error],
+				};
+			} else {
+				throw error;
+			}
+		}
+
 		fileLog('Fetched Config files: %O', configSet.files);
 		fileLog('Resolved Config: %O', configSet.config);
 		fileLog('Resolved Plugins: %O', configSet.plugins);

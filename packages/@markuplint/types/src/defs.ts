@@ -423,8 +423,16 @@ export const types: Defs = {
 			apply: '<source-size-list>',
 			def: {
 				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value>',
-				'source-size-value': '<length>',
+				'source-size': '<media-condition> <source-size-value> | auto',
+				/**
+				 * > Percentages are not allowed in a `<source-size-value>`,
+				 * > to avoid confusion about what it would be relative to.
+				 * > The 'vw' unit can be used for sizes relative to the viewport width.
+				 *
+				 * `<length>` doesn't allow percentages.
+				 * @see https://csstree.github.io/docs/syntax/#Type:length
+				 */
+				'source-size-value': '<length> | auto',
 			},
 		},
 	},
