@@ -160,6 +160,48 @@ describe('mergeConfig', () => {
 			},
 		});
 	});
+
+	test('rules[rule].value + rules[rule].value', () => {
+		expect(
+			mergeConfig(
+				{
+					rules: {
+						ruleA: true,
+						ruleB: [],
+					},
+				},
+				{
+					rules: {
+						ruleA: {
+							options: {
+								optionName: true,
+							},
+						},
+						ruleB: {
+							options: {
+								optionName: true,
+							},
+						},
+					},
+				},
+			),
+		).toStrictEqual({
+			rules: {
+				ruleA: {
+					value: true,
+					options: {
+						optionName: true,
+					},
+				},
+				ruleB: {
+					value: [],
+					options: {
+						optionName: true,
+					},
+				},
+			},
+		});
+	});
 });
 
 describe('mergeRule', () => {
@@ -218,6 +260,35 @@ describe('mergeRule', () => {
 			options: {
 				optional: 'CHANGED_OPTIONAL_VALUE',
 			},
+		});
+	});
+
+	test('{value} + empty', () => {
+		expect(
+			mergeRule(
+				{
+					value: [],
+				},
+				{},
+			),
+		).toStrictEqual({
+			value: [],
+		});
+	});
+
+	test('{value} + {options}', () => {
+		expect(
+			mergeRule(
+				{
+					value: [],
+				},
+				{
+					options: {},
+				},
+			),
+		).toStrictEqual({
+			value: [],
+			options: {},
 		});
 	});
 });
