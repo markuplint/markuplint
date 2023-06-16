@@ -77,7 +77,12 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 			return {
 				disabled: false,
 				severity: configSettings.severity ?? this.defaultSeverity,
-				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
+				value:
+					configSettings.value === undefined ||
+					// @ts-ignore
+					configSettings.value === true
+						? this.defaultValue
+						: configSettings.value,
 				options: mergeOptions(this.defaultOptions, configSettings.options),
 				reason: configSettings.reason,
 			};
