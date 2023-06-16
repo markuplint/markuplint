@@ -1170,4 +1170,24 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#1048', async () => {
+		const config = {
+			parser: {
+				'.*': '@markuplint/vue-parser',
+			},
+		};
+
+		const sourceCode = `
+			<template>
+				<ul v-if="props.examples.length > 0">
+					<!-- Error if comment inserted inside ul element -->
+					<li v-for="item in props.examples" :key="item.id">
+						{{ item.name }}
+					</li>
+				</ul>
+			</template>
+		`;
+		expect((await mlRuleTest(rule, sourceCode, config)).violations).toStrictEqual([]);
+	});
 });

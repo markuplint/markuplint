@@ -452,4 +452,31 @@ describe('Issues', () => {
 			'[3:63]>[4:2](75,77)#text: ⏎→',
 		]);
 	});
+
+	test('#1048', () => {
+		const doc = parse(`
+	<template>
+		<ul v-if="props.examples.length > 0">
+			<!-- Error if comment inserted inside ul element -->
+			<li v-for="item in props.examples" :key="item.id">
+				{{ item.name }}
+			</li>
+		</ul>
+	</template>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:40](15,52)ul: <ul␣v-if="props.examples.length␣>␣0">',
+			'[3:40]>[5:4](52,112)#text: ⏎→→→⏎→→→',
+			'[5:4]>[5:54](112,162)li: <li␣v-for="item␣in␣props.examples"␣:key="item.id">',
+			'[5:54]>[6:5](162,167)#text: ⏎→→→→',
+			'[6:5]>[6:20](167,182)#vue-expression-container: {{␣item.name␣}}',
+			'[6:20]>[7:4](182,186)#text: ⏎→→→',
+			'[7:4]>[7:9](186,191)li: </li>',
+			'[7:9]>[8:3](191,194)#text: ⏎→→',
+			'[8:3]>[8:8](194,199)ul: </ul>',
+			'[8:8]>[9:2](199,201)#text: ⏎→',
+		]);
+	});
 });
