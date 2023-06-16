@@ -55,3 +55,18 @@ test('in EJS', async () => {
 	});
 	expect(violations.length).toBe(0);
 });
+
+describe('Issues', () => {
+	test('#1074', async () => {
+		const { violations } = await mlRuleTest(rule, '<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				message: 'Illegal characters must escape in character reference',
+				line: 1,
+				col: 48,
+				raw: '&',
+			},
+		]);
+	});
+});
