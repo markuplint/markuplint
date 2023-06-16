@@ -8,7 +8,7 @@ describe('createRule', () => {
 		const rule = createRule({
 			name: 'test-rule',
 			defaultValue: [1, 2, 3],
-			async verify({ document }) {
+			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
 				document.getElementsByTagName('div').forEach(el => {
@@ -19,7 +19,7 @@ describe('createRule', () => {
 			},
 		});
 
-		rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' });
 	});
 
 	test('Change value from config', () => {
@@ -36,7 +36,7 @@ describe('createRule', () => {
 		const rule = createRule({
 			name: 'test-rule',
 			defaultValue: [1, 2, 3],
-			async verify({ document }) {
+			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([4, 5, 6]);
 
 				document.getElementsByTagName('div').forEach(el => {
@@ -47,7 +47,7 @@ describe('createRule', () => {
 			},
 		});
 
-		rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' });
 	});
 
 	test('Change value to true from config', () => {
@@ -64,7 +64,7 @@ describe('createRule', () => {
 		const rule = createRule({
 			name: 'test-rule',
 			defaultValue: [1, 2, 3],
-			async verify({ document }) {
+			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
 				document.getElementsByTagName('div').forEach(el => {
@@ -75,7 +75,7 @@ describe('createRule', () => {
 			},
 		});
 
-		rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' });
 	});
 
 	test('Change severity', () => {
@@ -92,7 +92,7 @@ describe('createRule', () => {
 		const rule = createRule({
 			name: 'test-rule',
 			defaultValue: [],
-			async verify({ document }) {
+			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([]);
 
 				document.getElementsByTagName('div').forEach(el => {
@@ -103,6 +103,6 @@ describe('createRule', () => {
 			},
 		});
 
-		rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' });
 	});
 });
