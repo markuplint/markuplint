@@ -171,14 +171,26 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	});
 
 	// the "none" role is synonym
-	const presentationRole = roles.find(role => role.name === 'presentation');
-	if (presentationRole) {
-		const noneRoleIndex = roles.findIndex(role => role.name === 'none');
-		roles[noneRoleIndex] = {
-			...presentationRole,
-			name: 'none',
-			description: roles[noneRoleIndex]?.description,
-		};
+	if (version === '1.1' || version === '1.2') {
+		const presentationRole = roles.find(role => role.name === 'presentation');
+		if (presentationRole) {
+			const noneRoleIndex = roles.findIndex(role => role.name === 'none');
+			roles[noneRoleIndex] = {
+				...presentationRole,
+				name: 'none',
+				description: roles[noneRoleIndex]?.description,
+			};
+		}
+	} else {
+		const noneRole = roles.find(role => role.name === 'none');
+		if (noneRole) {
+			const noneRoleIndex = roles.findIndex(role => role.name === 'presentation');
+			roles[noneRoleIndex] = {
+				...noneRole,
+				name: 'presentation',
+				description: roles[noneRoleIndex]?.description,
+			};
+		}
 	}
 
 	roles.sort(nameCompare);

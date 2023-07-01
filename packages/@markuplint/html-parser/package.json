@@ -23,7 +23,7 @@
 		"@markuplint/ml-ast": "3.2.0",
 		"@markuplint/parser-utils": "3.9.0",
 		"parse5": "7.1.2",
-		"tslib": "^2.5.3",
-		"type-fest": "^3.11.1"
+		"tslib": "^2.6.0",
+		"type-fest": "^3.12.0"
 	}
 }

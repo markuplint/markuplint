@@ -19,7 +19,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "20.3.1"
+		"@types/node": "20.3.3"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "3.9.0",
@@ -32,9 +32,9 @@
 		"@markuplint/shared": "3.7.0",
 		"cosmiconfig": "^8.2.0",
 		"cosmiconfig-typescript-loader": "^4.3.0",
-		"glob": "^10.2.7",
+		"glob": "^10.3.1",
 		"jsonc": "^2.0.0",
-		"minimatch": "^9.0.1",
-		"tslib": "^2.5.3"
+		"minimatch": "^9.0.2",
+		"tslib": "^2.6.0"
 	}
 }
