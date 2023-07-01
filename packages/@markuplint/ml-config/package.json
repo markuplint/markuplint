@@ -26,6 +26,6 @@
 		"deepmerge": "^4.3.1",
 		"is-plain-object": "^5.0.0",
 		"mustache": "^4.2.0",
-		"type-fest": "^3.11.1"
+		"type-fest": "^3.12.0"
 	}
 }
