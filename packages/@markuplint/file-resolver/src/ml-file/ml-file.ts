@@ -4,6 +4,7 @@ import type { Stats } from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';
 
+import ignore from 'ignore';
 import { minimatch } from 'minimatch';
 
 export class MLFile {
@@ -73,6 +74,16 @@ export class MLFile {
 		return '';
 	}
 
+	ignored(globPath: string | readonly string[]) {
+		if (typeof globPath === 'string') {
+			return !minimatch(this.nPath, pathNormalize(globPath));
+		}
+		const normalizedPaths = globPath.map(p => pathNormalize(p, true));
+		const ig = ignore().add(normalizedPaths);
+		const ignored = ig.ignores(pathNormalize(this.nPath, true));
+		return ignored;
+	}
+
 	async isExist() {
 		if (this.#type === 'code-base') {
 			return true;
@@ -131,12 +142,26 @@ async function stat(filePath: string) {
 	}
 }
 
-function pathNormalize(filePath: string) {
+function pathNormalize(filePath: string, relative?: boolean) {
 	// Remove the local disk scheme of Windows OS
 	if (path.isAbsolute(filePath)) {
 		filePath = filePath.replace(/^[a-z]+:/i, '');
 	}
 	// Replace the separator of Windows OS
 	filePath = filePath.split(path.sep).join('/');
+
+	const hasBang = filePath.startsWith('!');
+	if (hasBang) {
+		filePath = filePath.slice(1);
+	}
+
+	if (relative && path.isAbsolute(filePath)) {
+		filePath = path.relative('/', filePath);
+	}
+
+	if (hasBang) {
+		filePath = `!${filePath}`;
+	}
+
 	return filePath;
 }

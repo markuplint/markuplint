@@ -211,12 +211,10 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles ?? [];
-		for (const excludeFile of excludeFiles) {
-			if (this.#file.matches(excludeFile)) {
-				this.emit('exclude', this.#file.path, excludeFile);
-				fileLog('Excludes the file: %s', this.#file.path);
-				return null;
-			}
+		if (this.#file.ignored(excludeFiles)) {
+			// this.emit('exclude', this.#file.path, excludeFile);
+			fileLog('Excludes the file: %s', this.#file.path);
+			return null;
 		}
 
 		const { parser, parserOptions, matched } = await this.resolveParser(configSet);
