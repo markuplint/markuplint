@@ -1,0 +1,7 @@
+{
+	"extends": ["./extends.json"],
+	"rules": {
+		"permitted-contents": true
+	},
+	"excludeFiles": ["*", "!002.html"]
+}
