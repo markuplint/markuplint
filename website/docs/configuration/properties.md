@@ -38,7 +38,7 @@ The configuration has the following properties:
 [`plugins`](#plugins),
 [`parser`](#parser),
 [`specs`](#specs),
-and [`excludeFiles`](#exclude-files) can specify paths.
+and [`excludeFiles`](#excludefiles) can specify paths.
 In `extends`, `plugins`, `parser`, and `specs` , it can specify a npm package instead of a path.
 
 First, it tries to import it as a package.
@@ -262,13 +262,11 @@ You can specify it as Array or string, but it's **deprecated**.
 
 ### `excludeFiles`
 
-It can exclude files if you need them.
-The values require the **relative path from the configuration file** or the absolute path.
-Paths can be glob format in [minimatch](https://www.npmjs.com/package/minimatch) syntax.
+If necessary, files can be excluded. The value requires a **relative or absolute path** from the configuration file. Paths can also be in the glob format. You can use the `!` symbol to denote negation. Entries specified later will take precedence. The pattern operates in accordance with the [specification](https://git-scm.com/docs/gitignore) of `.gitignore`. (Resolved using [node-ignore](https://github.com/kaelzhang/node-ignore)).
 
 ```json class=config
 {
-  "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
+  "excludeFiles": ["./ignore.html", "./ignore/*.html", "!./ignore/no-ignore.html"]
 }
 ```
 
