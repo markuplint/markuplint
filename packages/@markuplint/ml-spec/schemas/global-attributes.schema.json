@@ -142,7 +142,15 @@
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
-				"onwheel"
+				"onwheel",
+				"onanimationstart",
+				"onanimationiteration",
+				"onanimationend",
+				"onanimationcancel",
+				"ontransitionrun",
+				"ontransitionstart",
+				"ontransitionend",
+				"ontransitioncancel"
 			]
 		},
 		"HTMLLinkAndFetchingAttrs": {
@@ -400,7 +408,7 @@
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#GlobalEventAttrs": {
-			"description": "[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ) and [UIEvent]( https://w3c.github.io/uievents/#event-types-list )",
+			"description": "[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ), [UIEvent]( https://w3c.github.io/uievents/#event-types-list ), [CSS Animation Events]( https://drafts.csswg.org/css-animations/#event-handlers-on-elements-document-objects-and-window-objects ), and [CSS Transition Events] ( https://drafts.csswg.org/css-transitions/#event-handlers-on-elements-document-objects-and-window-objects )",
 			"type": "object",
 			"required": [
 				"onabort",
@@ -482,7 +490,15 @@
 				"onwebkitanimationiteration",
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
-				"onwheel"
+				"onwheel",
+				"onanimationstart",
+				"onanimationiteration",
+				"onanimationend",
+				"onanimationcancel",
+				"ontransitionrun",
+				"ontransitionstart",
+				"ontransitionend",
+				"ontransitioncancel"
 			],
 			"propertyNames": { "$ref": "#/definitions/GlobalEventAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }

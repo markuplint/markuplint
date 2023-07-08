@@ -48,7 +48,7 @@ export const globalAttrs: Record<
 	},
 	'#GlobalEventAttrs': {
 		description:
-			'[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ) and [UIEvent]( https://w3c.github.io/uievents/#event-types-list )',
+			'[GlobalEventHandlers]( https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers ), [UIEvent]( https://w3c.github.io/uievents/#event-types-list ), [CSS Animation Events]( https://drafts.csswg.org/css-animations/#event-handlers-on-elements-document-objects-and-window-objects ), and [CSS Transition Events] ( https://drafts.csswg.org/css-transitions/#event-handlers-on-elements-document-objects-and-window-objects )',
 		attrs: [
 			'onabort',
 			'onauxclick',
@@ -130,6 +130,14 @@ export const globalAttrs: Record<
 			'onwebkitanimationstart',
 			'onwebkittransitionend',
 			'onwheel',
+			'onanimationstart', // CSS Animation Events
+			'onanimationiteration', // CSS Animation Events
+			'onanimationend', // CSS Animation Events
+			'onanimationcancel', // CSS Animation Events
+			'ontransitionrun', // CSS Transition Events
+			'ontransitionstart', // CSS Transition Events
+			'ontransitionend', // CSS Transition Events
+			'ontransitioncancel', // CSS Transition Events
 		],
 	},
 	'#HTMLLinkAndFetchingAttrs': {

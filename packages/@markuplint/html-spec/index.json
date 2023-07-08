@@ -629,6 +629,30 @@
 				"onwheel": {
 					"type": "FunctionBody"
 				},
+				"onanimationstart": {
+					"type": "FunctionBody"
+				},
+				"onanimationiteration": {
+					"type": "FunctionBody"
+				},
+				"onanimationend": {
+					"type": "FunctionBody"
+				},
+				"onanimationcancel": {
+					"type": "FunctionBody"
+				},
+				"ontransitionrun": {
+					"type": "FunctionBody"
+				},
+				"ontransitionstart": {
+					"type": "FunctionBody"
+				},
+				"ontransitionend": {
+					"type": "FunctionBody"
+				},
+				"ontransitioncancel": {
+					"type": "FunctionBody"
+				},
 				"onwebkitanimationend": {
 					"type": "FunctionBody",
 					"deprecated": true
