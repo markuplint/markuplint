@@ -36,7 +36,7 @@
 
 <!-- textlint-disable ja-technical-writing/max-comma -->
 
-[`extends`](#extends)、[`plugins`](#plugins)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#exclude-files)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
+[`extends`](#extends)、[`plugins`](#plugins)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#excludefiles)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
 
 <!-- textlint-enable  ja-technical-writing/max-comma -->
 
@@ -251,11 +251,11 @@ interface Config {
 
 ### `excludeFiles`
 
-必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
+必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。否定を表す`!`シンボルを使うこともできます。後から指定したものが優先されます。パターンは[`.gitignore`の仕様](https://git-scm.com/docs/gitignore)に従って動作します。（[node-ignore](https://github.com/kaelzhang/node-ignore)を用いて解決されます）
 
 ```json class=config
 {
-  "excludeFiles": ["./ignore.html", "./ignore/**/*.html"]
+  "excludeFiles": ["./ignore.html", "./ignore/*.html", "!./ignore/no-ignore.html"]
 }
 ```
 
