@@ -10,7 +10,7 @@ Warn it hard-coded the value of the id attribute when the element is a fragment.
 ❌ Examples of **incorrect** code for this rule
 
 ```jsx
-<div id="foo"></div>;
+<div id="foo"></div>
 ```
 
 ✅ Examples of **correct** code for this rule

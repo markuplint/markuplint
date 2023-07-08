@@ -11,8 +11,7 @@
 			"files": "*.{md,mdx}",
 			"options": {
 				"tabWidth": 2,
-				"useTabs": false,
-				"parser": "markdown-nocjsp"
+				"useTabs": false
 			}
 		},
 		{

@@ -1,4 +1,4 @@
-export const text = /* HTML */ `<!DOCTYPE html>
+export const text = /* HTML */ `<!doctype html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8" />

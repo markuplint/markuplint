@@ -65,8 +65,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	Object.keys(typesCheckers).forEach(key => {
 		const checker = typesCheckers[key];
 		// @ts-ignore
-		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
-			checker?.(token, getNextToken, cssSyntaxMatch),
+		lexer.addType_(
+			key,
+			(token: CSSSyntaxToken, getNextToken: GetNextToken) => checker?.(token, getNextToken, cssSyntaxMatch),
 		);
 	});
 
