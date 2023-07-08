@@ -52,8 +52,8 @@ TODO: Write a description
 
 | Property | Type       | Optional | Default Value | Description               |
 | -------- | ---------- | -------- | ------------- | ------------------------- |
-| `foo`    | `string`   | ✔        | `undefined`   | TODO: Write a description |
-| `bar`    | `number[]` | ✔        | `undefined`   | TODO: Write a description |
+| `foo`    | `string`   | ✔       | `undefined`   | TODO: Write a description |
+| `bar`    | `number[]` | ✔       | `undefined`   | TODO: Write a description |
 
 ### Default severity
 

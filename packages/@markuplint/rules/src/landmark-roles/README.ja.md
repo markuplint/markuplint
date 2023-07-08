@@ -17,7 +17,7 @@ W3Cの[Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regi
 ❌ 間違ったコード例
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <header>...</header>
@@ -36,7 +36,7 @@ W3Cの[Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regi
 ✅ 正しいコード例
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <header>...</header>

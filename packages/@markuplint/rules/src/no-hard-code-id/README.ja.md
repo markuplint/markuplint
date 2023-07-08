@@ -11,7 +11,7 @@ description: id 属性値のハードコーディング禁止
 ❌ 間違ったコード例
 
 ```jsx
-<div id="foo"></div>;
+<div id="foo"></div>
 ```
 
 ✅ 正しいコード例
