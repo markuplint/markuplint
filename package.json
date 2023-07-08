@@ -27,6 +27,7 @@
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
+		"site:up": "cd website; yarn; yarn site:up",
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn pg:build",
 		"apidoc": "typedoc --options ./typedoc.json",
