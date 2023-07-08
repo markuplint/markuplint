@@ -251,7 +251,7 @@ interface Config {
 
 ### `excludeFiles`
 
-必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。否定を表す`!`シンボルを使うこともできます。後から指定したものが優先されます。パターンは`.gitignore`の[仕様](https://git-scm.com/docs/gitignore)に従って動作します。（[node-ignore](https://github.com/kaelzhang/node-ignore)を用いて解決されます）
+必要であれば、ファイルを除外できます。値は**設定ファイルからの相対パスか絶対パス**が必要です。パスはglob形式も可能です。否定を表す`!`シンボルを使うこともできます。後から指定したものが優先されます。パターンは[`.gitignore`の仕様](https://git-scm.com/docs/gitignore)に従って動作します。（[node-ignore](https://github.com/kaelzhang/node-ignore)を用いて解決されます）
 
 ```json class=config
 {

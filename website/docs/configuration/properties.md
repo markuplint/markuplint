@@ -262,7 +262,7 @@ You can specify it as Array or string, but it's **deprecated**.
 
 ### `excludeFiles`
 
-If necessary, files can be excluded. The value requires a **relative or absolute path** from the configuration file. Paths can also be in the glob format. You can use the `!` symbol to denote negation. Entries specified later will take precedence. The pattern operates in accordance with the [specification](https://git-scm.com/docs/gitignore) of `.gitignore`. (Resolved using [node-ignore](https://github.com/kaelzhang/node-ignore)).
+If necessary, files can be excluded. The value requires a **relative or absolute path** from the configuration file. Paths can also be in the glob format. You can use the `!` symbol to denote negation. Entries specified later will take precedence. The pattern operates in accordance with the [specification of `.gitignore`](https://git-scm.com/docs/gitignore). (Resolved using [node-ignore](https://github.com/kaelzhang/node-ignore)).
 
 ```json class=config
 {
