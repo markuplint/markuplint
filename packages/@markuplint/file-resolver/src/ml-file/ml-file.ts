@@ -142,7 +142,7 @@ async function stat(filePath: string) {
 	}
 }
 
-function pathNormalize(filePath: string, relative?: boolean) {
+function pathNormalize(filePath: string, relative = false) {
 	// Remove the local disk scheme of Windows OS
 	if (path.isAbsolute(filePath)) {
 		filePath = filePath.replace(/^[a-z]+:/i, '');
