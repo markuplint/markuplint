@@ -52,7 +52,7 @@
 		"@markuplint/ml-spec": "3.10.0",
 		"@markuplint/parser-utils": "3.9.0",
 		"@markuplint/rules": "3.11.0",
-		"monaco-editor": "0.39.0",
+		"monaco-editor": "0.40.0",
 		"svelte": "3",
 		"tslib": "2.6.0"
 	}
