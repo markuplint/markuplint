@@ -75,9 +75,7 @@ export class MLFile {
 	}
 
 	ignored(globPath: string | readonly string[]) {
-		if (typeof globPath === 'string') {
-			return !minimatch(this.nPath, pathNormalize(globPath));
-		}
+		globPath = typeof globPath === 'string' ? [globPath] : globPath;
 		const normalizedPaths = globPath.map(p => pathNormalize(p, true));
 		const ig = ignore().add(normalizedPaths);
 		const ignored = ig.ignores(pathNormalize(this.nPath, true));
