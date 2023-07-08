@@ -26,8 +26,8 @@
 		"monaco-editor-webpack-plugin": "7.0.1",
 		"postcss-base64": "0.7.1",
 		"postcss-calc": "9.0.1",
-		"postcss-custom-media": "9.1.5",
-		"postcss-gap-properties": "4.0.1",
+		"postcss-custom-media": "10.0.0",
+		"postcss-gap-properties": "5.0.0",
 		"postcss-loader": "7.3.3",
 		"postcss-math": "0.0.10",
 		"sass": "1.63.6",
@@ -52,7 +52,7 @@
 		"@markuplint/ml-spec": "3.10.0",
 		"@markuplint/parser-utils": "3.9.0",
 		"@markuplint/rules": "3.11.0",
-		"monaco-editor": "0.39.0",
+		"monaco-editor": "0.40.0",
 		"svelte": "3",
 		"tslib": "2.6.0"
 	}
