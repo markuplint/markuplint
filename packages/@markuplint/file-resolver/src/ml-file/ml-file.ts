@@ -143,21 +143,22 @@ async function stat(filePath: string) {
 }
 
 function pathNormalize(filePath: string, relative = false) {
-	// Remove the local disk scheme of Windows OS
-	if (path.isAbsolute(filePath)) {
-		filePath = filePath.replace(/^[a-z]+:/i, '');
-	}
-	// Replace the separator of Windows OS
-	filePath = filePath.split(path.sep).join('/');
-
 	const hasBang = filePath.startsWith('!');
 	if (hasBang) {
 		filePath = filePath.slice(1);
 	}
 
-	if (relative && path.isAbsolute(filePath)) {
-		filePath = path.relative('/', filePath);
+	// Remove the local disk scheme of Windows OS
+	if (path.isAbsolute(filePath)) {
+		filePath = filePath.replace(/^[a-z]+:/i, '');
+
+		if (relative) {
+			filePath = path.relative(path.sep, filePath);
+		}
 	}
+
+	// Replace the separator of Windows OS
+	filePath = filePath.split(path.sep).join('/');
 
 	if (hasBang) {
 		filePath = `!${filePath}`;
