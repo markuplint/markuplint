@@ -39988,7 +39988,7 @@
 				"permittedRoles": false,
 				"properties": false,
 				"conditions": {
-					"datalist > option": {
+					":is(select, select > option, datalist) > option": {
 						"implicitRole": "option",
 						"properties": {
 							"global": true,
