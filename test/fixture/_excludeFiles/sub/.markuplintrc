@@ -1,0 +1,4 @@
+{
+	"extends": ["../.markuplintrc"],
+	"excludeFiles": ["!./", "*", "!003.html"]
+}

@@ -16,7 +16,7 @@ It is based on W3C [Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/
 ❌ Examples of **incorrect** code for this rule
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <header>...</header>
@@ -35,7 +35,7 @@ It is based on W3C [Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/
 ✅ Examples of **correct** code for this rule
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <body>
     <header>...</header>

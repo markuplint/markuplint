@@ -309,7 +309,11 @@ function resolve(dir: string, pathOrModName: string) {
 	if (moduleExists(pathOrModName) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
 		return pathOrModName;
 	}
-	return path.resolve(dir, pathOrModName);
+	const bangAndPath = /^(!)(.*)/.exec(pathOrModName) ?? [];
+	const bang = bangAndPath[1] ?? '';
+	const pathname = bangAndPath[2] ?? pathOrModName;
+	const absPath = path.resolve(dir, pathname);
+	return bang + absPath;
 }
 
 function moduleExists(name: string) {

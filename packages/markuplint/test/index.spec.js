@@ -100,6 +100,14 @@ describe('basic test', () => {
 	});
 });
 
+describe('excludeFiles', () => {
+	test('excludeFiles', async () => {
+		expect((await mlTestFile('test/fixture/_excludeFiles/001.html')).violations.length).toBe(0);
+		expect((await mlTestFile('test/fixture/_excludeFiles/002.html')).violations.length).toBe(1);
+		expect((await mlTestFile('test/fixture/_excludeFiles/sub/003.html')).violations.length).toBe(1);
+	});
+});
+
 describe('async and sync rules', () => {
 	const asyncReport = {
 		message: 'Async error test',

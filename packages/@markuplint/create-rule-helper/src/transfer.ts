@@ -109,7 +109,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 				? 'babel'
 				: 'typescript'
 			: undefined;
-	contents = format(contents, { parser, filepath: dest });
+	contents = await format(contents, { parser, filepath: dest });
 
 	if (!(await fsExists(newFile.destDir))) {
 		await fs.mkdir(newFile.destDir, { recursive: true });

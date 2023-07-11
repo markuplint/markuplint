@@ -26,6 +26,20 @@ it('file matches', () => {
 	expect(file2.matches('/dir/**/*.{html,css}')).toBeTruthy();
 });
 
+it('ignored', () => {
+	const file = new MLFile('/dir/file');
+	expect(file.ignored(['*'])).toBeTruthy();
+	expect(file.ignored(['dir'])).toBeTruthy();
+	expect(file.ignored(['dir/file'])).toBeTruthy();
+	expect(file.ignored(['!dir/file'])).toBeFalsy();
+
+	// It can't cancel because its parent is ignored.
+	expect(file.ignored(['*', '!dir/file'])).toBeTruthy();
+
+	// It can cancel because its parent is canceled.
+	expect(file.ignored(['*', '!dir', 'dir/*', '!dir/file'])).toBeFalsy();
+});
+
 it('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
 	expect(await file.isExist()).toBeTruthy();

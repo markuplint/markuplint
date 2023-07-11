@@ -18,11 +18,11 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "3.11.0",
-		"glob": "^10.2.7",
+		"glob": "^10.3.2",
 		"prettier": "^2.8.8",
 		"ts-node": "^10.9.1",
-		"tslib": "^2.5.3",
-		"typescript": "^5.1.3"
+		"tslib": "^2.6.0",
+		"typescript": "^5.1.6"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^11.0.1",

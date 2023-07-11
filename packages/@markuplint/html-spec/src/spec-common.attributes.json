@@ -510,6 +510,38 @@
 		"onwheel": {
 			"type": "FunctionBody"
 		},
+		// https://drafts.csswg.org/css-animations/#dom-document-onanimationstart
+		"onanimationstart": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-animations/#dom-document-onanimationiteration
+		"onanimationiteration": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-animations/#dom-document-onanimationend
+		"onanimationend": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-animations/#dom-document-onanimationcancel
+		"onanimationcancel": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-transitions/#dom-globaleventhandlers-ontransitionrun
+		"ontransitionrun": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-transitions/#dom-globaleventhandlers-ontransitionstart
+		"ontransitionstart": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-transitions/#dom-globaleventhandlers-ontransitionend
+		"ontransitionend": {
+			"type": "FunctionBody"
+		},
+		// https://drafts.csswg.org/css-transitions/#dom-globaleventhandlers-ontransitioncancel
+		"ontransitioncancel": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationend
 		"onwebkitanimationend": {
 			"type": "FunctionBody",
@@ -605,7 +637,9 @@
 					"unsafe-url"
 				]
 			},
-			"condition": "[href]",
+			// `[href]`: `<a>`, `<area>`, `<link>`, `<svg|a>`
+			// `[src]`: `<iframe>`, `<img>`, `<portal>`, `<script>`,
+			"condition": "[href], [src]",
 			"defaultValue": "strict-origin-when-cross-origin"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attribute

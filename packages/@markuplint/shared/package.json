@@ -19,6 +19,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"html-entities": "^2.3.6"
+		"html-entities": "^2.4.0"
 	}
 }

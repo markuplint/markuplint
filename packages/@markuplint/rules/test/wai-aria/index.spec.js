@@ -1170,4 +1170,34 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#1084', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+			<select multiple aria-label="some label text">
+				<option>foo</option>
+				<option>bar</option>
+			</select>
+
+			<select aria-label="some label text">
+				<option>foo</option>
+				<option>bar</option>
+			</select>
+
+			<select aria-label="some label text">
+				<option>foo</option>
+				<optgroup label="group">
+					<option>bar</option>
+				</optgroup>
+			</select>
+
+			<datalist>
+				<option>foo</option>
+				<option>bar</option>
+			</datalist>
+		`,
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });

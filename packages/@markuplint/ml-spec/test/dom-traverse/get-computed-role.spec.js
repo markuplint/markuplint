@@ -60,8 +60,12 @@ describe('1.2', () => {
 		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.2', 'rect').role?.name).toBe(
 			'graphics-symbol',
 		);
-		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.2', 'rect').role?.name).toBe('img');
-		expect(c('<svg><rect role="roletype"></rect></svg>', '1.2', 'rect').role?.name).toBe('graphics-symbol');
+		expect(c('<svg><rect role="roletype img" aria-label="accname"></rect></svg>', '1.2', 'rect').role?.name).toBe(
+			'img',
+		);
+		expect(c('<svg><rect role="roletype" aria-label="accname"></rect></svg>', '1.2', 'rect').role?.name).toBe(
+			'graphics-symbol',
+		);
 	});
 
 	test('landmark', () => {
@@ -187,8 +191,12 @@ describe('1.3', () => {
 		expect(c('<svg><rect role="graphics-symbol img"></rect></svg>', '1.3', 'rect').role?.name).toBe(
 			'graphics-symbol',
 		);
-		expect(c('<svg><rect role="roletype img"></rect></svg>', '1.3', 'rect').role?.name).toBe('img');
-		expect(c('<svg><rect role="roletype"></rect></svg>', '1.3', 'rect').role?.name).toBe('graphics-symbol');
+		expect(c('<svg><rect role="roletype img" aria-label="accname"></rect></svg>', '1.3', 'rect').role?.name).toBe(
+			'img',
+		);
+		expect(c('<svg><rect role="roletype" aria-label="accname"></rect></svg>', '1.3', 'rect').role?.name).toBe(
+			'graphics-symbol',
+		);
 	});
 
 	test('landmark', () => {
@@ -290,5 +298,18 @@ describe('Issues', () => {
 	test('#778', () => {
 		expect(c('<td role="gridcell"></td>', '1.2').role?.name).toBe('gridcell');
 		expect(c('<td role="gridcell"></td>', '1.3').role?.name).toBe('gridcell');
+	});
+
+	test('#1026', () => {
+		expect(c('<svg><rect width="30" height="30" /></svg>', '1.2', 'rect').role?.name).toBe(undefined);
+		expect(
+			c('<svg><rect width="30" height="30"><title>Accname</title></rect></svg>', '1.2', 'rect').role?.name,
+		).toBe('graphics-symbol');
+		expect(c('<svg><rect aria-label="accname" width="30" height="30" /></svg>', '1.2', 'rect').role?.name).toBe(
+			'graphics-symbol',
+		);
+		expect(
+			c('<svg role="img"><rect aria-label="accname" width="30" height="30" /></svg>', '1.2', 'rect').role?.name,
+		).toBe('graphics-symbol');
 	});
 });

@@ -1158,6 +1158,14 @@ export interface GlobalAttributes {
 				| 'onwebkitanimationstart'
 				| 'onwebkittransitionend'
 				| 'onwheel'
+				| 'onanimationstart'
+				| 'onanimationiteration'
+				| 'onanimationend'
+				| 'onanimationcancel'
+				| 'ontransitionrun'
+				| 'ontransitionstart'
+				| 'ontransitionend'
+				| 'ontransitioncancel'
 		  )[];
 	/**
 	 * @minItems 0

@@ -79,39 +79,6 @@ You can solve [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessi
 | `input`    | The `label` element   | Permit（_NOT RECOMMENDED_） |
 | `select`   | The `label` element   | Permit（_NOT RECOMMENDED_） |
 | `textarea` | The `label` element   | Permit（_NOT RECOMMENDED_） |
-| `svg`      | None                  | Permit                      |
-
-Also, most graphic elements related to SVG require accessible names.
-
-```html
-<svg>
-  <!-- The svg element requires an accessible name -->
-  <rect />
-  <!-- The rect element requires an accessible name -->
-  <path />
-  <!-- The path element requires an accessible name -->
-</svg>
-```
-
-Following the requirements, you should give all elements appropriate accessible names.
-
-```html
-<svg aria-label="Whole name of the figure">
-  <rect aria-label="Name of a rectangle that is part of a figure" />
-  <path aria-label="Name of a path that is part of a figure" />
-</svg>
-```
-
-However, in most cases, this is not a practical solution. Therefore, there is a solution that combines the accessible names into one by treating the `svg` element as a single image by attaching the `img` role to the `svg` element and taking advantage of the [Presentational Children](https://www.w3.org/TR/wai-aria-1.2/#childrenArePresentational) nature.
-
-```html
-<svg role="img" aria-label="Name of the figure">
-  <rect />
-  <!-- The rect do not require an accessible name -->
-  <path />
-  <!-- The path do not require an accessible name -->
-</svg>
-```
 
 ## The glob format does not work as expected in the CLI
 
