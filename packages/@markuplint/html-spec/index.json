@@ -736,7 +736,7 @@
 							"unsafe-url"
 						]
 					},
-					"condition": "[href]",
+					"condition": "[href], [src]",
 					"defaultValue": "strict-origin-when-cross-origin"
 				},
 				"loading": {
