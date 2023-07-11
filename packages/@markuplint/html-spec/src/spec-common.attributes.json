@@ -637,7 +637,9 @@
 					"unsafe-url"
 				]
 			},
-			"condition": "[href]",
+			// `[href]`: `<a>`, `<area>`, `<link>`, `<svg|a>`
+			// `[src]`: `<iframe>`, `<img>`, `<portal>`, `<script>`,
+			"condition": "[href], [src]",
 			"defaultValue": "strict-origin-when-cross-origin"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attribute

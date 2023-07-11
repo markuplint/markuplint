@@ -1629,4 +1629,13 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#1078', async () => {
+		expect(
+			(await mlRuleTest(rule, '<script src="foo.js" referrerpolicy="no-referrer"></script>')).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<img src="foo.png" referrerpolicy="no-referrer"></img>')).violations,
+		).toStrictEqual([]);
+	});
 });
