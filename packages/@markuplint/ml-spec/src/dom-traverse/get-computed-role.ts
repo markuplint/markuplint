@@ -3,6 +3,7 @@ import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
 import { ariaSpecs } from '../specs/aria-specs';
 import { isPresentational } from '../specs/is-presentational';
 
+import { getAccname } from './accname-computation';
 import { getAttrSpecs } from './get-attr-specs';
 import { getExplicitRole } from './get-explicit-role';
 import { getImplicitRole } from './get-implicit-role';
@@ -88,6 +89,56 @@ export function getComputedRole(
 				el,
 				role: null,
 				errorType: 'INVALID_REQUIRED_CONTEXT_ROLE',
+			};
+		}
+	}
+
+	/**
+	 * SVG: Including Elements in the Accessibility Tree
+	 *
+	 * > Many SVG elements—although rendered to the screen—
+	 * > do not have an intrinsic semantic meaning. Instead,
+	 * > they represent components of the visual presentation of the document.
+	 * > To simplify the accessible representation of the document,
+	 * > these purely presentational elements should normally be omitted
+	 * > from the accessibility tree, unless the author explicitly provides semantic content.
+	 * >
+	 * > However, any rendered SVG element may have semantic meaning.
+	 * > Authors indicate the significance of the element
+	 * > by including alternative text content or WAI-ARIA attributes.
+	 * > This section defines the rules for including normally-omitted elements
+	 * > in the accessibility tree.
+	 * >
+	 * > The following graphical and container elements
+	 * > in the SVG namespace SHOULD NOT be included in the accessibility tree,
+	 * > except as described in this section:
+	 * >
+	 * > - shape elements (circle, ellipse, line, path, polygon, polyline, rect)
+	 * > - the use element
+	 * > - the grouping (g) element
+	 * > - the image element
+	 * > - the mesh element
+	 * > - text formatting elements (textPath, tspan)
+	 * > - the foreignObject element
+	 *
+	 * @see https://www.w3.org/TR/svg-aam-1.0/#include_elements
+	 */
+	if (
+		// It doesn't been specified a valid explicit role.
+		(explicitRole.role === null || explicitRole.errorType != null) &&
+		// It is an SVG element.
+		el.namespaceURI === 'http://www.w3.org/2000/svg'
+	) {
+		const accname =
+			getAccname(el).trim() ||
+			Array.from(el.children)
+				.find(child => ['title', 'desc'].includes(child.localName))
+				?.textContent?.trim();
+
+		if (!accname) {
+			return {
+				el,
+				role: null,
 			};
 		}
 	}
