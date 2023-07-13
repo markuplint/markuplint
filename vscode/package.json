@@ -70,7 +70,7 @@
 		},
 		"jsonValidation": [
 			{
-				"fileMatch": "**/{.markuplintrc,markuplintrc.json,markuplint.config.json,markuplint.json}",
+				"fileMatch": "**/{.markuplintrc,.markuplintrc.json}",
 				"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
 			}
 		]
