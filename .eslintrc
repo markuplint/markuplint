@@ -7,10 +7,8 @@
 		"jest": true
 	},
 	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
-	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"sourceType": "module",
-		"project": ["./tsconfig.json", "./tsconfig.test.json"]
+		"ecmaVersion": 13
 	},
 	"rules": {
 		"indent": 0,
@@ -151,6 +149,14 @@
 		}
 	},
 	"overrides": [
+		{
+			"files": ["**/*.ts", "**/*.tsx", "**/*.mts"],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"sourceType": "module",
+				"project": ["./tsconfig.json", "./tsconfig.test.json"]
+			}
+		},
 		{
 			"files": ["**/*.spec.{js,ts}"],
 			"rules": {

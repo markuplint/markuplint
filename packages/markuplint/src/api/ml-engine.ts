@@ -21,7 +21,25 @@ type MLEngineOptions = {
 	readonly watch?: boolean;
 };
 
+export type FromCodeOptions = APIOptions &
+	MLEngineOptions & {
+		readonly name?: string;
+		readonly dirname?: string;
+	};
+
 export default class MLEngine extends Emitter<MLEngineEventMap> {
+	static async fromCode(sourceCode: string, options?: FromCodeOptions) {
+		const file = await MLEngine.toMLFile({
+			sourceCode,
+			name: options?.name,
+			workspace: options?.dirname,
+		});
+		if (!file) {
+			throw new Error('Never reach error');
+		}
+		return new MLEngine(file, options);
+	}
+
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
 		return files[0];
