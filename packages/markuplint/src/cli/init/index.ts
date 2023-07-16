@@ -1,9 +1,9 @@
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import fs from 'node:fs';
 import module from 'node:module';
+import path from 'node:path';
+import util from 'node:util';
 
 import { head, write, error } from '../../util.js';
 import { confirm, confirmSequence, multiSelect } from '../prompt.js';

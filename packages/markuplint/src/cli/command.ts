@@ -3,8 +3,8 @@ import type { APIOptions } from '../api/types.js';
 import type { Target } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 import { resolveFiles } from '@markuplint/file-resolver';
 
