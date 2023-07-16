@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/spec-generator",
-	"version": "3.10.0",
+	"version": "3.11.0",
 	"description": "Generates @markuplint/ml-spec",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,7 +21,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.10.0",
+		"@markuplint/ml-spec": "3.11.0",
 		"@types/cheerio": "^0.22.31",
 		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "^2.6.4",
