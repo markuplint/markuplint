@@ -1,6 +1,6 @@
-const { MLEngine, getVersion } = require('../cjs/index.cjs');
-
 const path = require('node:path');
+
+const { MLEngine, getVersion } = require('../cjs/index.cjs');
 
 describe('test', () => {
 	it('MLEngine.exec()', async () => {

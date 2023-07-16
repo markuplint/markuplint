@@ -138,7 +138,6 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		verify(context) {
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			context.document.walkOn('Element', el => {});
 			context.report(syncReport);
 		},

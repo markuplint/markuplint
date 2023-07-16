@@ -19,7 +19,7 @@ function tree(html, version) {
 	const el = _(html);
 	const tree = [];
 	let current = el;
-	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
 	while (current) {
 		const role = getComputedRole(specs, current, version);
 		const result = [current.localName, role.role?.name ?? null];
