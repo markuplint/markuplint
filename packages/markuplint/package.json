@@ -18,7 +18,7 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"bin": {
-		"markuplint": "bin/markuplint"
+		"markuplint": "./bin/markuplint.mjs"
 	},
 	"scripts": {
 		"build": "tsc",

@@ -18,7 +18,7 @@
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"all": "run-s lint clean build gen schema test:clear test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
-		"cli": "./packages/markuplint/bin/markuplint",
+		"cli": "./packages/markuplint/bin/markuplint.mjs",
 		"vscode:dev": "cd vscode; yarn --ignore-engines vscode:dev",
 		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn spellcheck; prettier --write './vscode/**/*{ts,tsx,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
