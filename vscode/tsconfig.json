@@ -16,8 +16,15 @@
 		"declaration": true,
 		"lib": ["esnext"],
 		"skipLibCheck": true,
-		"baseUrl": "."
+		"baseUrl": ".",
+		"moduleResolution": "node",
+		"preserveSymlinks": true
 	},
+	"references": [
+		{
+			"path": "../packages/markuplint"
+		}
+	],
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "out"]
 }

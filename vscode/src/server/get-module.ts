@@ -4,27 +4,44 @@ import path from 'node:path';
 
 import { Files } from 'vscode-languageserver/node';
 
-export async function getModule(log: Log) {
-	let modPath: string | undefined;
-	let markuplint: any;
-	let version: string;
-	let isLocalModule = true;
+export async function getModule(log: Log): Promise<OldModule | Module> {
 	try {
-		modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
-		markuplint = require(modPath);
+		const modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const markuplint = require(modPath);
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		version = require(packageJsonPath).version;
+		const version: string = require(packageJsonPath).version;
+		return {
+			type: 'v1',
+			version,
+			markuplint,
+			modPath,
+		};
 	} catch (_e) {
-		markuplint = require('markuplint');
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		version = require('markuplint/package.json').version;
-		isLocalModule = false;
+		const esmAdapter = require('@markuplint/esm-adapter');
+		const adapterVersion = esmAdapter.version;
+		const version = await esmAdapter.getVersion();
+		return {
+			type: 'v4',
+			version,
+			adapter: esmAdapter,
+			adapterVersion,
+		};
 	}
-	return {
-		modPath,
-		markuplint,
-		version,
-		isLocalModule,
-	};
 }
+
+type OldModule = {
+	type: 'v1';
+	version: string;
+	markuplint: any;
+	modPath: string;
+};
+
+type Module = {
+	type: 'v4';
+	version: string;
+	adapter: any;
+	adapterVersion: string;
+};

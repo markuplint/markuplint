@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "3.12.0",
+	"version": "4.0.0-alpha.0",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
