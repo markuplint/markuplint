@@ -1,15 +1,15 @@
-import type { Category, DefaultRules, Langs, RuleSettingMode } from './types';
+import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
 
-import { head, write, error } from '../../util';
-import { confirm, confirmSequence, multiSelect } from '../prompt';
+import { head, write, error } from '../../util.js';
+import { confirm, confirmSequence, multiSelect } from '../prompt.js';
 
-import { createConfig, langs } from './create-config';
-import { getDefaultRules } from './get-default-rules';
-import { installModule, selectModules } from './install-module';
+import { createConfig, langs } from './create-config.js';
+import { getDefaultRules } from './get-default-rules.js';
+import { installModule, selectModules } from './install-module.js';
 
 const writeFile = util.promisify(fs.writeFile);
 

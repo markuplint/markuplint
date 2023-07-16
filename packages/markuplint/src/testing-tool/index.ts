@@ -4,8 +4,8 @@ import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
 
-import { lint } from '../api';
-import { getGlobal } from '../global-settings';
+import { lint } from '../api/index.js';
+import { getGlobal } from '../global-settings.js';
 
 export async function mlTest(
 	sourceCode: string,

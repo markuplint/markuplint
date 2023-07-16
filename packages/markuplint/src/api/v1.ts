@@ -3,7 +3,7 @@ import type { MLRule } from '@markuplint/ml-core';
 
 import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { lint } from './lint';
+import { lint } from './lint.js';
 
 /**
  * @deprecated

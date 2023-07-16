@@ -1,4 +1,4 @@
-import type { Langs } from './types';
+import type { Langs } from './types.js';
 
 import { spawnSync } from 'child_process';
 

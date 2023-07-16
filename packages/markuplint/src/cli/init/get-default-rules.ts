@@ -1,4 +1,4 @@
-import type { DefaultRules } from './types';
+import type { DefaultRules } from './types.js';
 import type { Writable } from 'type-fest';
 
 import matter from 'gray-matter';

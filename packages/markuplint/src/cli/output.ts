@@ -1,9 +1,9 @@
-import type { CLIOptions } from './bootstrap';
-import type { MLResultInfo } from '../types';
+import type { CLIOptions } from './bootstrap.js';
+import type { MLResultInfo } from '../types.js';
 
 import stripAnsi from 'strip-ansi';
 
-import { simpleReporter, standardReporter, githubReporter } from '../reporter';
+import { simpleReporter, standardReporter, githubReporter } from '../reporter/index.js';
 
 export function output(results: MLResultInfo, options: CLIOptions) {
 	const format = options.format ?? 'Standard';
