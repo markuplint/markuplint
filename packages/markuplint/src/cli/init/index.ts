@@ -3,6 +3,7 @@ import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js'
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
+import module from 'node:module';
 
 import { head, write, error } from '../../util.js';
 import { confirm, confirmSequence, multiSelect } from '../prompt.js';
@@ -10,6 +11,8 @@ import { confirm, confirmSequence, multiSelect } from '../prompt.js';
 import { createConfig, langs } from './create-config.js';
 import { getDefaultRules } from './get-default-rules.js';
 import { installModule, selectModules } from './install-module.js';
+
+const require = module.createRequire(import.meta.url);
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -71,7 +74,6 @@ export async function initialize() {
 
 	let defaultRules: DefaultRules = {};
 	if (ruleSettingMode !== 'recommended') {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const rulesVersion: string = require('../../../package.json').version;
 		defaultRules = await getDefaultRules(rulesVersion);
 	}

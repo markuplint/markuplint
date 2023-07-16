@@ -5,7 +5,8 @@
 		"target": "ES2020",
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"resolveJsonModule": true
 	},
 	"references": [
 		{
