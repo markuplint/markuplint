@@ -1,4 +1,5 @@
 import { parentPort } from 'worker_threads';
+
 import { MLEngine, version } from 'markuplint';
 
 /**

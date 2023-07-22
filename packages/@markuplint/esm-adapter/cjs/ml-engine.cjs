@@ -1,6 +1,7 @@
-const { Worker } = require('node:worker_threads');
-const { Emitter } = require('strict-event-emitter');
 const path = require('node:path');
+const { Worker } = require('node:worker_threads');
+
+const { Emitter } = require('strict-event-emitter');
 
 class MLEngine extends Emitter {
 	/**
