@@ -1,4 +1,6 @@
-const { createConfig } = require('../../../lib/cli/init/create-config');
+import { test, expect } from 'vitest';
+
+import { createConfig } from './create-config';
 
 test('none', () => {
 	const result = createConfig(

@@ -1,9 +1,8 @@
-const { MLRule } = require('@markuplint/ml-core');
+import { MLRule } from '@markuplint/ml-core';
+import { describe, it, test, expect } from 'vitest';
 
-const { setGlobal } = require('../lib/global-settings');
-const { mlTest, mlTestFile } = require('../lib/testing-tool');
-
-jest.setTimeout(10000);
+import { setGlobal } from './global-settings';
+import { mlTest, mlTestFile } from './testing-tool';
 
 setGlobal({
 	locale: 'en',
@@ -138,7 +137,7 @@ describe('async and sync rules', () => {
 		defaultValue: null,
 		defaultOptions: null,
 		verify(context) {
-			context.document.walkOn('Element', el => {});
+			void context.document.walkOn('Element', el => {});
 			context.report(syncReport);
 		},
 	});

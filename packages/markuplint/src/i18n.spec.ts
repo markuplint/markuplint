@@ -1,4 +1,6 @@
-const { i18n } = require('../lib/i18n');
+import { test, expect } from 'vitest';
+
+import { i18n } from './i18n';
 
 test('ja', async () => {
 	const locale = await i18n('ja');

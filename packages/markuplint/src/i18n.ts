@@ -14,14 +14,12 @@ async function getLocale() {
 export async function i18n(locale?: string): Promise<LocaleSet> {
 	locale = locale ?? (await getLocale()) ?? 'en';
 	const langCode = locale.split('-')[0] ?? locale;
-	const loadLocaleSet: LocaleSet | null = await import(`@markuplint/i18n/locales/${langCode}.json`, {
-		assert: { type: 'json' },
-	}).catch(() => null);
+	const loadLocaleSet: LocaleSet | null = await import(`@markuplint/i18n/locales/${langCode}.json`).catch(() => null);
 	// @ts-ignore
 	const localeSet: LocaleSet =
 		loadLocaleSet ??
 		// @ts-ignore
-		(await import('@markuplint/i18n/locales/en.json', { assert: { type: 'json' } }));
+		(await import('@markuplint/i18n/locales/en.json'));
 	return {
 		...localeSet,
 		locale: loadLocaleSet ? langCode : 'en',

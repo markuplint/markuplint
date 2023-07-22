@@ -1,4 +1,6 @@
-const { selectModules } = require('../../../lib/cli/init/install-module');
+import { test, expect } from 'vitest';
+
+import { selectModules } from './install-module';
 
 test('selectModules', () => {
 	expect(selectModules(['jsx'])).toStrictEqual(['markuplint', '@markuplint/jsx-parser', '@markuplint/react-spec']);

@@ -1,4 +1,6 @@
-const { getDefaultRules } = require('../../../lib/cli/init/get-default-rules');
+import { test, expect } from 'vitest';
+
+import { getDefaultRules } from './get-default-rules';
 
 test('v3.0.0', async () => {
 	const defaultRules = await getDefaultRules('3.0.0');
