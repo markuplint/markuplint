@@ -49,7 +49,7 @@
 			"url": "/packages/@markuplint/i18n/$schema.json"
 		}
 	],
-	"vitest.include": ["**/*.spec.ts"],
+	"vitest.include": ["**/*.spec.{ts,js}"],
 	"github.copilot.enable": {
 		"*": true
 	}

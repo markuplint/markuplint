@@ -1,4 +1,4 @@
-const path = require('node:path');
+import { describe, it, expect } from 'vitest';
 
 const { MLEngine, getVersion } = require('../cjs/index.cjs');
 
@@ -7,14 +7,16 @@ describe('test', () => {
 		const engine = await MLEngine.fromCode('<span><div></div></span>', {
 			name: 'test.html',
 			dirname: __dirname,
+			locale: 'en',
 		});
-		expect((await engine.exec())[0].violations).toEqual([
+		const result = await engine.exec();
+		expect(result[0].violations).toEqual([
 			{
 				ruleId: 'permitted-contents',
 				severity: 'error',
 				line: 1,
 				col: 7,
-				message: 'the "div" element is not allowed in the "span" element in this context',
+				message: 'The "div" element is not allowed in the "span" element in this context',
 				raw: '<div>',
 			},
 		]);
