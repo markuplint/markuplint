@@ -73,6 +73,7 @@
 				"displayName": "node",
 				"testRegex": "(\\.|/)spec\\.js$",
 				"testPathIgnorePatterns": [
+					"esm-adapter",
 					"scaffold",
 					"(\\.|/)browser\\.spec\\.js$"
 				],
