@@ -5,6 +5,7 @@
 	"author": "yusukehirao",
 	"license": "MIT",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"test": "npm-run-all --parallel test:*",
 		"test:build": "tsc --build",
