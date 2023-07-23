@@ -343,7 +343,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
                 pm: [npm, yarn]
-                env: [commonjs, esm, typescript]
+                env: [esm, typescript]
         steps:
             - uses: actions/checkout@v3
               with:

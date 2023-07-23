@@ -1,9 +1,9 @@
-const test = require('node:test');
-const assert = require('node:assert');
+import assert from 'node:assert';
+import test from 'node:test';
 
-const { MLEngine } = require('markuplint');
+import { MLEngine } from 'markuplint';
 
-test('commonjs', async () => {
+test('esm', async () => {
 	const file = await MLEngine.toMLFile('../../fixture/002.html');
 
 	const engine = new MLEngine(file, {
