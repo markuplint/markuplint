@@ -1,10 +1,11 @@
-const path = require('path');
+import path from 'node:path';
 
-const { mlTest, mlTestFile } = require('markuplint');
-// @ts-ignore This has not types
-const Prh = require('textlint-rule-prh');
+import { mlTest, mlTestFile } from 'markuplint';
+// @ts-ignore
+import Prh from 'textlint-rule-prh';
+import { test, expect } from 'vitest';
 
-const { text } = require('../lib/test-utils');
+import { text } from './test-utils.js';
 
 test('is test 1', async () => {
 	const { violations } = await mlTest(
