@@ -36,6 +36,6 @@
 		"debug": "^4.3.4",
 		"is-plain-object": "^5.0.0",
 		"tslib": "^2.6.0",
-		"type-fest": "^3.12.0"
+		"type-fest": "^4.0.0"
 	}
 }

@@ -1,11 +1,11 @@
-const { Worker } = require('node:worker_threads');
 const path = require('node:path');
+const { Worker } = require('node:worker_threads');
 
 /**
  *
  * @returns {Promise<string>}
  */
-async function getVersion() {
+function getVersion() {
 	const worker = new Worker(path.resolve(__dirname, '..', 'esm', 'index.mjs'), { type: 'module' });
 	return new Promise((resolve, reject) => {
 		worker.once('message', args => {

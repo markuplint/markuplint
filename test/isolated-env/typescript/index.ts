@@ -13,3 +13,5 @@ async function main() {
 
 	await engine.exec();
 }
+
+await main();

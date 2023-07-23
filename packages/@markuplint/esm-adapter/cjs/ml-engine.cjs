@@ -1,6 +1,7 @@
-const { Worker } = require('node:worker_threads');
-const { Emitter } = require('strict-event-emitter');
 const path = require('node:path');
+const { Worker } = require('node:worker_threads');
+
+const { Emitter } = require('strict-event-emitter');
 
 class MLEngine extends Emitter {
 	/**
@@ -34,22 +35,24 @@ class MLEngine extends Emitter {
 	}
 
 	exec() {
-		this.#worker.postMessage({ method: 'exec' });
-
-		this.#worker.on('message', args => {
-			if (args.method !== 'event:lint') {
-				return;
-			}
-			this.emit('lint', ...args.data);
-		});
-
 		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
+			this.#worker.postMessage({ method: 'exec' });
+
+			const messageHandler = args => {
 				if (args.method === 'exec:return') {
+					this.#worker.off('message', messageHandler);
 					resolve(args.data);
 					return;
 				}
-			});
+
+				if (args.method !== 'event:lint') {
+					return;
+				}
+
+				this.emit('lint', ...args.data);
+			};
+
+			this.#worker.on('message', messageHandler);
 		});
 	}
 
