@@ -32,6 +32,6 @@
 		"chrono-node": "^2.6.3",
 		"debug": "^4.3.4",
 		"tslib": "^2.6.0",
-		"type-fest": "^3.12.0"
+		"type-fest": "^4.0.0"
 	}
 }
