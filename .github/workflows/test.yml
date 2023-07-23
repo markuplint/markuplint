@@ -194,7 +194,7 @@ jobs:
                 include:
                     - node: 20
                       os: ubuntu-latest
-                      shard: [1/4, 2/4, 3/4, 4/4]
+                      shard: 1/1
         steps:
             - uses: actions/checkout@v3
               with:
@@ -255,7 +255,7 @@ jobs:
                 include:
                     - node: 20
                       os: ubuntu-latest
-                      shard: [1/4, 2/4, 3/4, 4/4]
+                      shard: 1/1
         steps:
             - uses: actions/checkout@v3
               with:
