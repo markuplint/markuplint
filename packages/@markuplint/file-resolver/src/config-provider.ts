@@ -1,9 +1,10 @@
-import type { MLFile } from './ml-file';
-import type { ConfigSet } from './types';
+import type { MLFile } from './ml-file/index.js';
+import type { ConfigSet } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
-import path from 'path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 
 import { mergeConfig } from '@markuplint/ml-config';
 import { getPreset } from '@markuplint/ml-core';
@@ -11,9 +12,11 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { load as loadConfig, search } from './cosmiconfig';
-import { cacheClear, resolvePlugins } from './resolve-plugins';
-import { fileExists, uuid } from './utils';
+import { load as loadConfig, search } from './cosmiconfig.js';
+import { cacheClear, resolvePlugins } from './resolve-plugins.js';
+import { fileExists, uuid } from './utils.js';
+
+const require = createRequire(import.meta.url);
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -103,7 +106,7 @@ export class ConfigProvider {
 			return null;
 		}
 		const { filePath, config } = res;
-		const pathResolvedConfig = this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this._pathResolve(config, filePath);
 		this.#store.set(filePath, pathResolvedConfig);
 		return filePath;
 	}
@@ -123,7 +126,7 @@ export class ConfigProvider {
 		if (isPreset(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
-			const pathResolvedConfig = this._pathResolve(config, filePath);
+			const pathResolvedConfig = await this._pathResolve(config, filePath);
 
 			this.#store.set(filePath, pathResolvedConfig);
 			return pathResolvedConfig;
@@ -134,7 +137,7 @@ export class ConfigProvider {
 			return null;
 		}
 
-		if (!moduleExists(filePath) && !path.isAbsolute(filePath)) {
+		if (!(await moduleExists(filePath)) && !path.isAbsolute(filePath)) {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
@@ -143,7 +146,7 @@ export class ConfigProvider {
 			return null;
 		}
 
-		const pathResolvedConfig = this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this._pathResolve(config, filePath);
 
 		this.#store.set(filePath, pathResolvedConfig);
 		return pathResolvedConfig;
@@ -176,16 +179,16 @@ export class ConfigProvider {
 		};
 	}
 
-	private _pathResolve(config: Config, filePath: string): Config {
+	private async _pathResolve(config: Config, filePath: string): Promise<Config> {
 		const dir = path.dirname(filePath);
 		return {
 			...config,
-			extends: pathResolve(dir, config.extends),
-			plugins: pathResolve(dir, config.plugins, ['name']),
-			parser: pathResolve(dir, config.parser),
-			specs: pathResolve(dir, config.specs),
-			excludeFiles: pathResolve(dir, config.excludeFiles),
-			overrides: pathResolve(dir, config.overrides, undefined, true),
+			extends: await pathResolve(dir, config.extends),
+			plugins: await pathResolve(dir, config.plugins, ['name']),
+			parser: await pathResolve(dir, config.parser),
+			specs: await pathResolve(dir, config.specs),
+			excludeFiles: await pathResolve(dir, config.excludeFiles),
+			overrides: await pathResolve(dir, config.overrides, undefined, true),
 		};
 	}
 
@@ -256,7 +259,7 @@ export class ConfigProvider {
 }
 
 async function load(filePath: string, cache: boolean) {
-	if (!fileExists(filePath) && moduleExists(filePath)) {
+	if (!fileExists(filePath) && (await moduleExists(filePath))) {
 		const mod = await import(filePath);
 		const config: Config | null = mod?.default ?? null;
 		return config;
@@ -268,9 +271,9 @@ async function load(filePath: string, cache: boolean) {
 	return res.config;
 }
 
-function pathResolve<
+async function pathResolve<
 	T extends string | readonly (string | Record<string, unknown>)[] | Readonly<Record<string, unknown>> | undefined,
->(dir: string, filePath?: T, resolveProps?: readonly string[], resolveKey = false): T {
+>(dir: string, filePath?: T, resolveProps?: readonly string[], resolveKey = false): Promise<T> {
 	if (filePath == null) {
 		// @ts-ignore
 		return undefined;
@@ -281,19 +284,19 @@ function pathResolve<
 	}
 	if (Array.isArray(filePath)) {
 		// @ts-ignore
-		return filePath.map(fp => pathResolve(dir, fp, resolveProps));
+		return Promise.all(filePath.map(fp => pathResolve(dir, fp, resolveProps)));
 	}
 	const res: Record<string, unknown> = {};
 	for (const [key, fp] of Object.entries(filePath)) {
 		let _key = key;
 		if (resolveKey) {
-			_key = resolve(dir, key);
+			_key = await resolve(dir, key);
 		}
 		if (typeof fp === 'string') {
 			if (!resolveProps) {
-				res[_key] = resolve(dir, fp);
+				res[_key] = await resolve(dir, fp);
 			} else if (resolveProps.includes(key)) {
-				res[_key] = resolve(dir, fp);
+				res[_key] = await resolve(dir, fp);
 			} else {
 				res[_key] = fp;
 			}
@@ -305,8 +308,8 @@ function pathResolve<
 	return res;
 }
 
-function resolve(dir: string, pathOrModName: string) {
-	if (moduleExists(pathOrModName) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
+async function resolve(dir: string, pathOrModName: string) {
+	if ((await moduleExists(pathOrModName)) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
 		return pathOrModName;
 	}
 	const bangAndPath = /^(!)(.*)/.exec(pathOrModName) ?? [];
@@ -316,19 +319,41 @@ function resolve(dir: string, pathOrModName: string) {
 	return bang + absPath;
 }
 
-function moduleExists(name: string) {
+async function moduleExists(name: string) {
 	try {
-		require.resolve(name);
+		await import(name);
 	} catch (err) {
-		if (
-			// @ts-ignore
-			'code' in err &&
-			// @ts-ignore
-			err.code === 'MODULE_NOT_FOUND'
-		) {
-			return false;
+		if (err instanceof Error) {
+			if (/^Parse failure/i.test(err.message)) {
+				return true;
+			}
 		}
-		throw err;
+
+		try {
+			require.resolve(name);
+		} catch (err) {
+			if (
+				// @ts-ignore
+				'code' in err &&
+				// @ts-ignore
+				err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+			) {
+				// Even if there are issues with the fields,
+				// assume that the module exists and return true.
+				return true;
+			}
+
+			if (
+				// @ts-ignore
+				'code' in err &&
+				// @ts-ignore
+				err.code === 'MODULE_NOT_FOUND'
+			) {
+				return false;
+			}
+
+			throw err;
+		}
 	}
 
 	return true;
