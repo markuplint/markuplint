@@ -1,11 +1,11 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types.js';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { choice } from './choice';
-import { countPattern } from './count-pattern';
-import { transparent } from './transparent';
-import { isChoice, isTransparent } from './utils';
+import { choice } from './choice.js';
+import { countPattern } from './count-pattern.js';
+import { transparent } from './transparent.js';
+import { isChoice, isTransparent } from './utils.js';
 
 /**
  * Check content condition

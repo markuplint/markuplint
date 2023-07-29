@@ -1,10 +1,10 @@
-import type { ChildNode, Result, Specs } from './types';
+import type { ChildNode, Result, Specs } from './types.js';
 import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
-import { cmLog } from './debug';
-import { cleanObject, matches } from './utils';
+import { cmLog } from './debug.js';
+import { cleanObject, matches } from './utils.js';
 
 export type SelectorResult = Result<'UNMATCHED_SELECTOR_BUT_MAY_EMPTY' | 'MISSING_NODE' | 'UNMATCHED_SELECTORS'>;
 

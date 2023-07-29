@@ -1,6 +1,6 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { toNormalizedValue } from '../helpers';
+import { toNormalizedValue } from '../helpers.js';
 
 export default createRule({
 	defaultSeverity: 'warning',

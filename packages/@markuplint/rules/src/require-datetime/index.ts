@@ -1,9 +1,9 @@
-import type { Lang } from './types';
+import type { Lang } from './types.js';
 
 import { createRule } from '@markuplint/ml-core';
 import { check } from '@markuplint/types';
 
-import { getCandidateDatetimeString } from './utils';
+import { getCandidateDatetimeString } from './utils.js';
 
 type Options = {
 	langs?: Lang[];

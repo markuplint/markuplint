@@ -1,10 +1,10 @@
-import type { ChildNode, MatchedReason, Options, Result, Specs } from './types';
+import type { ChildNode, MatchedReason, Options, Result, Specs } from './types.js';
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { bgBlue, bgGreen, cmLog } from './debug';
-import { order } from './order';
-import { Collection, modelLog } from './utils';
+import { bgBlue, bgGreen, cmLog } from './debug.js';
+import { order } from './order.js';
+import { Collection, modelLog } from './utils.js';
 
 const indexes = new WeakMap<Result<MatchedReason>, number>();
 

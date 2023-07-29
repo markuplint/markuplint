@@ -1,13 +1,18 @@
 {
 	"name": "@markuplint/rules",
-	"version": "3.12.0",
+	"version": "4.0.0-alpha.0",
 	"description": "Built-in rules of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},

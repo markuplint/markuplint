@@ -44,8 +44,7 @@ async function importPresetRules() {
 	}
 	const modName = '@markuplint/rules';
 	const mod = await import(modName);
-	// TODO: Change to refer to property name when the module updates to ESM
-	const presetRules: Record<string, AnyRuleSeed> = mod.default.default ? mod.default.default : mod.default;
+	const presetRules: Record<string, AnyRuleSeed> = mod.default;
 	const ruleList = Object.entries(presetRules).map(([name, seed]) => {
 		const rule = new MLRule({
 			name,

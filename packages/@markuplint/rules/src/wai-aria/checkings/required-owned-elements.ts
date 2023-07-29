@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
