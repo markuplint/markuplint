@@ -8,6 +8,7 @@ export default defineConfig({
 			'./packages/@markuplint/rule-textlint/**/*.spec.ts',
 			'./packages/@markuplint/rules/**/*.spec.ts',
 			'./packages/@markuplint/file-resolver/**/*.spec.ts',
+			'./packages/@markuplint/create-rule-helper/src/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},

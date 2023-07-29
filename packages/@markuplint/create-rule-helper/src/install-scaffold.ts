@@ -1,10 +1,14 @@
-import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
 import fs from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { fsExists } from './fs-exists';
-import { transfer } from './transfer';
+import { fsExists } from './fs-exists.js';
+import { transfer } from './transfer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export async function installScaffold(
 	scaffoldType: 'core' | 'project' | 'package',

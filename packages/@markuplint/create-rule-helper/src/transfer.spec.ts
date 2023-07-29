@@ -1,8 +1,10 @@
-const { rm } = require('node:fs/promises');
-const { resolve, relative, sep } = require('node:path');
+import { rm } from 'node:fs/promises';
+import { resolve, relative, sep } from 'node:path';
 
-const glob = require('../lib/glob').default;
-const { transfer } = require('../lib/transfer');
+import { test, expect, afterAll, beforeAll } from 'vitest';
+
+import glob from './glob.js';
+import { transfer } from './transfer.js';
 
 const SCAFFOLD = resolve(__dirname, '..', 'scaffold');
 const TEST_SANDBOX = resolve(__dirname, '..', '__test_sandbox__');
@@ -11,7 +13,7 @@ async function removeTestDir() {
 	await rm(TEST_SANDBOX, { recursive: true, force: true });
 }
 
-async function delay(ms) {
+async function delay(ms: number) {
 	await new Promise(r => setTimeout(r, ms));
 }
 

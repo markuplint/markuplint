@@ -1,11 +1,13 @@
-const { rm, readdir } = require('node:fs/promises');
-const { resolve, sep } = require('node:path');
+import { rm, readdir } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 
-const { createRuleToCore, getRulesDir } = require('../lib/create-rule-to-core');
+import { test, expect, afterAll, beforeAll } from 'vitest';
+
+import { createRuleToCore, getRulesDir } from './create-rule-to-core.js';
 
 const sandboxDirName = '__foo';
 
-async function getTestDir(testDirName) {
+async function getTestDir(testDirName: string) {
 	const rulesDir = await getRulesDir();
 	return resolve(rulesDir, testDirName);
 }
@@ -17,7 +19,7 @@ async function removeTestDir() {
 	await rm(sandboxDirTest, { recursive: true, force: true });
 }
 
-async function delay(ms) {
+async function delay(ms: number) {
 	await new Promise(r => setTimeout(r, ms));
 }
 

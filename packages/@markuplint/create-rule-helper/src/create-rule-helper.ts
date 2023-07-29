@@ -1,8 +1,8 @@
-import type { CreateRuleHelperParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleHelperParams, CreateRuleHelperResult } from './types.js';
 
-import { createRulePackage } from './create-rule-package';
-import { createRuleToCore } from './create-rule-to-core';
-import { createRuleToProject } from './create-rule-to-project';
+import { createRulePackage } from './create-rule-package.js';
+import { createRuleToCore } from './create-rule-to-core.js';
+import { createRuleToProject } from './create-rule-to-project.js';
 
 export async function createRuleHelper(params: CreateRuleHelperParams): Promise<CreateRuleHelperResult> {
 	switch (params.purpose) {

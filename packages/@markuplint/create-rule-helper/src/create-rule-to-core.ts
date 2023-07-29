@@ -1,11 +1,11 @@
-import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
-import path from 'path';
+import path from 'node:path';
 
-import { CreateRuleHelperError } from './create-rule-helper-error';
-import { fsExists } from './fs-exists';
-import { installScaffold } from './install-scaffold';
-import { searchCoreRepository } from './search-core-repository';
+import { CreateRuleHelperError } from './create-rule-helper-error.js';
+import { fsExists } from './fs-exists.js';
+import { installScaffold } from './install-scaffold.js';
+import { searchCoreRepository } from './search-core-repository.js';
 
 const rulesRelDir = ['packages', '@markuplint', 'rules', 'src'];
 
