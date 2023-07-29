@@ -1,6 +1,6 @@
 import type { LoaderSync, Loader } from 'cosmiconfig';
 
-import path from 'path';
+import path from 'node:path';
 
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';

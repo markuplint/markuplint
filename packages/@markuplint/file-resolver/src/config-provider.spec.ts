@@ -1,11 +1,21 @@
-const path = require('path');
+import path from 'node:path';
 
-const { ConfigProvider } = require('../lib/config-provider');
-const { getFile } = require('../lib/ml-file');
+import { test, expect, vi } from 'vitest';
+
+import { ConfigProvider } from './config-provider.js';
+import { getFile } from './ml-file/index.js';
+
+vi.mock('packaged-config', () => {
+	return {
+		default: {
+			mock: true,
+		},
+	};
+});
 
 const configProvider = new ConfigProvider();
 
-it('001 + 002', async () => {
+test('001 + 002', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '002', '.markuplintrc.json');
 	const file = getFile(path.resolve(testDir, '002', 'target.html'));
@@ -65,7 +75,7 @@ it('001 + 002', async () => {
 	});
 });
 
-it('001 + 002 + 003', async () => {
+test('001 + 002 + 003', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const file = getFile(path.resolve(testDir, '003', 'dir', 'target.html'));
 	const key = await configProvider.search(file);
@@ -149,7 +159,7 @@ it('001 + 002 + 003', async () => {
 	});
 });
 
-it('Deep target', async () => {
+test('Deep target', async () => {
 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', 'deep-target.html'));
@@ -164,7 +174,7 @@ it('Deep target', async () => {
 	});
 	expect(configSet.errs.length).toBe(1);
 	expect(configSet.errs[0] instanceof ReferenceError).toBe(true);
-	expect(configSet.errs[0].message).toBe(`Circular reference detected: ${key}`);
+	expect(configSet.errs[0]?.message).toBe(`Circular reference detected: ${key}`);
 });
 
 test('Import packaged config (Issue: #403)', async () => {

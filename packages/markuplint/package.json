@@ -9,8 +9,7 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js",
-			"types": "./lib/index.d.ts"
+			"import": "./lib/index.js"
 		}
 	},
 	"types": "./lib/index.d.ts",
@@ -27,7 +26,7 @@
 	},
 	"dependencies": {
 		"@markuplint/create-rule-helper": "3.12.0",
-		"@markuplint/file-resolver": "3.12.0",
+		"@markuplint/file-resolver": "4.0.0-alpha.0",
 		"@markuplint/html-parser": "3.10.0",
 		"@markuplint/html-spec": "3.11.0",
 		"@markuplint/i18n": "3.9.0",

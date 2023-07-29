@@ -1,10 +1,12 @@
-const path = require('path');
+import path from 'node:path';
 
-const { resolvePlugins } = require('../lib/resolve-plugins');
+import { test, expect } from 'vitest';
+
+import { resolvePlugins } from './resolve-plugins.js';
 
 test('resolvePlugins', async () => {
 	const plugins = await resolvePlugins([path.resolve(__dirname, '..', 'test', 'plugins', '001.js')]);
-	expect(plugins[0].name).toBe('foo');
+	expect(plugins[0]?.name).toBe('foo');
 	// @ts-ignore
 	expect(await plugins[0].rules?.bar?.verify?.()).toEqual([]);
 });
@@ -12,5 +14,5 @@ test('resolvePlugins', async () => {
 test('resolve name', async () => {
 	const filePath = path.resolve(__dirname, '..', 'test', 'plugins', '002.js');
 	const plugins = await resolvePlugins([filePath]);
-	expect(plugins[0].name).toBe(filePath.toLowerCase().replace(/\s+|\/|\\|\./g, '-'));
+	expect(plugins[0]?.name).toBe(filePath.toLowerCase().replace(/\s+|\/|\\|\./g, '-'));
 });

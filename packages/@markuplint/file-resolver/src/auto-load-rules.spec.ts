@@ -1,6 +1,13 @@
-const { Ruleset } = require('@markuplint/ml-core');
+import { Ruleset } from '@markuplint/ml-core';
+import { test, expect, vi } from 'vitest';
 
-const { autoLoadRules } = require('../lib/auto-load-rules');
+import { autoLoadRules } from './auto-load-rules.js';
+
+vi.mock('markuplint-rule-fake', () => {
+	return {
+		default: {},
+	};
+});
 
 test('built-in-rules', async () => {
 	const r = await autoLoadRules(

@@ -1177,6 +1177,27 @@
     validate-npm-package-name "5.0.0"
     yargs-parser "20.2.4"
 
+"@markuplint/file-resolver@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/file-resolver/-/file-resolver-3.12.0.tgz#24aae0924443e580237a6ebd7fb71196301044b5"
+  integrity sha512-LFCnRsKsZF23+JxGCw9yPDKhsh5dDqec3IBFJIal5VTNiVQDPv54u3EY6g0fP9mkhsapyb/igQx0wHvaQA8X6w==
+  dependencies:
+    "@markuplint/html-parser" "3.10.0"
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/ml-config" "3.11.0"
+    "@markuplint/ml-core" "3.12.0"
+    "@markuplint/ml-spec" "3.11.0"
+    "@markuplint/parser-utils" "3.10.0"
+    "@markuplint/selector" "3.11.0"
+    "@markuplint/shared" "3.8.0"
+    cosmiconfig "^8.2.0"
+    cosmiconfig-typescript-loader "^4.3.0"
+    glob "^10.3.2"
+    ignore "^5.2.4"
+    jsonc "^2.0.0"
+    minimatch "^9.0.3"
+    tslib "^2.6.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

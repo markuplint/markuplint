@@ -1,6 +1,8 @@
-const { MLFile } = require('../../lib/ml-file/ml-file');
+import { test, expect } from 'vitest';
 
-it('file path', () => {
+import { MLFile } from './ml-file.js';
+
+test('file path', () => {
 	const file = new MLFile('/dir/file');
 	expect(file.nPath).toBe('/dir/file');
 	expect(file.nDirname).toBe('/dir');
@@ -10,7 +12,7 @@ it('file path', () => {
 	expect(file2.nDirname).toBe('/dir/dir2');
 });
 
-it('file matches', () => {
+test('file matches', () => {
 	const file = new MLFile('/dir/file');
 	expect(file.matches('/dir/*')).toBeTruthy();
 	expect(file.matches('/**/*')).toBeTruthy();
@@ -26,7 +28,7 @@ it('file matches', () => {
 	expect(file2.matches('/dir/**/*.{html,css}')).toBeTruthy();
 });
 
-it('ignored', () => {
+test('ignored', () => {
 	const file = new MLFile('/dir/file');
 	expect(file.ignored(['*'])).toBeTruthy();
 	expect(file.ignored(['dir'])).toBeTruthy();
@@ -40,7 +42,7 @@ it('ignored', () => {
 	expect(file.ignored(['*', '!dir', 'dir/*', '!dir/file'])).toBeFalsy();
 });
 
-it('file exists', async () => {
+test('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
 	expect(await file.isExist()).toBeTruthy();
 });
