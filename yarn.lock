@@ -1177,6 +1177,18 @@
     validate-npm-package-name "5.0.0"
     yargs-parser "20.2.4"
 
+"@markuplint/create-rule-helper@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/create-rule-helper/-/create-rule-helper-3.12.0.tgz#191f232c602e5375fcbe6c6c60196a353edd3f55"
+  integrity sha512-NEtgq+QU0JwOFV6hKzfJDxPAQOvoXigiG83g4Fo/1fD2D2SNq7xPV0aDx5yEqNf6RcFPfnlVsp8eCTrVCU6oyg==
+  dependencies:
+    "@markuplint/ml-core" "3.12.0"
+    glob "^10.3.2"
+    prettier "^2.8.8"
+    ts-node "^10.9.1"
+    tslib "^2.6.0"
+    typescript "^5.1.6"
+
 "@markuplint/file-resolver@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@markuplint/file-resolver/-/file-resolver-3.12.0.tgz#24aae0924443e580237a6ebd7fb71196301044b5"
@@ -1197,6 +1209,26 @@
     jsonc "^2.0.0"
     minimatch "^9.0.3"
     tslib "^2.6.0"
+
+"@markuplint/ml-core@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-3.12.0.tgz#97049c87b68406716c5a8b5f4665a2b32161b67d"
+  integrity sha512-R689jNPz86m2oAc6Ag+pVX3SBg7NclH/jlChiuc337uCWKFvCCUBR2+SFffZCrQ+s8BruyBau9hTK/jkAVrRDQ==
+  dependencies:
+    "@markuplint/config-presets" "3.8.0"
+    "@markuplint/html-parser" "3.10.0"
+    "@markuplint/html-spec" "3.11.0"
+    "@markuplint/i18n" "3.9.0"
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/ml-config" "3.11.0"
+    "@markuplint/ml-spec" "3.11.0"
+    "@markuplint/parser-utils" "3.10.0"
+    "@markuplint/selector" "3.11.0"
+    "@types/debug" "^4.1.8"
+    debug "^4.3.4"
+    is-plain-object "^5.0.0"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
 
 "@markuplint/rules@3.12.0":
   version "3.12.0"

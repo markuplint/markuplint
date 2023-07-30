@@ -1,5 +1,9 @@
-const { createRule } = require('../../../lib/ml-rule/create-test-rule');
-const { createTestDocument } = require('../../../lib/test');
+// @ts-nocheck
+
+import { describe, test, expect } from 'vitest';
+
+import { createRule } from '../ml-rule/create-test-rule.js';
+import { createTestDocument } from '../test/index.js';
 
 describe('createRule', () => {
 	test('defaultValue', () => {

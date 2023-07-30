@@ -1,5 +1,5 @@
-import type { MLAttr } from '../node/attr';
-import type { MLNode } from '../node/node';
+import type { MLAttr } from '../node/attr.js';
+import type { MLNode } from '../node/node.js';
 
 export function nodeListToDebugMaps(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

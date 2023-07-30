@@ -1,8 +1,8 @@
-import type { CommentNodeType } from './types';
+import type { CommentNodeType } from './types.js';
 import type { MLASTComment } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLCharacterData } from './character-data';
+import { MLCharacterData } from './character-data.js';
 
 export class MLComment<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLCharacterData<T, O, MLASTComment>

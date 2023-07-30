@@ -1,6 +1,6 @@
-import type { RuleSeed } from './types';
-import type { Ruleset } from '..';
-import type { MLDocument } from '../ml-dom/node/document';
+import type { RuleSeed } from './types.js';
+import type { MLDocument } from '../ml-dom/node/document.js';
+import type Ruleset from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
 	GlobalRuleInfo,
@@ -15,9 +15,10 @@ import type {
 } from '@markuplint/ml-config';
 
 import { deleteUndefProp } from '@markuplint/ml-config';
+// @ts-ignore
 import { isPlainObject } from 'is-plain-object';
 
-import { MLRuleContext } from './ml-rule-context';
+import { MLRuleContext } from './ml-rule-context.js';
 
 export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	readonly defaultOptions: O;

@@ -1,5 +1,5 @@
-import type { MLNode } from '../node/node';
-import type { MLText } from '../node/text';
+import type { MLNode } from '../node/node.js';
+import type { MLText } from '../node/text.js';
 
 /**
  *

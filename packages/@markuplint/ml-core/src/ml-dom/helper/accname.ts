@@ -1,9 +1,9 @@
-import type { MLElement } from '../node/element';
+import type { MLElement } from '../node/element.js';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getAccname as get, getComputedRole } from '@markuplint/ml-spec';
 
-import { log } from '../../debug';
+import { log } from '../../debug.js';
 
 const accnameLog = log.extend('accname');
 

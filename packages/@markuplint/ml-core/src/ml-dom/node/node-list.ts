@@ -1,5 +1,5 @@
-import type { MLChildNode } from './child-node';
-import type { MLElement } from './element';
+import type { MLChildNode } from './child-node.js';
+import type { MLElement } from './element.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChildNode<T, O>>

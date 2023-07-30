@@ -9,6 +9,7 @@ export default defineConfig({
 			'./packages/@markuplint/rules/**/*.spec.ts',
 			'./packages/@markuplint/file-resolver/**/*.spec.ts',
 			'./packages/@markuplint/create-rule-helper/src/**/*.spec.ts',
+			'./packages/@markuplint/ml-core/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},

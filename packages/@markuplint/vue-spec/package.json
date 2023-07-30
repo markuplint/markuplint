@@ -19,6 +19,6 @@
 		"@markuplint/ml-spec": "3.11.0"
 	},
 	"peerDependencies": {
-		"@markuplint/ml-core": "3.x"
+		"@markuplint/ml-core": ">=3.x"
 	}
 }

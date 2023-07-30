@@ -1,5 +1,9 @@
-const { createRule } = require('../../lib/ml-rule/create-test-rule');
-const { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } = require('../../lib/test');
+// @ts-nocheck
+
+import { describe, test, expect } from 'vitest';
+
+import { createRule } from './ml-rule/create-test-rule.js';
+import { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } from './test/index.js';
 
 describe('AST', () => {
 	test('node count', () => {
@@ -11,7 +15,7 @@ describe('AST', () => {
 		const nodeList = createTestNodeList('<div>text</div>');
 		expect(nodeList[0].raw).toBe('<div>');
 		expect(nodeList[1].raw).toBe('text');
-		expect(nodeList[0].closeTag?.raw).toBe('</div>');
+		expect(nodeList[0].closeTag.raw).toBe('</div>');
 	});
 
 	test('raw', () => {
@@ -35,10 +39,10 @@ describe('AST', () => {
 		expect(tokens[2].raw).toBe('\n        text\n    ');
 		expect(tokens[3].raw).toBe('</div>');
 		expect(tokens[0].prevToken).toBe(null);
-		expect(tokens[1].prevToken?.raw).toBe('\n    ');
-		expect(tokens[2].prevToken?.raw).toBe('<div>');
-		expect(tokens[1].prevToken?.uuid).toBe(tokens[0].uuid);
-		expect(tokens[2].prevToken?.uuid).toBe(tokens[1].uuid);
+		expect(tokens[1].prevToken.raw).toBe('\n    ');
+		expect(tokens[2].prevToken.raw).toBe('<div>');
+		expect(tokens[1].prevToken.uuid).toBe(tokens[0].uuid);
+		expect(tokens[2].prevToken.uuid).toBe(tokens[1].uuid);
 	});
 
 	test('raw', () => {

@@ -1,5 +1,5 @@
-import type { CheckerReport } from './types';
-import type { MLDocument } from '../ml-dom/node/document';
+import type { CheckerReport } from './types.js';
+import type { MLDocument } from '../ml-dom/node/document.js';
 import type { LocaleSet, Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue } from '@markuplint/ml-config';
 

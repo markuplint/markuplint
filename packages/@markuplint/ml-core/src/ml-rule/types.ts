@@ -1,5 +1,5 @@
-import type { MLRuleContext } from './ml-rule-context';
-import type { Attr, Element } from '../ml-dom';
+import type { MLRuleContext } from './ml-rule-context.js';
+import type { Attr, Element } from '../ml-dom/index.js';
 import type { Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
