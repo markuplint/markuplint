@@ -2057,6 +2057,13 @@
   resolved "https://registry.yarnpkg.com/@types/bcp-47/-/bcp-47-1.0.0.tgz#9b0482cab6cbefe4a18e2aee8d4f061951feb969"
   integrity sha512-KNuP/hxVUX2+H5Gps3kCm1QtBWczQ82P2GEK61bcKqk7L0UkXWnsLOBoLm6lwmntnQwcGGSl/V3qwAtQM+aGhg==
 
+"@types/bcp-47@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bcp-47/-/bcp-47-2.0.0.tgz#122ac13ddfd89b01dffb1269fe0146ea322018b8"
+  integrity sha512-Hex9UVfVgC02d1aLXQo/Tszl7h+Awyi8GaiA99fMJNzIG7zfEpWjsuKyRUpSfuocAziSykmmz2Pt7GskgpDiLw==
+  dependencies:
+    bcp-47 "*"
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -2118,7 +2125,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/css-tree@^2.0.1":
+"@types/css-tree@^2.0.1", "@types/css-tree@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@types/css-tree/-/css-tree-2.3.1.tgz#f359cf7ad9318d51b173b923bb8e8d81e21329a1"
   integrity sha512-3m636Jz4d9d+lHVMp6FNLsUWQrfOx1xpm1SBxPbQYSNNgXMe+XswcsDeo1ldyULiuzYyWKk1kmvkLTgNq+215Q==
@@ -3514,6 +3521,15 @@ batch@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==
+
+bcp-47@*, bcp-47@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/bcp-47/-/bcp-47-2.1.0.tgz#7e80734c3338fe8320894981dccf4968c3092df6"
+  integrity sha512-9IIS3UPrvIa1Ej+lVDdDwO7zLehjqsaByECw0bu2RRGP73jALm6FYbzI5gWbgHLvNdkvfXB5YrSbocZdOS0c0w==
+  dependencies:
+    is-alphabetical "^2.0.0"
+    is-alphanumerical "^2.0.0"
+    is-decimal "^2.0.0"
 
 bcp-47@1:
   version "1.0.8"
@@ -7313,6 +7329,11 @@ is-alphabetical@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-alphabetical/-/is-alphabetical-1.0.4.tgz#9e7d6b94916be22153745d184c298cbf986a686d"
   integrity sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==
 
+is-alphabetical@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/is-alphabetical/-/is-alphabetical-2.0.1.tgz#01072053ea7c1036df3c7d19a6daaec7f19e789b"
+  integrity sha512-FWyyY60MeTNyeSRpkM2Iry0G9hpr7/9kD40mD/cGQEuilcZYS4okz8SN2Q6rLCJ8gbCt6fN+rC+6tMGS99LaxQ==
+
 is-alphanumerical@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-alphanumerical/-/is-alphanumerical-1.0.4.tgz#7eb9a2431f855f6b1ef1a78e326df515696c4dbf"
@@ -7320,6 +7341,14 @@ is-alphanumerical@^1.0.0:
   dependencies:
     is-alphabetical "^1.0.0"
     is-decimal "^1.0.0"
+
+is-alphanumerical@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/is-alphanumerical/-/is-alphanumerical-2.0.1.tgz#7c03fbe96e3e931113e57f964b0a368cc2dfd875"
+  integrity sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==
+  dependencies:
+    is-alphabetical "^2.0.0"
+    is-decimal "^2.0.0"
 
 is-arguments@^1.0.4:
   version "1.1.1"
@@ -7419,6 +7448,11 @@ is-decimal@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-decimal/-/is-decimal-1.0.4.tgz#65a3a5958a1c5b63a706e1b333d7cd9f630d3fa5"
   integrity sha512-RGdriMmQQvZ2aqaQq3awNA6dCGtKpiDFcOzrTWrDAT2MiWrKQVPmxLGHl7Y2nNu6led0kEyoX0enY0qXYsv9zw==
+
+is-decimal@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/is-decimal/-/is-decimal-2.0.1.tgz#9469d2dc190d0214fd87d78b78caecc0cc14eef7"
+  integrity sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==
 
 is-descriptor@^1.0.2:
   version "1.0.2"
@@ -8545,6 +8579,11 @@ leven@3, leven@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/leven/-/leven-3.1.0.tgz#77891de834064cccba82ae7842bb6b14a13ed7f2"
   integrity sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==
+
+leven@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/leven/-/leven-4.0.0.tgz#b9c39c803f835950fabef9e122a9b47b95708710"
+  integrity sha512-puehA3YKku3osqPlNuzGDUHq8WpwXupUg1V6NXdV38G+gr+gkBwFC8g1b/+YcIvp8gnqVIus+eJCH/eGsRmJNw==
 
 levn@^0.4.1:
   version "0.4.1"

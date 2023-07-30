@@ -25,14 +25,14 @@
 		"schema": "ts-node './gen/types.ts'; json2ts './types.schema.json' > './src/types.schema.ts'; prettier './src/types.schema.ts' './types.schema.json' --write; eslint './src/types.schema.ts' --fix; tsc;"
 	},
 	"dependencies": {
-		"@types/bcp-47": "1",
-		"@types/css-tree": "^2.0.1",
+		"@types/bcp-47": "^2.0.0",
+		"@types/css-tree": "^2.3.1",
 		"@types/debug": "^4.1.8",
 		"@types/whatwg-mimetype": "3.0.0",
-		"bcp-47": "1",
+		"bcp-47": "^2.1.0",
 		"css-tree": "^2.3.1",
 		"debug": "^4.3.4",
-		"leven": "3",
+		"leven": "^4.0.0",
 		"type-fest": "^4.0.0",
 		"whatwg-mimetype": "^3.0.0"
 	}
