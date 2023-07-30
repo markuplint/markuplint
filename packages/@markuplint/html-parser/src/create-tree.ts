@@ -23,7 +23,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
-import parseRawTag from './parse-raw-tag';
+import parseRawTag from './parse-raw-tag.js';
 
 interface TraversalNode {
 	readonly childNodes?: readonly P5Node[];

@@ -1,4 +1,4 @@
-import type { ASTNode, VueTokens } from './vue-parser';
+import type { ASTNode, VueTokens } from './vue-parser/index.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -12,8 +12,8 @@ import type {
 import { parseRawTag } from '@markuplint/html-parser';
 import { flattenNodes, getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import vueParse from './vue-parser';
+import { attr } from './attr.js';
+import vueParse from './vue-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let ast: VueTokens;

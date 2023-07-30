@@ -1,9 +1,9 @@
-import type { SvelteDirective } from './svelte-parser';
+import type { SvelteDirective } from './svelte-parser/index.js';
 import type { MLASTAttr, MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { defaultValueDelimiters, parseAttr, sliceFragment } from '@markuplint/parser-utils';
 
-import directiveTokenizer from './directive-tokenizer';
+import directiveTokenizer from './directive-tokenizer.js';
 
 const mustacheTag = {
 	start: '{',

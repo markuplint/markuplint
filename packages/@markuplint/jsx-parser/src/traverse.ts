@@ -1,7 +1,7 @@
-import type { JSXNode } from './jsx';
+import type { JSXNode } from './jsx.js';
 import type { MLASTNode, MLASTParentNode, ParserOptions } from '@markuplint/ml-ast';
 
-import { nodeize } from './nodeize';
+import { nodeize } from './nodeize.js';
 
 export function traverse(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

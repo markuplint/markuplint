@@ -1210,6 +1210,17 @@
     minimatch "^9.0.3"
     tslib "^2.6.0"
 
+"@markuplint/html-parser@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-parser/-/html-parser-3.10.0.tgz#eb353d1c58c762523083b590b77fa0ea2c81ad30"
+  integrity sha512-+XoUe3Y6kfFfgCZ1K/r46mAPetk8sORoxtwD3ZkcrhR/1yQDbh1iFBBUqTjpZeSMyQaozhNt16ACXTO3vUgvTw==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/parser-utils" "3.10.0"
+    parse5 "7.1.2"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
 "@markuplint/html-spec@3.11.0":
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-3.11.0.tgz#017f2cbc63c6204df30b03b9392fab49addceefc"

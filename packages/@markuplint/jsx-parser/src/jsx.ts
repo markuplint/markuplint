@@ -8,11 +8,11 @@ import type {
 	JSXSpreadAttribute,
 	JSXTagNameExpression,
 	Node,
-} from '@typescript-eslint/types/dist/generated/ast-spec';
+} from '@typescript-eslint/types/dist/generated/ast-spec.js';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type { JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec';
+export type { JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec.js';
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 	__alreadyNodeized?: true;

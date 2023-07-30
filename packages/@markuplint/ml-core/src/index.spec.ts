@@ -121,20 +121,20 @@ describe('AST', () => {
 		expect(doc.toString()).toBe(raw);
 	});
 
-	test('IDL attribute in JSX', () => {
+	test('IDL attribute in JSX', async () => {
 		expect(
 			createTestElement('<label></label>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).getAttributeNode('for')?.localName,
 		).toBeUndefined();
 		expect(
 			createTestElement('<label htmlFor></label>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).getAttributeNode('for')?.localName,
 		).toBe('for');
 		expect(
 			createTestElement('<label htmlFor></label>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).getAttributeNode('htmlFor')?.localName,
 		).toBeUndefined();
 	});
@@ -180,24 +180,24 @@ describe('AST', () => {
 });
 
 describe('Selector', () => {
-	test('nodeName case-sensitive', () => {
+	test('nodeName case-sensitive', async () => {
 		expect(createTestElement('<DIV></DIV>').matches('div')).toBeTruthy();
 		expect(createTestElement('<DIV></DIV>').matches('DIV')).toBeTruthy();
 		expect(
 			createTestElement('<Div></Div>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).matches('DIV'),
 		).toBeFalsy();
 	});
 
-	test('Pug has PSBlock', () => {
+	test('Pug has PSBlock', async () => {
 		const el = createTestElement(
 			`
 div#hoge.foo.bar
 	if foo
 		a(href="path/to")`,
 			{
-				parser: require('@markuplint/pug-parser'),
+				parser: await import('@markuplint/pug-parser'),
 			},
 		);
 		// @ts-ignore
@@ -218,16 +218,16 @@ div#hoge.foo.bar
 		expect(a.matches('div > a')).toBeTruthy();
 	});
 
-	test('Attribute potential name', () => {
+	test('Attribute potential name', async () => {
 		expect(
 			createTestElement('<div tabIndex className><label htmlFor></label></div>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).matches('[tabindex][class]:has(>label[for])'),
 		).toBeTruthy();
 
 		expect(
 			createTestElement('<svg><image clipPath /></svg>', {
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			}).matches('svg:has(>image[clip-path])'),
 		).toBeTruthy();
 	});
@@ -444,7 +444,7 @@ describe('Rule', () => {
 		expect(document.nodeList[2].rule).toStrictEqual(resultE);
 	});
 
-	test('regexSelector + pug', () => {
+	test('regexSelector + pug', async () => {
 		const document = createTestDocument(
 			`section.Card
 	.Card__inner1
@@ -469,7 +469,7 @@ describe('Rule', () => {
 						},
 					],
 				},
-				parser: require('@markuplint/pug-parser'),
+				parser: await import('@markuplint/pug-parser'),
 			},
 		);
 		const ruleA = createRule({
@@ -511,7 +511,7 @@ describe('Rule', () => {
 		});
 	});
 
-	test('regexSelector + jsx', () => {
+	test('regexSelector + jsx', async () => {
 		const document = createTestDocument(
 			`<section className="Card">
 	<div className="Card__inner1">
@@ -538,7 +538,7 @@ describe('Rule', () => {
 						},
 					],
 				},
-				parser: require('@markuplint/jsx-parser'),
+				parser: await import('@markuplint/jsx-parser'),
 			},
 		);
 		const ruleA = createRule({
@@ -580,7 +580,7 @@ describe('Rule', () => {
 		});
 	});
 
-	test('Rule Mapping', () => {
+	test('Rule Mapping', async () => {
 		const config = {
 			rules: {
 				ruleA: 'global',
@@ -606,7 +606,7 @@ describe('Rule', () => {
 
 		const pug = createTestDocument('x-a: x-b: x-c', {
 			config,
-			parser: require('@markuplint/pug-parser'),
+			parser: await import('@markuplint/pug-parser'),
 		});
 		const pugRules = pug.nodeList.map(node => node.nodeName.toLowerCase() + ':' + node.rules['ruleA']);
 		expect(pugRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
@@ -614,19 +614,19 @@ describe('Rule', () => {
 });
 
 describe('Issues', () => {
-	test('#607', () => {
+	test('#607', async () => {
 		const dom = createTestDocument('<% %><div></div>', {
 			config: {
 				nodeRules: [{ selector: '* ~ div', rules: {} }],
 			},
-			parser: require('@markuplint/ejs-parser'),
+			parser: await import('@markuplint/ejs-parser'),
 		});
 		expect(dom.nodeList[0].nodeName).toBe('#ml-block');
 	});
 
-	test('#641', () => {
+	test('#641', async () => {
 		const dom = createTestDocument('<p>{array.map(_ => <></>)}</p>', {
-			parser: require('@markuplint/jsx-parser'),
+			parser: await import('@markuplint/jsx-parser'),
 		});
 		expect(dom.nodeList[0].raw).toBe('<p>');
 		expect(dom.nodeList[1].raw).toBe('{array.map(_ => <></>)}');
@@ -638,7 +638,7 @@ describe('Issues', () => {
 		expect(elements.length).toBe(2);
 	});
 
-	test('#698', () => {
+	test('#698', async () => {
 		const dom = createTestDocument(
 			`<ul>
 	{#if cond === valueA}
@@ -647,7 +647,7 @@ describe('Issues', () => {
 		<li>B</li>
 	{/if}
 </ul>`,
-			{ parser: require('@markuplint/svelte-parser') },
+			{ parser: await import('@markuplint/svelte-parser') },
 		);
 
 		// 💡 This calling is a test that checks it

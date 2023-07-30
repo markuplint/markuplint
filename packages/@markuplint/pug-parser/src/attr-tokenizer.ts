@@ -1,4 +1,4 @@
-import type { ASTAttr } from './pug-parser';
+import type { ASTAttr } from './pug-parser/index.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
 import { tokenizer, uuid } from '@markuplint/parser-utils';
