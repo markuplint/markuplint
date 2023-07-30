@@ -1,4 +1,6 @@
-const { check } = require('../lib/check');
+import { test, expect } from 'vitest';
+
+import { check } from './check.js';
 
 test('Any', () => {
 	expect(check('', 'Any').matched).toBe(true);

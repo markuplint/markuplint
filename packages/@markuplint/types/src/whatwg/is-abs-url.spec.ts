@@ -1,4 +1,6 @@
-const { isAbsURL } = require('../../lib/whatwg/is-abs-url');
+import { test, expect } from 'vitest';
+
+import { isAbsURL } from './is-abs-url.js';
 
 const is = isAbsURL();
 

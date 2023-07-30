@@ -1,4 +1,8 @@
-const { checkSerializedPermissionsPolicy } = require('../../lib/w3c/check-serialized-permissions-policy');
+// @ts-nocheck
+
+import { test, expect } from 'vitest';
+
+import { checkSerializedPermissionsPolicy } from './check-serialized-permissions-policy.js';
 
 const check = checkSerializedPermissionsPolicy();
 

@@ -1,21 +1,20 @@
-const { checkDateTime } = require('../../../lib/whatwg/check-datetime');
-const { checkDateString } = require('../../../lib/whatwg/check-datetime/date-string');
-const { getMaxWeekNum } = require('../../../lib/whatwg/check-datetime/datetime-tokens');
-const {
-	checkDurationISO8601LikeString,
-	checkDurationComponentListString,
-} = require('../../../lib/whatwg/check-datetime/duration-string');
-const { checkGlobalDateAndTimeString } = require('../../../lib/whatwg/check-datetime/global-date-and-time-string');
-const {
-	checkLocalDateAndTimeString,
-	checkNormalizedLocalDateAndTimeString,
-} = require('../../../lib/whatwg/check-datetime/local-date-and-time-string');
-const { checkMonthString } = require('../../../lib/whatwg/check-datetime/month-string');
-const { checkTimeString } = require('../../../lib/whatwg/check-datetime/time-string');
-const { checkTimeZoneOffsetString } = require('../../../lib/whatwg/check-datetime/time-zone-offset-string');
-const { checkWeekString } = require('../../../lib/whatwg/check-datetime/week-string');
-const { checkYearString } = require('../../../lib/whatwg/check-datetime/year-string');
-const { checkYearlessDateString } = require('../../../lib/whatwg/check-datetime/yearless-date-string');
+// @ts-nocheck
+
+import { test, expect } from 'vitest';
+
+import { checkDateString } from './date-string.js';
+import { getMaxWeekNum } from './datetime-tokens.js';
+import { checkDurationISO8601LikeString, checkDurationComponentListString } from './duration-string.js';
+import { checkGlobalDateAndTimeString } from './global-date-and-time-string.js';
+import { checkLocalDateAndTimeString, checkNormalizedLocalDateAndTimeString } from './local-date-and-time-string.js';
+import { checkMonthString } from './month-string.js';
+import { checkTimeString } from './time-string.js';
+import { checkTimeZoneOffsetString } from './time-zone-offset-string.js';
+import { checkWeekString } from './week-string.js';
+import { checkYearString } from './year-string.js';
+import { checkYearlessDateString } from './yearless-date-string.js';
+
+import { checkDateTime } from './index.js';
 
 const isMonth = checkMonthString();
 const isDate = checkDateString();

@@ -1,7 +1,7 @@
-import type { TokenEachCheck } from '../../token/token-collection';
+import type { TokenEachCheck } from '../../token/token-collection.js';
 
-import { log } from '../../debug';
-import { matched, unmatched } from '../../match-result';
+import { log } from '../../debug.js';
+import { matched, unmatched } from '../../match-result.js';
 
 export const datetimeTokenCheck: Record<
 	| 'year'

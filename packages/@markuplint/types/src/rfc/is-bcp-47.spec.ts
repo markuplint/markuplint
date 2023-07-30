@@ -1,4 +1,6 @@
-const { isBCP47 } = require('../../lib/rfc/is-bcp-47');
+import { test, expect } from 'vitest';
+
+import { isBCP47 } from './is-bcp-47.js';
 
 const is = isBCP47();
 

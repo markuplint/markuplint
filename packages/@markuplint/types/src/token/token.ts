@@ -1,5 +1,5 @@
-import type { TokenValue } from './types';
-import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types';
+import type { TokenValue } from './types.js';
+import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types.js';
 
 export class Token {
 	/**

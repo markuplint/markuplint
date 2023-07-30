@@ -1,7 +1,11 @@
-const { checkList } = require('../lib/list');
+import type { List } from './types.schema.js';
+
+import { test, expect } from 'vitest';
+
+import { checkList } from './list.js';
 
 test('Zero space', () => {
-	const type = { token: 'Zero', separator: 'space' };
+	const type: List = { token: 'Zero', separator: 'space' };
 	expect(checkList('0', type).matched).toBe(true);
 	expect(checkList(' 0 ', type).matched).toBe(true);
 	expect(checkList(' 0 0', type).matched).toBe(true);
@@ -19,7 +23,7 @@ test('Zero space', () => {
 });
 
 test('Zero comma', () => {
-	const type = { token: 'Zero', separator: 'comma' };
+	const type: List = { token: 'Zero', separator: 'comma' };
 	expect(checkList('0', type).matched).toBe(true);
 	expect(checkList(' 0 ', type).matched).toBe(true);
 	expect(checkList(' 0 0', type).matched).toBe(false);
@@ -33,7 +37,7 @@ test('Zero comma', () => {
 });
 
 test('Zero comma (disallowToSurroundBySpaces)', () => {
-	const type = { token: 'Zero', separator: 'comma', disallowToSurroundBySpaces: true };
+	const type: List = { token: 'Zero', separator: 'comma', disallowToSurroundBySpaces: true };
 	expect(checkList('0', type).matched).toBe(true);
 	expect(checkList(' 0 ', type).matched).toBe(false);
 	expect(checkList(' 0 0', type).matched).toBe(false);
@@ -48,7 +52,7 @@ test('Zero comma (disallowToSurroundBySpaces)', () => {
 });
 
 test('Location of the token', () => {
-	const type = { token: 'Accept', separator: 'comma' };
+	const type: List = { token: 'Accept', separator: 'comma' };
 	expect(checkList('x/y;a=b', type)).toStrictEqual({
 		candidate: 'x/y',
 		column: 4,
@@ -91,7 +95,7 @@ test('Location of the token', () => {
 });
 
 test('Expected comma', () => {
-	const type = { token: 'Accept', separator: 'comma' };
+	const type: List = { token: 'Accept', separator: 'comma' };
 	expect(checkList('x/y,', type)).toStrictEqual({
 		column: 4,
 		expects: undefined,
@@ -117,7 +121,7 @@ test('Expected comma', () => {
 });
 
 test('Missing comma', () => {
-	const type = { token: 'Accept', separator: 'comma' };
+	const type: List = { token: 'Accept', separator: 'comma' };
 	expect(checkList('a/b,x/y a/z', type)).toStrictEqual({
 		column: 9,
 		candidate: ',a/z',

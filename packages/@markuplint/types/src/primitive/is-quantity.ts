@@ -1,7 +1,7 @@
-import { isFloat } from './is-float';
-import { isInt } from './is-int';
-import { isUint } from './is-uint';
-import { splitUnit } from './split-unit';
+import { isFloat } from './is-float.js';
+import { isInt } from './is-int.js';
+import { isUint } from './is-uint.js';
+import { splitUnit } from './split-unit.js';
 
 /**
  *

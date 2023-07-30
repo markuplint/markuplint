@@ -1,8 +1,8 @@
-import type { Result } from './types';
-import type { Enum } from './types.schema';
+import type { Result } from './types.js';
+import type { Enum } from './types.schema.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { matched, unmatched } from './match-result';
+import { matched, unmatched } from './match-result.js';
 
 export function checkEnum(value: string, type: ReadonlyDeep<Enum>, ref?: string): Result {
 	const disallowToSurroundBySpaces = type.disallowToSurroundBySpaces ?? true;

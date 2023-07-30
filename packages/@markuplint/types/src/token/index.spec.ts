@@ -1,6 +1,6 @@
-const { Token } = require('../../lib/token/token');
-const { TokenCollection } = require('../../lib/token/token-collection');
+import { test, expect } from 'vitest';
 
+import { Token, TokenCollection } from './index.js';
 test('parse', () => {
 	expect(new TokenCollection(' a  b   c    ').toJSON()).toStrictEqual([
 		{

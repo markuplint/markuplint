@@ -1,4 +1,6 @@
-const { isInt, isUint, isFloat, isNonZeroUint, isQuantity } = require('../../lib/primitive');
+import { test, expect } from 'vitest';
+
+import { isInt, isUint, isFloat, isNonZeroUint, isQuantity } from './index.js';
 
 test('int', () => {
 	expect(isInt('0')).toBe(true);

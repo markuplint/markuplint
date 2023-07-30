@@ -1,4 +1,6 @@
-const { checkAutoComplete } = require('../../lib/whatwg/check-autocomplete');
+import { test, expect } from 'vitest';
+
+import { checkAutoComplete } from './check-autocomplete.js';
 
 const check = checkAutoComplete();
 

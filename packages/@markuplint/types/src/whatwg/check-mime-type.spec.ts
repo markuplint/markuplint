@@ -1,4 +1,6 @@
-const { checkMIMEType } = require('../../lib/whatwg/check-mime-type');
+import { test, expect } from 'vitest';
+
+import { checkMIMEType } from './check-mime-type.js';
 
 const check = checkMIMEType();
 const checkNoParam = checkMIMEType({ withoutParameters: true });

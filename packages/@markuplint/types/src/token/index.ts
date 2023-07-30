@@ -1,2 +1,2 @@
-export { Token } from './token';
-export { TokenCollection } from './token-collection';
+export { Token } from './token.js';
+export { TokenCollection } from './token-collection.js';

@@ -13,6 +13,7 @@ export default defineConfig({
 			'./packages/@markuplint/i18n/**/*.spec.ts',
 			'./packages/@markuplint/*-parser/**/*.spec.ts',
 			'./packages/@markuplint/parser-utils/**/*.spec.ts',
+			'./packages/@markuplint/types/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},
