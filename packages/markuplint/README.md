@@ -77,7 +77,7 @@ Options
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
-	--allow-warnings                       returns status code 0 even if there are warnings.
+	--allow-warnings                       Return status code 0 even if there are warnings.
 	--no-import-preset-rules               No import preset rules.
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
