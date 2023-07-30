@@ -35,7 +35,7 @@
 		"@markuplint/ml-ast": "3.2.0",
 		"@markuplint/ml-config": "3.11.0",
 		"@markuplint/ml-spec": "3.11.0",
-		"@markuplint/parser-utils": "3.10.0",
+		"@markuplint/parser-utils": "4.0.0-alpha.0",
 		"@markuplint/selector": "3.11.0",
 		"@types/debug": "^4.1.8",
 		"debug": "^4.3.4",

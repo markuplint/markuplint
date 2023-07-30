@@ -1,7 +1,9 @@
-const { tokenizer } = require('../lib/create-token');
+import { describe, test, expect } from 'vitest';
+
+import { tokenizer } from './create-token.js';
 
 describe('tokenizer', () => {
-	it('empty', () => {
+	test('empty', () => {
 		expect(tokenizer('', 1, 1, 0)).toEqual(
 			expect.objectContaining({
 				raw: '',

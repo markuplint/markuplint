@@ -1,28 +1,29 @@
-const { isDocumentFragment, createTree } = require('@markuplint/html-parser');
+import { isDocumentFragment, createTree } from '@markuplint/html-parser';
+import { describe, test, expect } from 'vitest';
 
-const { flattenNodes } = require('../lib/flatten-nodes');
+import { flattenNodes } from './flatten-nodes.js';
 
-function toTree(rawCode) {
+function toTree(rawCode: string) {
 	const isFragment = isDocumentFragment(rawCode);
 	return createTree(rawCode, isFragment, 0, 0, 0);
 }
 
 describe('flattenNodes', () => {
-	it('a node', () => {
+	test('a node', () => {
 		const raw = '<div></div>';
 		const tree = toTree(raw);
 		const list = flattenNodes(tree, raw);
 		expect(list.length).toStrictEqual(2);
 	});
 
-	it('one depth', () => {
+	test('one depth', () => {
 		const raw = '<div><span></span></div>';
 		const tree = toTree(raw);
 		const list = flattenNodes(tree, raw);
 		expect(list.length).toStrictEqual(4);
 	});
 
-	it('two depth', () => {
+	test('two depth', () => {
 		const raw = '<div><span><span></span></span></div>';
 		const tree = toTree(raw);
 		const list = flattenNodes(tree, raw);

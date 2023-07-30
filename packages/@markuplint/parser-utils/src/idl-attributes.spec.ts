@@ -1,6 +1,8 @@
-import { searchIDLAttribute } from './idl-attributes';
+import { test, expect } from 'vitest';
 
-it('basic', () => {
+import { searchIDLAttribute } from './idl-attributes.js';
+
+test('basic', () => {
 	expect(searchIDLAttribute('class')).toStrictEqual({
 		idlPropName: 'className',
 		contentAttrName: 'class',

@@ -1,4 +1,6 @@
-const { tokenize, defaultValueDelimiters } = require('../lib/parse-attr');
+import { describe, test, expect } from 'vitest';
+
+import { tokenize, defaultValueDelimiters } from './parse-attr.js';
 
 describe('tokenize', () => {
 	test('name', () => {

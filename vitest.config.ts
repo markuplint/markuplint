@@ -12,6 +12,7 @@ export default defineConfig({
 			'./packages/@markuplint/ml-core/**/*.spec.ts',
 			'./packages/@markuplint/i18n/**/*.spec.ts',
 			'./packages/@markuplint/*-parser/**/*.spec.ts',
+			'./packages/@markuplint/parser-utils/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},

@@ -1,7 +1,10 @@
-const { parse } = require('@markuplint/html-parser');
+// @ts-nocheck
 
-const { nodeListToDebugMaps } = require('../lib/debugger');
-const { ignoreBlock, restoreNode } = require('../lib/ignore-block');
+import { parse } from '@markuplint/html-parser';
+import { describe, test, expect } from 'vitest';
+
+import { nodeListToDebugMaps } from './debugger.js';
+import { ignoreBlock, restoreNode } from './ignore-block.js';
 
 const tags = [
 	{
@@ -12,7 +15,7 @@ const tags = [
 ];
 
 describe('ignoreBlock', () => {
-	it('basic', () => {
+	test('basic', () => {
 		const result = ignoreBlock('<div><%= test %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test %></div>',
@@ -30,7 +33,7 @@ describe('ignoreBlock', () => {
 		});
 	});
 
-	it('2 tags', () => {
+	test('2 tags', () => {
 		const result = ignoreBlock('<div><%= test %></div><div><%= test2 %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test %></div><div><%= test2 %></div>',
@@ -55,7 +58,7 @@ describe('ignoreBlock', () => {
 		});
 	});
 
-	it('without closing tag', () => {
+	test('without closing tag', () => {
 		const result = ignoreBlock('<div><%= test', tags);
 		expect(result).toStrictEqual({
 			source: '<div><%= test',
@@ -73,7 +76,7 @@ describe('ignoreBlock', () => {
 		});
 	});
 
-	it('with line break', () => {
+	test('with line break', () => {
 		const result = ignoreBlock('<div><% if () {\n\t\n} %></div>', tags);
 		expect(result).toStrictEqual({
 			source: '<div><% if () {\n\t\n} %></div>',
@@ -91,7 +94,7 @@ describe('ignoreBlock', () => {
 		});
 	});
 
-	it('multiple tags', () => {
+	test('multiple tags', () => {
 		const result = ignoreBlock('<% 1 %>2<%= 3 %>4<%_ 5 _%>6<%- 7 -%>8<%% 9 %>', [
 			{
 				type: 'ejs-whitespace-slurping',
@@ -159,7 +162,7 @@ describe('ignoreBlock', () => {
 });
 
 describe('restoreNode', () => {
-	it('basic', () => {
+	test('basic', () => {
 		const code = '<div attr="<% attr %>"><% content %></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -184,7 +187,7 @@ describe('restoreNode', () => {
 		]);
 	});
 
-	it('tag', () => {
+	test('tag', () => {
 		const code = '<title><% content %></title>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -197,7 +200,7 @@ describe('restoreNode', () => {
 		]);
 	});
 
-	it('attr', () => {
+	test('attr', () => {
 		const code = '<div attr="<% attr %><% attr2 %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -205,7 +208,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %><% attr2 %>');
 	});
 
-	it('attr', () => {
+	test('attr', () => {
 		const code = '<div attr="<% attr %> <% attr2 %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -213,7 +216,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %> <% attr2 %>');
 	});
 
-	it('attr', () => {
+	test('attr', () => {
 		const code = '<div attr="<% attr %>A<% attr2 %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -221,7 +224,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe('<% attr %>A<% attr2 %>');
 	});
 
-	it('before space', () => {
+	test('before space', () => {
 		const code = '<div attr=" <% attr %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -229,7 +232,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe(' <% attr %>');
 	});
 
-	it('after space', () => {
+	test('after space', () => {
 		const code = '<div attr=" <% attr %> "></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -237,7 +240,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe(' <% attr %> ');
 	});
 
-	it('before char', () => {
+	test('before char', () => {
 		const code = '<div attr="A<% attr %>"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -245,7 +248,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe('A<% attr %>');
 	});
 
-	it('after char', () => {
+	test('after char', () => {
 		const code = '<div attr="A<% attr %>B"></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);
@@ -253,7 +256,7 @@ describe('restoreNode', () => {
 		expect(restoredAst[0].attributes[0].value.raw).toBe('A<% attr %>B');
 	});
 
-	it('unexpected parsing', () => {
+	test('unexpected parsing', () => {
 		const code = '<div attr="<% attr %> "></div>';
 		const masked = ignoreBlock(code, tags);
 		const ast = parse(masked.replaced);

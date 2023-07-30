@@ -1,4 +1,4 @@
-import { createTokenFromRawCode } from './create-token';
+import { createTokenFromRawCode } from './create-token.js';
 
 export function getSpaceBefore(offset: number, rawCode: string) {
 	const aboveCode = rawCode.slice(0, offset);

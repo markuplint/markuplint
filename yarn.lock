@@ -1253,6 +1253,18 @@
     tslib "^2.6.0"
     type-fest "^3.12.0"
 
+"@markuplint/parser-utils@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-3.10.0.tgz#558add187482492b017075226b9104a1bbebbe79"
+  integrity sha512-/na4v566HP0MCunJZkdgjhAAhVI4FmIqFnCwezE8zVfZn4Se0VECS5V/AQ9MHBSK7xSufgpEhCmjfBZDDJo+Ag==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/types" "3.9.0"
+    "@types/uuid" "^9.0.2"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+    uuid "^9.0.0"
+
 "@markuplint/rules@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-3.12.0.tgz#b4d1281e6cf871b5a241b456f1ba5f55881bac0f"

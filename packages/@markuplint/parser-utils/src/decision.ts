@@ -1,6 +1,6 @@
 import { isCustomElementName } from '@markuplint/types';
 
-import { svgElementList } from './const';
+import { svgElementList } from './const.js';
 
 /**
  *
