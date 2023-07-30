@@ -25,7 +25,7 @@
 		"./lib/permitted-contents/debug.js": "./lib/permitted-contents/debug.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/html-spec": "3.11.0",
+		"@markuplint/html-spec": "4.0.0-alpha.0",
 		"@markuplint/ml-core": "4.0.0-alpha.0",
 		"@markuplint/ml-spec": "3.11.0",
 		"@markuplint/selector": "3.11.0",

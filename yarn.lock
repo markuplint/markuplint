@@ -1210,6 +1210,13 @@
     minimatch "^9.0.3"
     tslib "^2.6.0"
 
+"@markuplint/html-spec@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-3.11.0.tgz#017f2cbc63c6204df30b03b9392fab49addceefc"
+  integrity sha512-gekCwBQ+EiN9mnMK6iJ6nXf11ah8jfVacc6PcfFpglZGRNiwST/WxAxzwlBQXTErra0XhxTkY8411e85zuV46Q==
+  dependencies:
+    "@markuplint/ml-spec" "3.11.0"
+
 "@markuplint/ml-core@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-3.12.0.tgz#97049c87b68406716c5a8b5f4665a2b32161b67d"
