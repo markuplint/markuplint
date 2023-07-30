@@ -1217,6 +1217,11 @@
   dependencies:
     "@markuplint/ml-spec" "3.11.0"
 
+"@markuplint/i18n@3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/i18n/-/i18n-3.9.0.tgz#2b4a923ba79f33a02ef6301628cc87c82fe51f27"
+  integrity sha512-M1eYAOpvRBOnBt05+2+YKOkXbbpn/Z6ABV/Ecwv0NxbKHZuzRZyZkuWVsYg2MOGFwB0TXWkyE3AFGh4r74ZOLA==
+
 "@markuplint/ml-core@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-3.12.0.tgz#97049c87b68406716c5a8b5f4665a2b32161b67d"

@@ -1,4 +1,6 @@
-const { taggedTemplateTranslator, translator } = require('../lib/translator');
+import { test, expect } from 'vitest';
+
+import { taggedTemplateTranslator, translator } from './translator.js';
 
 const ja = {
 	locale: 'ja',

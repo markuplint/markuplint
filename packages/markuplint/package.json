@@ -29,7 +29,7 @@
 		"@markuplint/file-resolver": "4.0.0-alpha.0",
 		"@markuplint/html-parser": "3.10.0",
 		"@markuplint/html-spec": "4.0.0-alpha.0",
-		"@markuplint/i18n": "3.9.0",
+		"@markuplint/i18n": "4.0.0-alpha.0",
 		"@markuplint/ml-ast": "3.2.0",
 		"@markuplint/ml-config": "3.11.0",
 		"@markuplint/ml-core": "4.0.0-alpha.0",
