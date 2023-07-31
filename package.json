@@ -7,16 +7,14 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "vitest run",
-		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
-		"test:clear": "jest --clearCache",
-		"test:unit": "jest",
+		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
 		"lint": "eslint --fix './packages/**/{*.ts,*.spec.js}'; yarn spellcheck; prettier --write './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}';",
 		"lint:check": "eslint './packages/**/{*.ts,*.spec.js}' && yarn spellcheck && prettier --check './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}'",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
-		"all": "run-s lint clean build gen schema test:clear test",
+		"all": "run-s lint clean build gen schema test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint.mjs",
 		"vscode:dev": "cd vscode; yarn --ignore-engines vscode:dev",
@@ -56,39 +54,6 @@
 			"cspell --no-must-find-files --no-progress --show-suggestions"
 		]
 	},
-	"jest": {
-		"verbose": true,
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"node"
-		],
-		"collectCoverageFrom": [
-			"packages/markuplint/lib/**/*.js",
-			"packages/@markuplint/*/lib/**/*.js",
-			"!**/*.spec.js"
-		],
-		"projects": [
-			{
-				"displayName": "node",
-				"testRegex": "(\\.|/)spec\\.js$",
-				"testPathIgnorePatterns": [
-					"esm-adapter",
-					"scaffold",
-					"(\\.|/)browser\\.spec\\.js$"
-				],
-				"testEnvironment": "node"
-			},
-			{
-				"displayName": "browser",
-				"testRegex": "(\\.|/)browser\\.spec\\.js?$",
-				"resolver": "<rootDir>/test/browser-resolver.js",
-				"setupFiles": [
-					"<rootDir>/test/browser-setup.js"
-				]
-			}
-		]
-	},
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
@@ -96,7 +61,6 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@types/jest": "^29.5.2",
 		"@typescript-eslint/eslint-plugin": "^6.1.0",
 		"@typescript-eslint/parser": "^6.1.0",
 		"@vitest/coverage-v8": "^0.33.0",

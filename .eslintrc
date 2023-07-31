@@ -3,8 +3,7 @@
 	"env": {
 		"browser": false,
 		"es6": true,
-		"node": true,
-		"jest": true
+		"node": true
 	},
 	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
 	"parserOptions": {
