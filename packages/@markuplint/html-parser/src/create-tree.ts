@@ -1,3 +1,5 @@
+// @ts-nocheck TODO: Parse5(https://github.com/inikulin/parse5) supports to expose type definitions as submodules.
+
 import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
