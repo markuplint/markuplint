@@ -156,20 +156,7 @@
 							"order": "alphabetically"
 						}
 					}
-				]
-			}
-		},
-		{
-			"files": ["**/*.spec.{js,mjs,cjs,ts}", "vitest.config.ts"],
-			"rules": {
-				"import/no-extraneous-dependencies": 0,
-				"@typescript-eslint/no-var-requires": 0
-			}
-		},
-		{
-			"files": ["packages/**/*.ts", "vscode/**/*.ts"],
-			"excludedFiles": ["**/*.spec.ts"],
-			"rules": {
+				],
 				"@typescript-eslint/prefer-readonly-parameter-types": [
 					"warn",
 					{
@@ -178,6 +165,14 @@
 						"treatMethodsAsReadonly": false
 					}
 				]
+			}
+		},
+		{
+			"files": ["**/*.spec.{js,mjs,cjs,ts}", "vitest.config.ts"],
+			"rules": {
+				"import/no-extraneous-dependencies": 0,
+				"@typescript-eslint/no-var-requires": 0,
+				"@typescript-eslint/prefer-readonly-parameter-types": 0
 			}
 		}
 	]
