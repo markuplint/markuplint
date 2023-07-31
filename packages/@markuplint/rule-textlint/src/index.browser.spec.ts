@@ -33,6 +33,7 @@ test.skip('is test 1', async () => {
 								ruleId: 'prh',
 								rule: Prh,
 								options: {
+									// eslint-disable-next-line no-restricted-globals
 									rulePaths: [path.resolve(__dirname, '../', 'prh.yml')],
 								},
 							},

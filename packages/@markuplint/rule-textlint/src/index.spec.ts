@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { mlTest, mlTestFile } from 'markuplint';
 // @ts-ignore
@@ -6,6 +7,9 @@ import Prh from 'textlint-rule-prh';
 import { test, expect } from 'vitest';
 
 import { text } from './test-utils.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test('is test 1', async () => {
 	const { violations } = await mlTest(

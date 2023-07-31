@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { i18n } from './i18n';
+import { i18n } from './i18n.js';
 
 test('ja', async () => {
 	const locale = await i18n('ja');

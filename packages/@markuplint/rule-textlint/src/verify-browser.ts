@@ -1,8 +1,8 @@
-import type { Option } from './helper';
+import type { Option } from './helper.js';
 import type { RuleSeed } from '@markuplint/ml-core';
 import type { TextlintResult } from '@textlint/kernel';
 
-import { lintText } from './helper';
+import { lintText } from './helper.js';
 
 export const defaultOptions = {};
 

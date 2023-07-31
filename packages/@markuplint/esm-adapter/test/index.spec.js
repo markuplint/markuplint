@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+
 import { describe, it, expect } from 'vitest';
 
 const { MLEngine, getVersion } = require('../cjs/index.cjs');
@@ -28,3 +30,5 @@ describe('test', () => {
 		expect(version).toMatch(/^\d+\.\d+\.\d+(?:-.+)$/);
 	});
 });
+
+/* eslint-enable no-restricted-globals */

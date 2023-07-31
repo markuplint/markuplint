@@ -1,6 +1,10 @@
+import { createRequire } from 'node:module';
+
 import { test, expect } from 'vitest';
 
 import { taggedTemplateTranslator, translator } from './translator.js';
+
+const require = createRequire(import.meta.url);
 
 const ja = {
 	locale: 'ja',

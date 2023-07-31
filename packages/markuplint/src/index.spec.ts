@@ -1,8 +1,8 @@
 import { MLRule } from '@markuplint/ml-core';
 import { describe, it, test, expect } from 'vitest';
 
-import { setGlobal } from './global-settings';
-import { mlTest, mlTestFile } from './testing-tool';
+import { setGlobal } from './global-settings.js';
+import { mlTest, mlTestFile } from './testing-tool/index.js';
 
 setGlobal({
 	locale: 'en',

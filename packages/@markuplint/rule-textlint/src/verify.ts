@@ -1,13 +1,13 @@
-import type { Option } from './helper';
+import type { Option } from './helper.js';
 import type { RuleSeed } from '@markuplint/ml-core';
 import type { TextlintResult } from '@textlint/kernel';
 
-import path from 'path';
+import path from 'node:path';
 
 import { TextLintEngine } from 'textlint';
 import { Config } from 'textlint/lib/src/config/config';
 
-import { lintText } from './helper';
+import { lintText } from './helper.js';
 
 const lintEngineCache = new Map<string, TextLintEngine>();
 

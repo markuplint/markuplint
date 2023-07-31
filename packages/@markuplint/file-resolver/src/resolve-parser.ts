@@ -2,7 +2,7 @@ import type { MLFile } from './ml-file/index.js';
 import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { ParserConfig } from '@markuplint/ml-config';
 
-import path from 'path';
+import path from 'node:path';
 
 import { toRegexp } from './utils.js';
 

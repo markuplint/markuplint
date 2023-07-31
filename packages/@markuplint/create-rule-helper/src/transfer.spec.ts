@@ -1,10 +1,14 @@
 import { rm } from 'node:fs/promises';
-import { resolve, relative, sep } from 'node:path';
+import { resolve, relative, sep, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { test, expect, afterAll, beforeAll } from 'vitest';
 
 import glob from './glob.js';
 import { transfer } from './transfer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const SCAFFOLD = resolve(__dirname, '..', 'scaffold');
 const TEST_SANDBOX = resolve(__dirname, '..', '__test_sandbox__');

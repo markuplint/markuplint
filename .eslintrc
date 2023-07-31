@@ -3,7 +3,8 @@
 	"env": {
 		"browser": false,
 		"es6": true,
-		"node": true
+		"node": true,
+		"commonjs": false
 	},
 	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
 	"parserOptions": {
@@ -22,6 +23,7 @@
 		"no-mixed-spaces-and-tabs": 0,
 		"require-await": 2,
 		"lines-between-class-members": [1, "always", { "exceptAfterSingleLine": true }],
+		"no-restricted-globals": [2, "__dirname", "require"],
 
 		"node/no-unsupported-features/es-syntax": 0,
 

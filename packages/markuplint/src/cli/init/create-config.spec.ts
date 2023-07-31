@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { createConfig } from './create-config';
+import { createConfig } from './create-config.js';
 
 test('none', () => {
 	const result = createConfig(

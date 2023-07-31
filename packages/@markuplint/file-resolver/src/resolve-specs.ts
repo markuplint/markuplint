@@ -1,7 +1,7 @@
 import type { SpecConfig } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
-import path from 'path';
+import path from 'node:path';
 
 import { toRegexp } from './utils.js';
 

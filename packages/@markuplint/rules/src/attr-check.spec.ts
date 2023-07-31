@@ -4,7 +4,7 @@ import { translator } from '@markuplint/i18n';
 import { i18n } from 'markuplint';
 import { test, expect, beforeAll } from 'vitest';
 
-import { valueCheck } from './attr-check';
+import { valueCheck } from './attr-check.js';
 
 let t: Translator;
 

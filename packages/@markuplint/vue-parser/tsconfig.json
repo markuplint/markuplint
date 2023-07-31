@@ -1,8 +1,6 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
-		"module": "NodeNext",
-		"target": "ES2020",
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src"

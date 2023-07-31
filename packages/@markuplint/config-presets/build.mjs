@@ -1,6 +1,7 @@
-import { readFile, rm, writeFile } from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { readFile, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { glob } from 'glob';
 import { stripComments, visit } from 'jsonc-parser';
 import mustache from 'mustache';
