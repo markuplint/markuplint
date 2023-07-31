@@ -726,6 +726,11 @@
     validate-npm-package-name "5.0.0"
     yargs-parser "20.2.4"
 
+"@markuplint/config-presets@3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-3.8.0.tgz#742f01cce27ef03cc0f13610d0f8976925d5c34f"
+  integrity sha512-ohE9Z48cuZpSeZnA467E/LtKgFTEzu0ncJPM30gp9e/O8SLAo0qzSvQNdTwMS2jf10IA6VSIdOcOfKM5V447fA==
+
 "@markuplint/create-rule-helper@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@markuplint/create-rule-helper/-/create-rule-helper-3.12.0.tgz#191f232c602e5375fcbe6c6c60196a353edd3f55"

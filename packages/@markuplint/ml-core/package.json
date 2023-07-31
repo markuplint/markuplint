@@ -28,7 +28,7 @@
 		"./lib/configs.js": "./lib/configs.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/config-presets": "3.8.0",
+		"@markuplint/config-presets": "4.0.0-alpha.0",
 		"@markuplint/html-parser": "4.0.0-alpha.0",
 		"@markuplint/html-spec": "4.0.0-alpha.0",
 		"@markuplint/i18n": "4.0.0-alpha.0",
