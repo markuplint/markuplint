@@ -6,8 +6,9 @@ import type {
 	RuleConfig,
 	RuleConfigV2,
 	RuleConfigValue,
-} from './types';
+} from './types.js';
 
+// @ts-ignore
 import { isPlainObject } from 'is-plain-object';
 import mustache from 'mustache';
 

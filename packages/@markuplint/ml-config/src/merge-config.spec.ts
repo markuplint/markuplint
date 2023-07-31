@@ -1,4 +1,6 @@
-const { mergeConfig, mergeRule } = require('../lib/merge-config');
+import { describe, test, expect } from 'vitest';
+
+import { mergeConfig, mergeRule } from './merge-config.js';
 
 describe('mergeConfig', () => {
 	test('empty + empty', () => {
@@ -129,6 +131,7 @@ describe('mergeConfig', () => {
 				{
 					rules: {
 						a: {
+							// @ts-ignore
 							option: {
 								ruleA: true,
 							},

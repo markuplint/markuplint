@@ -1,6 +1,8 @@
-const { exchangeValueOnRule, provideValue } = require('../lib/utils');
+import { test, expect } from 'vitest';
 
-it('provideValue', () => {
+import { exchangeValueOnRule, provideValue } from './utils.js';
+
+test('provideValue', () => {
 	expect(
 		provideValue('The name is {{ dataName }}', {
 			$0: 'data-hoge',
@@ -20,7 +22,7 @@ it('provideValue', () => {
 	).toBe('No variable');
 });
 
-it('exchangeValueOnRule', () => {
+test('exchangeValueOnRule', () => {
 	expect(
 		exchangeValueOnRule('The name is {{ dataName }}', {
 			$0: 'data-hoge',
