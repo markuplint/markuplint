@@ -1,6 +1,9 @@
-const htmlSpec = require('@markuplint/html-spec');
+// @ts-nocheck
 
-const { schemaToSpec } = require('../../lib/specs/schema-to-spec');
+import htmlSpec from '@markuplint/html-spec';
+import { describe, test, expect } from 'vitest';
+
+import { schemaToSpec } from './schema-to-spec.js';
 
 describe('schemaToSpec', () => {
 	test('specs', () => {

@@ -1,10 +1,11 @@
-const specs = require('@markuplint/html-spec');
-const { createSelector } = require('@markuplint/selector');
-const { createJSDOMElement } = require('@markuplint/test-tools');
+import specs from '@markuplint/html-spec';
+import { createSelector } from '@markuplint/selector';
+import { createJSDOMElement } from '@markuplint/test-tools';
+import { describe, test, expect } from 'vitest';
 
-const { matchesContextRole } = require('../../lib/dom-traverse/matches-context-role');
+import { matchesContextRole } from './matches-context-role.js';
 
-function _(html, selector) {
+function _(html: string, selector?: string) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;

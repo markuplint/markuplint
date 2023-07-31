@@ -1,10 +1,10 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
-import { isPresentational } from '../specs/is-presentational';
+import { isPresentational } from '../specs/is-presentational.js';
 
-import { getComputedRole } from './get-computed-role';
-import { getExplicitRole } from './get-explicit-role';
-import { getImplicitRole } from './get-implicit-role';
+import { getComputedRole } from './get-computed-role.js';
+import { getExplicitRole } from './get-explicit-role.js';
+import { getImplicitRole } from './get-implicit-role.js';
 
 export function hasRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

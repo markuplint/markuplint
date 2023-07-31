@@ -21,7 +21,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "3.11.0",
+		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"@types/cheerio": "^0.22.31",
 		"@types/cli-progress": "^3.11.0",
 		"@types/node-fetch": "^2.6.4",

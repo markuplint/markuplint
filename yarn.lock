@@ -1253,6 +1253,18 @@
     tslib "^2.6.0"
     type-fest "^3.12.0"
 
+"@markuplint/ml-spec@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-3.11.0.tgz#f78430926b41984c2eb9c6b87c9c8f2a6698ec16"
+  integrity sha512-wMHwFo1q5VK3ONPtbdpdpHvW8SeTcI4ooctCcTA/5f9tks5axfMekGuDhC41lLIyVDgVO8O6/iCZ8TGIawzwvA==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/types" "3.9.0"
+    dom-accessibility-api "^0.6.1"
+    is-plain-object "^5.0.0"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
 "@markuplint/parser-utils@3.10.0":
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-3.10.0.tgz#558add187482492b017075226b9104a1bbebbe79"

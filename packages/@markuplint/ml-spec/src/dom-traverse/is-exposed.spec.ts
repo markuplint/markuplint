@@ -1,17 +1,20 @@
-const specs = require('@markuplint/html-spec');
-const { createSelector } = require('@markuplint/selector');
-const { createJSDOMElement } = require('@markuplint/test-tools');
+import type { ARIAVersion } from '../types/index.js';
 
-const { isExposed } = require('../../lib/dom-traverse/is-exposed');
+import specs from '@markuplint/html-spec';
+import { createSelector } from '@markuplint/selector';
+import { createJSDOMElement } from '@markuplint/test-tools';
+import { describe, test, expect } from 'vitest';
 
-function _(html, selector) {
+import { isExposed } from './is-exposed.js';
+
+function _(html: string, selector?: string) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 
-function x(html, selector, version = '1.2') {
+function x(html: string, selector?: string, version: ARIAVersion = '1.2') {
 	const el = _(html, selector);
 	return isExposed(el, specs, version);
 }

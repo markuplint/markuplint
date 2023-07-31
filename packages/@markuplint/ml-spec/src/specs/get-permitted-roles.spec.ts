@@ -1,10 +1,13 @@
-const specs = require('@markuplint/html-spec');
-const { createSelector } = require('@markuplint/selector');
-const { createJSDOMElement } = require('@markuplint/test-tools');
+import type { ARIAVersion } from '../types/index.js';
 
-const { getPermittedRoles } = require('../../lib/specs/get-permitted-roles');
+import specs from '@markuplint/html-spec';
+import { createSelector } from '@markuplint/selector';
+import { createJSDOMElement } from '@markuplint/test-tools';
+import { describe, test, expect } from 'vitest';
 
-function c(html, version, selector) {
+import { getPermittedRoles } from './get-permitted-roles.js';
+
+function c(html: string, version: ARIAVersion, selector?: string) {
 	const el = createJSDOMElement(html, selector);
 	const roles = getPermittedRoles(
 		specs,

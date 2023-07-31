@@ -1,4 +1,6 @@
-const { resolveVersion } = require('../../lib/specs/resolve-version');
+import { test, expect } from 'vitest';
+
+import { resolveVersion } from './resolve-version.js';
 
 test('output', () => {
 	const aria = {

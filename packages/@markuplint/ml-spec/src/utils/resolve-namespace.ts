@@ -1,6 +1,6 @@
 import type { NamespaceURI, Namespace } from '@markuplint/ml-ast';
 
-import { getNS } from './get-ns';
+import { getNS } from './get-ns.js';
 
 const cache = new Map<string, NamespacedElementName>();
 

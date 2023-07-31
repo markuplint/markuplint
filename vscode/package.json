@@ -94,7 +94,7 @@
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.0-alpha.0",
 		"@markuplint/i18n": "4.0.0-alpha.0",
-		"@markuplint/ml-spec": "3.11.0",
+		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"markuplint": "4.0.0-alpha.0",
 		"semver": "^7.5.4",
 		"vscode-languageclient": "^8.1.0",

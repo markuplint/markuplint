@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@markuplint/html-spec": "4.0.0-alpha.0",
 		"@markuplint/ml-core": "4.0.0-alpha.0",
-		"@markuplint/ml-spec": "3.11.0",
+		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"@markuplint/selector": "4.0.0-alpha.0",
 		"@markuplint/shared": "3.8.0",
 		"@markuplint/types": "4.0.0-alpha.0",

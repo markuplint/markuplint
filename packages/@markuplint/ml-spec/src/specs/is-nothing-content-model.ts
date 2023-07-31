@@ -1,4 +1,4 @@
-import { isVoidElement } from './is-void-element';
+import { isVoidElement } from './is-void-element.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-nothing-content-model

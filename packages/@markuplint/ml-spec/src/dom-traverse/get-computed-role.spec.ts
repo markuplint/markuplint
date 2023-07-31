@@ -1,26 +1,29 @@
-const specs = require('@markuplint/html-spec');
-const { createSelector } = require('@markuplint/selector');
-const { createJSDOMElement } = require('@markuplint/test-tools');
+import type { ARIAVersion } from '../types/index.js';
 
-const { getComputedRole } = require('../../lib/dom-traverse/get-computed-role');
+import specs from '@markuplint/html-spec';
+import { createSelector } from '@markuplint/selector';
+import { createJSDOMElement } from '@markuplint/test-tools';
+import { describe, test, expect } from 'vitest';
 
-function _(html, selector) {
+import { getComputedRole } from './get-computed-role.js';
+
+function _(html: string, selector?: string) {
 	return createJSDOMElement(html, selector, function (selector) {
 		// JSDOM supports no level 4 selectors yet.
 		return createSelector(selector, specs).match(this) !== false;
 	});
 }
 
-function c(html, version, selector) {
+function c(html: string, version: ARIAVersion, selector?: string) {
 	return getComputedRole(specs, _(html, selector), version);
 }
 
-function tree(html, version) {
+function tree(html: string, version: ARIAVersion) {
 	const el = _(html);
 	const tree = [];
-	let current = el;
+	let current: Element | null = el;
 
-	while (current) {
+	while (current != null) {
 		const role = getComputedRole(specs, current, version);
 		const result = [current.localName, role.role?.name ?? null];
 		if (role.errorType) {

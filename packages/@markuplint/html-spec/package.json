@@ -21,6 +21,6 @@
 		"@markuplint/test-tools": "3.6.0"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "3.11.0"
+		"@markuplint/ml-spec": "4.0.0-alpha.0"
 	}
 }

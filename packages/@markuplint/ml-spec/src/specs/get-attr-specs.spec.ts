@@ -1,6 +1,7 @@
-const htmlSpec = require('@markuplint/html-spec');
+import htmlSpec from '@markuplint/html-spec';
+import { describe, test, expect } from 'vitest';
 
-const { getAttrSpecs } = require('../../lib/specs/get-attr-specs');
+import { getAttrSpecs } from './get-attr-specs.js';
 
 describe('getSpec', () => {
 	test('svg:image[x]', () => {

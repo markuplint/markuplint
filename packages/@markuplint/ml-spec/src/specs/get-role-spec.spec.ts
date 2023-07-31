@@ -1,12 +1,13 @@
-const specs = require('@markuplint/html-spec');
+import specs from '@markuplint/html-spec';
+import { describe, test, expect } from 'vitest';
 
-const { getRoleSpec } = require('../../lib/specs/get-role-spec');
+import { getRoleSpec } from './get-role-spec.js';
 
 describe('getRoleSpec', () => {
 	test('the button role', () => {
 		const role = getRoleSpec(specs, 'button', 'http://www.w3.org/1999/xhtml', '1.2');
-		const superClassRoles = role.superClassRoles.map(r => r.name);
-		expect(role.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
+		const superClassRoles = role?.superClassRoles.map(r => r.name);
+		expect(role?.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
 			'aria-busy',
 			'aria-controls',
@@ -31,14 +32,14 @@ describe('getRoleSpec', () => {
 			'aria-relevant',
 			'aria-roledescription',
 		]);
-		expect(role.isAbstract).toBe(false);
+		expect(role?.isAbstract).toBe(false);
 		expect(superClassRoles).toStrictEqual(['command', 'widget', 'roletype']);
 	});
 
 	test('the roletype role', () => {
 		const role = getRoleSpec(specs, 'roletype', 'http://www.w3.org/1999/xhtml', '1.2');
-		const superClassRoles = role.superClassRoles.map(r => r.name);
-		expect(role.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
+		const superClassRoles = role?.superClassRoles.map(r => r.name);
+		expect(role?.ownedProperties.map(p => p.name + (p.deprecated ? ':deprecated' : ''))).toStrictEqual([
 			'aria-atomic',
 			'aria-busy',
 			'aria-controls',
@@ -61,7 +62,7 @@ describe('getRoleSpec', () => {
 			'aria-relevant',
 			'aria-roledescription',
 		]);
-		expect(role.isAbstract).toBe(true);
+		expect(role?.isAbstract).toBe(true);
 		expect(superClassRoles).toStrictEqual([]);
 	});
 });

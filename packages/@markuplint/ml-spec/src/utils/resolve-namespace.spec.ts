@@ -1,4 +1,6 @@
-const { resolveNamespace } = require('../../lib/utils/resolve-namespace');
+import { test, expect } from 'vitest';
+
+import { resolveNamespace } from './resolve-namespace.js';
 
 test('tag', () => {
 	expect(resolveNamespace('a')).toStrictEqual({
