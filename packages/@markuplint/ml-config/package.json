@@ -24,7 +24,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "3.2.0",
+		"@markuplint/ml-ast": "4.0.0-alpha.0",
 		"@markuplint/selector": "4.0.0-alpha.0",
 		"@markuplint/shared": "4.0.0-alpha.0",
 		"@types/mustache": "^4.2.2",
