@@ -21,7 +21,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/html-spec": "4.0.0-alpha.0",
 		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"@markuplint/test-tools": "4.0.0-alpha.0",
 		"@types/cheerio": "^0.22.31",

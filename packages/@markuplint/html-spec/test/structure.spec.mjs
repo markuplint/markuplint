@@ -2,12 +2,13 @@ import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import htmlSpec from '@markuplint/html-spec';
 import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
 import { glob } from '@markuplint/test-tools';
 import Ajv from 'ajv';
 import strip from 'strip-json-comments';
 import { describe, test, expect } from 'vitest';
+
+import htmlSpec from '../index.js';
 
 const require = createRequire(import.meta.url);
 
@@ -64,6 +65,7 @@ describe('schema', () => {
 					schemas.types,
 				],
 			}).getSchema(schemas.element.$id),
+			// eslint-disable-next-line no-restricted-globals
 			path.resolve(__dirname, 'spec.*.json'),
 		],
 		[
@@ -71,6 +73,7 @@ describe('schema', () => {
 			new Ajv({
 				schemas: [schemas.globalAttributes, schemas.attributes, schemas.types],
 			}).getSchema(schemas.globalAttributes.$id),
+			// eslint-disable-next-line no-restricted-globals
 			path.resolve(__dirname, 'spec-common.attributes.json'),
 		],
 	];
