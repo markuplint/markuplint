@@ -26,6 +26,6 @@
 		"@markuplint/ml-ast": "4.0.0-alpha.0",
 		"@markuplint/parser-utils": "4.0.0-alpha.0",
 		"astro-eslint-parser": "^0.14.0",
-		"tslib": "^2.6.0"
+		"tslib": "^2.6.1"
 	}
 }

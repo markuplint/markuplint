@@ -34,8 +34,8 @@
 		"@markuplint/types": "4.0.0-alpha.0",
 		"dom-accessibility-api": "^0.6.1",
 		"is-plain-object": "^5.0.0",
-		"tslib": "^2.6.0",
-		"type-fest": "^4.0.0"
+		"tslib": "^2.6.1",
+		"type-fest": "^4.1.0"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "4.0.0-alpha.0",

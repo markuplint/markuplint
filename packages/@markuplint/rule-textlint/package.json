@@ -31,6 +31,6 @@
 		"@textlint/kernel": "13.3.3",
 		"textlint": "12",
 		"textlint-plugin-html": "0.3.0",
-		"tslib": "^2.6.0"
+		"tslib": "^2.6.1"
 	}
 }
