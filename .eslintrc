@@ -4,7 +4,7 @@
 		"browser": false,
 		"es6": true,
 		"node": true,
-		"jest": true
+		"commonjs": false
 	},
 	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
 	"parserOptions": {
@@ -23,6 +23,7 @@
 		"no-mixed-spaces-and-tabs": 0,
 		"require-await": 2,
 		"lines-between-class-members": [1, "always", { "exceptAfterSingleLine": true }],
+		"no-restricted-globals": [2, "__dirname", "require"],
 
 		"node/no-unsupported-features/es-syntax": 0,
 
@@ -155,20 +156,7 @@
 							"order": "alphabetically"
 						}
 					}
-				]
-			}
-		},
-		{
-			"files": ["**/*.spec.{js,ts}"],
-			"rules": {
-				"import/no-extraneous-dependencies": 0,
-				"@typescript-eslint/no-var-requires": 0
-			}
-		},
-		{
-			"files": ["packages/**/*.ts", "vscode/**/*.ts"],
-			"excludedFiles": ["**/*.spec.ts"],
-			"rules": {
+				],
 				"@typescript-eslint/prefer-readonly-parameter-types": [
 					"warn",
 					{
@@ -177,6 +165,14 @@
 						"treatMethodsAsReadonly": false
 					}
 				]
+			}
+		},
+		{
+			"files": ["**/*.spec.{js,mjs,cjs,ts}", "vitest.config.ts"],
+			"rules": {
+				"import/no-extraneous-dependencies": 0,
+				"@typescript-eslint/no-var-requires": 0,
+				"@typescript-eslint/prefer-readonly-parameter-types": 0
 			}
 		}
 	]

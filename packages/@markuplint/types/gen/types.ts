@@ -1,15 +1,21 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // @ts-ignore
 import { lexer } from 'css-tree';
 
-import { types as extendedTypes, tokenizers } from '../src/defs';
+import { types as extendedTypes, tokenizers } from '../src/defs.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const require = createRequire(import.meta.url);
 
 const props = Object.keys(lexer.properties).map(p => `<'${p}'>`);
 const types = Object.keys(lexer.types).map(t => `<${t}>`);
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const specific = require('./specific-schema.json');
 
 fs.writeFileSync(

@@ -1,10 +1,10 @@
-import type { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser/index.js';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 
-import svelteParse from './svelte-parser';
-import { traverse } from './traverse';
+import svelteParse from './svelte-parser/index.js';
+import { traverse } from './traverse.js';
 
 export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(

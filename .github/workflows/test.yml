@@ -104,7 +104,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
-        needs: dev-setup
+        needs: [dev-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
@@ -127,6 +127,17 @@ jobs:
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@v3
+              with:
+                  path: |
+                      packages/**/lib
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Lint
               run: yarn lint:check
@@ -234,55 +245,6 @@ jobs:
                   ls -la ./packages/@markuplint/*/lib
                   ls -la ./packages/@markuplint/config-presets
               shell: bash
-
-            - name: Test
-              uses: nick-fields/retry@v2
-              with:
-                  timeout_minutes: 20
-                  max_attempts: 3
-                  shell: bash
-                  command: yarn jest --useStderr --coverage --shard=${{ matrix.shard }}
-
-    test_new:
-        needs: [os-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
-                node: [18]
-                shard: [1/4, 2/4, 3/4, 4/4]
-                include:
-                    - node: 20
-                      os: ubuntu-latest
-                      shard: 1/1
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v3
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
-              with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@v3
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Test
               uses: nick-fields/retry@v2

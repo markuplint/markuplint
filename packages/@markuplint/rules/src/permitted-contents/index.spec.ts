@@ -1347,7 +1347,9 @@ describe('Issues', () => {
 	noscript
 		style`,
 					{
-						parser: require('@markuplint/pug-parser'),
+						parser: {
+							'.*': '@markuplint/pug-parser',
+						},
 					},
 				)
 			).violations,

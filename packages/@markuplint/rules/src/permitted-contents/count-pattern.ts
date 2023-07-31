@@ -1,4 +1,4 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types.js';
 import type {
 	PermittedContentOneOrMore,
 	PermittedContentOptional,
@@ -7,9 +7,9 @@ import type {
 } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { cmLog } from './debug';
-import { recursiveBranch } from './recursive-branch';
-import { Collection, mergeHints, modelLog, normalizeModel } from './utils';
+import { cmLog } from './debug.js';
+import { recursiveBranch } from './recursive-branch.js';
+import { Collection, mergeHints, modelLog, normalizeModel } from './utils.js';
 
 /**
  * Check count

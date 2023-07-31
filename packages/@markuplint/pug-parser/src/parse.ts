@@ -1,4 +1,4 @@
-import type { ASTBlock, ASTNode } from './pug-parser';
+import type { ASTBlock, ASTNode } from './pug-parser/index.js';
 import type {
 	MLASTDoctype,
 	MLASTNode,
@@ -19,8 +19,8 @@ import {
 	removeDeprecatedNode,
 } from '@markuplint/parser-utils';
 
-import attrTokenizer from './attr-tokenizer';
-import { pugParse } from './pug-parser';
+import attrTokenizer from './attr-tokenizer.js';
+import { pugParse } from './pug-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let unknownParseError: string | undefined;

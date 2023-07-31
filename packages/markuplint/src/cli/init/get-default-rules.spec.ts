@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { getDefaultRules } from './get-default-rules';
+import { getDefaultRules } from './get-default-rules.js';
 
 test('v3.0.0', async () => {
 	const defaultRules = await getDefaultRules('3.0.0');

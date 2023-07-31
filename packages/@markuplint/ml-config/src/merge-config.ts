@@ -1,10 +1,10 @@
-import type { Config, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Config, AnyRule, AnyRuleV2, Rules } from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
 import deepmerge from 'deepmerge';
 
-import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils';
+import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
 export function mergeConfig(a: Config, b: Config): Config {
 	const config: Config = {

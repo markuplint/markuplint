@@ -1,6 +1,8 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es2019",
 		"resolveJsonModule": true,
 		"declaration": false,
 		"importHelpers": true

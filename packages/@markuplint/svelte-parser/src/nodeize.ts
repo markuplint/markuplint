@@ -1,4 +1,4 @@
-import type { SvelteDirective, SvelteNode } from './svelte-parser';
+import type { SvelteDirective, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTAttr,
 	MLASTElementCloseTag,
@@ -13,9 +13,9 @@ import type {
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import { parseCtrlBlock } from './parse-ctrl-block';
-import { traverse } from './traverse';
+import { attr } from './attr.js';
+import { parseCtrlBlock } from './parse-ctrl-block.js';
+import { traverse } from './traverse.js';
 
 export function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

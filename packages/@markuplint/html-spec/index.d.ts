@@ -1,4 +1,4 @@
-import { Cites, ElementSpec, SpecDefs } from '@markuplint/ml-spec';
+import type { Cites, ElementSpec, SpecDefs } from '@markuplint/ml-spec';
 
 export { Attribute } from '@markuplint/ml-spec';
 

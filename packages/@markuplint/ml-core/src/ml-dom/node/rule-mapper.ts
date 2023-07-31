@@ -1,11 +1,11 @@
-import type { MLDocument } from './document';
-import type { MLNode } from './node';
+import type { MLDocument } from './document.js';
+import type { MLNode } from './node.js';
 import type { AnyRule } from '@markuplint/ml-config';
 import type { Specificity } from '@markuplint/selector';
 
 import { compareSpecificity } from '@markuplint/selector';
 
-import { log as coreLog } from '../../debug';
+import { log as coreLog } from '../../debug.js';
 
 const ruleMapperLog = coreLog.extend('rule-mapper');
 const ruleMapperNodeLog = ruleMapperLog.extend('node');

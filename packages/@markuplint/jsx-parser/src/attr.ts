@@ -1,10 +1,10 @@
-import type { JSXAttribute } from './jsx';
+import type { JSXAttribute } from './jsx.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
 import { attrTokenizer } from '@markuplint/html-parser';
 import { searchIDLAttribute, sliceFragment, tokenizer, uuid } from '@markuplint/parser-utils';
 
-import { getAttrName } from './jsx';
+import { getAttrName } from './jsx.js';
 
 export function attr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

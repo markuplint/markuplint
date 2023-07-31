@@ -1,11 +1,11 @@
-import type { MLNode } from './node';
-import type { MappedNode } from './types';
+import type { MLNode } from './node.js';
+import type { MappedNode } from './types.js';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { TargetParserError } from '@markuplint/parser-utils';
 
-import { log } from '../../debug';
+import { log } from '../../debug.js';
 
 const nodeStoreLog = log.extend('node-store');
 const nodeStoreError = nodeStoreLog.extend('error');

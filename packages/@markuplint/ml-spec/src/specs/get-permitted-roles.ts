@@ -1,13 +1,14 @@
-import type { ARIAVersion, Matches, MLMLSpec } from '../types';
-import type { PermittedARIAAAMInfo, PermittedRoles } from '../types/aria';
+import type { PermittedARIAAAMInfo, PermittedRoles } from '../types/aria.js';
+import type { ARIAVersion, Matches, MLMLSpec } from '../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
+// @ts-ignore
 import { isPlainObject } from 'is-plain-object';
 
-import { mergeArray } from '../utils/merge-array';
+import { mergeArray } from '../utils/merge-array.js';
 
-import { ariaSpecs } from './aria-specs';
-import { getARIA } from './get-aria';
+import { ariaSpecs } from './aria-specs.js';
+import { getARIA } from './get-aria.js';
 
 /**
  * Getting permitted ARIA roles.

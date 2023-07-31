@@ -1,4 +1,4 @@
-import type { MLNode } from '../node/node';
+import type { MLNode } from '../node/node.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 export type Walker<T extends RuleConfigValue, O extends PlainData = undefined, N = MLNode<T, O>> = (

@@ -146,7 +146,7 @@
 	],
 	"overrides": [
 		{
-			"filename": "packages/@markuplint/types/test/whatwg/check-autocomplete.spec.js",
+			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
 			"words": ["neme", "emall"]
 		}
 	]

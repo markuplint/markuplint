@@ -1,4 +1,4 @@
-import type { ChildNode, Element, Hints, MissingNodeReason, RepeatSign, Specs } from './types';
+import type { ChildNode, Element, Hints, MissingNodeReason, RepeatSign, Specs } from './types.js';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -15,8 +15,8 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { createSelector } from '@markuplint/selector';
 
-import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug';
-import { transparentMode } from './represent-transparent-nodes';
+import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug.js';
+import { transparentMode } from './represent-transparent-nodes.js';
 
 const getChildNodesWithoutWhitespacesCaches = new Map<Element, ChildNode[]>();
 export function getChildNodesWithoutWhitespaces(

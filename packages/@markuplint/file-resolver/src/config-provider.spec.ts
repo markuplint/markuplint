@@ -1,9 +1,13 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { test, expect, vi } from 'vitest';
 
 import { ConfigProvider } from './config-provider.js';
 import { getFile } from './ml-file/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 vi.mock('packaged-config', () => {
 	return {

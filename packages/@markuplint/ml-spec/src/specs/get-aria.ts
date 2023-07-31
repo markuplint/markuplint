@@ -1,9 +1,9 @@
-import type { ARIAVersion, Matches, MLMLSpec } from '../types';
-import type { ARIA, PermittedRoles } from '../types/aria';
+import type { ARIA, PermittedRoles } from '../types/aria.js';
+import type { ARIAVersion, Matches, MLMLSpec } from '../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { getSpecByTagName } from './get-spec-by-tag-name';
-import { resolveVersion } from './resolve-version';
+import { getSpecByTagName } from './get-spec-by-tag-name.js';
+import { resolveVersion } from './resolve-version.js';
 
 const cache = new Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>();
 

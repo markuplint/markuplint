@@ -1,8 +1,8 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
-import { isValidAttr } from '../../helpers';
+import { isValidAttr } from '../../helpers.js';
 
 export const checkingImplicitProps: AttrChecker<
 	boolean,

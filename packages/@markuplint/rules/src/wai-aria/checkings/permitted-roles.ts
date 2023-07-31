@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { getPermittedRoles } from '@markuplint/ml-spec';

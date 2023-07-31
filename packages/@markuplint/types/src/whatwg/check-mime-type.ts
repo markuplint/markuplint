@@ -1,10 +1,10 @@
-import type { CustomSyntaxChecker } from '../types';
+import type { CustomSyntaxChecker } from '../types.js';
 
 // @ts-ignore
 import MIMEType from 'whatwg-mimetype';
 
-import { matched, unmatched } from '../match-result';
-import { Token } from '../token';
+import { matched, unmatched } from '../match-result.js';
+import { Token } from '../token/index.js';
 
 const expects = (withoutParameters: boolean) => [
 	{

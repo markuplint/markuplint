@@ -1,11 +1,11 @@
-import type { CustomSyntaxChecker } from '../../types';
+import type { CustomSyntaxChecker } from '../../types.js';
 
-import { log } from '../../debug';
-import { unmatched } from '../../match-result';
-import { TokenCollection } from '../../token';
+import { log } from '../../debug.js';
+import { unmatched } from '../../match-result.js';
+import { TokenCollection } from '../../token/index.js';
 
-import { datetimeTokenCheck } from './datetime-tokens';
-import { parseTimeZone } from './time-zone-offset-string';
+import { datetimeTokenCheck } from './datetime-tokens.js';
+import { parseTimeZone } from './time-zone-offset-string.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#global-dates-and-times

@@ -36,7 +36,7 @@ And then there are the below files created:
 </file-tree>
 
 :::info
-The **test** code is written in [**Jest**](https://jestjs.io/) format. Please rewrite it you need.
+The **test** code is written in [**Vitest**](https://vitest.dev/) format. Please rewrite it you need.
 :::
 
 Eventually, you should specify it to the configuration to apply it.

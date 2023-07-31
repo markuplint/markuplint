@@ -1,9 +1,9 @@
-import type { ContentModelResult, Element, Options, Specs, TagRule } from './types';
+import type { ContentModelResult, Element, Options, Specs, TagRule } from './types.js';
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
-import { start } from './start';
+import { start } from './start.js';
 
 export function contentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

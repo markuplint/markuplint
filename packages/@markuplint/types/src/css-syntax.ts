@@ -1,10 +1,10 @@
-import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
+import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types.js';
 
 import { fork } from 'css-tree';
 
-import { log } from './debug';
-import { tokenizers } from './defs';
-import { matched } from './match-result';
+import { log } from './debug.js';
+import { tokenizers } from './defs.js';
+import { matched } from './match-result.js';
 
 const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';

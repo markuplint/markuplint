@@ -1,6 +1,6 @@
 import type { ElementType, ParserAuthoredElementNameDistinguishing } from '@markuplint/ml-ast';
 
-import { isPotentialCustomElementName } from './decision';
+import { isPotentialCustomElementName } from './decision.js';
 
 export function detectElementType(
 	name: string,

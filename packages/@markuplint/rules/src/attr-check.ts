@@ -5,8 +5,8 @@ import type { ReadonlyDeep } from 'type-fest';
 import { toNonNullableArrayFromItemOrArray } from '@markuplint/shared';
 import { check } from '@markuplint/types';
 
-import { createMessageValueExpected } from './create-message';
-import { log } from './debug';
+import { createMessageValueExpected } from './create-message.js';
+import { log } from './debug.js';
 
 type Invalid = {
 	invalidType: 'non-existent' | 'invalid-value' | 'disallowed-attr';

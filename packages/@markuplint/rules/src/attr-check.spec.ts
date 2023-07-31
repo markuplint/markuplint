@@ -1,11 +1,10 @@
 import type { Translator } from '@markuplint/i18n';
 
+import { translator } from '@markuplint/i18n';
 import { i18n } from 'markuplint';
 import { test, expect, beforeAll } from 'vitest';
 
-const { translator } = require('@markuplint/i18n');
-
-const { valueCheck } = require('./attr-check');
+import { valueCheck } from './attr-check.js';
 
 let t: Translator;
 

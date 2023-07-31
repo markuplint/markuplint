@@ -1,9 +1,10 @@
 import type { MLASTNode, MLASTText } from '@markuplint/ml-ast';
 
-import { removeDeprecatedNode } from './remove-deprecated-node';
-import tagSplitter from './tag-splitter';
-
-import { getEndCol, getEndLine, uuid, walk } from '@markuplint/parser-utils';
+import { uuid } from './create-token.js';
+import { getEndCol, getEndLine } from './get-location.js';
+import { removeDeprecatedNode } from './remove-deprecated-node.js';
+import tagSplitter from './tag-splitter.js';
+import { walk } from './walker.js';
 
 export function flattenNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

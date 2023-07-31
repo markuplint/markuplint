@@ -1,10 +1,10 @@
-import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
 import path from 'node:path';
 
-import { CreateRuleHelperError } from './create-rule-helper-error';
-import glob from './glob';
-import { installScaffold } from './install-scaffold';
+import { CreateRuleHelperError } from './create-rule-helper-error.js';
+import glob from './glob.js';
+import { installScaffold } from './install-scaffold.js';
 
 export async function createRulePackage({
 	pluginName,

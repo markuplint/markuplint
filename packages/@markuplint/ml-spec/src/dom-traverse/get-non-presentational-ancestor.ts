@@ -1,8 +1,8 @@
-import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAVersion, MLMLSpec } from '../types/index.js';
 
-import { isPresentational } from '../specs/is-presentational';
+import { isPresentational } from '../specs/is-presentational.js';
 
-import { getComputedRole } from './get-computed-role';
+import { getComputedRole } from './get-computed-role.js';
 
 export function getNonPresentationalAncestor(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -1,6 +1,6 @@
-import type { ChildNode, Result } from './types';
+import type { ChildNode, Result } from './types.js';
 
-import { cmLog } from './debug';
+import { cmLog } from './debug.js';
 
 const transparentLog = cmLog.extend('transparent');
 

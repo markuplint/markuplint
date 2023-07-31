@@ -1,5 +1,5 @@
-import type { AnyMLRule } from './ml-rule';
-import type Ruleset from './ruleset';
+import type { AnyMLRule } from './ml-rule/index.js';
+import type Ruleset from './ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { Pretender } from '@markuplint/ml-config';

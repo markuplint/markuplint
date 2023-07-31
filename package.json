@@ -7,20 +7,18 @@
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
 		"test": "vitest run",
-		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
-		"test:clear": "jest --clearCache",
-		"test:unit": "jest",
+		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix './packages/**/{*.ts,*.spec.js}'; yarn spellcheck; prettier --write './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}';",
-		"lint:check": "eslint './packages/**/{*.ts,*.spec.js}' && yarn spellcheck && prettier --check './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}'",
+		"lint": "eslint --fix './packages/**/*.ts'; yarn spellcheck; prettier --write './packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}';",
+		"lint:check": "eslint './packages/**/*.ts' && yarn spellcheck && prettier --check './packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}'",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
-		"all": "run-s lint clean build gen schema test:clear test",
+		"all": "run-s lint clean build gen schema test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint.mjs",
 		"vscode:dev": "cd vscode; yarn --ignore-engines vscode:dev",
-		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn spellcheck; prettier --write './vscode/**/*{ts,tsx,json,rc,md}';",
+		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn spellcheck; prettier --write './vscode/**/*{ts,tsx,js,cjs,mjs,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
 		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; cd ..; mv package.json.bak package.json;",
 		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; cd ..; mv package.json.bak package.json;",
@@ -40,7 +38,7 @@
 		"up": "yarn upgrade-interactive --latest"
 	},
 	"lint-staged": {
-		"./{packages,website,playground}/**/*.{ts,tsx,json}": [
+		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
 			"prettier --write"
 		],
 		"./{packages,website,playground}/**/*.{ts,tsx}": [
@@ -56,39 +54,6 @@
 			"cspell --no-must-find-files --no-progress --show-suggestions"
 		]
 	},
-	"jest": {
-		"verbose": true,
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"node"
-		],
-		"collectCoverageFrom": [
-			"packages/markuplint/lib/**/*.js",
-			"packages/@markuplint/*/lib/**/*.js",
-			"!**/*.spec.js"
-		],
-		"projects": [
-			{
-				"displayName": "node",
-				"testRegex": "(\\.|/)spec\\.js$",
-				"testPathIgnorePatterns": [
-					"esm-adapter",
-					"scaffold",
-					"(\\.|/)browser\\.spec\\.js$"
-				],
-				"testEnvironment": "node"
-			},
-			{
-				"displayName": "browser",
-				"testRegex": "(\\.|/)browser\\.spec\\.js?$",
-				"resolver": "<rootDir>/test/browser-resolver.js",
-				"setupFiles": [
-					"<rootDir>/test/browser-setup.js"
-				]
-			}
-		]
-	},
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
@@ -96,16 +61,15 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@types/jest": "^29.5.2",
-		"@typescript-eslint/eslint-plugin": "^6.1.0",
-		"@typescript-eslint/parser": "^6.1.0",
+		"@typescript-eslint/eslint-plugin": "^6.2.0",
+		"@typescript-eslint/parser": "^6.2.0",
 		"@vitest/coverage-v8": "^0.33.0",
 		"cspell": "^6.31.1",
-		"eslint": "^8.44.0",
+		"eslint": "^8.46.0",
 		"eslint-import-resolver-typescript": "^3.5.5",
 		"eslint-plugin-eslint-comments": "^3.2.0",
-		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-jsdoc": "^46.4.3",
+		"eslint-plugin-import": "^2.28.0",
+		"eslint-plugin-jsdoc": "^46.4.5",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-sort-class-members": "^1.17.1",
 		"heapdump": "^0.3.15",

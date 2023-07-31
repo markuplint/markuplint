@@ -1,10 +1,10 @@
-import type { JSXNode } from './jsx';
+import type { JSXNode } from './jsx.js';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, ParserError, walk } from '@markuplint/parser-utils';
 
-import jsxParser from './jsx';
-import { traverse } from './traverse';
+import jsxParser from './jsx.js';
+import { traverse } from './traverse.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let ast: JSXNode[];

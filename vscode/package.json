@@ -88,13 +88,13 @@
 		"@types/node": "18",
 		"@types/semver": "^7.5.0",
 		"@types/vscode": "^1.80.0",
-		"@vscode/vsce": "^2.19.0",
+		"@vscode/vsce": "^2.20.0",
 		"typescript": "^5.1.6"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.0-alpha.0",
-		"@markuplint/i18n": "3.9.0",
-		"@markuplint/ml-spec": "3.11.0",
+		"@markuplint/i18n": "4.0.0-alpha.0",
+		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"markuplint": "4.0.0-alpha.0",
 		"semver": "^7.5.4",
 		"vscode-languageclient": "^8.1.0",

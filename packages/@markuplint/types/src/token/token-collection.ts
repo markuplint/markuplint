@@ -1,11 +1,10 @@
-import type { TokenValue } from './types';
-import type { UnmatchedResult } from '..';
-import type { Expect, Result, List } from '../types';
+import type { TokenValue } from './types.js';
+import type { Expect, Result, List, UnmatchedResult } from '../types.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { matched, unmatched } from '../match-result';
+import { matched, unmatched } from '../match-result.js';
 
-import { Token } from './token';
+import { Token } from './token.js';
 
 type TokenCollectionOptions = Partial<
 	Omit<List, 'token'> & {

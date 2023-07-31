@@ -1,11 +1,10 @@
 import type { Translator } from '@markuplint/i18n';
 
+import { translator } from '@markuplint/i18n';
 import { i18n } from 'markuplint';
 import { describe, test, expect, beforeAll } from 'vitest';
 
-const { translator } = require('@markuplint/i18n');
-
-const { __createMessageValueExpected } = require('./create-message');
+import { __createMessageValueExpected } from './create-message.js';
 
 let t: Translator;
 

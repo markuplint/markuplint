@@ -1,8 +1,8 @@
-import type { Option } from './helper';
+import type { Option } from './helper.js';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { defaultOptions, textlintVerify } from './verify';
+import { defaultOptions, textlintVerify } from './verify.js';
 
 export default createRule<boolean, Option>({
 	defaultSeverity: 'warning',

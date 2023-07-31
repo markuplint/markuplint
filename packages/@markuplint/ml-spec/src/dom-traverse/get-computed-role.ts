@@ -1,16 +1,16 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
-import { ariaSpecs } from '../specs/aria-specs';
-import { isPresentational } from '../specs/is-presentational';
+import { ariaSpecs } from '../specs/aria-specs.js';
+import { isPresentational } from '../specs/is-presentational.js';
 
-import { getAccname } from './accname-computation';
-import { getAttrSpecs } from './get-attr-specs';
-import { getExplicitRole } from './get-explicit-role';
-import { getImplicitRole } from './get-implicit-role';
-import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
-import { isRequiredOwnedElement } from './has-required-owned-elements';
-import { matchesContextRole } from './matches-context-role';
-import { mayBeFocusable } from './may-be-focusable';
+import { getAccname } from './accname-computation.js';
+import { getAttrSpecs } from './get-attr-specs.js';
+import { getExplicitRole } from './get-explicit-role.js';
+import { getImplicitRole } from './get-implicit-role.js';
+import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
+import { isRequiredOwnedElement } from './has-required-owned-elements.js';
+import { matchesContextRole } from './matches-context-role.js';
+import { mayBeFocusable } from './may-be-focusable.js';
 
 export function getComputedRole(
 	specs: MLMLSpec,

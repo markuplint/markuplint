@@ -1,8 +1,8 @@
-import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../types/index.js';
 
-import { ariaSpecs as _ariaSpecs } from '../specs/aria-specs';
+import { ariaSpecs as _ariaSpecs } from '../specs/aria-specs.js';
 
-import { getComputedRole } from './get-computed-role';
+import { getComputedRole } from './get-computed-role.js';
 
 type ARIAProps = Record<string, ARIAProp>;
 

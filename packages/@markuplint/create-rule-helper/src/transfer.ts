@@ -1,20 +1,23 @@
-import type { File } from './types';
+import type { File } from './types.js';
 
 import { statSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { resolve, extname, basename, relative, dirname, sep } from 'node:path';
 
 import { format } from 'prettier';
-import { transpile, ScriptTarget } from 'typescript';
+import tsc from 'typescript';
 
-import { fsExists } from './fs-exists';
-import glob from './glob';
+import { fsExists } from './fs-exists.js';
+import glob from './glob.js';
 
 type TransferOptions = {
 	readonly transpile?: boolean;
 	readonly test?: boolean;
 	readonly replacer?: Readonly<Record<string, string | void>>;
 };
+
+// eslint-disable-next-line import/no-named-as-default-member
+const { transpile, ScriptTarget } = tsc;
 
 export async function transfer(
 	scaffoldType: 'core' | 'project' | 'package',

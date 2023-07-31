@@ -1,6 +1,6 @@
 import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-import { createTokenFromRawCode, tokenizer, uuid } from './create-token';
+import { createTokenFromRawCode, tokenizer, uuid } from './create-token.js';
 
 type ParseAttrOptions = {
 	readonly booleanish?: boolean;

@@ -1,10 +1,9 @@
-import type { Expect } from '..';
-import type { CustomSyntaxChecker } from '../types';
+import type { CustomSyntaxChecker, Expect } from '../types.js';
 
-import { log } from '../debug';
-import { getCandidate } from '../get-candidate';
-import { matched } from '../match-result';
-import { TokenCollection } from '../token';
+import { log } from '../debug.js';
+import { getCandidate } from '../get-candidate.js';
+import { matched } from '../match-result.js';
+import { TokenCollection } from '../token/index.js';
 
 const acLog = log.extend('autocomplete');
 

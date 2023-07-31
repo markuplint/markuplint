@@ -1,10 +1,10 @@
-import type { ContentModelResult, Element, Options, Specs } from './types';
+import type { ContentModelResult, Element, Options, Specs } from './types.js';
 import type { ContentModel } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { order } from './order';
-import { representTransparentNodes } from './represent-transparent-nodes';
-import { getChildNodesWithoutWhitespaces } from './utils';
+import { order } from './order.js';
+import { representTransparentNodes } from './represent-transparent-nodes.js';
+import { getChildNodesWithoutWhitespaces } from './utils.js';
 
 /**
  * Check start

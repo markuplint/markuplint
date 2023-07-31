@@ -1,10 +1,14 @@
-import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
 import fs from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { fsExists } from './fs-exists';
-import { transfer } from './transfer';
+import { fsExists } from './fs-exists.js';
+import { transfer } from './transfer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export async function installScaffold(
 	scaffoldType: 'core' | 'project' | 'package',
@@ -37,37 +41,11 @@ export async function installScaffold(
 	const devDependencies: string[] = [];
 
 	if (packageJson) {
-		const ext = params.lang === 'JAVASCRIPT' ? 'js' : 'ts';
+		// const ext = params.lang === 'JAVASCRIPT' ? 'js' : 'ts';
 
 		const packageContent: any = {
 			name: params.ruleName,
 			scripts: {},
-			jest: {
-				moduleFileExtensions: ['js', ...(params.lang === 'TYPESCRIPT' ? ['ts'] : [])],
-				testRegex: `(\\.|/)(spec|test)\\.${ext}$`,
-				testEnvironment: 'node',
-				transform:
-					params.lang === 'TYPESCRIPT'
-						? {
-								'^.+\\.ts$': 'ts-jest',
-						  }
-						: undefined,
-			},
-			babel:
-				params.needTest && params.lang === 'JAVASCRIPT'
-					? {
-							presets: [
-								[
-									'@babel/preset-env',
-									{
-										targets: {
-											node: 'current',
-										},
-									},
-								],
-							],
-					  }
-					: undefined,
 		};
 
 		if (params.lang === 'TYPESCRIPT') {
@@ -78,17 +56,8 @@ export async function installScaffold(
 		devDependencies.push('markuplint');
 
 		if (params.needTest) {
-			packageContent.scripts.test = 'jest';
-			devDependencies.push('jest');
-
-			if (params.lang === 'TYPESCRIPT') {
-				devDependencies.push('@types/jest');
-				devDependencies.push('ts-jest');
-			} else {
-				devDependencies.push('babel-jest');
-				devDependencies.push('@babel/core');
-				devDependencies.push('@babel/preset-env');
-			}
+			packageContent.scripts.test = 'vitest';
+			devDependencies.push('vitest');
 		}
 
 		if (params.lang === 'TYPESCRIPT') {

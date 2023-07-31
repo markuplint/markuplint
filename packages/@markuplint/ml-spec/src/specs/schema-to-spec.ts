@@ -1,6 +1,6 @@
-import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types';
+import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types/index.js';
 
-import { mergeArray } from '../utils/merge-array';
+import { mergeArray } from '../utils/merge-array.js';
 
 /**
  * Merging HTML-spec schema and extended spec schemas

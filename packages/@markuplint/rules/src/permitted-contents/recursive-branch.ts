@@ -1,11 +1,11 @@
-import type { SelectorResult } from './matches-selector';
-import type { ChildNode, Options, Specs } from './types';
+import type { SelectorResult } from './matches-selector.js';
+import type { ChildNode, Options, Specs } from './types.js';
 import type { PermittedContentPattern, Model } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { matchesSelector } from './matches-selector';
-import { order } from './order';
-import { Collection, isModel } from './utils';
+import { matchesSelector } from './matches-selector.js';
+import { order } from './order.js';
+import { Collection, isModel } from './utils.js';
 
 export function recursiveBranch(
 	model: ReadonlyDeep<Model | PermittedContentPattern[]>,

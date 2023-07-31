@@ -1,4 +1,4 @@
-import type { SelectorResult } from '../types';
+import type { SelectorResult } from '../types.js';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';

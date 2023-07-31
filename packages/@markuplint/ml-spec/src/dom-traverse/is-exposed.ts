@@ -1,11 +1,11 @@
-import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAVersion, MLMLSpec } from '../types/index.js';
 
-import { ariaSpecs } from '../specs/aria-specs';
-import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
-import { isPresentational } from '../specs/is-presentational';
-import { resolveNamespace } from '../utils/resolve-namespace';
+import { ariaSpecs } from '../specs/aria-specs.js';
+import { getSpecByTagName } from '../specs/get-spec-by-tag-name.js';
+import { isPresentational } from '../specs/is-presentational.js';
+import { resolveNamespace } from '../utils/resolve-namespace.js';
 
-import { getComputedRole } from './get-computed-role';
+import { getComputedRole } from './get-computed-role.js';
 
 /**
  * Detect including/excluding from the Accessibility Tree

@@ -1,4 +1,4 @@
-import type { DateTime, DateTimeData, DateTimeKey, Lang } from './types';
+import type { DateTime, DateTimeData, DateTimeKey, Lang } from './types.js';
 
 import * as chrono from 'chrono-node';
 

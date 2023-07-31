@@ -1,9 +1,9 @@
-import type { TextNodeType } from './types';
+import type { TextNodeType } from './types.js';
 import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLCharacterData } from './character-data';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLCharacterData } from './character-data.js';
+import UnexpectedCallError from './unexpected-call-error.js';
 
 /**
  * Raw text elements

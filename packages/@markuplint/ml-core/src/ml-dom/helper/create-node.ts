@@ -1,13 +1,13 @@
-import type { MLDocument } from '../node/document';
-import type { MappedNode } from '../node/types';
+import type { MLDocument } from '../node/document.js';
+import type { MappedNode } from '../node/types.js';
 import type { MLASTAbstractNode, MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLBlock } from '../node/block';
-import { MLComment } from '../node/comment';
-import { MLDocumentType } from '../node/document-type';
-import { MLElement } from '../node/element';
-import { MLText } from '../node/text';
+import { MLBlock } from '../node/block.js';
+import { MLComment } from '../node/comment.js';
+import { MLDocumentType } from '../node/document-type.js';
+import { MLElement } from '../node/element.js';
+import { MLText } from '../node/text.js';
 
 export function createNode<N extends MLASTAbstractNode, T extends RuleConfigValue, O extends PlainData = undefined>(
 	astNode: N,

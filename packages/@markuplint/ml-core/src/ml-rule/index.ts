@@ -1,3 +1,3 @@
-export * from './create-rule';
-export * from './ml-rule';
-export * from './types';
+export * from './create-rule.js';
+export * from './ml-rule.js';
+export * from './types.js';
