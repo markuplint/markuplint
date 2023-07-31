@@ -3,7 +3,7 @@ import lexer from 'pug-lexer';
 // @ts-ignore
 import parser from 'pug-parser';
 
-import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col';
+import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.js';
 
 export function pugParse(pug: string) {
 	const lexOrigin = lexer(pug);

@@ -1,7 +1,7 @@
-import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types';
+import type { ARIAVersion, ARIARoleInSchema, MLMLSpec, ARIARole } from '../types/index.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 
-import { ariaSpecs } from './aria-specs';
+import { ariaSpecs } from './aria-specs.js';
 
 export function getRoleSpec(
 	specs: MLMLSpec,

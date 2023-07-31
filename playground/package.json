@@ -18,19 +18,19 @@
 		"css-loader": "6.8.1",
 		"cssnano": "6.0.1",
 		"file-loader": "6.2.0",
-		"html-inline-css-webpack-plugin": "1.11.1",
+		"html-inline-css-webpack-plugin": "1.11.2",
 		"html-loader": "4.2.0",
 		"html-webpack-plugin": "5.5.3",
 		"json-loader": "0.5.7",
 		"mini-css-extract-plugin": "2.7.6",
-		"monaco-editor-webpack-plugin": "7.0.1",
+		"monaco-editor-webpack-plugin": "7.1.0",
 		"postcss-base64": "0.7.1",
 		"postcss-calc": "9.0.1",
 		"postcss-custom-media": "10.0.0",
 		"postcss-gap-properties": "5.0.0",
 		"postcss-loader": "7.3.3",
 		"postcss-math": "0.0.10",
-		"sass": "1.63.6",
+		"sass": "1.64.1",
 		"sass-loader": "13.3.2",
 		"script-ext-html-webpack-plugin": "2.1.5",
 		"style-loader": "3.3.3",
@@ -38,7 +38,7 @@
 		"svelte-preprocess": "5.0.4",
 		"ts-loader": "9.4.4",
 		"ttf-loader": "1.0.2",
-		"webpack": "5.88.1",
+		"webpack": "5.88.2",
 		"webpack-cli": "5.1.4",
 		"webpack-dev-server": "4.15.1"
 	},
@@ -54,6 +54,6 @@
 		"@markuplint/rules": "3.12.0",
 		"monaco-editor": "0.40.0",
 		"svelte": "3",
-		"tslib": "2.6.0"
+		"tslib": "2.6.1"
 	}
 }

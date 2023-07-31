@@ -22,6 +22,7 @@ import { getModule } from './get-module';
 import * as v1 from './v1';
 import * as v2 from './v2';
 import * as v3 from './v3';
+import * as v4 from './v4';
 
 export async function bootServer() {
 	const connection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
@@ -34,7 +35,7 @@ export async function bootServer() {
 		void connection.sendNotification(logToDiagnosticsChannel, [message, type]);
 	};
 
-	const { modPath, markuplint, version, isLocalModule } = await getModule(log);
+	const mod = await getModule(log);
 
 	const documents = new TextDocuments(TextDocument);
 	documents.listen(connection);
@@ -53,10 +54,20 @@ export async function bootServer() {
 		initUI: () => void;
 	}>();
 
+	let isLocalModule = false;
+	let version: string;
+	if (mod.type === 'v4') {
+		version = mod.version;
+	} else {
+		// const { modPath, markuplint } = mod;
+		version = mod.version;
+		isLocalModule = true;
+	}
+
 	connection.onInitialized(async () => {
 		const locale = getLocale();
 
-		log(`Search Markuplint on: ${modPath}`, 'debug');
+		// log(`Search Markuplint on: ${modPath}`, 'debug');
 		log(`Found version: ${version} (isLocalModule: ${isLocalModule})`, 'info');
 		log(`Locale: ${locale}`, 'info');
 
@@ -121,25 +132,45 @@ export async function bootServer() {
 
 		initUI();
 
-		if (satisfies(version, '1.x')) {
-			return;
-		}
+		if (mod.type === 'v4') {
+			void v4.onDidOpen(
+				e,
+				mod.adapter.MLEngine,
+				config,
+				locale,
+				log,
+				diagnosticsLog,
+				sendDiagnostics,
+				notFoundParserError(languageId),
+			);
+		} else {
+			if (satisfies(version, '1.x')) {
+				return;
+			}
 
-		if (satisfies(version, '2.x')) {
-			void v2.onDidOpen(e, markuplint.MLEngine, config, locale, sendDiagnostics, notFoundParserError(languageId));
-			return;
-		}
+			if (satisfies(version, '2.x')) {
+				void v2.onDidOpen(
+					e,
+					mod.markuplint.MLEngine,
+					config,
+					locale,
+					sendDiagnostics,
+					notFoundParserError(languageId),
+				);
+				return;
+			}
 
-		void v3.onDidOpen(
-			e,
-			markuplint.MLEngine,
-			config,
-			locale,
-			log,
-			diagnosticsLog,
-			sendDiagnostics,
-			notFoundParserError(languageId),
-		);
+			void v3.onDidOpen(
+				e,
+				mod.markuplint.MLEngine,
+				config,
+				locale,
+				log,
+				diagnosticsLog,
+				sendDiagnostics,
+				notFoundParserError(languageId),
+			);
+		}
 	});
 
 	documents.onDidChangeContent(async e => {
@@ -151,17 +182,21 @@ export async function bootServer() {
 			return;
 		}
 
-		if (satisfies(version, '1.x')) {
-			void v1.onDidChangeContent(e, markuplint, config, sendDiagnostics);
-			return;
-		}
+		if (mod.type === 'v4') {
+			v4.onDidChangeContent(e, log, notFoundParserError(languageId));
+		} else {
+			if (satisfies(version, '1.x')) {
+				void v1.onDidChangeContent(e, mod.markuplint, config, sendDiagnostics);
+				return;
+			}
 
-		if (satisfies(version, '2.x')) {
-			v2.onDidChangeContent(e, notFoundParserError(languageId));
-			return;
-		}
+			if (satisfies(version, '2.x')) {
+				v2.onDidChangeContent(e, notFoundParserError(languageId));
+				return;
+			}
 
-		v3.onDidChangeContent(e, log, notFoundParserError(languageId));
+			v3.onDidChangeContent(e, log, notFoundParserError(languageId));
+		}
 	});
 
 	connection.onHover(async params => {

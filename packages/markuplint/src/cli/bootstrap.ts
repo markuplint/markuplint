@@ -34,10 +34,11 @@ Examples
 `;
 
 export const cli = meow(help, {
+	importMeta: import.meta,
 	flags: {
 		config: {
 			type: 'string',
-			alias: 'c',
+			shortFlag: 'c',
 		},
 		fix: {
 			type: 'boolean',
@@ -45,7 +46,7 @@ export const cli = meow(help, {
 		},
 		format: {
 			type: 'string',
-			alias: 'f',
+			shortFlag: 'f',
 		},
 		searchConfig: {
 			type: 'boolean',
@@ -68,7 +69,7 @@ export const cli = meow(help, {
 		},
 		problemOnly: {
 			type: 'boolean',
-			alias: 'p',
+			shortFlag: 'p',
 			default: false,
 		},
 		allowWarnings: {

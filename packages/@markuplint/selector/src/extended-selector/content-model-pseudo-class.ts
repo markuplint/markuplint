@@ -1,9 +1,9 @@
-import type { SelectorMatchedResult, SelectorResult } from '../types';
+import type { SelectorMatchedResult, SelectorResult } from '../types.js';
 import type { Category, MLMLSpec } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
-import { createSelector } from '../create-selector';
+import { createSelector } from '../create-selector.js';
 
 export function contentModelPseudoClass(specs: MLMLSpec) {
 	return (category: string) =>

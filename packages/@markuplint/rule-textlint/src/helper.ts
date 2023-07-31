@@ -1,4 +1,4 @@
-import type { TextlintKernelOptions } from '@textlint/kernel/lib/src/textlint-kernel-interface';
+import type { TextlintKernelOptions } from '@textlint/kernel/lib/src/textlint-kernel-interface.js';
 
 import { TextlintKernel } from '@textlint/kernel';
 // @ts-ignore / This has no types

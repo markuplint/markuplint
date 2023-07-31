@@ -1,5 +1,5 @@
 import c from 'cli-color';
-import { prompt as enquirer } from 'enquirer';
+import Enquirer from 'enquirer';
 
 type SelectQuestion<T> = {
 	readonly message: string;
@@ -10,7 +10,7 @@ type SelectQuestion<T> = {
 };
 
 export async function select<T>(question: SelectQuestion<T>) {
-	const res = await enquirer({
+	const res = await Enquirer.prompt({
 		...question,
 		name: '__Q__',
 		type: 'select',
@@ -24,7 +24,7 @@ export async function select<T>(question: SelectQuestion<T>) {
 }
 
 export async function multiSelect<T>(question: SelectQuestion<T>) {
-	const res = await enquirer({
+	const res = await Enquirer.prompt({
 		...question,
 		name: '__Q__',
 		type: 'multiselect',
@@ -43,7 +43,7 @@ export async function multiSelect<T>(question: SelectQuestion<T>) {
 export async function input<T extends string = string>(question: string, validation?: Readonly<RegExp>) {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		const _res = await enquirer({
+		const _res = await Enquirer.prompt({
 			message: question,
 			name: '__Q__',
 			type: 'input',
@@ -61,7 +61,7 @@ export async function input<T extends string = string>(question: string, validat
 }
 
 export async function confirm(question: string, options?: { readonly initial?: boolean }) {
-	const res = await enquirer({
+	const res = await Enquirer.prompt({
 		message: question,
 		name: '__Q__',
 		type: 'confirm',
@@ -77,7 +77,7 @@ export async function confirmSequence<T extends string = string>(
 		readonly name: T;
 	}[],
 ) {
-	const res = await enquirer<Record<T, boolean>>(
+	const res = await Enquirer.prompt<Record<T, boolean>>(
 		questions.map(question => {
 			return {
 				...question,

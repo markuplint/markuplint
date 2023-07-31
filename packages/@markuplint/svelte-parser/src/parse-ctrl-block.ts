@@ -1,9 +1,9 @@
-import type { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser/index.js';
 import type { MLASTNode, MLASTParentNode, MLASTPreprocessorSpecificBlock, ParserOptions } from '@markuplint/ml-ast';
 
 import { sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { traverse } from './traverse';
+import { traverse } from './traverse.js';
 
 export function parseCtrlBlock(
 	ctrlName: 'if' | 'each',

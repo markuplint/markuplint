@@ -8,11 +8,11 @@ import type {
 	JSXSpreadAttribute,
 	JSXTagNameExpression,
 	Node,
-} from '@typescript-eslint/types/dist/generated/ast-spec';
+} from 'ts-eslint-types-v5/dist/generated/ast-spec.js';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type { JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec';
+export type { JSXAttribute } from 'ts-eslint-types-v5/dist/generated/ast-spec.js';
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 	__alreadyNodeized?: true;
@@ -33,6 +33,8 @@ export default function jsxParser(jsxCode: string): JSXNode[] {
 		useJSXTextNode: true,
 	});
 
+	// TODO: Remove dependency {"ts-eslint-types-v5": "npm:@typescript-eslint/types@5"}
+	// @ts-ignore
 	return recursiveSearchJSXElements(ast.body, null);
 }
 

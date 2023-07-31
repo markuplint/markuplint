@@ -3,11 +3,7 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src",
-		"paths": {
-			"@markuplint/*": ["../../../node_modules"],
-			"*": ["../../../node_modules"]
-		}
+		"rootDir": "./src"
 	},
 	"references": [
 		{

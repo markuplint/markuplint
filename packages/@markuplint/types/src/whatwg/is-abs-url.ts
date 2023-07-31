@@ -1,4 +1,4 @@
-import type { FormattedPrimitiveTypeCreator } from '../types';
+import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
  * @see https://url.spec.whatwg.org/#syntax-url-absolute

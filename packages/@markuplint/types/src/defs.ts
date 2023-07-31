@@ -1,19 +1,19 @@
-import type { Defs, CssSyntaxTokenizer } from './types';
+import type { Defs, CssSyntaxTokenizer } from './types.js';
 
-import { checkMultiTypes } from './check-multi-types';
-import { getCandidate } from './get-candidate';
-import { matched, matches, unmatched } from './match-result';
-import { splitUnit, isFloat, isUint, isInt } from './primitive';
-import { isBCP47 } from './rfc/is-bcp-47';
-import { Token, TokenCollection } from './token';
-import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy';
-import { checkAutoComplete } from './whatwg/check-autocomplete';
-import { checkDateTime } from './whatwg/check-datetime';
-import { checkMIMEType } from './whatwg/check-mime-type';
-import { isAbsURL } from './whatwg/is-abs-url';
-import { isBrowserContextName } from './whatwg/is-browser-context-name';
-import { isCustomElementName } from './whatwg/is-custom-element-name';
-import { isItempropName } from './whatwg/is-itemprop-name';
+import { checkMultiTypes } from './check-multi-types.js';
+import { getCandidate } from './get-candidate.js';
+import { matched, matches, unmatched } from './match-result.js';
+import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
+import { isBCP47 } from './rfc/is-bcp-47.js';
+import { Token, TokenCollection } from './token/index.js';
+import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
+import { checkAutoComplete } from './whatwg/check-autocomplete.js';
+import { checkDateTime } from './whatwg/check-datetime/index.js';
+import { checkMIMEType } from './whatwg/check-mime-type.js';
+import { isAbsURL } from './whatwg/is-abs-url.js';
+import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
+import { isCustomElementName } from './whatwg/is-custom-element-name.js';
+import { isItempropName } from './whatwg/is-itemprop-name.js';
 
 export const types: Defs = {
 	Any: {

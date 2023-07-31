@@ -1,4 +1,4 @@
-import type { DefaultRules, Langs, RuleSettingMode } from './types';
+import type { DefaultRules, Langs, RuleSettingMode } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Writable } from 'type-fest';
 

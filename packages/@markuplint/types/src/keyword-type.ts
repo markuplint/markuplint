@@ -1,11 +1,11 @@
-import type { Result } from './types';
-import type { KeywordDefinedType, CssSyntax } from './types.schema';
+import type { Result } from './types.js';
+import type { KeywordDefinedType, CssSyntax } from './types.schema.js';
 
-import { isCSSSyntax } from './check';
-import { cssSyntaxMatch } from './css-syntax';
-import { log } from './debug';
-import { types } from './defs';
-import { matched } from './match-result';
+import { isCSSSyntax } from './check.js';
+import { cssSyntaxMatch } from './css-syntax.js';
+import { log } from './debug.js';
+import { types } from './defs.js';
+import { matched } from './match-result.js';
 
 const resultCache = new Map<string, Result>();
 const CACHE_KEY_PREFIX = '@markuplint/types/checkKeywordType/cache:::';

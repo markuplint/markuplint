@@ -1,10 +1,10 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { getRoleSpec } from '../specs/get-role-spec';
-import { resolveNamespace } from '../utils/resolve-namespace';
+import { getRoleSpec } from '../specs/get-role-spec.js';
+import { resolveNamespace } from '../utils/resolve-namespace.js';
 
-import { getPermittedRoles } from './get-permitted-roles';
+import { getPermittedRoles } from './get-permitted-roles.js';
 
 export function getExplicitRole(
 	specs: MLMLSpec,

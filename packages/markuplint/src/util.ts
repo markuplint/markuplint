@@ -1,8 +1,12 @@
+import module from 'node:module';
+
 import c from 'cli-color';
 // @ts-ignore
 import eastasianwidth from 'eastasianwidth';
 import stripAnsi from 'strip-ansi';
 import { v4 } from 'uuid';
+
+const require = module.createRequire(import.meta.url);
 
 export function uuid() {
 	return v4();
@@ -15,7 +19,6 @@ export function uuid() {
  */
 const PRIMARY_COLOR = 33;
 const logo = `/${c.xterm(PRIMARY_COLOR)('✔')}\\`;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../package.json').version;
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 

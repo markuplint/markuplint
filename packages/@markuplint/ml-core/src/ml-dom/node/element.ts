@@ -1,9 +1,9 @@
 /* global StylePropertyMap, StylePropertyMapReadOnly */
 
-import type { MLDocument } from './document';
-import type { MLNamedNodeMap } from './named-node-map';
-import type { MLText } from './text';
-import type { ElementNodeType, PretenderContext } from './types';
+import type { MLDocument } from './document.js';
+import type { MLNamedNodeMap } from './named-node-map.js';
+import type { MLText } from './text.js';
+import type { ElementNodeType, PretenderContext } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
@@ -11,8 +11,8 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
-import { stringSplice } from '../../utils/string-splice';
-import { getAccname } from '../helper/accname';
+import { stringSplice } from '../../utils/string-splice.js';
+import { getAccname } from '../helper/accname.js';
 import {
 	after,
 	before,
@@ -20,15 +20,15 @@ import {
 	previousElementSibling,
 	remove,
 	replaceWith,
-} from '../manipulations/child-node-methods';
-import { MLToken } from '../token/token';
+} from '../manipulations/child-node-methods.js';
+import { MLToken } from '../token/token.js';
 
-import { MLAttr } from './attr';
-import { MLDomTokenList } from './dom-token-list';
-import { toNamedNodeMap } from './named-node-map';
-import { toHTMLCollection } from './node-list';
-import { MLParentNode } from './parent-node';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLAttr } from './attr.js';
+import { MLDomTokenList } from './dom-token-list.js';
+import { toNamedNodeMap } from './named-node-map.js';
+import { toHTMLCollection } from './node-list.js';
+import { MLParentNode } from './parent-node.js';
+import UnexpectedCallError from './unexpected-call-error.js';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 

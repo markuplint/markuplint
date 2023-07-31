@@ -1,4 +1,4 @@
-import type { Nullable } from './types';
+import type { Nullable } from './types.js';
 
 import { decode as decodeHtmlEntities } from 'html-entities';
 

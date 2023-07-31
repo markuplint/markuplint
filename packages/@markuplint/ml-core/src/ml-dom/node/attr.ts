@@ -1,15 +1,15 @@
-import type { MLElement } from './element';
-import type { AttributeNodeType } from './types';
+import type { MLElement } from './element.js';
+import type { AttributeNodeType } from './types.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 
-import { MLToken } from '../token/token';
+import { MLToken } from '../token/token.js';
 
-import { MLDomTokenList } from './dom-token-list';
-import { MLNode } from './node';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLDomTokenList } from './dom-token-list.js';
+import { MLNode } from './node.js';
+import UnexpectedCallError from './unexpected-call-error.js';
 
 export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTAttr>

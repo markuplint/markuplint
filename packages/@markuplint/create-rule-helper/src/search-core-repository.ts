@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { readPackageJson } from './read-package-json';
+import { readPackageJson } from './read-package-json.js';
 
 export async function searchCoreRepository() {
 	const paths = path.resolve(process.cwd()).split(path.sep);

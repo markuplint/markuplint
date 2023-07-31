@@ -7,6 +7,6 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "node ./index.mjs"
+		"test": "node ./index.js"
 	}
 }

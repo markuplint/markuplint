@@ -2,9 +2,9 @@ import type { AttributeType } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
-import { attrCheck } from '../attr-check';
-import { log as ruleLog } from '../debug';
-import { isValidAttr, match } from '../helpers';
+import { attrCheck } from '../attr-check.js';
+import { log as ruleLog } from '../debug.js';
+import { isValidAttr, match } from '../helpers.js';
 
 const log = ruleLog.extend('invalid-attr');
 

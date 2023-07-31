@@ -1,6 +1,6 @@
-import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAVersion, MLMLSpec } from '../types/index.js';
 
-import { getComputedRole } from './get-computed-role';
+import { getComputedRole } from './get-computed-role.js';
 
 export function matchesContextRole(
 	conditions: readonly string[],

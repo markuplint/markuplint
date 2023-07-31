@@ -1,4 +1,4 @@
-import type { JSXNode } from './jsx';
+import type { JSXNode } from './jsx.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -11,9 +11,9 @@ import type {
 import { getNamespace, parseRawTag } from '@markuplint/html-parser';
 import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import { getAttr, getName } from './jsx';
-import { traverse } from './traverse';
+import { attr } from './attr.js';
+import { getAttr, getName } from './jsx.js';
+import { traverse } from './traverse.js';
 
 export function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

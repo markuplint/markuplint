@@ -1,4 +1,11 @@
-import type { Node, ElementNode, ComponentNode, FragmentNode, CustomElementNode, AttributeNode } from './astro-parser';
+import type {
+	Node,
+	ElementNode,
+	ComponentNode,
+	FragmentNode,
+	CustomElementNode,
+	AttributeNode,
+} from './astro-parser.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -14,8 +21,8 @@ import type {
 import { parseRawTag, parse as htmlParse } from '@markuplint/html-parser';
 import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { astroParse } from './astro-parser';
-import { attrTokenizer } from './attr-tokenizer';
+import { astroParse } from './astro-parser.js';
+import { attrTokenizer } from './attr-tokenizer.js';
 
 export const parse: Parse = (rawCode, options = {}) => {
 	const ast = astroParse(rawCode);

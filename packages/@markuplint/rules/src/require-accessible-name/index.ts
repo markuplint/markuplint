@@ -3,7 +3,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable } from '../helpers';
+import { accnameMayBeMutable } from '../helpers.js';
 
 type Option = {
 	ariaVersion: ARIAVersion;

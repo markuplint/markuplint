@@ -1,4 +1,4 @@
-import type { Log } from './debug';
+import type { Log } from './debug.js';
 import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
@@ -8,7 +8,7 @@ import type { WritableDeep } from 'type-fest';
 // @ts-ignore
 import structuredClone from '@ungap/structured-clone';
 
-import { attrCheck } from './attr-check';
+import { attrCheck } from './attr-check.js';
 
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

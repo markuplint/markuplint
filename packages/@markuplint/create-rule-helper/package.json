@@ -1,13 +1,18 @@
 {
 	"name": "@markuplint/create-rule-helper",
-	"version": "3.12.0",
+	"version": "4.0.0-alpha.0",
 	"description": "Create rule helper",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -17,11 +22,11 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-core": "3.12.0",
+		"@markuplint/ml-core": "4.0.0-alpha.0",
 		"glob": "^10.3.2",
-		"prettier": "^2.8.8",
+		"prettier": "^3.0.0",
 		"ts-node": "^10.9.1",
-		"tslib": "^2.6.0",
+		"tslib": "^2.6.1",
 		"typescript": "^5.1.6"
 	},
 	"devDependencies": {

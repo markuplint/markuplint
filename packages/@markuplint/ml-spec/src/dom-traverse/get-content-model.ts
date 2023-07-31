@@ -1,8 +1,8 @@
-import type { ElementSpec } from '../types';
-import type { PermittedContentPattern } from '../types/permitted-structures';
+import type { ElementSpec } from '../types/index.js';
+import type { PermittedContentPattern } from '../types/permitted-structures.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { getSpec } from './get-spec';
+import { getSpec } from './get-spec.js';
 
 type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 

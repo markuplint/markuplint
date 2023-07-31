@@ -1,19 +1,19 @@
-import type { MLBlock } from './block';
-import type { MLChildNode } from './child-node';
-import type { MLDocument } from './document';
-import type { MLDocumentFragment } from './document-fragment';
-import type { MLElement } from './element';
-import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
-import type { RuleInfo } from '../..';
+import type { MLBlock } from './block.js';
+import type { MLChildNode } from './child-node.js';
+import type { MLDocumentFragment } from './document-fragment.js';
+import type { MLDocument } from './document.js';
+import type { MLElement } from './element.js';
+import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
+import type { RuleInfo } from '../../index.js';
 import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLToken } from '../token/token';
+import { MLToken } from '../token/token.js';
 
-import { isChildNode } from './child-node';
-import { toNodeList } from './node-list';
-import { nodeStore } from './node-store';
-import UnexpectedCallError from './unexpected-call-error';
+import { isChildNode } from './child-node.js';
+import { toNodeList } from './node-list.js';
+import { nodeStore } from './node-store.js';
+import UnexpectedCallError from './unexpected-call-error.js';
 
 export abstract class MLNode<
 		T extends RuleConfigValue,

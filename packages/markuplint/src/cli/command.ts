@@ -1,17 +1,17 @@
-import type { CLIOptions } from './bootstrap';
-import type { APIOptions } from '../api/types';
+import type { CLIOptions } from './bootstrap.js';
+import type { APIOptions } from '../api/types.js';
 import type { Target } from '@markuplint/file-resolver';
 import type { Violation } from '@markuplint/ml-config';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 import { resolveFiles } from '@markuplint/file-resolver';
 
-import { MLEngine } from '../api';
-import { log } from '../debug';
+import { MLEngine } from '../api/index.js';
+import { log } from '../debug.js';
 
-import { output } from './output';
+import { output } from './output.js';
 
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fix = options.fix;

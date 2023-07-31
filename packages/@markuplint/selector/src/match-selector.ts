@@ -1,9 +1,9 @@
-import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types';
+import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types.js';
 import type { Writable } from 'type-fest';
 
-import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
-import { regexSelectorMatches } from './regex-selector-matches';
-import { Selector } from './selector';
+import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { regexSelectorMatches } from './regex-selector-matches.js';
+import { Selector } from './selector.js';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
 

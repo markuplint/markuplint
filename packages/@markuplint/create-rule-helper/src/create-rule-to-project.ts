@@ -1,10 +1,10 @@
-import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types';
+import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
 import { resolve } from 'node:path';
 
-import { CreateRuleHelperError } from './create-rule-helper-error';
-import { fsExists } from './fs-exists';
-import { installScaffold } from './install-scaffold';
+import { CreateRuleHelperError } from './create-rule-helper-error.js';
+import { fsExists } from './fs-exists.js';
+import { installScaffold } from './install-scaffold.js';
 
 export async function createRuleToProject({
 	pluginName,

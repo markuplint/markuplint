@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { match } from '../helpers';
+import { match } from '../helpers.js';
 
 export type Value = string | string[] | null;
 

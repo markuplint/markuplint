@@ -1,14 +1,14 @@
-import type { MLRule } from './ml-rule';
-import type Ruleset from './ruleset';
-import type { MLFabric, MLSchema } from './types';
+import type { MLRule } from './ml-rule/index.js';
+import type Ruleset from './ruleset/index.js';
+import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
-import { log, enableDebug } from './debug';
-import { Document } from './ml-dom';
+import { log, enableDebug } from './debug.js';
+import { Document } from './ml-dom/index.js';
 
 const resultLog = log.extend('result');
 

@@ -1,6 +1,6 @@
-import type { MLMLSpec } from '../types';
+import type { MLMLSpec } from '../types/index.js';
 
-import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category';
+import { getSelectorsByContentModelCategory } from '../specs/get-selectors-by-content-model-category.js';
 
 export function mayBeFocusable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

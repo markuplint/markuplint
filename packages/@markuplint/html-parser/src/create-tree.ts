@@ -1,3 +1,5 @@
+// @ts-nocheck TODO: Parse5(https://github.com/inikulin/parse5) supports to expose type definitions as submodules.
+
 import type {
 	MLASTDoctype,
 	MLASTElementCloseTag,
@@ -23,7 +25,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
-import parseRawTag from './parse-raw-tag';
+import parseRawTag from './parse-raw-tag.js';
 
 interface TraversalNode {
 	readonly childNodes?: readonly P5Node[];

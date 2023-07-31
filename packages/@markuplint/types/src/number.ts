@@ -1,8 +1,8 @@
-import type { Result } from './types';
-import type { Number } from './types.schema';
+import type { Result } from './types.js';
+import type { Number } from './types.schema.js';
 
-import { matched, unmatched } from './match-result';
-import { isFloat, isInt } from './primitive';
+import { matched, unmatched } from './match-result.js';
+import { isFloat, isInt } from './primitive/index.js';
 
 export function checkNumber(value: string, type: Readonly<Number>, ref?: string): Result {
 	if (!value) {

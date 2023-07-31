@@ -1,10 +1,10 @@
-import type { Result } from './types';
-import type { List } from './types.schema';
+import type { Result } from './types.js';
+import type { List } from './types.schema.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { check } from './check';
-import { matched } from './match-result';
-import { Token, TokenCollection } from './token';
+import { check } from './check.js';
+import { matched } from './match-result.js';
+import { Token, TokenCollection } from './token/index.js';
 
 export function checkList(value: string, type: ReadonlyDeep<List>, ref?: string, cache = true): Result {
 	const tokens = new TokenCollection(value, type);

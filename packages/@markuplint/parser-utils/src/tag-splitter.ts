@@ -1,4 +1,4 @@
-import { reSplitterTag, reTagName } from './const';
+import { reSplitterTag, reTagName } from './const.js';
 
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 

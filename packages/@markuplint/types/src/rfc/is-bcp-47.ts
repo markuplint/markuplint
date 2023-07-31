@@ -1,4 +1,4 @@
-import type { FormattedPrimitiveTypeCreator } from '../types';
+import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 import { parse } from 'bcp-47';
 

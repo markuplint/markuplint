@@ -1,4 +1,4 @@
-import type { ListFormat, LocaleSet, Primitive, Translator } from './types';
+import type { ListFormat, LocaleSet, Primitive, Translator } from './types.js';
 
 const defaultListFormat: ListFormat = {
 	quoteStart: '"',

@@ -1,4 +1,4 @@
-import type { RuleSeed } from '../ml-rule';
+import type { RuleSeed } from '../ml-rule/index.js';
 import type { Config } from '@markuplint/ml-config';
 
 export type Plugin = {

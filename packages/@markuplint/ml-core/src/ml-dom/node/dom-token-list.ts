@@ -1,9 +1,9 @@
-import type { MLAttr } from './attr';
+import type { MLAttr } from './attr.js';
 import type { RuleInfo } from '@markuplint/ml-config';
 
 import { getCol, getLine } from '@markuplint/parser-utils';
 
-import UnexpectedCallError from './unexpected-call-error';
+import UnexpectedCallError from './unexpected-call-error.js';
 
 type Scope = {
 	raw: string;
