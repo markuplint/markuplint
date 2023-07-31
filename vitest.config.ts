@@ -16,6 +16,7 @@ export default defineConfig({
 			'./packages/@markuplint/types/**/*.spec.ts',
 			'./packages/@markuplint/selector/**/*.spec.ts',
 			'./packages/@markuplint/ml-spec/**/*.spec.ts',
+			'./packages/@markuplint/shared/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},

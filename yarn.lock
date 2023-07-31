@@ -1308,6 +1308,13 @@
     tslib "^2.6.0"
     type-fest "^3.12.0"
 
+"@markuplint/shared@3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/shared/-/shared-3.8.0.tgz#21e0260e9c6293e1a70fc1ec4fe332337fdf183a"
+  integrity sha512-Pw9UiSi5qVsApm6DuMyGRYomAsfTnOH7yz7NT8RzlfObL6i9C3op2c019stw/eBrXRn2w8hsBHOfAfqfgY2jzQ==
+  dependencies:
+    html-entities "^2.4.0"
+
 "@markuplint/types@3.9.0":
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-3.9.0.tgz#1be36a7c6b9f8ce0609743958b112e1fd93718a1"

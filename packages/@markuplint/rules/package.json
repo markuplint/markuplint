@@ -29,7 +29,7 @@
 		"@markuplint/ml-core": "4.0.0-alpha.0",
 		"@markuplint/ml-spec": "4.0.0-alpha.0",
 		"@markuplint/selector": "4.0.0-alpha.0",
-		"@markuplint/shared": "3.8.0",
+		"@markuplint/shared": "4.0.0-alpha.0",
 		"@markuplint/types": "4.0.0-alpha.0",
 		"@types/debug": "^4.1.8",
 		"@ungap/structured-clone": "^1.2.0",

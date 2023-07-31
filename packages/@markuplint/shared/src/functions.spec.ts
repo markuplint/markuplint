@@ -1,4 +1,6 @@
-const { toNoEmptyStringArrayFromStringOrArray, decodeEntities } = require('../lib/functions');
+import { test, expect } from 'vitest';
+
+import { toNoEmptyStringArrayFromStringOrArray, decodeEntities } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
 	expect(toNoEmptyStringArrayFromStringOrArray('')).toStrictEqual([]);
