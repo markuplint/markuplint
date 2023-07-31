@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@markuplint/spec-generator": "4.0.0-alpha.0",
-		"@markuplint/test-tools": "3.6.0"
+		"@markuplint/test-tools": "4.0.0-alpha.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "4.0.0-alpha.0"

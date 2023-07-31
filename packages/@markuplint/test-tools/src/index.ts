@@ -1,4 +1,4 @@
-export * from './exports';
+export * from './exports.js';
 
 import { JSDOM } from 'jsdom';
 
