@@ -32,11 +32,17 @@ async function forceImportJsonInModule(modPath: string) {
 		const searchPath = /Module\s"([^"]+)"\sneeds/i.exec(error.message);
 		const absPath = searchPath?.[1] ?? null;
 
+		log('Extract path: %s', absPath);
+
 		if (!absPath) {
 			throw error;
 		}
 
-		const normalizePath = absPath.replace(/^file:\/\//, '').replace(/\//g, path.sep);
+		const normalizePath = absPath
+			.replace(/^file:\/\//, '')
+			.replace(/\//g, path.sep)
+			// Windows
+			.replace(/^[\\/][a-z]:/i, '');
 		log('Find JSON file path: %s', normalizePath);
 
 		const fileContent = await readFile(normalizePath, { encoding: 'utf8' });
