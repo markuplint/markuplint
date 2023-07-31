@@ -159,7 +159,7 @@
 			}
 		},
 		{
-			"files": ["**/*.spec.{js,ts}"],
+			"files": ["**/*.spec.{js,mjs,cjs,ts}"],
 			"rules": {
 				"import/no-extraneous-dependencies": 0,
 				"@typescript-eslint/no-var-requires": 0

@@ -1,33 +1,36 @@
-const { readFile } = require('node:fs/promises');
-const path = require('node:path');
+import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 
-const { resolveNamespace, getAttrSpecsByNames } = require('@markuplint/ml-spec');
-const { glob } = require('@markuplint/test-tools');
-const Ajv = require('ajv');
-const strip = require('strip-json-comments');
+import htmlSpec from '@markuplint/html-spec';
+import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
+import { glob } from '@markuplint/test-tools';
+import Ajv from 'ajv';
+import strip from 'strip-json-comments';
+import { describe, test, expect } from 'vitest';
 
-const htmlSpec = require('../index');
+const require = createRequire(import.meta.url);
 
 const schemas = {
 	element: {
 		$id: '@markuplint/ml-spec/schemas/element.schema.json',
-		...require('@markuplint/ml-spec/schemas/element.schema.json'),
+		...require('../../ml-spec/schemas/element.schema.json'),
 	},
 	aria: {
 		$id: '@markuplint/ml-spec/schemas/aria.schema.json',
-		...require('@markuplint/ml-spec/schemas/aria.schema.json'),
+		...require('../../ml-spec/schemas/aria.schema.json'),
 	},
 	contentModels: {
 		$id: '@markuplint/ml-spec/schemas/content-models.schema.json',
-		...require('@markuplint/ml-spec/schemas/content-models.schema.json'),
+		...require('../../ml-spec/schemas/content-models.schema.json'),
 	},
 	globalAttributes: {
 		$id: '@markuplint/ml-spec/schemas/global-attributes.schema.json',
-		...require('@markuplint/ml-spec/schemas/global-attributes.schema.json'),
+		...require('../../ml-spec/schemas/global-attributes.schema.json'),
 	},
 	attributes: {
 		$id: '@markuplint/ml-spec/schemas/attributes.schema.json',
-		...require('@markuplint/ml-spec/schemas/attributes.schema.json'),
+		...require('../../ml-spec/schemas/attributes.schema.json'),
 	},
 	types: {
 		$id: '@markuplint/types/types.schema.json',
@@ -36,6 +39,7 @@ const schemas = {
 };
 
 test('structure', () => {
+	// eslint-disable-next-line import/no-named-as-default-member
 	htmlSpec.specs.forEach(el => {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
 		try {
