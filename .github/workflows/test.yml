@@ -241,7 +241,7 @@ jobs:
                   timeout_minutes: 20
                   max_attempts: 3
                   shell: bash
-                  command: yarn vitest run --coverage --shard=${{ matrix.shard }}
+                  command: yarn vitest run --shard=${{ matrix.shard }}
 
     playground:
         needs: [os-setup, build]
