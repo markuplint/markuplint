@@ -104,7 +104,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
-        needs: dev-setup
+        needs: [dev-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
