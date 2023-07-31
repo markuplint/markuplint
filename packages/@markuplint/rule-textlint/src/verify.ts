@@ -5,7 +5,7 @@ import type { TextlintResult } from '@textlint/kernel';
 import path from 'node:path';
 
 import { TextLintEngine } from 'textlint';
-import { Config } from 'textlint/lib/src/config/config';
+import { Config } from 'textlint/lib/src/config/config.js';
 
 import { lintText } from './helper.js';
 
