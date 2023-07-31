@@ -1,8 +1,9 @@
-const { mlRuleTest } = require('markuplint');
+import { mlRuleTest } from 'markuplint';
+import { test, expect } from 'vitest';
 
-const rule = require('./').default;
+import rule from './index.js';
 
-it('is test', async () => {
+test('It is test', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>');
 	expect(violations.length).toBe(1);
 	// expect(violations).toStrictEqual([

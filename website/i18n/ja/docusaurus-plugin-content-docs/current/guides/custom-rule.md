@@ -41,7 +41,7 @@ npx markuplint --create-rule
 
 :::info
 
-**テスト**は[**Jest**](https://jestjs.io/)形式で書かれます。適宜書き換えてください。
+**テスト**は[**Vitest**](https://vitest.dev/)形式で書かれます。適宜書き換えてください。
 
 :::
 
