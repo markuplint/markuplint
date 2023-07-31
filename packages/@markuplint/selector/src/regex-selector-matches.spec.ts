@@ -1,6 +1,8 @@
-const { regexSelectorMatches } = require('../lib/regex-selector-matches');
+import { test, expect } from 'vitest';
 
-it('regexSelectorMatches', () => {
+import { regexSelectorMatches } from './regex-selector-matches.js';
+
+test('regexSelectorMatches', () => {
 	expect(regexSelectorMatches('/^data-([a-z]+)/', 'data-hoge', true)).toStrictEqual({
 		$0: 'data-hoge',
 		$1: 'hoge',

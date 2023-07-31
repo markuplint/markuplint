@@ -1,13 +1,11 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
+		"module": "NodeNext",
+		"target": "ES2020",
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src",
-		"paths": {
-			"@markuplint/*": ["../../../node_modules"],
-			"*": ["../../../node_modules"]
-		}
+		"rootDir": "./src"
 	},
 	"references": [
 		{

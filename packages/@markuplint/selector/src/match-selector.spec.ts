@@ -1,8 +1,11 @@
-const { JSDOM } = require('jsdom');
+// @ts-nocheck
 
-const { matchSelector } = require('../lib/match-selector');
+import { JSDOM } from 'jsdom';
+import { test, expect } from 'vitest';
 
-function createTestElement(html) {
+import { matchSelector } from './match-selector.js';
+
+function createTestElement(html: string) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
 		return dom.window.document.querySelector('html');

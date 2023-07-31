@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "3.2.0",
-		"@markuplint/selector": "3.11.0",
+		"@markuplint/selector": "4.0.0-alpha.0",
 		"@markuplint/shared": "3.8.0",
 		"@types/mustache": "^4.2.2",
 		"deepmerge": "^4.3.1",

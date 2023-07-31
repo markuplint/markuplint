@@ -1,14 +1,17 @@
-const { JSDOM } = require('jsdom');
+// @ts-nocheck
 
-const { InvalidSelectorError } = require('../lib/invalid-selector-error');
-const { Selector } = require('../lib/selector');
+import { JSDOM } from 'jsdom';
+import { describe, test, expect, beforeEach } from 'vitest';
+
+import { InvalidSelectorError } from './invalid-selector-error.js';
+import { Selector } from './selector.js';
 
 beforeEach(() => {
 	const dom = new JSDOM();
 	global.Element = dom.window.Element;
 });
 
-function createTestElement(html, selector) {
+function createTestElement(html: string, selector?: string) {
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
 		return dom.window.document.querySelector('html');
@@ -27,17 +30,17 @@ function createTestElement(html, selector) {
 	return fragment.firstChild;
 }
 
-function createSelector(selector) {
+function createSelector(selector: string) {
 	return new Selector(selector);
 }
 
 describe('selector matching', () => {
-	it('Multiple selector', () => {
+	test('Multiple selector', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div, span').match(el)).toBeTruthy();
 	});
 
-	it('type / id / class', () => {
+	test('type / id / class', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector('*').match(el)).toBeTruthy();
 		expect(createSelector('div').match(el)).toBeTruthy();
@@ -51,7 +54,7 @@ describe('selector matching', () => {
 		expect(createSelector('.any').match(el)).toBe(false);
 	});
 
-	it('attributes', () => {
+	test('attributes', () => {
 		const el = createTestElement('<div a="ABC" b="1 2 3" c="あいうえお" d="en-US" e="" f></div>');
 
 		expect(createSelector('[a]').match(el)).toBeTruthy();
@@ -90,7 +93,7 @@ describe('selector matching', () => {
 		expect(createSelector('[f="f"]').match(el)).toBe(false);
 	});
 
-	it(':not', () => {
+	test(':not', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector('*:not(a)').match(el)).toBeTruthy();
 		expect(createSelector('*:not(div)').match(el)).toBe(false);
@@ -99,13 +102,13 @@ describe('selector matching', () => {
 		expect(createSelector(':not(#hoge)').match(el)).toBe(false);
 	});
 
-	it(':is', () => {
+	test(':is', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':is(a, div)').match(el)).toBeTruthy();
 		expect(createSelector(':is(a, span)').match(el)).toBe(false);
 	});
 
-	it(':has', () => {
+	test(':has', () => {
 		const el = createTestElement('<header><div></div></header>');
 		expect(createSelector(':has(div, span)').match(el)).toBeTruthy();
 		expect(
@@ -115,19 +118,19 @@ describe('selector matching', () => {
 		).toBe(false);
 	});
 
-	it(':scope', () => {
+	test(':scope', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector(':scope').match(el)).toBeTruthy();
 	});
 
-	it(':root', () => {
+	test(':root', () => {
 		const el = createTestElement('<html><div id="hoge" class="foo bar"></div></html>');
 		expect(createSelector(':root').match(el)).toBeTruthy();
 		const el2 = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':root').match(el2)).toBe(false);
 	});
 
-	it('Descendant combinator', () => {
+	test('Descendant combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
 		expect(a.nodeName).toBe('A');
@@ -137,7 +140,7 @@ describe('selector matching', () => {
 		expect(createSelector('header a').match(a)).toBe(false);
 	});
 
-	it('Child combinator', () => {
+	test('Child combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
 		const a = el.children[0].children[0];
 		expect(createSelector('div > div').match(el)).toBe(false);
@@ -148,7 +151,7 @@ describe('selector matching', () => {
 		expect(createSelector('header > a').match(a)).toBe(false);
 	});
 
-	it('Next-sibling combinator', () => {
+	test('Next-sibling combinator', () => {
 		const el = createTestElement(`<ul>
 			<li class="i1"><a class="a1">1</a></li>
 			<li class="i2"><a class="a2">2</a></li>
@@ -168,7 +171,7 @@ describe('selector matching', () => {
 		expect(createSelector('.i4 + li').match(el.children[4])).toBeTruthy();
 	});
 
-	it('Subsequent-sibling combinator', () => {
+	test('Subsequent-sibling combinator', () => {
 		const el = createTestElement(`<ul>
 			<li class="i1"><a class="a1">1</a></li>
 			<li class="i2"><a class="a2">2</a></li>
@@ -183,7 +186,7 @@ describe('selector matching', () => {
 		expect(createSelector('.i2 ~ li').match(el.children[4])).toBeTruthy();
 	});
 
-	it('combinator start error', () => {
+	test('combinator start error', () => {
 		const el = createTestElement('<div><a></a><span></span></div>', 'a');
 		InvalidSelectorError;
 		expect(() => createSelector('> a').match(el)).toThrow(InvalidSelectorError);
@@ -191,17 +194,17 @@ describe('selector matching', () => {
 		expect(() => createSelector('~ a').match(el)).toThrow(InvalidSelectorError);
 	});
 
-	it(':has(+ E)', () => {
+	test(':has(+ E)', () => {
 		const el = createTestElement('<figure><table></table><figcaption></figcaption></figure>', 'table');
 		expect(createSelector('table:has(+ figcaption)').match(el)).toBeTruthy();
 	});
 
-	it(':has(~ E)', () => {
+	test(':has(~ E)', () => {
 		const el = createTestElement('<figure><table></table><p></p><figcaption></figcaption></figure>', 'table');
 		expect(createSelector('table:has(~ figcaption)').match(el)).toBeTruthy();
 	});
 
-	it(':closest', () => {
+	test(':closest', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
 		const td = el.children[0].children[0].children[0];
 		expect(createSelector('td').match(td)).toBeTruthy();
@@ -211,7 +214,7 @@ describe('selector matching', () => {
 		expect(createSelector(':closest(div)').match(td)).toBe(false);
 	});
 
-	it('namespace', () => {
+	test('namespace', () => {
 		const svgA = createTestElement('<svg><a></a></svg>', 'a');
 		expect(createSelector('a').match(svgA)).toBeTruthy();
 		expect(createSelector('|a').match(svgA)).toBeTruthy();
@@ -224,7 +227,7 @@ describe('selector matching', () => {
 		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
 	});
 
-	it('namespaced attribute', () => {
+	test('namespaced attribute', () => {
 		const svgA = createTestElement('<svg><a href></a></svg>', 'a');
 		expect(createSelector('[href]').match(svgA)).toBeTruthy();
 		expect(createSelector('[|href]').match(svgA)).toBeTruthy();
@@ -237,7 +240,7 @@ describe('selector matching', () => {
 		expect(createSelector('[xlink|href]').match(svgAx)).toBeTruthy();
 	});
 
-	it('is invisible tags', () => {
+	test('is invisible tags', () => {
 		const el = createTestElement('<html><head><title></title></head></html>');
 		const head = el.children[0];
 		const title = head.children[0];
@@ -247,7 +250,7 @@ describe('selector matching', () => {
 });
 
 describe('specificity', () => {
-	it(':not', () => {
+	test(':not', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':not(span)').match(el)).toStrictEqual([0, 0, 1]);
@@ -255,7 +258,7 @@ describe('specificity', () => {
 		expect(createSelector(':not(span, #foo)').match(el)).toStrictEqual([1, 0, 0]);
 	});
 
-	it(':is', () => {
+	test(':is', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':is(div)').match(el)).toStrictEqual([0, 0, 1]);
@@ -265,7 +268,7 @@ describe('specificity', () => {
 		expect(createSelector(':is(div, #foo.bar)').match(el)).toStrictEqual([1, 1, 0]);
 	});
 
-	it(':where', () => {
+	test(':where', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);
 		expect(createSelector(':where(div)').match(el)).toStrictEqual([0, 0, 0]);
@@ -277,7 +280,7 @@ describe('specificity', () => {
 });
 
 describe('search', () => {
-	it('search', () => {
+	test('search', () => {
 		const el = createTestElement('<a><div><button></button></div></a>');
 		expect(createSelector(':has(button)').search(el)[0].has?.[0].nodes?.[0].nodeName).toBe('BUTTON');
 	});

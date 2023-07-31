@@ -14,6 +14,7 @@ export default defineConfig({
 			'./packages/@markuplint/*-parser/**/*.spec.ts',
 			'./packages/@markuplint/parser-utils/**/*.spec.ts',
 			'./packages/@markuplint/types/**/*.spec.ts',
+			'./packages/@markuplint/selector/**/*.spec.ts',
 		],
 		testTimeout: 10000,
 	},

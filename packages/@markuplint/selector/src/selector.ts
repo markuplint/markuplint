@@ -1,13 +1,13 @@
-import type { SelectorMatchedResult, SelectorResult, Specificity } from './types';
+import type { SelectorMatchedResult, SelectorResult, Specificity } from './types.js';
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import parser, { pseudo } from 'postcss-selector-parser';
+import parser from 'postcss-selector-parser';
 
-import { compareSpecificity } from './compare-specificity';
-import { log as coreLog } from './debug';
-import { InvalidSelectorError } from './invalid-selector-error';
-import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
+import { compareSpecificity } from './compare-specificity.js';
+import { log as coreLog } from './debug.js';
+import { InvalidSelectorError } from './invalid-selector-error.js';
+import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
 
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
@@ -122,7 +122,8 @@ class StructuredSelector {
 			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
 		const nodes = this.#selector.nodes.slice();
 		if (0 < depth && this.headCombinator) {
-			nodes.unshift(pseudo({ value: ':scope' }));
+			// eslint-disable-next-line import/no-named-as-default-member
+			nodes.unshift(parser.pseudo({ value: ':scope' }));
 		}
 		nodes.forEach(node => {
 			switch (node.type) {
