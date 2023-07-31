@@ -102,10 +102,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```json class=config title="Reactでつかう"
 {
   "parser": {
-    ".jsx$": "@markuplint/jsx-parser"
+    "\\.jsx$": "@markuplint/jsx-parser"
   },
   "specs": {
-    ".jsx$": "@markuplint/react-spec"
+    "\\.jsx$": "@markuplint/react-spec"
   }
 }
 ```
@@ -113,10 +113,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```json class=config title="Vueでつかう"
 {
   "parser": {
-    ".vue$": "@markuplint/vue-parser"
+    "\\.vue$": "@markuplint/vue-parser"
   },
   "specs": {
-    ".vue$": "@markuplint/vue-spec"
+    "\\.vue$": "@markuplint/vue-spec"
   }
 }
 ```
