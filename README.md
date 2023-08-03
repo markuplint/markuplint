@@ -51,8 +51,10 @@ Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 ### Personal Supporters
 
 [<img width="36" src="https://avatars.githubusercontent.com/u/91733847" alt="Tokitake" />](https://github.com/Tokitake)
-[<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="yamanoku" />](https://github.com/yamanoku)
+[<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="Okuto Oyama" />](https://github.com/yamanoku)
 [<img width="36" src="https://avatars.githubusercontent.com/u/6581173" alt="miita" />](https://github.com/mikimhk)
+[<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
+[<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
 
 ## Thanks
 
