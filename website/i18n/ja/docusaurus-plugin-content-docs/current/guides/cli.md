@@ -22,7 +22,7 @@ CLIはターゲットとなるHTMLファイルを可変長引数として受け�
 | `--no-search-config`       | なし             | なし                                         | false        | 設定ファイルを自動で検索しません                              |
 | `--ignore-ext`             | なし             | なし                                         | false        | 拡張子の種類に関わらず受け取ったファイルを評価します          |
 | `--no-import-preset-rules` | なし             | なし                                         | false        | 組み込みルールを利用しません                                  |
-| `--locale`                 | なし             | なし                                         | OS設定による | メッセージの言語                                              |
+| `--locale`                 | なし             | 言語コード（例：`ja`）                       | OS設定による | メッセージの言語                                              |
 | `--no-color`               | なし             | なし                                         | false        | 出力をカラーリングしません                                    |
 | `--problem-only`           | `-p`             | なし                                         | false        | 違反結果のみ出力します                                        |
 | `--allow-warnings`         | なし             | なし                                         | false        | `warning`ではステータスコード`0`を返します                    |
