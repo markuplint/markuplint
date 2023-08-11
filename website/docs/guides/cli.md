@@ -24,7 +24,7 @@ And returns `1` if the result has problems one or more.
 | `--no-search-config`       | none         | none                                     | false      | No search a configure file automatically.                           |
 | `--ignore-ext`             | none         | none                                     | false      | Evaluate files that are received even though the type of extension. |
 | `--no-import-preset-rules` | none         | none                                     | false      | No import preset rules.                                             |
-| `--locale`                 | none         | none                                     | OS setting | Locale of the message of violation.                                 |
+| `--locale`                 | none         | Language code (example: `en`)            | OS setting | Locale of the message of violation.                                 |
 | `--no-color`               | none         | none                                     | false      | Output no color.                                                    |
 | `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                               |
 | `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                    |
