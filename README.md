@@ -64,3 +64,5 @@ This linter is inspired by:
 - [ESLint](https://eslint.org/)
 - [Stylelint](https://stylelint.io/)
 - [textlint](https://textlint.github.io/)
+
+<!-- test -->
