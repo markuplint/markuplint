@@ -35,7 +35,7 @@
 		"@markuplint/parser-utils": "4.0.0-alpha.0",
 		"@markuplint/selector": "4.0.0-alpha.0",
 		"@markuplint/shared": "4.0.0-alpha.0",
-		"cosmiconfig": "^8.2.0",
+		"cosmiconfig": "^8.3.3",
 		"cosmiconfig-typescript-loader": "^5.0.0",
 		"glob": "^10.3.2",
 		"ignore": "^5.2.4",
