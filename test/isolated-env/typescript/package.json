@@ -8,11 +8,11 @@
 	"scripts": {
 		"test": "npm-run-all --parallel test:*",
 		"test:build": "tsc --build",
-		"test:esnext": "tsc --lib esnext --target esnext --module esnext --moduleResolution nodenext --skipLibCheck index.ts",
-		"test:commonjs": "tsc --lib esnext --target es5 --module commonjs --moduleResolution nodenext --skipLibCheck index.ts",
+		"test:esnext": "tsc --lib esnext --target esnext --module nodenext --moduleResolution nodenext --skipLibCheck index.ts",
+		"test:commonjs": "tsc --lib esnext --target es5 --module commonjs --skipLibCheck index.ts",
 		"test:ts-node01": "ts-node index.ts",
 		"test:ts-node02": "ts-node --skipProject index.ts",
-		"test:ts-node03": "ts-node index.ts -O '{\"module\":\"esnext\"}'",
+		"test:ts-node03": "ts-node index.ts -O '{\"module\":\"nodenext\"}'",
 		"test:ts-node04": "ts-node index.ts -O '{\"target\":\"es3\",\"module\":\"commonjs\"}'"
 	},
 	"dependencies": {
