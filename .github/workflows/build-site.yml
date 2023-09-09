@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - v3
         paths:
             - 'website/**'
             - '!website/**/*.md'
