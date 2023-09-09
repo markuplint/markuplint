@@ -21,6 +21,6 @@
 		"@markuplint/parser-utils": "3.10.0",
 		"pug-lexer": "^5.0.1",
 		"pug-parser": "^6.0.0",
-		"tslib": "^2.6.0"
+		"tslib": "^2.6.2"
 	}
 }
