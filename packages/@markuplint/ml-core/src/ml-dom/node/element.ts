@@ -2208,6 +2208,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
+	get onscrollend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onscrollend" property');
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -2653,6 +2664,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get part(): DOMTokenList {
 		throw new UnexpectedCallError('Not supported "part" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-popover
+	 */
+	get popover(): string | null {
+		throw new UnexpectedCallError('Not supported "popover" property');
 	}
 
 	/**
@@ -3302,6 +3324,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-hidepopover
+	 */
+	hidePopover(): void {
+		throw new UnexpectedCallError('Not supported "hidePopover" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-insertadjacentelement
 	 */
 	insertAdjacentElement(
@@ -3685,6 +3718,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-showpopover
+	 */
+	showPopover(): void {
+		throw new UnexpectedCallError('Not supported "showPopover" method');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	toNormalizeString(): string {
@@ -3725,6 +3769,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	toggleAttribute(qualifiedName: string, force?: boolean): boolean {
 		throw new UnexpectedCallError('Not supported "toggleAttribute" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-togglepopover
+	 */
+	togglePopover(force?: boolean): void {
+		throw new UnexpectedCallError('Not supported "togglePopover" method');
 	}
 
 	/**
