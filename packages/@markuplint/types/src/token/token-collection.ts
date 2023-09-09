@@ -1,6 +1,5 @@
 import type { TokenValue } from './types.js';
 import type { Expect, Result, List, UnmatchedResult } from '../types.js';
-import type { ReadonlyDeep } from 'type-fest';
 
 import { matched, unmatched } from '../match-result.js';
 
@@ -12,13 +11,18 @@ type TokenCollectionOptions = Partial<
 	}
 >;
 
-export type TokenEachCheck = (head: Readonly<Token> | null, tail: ReadonlyDeep<TokenCollection>) => Result | void;
+export type TokenEachCheck = (
+	head: Readonly<Token> | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tail: TokenCollection,
+) => Result | void;
 
 export class TokenCollection extends Array<Token> {
 	static fromPatterns(
 		value: Readonly<Token> | string,
 		patterns: readonly Readonly<RegExp>[],
-		typeOptions?: ReadonlyDeep<Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean }>,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean },
 	) {
 		const originalValue = typeof value === 'string' ? value : value.originalValue;
 		let strings = typeof value === 'string' ? value : value.value;
@@ -82,9 +86,18 @@ export class TokenCollection extends Array<Token> {
 	readonly separator: NonNullable<List['separator']>;
 	readonly unique: NonNullable<List['unique']>;
 
-	constructor(value?: string, typeOptions?: ReadonlyDeep<TokenCollectionOptions>);
+	constructor(
+		value?: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: TokenCollectionOptions,
+	);
+
 	constructor(value?: number); // for map method etc.
-	constructor(value?: string | number, typeOptions?: ReadonlyDeep<TokenCollectionOptions>) {
+	constructor(
+		value?: string | number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: TokenCollectionOptions,
+	) {
 		super();
 
 		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces ?? false;
@@ -341,7 +354,7 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	filter(callback: Parameters<Array<Token>['filter']>[0]) {
+	filter(callback: Parameters<Array<Token>['filter']>[0]): TokenCollection {
 		return TokenCollection._new(super.filter(callback), this);
 	}
 
@@ -441,7 +454,11 @@ export class TokenCollection extends Array<Token> {
 		return this.map(t => t.toJSON());
 	}
 
-	private static _new(tokens: readonly Readonly<Token>[], old?: ReadonlyDeep<TokenCollection>) {
+	private static _new(
+		tokens: readonly Readonly<Token>[],
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		old?: TokenCollection,
+	) {
 		const newCollection = new TokenCollection('', old);
 		newCollection.push(...tokens);
 		return newCollection;
