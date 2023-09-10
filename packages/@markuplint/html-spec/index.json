@@ -2791,9 +2791,9 @@
 					},
 					{
 						"name": "caption",
-						"description": "Visible content that names, or describes a group, figure, table, grid, radiogroup, or treegrid.\n\nWhen using caption authors SHOULD ensure:\n\nIf the caption represents an accessible name for its containing element, authors SHOULD specify aria-labelledby on the containing element to reference the element with role caption.\n\nIf a caption contains content that serves as both a name and description for its containing element, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-describedby to reference an element within the caption that represents the descriptive content.\n\nIf the caption represents a long-form description, or if the description contains semantic elements which are important in understanding the description, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-details to reference an element within the caption that represents the descriptive content.\n\nIf a caption contains only a description, without a suitable text string to serve as the accessible name for its containing element, then aria-label or aria-labelledby MAY be used to provide an accessible name, and the caption MAY be treated solely as descriptive content, referenced via aria-details.",
+						"description": "Visible content that names, or describes a figure, grid, group, radiogroup, table or treegrid.\n\nWhen using caption authors SHOULD ensure:\n\nIf the caption represents an accessible name for its containing element, authors SHOULD specify aria-labelledby on the containing element to reference the element with role caption.\n\nIf a caption contains content that serves as both a name and description for its containing element, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-describedby to reference an element within the caption that represents the descriptive content.\n\nIf the caption represents a long-form description, or if the description contains semantic elements which are important in understanding the description, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-details to reference an element within the caption that represents the descriptive content.\n\nIf a caption contains only a description, without a suitable text string to serve as the accessible name for its containing element, then aria-label or aria-labelledby MAY be used to provide an accessible name, and the caption MAY be treated solely as descriptive content, referenced via aria-details.",
 						"generalization": ["section"],
-						"requiredContextRole": ["figure", "grid", "table", "treegrid"],
+						"requiredContextRole": ["figure", "grid", "group", "radiogroup", "table", "treegrid"],
 						"requiredOwnedElements": [],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": false,
@@ -2802,10 +2802,6 @@
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -2893,7 +2889,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "cell",
@@ -3166,10 +3162,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -3254,7 +3246,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "columnheader",
@@ -4129,10 +4121,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4217,7 +4205,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "deletion",
@@ -4235,10 +4223,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4323,7 +4307,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "dialog",
@@ -4687,10 +4671,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4775,7 +4755,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "feed",
@@ -5121,7 +5101,7 @@
 					},
 					{
 						"name": "generic",
-						"description": "A nameless container element that has no semantic meaning on its own.\n\nThe generic role is intended for use as the implicit role of generic elements in host languages (such as HTML div or span), so is primarily for implementors of user agents. Authors SHOULD NOT use this role in content. Authors MAY use presentation or none to remove implicit accessibility semantics, or a semantic container role such as group to semantically group descendants in a named container.\n\nLike an element with role presentation, an element with role generic can provide a limited number of accessible states and properties for its descendants, such as aria-live attributes. However, unlike elements with role presentation, generic elements are exposed in accessibility APIs so that assistive technologies can gather certain properties such as layout and bounds.",
+						"description": "A nameless container element that has no semantic meaning on its own.\n\nThe generic role is intended for use as the implicit role of generic elements in host languages (such as HTML div or span), so is primarily for implementors of user agents. Authors SHOULD NOT use this role in content. Authors MAY use presentation or none to remove implicit accessibility semantics, or a semantic container role such as group to semantically group descendants in a named container.\n\nLike an element with role presentation, an element with role generic can provide a limited number of accessible states and properties for its descendants, such as aria-live attributes.\n\nHowever, unlike elements with role presentation, user agents expose generic elements in accessibility APIs when permitted accessibility attributes have been specified. User agents MAY otherwise ignore generic elements if such permitted attributes have not been specified.",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -5132,10 +5112,6 @@
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -5216,6 +5192,7 @@
 							}
 						],
 						"prohibitedProperties": [
+							"aria-braillelabel",
 							"aria-brailleroledescription",
 							"aria-label",
 							"aria-labelledby",
@@ -5985,10 +5962,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -6073,7 +6046,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "landmark",
@@ -6910,10 +6883,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -6998,7 +6967,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "marquee",
@@ -8124,10 +8093,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -8212,7 +8177,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "note",
@@ -8470,10 +8435,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -8558,7 +8519,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "presentation",
@@ -8576,10 +8537,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -8664,7 +8621,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "progressbar",
@@ -11037,10 +10994,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11125,7 +11078,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "structure",
@@ -11258,10 +11211,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11346,7 +11295,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "suggestion",
@@ -11364,10 +11313,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11452,7 +11397,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "superscript",
@@ -11470,10 +11415,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11558,7 +11499,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "switch",
@@ -12184,10 +12125,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -12272,7 +12209,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "textbox",
@@ -12415,10 +12352,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -12503,7 +12436,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "timer",
