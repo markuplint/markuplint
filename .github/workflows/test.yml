@@ -22,7 +22,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -59,7 +59,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -111,7 +111,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -161,7 +161,7 @@ jobs:
                     - node: 20
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -207,7 +207,7 @@ jobs:
                       os: ubuntu-latest
                       shard: 1/1
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -266,7 +266,7 @@ jobs:
                 os: [ubuntu-latest]
                 node: [18]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -312,7 +312,7 @@ jobs:
                 pm: [npm, yarn]
                 env: [esm, typescript]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
