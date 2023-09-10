@@ -247,7 +247,7 @@ jobs:
               shell: bash
 
             - name: Add modules that needs test
-              run: yarn add -D execa --ignore-engines
+              run: yarn add -DW execa --ignore-engines
 
             - name: Test
               uses: nick-fields/retry@v2
