@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/jsx-parser",
-	"version": "3.9.0",
+	"version": "3.9.1",
 	"description": "JSX parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -16,9 +16,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "3.10.0",
+		"@markuplint/html-parser": "3.10.1",
 		"@markuplint/ml-ast": "3.2.0",
-		"@markuplint/parser-utils": "3.10.0",
+		"@markuplint/parser-utils": "3.10.1",
 		"@typescript-eslint/types": "5",
 		"@typescript-eslint/typescript-estree": "5",
 		"tslib": "^2.6.2"

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-spec",
-	"version": "3.11.0",
+	"version": "3.11.1",
 	"description": "A specification of HTML Living Standard for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,10 +17,10 @@
 		"gen:prettier": "prettier --write index.json"
 	},
 	"devDependencies": {
-		"@markuplint/spec-generator": "3.11.0",
-		"@markuplint/test-tools": "3.6.0"
+		"@markuplint/spec-generator": "3.11.1",
+		"@markuplint/test-tools": "3.6.1"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "3.11.0"
+		"@markuplint/ml-spec": "3.11.1"
 	}
 }
