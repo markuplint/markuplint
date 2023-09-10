@@ -41360,6 +41360,9 @@
 					},
 					"defaultValue": "20"
 				},
+				"dirname": {
+					"description": "This attribute is used to indicate the text directionality of the element contents similar to the dirname attribute of the <input> element. For more information, see the dirname attribute."
+				},
 				"disabled": {
 					"description": "This Boolean attribute indicates that the user cannot interact with the control. If this attribute is not specified, the control inherits its setting from the containing element, for example <fieldset>; if there is no containing element when the disabled attribute is set, the control is enabled."
 				},
