@@ -24,6 +24,9 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},
+	"devDependencies": {
+		"execa": "^8.0.1"
+	},
 	"dependencies": {
 		"@markuplint/create-rule-helper": "4.0.0-alpha.0",
 		"@markuplint/file-resolver": "4.0.0-alpha.0",
