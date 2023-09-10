@@ -35706,7 +35706,7 @@
 			},
 			"attributes": {
 				"href": {
-					"description": "The base URL to be used throughout the document for relative URLs. Absolute and relative URLs are allowed."
+					"description": "The base URL to be used throughout the document for relative URLs. Absolute and relative URLs are allowed. data: and javascript: URLs are not allowed."
 				},
 				"target": {
 					"description": "A keyword or author-defined name of the default browsing context to show the results of navigation from <a>, <area>, or <form> elements without explicit target attributes. The following keywords have special meanings: _self (default): Show the result in the current browsing context. _blank: Show the result in a new, unnamed browsing context. _parent: Show the result in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the result in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self."
@@ -35716,7 +35716,7 @@
 		{
 			"name": "basefont",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The CSS fonts module defines font-related properties and how font resources are loaded. It lets you define the style of a font, such as its family, size and weight, line height, and the glyph variants to use when multiple are available for a single character.",
+			"description": "The CSS fonts module defines font-related properties and how font resources are loaded. It lets you define the style of a font, such as its family, size and weight, and the glyph variants to use when multiple are available for a single character.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -36170,7 +36170,7 @@
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Used to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
 				},
 				"formmethod": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. dialog: This method is used to indicate that the button closes the dialog with which it is associated, and does not transmit the form data at all. If specified, this attribute overrides the method attribute of the button's form owner."
 				},
 				"formnovalidate": {
 					"description": "If the button is a submit button, this Boolean attribute specifies that the form is not to be validated when it is submitted. If this attribute is specified, it overrides the novalidate attribute of the button's form owner. This attribute is also available on <input type=\"image\"> and <input type=\"submit\"> elements."
@@ -37277,7 +37277,7 @@
 		{
 			"name": "h1",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37304,7 +37304,7 @@
 		{
 			"name": "h2",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37331,7 +37331,7 @@
 		{
 			"name": "h3",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37358,7 +37358,7 @@
 		{
 			"name": "h4",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37385,7 +37385,7 @@
 		{
 			"name": "h5",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37412,7 +37412,7 @@
 		{
 			"name": "h6",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
