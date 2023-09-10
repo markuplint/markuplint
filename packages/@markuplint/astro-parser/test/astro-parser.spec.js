@@ -110,6 +110,7 @@ div {
 									offset: 93,
 								},
 							},
+							raw: '"v"',
 							type: 'attribute',
 							value: 'v',
 						},
@@ -227,6 +228,7 @@ it('Attr and Template Directive', () => {
 				kind: 'empty',
 				name: 'a',
 				value: '',
+				raw: '',
 				position: { start: { column: 6, line: 1, offset: 5 } },
 			},
 			{
@@ -234,6 +236,7 @@ it('Attr and Template Directive', () => {
 				kind: 'quoted',
 				name: 'b',
 				value: 'c',
+				raw: 'c',
 				position: { start: { column: 8, line: 1, offset: 7 } },
 			},
 			{
@@ -241,6 +244,7 @@ it('Attr and Template Directive', () => {
 				kind: 'quoted',
 				name: 'd',
 				value: 'e',
+				raw: '"e"',
 				position: { start: { column: 12, line: 1, offset: 11 } },
 			},
 			{
@@ -248,6 +252,7 @@ it('Attr and Template Directive', () => {
 				kind: 'template-literal',
 				name: 'f',
 				value: 'g',
+				raw: '',
 				position: { start: { column: 18, line: 1, offset: 17 } },
 			},
 			{
@@ -255,6 +260,7 @@ it('Attr and Template Directive', () => {
 				kind: 'empty',
 				name: 'x:y',
 				value: '',
+				raw: '',
 				position: { start: { column: 24, line: 1, offset: 23 } },
 			},
 			{
@@ -262,6 +268,7 @@ it('Attr and Template Directive', () => {
 				kind: 'expression',
 				name: 'prop',
 				value: '  prop  ',
+				raw: '',
 				position: { start: { column: 28, line: 1, offset: 27 } },
 			},
 		]),
@@ -278,6 +285,7 @@ test('Greater-than sign in attribute value', () => {
 				position: { start: { column: 6, line: 1, offset: 5 } },
 				type: 'attribute',
 				value: 'a>b',
+				raw: '"a>b"',
 			},
 		]),
 	);
@@ -308,6 +316,7 @@ describe('Issues', () => {
 								kind: 'quoted',
 								name: 'lang',
 								value: 'en',
+								raw: '"en"',
 								position: { start: { line: 1, column: 7, offset: 6 } },
 							},
 						],
@@ -347,6 +356,7 @@ describe('Issues', () => {
 												kind: 'quoted',
 												name: 'charset',
 												value: 'utf-8',
+												raw: '"utf-8"',
 												position: { start: { line: 3, column: 9, offset: 33 } },
 											},
 										],
@@ -396,6 +406,7 @@ describe('Issues', () => {
 												kind: 'quoted',
 												name: 'name',
 												value: 'viewport',
+												raw: '"viewport"',
 												position: { start: { line: 5, column: 9, offset: 83 } },
 											},
 											{
@@ -403,6 +414,7 @@ describe('Issues', () => {
 												kind: 'quoted',
 												name: 'content',
 												value: 'width=device-width',
+												raw: '"width=device-width"',
 												position: { start: { line: 5, column: 25, offset: 99 } },
 											},
 										],

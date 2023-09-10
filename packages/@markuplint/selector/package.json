@@ -24,11 +24,11 @@
 		"@types/debug": "^4.1.8",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.13",
-		"tslib": "^2.6.0",
-		"type-fest": "^3.12.0"
+		"tslib": "^2.6.2",
+		"type-fest": "^4.3.1"
 	},
 	"devDependencies": {
-		"@types/jsdom": "21.1.1",
+		"@types/jsdom": "21.1.2",
 		"jsdom": "22.1.0"
 	}
 }
