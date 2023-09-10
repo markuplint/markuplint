@@ -23,8 +23,6 @@ Warn if:
 - Preference
   - Set the default value of the property/state explicitly.
 
-There are settings about **ARIA in HTML** on [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src). And you can disable them because that is draft yet.
-
 ❌ Examples of **incorrect** code for this rule
 
 ```html
