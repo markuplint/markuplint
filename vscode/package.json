@@ -86,10 +86,10 @@
 	},
 	"devDependencies": {
 		"@types/node": "18",
-		"@types/semver": "^7.5.0",
-		"@types/vscode": "^1.80.0",
-		"@vscode/vsce": "^2.20.0",
-		"typescript": "^5.1.6"
+		"@types/semver": "^7.5.1",
+		"@types/vscode": "^1.82.0",
+		"@vscode/vsce": "^2.21.0",
+		"typescript": "^5.2.2"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.0-alpha.0",
