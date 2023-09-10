@@ -11,6 +11,11 @@
 - `markuplint.showAccessibility.ariaVersion`: Set `1.1` or `1.2` WAI-ARIA version; Default is `1.2`.
 
 ## Release Notes
+
+### 3.7.1
+
+- Depends: `markuplint@3.12.1`
+
 ### 3.7.0
 
 - Depends: `markuplint@3.12.0`
@@ -18,6 +23,7 @@
 ### 3.6.0
 
 - Depends: `markuplint@3.11.0`
+
 ### 3.5.0
 
 - Depends: `markuplint@3.10.0`
