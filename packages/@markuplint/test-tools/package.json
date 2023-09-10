@@ -27,6 +27,7 @@
 		"@vitest/coverage-v8": "^0.34.4",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
+		"execa": "^8.0.1",
 		"glob": "^10.3.4",
 		"jsdom": "^22.1.0",
 		"strip-json-comments": "^5.0.1",
