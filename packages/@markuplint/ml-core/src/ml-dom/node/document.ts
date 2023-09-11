@@ -1896,6 +1896,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
+	get onscrollend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onscrollend" property');
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
