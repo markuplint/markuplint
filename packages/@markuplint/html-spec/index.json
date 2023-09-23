@@ -35521,10 +35521,6 @@
 				},
 				"target": {
 					"description": "A keyword or author-defined name of the browsing context to display the linked resource. The following keywords have special meanings: _self (default): Show the resource in the current browsing context. _blank: Show the resource in a new, unnamed browsing context. _parent: Show the resource in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the resource in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self. Use this attribute only if the href attribute is present. Note: Setting target=\"_blank\" on <area> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
-				},
-				"type": {
-					"description": "Hint for the type of the referenced resource. Ignored by browsers.",
-					"deprecated": true
 				}
 			}
 		},
