@@ -205,7 +205,7 @@ test('the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('part of the ruby element', () => {
+test('part of the ruby element #1', () => {
 	const models = {
 		// 1. One or the other of the following:
 		oneOrMore: [
@@ -227,7 +227,7 @@ test('part of the ruby element', () => {
 	expect(c(models, '<ruby><ruby></ruby></ruby>').query).toBe('ruby:not(:has(ruby))');
 });
 
-test('part of the ruby element', () => {
+test('part of the ruby element #2', () => {
 	const models = {
 		// The content model of ruby elements consists of one or more of the following sequences:
 		oneOrMore: [
@@ -288,7 +288,7 @@ test('part of the ruby element', () => {
 	expect(c(models, 'text<rp></rp><rt></rt><rp></rp>text2<rt></rt>').type).toBe('MATCHED');
 });
 
-test('part of the ruby element', () => {
+test('part of the ruby element #3', () => {
 	const models = {
 		// followed by one or more rt elements, each of which is itself followed by an rp element
 		oneOrMore: [
