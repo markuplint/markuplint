@@ -39032,7 +39032,8 @@
 				"blocking": {
 					"type": {
 						"enum": ["render"]
-					}
+					},
+					"condition": "[rel~='stylesheet' i]"
 				},
 				"charset": {
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",

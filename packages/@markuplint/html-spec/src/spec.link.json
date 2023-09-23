@@ -115,11 +115,13 @@
 			// If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`
 			"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 		},
-		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-blocking
 		"blocking": {
 			"type": {
 				"enum": ["render"]
-			}
+			},
+			// > It is used by link type stylesheet, and it must only be specified on link elements that have a rel attribute containing that keyword.
+			"condition": "[rel~='stylesheet' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-color
 		"color": {
