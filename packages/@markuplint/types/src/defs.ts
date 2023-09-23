@@ -263,6 +263,9 @@ export const types: Defs = {
 		is: matches(isCustomElementName()),
 	},
 
+	/**
+	 * @deprecated
+	 */
 	BrowsingContextName: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#browsing-context-names',
 		expects: [
@@ -275,6 +278,9 @@ export const types: Defs = {
 		is: matches(isBrowserContextName()),
 	},
 
+	/**
+	 * @deprecated
+	 */
 	BrowsingContextNameOrKeyword: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword',
 		expects: [
