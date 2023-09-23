@@ -40802,8 +40802,7 @@
 					"condition": "picture > source"
 				},
 				"media": {
-					"type": "<media-query-list>",
-					"condition": "picture > source"
+					"type": "<media-query-list>"
 				},
 				"sizes": {
 					"condition": "picture > source"
