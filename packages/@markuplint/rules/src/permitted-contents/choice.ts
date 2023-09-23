@@ -17,9 +17,7 @@ export function choice(
 	depth: number,
 ): Result {
 	const choiceLog = cmLog.extend(`choice#${depth}`);
-
 	const collection = new Collection(elements);
-
 	const unmatchedResults: Result[] = [];
 
 	let i = 0;
