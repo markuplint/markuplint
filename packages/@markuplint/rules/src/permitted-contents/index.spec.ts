@@ -1395,4 +1395,9 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#1146', async () => {
+		const sourceCode = '<datalist><option></option></datalist>';
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+	});
 });

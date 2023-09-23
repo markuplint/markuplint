@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { order } from './order.js';
 
@@ -349,4 +349,26 @@ test('part of the ruby element', () => {
 	expect(c(models, '<rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('MATCHED');
+});
+
+describe('Issues', () => {
+	test('#1146', () => {
+		const models = [
+			{
+				choice: [
+					[
+						{
+							require: 'b',
+						},
+					],
+				],
+			},
+		];
+
+		expect(c(models, '<b></b><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
+		expect(c(models, '<b></b><b></b>').query).toBe('b');
+		expect(c(models, '<b></b><b></b>').hint).toStrictEqual({ max: 1 });
+		expect(c(models, '<b></b><b></b>').matched.map(node => node.nodeName)).toStrictEqual(['B']);
+		expect(c(models, '<b></b><b></b>').unmatched.map(node => node.nodeName)).toStrictEqual(['B']);
+	});
 });

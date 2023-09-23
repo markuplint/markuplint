@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { countPattern } from './count-pattern.js';
 
@@ -281,6 +281,7 @@ test('part of the ruby element', () => {
 		'UNEXPECTED_EXTRA_NODE',
 	);
 	expect(c(models, '<span></span><rp></rp><rt></rt><rp></rp><span></span><span></span>').query).toBe('rp');
+	expect(c(models, '<span></span><rt></rt>').type).toBe('MATCHED');
 	expect(c(models, '<span></span><rt></rt><span></span><rt></rt>').type).toBe('MATCHED');
 	expect(c(models, 'text<rt></rt>text2<rt></rt>').type).toBe('MATCHED');
 	expect(c(models, 'text<rt></rt><rt></rt>text2<rt></rt><rt></rt>').type).toBe('MATCHED');
@@ -306,4 +307,61 @@ test('part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp><rt></rt>').type).toBe('MISSING_NODE_REQUIRED');
 	expect(c(models, '<rt></rt><rp></rp><rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
+});
+
+describe('Issues', () => {
+	test('#1146 1/2', () => {
+		const models = {
+			oneOrMore: [
+				{
+					choice: [
+						[
+							{
+								require: 'b',
+							},
+						],
+					],
+				},
+			],
+		};
+
+		expect(c(models, '<b></b>').type).toBe('MATCHED');
+		expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
+	});
+
+	test('#1146 2/2', () => {
+		const models = {
+			oneOrMore: [
+				{
+					optional: 'a',
+				},
+				{
+					choice: [
+						[
+							{
+								optional: 'b',
+							},
+						],
+						[
+							{
+								require: 'c',
+							},
+						],
+					],
+				},
+			],
+		};
+
+		expect(c(models, '<a></a>').type).toBe('MATCHED');
+		expect(c(models, '<a></a><a></a><a></a>').type).toBe('MATCHED');
+		expect(c(models, '<a></a><b></b>').type).toBe('MATCHED');
+		expect(c(models, '<a></a><c></c>').type).toBe('MATCHED');
+		expect(c(models, '<b></b>').type).toBe('MATCHED');
+		expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
+		expect(c(models, '<b></b><c></c>').type).toBe('MATCHED');
+		expect(c(models, '<c></c><c></c>').type).toBe('MATCHED');
+		expect(c(models, '<a></a><b></b><c></c>').type).toBe('MATCHED');
+		expect(c(models, '<a></a><c></c><c></c>').type).toBe('MATCHED');
+		expect(c(models, '<c></c><b></b><a></a>').type).toBe('MATCHED');
+	});
 });
