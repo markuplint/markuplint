@@ -1034,6 +1034,7 @@ export type ExtendedType =
 	| 'Any'
 	| 'AutoComplete'
 	| 'BCP47'
+	| 'BaseURL'
 	| 'BrowsingContextName'
 	| 'BrowsingContextNameOrKeyword'
 	| 'CustomElementName'

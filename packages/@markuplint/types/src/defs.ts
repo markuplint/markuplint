@@ -226,6 +226,26 @@ export const types: Defs = {
 		is: () => matched(),
 	},
 
+	/**
+	 * Fail if it inclides "data" or "javascript" scheme.
+	 *
+	 * > If any of the following are true:
+	 * >   urlRecord is failure;
+	 * >     urlRecord's scheme is "data" or "javascript"; or
+	 * >     running Is base allowed for Document? on urlRecord and document returns "Blocked",
+	 * >     then set element's frozen base URL to document's fallback base URL and return.
+	 */
+	BaseURL: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url',
+		is(value) {
+			value = value.toLowerCase().trim();
+			if (value.startsWith('data:') || value.startsWith('javascript:')) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return matched();
+		},
+	},
+
 	AbsoluteURL: {
 		ref: 'https://url.spec.whatwg.org/#syntax-url-absolute',
 		is: matches(isAbsURL()),
