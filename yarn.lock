@@ -1168,6 +1168,134 @@
     yargs "16.2.0"
     yargs-parser "20.2.4"
 
+"@markuplint/config-presets@3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-3.8.0.tgz#742f01cce27ef03cc0f13610d0f8976925d5c34f"
+  integrity sha512-ohE9Z48cuZpSeZnA467E/LtKgFTEzu0ncJPM30gp9e/O8SLAo0qzSvQNdTwMS2jf10IA6VSIdOcOfKM5V447fA==
+
+"@markuplint/html-parser@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-parser/-/html-parser-3.10.0.tgz#eb353d1c58c762523083b590b77fa0ea2c81ad30"
+  integrity sha512-+XoUe3Y6kfFfgCZ1K/r46mAPetk8sORoxtwD3ZkcrhR/1yQDbh1iFBBUqTjpZeSMyQaozhNt16ACXTO3vUgvTw==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/parser-utils" "3.10.0"
+    parse5 "7.1.2"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
+"@markuplint/html-spec@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-3.11.0.tgz#017f2cbc63c6204df30b03b9392fab49addceefc"
+  integrity sha512-gekCwBQ+EiN9mnMK6iJ6nXf11ah8jfVacc6PcfFpglZGRNiwST/WxAxzwlBQXTErra0XhxTkY8411e85zuV46Q==
+  dependencies:
+    "@markuplint/ml-spec" "3.11.0"
+
+"@markuplint/ml-config@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-3.11.0.tgz#e84af1eb0b18dabebcf5f34ca318b3dfb7d40585"
+  integrity sha512-nH/zo1P5jGOWlmlpSVBaVRT9nRq/o8tBuvZQdplYOezEp635uq9hjLnliZBiHQv6oFZSAe2vG+LG0UJbAYapPA==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/selector" "3.11.0"
+    "@markuplint/shared" "3.8.0"
+    "@types/mustache" "^4.2.2"
+    deepmerge "^4.3.1"
+    is-plain-object "^5.0.0"
+    mustache "^4.2.0"
+    type-fest "^3.12.0"
+
+"@markuplint/ml-core@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-3.12.0.tgz#97049c87b68406716c5a8b5f4665a2b32161b67d"
+  integrity sha512-R689jNPz86m2oAc6Ag+pVX3SBg7NclH/jlChiuc337uCWKFvCCUBR2+SFffZCrQ+s8BruyBau9hTK/jkAVrRDQ==
+  dependencies:
+    "@markuplint/config-presets" "3.8.0"
+    "@markuplint/html-parser" "3.10.0"
+    "@markuplint/html-spec" "3.11.0"
+    "@markuplint/i18n" "3.9.0"
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/ml-config" "3.11.0"
+    "@markuplint/ml-spec" "3.11.0"
+    "@markuplint/parser-utils" "3.10.0"
+    "@markuplint/selector" "3.11.0"
+    "@types/debug" "^4.1.8"
+    debug "^4.3.4"
+    is-plain-object "^5.0.0"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
+"@markuplint/ml-spec@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-3.11.0.tgz#f78430926b41984c2eb9c6b87c9c8f2a6698ec16"
+  integrity sha512-wMHwFo1q5VK3ONPtbdpdpHvW8SeTcI4ooctCcTA/5f9tks5axfMekGuDhC41lLIyVDgVO8O6/iCZ8TGIawzwvA==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/types" "3.9.0"
+    dom-accessibility-api "^0.6.1"
+    is-plain-object "^5.0.0"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
+"@markuplint/parser-utils@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-3.10.0.tgz#558add187482492b017075226b9104a1bbebbe79"
+  integrity sha512-/na4v566HP0MCunJZkdgjhAAhVI4FmIqFnCwezE8zVfZn4Se0VECS5V/AQ9MHBSK7xSufgpEhCmjfBZDDJo+Ag==
+  dependencies:
+    "@markuplint/ml-ast" "3.2.0"
+    "@markuplint/types" "3.9.0"
+    "@types/uuid" "^9.0.2"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+    uuid "^9.0.0"
+
+"@markuplint/rules@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-3.12.0.tgz#b4d1281e6cf871b5a241b456f1ba5f55881bac0f"
+  integrity sha512-5bvEE8tUvHFbRGs6yc9dKJkNpY+Ad4olCI1AggH67ovslfk7pn0c//BtQsKriA7gGY/w9yUbu2won+Iz/A7sVA==
+  dependencies:
+    "@markuplint/html-spec" "3.11.0"
+    "@markuplint/ml-core" "3.12.0"
+    "@markuplint/ml-spec" "3.11.0"
+    "@markuplint/selector" "3.11.0"
+    "@markuplint/shared" "3.8.0"
+    "@markuplint/types" "3.9.0"
+    "@types/debug" "^4.1.8"
+    "@ungap/structured-clone" "^1.2.0"
+    ansi-colors "^4.1.3"
+    chrono-node "^2.6.3"
+    debug "^4.3.4"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
+"@markuplint/selector@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/selector/-/selector-3.11.0.tgz#888773b906057093868ebe13ab22041a3c3941b7"
+  integrity sha512-FBe5Voks+EuuxljqNZWWR2Jqq69a1aU/4tokV9dCFIKCyU0SWLxm8mDbQEm8DHoVXOviUIqByxdRzRJHhM/reg==
+  dependencies:
+    "@markuplint/ml-spec" "3.11.0"
+    "@types/debug" "^4.1.8"
+    debug "^4.3.4"
+    postcss-selector-parser "^6.0.13"
+    tslib "^2.6.0"
+    type-fest "^3.12.0"
+
+"@markuplint/types@3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-3.9.0.tgz#1be36a7c6b9f8ce0609743958b112e1fd93718a1"
+  integrity sha512-+z8qlubU9JCzT1GGqXQ1Ue6EET5B+G0ci6Z/IN0XeksvyWYSXYWrHqq4ccaoC+tLBzcoJNyj+eQhDAqQ+6Kg5A==
+  dependencies:
+    "@types/bcp-47" "1"
+    "@types/css-tree" "^2.0.1"
+    "@types/debug" "^4.1.8"
+    "@types/whatwg-mimetype" "3.0.0"
+    bcp-47 "1"
+    css-tree "^2.3.1"
+    debug "^4.3.4"
+    leven "3"
+    type-fest "^3.12.0"
+    whatwg-mimetype "^3.0.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -1970,7 +2098,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/css-tree@^2.3.2":
+"@types/css-tree@^2.0.1", "@types/css-tree@^2.3.2":
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@types/css-tree/-/css-tree-2.3.2.tgz#caf5579204b16ef09472af8001e8c4642652f101"
   integrity sha512-B5nF6h7xxpMLvZ1pzugAYUGj1aw4KgTpXZzOijkDMRzey4SlFi0jVWb3o0SS1CVSxyBciltVgjt67CwrgjmlWA==
@@ -2315,6 +2443,11 @@
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
+
+"@types/uuid@^9.0.2":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.4.tgz#e884a59338da907bda8d2ed03e01c5c49d036f1c"
+  integrity sha512-zAuJWQflfx6dYJM62vna+Sn5aeSWhh3OB+wfUEACNcqUSc0AGc5JKl+ycL1vrH7frGTXhJchYjE1Hak8L819dA==
 
 "@types/uuid@^9.0.3":
   version "9.0.3"
@@ -3808,6 +3941,13 @@ chrome-trace-event@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/chrome-trace-event/-/chrome-trace-event-1.0.3.tgz#1015eced4741e15d06664a957dbbf50d041e26ac"
   integrity sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==
+
+chrono-node@^2.6.3:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/chrono-node/-/chrono-node-2.7.0.tgz#2c25ed3d810ccd1fceabb630f70922af9600e45e"
+  integrity sha512-0s2vv89LmsbgoibV0AIVgNnGqlU8N5yCCVZXvc3mRCjnmlG/gJw1hCYOmNwjB+AIuwZQdKTXfwvsHDRTs6pwcg==
+  dependencies:
+    dayjs "^1.10.0"
 
 chrono-node@^2.6.6:
   version "2.6.6"
@@ -13513,6 +13653,11 @@ type-fest@^3.1.0, type-fest@^3.9.0:
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-3.11.1.tgz#d8e62c7f42e14537d5b8796de5450d541f3a33a7"
   integrity sha512-aCuRNRERRVh33lgQaJRlUxZqzfhzwTrsE98Mc3o3VXqmiaQdHacgUtJ0esp+7MvZ92qhtzKPeusaX6vIEcoreA==
+
+type-fest@^3.12.0:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-3.13.1.tgz#bb744c1f0678bea7543a2d1ec24e83e68e8c8706"
+  integrity sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==
 
 type-fest@^4.3.1:
   version "4.3.1"
