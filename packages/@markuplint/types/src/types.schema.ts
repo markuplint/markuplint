@@ -1046,6 +1046,8 @@ export type ExtendedType =
 	| 'Int'
 	| 'ItemProp'
 	| 'MIMEType'
+	| 'NavigableTargetName'
+	| 'NavigableTargetNameOrKeyword'
 	| 'NoEmptyAny'
 	| 'Number'
 	| 'OneCodePointChar'
