@@ -21,6 +21,7 @@ export type UnmatchedResultOptions = {
 	readonly expects?: readonly Expect[];
 	readonly extra?: Expect;
 	readonly candidate?: string;
+	readonly fallbackTo?: string;
 };
 
 export type UnmatchedResultReason =
