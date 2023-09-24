@@ -14,6 +14,7 @@ import { isAbsURL } from './whatwg/is-abs-url';
 import { isBrowserContextName } from './whatwg/is-browser-context-name';
 import { isCustomElementName } from './whatwg/is-custom-element-name';
 import { isItempropName } from './whatwg/is-itemprop-name';
+import { isNavigableTargetName } from './whatwg/is-navigable-target-name';
 
 export const types: Defs = {
 	Any: {
@@ -263,8 +264,20 @@ export const types: Defs = {
 		is: matches(isCustomElementName()),
 	},
 
+	NavigableTargetName: {
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name',
+		expects: [
+			{
+				type: 'common',
+				value: 'navigable target name',
+			},
+		],
+		// <iframe name="[HERE]">
+		is: matches(isNavigableTargetName()),
+	},
+
 	/**
-	 * @deprecated
+	 * @deprecated Use {@link types.NavigableTargetName} instead.
 	 */
 	BrowsingContextName: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#browsing-context-names',
@@ -274,12 +287,44 @@ export const types: Defs = {
 				value: 'browsing context name',
 			},
 		],
-		// <iframe name="[HERE]">
 		is: matches(isBrowserContextName()),
 	},
 
+	NavigableTargetNameOrKeyword: {
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword',
+		expects: [
+			{ type: 'const', value: '_blank' },
+			{ type: 'const', value: '_self' },
+			{ type: 'const', value: '_parent' },
+			{ type: 'const', value: '_top' },
+			{
+				type: 'common',
+				value: 'navigable target name',
+			},
+		],
+		// <a target="[HERE]">
+		is(value) {
+			value = value.toLowerCase();
+			const keywords = ['_blank', '_self', '_parent', '_top'];
+			if (keywords.includes(value)) {
+				return matched();
+			}
+			if (value[0] === '_') {
+				const candidate = getCandidate(value, keywords);
+				return unmatched(value, 'unexpected-token', { candidate });
+			}
+			const res = matches(isNavigableTargetName())(value);
+			if (!res.matched) {
+				// @see https://html.spec.whatwg.org/multipage/semantics.html#get-an-element's-target
+				// > If target is not null, and contains an ASCII tab or newline and a U+003C (<), then set target to "_blank".
+				return unmatched(value, 'unexpected-token', { fallbackTo: '_blank' });
+			}
+			return res;
+		},
+	},
+
 	/**
-	 * @deprecated
+	 * @deprecated Use {@link types.NavigableTargetNameOrKeyword} instead.
 	 */
 	BrowsingContextNameOrKeyword: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword',
@@ -293,7 +338,6 @@ export const types: Defs = {
 				value: 'browsing context name',
 			},
 		],
-		// <a target="[HERE]">
 		is(value) {
 			value = value.toLowerCase();
 			const keywords = ['_blank', '_self', '_parent', '_top'];
