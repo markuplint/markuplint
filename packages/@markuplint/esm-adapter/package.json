@@ -15,7 +15,7 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"strict-event-emitter": "^0.5.0"
+		"strict-event-emitter": "^0.5.1"
 	},
 	"peerDependencies": {
 		"markuplint": "4.0.0-alpha.0"
