@@ -12,6 +12,10 @@
 
 ## Release Notes
 
+### 3.8.0
+
+- Depends: `markuplint@3.13.0`
+
 ### 3.7.1
 
 - Depends: `markuplint@3.12.1`
