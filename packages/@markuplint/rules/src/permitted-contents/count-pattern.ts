@@ -13,8 +13,6 @@ import { Collection, mergeHints, modelLog, normalizeModel } from './utils.js';
 
 const cLog = cmLog.extend('countCompereResult');
 
-const cLog = cmLog.extend('countCompereResult');
-
 /**
  * Check count
  *

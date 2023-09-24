@@ -117,7 +117,6 @@ div {
 							raw: '"v"',
 							type: 'attribute',
 							value: 'v',
-							raw: '"v"',
 						},
 					],
 					children: [
