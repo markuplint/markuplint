@@ -60,7 +60,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-target
 		"target": {
-			"type": "BrowsingContextNameOrKeyword"
+			"type": "NavigableTargetNameOrKeyword"
 		},
 		// https://html.spec.whatwg.org/multipage/forms.html#attr-form-rel
 		"rel": {

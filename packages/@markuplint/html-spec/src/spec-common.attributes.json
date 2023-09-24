@@ -570,7 +570,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-target
 		"target": {
-			"type": "BrowsingContextNameOrKeyword",
+			"type": "NavigableTargetNameOrKeyword",
 			"condition": "[href]"
 		},
 		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download
@@ -766,7 +766,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formtarget
 		"formtarget": {
-			"type": "BrowsingContextNameOrKeyword"
+			"type": "NavigableTargetNameOrKeyword"
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name
 		"name": {

@@ -11,6 +11,8 @@ import { cmLog } from './debug';
 import { recursiveBranch } from './recursive-branch';
 import { Collection, mergeHints, modelLog, normalizeModel } from './utils';
 
+const cLog = cmLog.extend('countCompereResult');
+
 /**
  * Check count
  *
@@ -217,7 +219,6 @@ export function countPattern(
 	}
 }
 
-const cLog = cmLog.extend('countCompereResult');
 function compereResult(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	a: Readonly<Result>,
