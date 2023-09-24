@@ -42,13 +42,14 @@ export function __createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	expected: string | null,
-	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
+	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra' | 'fallbackTo'>,
 ) {
 	let target = baseTarget;
 	let reasonPart: string | undefined;
 	let expectPart: string | undefined;
 	let unnecessaryPart: string | undefined;
 	let candidatePart: string | undefined;
+	let fallbackToPart: string | undefined;
 	let expectOrNeed: 'expects' | 'needs' = 'expects';
 
 	if (matches.partName) {
@@ -207,7 +208,11 @@ export function __createMessageValueExpected(
 		candidatePart = t('Did you mean "{0*}"?', matches.candidate);
 	}
 
-	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart].filter(s => s).join(t('. '));
+	if (matches.fallbackTo) {
+		fallbackToPart = t('The user agent will automatically use "{0*}" instead', matches.fallbackTo);
+	}
+
+	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart, fallbackToPart].filter(s => s).join(t('. '));
 
 	if (matches.ref) {
 		message += ` (${matches.ref})`;

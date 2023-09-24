@@ -114,6 +114,7 @@ div {
 									offset: 93,
 								},
 							},
+							raw: '"v"',
 							type: 'attribute',
 							value: 'v',
 							raw: '"v"',
