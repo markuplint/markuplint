@@ -1999,10 +1999,10 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/script-ext-html-webpack-plugin@2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@types/script-ext-html-webpack-plugin/-/script-ext-html-webpack-plugin-2.1.3.tgz#9d997e41b7d50d9d2758a83764a3f25c32157b5c"
-  integrity sha512-1iKwiXYavFnW5h6875AXUFxXG2ZW+wdK5+XwsKvA7O17gr3iRaTCnwRelKqoY4UZNvpxkHg+opbOpNcoX0Lv6g==
+"@types/script-ext-html-webpack-plugin@2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@types/script-ext-html-webpack-plugin/-/script-ext-html-webpack-plugin-2.1.4.tgz#eda5f0fea609e3bc0745a448c86f3d1c5fcc0deb"
+  integrity sha512-OVUVt/UL8JKjcsJf/wKms/Z9WWxzg+vEGo3RU3YCGLMDfojTbrbXB2qsvn4A8hbgLE3Wd97OMLr9nXG3DCNLMw==
   dependencies:
     "@types/webpack" "^4"
 
