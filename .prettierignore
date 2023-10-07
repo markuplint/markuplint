@@ -1,2 +1,3 @@
 packages/@markuplint/config-presets/README.md
 packages/@markuplint/config-presets/preset.*.json
+playground/dist

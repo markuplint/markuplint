@@ -9,8 +9,6 @@ import { MLRule, MLCore } from '@markuplint/ml-core';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 import rules from '@markuplint/rules';
 
-export type { MLCore } from '@markuplint/ml-core';
-
 export const createLinter = async (ruleset: Ruleset) => {
 	const language = navigator.language ?? '';
 	const langCode = language.split(/_|-/)[0];
@@ -23,6 +21,7 @@ export const createLinter = async (ruleset: Ruleset) => {
 		parser: HTMLParser,
 		sourceCode: '',
 		ruleset,
+		// @ts-ignore
 		rules: Object.entries(rules).map(([name, seed]) => new MLRule<RuleConfigValue, PlainData>({ name, ...seed })),
 		locale: localSet,
 		schemas: [spec],
@@ -33,7 +32,7 @@ export const createLinter = async (ruleset: Ruleset) => {
 	return linter;
 };
 
-export const diagnose = (reports: Violation[]) => {
+export const diagnose = (reports: readonly Violation[]) => {
 	const diagnostics: editor.IMarkerData[] = [];
 	for (const report of reports) {
 		diagnostics.push({

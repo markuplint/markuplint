@@ -1,10 +1,10 @@
-import type { MLCore } from './diagnose';
-import type { Ruleset } from '@markuplint/ml-core';
+import type { Ruleset, MLCore } from '@markuplint/ml-core';
 
 import { editor } from 'monaco-editor';
 
-import { diagnose, createLinter } from './diagnose';
-import { decode, encode } from './utils';
+import { diagnose, createLinter } from './diagnose.js';
+import { ruleset } from './ruleset.js';
+import { decode, encode } from './utils.js';
 
 const defaultSample = `<!doctype html>
 <html
@@ -68,16 +68,21 @@ export default class Playground {
 	#rafId = 0;
 	#linter: MLCore | null = null;
 
-	constructor(el: HTMLElement, ruleset?: string) {
+	constructor(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		monacoEditor: typeof editor,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		el: HTMLElement,
+	) {
 		const initCode = location.hash ? decode(location.hash.slice(1)) : defaultSample;
 
-		this.#editor = editor.create(el, {
+		this.#editor = monacoEditor.create(el, {
 			theme: 'vs-dark',
 			value: initCode,
 			language: 'html',
 		});
 
-		this.#rulesetString = ruleset ?? '';
+		this.#rulesetString = ruleset;
 		this.#ruleset = convertRuleset(ruleset);
 
 		void createLinter(this.#ruleset).then(linter => (this.#linter = linter));
