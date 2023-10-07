@@ -16,11 +16,8 @@
 		"@markuplint/ml-core": "4.0.0-alpha.0",
 		"@markuplint/parser-utils": "4.0.0-alpha.0",
 		"@markuplint/rules": "4.0.0-alpha.0",
-		"monaco-editor": "0.44.0"
-	},
-	"devDependencies": {
+		"monaco-editor": "0.44.0",
 		"sass": "1.69.0",
-		"typescript": "5.2.2",
 		"vite": "4.4.5"
 	}
 }
