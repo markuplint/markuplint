@@ -170,10 +170,10 @@ describe('verify', () => {
 		expect(violations2).toStrictEqual([
 			{
 				severity: 'error',
-				col: 1,
-				line: 1,
-				message: 'Require one or more elements. (Need "dt")',
-				raw: '<dl>',
+				col: 5,
+				line: 2,
+				message: 'The "dt" element is not allowed in the "dl" element in this context',
+				raw: '<dt>',
 			},
 			{
 				severity: 'error',
@@ -1394,5 +1394,10 @@ describe('Issues', () => {
 				raw: '<div>',
 			},
 		]);
+	});
+
+	test('#1146', async () => {
+		const sourceCode = '<datalist><option></option></datalist>';
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
 });

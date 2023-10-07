@@ -1,38 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=1000" />
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<title>Markuplint</title>
-		<meta
-			name="description"
-			content="HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more."
-		/>
+		<meta name="description" content="Peace of mind in your markup - An HTML linter for all markup developers." />
 		<meta property="og:type" content="website" />
-		<meta property="og:image" content="https://markuplint.dev/media/icon-large.png" />
+		<meta
+			property="og:image"
+			content="https://markuplint.imgix.net/og-img-base.png?ixlib=js-3.8.0&mark=https%3A%2F%2Fmarkuplint.imgix.net%2F~text%3Fixlib%3Djs-3.8.0%26txt%3DPlayground%26txt-align%3Dleft%252Cmiddle%26txt-color%3D333333%26txt-font%3DPT%2520Sans%252CBold%26txt-size%3D150%26txt-clip%3Dellipsis%26w%3D1600%26h%3D560&mark-x=240&mark-y=452&w=2400&h=1260"
+		/>
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:site" content="@markuplint" />
-		<meta name="twitter:title" content="markuplint" />
-		<meta
-			name="twitter:description"
-			content="HTML linter for legacy/modern HTML, Web Components, SVG, MathML, AMP HTML and more."
-		/>
-		<meta name="twitter:image" content="https://markuplint.dev/media/icon-large.png" />
-		<!-- inline_css_plugin -->
+
+		<link rel="shortcut icon" href="/logo.svg" />
+		<script type="module" src="/src/main.ts"></script>
 	</head>
 	<body>
 		<header>
 			<div>
 				<h1>
-					<img
-						src="./media/logo.svg"
-						width="200"
-						height="134"
-						alt="Markuplint"
-						decoding="async"
-						loading="lazy"
-					/>
+					<img src="/logo.svg" width="200" height="134" alt="Markuplint" decoding="async" loading="lazy" />
 				</h1>
 				<p><em>Peace of mind in your markup</em> - <span>An HTML linter for all markup developers.</span></p>
 			</div>
@@ -42,7 +30,13 @@
 			<section>
 				<div>
 					<h2>Playground</h2>
-					<div id="playground-home"></div>
+
+					<div class="container">
+						<div id="app"></div>
+						<div class="credit">
+							<p>Version: <span id="version"></span></p>
+						</div>
+					</div>
 				</div>
 			</section>
 		</main>
@@ -58,7 +52,7 @@
 							rel="noreferrer"
 						>
 							<figure>
-								<img src="./media/vscode.png" alt="" width="903" height="987" decoding="async" />
+								<img src="/vscode.png" alt="" width="903" height="987" decoding="async" />
 								<figcaption>Visual Studio Code</figcaption>
 							</figure>
 						</a>

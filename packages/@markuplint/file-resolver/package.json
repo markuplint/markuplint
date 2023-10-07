@@ -24,7 +24,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "20.6.0"
+		"@types/node": "20.8.3"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "4.0.0-alpha.0",
@@ -35,8 +35,8 @@
 		"@markuplint/parser-utils": "4.0.0-alpha.0",
 		"@markuplint/selector": "4.0.0-alpha.0",
 		"@markuplint/shared": "4.0.0-alpha.0",
-		"cosmiconfig": "^8.3.5",
-		"glob": "^10.3.4",
+		"cosmiconfig": "^8.3.6",
+		"glob": "^10.3.6",
 		"ignore": "^5.2.4",
 		"jsonc": "^2.0.0",
 		"minimatch": "^9.0.3",

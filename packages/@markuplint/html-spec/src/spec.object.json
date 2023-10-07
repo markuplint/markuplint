@@ -29,7 +29,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-name
 		"name": {
-			"type": "BrowsingContextName"
+			"type": "NavigableTargetName"
 		}
 	},
 	"aria": {

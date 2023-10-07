@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@types/bcp-47": "^2.0.0",
 		"@types/css-tree": "^2.3.2",
-		"@types/debug": "^4.1.8",
+		"@types/debug": "^4.1.9",
 		"@types/whatwg-mimetype": "3.0.0",
 		"bcp-47": "^2.1.0",
 		"css-tree": "^2.3.1",

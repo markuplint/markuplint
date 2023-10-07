@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - v3
             - next
         paths:
             - '**'
@@ -276,17 +277,12 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
-            - name: Cache devDependencies
-              uses: actions/cache@v3
-              with:
-                  path: '**/node_modules'
-                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
-
-            - name: Cache Restore productionDependencies
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
               uses: actions/cache/restore@v3
               with:
                   path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@v3

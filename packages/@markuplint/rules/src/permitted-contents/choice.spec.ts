@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { choice } from './choice.js';
 
@@ -172,4 +172,28 @@ test('part of the ruby element', () => {
 	expect(c(models, '<rp></rp><rt></rt>').query).toBe('rp');
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('UNEXPECTED_EXTRA_NODE');
 	expect(c(models, '<rt></rt><rp></rp>').query).toBe('rt');
+});
+
+describe('Issues', () => {
+	test('#1146', () => {
+		const models = {
+			choice: [
+				[
+					{
+						optional: 'b',
+					},
+				],
+				[
+					{
+						require: 'c',
+					},
+				],
+			],
+		};
+
+		expect(c(models, '<b></b>').type).toBe('MATCHED');
+		expect(c(models, '<b></b><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
+		expect(c(models, '<c></c>').type).toBe('MATCHED');
+		expect(c(models, '<c></c><c></c>').type).toBe('UNEXPECTED_EXTRA_NODE');
+	});
 });

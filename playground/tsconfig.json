@@ -1,11 +1,32 @@
 {
-	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2019",
+		"target": "ES2020",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"skipLibCheck": true,
+
+		/* Bundler mode */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
-		"declaration": false,
-		"importHelpers": true
+		"isolatedModules": true,
+		"noEmit": true,
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true
 	},
-	"exclude": ["node_modules"]
+	"references": [
+		{ "path": "../packages/@markuplint/html-parser" },
+		{ "path": "../packages/@markuplint/html-spec" },
+		{ "path": "../packages/@markuplint/i18n" },
+		{ "path": "../packages/@markuplint/ml-config" },
+		{ "path": "../packages/@markuplint/ml-core" },
+		{ "path": "../packages/@markuplint/parser-utils" },
+		{ "path": "../packages/@markuplint/rules" }
+	],
+	"include": ["src"]
 }

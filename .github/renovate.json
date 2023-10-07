@@ -17,6 +17,10 @@
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
 			"automerge": true
+		},
+		{
+			"matchPaths": ["vscode/*"],
+			"ignoreDeps": ["@types/node"]
 		}
 	]
 }

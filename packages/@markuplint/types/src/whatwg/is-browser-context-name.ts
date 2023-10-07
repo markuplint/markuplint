@@ -8,6 +8,8 @@ import type { FormattedPrimitiveTypeCreator } from '../types.js';
  * > that does not start with a U+005F LOW LINE character.
  * > (Names starting with an underscore are reserved for special keywords.)
  *
+ * @deprecated
+ *
  */
 export const isBrowserContextName: FormattedPrimitiveTypeCreator = () => {
 	return value => {
