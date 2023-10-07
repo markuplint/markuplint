@@ -85,7 +85,7 @@
 		"vscode:up": "yarn upgrade-interactive --latest"
 	},
 	"devDependencies": {
-		"@types/node": "18.15",
+		"@types/node": "20.8",
 		"@types/semver": "^7.5.2",
 		"@types/vscode": "^1.82.0",
 		"@vscode/vsce": "^2.21.0",
