@@ -2,5 +2,5 @@
 	"lerna": "7.0.1",
 	"version": "independent",
 	"npmClient": "yarn",
-	"packages": ["packages/*", "packages/@markuplint/*", "vscode"]
+	"packages": ["packages/*", "packages/@markuplint/*", "playground", "vscode"]
 }

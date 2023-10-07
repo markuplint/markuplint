@@ -15,17 +15,10 @@ footer > * {
 	margin: 0 auto;
 }
 
-#playground-home {
+#app {
 	width: 950px;
 	height: 500px;
-	margin: 0 0 2em;
-	background: #000;
-}
-
-#playground-home {
-	width: 950px;
-	height: 500px;
-	margin: 0 0 2em;
+	margin: 0;
 	background: #000;
 }
 
@@ -51,6 +44,24 @@ h2 {
 em {
 	font-weight: bold;
 	font-style: normal;
+}
+
+.container {
+	width: 950px;
+	height: 500px;
+	margin: 0 0 2em;
+}
+
+.credit {
+	display: flex;
+	justify-content: flex-end;
+	font-size: 0.8em;
+	opacity: 0.8;
+}
+
+.credit p {
+	margin: 0;
+	padding: 0;
 }
 
 .editor {
