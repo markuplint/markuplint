@@ -36,7 +36,7 @@
 		"style-loader": "3.3.3",
 		"svelte-loader": "3.1.9",
 		"svelte-preprocess": "5.0.4",
-		"ts-loader": "9.4.4",
+		"ts-loader": "9.5.0",
 		"ttf-loader": "1.0.2",
 		"webpack": "5.88.2",
 		"webpack-cli": "5.1.4",
