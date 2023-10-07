@@ -4,12 +4,10 @@ import path from 'node:path';
 
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
-import { TypeScriptLoader } from 'cosmiconfig-typescript-loader';
 import { jsonc } from 'jsonc';
 
 const explorer = cosmiconfig('markuplint', {
 	loaders: {
-		'.ts': TypeScriptLoader(),
 		noExt: ((path, content) => {
 			try {
 				return jsonc.parse(content);
