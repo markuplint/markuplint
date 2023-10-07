@@ -1916,7 +1916,6 @@
     ts-api-utils "^1.0.1"
 
 "@typescript-eslint/types@5.62.0", "@typescript-eslint/types@^5.0.0", "ts-eslint-types-v5@npm:@typescript-eslint/types@5":
-  name ts-eslint-types-v5
   version "5.62.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.62.0.tgz#258607e60effa309f067608931c3df6fed41fd2f"
   integrity sha512-87NVngcbVXUahrRTqIK27gD2t5Cu1yuCXxbLcFtCzZGlfyVWWh8mLHkoxzjsB6DDNnvdL+fW8MiwPEJyGJQDgQ==
@@ -10394,7 +10393,7 @@ typedoc@^0.25.1:
     minimatch "^9.0.3"
     shiki "^0.14.1"
 
-typescript@5.2.2, "typescript@>=3 < 6", typescript@^5.2.2:
+"typescript@>=3 < 6", typescript@^5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
   integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
