@@ -10,9 +10,9 @@ import type {
 } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
+// import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
 
-import { t } from '../i18n';
+// import { t } from '../i18n';
 import { getFilePath } from '../utils/get-file-path';
 
 import { convertDiagnostics } from './convert-diagnostics';
@@ -195,44 +195,44 @@ export function getNodeWithAccessibilityProps(
 
 	const aria: Record<string, string> = {};
 
-	const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
+	// const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
 
-	if (!exposed) {
-		return {
-			nodeName: node.localName,
-			exposed: false,
-			aria: {},
-		};
-	}
+	// if (!exposed) {
+	// 	return {
+	// 		nodeName: node.localName,
+	// 		exposed: false,
+	// 		aria: {},
+	// 	};
+	// }
 
-	const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-	const name = getAccname(node).trim();
-	const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
+	// const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
+	// const name = getAccname(node).trim();
+	// const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
-	const nameRequired = role.role?.accessibleNameRequired ?? false;
-	const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+	// const nameRequired = role.role?.accessibleNameRequired ?? false;
+	// const nameProhibited = role.role?.accessibleNameProhibited ?? false;
 
-	const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
+	// const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
 
-	aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
-	aria.name = nameProhibited
-		? `**${t('Prohibited')}**`
-		: name
-		? `\`"${name}"\``
-		: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
-	aria.focusable = `\`${focusable}\``;
+	// aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
+	// aria.name = nameProhibited
+	// 	? `**${t('Prohibited')}**`
+	// 	: name
+	// 	? `\`"${name}"\``
+	// 	: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
+	// aria.focusable = `\`${focusable}\``;
 
-	Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
-		if (!prop.required) {
-			if (prop.from === 'default') {
-				return;
-			}
-		}
-		aria[prop.name.replace('aria-', '')] =
-			prop.value === undefined
-				? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
-				: `\`${prop.value}\``;
-	});
+	// Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
+	// 	if (!prop.required) {
+	// 		if (prop.from === 'default') {
+	// 			return;
+	// 		}
+	// 	}
+	// 	aria[prop.name.replace('aria-', '')] =
+	// 		prop.value === undefined
+	// 			? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
+	// 			: `\`${prop.value}\``;
+	// });
 
 	return {
 		nodeName: node.localName,

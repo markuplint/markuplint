@@ -1,4 +1,6 @@
 import type { Log } from '../types';
+import type { FromCodeFunction } from '@markuplint/esm-adapter';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import path from 'node:path';
 
@@ -17,17 +19,42 @@ export async function getModule(log: Log): Promise<OldModule | Module> {
 			version,
 			markuplint,
 			modPath,
+			ariaRecommendedVersion: '1.2',
 		};
 	} catch (_e) {
+		let isESM = false;
+		try {
+			// eslint-disable-next-line import/no-extraneous-dependencies
+			require('markuplint');
+		} catch (e) {
+			if (e && typeof e === 'object' && 'code' in e) {
+				switch (e.code) {
+					case 'ERR_PACKAGE_PATH_NOT_EXPORTED': {
+						isESM = true;
+						break;
+					}
+				}
+			} else {
+				throw e;
+			}
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const esmAdapter = require('@markuplint/esm-adapter');
-		const adapterVersion = esmAdapter.version;
-		const version = await esmAdapter.getVersion();
+		const { MLEngine } = require('@markuplint/esm-adapter');
+		const fromCode: FromCodeFunction = async (sourceCode, options) => {
+			const engine = await MLEngine.fromCode(sourceCode, {
+				...options,
+				moduleName: isESM ? 'markuplint' : undefined,
+			});
+			return engine;
+		};
+		const engine = await fromCode('');
+		const version = await engine.getVersion();
 		return {
 			type: 'v4',
 			version,
-			adapter: esmAdapter,
-			adapterVersion,
+			fromCode,
+			ariaRecommendedVersion: '1.2',
 		};
 	}
 }
@@ -37,11 +64,12 @@ type OldModule = {
 	version: string;
 	markuplint: any;
 	modPath: string;
+	ariaRecommendedVersion: '1.2';
 };
 
 type Module = {
 	type: 'v4';
 	version: string;
-	adapter: any;
-	adapterVersion: string;
+	fromCode: FromCodeFunction;
+	ariaRecommendedVersion: ARIAVersion;
 };

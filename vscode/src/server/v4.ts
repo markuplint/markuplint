@@ -1,7 +1,7 @@
 import type { Config, Log } from '../types';
+import type { MLEngine as ESMAdapterMLEngine, FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
-import type { MLEngine as _MLEngine } from 'markuplint';
 import type {
 	TextDocumentChangeEvent,
 	PublishDiagnosticsParams,
@@ -10,20 +10,17 @@ import type {
 } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
-
 import { t } from '../i18n';
 import { getFilePath } from '../utils/get-file-path';
 
 import { convertDiagnostics } from './convert-diagnostics';
 
-const engines = new Map<string, _MLEngine>();
+const engines = new Map<string, ESMAdapterMLEngine>();
 
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	opened: TextDocumentChangeEvent<TextDocument>,
-
-	MLEngine: typeof _MLEngine,
+	fromCode: FromCodeFunction,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
 	locale: string,
@@ -47,7 +44,7 @@ export async function onDidOpen(
 
 	const sourceCode = opened.document.getText();
 
-	const engine = await MLEngine.fromCode(sourceCode, {
+	const engine = await fromCode(sourceCode, {
 		name: filePath.basename,
 		dirname: filePath.dirname,
 		locale,
@@ -85,7 +82,16 @@ export async function onDidOpen(
 		debounceTimer = setTimeout(() => {
 			diagnosticsLog(`Lint: ${opened.document.uri}`);
 			if (debug) {
-				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
+				diagnosticsLog(
+					'  Tracing AST Mapping:\n' +
+						debug
+							.map(
+								// @ts-ignore
+								line => `  ${line}`,
+							)
+							.join('\n'),
+					'trace',
+				);
 			}
 			if (configSet) {
 				if (configSet.files.size > 0) {
@@ -165,74 +171,60 @@ export function onDidChangeContent(
 	}, 300);
 }
 
-export function getNodeWithAccessibilityProps(
+export async function getNodeWithAccessibilityProps(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	textDocument: TextDocumentIdentifier,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	position: Position,
 	ariaVersion: ARIAVersion,
-): {
+): Promise<{
 	nodeName: string;
 	exposed: boolean;
-	aria: Record<string, string>;
-} | null {
+	labels: Record<string, string>;
+} | null> {
 	const key = textDocument.uri;
 	const engine = engines.get(key);
 
-	if (!engine || !engine.document) {
+	if (!engine) {
 		return null;
 	}
 
-	const node = engine.document.searchNodeByLocation(position.line + 1, position.character);
+	const a11y = await engine.getAccessibilityByLocation(position.line + 1, position.character, ariaVersion);
 
-	if (!node || !node.is(node.ELEMENT_NODE)) {
+	if (!a11y) {
 		return null;
 	}
 
-	const aria: Record<string, string> = {};
+	const { node, aria } = a11y;
 
-	const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
-
-	if (!exposed) {
+	if (!aria.exposedToTree) {
 		return {
-			nodeName: node.localName,
+			nodeName: node,
 			exposed: false,
-			aria: {},
+			labels: {},
 		};
 	}
 
-	const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-	const name = getAccname(node).trim();
-	const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
-
-	const nameRequired = role.role?.accessibleNameRequired ?? false;
-	const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+	const labels: Record<string, string> = {};
 
 	const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
 
-	aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
-	aria.name = nameProhibited
+	labels.role = aria.role ? `\`${aria.role}\`` : t('No corresponding role');
+	labels.name = aria.nameProhibited
 		? `**${t('Prohibited')}**`
-		: name
-		? `\`"${name}"\``
-		: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
-	aria.focusable = `\`${focusable}\``;
+		: aria.name
+		? `\`"${aria.name}"\``
+		: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
+	labels.focusable = `\`${aria.focusable}\``;
 
-	Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
-		if (!prop.required) {
-			if (prop.from === 'default') {
-				return;
-			}
-		}
-		aria[prop.name.replace('aria-', '')] =
-			prop.value === undefined
-				? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
-				: `\`${prop.value}\``;
+	Object.entries(aria.props ?? {}).forEach(([propName, { value, required }]) => {
+		labels[propName] =
+			value === undefined ? t('Undefined') + (required ? ` ${requiredLabel}` : '') : `\`${value}\``;
 	});
 
 	return {
-		nodeName: node.localName,
+		nodeName: node,
 		exposed: true,
-		aria,
+		labels,
 	};
 }

@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "3.8.0",
+	"version": "4.0.0-alpha.0",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -13,7 +13,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.82.0"
+		"vscode": "^1.83.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -86,18 +86,17 @@
 	},
 	"devDependencies": {
 		"@types/node": "18.15",
-		"@types/semver": "^7.5.2",
-		"@types/vscode": "^1.82.0",
-		"@vscode/vsce": "^2.21.0",
-		"typescript": "^5.2.2"
+		"@types/semver": "7.5.3",
+		"@types/vscode": "1.83.0",
+		"@vscode/vsce": "2.21.0",
+		"typescript": "5.2.2"
 	},
 	"dependencies": {
-		"@markuplint/i18n": "3.10.0",
-		"@markuplint/ml-spec": "3.12.0",
-		"markuplint": "3.13.0",
-		"semver": "^7.5.4",
-		"vscode-languageclient": "^9.0.0",
-		"vscode-languageserver": "^9.0.0",
-		"vscode-languageserver-textdocument": "^1.0.8"
+		"@markuplint/esm-adapter": "4.0.0-alpha.2",
+		"semver": "7.5.4",
+		"vscode-languageclient": "9.0.1",
+		"vscode-languageserver": "9.0.1",
+		"vscode-languageserver-textdocument": "1.0.11",
+		"vscode-default-markuplint": "npm:markuplint@4.0.0-alpha.2"
 	}
 }

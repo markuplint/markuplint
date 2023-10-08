@@ -1,7 +1,6 @@
 import type { LangConfigs, Log } from '../types';
 import type { InitializeResult, PublishDiagnosticsParams } from 'vscode-languageserver/node';
 
-import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { satisfies } from 'semver';
 import {
 	createConnection,
@@ -135,7 +134,7 @@ export async function bootServer() {
 		if (mod.type === 'v4') {
 			void v4.onDidOpen(
 				e,
-				mod.adapter.MLEngine,
+				mod.fromCode,
 				config,
 				locale,
 				log,
@@ -208,28 +207,50 @@ export async function bootServer() {
 		}
 
 		const ariaVersion =
-			typeof showAccessibility === 'boolean' ? ARIA_RECOMMENDED_VERSION : showAccessibility.ariaVersion;
+			typeof showAccessibility === 'boolean' ? mod.ariaRecommendedVersion : showAccessibility.ariaVersion;
 
-		const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
+		if (mod.type === 'v4') {
+			const aria = await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
+			if (!aria) {
+				return;
+			}
 
-		if (!node) {
-			return;
+			const heading = `\`<${aria.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
+
+			const props = aria.exposed
+				? `${Object.entries(aria.labels)
+						.map(([key, value]) => `- ${key}: ${value}`)
+						.join('\n')}`
+				: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
+
+			return {
+				contents: {
+					kind: MarkupKind.Markdown,
+					value: heading + props,
+				},
+			};
+		} else {
+			const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
+
+			if (!node) {
+				return;
+			}
+
+			const heading = `\`<${node.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
+
+			const props = node.exposed
+				? `${Object.entries(node.aria)
+						.map(([key, value]) => `- ${key}: ${value}`)
+						.join('\n')}`
+				: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
+
+			return {
+				contents: {
+					kind: MarkupKind.Markdown,
+					value: heading + props,
+				},
+			};
 		}
-
-		const heading = `\`<${node.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
-
-		const props = node.exposed
-			? `${Object.entries(node.aria)
-					.map(([key, value]) => `- ${key}: ${value}`)
-					.join('\n')}`
-			: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
-
-		return {
-			contents: {
-				kind: MarkupKind.Markdown,
-				value: heading + props,
-			},
-		};
 	});
 
 	connection.listen();
