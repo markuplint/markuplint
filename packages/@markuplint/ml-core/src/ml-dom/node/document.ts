@@ -4,7 +4,7 @@ import type { MLDocumentType } from './document-type.js';
 import type { MLElement } from './element.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
-import type { DocumentNodeType } from './types.js';
+import type { AccessibilityProperties, DocumentNodeType } from './types.js';
 import type { MLRule } from '../../ml-rule/index.js';
 import type Ruleset from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
@@ -15,7 +15,15 @@ import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-confi
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
-import { schemaToSpec } from '@markuplint/ml-spec';
+import {
+	schemaToSpec,
+	getAccname,
+	getComputedRole,
+	mayBeFocusable,
+	getComputedAriaProps,
+	isExposed,
+	ARIA_RECOMMENDED_VERSION,
+} from '@markuplint/ml-spec';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, matchSelector } from '@markuplint/selector';
 
@@ -2803,6 +2811,59 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	exitPointerLock(): void {
 		throw new UnexpectedCallError('Not supported "exitPointerLock" method');
+	}
+
+	getAccessibilityProp(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: MLNode<T, O>,
+		ariaVersion = ARIA_RECOMMENDED_VERSION,
+	): AccessibilityProperties | null {
+		if (!node.is(node.ELEMENT_NODE)) {
+			return null;
+		}
+
+		const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
+
+		if (!exposed) {
+			return {
+				exposedToTree: false,
+			};
+		}
+
+		const aria: AccessibilityProperties = {
+			exposedToTree: true,
+		};
+
+		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
+		const name = getAccname(node).trim();
+		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
+
+		const nameRequired = role.role?.accessibleNameRequired ?? false;
+		const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+
+		aria.role = role.role?.name;
+		aria.nameRequired = nameRequired;
+		aria.nameProhibited = nameProhibited;
+		aria.name = name;
+		aria.focusable = focusable;
+
+		Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
+			if (!prop.required) {
+				if (prop.from === 'default') {
+					return;
+				}
+			}
+			aria.props = aria.props || {};
+
+			const propName = prop.name.replace('aria-', '');
+
+			aria.props[propName] = {
+				value: prop.value ?? null,
+				required: prop.required,
+			};
+		});
+
+		return aria;
 	}
 
 	/**

@@ -37,7 +37,8 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 		if (!file) {
 			throw new Error('Never reach error');
 		}
-		return new MLEngine(file, options);
+		const engine = new MLEngine(file, options);
+		return engine;
 	}
 
 	static async toMLFile(target: Target) {
