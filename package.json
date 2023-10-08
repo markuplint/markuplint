@@ -30,7 +30,7 @@
 		"pg:build": "cd playground; yarn pg:build",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"release": "lerna publish --exact",
-		"release:next": "lerna publish --dist-tag next --exact --force-publish --no-git-tag-version",
+		"release:next": "lerna publish --dist-tag next --exact --force-publish",
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
 		"prerelease": "yarn build; yarn test",
 		"prepare": "husky install",
