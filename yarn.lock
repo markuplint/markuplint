@@ -1916,6 +1916,7 @@
     ts-api-utils "^1.0.1"
 
 "@typescript-eslint/types@5.62.0", "@typescript-eslint/types@^5.0.0", "ts-eslint-types-v5@npm:@typescript-eslint/types@5":
+  name ts-eslint-types-v5
   version "5.62.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.62.0.tgz#258607e60effa309f067608931c3df6fed41fd2f"
   integrity sha512-87NVngcbVXUahrRTqIK27gD2t5Cu1yuCXxbLcFtCzZGlfyVWWh8mLHkoxzjsB6DDNnvdL+fW8MiwPEJyGJQDgQ==
@@ -10384,9 +10385,9 @@ typedoc-plugin-resolve-crossmodule-references@^0.3.3:
   integrity sha512-ZWWBy2WR8z9a6iXYGlyB3KrpV+JDdZv1mndYU6Eh6mInrfMCrQJi3Y5K9ihMBfuaBGB//le1nEmQLgzU3IO+dw==
 
 typedoc@^0.25.1:
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.1.tgz#50de2d8fb93623fbfb59e2fa6407ff40e3d3f438"
-  integrity sha512-c2ye3YUtGIadxN2O6YwPEXgrZcvhlZ6HlhWZ8jQRNzwLPn2ylhdGqdR8HbyDRyALP8J6lmSANILCkkIdNPFxqA==
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.2.tgz#39f525c28b6eb61da54dda4ec6b1500df620bed8"
+  integrity sha512-286F7BeATBiWe/qC4PCOCKlSTwfnsLbC/4cZ68oGBbvAqb9vV33quEOXx7q176OXotD+JdEerdQ1OZGJ818lnA==
   dependencies:
     lunr "^2.3.9"
     marked "^4.3.0"
