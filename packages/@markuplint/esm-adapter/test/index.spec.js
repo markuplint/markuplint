@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import { version as versionForTest } from 'test-markuplint';
 import { describe, it, expect } from 'vitest';
 
@@ -21,6 +24,29 @@ describe('test', () => {
 				raw: '<div>',
 			},
 		]);
+		engine.dispose();
+	});
+
+	it('Fixture 003.html', async () => {
+		const filePath = path.resolve(__dirname, '..', '..', '..', '..', 'test', 'fixture', '003.html');
+		const file = await fs.readFile(filePath, { encoding: 'utf8' });
+		const name = path.basename(filePath);
+		const dirname = path.dirname(filePath);
+
+		const engine = await MLEngine.fromCode(file, {
+			name,
+			dirname,
+			locale: 'en',
+		});
+
+		const result = await engine.exec();
+
+		const errors = result[0].violations.filter(v => v.severity === 'error');
+		const warns = result[0].violations.filter(v => v.severity === 'warning');
+
+		expect(errors.length).toBe(42);
+		expect(warns.length).toBe(4);
+
 		engine.dispose();
 	});
 

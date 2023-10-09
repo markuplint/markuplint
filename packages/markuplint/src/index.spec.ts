@@ -74,6 +74,16 @@ describe('basic test', () => {
 		]);
 	});
 
+	it('is reported from 003.html', async () => {
+		const { violations } = await mlTestFile('test/fixture/003.html');
+
+		const errors = violations.filter(v => v.severity === 'error');
+		const warns = violations.filter(v => v.severity === 'warning');
+
+		expect(errors.length).toBe(42);
+		expect(warns.length).toBe(4);
+	});
+
 	it('is reported from 006.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/006.html');
 		expect(violations).toEqual([
