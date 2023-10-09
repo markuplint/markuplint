@@ -3437,8 +3437,7 @@ default-browser@^4.0.0:
     execa "^7.1.1"
     titleize "^3.0.0"
 
-"default-markuplint@npm:markuplint@4.0.0-alpha.2", markuplint@4.0.0-alpha.2, "test-markuplint@npm:markuplint@4.0.0-alpha.2":
-  name default-markuplint
+"default-markuplint@npm:markuplint@4.0.0-alpha.2", "test-markuplint@npm:markuplint@4.0.0-alpha.2":
   version "4.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.0.0-alpha.2.tgz#e6261b30a947dd6a8fec63e9da6af22884d5c20e"
   integrity sha512-jfCU7rVQyS/+SezOFRIOjxqbXi4THbsy6Fl/NrhyfsR/rUnwlWoK2i72v0NT2mGDcf+ZPvyHN0DCQ6N5NgfZnw==

@@ -24,8 +24,5 @@
 	"devDependencies": {
 		"@types/debug": "^4.1.9",
 		"test-markuplint": "npm:markuplint@4.0.0-alpha.2"
-	},
-	"peerDependencies": {
-		"markuplint": "^4.0.0-alpha.2"
 	}
 }
