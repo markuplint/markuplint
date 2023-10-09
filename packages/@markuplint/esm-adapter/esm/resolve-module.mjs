@@ -16,11 +16,6 @@ export function resolveModule(id) {
 
 			const matched = /^No "exports" main defined in (.+)\/package\.json$/i.exec(message);
 
-			console.log({
-				message: err.message,
-				matched,
-			});
-
 			if (!matched) {
 				throw err;
 			}

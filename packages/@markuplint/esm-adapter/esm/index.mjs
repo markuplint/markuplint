@@ -2,6 +2,7 @@ import { parentPort } from 'worker_threads';
 
 import { MLEngine as DefaultMLEngine, version as defaultVersion } from 'default-markuplint';
 
+import { importLocalModule } from './import-local-module.mjs';
 import { resolveModule } from './resolve-module.mjs';
 
 /**
@@ -28,15 +29,21 @@ let engine = null;
 parentPort.on('message', async args => {
 	switch (args.method) {
 		case 'setModule': {
+			const baseDir = args.data[1];
 			const oldModule = currentModule;
 			const oldModuleURL = resolveModule(oldModule);
 			currentModule = args.data[0];
-			const mod = await import(currentModule);
-			const newModuleURL = resolveModule(currentModule);
+			const localMod = await importLocalModule(currentModule, baseDir);
+			let mod = localMod?.module;
+			let newModuleURL = localMod?.modPath;
+			if (!mod) {
+				mod = await import(currentModule);
+				newModuleURL = resolveModule(currentModule);
+			}
 			const { MLEngine: _MLEngine, version: _version } = mod;
 
 			const oldVersion = version;
-			const changed = MLEngine !== _MLEngine || version !== _version;
+			const changed = oldModuleURL !== newModuleURL;
 
 			MLEngine = _MLEngine;
 			version = _version;
@@ -46,6 +53,7 @@ parentPort.on('message', async args => {
 				data: [
 					{
 						changed,
+						baseDir,
 						oldModule,
 						oldModuleURL,
 						oldVersion,

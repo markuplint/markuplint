@@ -14,7 +14,7 @@ class MLEngine extends Emitter {
 	static async fromCode(sourceCode, options) {
 		const engine = new MLEngine();
 		if (options?.moduleName) {
-			await engine.setModule(options.moduleName);
+			await engine.setModule(options.moduleName, options.dirname);
 		}
 		await engine.#fromCodeInit(sourceCode, options);
 		return engine;
@@ -26,7 +26,7 @@ class MLEngine extends Emitter {
 	constructor() {
 		super();
 		this.#worker.on('message', args => {
-			console.log('worker: %O', args);
+			log('worker: %O', args);
 		});
 
 		this.#worker.on('error', args => {
@@ -142,9 +142,10 @@ class MLEngine extends Emitter {
 	/**
 	 *
 	 * @param {string} moduleName
+	 * @param {string} baseDir
 	 * @returns {Promise<{ changed: boolean; version: string }>}
 	 */
-	setModule(moduleName) {
+	setModule(moduleName, baseDir) {
 		if (this.#moduleName === moduleName) {
 			return Promise.resolve();
 		}
@@ -156,12 +157,12 @@ class MLEngine extends Emitter {
 				}
 				resolve(args?.data?.[0]);
 			});
-			this.#post('setModule', moduleName);
+			this.#post('setModule', moduleName, baseDir);
 		});
 	}
 
 	#post(method, ...data) {
-		console.log('post: %O', { method, data });
+		log('post: %O', { method, data });
 		this.#worker.postMessage({ method, data });
 	}
 }

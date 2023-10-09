@@ -25,7 +25,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	} | null>;
 
 	getVersion(): Promise<string>;
-	setCode(sourceCode: string): Promise<void>;
+	setCode(sourceCode: string, baseDir?: string): Promise<void>;
 	setModule(moduleName: string): Promise<void>;
 }
 
