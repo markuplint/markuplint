@@ -70,10 +70,21 @@ export async function onDidOpen(
 	});
 
 	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug) => {
+		clearTimeout(debounceTimer);
 		diagnosticsLog('', 'clear');
 
-		debounceTimer = setTimeout(() => {
+		// Execute after 300ms from the last change.
+		debounceTimer = setTimeout(lint, 300);
+
+		function lint() {
 			diagnosticsLog(`Lint: ${document.uri}`);
+
+			const errors = violations.filter(v => v.severity === 'error');
+			const warns = violations.filter(v => v.severity === 'warning');
+
+			log(`Errors: ${errors.length}`, 'debug');
+			log(`Warnings: ${warns.length}`, 'debug');
+
 			if (debug) {
 				diagnosticsLog(
 					'  Tracing AST Mapping:\n' +
@@ -119,7 +130,7 @@ export async function onDidOpen(
 			} else {
 				diagnosticsLog('  ✔ No violations');
 			}
-		}, 300);
+		}
 	});
 
 	log('Run `engine.exec()` in `onDidOpen`', 'debug');
