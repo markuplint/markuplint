@@ -6,7 +6,7 @@ import path from 'node:path';
 
 import { Files } from 'vscode-languageserver/node';
 
-export async function getModule(log: Log): Promise<OldModule | Module> {
+export async function getModule(baseDir: string, log: Log): Promise<OldModule | Module> {
 	try {
 		const modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -16,6 +16,7 @@ export async function getModule(log: Log): Promise<OldModule | Module> {
 		const version: string = require(packageJsonPath).version;
 		return {
 			type: 'v1',
+			isLocalModule: true,
 			version,
 			markuplint,
 			modPath,
@@ -44,6 +45,7 @@ export async function getModule(log: Log): Promise<OldModule | Module> {
 		const fromCode: FromCodeFunction = async (sourceCode, options) => {
 			const engine = await MLEngine.fromCode(sourceCode, {
 				...options,
+				dirname: baseDir,
 				moduleName: isESM ? 'markuplint' : undefined,
 			});
 			return engine;
@@ -52,6 +54,7 @@ export async function getModule(log: Log): Promise<OldModule | Module> {
 		const version = await engine.getVersion();
 		return {
 			type: 'v4',
+			isLocalModule: engine.isLocalModule,
 			version,
 			fromCode,
 			ariaRecommendedVersion: '1.2',
@@ -59,16 +62,18 @@ export async function getModule(log: Log): Promise<OldModule | Module> {
 	}
 }
 
-type OldModule = {
+export type OldModule = {
 	type: 'v1';
+	isLocalModule: true;
 	version: string;
 	markuplint: any;
 	modPath: string;
 	ariaRecommendedVersion: '1.2';
 };
 
-type Module = {
+export type Module = {
 	type: 'v4';
+	isLocalModule: boolean;
 	version: string;
 	fromCode: FromCodeFunction;
 	ariaRecommendedVersion: ARIAVersion;
