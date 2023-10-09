@@ -1,5 +1,6 @@
+import type { SendDiagnostics } from './document-events';
 import type { Config } from '../types';
-import type { Diagnostic, TextDocumentChangeEvent, PublishDiagnosticsParams } from 'vscode-languageserver/node';
+import type { Diagnostic } from 'vscode-languageserver/node';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { DiagnosticSeverity } from 'vscode-languageserver/node';
@@ -8,20 +9,17 @@ import { getFilePath } from '../utils/get-file-path';
 
 export async function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	change: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	markuplint: any,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
-	sendDiagnostics: (
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		params: PublishDiagnosticsParams,
-	) => void,
+	sendDiagnostics: SendDiagnostics,
 ) {
 	const diagnostics: Diagnostic[] = [];
 
-	const file = getFilePath(change.document.uri, change.document.languageId);
+	const file = getFilePath(document.uri, document.languageId);
 
-	const html = change.document.getText();
+	const html = document.getText();
 
 	const totalResults = await markuplint.exec({
 		sourceCodes: html,
@@ -44,14 +42,14 @@ export async function onDidChangeContent(
 	 * @deprecated
 	 */
 	if (result.parser === '@markuplint/html-parser' && !/\.html?/i.test(file.basename)) {
-		console.log(`Skipped: "${change.document.uri}"`);
+		console.log(`Skipped: "${document.uri}"`);
 		return;
 	}
 
 	console.log(
 		[
-			`Linting: "${change.document.uri}"`,
-			`\tLangId: ${change.document.languageId}`,
+			`Linting: "${document.uri}"`,
+			`\tLangId: ${document.languageId}`,
 			`\tConfig: [${result.configSet.files.map((file: string) => `\n\t\t${file}`)}\n\t]`,
 			`\tParser: ${result.parser}`,
 			`\tResult: ${result.results.length} reports.`,
@@ -77,7 +75,7 @@ export async function onDidChangeContent(
 	}
 
 	sendDiagnostics({
-		uri: change.document.uri,
+		uri: document.uri,
 		diagnostics,
 	});
 }

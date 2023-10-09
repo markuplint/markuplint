@@ -13,8 +13,11 @@ import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig.js';
+import { log } from './debug.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
+
+const cpLog = log.extend('config-provider');
 
 const require = createRequire(import.meta.url);
 
@@ -98,16 +101,27 @@ export class ConfigProvider {
 	}
 
 	async search(targetFile: Readonly<MLFile>) {
-		if (!(await targetFile.dirExists())) {
+		const isExists = await targetFile.dirExists();
+
+		cpLog('search: %s', targetFile.path);
+		cpLog('isExists: %s', isExists);
+
+		if (!isExists) {
 			return null;
 		}
+
 		const res = await search<Config>(targetFile.path, false);
+
+		cpLog('searched config: %O', res);
+
 		if (!res) {
 			return null;
 		}
 		const { filePath, config } = res;
 		const pathResolvedConfig = await this._pathResolve(config, filePath);
 		this.#store.set(filePath, pathResolvedConfig);
+
+		cpLog('Store key: %s', filePath);
 		return filePath;
 	}
 

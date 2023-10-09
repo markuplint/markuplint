@@ -1,4 +1,5 @@
 export { MLEngine, FromCodeOptions } from './api/index.js';
+export { MLEngineEventMap } from './api/types.js';
 export * from './i18n.js';
 export * from './testing-tool/index.js';
 export * from './types.js';

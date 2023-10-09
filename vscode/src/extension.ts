@@ -72,6 +72,9 @@ export function activate(
 		},
 		outputChannel: logger.outputChannel,
 		revealOutputChannelOn: RevealOutputChannelOn.Error,
+		initializationOptions: {
+			langConfigs,
+		},
 	};
 
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);

@@ -1,6 +1,6 @@
+import type { SendDiagnostics } from './document-events';
 import type { Config } from '../types';
 import type { MLEngine as _MLEngine } from 'markuplint';
-import type { TextDocumentChangeEvent, PublishDiagnosticsParams } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { getFilePath } from '../utils/get-file-path';
@@ -11,31 +11,28 @@ const engines = new Map<string, _MLEngine>();
 
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	opened: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	MLEngine: typeof _MLEngine,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
 	locale: string,
-	sendDiagnostics: (
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		params: PublishDiagnosticsParams,
-	) => void,
+	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
 ) {
-	const key = opened.document.uri;
+	const key = document.uri;
 	console.log(`Opened: ${key}`);
 	const currentEngine = engines.get(key);
 	if (currentEngine) {
 		return;
 	}
 
-	const filePath = getFilePath(opened.document.uri, opened.document.languageId);
+	const filePath = getFilePath(document.uri, document.languageId);
 	if (config.debug) {
 		console.log(filePath);
 	}
 
-	const sourceCode = opened.document.getText();
+	const sourceCode = document.getText();
 	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
 
 	if (!file) {
@@ -78,11 +75,11 @@ export async function onDidOpen(
 		const date = new Date().toLocaleDateString();
 		const time = new Date().toLocaleTimeString();
 
-		console.log(`Linted(${date} ${time}): ${opened.document.uri}`);
+		console.log(`Linted(${date} ${time}): ${document.uri}`);
 
 		const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
 		sendDiagnostics({
-			uri: opened.document.uri,
+			uri: document.uri,
 			diagnostics,
 		});
 
@@ -98,12 +95,12 @@ let debounceTimer: NodeJS.Timer;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	change: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	notFoundParserError: (e: unknown) => void,
 ) {
 	clearTimeout(debounceTimer);
 
-	const key = change.document.uri;
+	const key = document.uri;
 	const engine = engines.get(key);
 
 	debounceTimer = setTimeout(async () => {
@@ -111,7 +108,7 @@ export function onDidChangeContent(
 			return;
 		}
 
-		const code = change.document.getText();
+		const code = document.getText();
 		try {
 			await engine.setCode(code);
 			console.log('exec (onDidChangeContent)');

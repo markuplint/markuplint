@@ -1,6 +1,11 @@
 import type { LocaleSet, Translator } from '@markuplint/i18n';
 
-import { translator } from '@markuplint/i18n';
+// import { translator } from '@markuplint/i18n';
+
+const translator =
+	(localeSet: LocaleSet) =>
+	(...args: Parameters<Translator>) =>
+		args.map(s => s).join(' ');
 
 export function t(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

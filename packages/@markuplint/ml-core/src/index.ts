@@ -22,3 +22,5 @@ export * from './plugin/index.js';
 export * from './test/index.js';
 export * from './types.js';
 export * from './utils/index.js';
+
+export { AccessibilityProperties } from './ml-dom/node/types.js';

@@ -1,53 +1,43 @@
+import type { SendDiagnostics } from './document-events';
 import type { Config, Log } from '../types';
+import type { MLEngine as ESMAdapterMLEngine, FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
-import type { MLEngine as _MLEngine } from 'markuplint';
-import type {
-	TextDocumentChangeEvent,
-	PublishDiagnosticsParams,
-	Position,
-	TextDocumentIdentifier,
-} from 'vscode-languageserver';
+import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
-
-import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
 
 import { t } from '../i18n';
 import { getFilePath } from '../utils/get-file-path';
 
 import { convertDiagnostics } from './convert-diagnostics';
 
-const engines = new Map<string, _MLEngine>();
+const engines = new Map<string, ESMAdapterMLEngine>();
 
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	opened: TextDocumentChangeEvent<TextDocument>,
-
-	MLEngine: typeof _MLEngine,
+	document: TextDocument,
+	fromCode: FromCodeFunction,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
 	locale: string,
 	log: Log,
 	diagnosticsLog: Log,
-	sendDiagnostics: (
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		params: PublishDiagnosticsParams,
-	) => void,
+	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
 ) {
-	const key = opened.document.uri;
+	const key = document.uri;
 	log(`Opened: ${key}`, 'debug');
 	const currentEngine = engines.get(key);
 	if (currentEngine) {
 		return;
 	}
 
-	const filePath = getFilePath(opened.document.uri, opened.document.languageId);
+	const filePath = getFilePath(document.uri, document.languageId);
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
-	const sourceCode = opened.document.getText();
+	const sourceCode = document.getText();
 
-	const engine = await MLEngine.fromCode(sourceCode, {
+	const engine = await fromCode(sourceCode, {
 		name: filePath.basename,
 		dirname: filePath.dirname,
 		locale,
@@ -80,12 +70,32 @@ export async function onDidOpen(
 	});
 
 	engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug) => {
+		clearTimeout(debounceTimer);
 		diagnosticsLog('', 'clear');
 
-		debounceTimer = setTimeout(() => {
-			diagnosticsLog(`Lint: ${opened.document.uri}`);
+		// Execute after 300ms from the last change.
+		debounceTimer = setTimeout(lint, 300);
+
+		function lint() {
+			diagnosticsLog(`Lint: ${document.uri}`);
+
+			const errors = violations.filter(v => v.severity === 'error');
+			const warns = violations.filter(v => v.severity === 'warning');
+
+			log(`Errors: ${errors.length}`, 'debug');
+			log(`Warnings: ${warns.length}`, 'debug');
+
 			if (debug) {
-				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
+				diagnosticsLog(
+					'  Tracing AST Mapping:\n' +
+						debug
+							.map(
+								// @ts-ignore
+								line => `  ${line}`,
+							)
+							.join('\n'),
+					'trace',
+				);
 			}
 			if (configSet) {
 				if (configSet.files.size > 0) {
@@ -108,7 +118,7 @@ export async function onDidOpen(
 
 			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
 			sendDiagnostics({
-				uri: opened.document.uri,
+				uri: document.uri,
 				diagnostics,
 			});
 
@@ -120,7 +130,7 @@ export async function onDidOpen(
 			} else {
 				diagnosticsLog('  ✔ No violations');
 			}
-		}, 300);
+		}
 	});
 
 	log('Run `engine.exec()` in `onDidOpen`', 'debug');
@@ -136,13 +146,13 @@ let debounceTimer: NodeJS.Timer;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	change: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	log: Log,
 	notFoundParserError: (e: unknown) => void,
 ) {
 	clearTimeout(debounceTimer);
 
-	const key = change.document.uri;
+	const key = document.uri;
 	const engine = engines.get(key);
 
 	debounceTimer = setTimeout(async () => {
@@ -150,7 +160,7 @@ export function onDidChangeContent(
 			return;
 		}
 
-		const code = change.document.getText();
+		const code = document.getText();
 		try {
 			await engine.setCode(code);
 			log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
@@ -165,74 +175,60 @@ export function onDidChangeContent(
 	}, 300);
 }
 
-export function getNodeWithAccessibilityProps(
+export async function getNodeWithAccessibilityProps(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	textDocument: TextDocumentIdentifier,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	position: Position,
 	ariaVersion: ARIAVersion,
-): {
+): Promise<{
 	nodeName: string;
 	exposed: boolean;
-	aria: Record<string, string>;
-} | null {
+	labels: Record<string, string>;
+} | null> {
 	const key = textDocument.uri;
 	const engine = engines.get(key);
 
-	if (!engine || !engine.document) {
+	if (!engine) {
 		return null;
 	}
 
-	const node = engine.document.searchNodeByLocation(position.line + 1, position.character);
+	const a11y = await engine.getAccessibilityByLocation(position.line + 1, position.character, ariaVersion);
 
-	if (!node || !node.is(node.ELEMENT_NODE)) {
+	if (!a11y) {
 		return null;
 	}
 
-	const aria: Record<string, string> = {};
+	const { node, aria } = a11y;
 
-	const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
-
-	if (!exposed) {
+	if (!aria.exposedToTree) {
 		return {
-			nodeName: node.localName,
+			nodeName: node,
 			exposed: false,
-			aria: {},
+			labels: {},
 		};
 	}
 
-	const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-	const name = getAccname(node).trim();
-	const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
-
-	const nameRequired = role.role?.accessibleNameRequired ?? false;
-	const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+	const labels: Record<string, string> = {};
 
 	const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
 
-	aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
-	aria.name = nameProhibited
+	labels.role = aria.role ? `\`${aria.role}\`` : t('No corresponding role');
+	labels.name = aria.nameProhibited
 		? `**${t('Prohibited')}**`
-		: name
-		? `\`"${name}"\``
-		: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
-	aria.focusable = `\`${focusable}\``;
+		: aria.name
+		? `\`"${aria.name}"\``
+		: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
+	labels.focusable = `\`${aria.focusable}\``;
 
-	Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
-		if (!prop.required) {
-			if (prop.from === 'default') {
-				return;
-			}
-		}
-		aria[prop.name.replace('aria-', '')] =
-			prop.value === undefined
-				? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
-				: `\`${prop.value}\``;
+	Object.entries(aria.props ?? {}).forEach(([propName, { value, required }]) => {
+		labels[propName] =
+			value === undefined ? t('Undefined') + (required ? ` ${requiredLabel}` : '') : `\`${value}\``;
 	});
 
 	return {
-		nodeName: node.localName,
+		nodeName: node,
 		exposed: true,
-		aria,
+		labels,
 	};
 }

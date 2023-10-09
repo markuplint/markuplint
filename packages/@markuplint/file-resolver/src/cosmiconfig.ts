@@ -6,6 +6,10 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
 import { jsonc } from 'jsonc';
 
+import { log } from './debug.js';
+
+const searchLog = log.extend('search');
+
 const explorer = cosmiconfig('markuplint', {
 	loaders: {
 		noExt: ((path, content) => {
@@ -28,7 +32,12 @@ export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) 
 		explorer.clearCaches();
 	}
 	dir = path.dirname(dir);
+
+	searchLog('Search dir: %s', dir);
 	const result = await explorer.search(dir).catch(cacheConfigError(dir));
+
+	searchLog('Search result: %O', result);
+
 	if (!result || result.isEmpty) {
 		return null;
 	}

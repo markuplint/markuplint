@@ -91,3 +91,19 @@ export type PretenderContextPretended<
 	readonly type: 'origin';
 	readonly origin: N;
 };
+
+export type AccessibilityProperties = {
+	exposedToTree: boolean;
+	role?: string;
+	roleDescription?: string;
+	name?: string;
+	nameRequired?: boolean;
+	nameProhibited?: boolean;
+	focusable?: boolean;
+	props?: Record<string, AccessibilityProperty>;
+};
+
+export type AccessibilityProperty = {
+	value: string | null;
+	required: boolean;
+};

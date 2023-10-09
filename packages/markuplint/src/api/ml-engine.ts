@@ -29,15 +29,24 @@ export type FromCodeOptions = APIOptions &
 
 export default class MLEngine extends Emitter<MLEngineEventMap> {
 	static async fromCode(sourceCode: string, options?: FromCodeOptions) {
+		if (options?.debug) {
+			verbosely();
+		}
+		log('[fromCode] Creates: %O', options);
+
 		const file = await MLEngine.toMLFile({
 			sourceCode,
 			name: options?.name,
 			workspace: options?.dirname,
 		});
+
 		if (!file) {
 			throw new Error('Never reach error');
 		}
-		return new MLEngine(file, options);
+
+		log('[fromCode] Created file: %s', file.path);
+		const engine = new MLEngine(file, options);
+		return engine;
 	}
 
 	static async toMLFile(target: Target) {
@@ -53,14 +62,17 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
+
+		if (this.#options?.debug) {
+			verbosely();
+		}
+
 		this.#file = file;
 		this.#options = options;
 		this.#configProvider = new ConfigProvider();
 		this.watchMode(!!this.#options?.watch);
 
-		if (this.#options?.debug) {
-			verbosely();
-		}
+		log('[MLEngine] Initialized: %s', this.#file.path);
 	}
 
 	get document(): Document<RuleConfigValue, PlainData> | null {
@@ -289,13 +301,19 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	private async resolveConfig(cache: boolean) {
+		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
+		configLog('configProvider: %s', this.#configProvider);
+
 		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
+		const targetConfig = await this.#configProvider.search(this.#file);
+		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
-			: (await this.#configProvider.search(this.#file)) ?? defaultConfigKey;
+			: targetConfig ?? defaultConfigKey;
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
