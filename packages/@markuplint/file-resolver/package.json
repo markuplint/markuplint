@@ -36,6 +36,7 @@
 		"@markuplint/selector": "4.0.0-alpha.2",
 		"@markuplint/shared": "4.0.0-alpha.2",
 		"cosmiconfig": "^8.3.6",
+		"debug": "^4.3.4",
 		"glob": "^10.3.6",
 		"ignore": "^5.2.4",
 		"jsonc": "^2.0.0",
