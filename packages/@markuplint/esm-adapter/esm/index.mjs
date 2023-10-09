@@ -2,6 +2,7 @@ import { parentPort } from 'worker_threads';
 
 import { MLEngine as DefaultMLEngine, version as defaultVersion } from 'default-markuplint';
 
+import { getAccessibilityByLocation } from './get-accessibility-by-location.mjs';
 import { importLocalModule } from './import-local-module.mjs';
 import { resolveModule } from './resolve-module.mjs';
 
@@ -112,7 +113,7 @@ parentPort.on('message', async args => {
 			const col = args.data[1];
 			const ariaVersion = args.data[2] ?? '1.2';
 
-			const aria = getAccessibilityByLocation(line, col, ariaVersion);
+			const aria = getAccessibilityByLocation(engine, line, col, ariaVersion);
 
 			parentPort.postMessage({ method: 'getAccessibilityByLocation:return', data: [aria] });
 			break;
@@ -127,29 +128,3 @@ parentPort.on('message', async args => {
 parentPort.on('error', err => {
 	parentPort.postMessage({ method: 'error', data: ['' + err] });
 });
-
-/**
- *
- * @param {number} line
- * @param {number} col
- * @param {import("@markuplint/ml-spec").ARIAVersion} ariaVersion
- * @returns
- */
-function getAccessibilityByLocation(line, col, ariaVersion) {
-	if (!engine || !engine.document) {
-		return null;
-	}
-
-	const node = engine.document.searchNodeByLocation(line, col);
-
-	if (!node || !node.is(node.ELEMENT_NODE)) {
-		return null;
-	}
-
-	const aria = engine.document.getAccessibilityProp(node, ariaVersion);
-
-	return {
-		node: node.localName,
-		aria,
-	};
-}
