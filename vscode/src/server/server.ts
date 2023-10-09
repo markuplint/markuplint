@@ -9,8 +9,11 @@ import { NO_INSTALL_WARNING } from '../const';
 import { t } from '../i18n';
 import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
 
+import { verbosely } from './debug';
 import { createEventHandlers } from './document-events';
 import { getModule } from './get-module';
+
+const DEBUG = false;
 
 export function bootServer() {
 	const connection = createConnection(ProposedFeatures.all);
@@ -43,6 +46,10 @@ export function bootServer() {
 
 		connection.onInitialized(async () => {
 			log('onInitialized');
+
+			if (DEBUG) {
+				verbosely();
+			}
 
 			const mod = await getModule(params.rootPath ?? process.cwd(), log);
 
