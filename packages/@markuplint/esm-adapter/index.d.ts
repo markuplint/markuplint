@@ -11,7 +11,16 @@ export type FromCodeFunction = (
 
 export class MLEngine extends Emitter<MLEngineEventMap> {
 	static fromCode: FromCodeFunction;
+	static getCurrentModuleInfo(): Promise<{
+		modulePath: string | null;
+		isLocalModule: boolean;
+		version: string;
+	}>;
+
+	static setModule(moduleName: string): Promise<void>;
+
 	isLocalModule: boolean;
+	modulePath: string | null;
 
 	constructor();
 	dispose(): Promise<void>;
@@ -25,7 +34,5 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		aria: AccessibilityProperties;
 	} | null>;
 
-	getVersion(): Promise<string>;
 	setCode(sourceCode: string, baseDir?: string): Promise<void>;
-	setModule(moduleName: string): Promise<void>;
 }

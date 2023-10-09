@@ -24,7 +24,6 @@ describe('test', () => {
 				raw: '<div>',
 			},
 		]);
-		engine.dispose();
 	});
 
 	it('Fixture 003.html', async () => {
@@ -46,16 +45,12 @@ describe('test', () => {
 
 		expect(errors.length).toBe(42);
 		expect(warns.length).toBe(4);
-
-		engine.dispose();
 	});
 
 	it('setModule', async () => {
-		const engine = await MLEngine.fromCode('<span><div></div></span>');
-		await engine.setModule('test-markuplint');
-		const version = await engine.getVersion();
+		await MLEngine.setModule('test-markuplint');
+		const { version } = await MLEngine.getCurrentModuleInfo();
 		expect(version).toBe(versionForTest);
-		engine.dispose();
 	});
 
 	it('getAccessibilityByLocation', async () => {
@@ -76,6 +71,5 @@ describe('test', () => {
 				focusable: true,
 			},
 		});
-		engine.dispose();
 	});
 });
