@@ -34,6 +34,7 @@ describe('test', () => {
 		await engine.setModule('test-markuplint');
 		const version = await engine.getVersion();
 		expect(version).toBe(versionForTest);
+		engine.dispose();
 	});
 
 	it('getAccessibilityByLocation', async () => {
@@ -54,5 +55,6 @@ describe('test', () => {
 				focusable: true,
 			},
 		});
+		engine.dispose();
 	});
 });

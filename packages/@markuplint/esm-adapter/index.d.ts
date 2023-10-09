@@ -11,6 +11,7 @@ export type FromCodeFunction = (
 
 export class MLEngine extends Emitter<MLEngineEventMap> {
 	static fromCode: FromCodeFunction;
+	isLocalModule: boolean;
 
 	constructor();
 	dispose(): Promise<void>;

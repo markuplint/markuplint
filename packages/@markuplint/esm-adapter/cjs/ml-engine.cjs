@@ -14,7 +14,8 @@ class MLEngine extends Emitter {
 	static async fromCode(sourceCode, options) {
 		const engine = new MLEngine();
 		if (options?.moduleName) {
-			await engine.setModule(options.moduleName, options.dirname);
+			const { isLocal } = await engine.setModule(options.moduleName, options.dirname);
+			engine.isLocalModule = isLocal;
 		}
 		await engine.#fromCodeInit(sourceCode, options);
 		return engine;
@@ -22,6 +23,8 @@ class MLEngine extends Emitter {
 
 	#worker = new Worker(path.resolve(__dirname, '..', 'esm', 'index.mjs'), { type: 'module' });
 	#moduleName = 'default-markuplint';
+
+	isLocalModule = false;
 
 	constructor() {
 		super();
@@ -143,7 +146,7 @@ class MLEngine extends Emitter {
 	 *
 	 * @param {string} moduleName
 	 * @param {string} baseDir
-	 * @returns {Promise<{ changed: boolean; version: string }>}
+	 * @returns {Promise<{ changed: boolean; version: string, isLocal: boolean; }>}
 	 */
 	setModule(moduleName, baseDir) {
 		if (this.#moduleName === moduleName) {

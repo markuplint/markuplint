@@ -36,9 +36,11 @@ parentPort.on('message', async args => {
 			const localMod = await importLocalModule(currentModule, baseDir);
 			let mod = localMod?.module;
 			let newModuleURL = localMod?.modPath;
+			let isLocal = true;
 			if (!mod) {
 				mod = await import(currentModule);
 				newModuleURL = resolveModule(currentModule);
+				isLocal = false;
 			}
 			const { MLEngine: _MLEngine, version: _version } = mod;
 
@@ -59,6 +61,7 @@ parentPort.on('message', async args => {
 						oldVersion,
 						newModule: currentModule,
 						newModuleURL,
+						isLocal,
 						version,
 					},
 				],
