@@ -30,6 +30,11 @@ class MLEngine extends Emitter {
 		super();
 		this.#worker.on('message', args => {
 			log('worker: %O', args);
+
+			const logType = args.method?.replace(/^log:/, '');
+			if (logType) {
+				this.emit(logType, ...(args?.data ?? []));
+			}
 		});
 
 		this.#worker.on('error', args => {
@@ -43,42 +48,17 @@ class MLEngine extends Emitter {
 	 * @param {import("markuplint").FromCodeOptions} options
 	 * @returns {Promise<void>}
 	 */
-	#fromCodeInit(sourceCode, options) {
-		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
-				if (args.method !== 'fromCode:return') {
-					reject(`Unknown method: ${args.method} (Catch: #fromCodeInit))`);
-					return;
-				}
-				resolve();
-			});
-			this.#post('fromCode', sourceCode, options);
-		});
+	async #fromCodeInit(sourceCode, options) {
+		await this.#add('fromCode', true, sourceCode, options);
 	}
 
 	/**
 	 *
 	 * @returns {Promise<import("markuplint").MLResultInfo | null>}
 	 */
-	exec() {
-		return new Promise((resolve, reject) => {
-			const messageHandler = args => {
-				if (args.method === 'exec:return') {
-					this.#worker.off('message', messageHandler);
-					resolve(args.data);
-					return;
-				}
-
-				if (args.method !== 'event:lint') {
-					return;
-				}
-
-				this.emit('lint', ...args.data);
-			};
-
-			this.#worker.on('message', messageHandler);
-			this.#post('exec');
-		});
+	async exec() {
+		const result = await this.#add('exec', true);
+		return result;
 	}
 
 	/**
@@ -88,33 +68,17 @@ class MLEngine extends Emitter {
 	 * @param {import("@markuplint/ml-spec").ARIAVersion} ariaVersion
 	 * @returns {Promise<{ node: string, aria: import("@markuplint/ml-core").AccessibilityProperties> | null }}
 	 */
-	getAccessibilityByLocation(line, col, ariaVersion) {
-		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
-				if (args.method !== 'getAccessibilityByLocation:return') {
-					reject(`Unknown method: ${args.method} (Catch: getAccessibilityByLocation)`);
-					return;
-				}
-				resolve(args.data[0]);
-			});
-			this.#post('getAccessibilityByLocation', line, col, ariaVersion);
-		});
+	async getAccessibilityByLocation(line, col, ariaVersion) {
+		const [result] = await this.#add('getAccessibilityByLocation', true, line, col, ariaVersion);
+		return result;
 	}
 
 	/**
 	 * @returns {Promise<string>}
 	 */
-	getVersion() {
-		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
-				if (args.method !== 'getVersion:return') {
-					reject(`Unknown method: ${args.method} (Catch: getVersion)`);
-					return;
-				}
-				resolve(args.data[0]);
-			});
-			this.#post('getVersion');
-		});
+	async getVersion() {
+		const [version] = await this.#add('getVersion', true);
+		return version;
 	}
 
 	/**
@@ -129,17 +93,8 @@ class MLEngine extends Emitter {
 	 * @param {string} sourceCode
 	 * @returns {Promise<void>}
 	 */
-	setCode(sourceCode) {
-		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
-				if (args.method !== 'setCode:return') {
-					reject(`Unknown method: ${args.method} (Catch: setCode)`);
-					return;
-				}
-				resolve();
-			});
-			this.#post('setCode', sourceCode);
-		});
+	async setCode(sourceCode) {
+		await this.#add('setCode', true, sourceCode);
 	}
 
 	/**
@@ -148,19 +103,37 @@ class MLEngine extends Emitter {
 	 * @param {string} baseDir
 	 * @returns {Promise<{ changed: boolean; version: string, isLocal: boolean; }>}
 	 */
-	setModule(moduleName, baseDir) {
+	async setModule(moduleName, baseDir) {
 		if (this.#moduleName === moduleName) {
 			return Promise.resolve();
 		}
+
+		const [result] = await this.#add('setModule', true, moduleName, baseDir);
+		return result;
+	}
+
+	/**
+	 *
+	 * @param {string} method
+	 * @param {boolean} once
+	 * @param  {...any} data
+	 * @returns
+	 */
+	#add(method, once, ...data) {
 		return new Promise((resolve, reject) => {
-			this.#worker.once('message', args => {
-				if (args.method !== 'setModule:return') {
-					reject(`Unknown method: ${args.method} (Catch: setModule)`);
+			const receiver = args => {
+				if (args.method === `${method}:return`) {
+					log('%s: %O', args.method, { method, data, args });
+					if (once) {
+						this.#worker.off('message', receiver);
+					}
+					resolve(args?.data ?? []);
 					return;
 				}
-				resolve(args?.data?.[0]);
-			});
-			this.#post('setModule', moduleName, baseDir);
+			};
+
+			this.#worker.on('message', receiver);
+			this.#post(method, ...data);
 		});
 	}
 
