@@ -1,7 +1,7 @@
 import { version as versionForTest } from 'test-markuplint';
 import { describe, it, expect } from 'vitest';
 
-const { MLEngine, getVersion } = require('../cjs/index.cjs');
+const { MLEngine } = require('../cjs/index.cjs');
 
 describe('test', () => {
 	it('MLEngine.exec()', async () => {
@@ -22,11 +22,6 @@ describe('test', () => {
 			},
 		]);
 		engine.dispose();
-	});
-
-	it('getVersion()', async () => {
-		const version = await getVersion();
-		expect(version).toMatch(/^\d+\.\d+\.\d+(?:-.+)$/);
 	});
 
 	it('setModule', async () => {
