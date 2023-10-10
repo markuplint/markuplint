@@ -21,6 +21,10 @@
 		{
 			"matchPaths": ["vscode/*"],
 			"ignoreDeps": ["@types/node"]
+		},
+		{
+			"matchPaths": ["packages/@markuplint/esm-adaptor/*"],
+			"ignoreDeps": ["default-markuplint", "test-markuplint"]
 		}
 	]
 }
