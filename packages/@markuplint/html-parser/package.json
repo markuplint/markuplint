@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "4.0.0-alpha.2",
+	"version": "4.0.0-alpha.3",
 	"description": "HTML parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -25,8 +25,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "4.0.0-alpha.2",
-		"@markuplint/parser-utils": "4.0.0-alpha.2",
+		"@markuplint/ml-ast": "4.0.0-alpha.3",
+		"@markuplint/parser-utils": "4.0.0-alpha.3",
 		"parse5": "7.1.2",
 		"tslib": "^2.6.2",
 		"type-fest": "^4.3.1"

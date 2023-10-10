@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/esm-adapter",
-	"version": "4.0.0-alpha.2",
+	"version": "4.0.0-alpha.3",
 	"description": "A library for utilizing ESM-converted Markuplint modules through a subprocess from a CJS environment",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -17,9 +17,9 @@
 	"scripts": {},
 	"dependencies": {
 		"debug": "^4.3.4",
-		"strict-event-emitter": "^0.5.1",
 		"default-markuplint": "npm:markuplint@4.0.0-alpha.2",
-		"latest-markuplint-ml-spec": "npm:@markuplint/ml-spec@4.0.0-alpha.2"
+		"latest-markuplint-ml-spec": "npm:@markuplint/ml-spec@4.0.0-alpha.2",
+		"strict-event-emitter": "^0.5.1"
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.9",
