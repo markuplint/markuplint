@@ -3615,7 +3615,7 @@ default-browser@^4.0.0:
     execa "^7.1.1"
     titleize "^3.0.0"
 
-"default-markuplint@npm:markuplint@4.0.0-alpha.2", "test-markuplint@npm:markuplint@4.0.0-alpha.2":
+"default-markuplint@npm:markuplint@4.0.0-alpha.2":
   version "4.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.0.0-alpha.2.tgz#e6261b30a947dd6a8fec63e9da6af22884d5c20e"
   integrity sha512-jfCU7rVQyS/+SezOFRIOjxqbXi4THbsy6Fl/NrhyfsR/rUnwlWoK2i72v0NT2mGDcf+ZPvyHN0DCQ6N5NgfZnw==
@@ -9466,6 +9466,45 @@ test-exclude@^6.0.0:
     "@istanbuljs/schema" "^0.1.2"
     glob "^7.1.4"
     minimatch "^3.0.4"
+
+"test-markuplint@npm:markuplint@4.0.0-alpha.3":
+  version "4.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.0.0-alpha.3.tgz#0f8b389b272d70b45b253ba97c319ec23f55aa28"
+  integrity sha512-4KQQVUwhf55qdXkyubzOKlWRJIEMAwCFy2q0wJ6+uxl/pDrXSgnegV77Wbn6JtFLbugqp8KC7KqxVgERWsbXVg==
+  dependencies:
+    "@markuplint/create-rule-helper" "4.0.0-alpha.3"
+    "@markuplint/file-resolver" "4.0.0-alpha.3"
+    "@markuplint/html-parser" "4.0.0-alpha.3"
+    "@markuplint/html-spec" "4.0.0-alpha.3"
+    "@markuplint/i18n" "4.0.0-alpha.3"
+    "@markuplint/ml-ast" "4.0.0-alpha.3"
+    "@markuplint/ml-config" "4.0.0-alpha.3"
+    "@markuplint/ml-core" "4.0.0-alpha.3"
+    "@markuplint/ml-spec" "4.0.0-alpha.3"
+    "@markuplint/rules" "4.0.0-alpha.3"
+    "@markuplint/shared" "4.0.0-alpha.3"
+    "@types/cli-color" "^2.0.3"
+    "@types/debug" "^4.1.9"
+    "@types/has-yarn" "^1.0.1"
+    "@types/meow" "^6.0.0"
+    "@types/uuid" "^9.0.4"
+    chokidar "^3.5.3"
+    cli-color "^2.0.3"
+    debug "^4.3.4"
+    detect-installed "^2.0.4"
+    eastasianwidth "^0.2.0"
+    enquirer "^2.4.1"
+    get-stdin "^9.0.0"
+    gray-matter "^4.0.3"
+    has-yarn "^3.0.0"
+    meow "^12.1.1"
+    node-fetch "^3.3.2"
+    os-locale "^6.0.2"
+    strict-event-emitter "^0.5.1"
+    strip-ansi "^7.1.0"
+    tslib "^2.6.2"
+    type-fest "^4.3.1"
+    uuid "^9.0.1"
 
 text-extensions@^1.0.0:
   version "1.9.0"
