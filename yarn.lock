@@ -1876,10 +1876,10 @@
     loupe "^2.3.6"
     pretty-format "^29.5.0"
 
-"@vscode/vsce@2.21.0":
-  version "2.21.0"
-  resolved "https://registry.yarnpkg.com/@vscode/vsce/-/vsce-2.21.0.tgz#572e66db79cff383b9ac39f71710aa62e6392330"
-  integrity sha512-KuxYqScqUY/duJbkj9eE2tN2X/WJoGAy54hHtxT3ZBkM6IzrOg7H7CXGUPBxNlmqku2w/cAjOUSrgIHlzz0mbA==
+"@vscode/vsce@2.21.1":
+  version "2.21.1"
+  resolved "https://registry.yarnpkg.com/@vscode/vsce/-/vsce-2.21.1.tgz#793c78d992483b428611a3927211a9640041be14"
+  integrity sha512-f45/aT+HTubfCU2oC7IaWnH9NjOWp668ML002QiFObFRVUCoLtcwepp9mmql/ArFUy+HCHp54Xrq4koTcOD6TA==
   dependencies:
     azure-devops-node-api "^11.0.1"
     chalk "^2.4.2"
