@@ -10,6 +10,7 @@
 		"test": "node --loader ts-node/esm index.ts"
 	},
 	"dependencies": {
+		"@types/node": "latest",
 		"typescript": "latest",
 		"ts-node": "latest"
 	}
