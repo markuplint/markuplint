@@ -1,6 +1,7 @@
 {
 	"name": "markuplint-packages",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
 		"build": "lerna run build",
