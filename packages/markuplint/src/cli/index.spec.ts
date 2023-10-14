@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { execa } from 'execa';
+import { execa } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
 import { cli } from './bootstrap.js';
