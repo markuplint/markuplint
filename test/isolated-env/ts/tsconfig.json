@@ -2,9 +2,7 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "NodeNext",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
+		"moduleResolution": "NodeNext",
 		"skipLibCheck": true
 	}
 }
