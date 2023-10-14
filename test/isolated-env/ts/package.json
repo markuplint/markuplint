@@ -1,5 +1,5 @@
 {
-	"name": "@markuplint/isolated-env-test-esm",
+	"name": "@markuplint/isolated-env-test-ts",
 	"version": "4.0.0",
 	"main": "index.js",
 	"author": "yusukehirao",
@@ -7,9 +7,13 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "node ./index.js"
+		"test": "npm-run-all --parallel test:*",
+		"test:build": "tsc --build --dry",
+		"test:normal": "tsc --noEmit",
+		"test:ts-node": "node --loader ts-node/esm index.ts"
 	},
 	"dependencies": {
+		"@types/node": "latest",
 		"@markuplint/astro-parser": "file:../../../../markuplint/packages/@markuplint/astro-parser",
 		"@markuplint/config-presets": "file:../../../../markuplint/packages/@markuplint/config-presets",
 		"@markuplint/create-rule-helper": "file:../../../../markuplint/packages/@markuplint/create-rule-helper",
@@ -40,6 +44,11 @@
 		"@markuplint/types": "file:../../../../markuplint/packages/@markuplint/types",
 		"@markuplint/vue-parser": "file:../../../../markuplint/packages/@markuplint/vue-parser",
 		"@markuplint/vue-spec": "file:../../../../markuplint/packages/@markuplint/vue-spec",
-		"markuplint": "file:../../../../markuplint/packages/markuplint"
+		"markuplint": "file:../../../../markuplint/packages/markuplint",
+		"typescript": "latest",
+		"ts-node": "latest"
+	},
+	"devDependencies": {
+		"npm-run-all": "latest"
 	}
 }
