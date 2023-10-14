@@ -23,7 +23,7 @@
 			"ignoreDeps": ["@types/node"]
 		},
 		{
-			"matchPaths": ["packages/@markuplint/esm-adaptor/*"],
+			"matchPaths": ["packages/**/*"],
 			"ignoreDeps": ["default-markuplint", "test-markuplint"]
 		}
 	]

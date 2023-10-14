@@ -250,9 +250,6 @@ jobs:
                   ls -la ./packages/@markuplint/config-presets
               shell: bash
 
-            - name: Add modules that needs test
-              run: yarn add -DW execa --ignore-engines
-
             - name: Test
               uses: nick-fields/retry@v2
               with:
