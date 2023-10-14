@@ -1,0 +1,16 @@
+{
+	"name": "@markuplint/isolated-env-test-ts-config-ts",
+	"version": "3.0.0",
+	"main": "index.js",
+	"author": "yusukehirao",
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "node --loader ts-node/esm index.ts"
+	},
+	"dependencies": {
+		"typescript": "latest",
+		"ts-node": "latest"
+	}
+}
