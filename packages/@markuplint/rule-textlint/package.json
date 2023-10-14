@@ -11,9 +11,6 @@
 		".": "./lib/index.js"
 	},
 	"types": "lib/index.d.ts",
-	"browser": {
-		"./lib/verify.js": "./lib/verify-browser.js"
-	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -28,9 +25,8 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "4.0.0-alpha.3",
-		"@textlint/kernel": "13.3.3",
-		"textlint": "12",
-		"textlint-plugin-html": "0.3.0",
+		"@textlint/kernel": "^13.3.3",
+		"textlint-plugin-html": "^1.0.0",
 		"tslib": "^2.6.2"
 	}
 }
