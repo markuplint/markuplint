@@ -79,7 +79,7 @@ describe('Watcher', () => {
 
 describe('Resolving the plugin', () => {
 	// TODO: Importing the plugin as an ES module
-	it.skip('config', async () => {
+	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file!, {
 			// debug: true,
@@ -98,17 +98,14 @@ describe('Resolving the plugin', () => {
 			},
 		});
 		const result = await engine.exec();
-		if (!result) {
-			throw new Error('Test failed');
-		}
-		expect(result.violations).toStrictEqual([
+		expect(result?.violations).toStrictEqual([
 			{
 				ruleId: 'foo/bar',
 				severity: 'error',
 				line: 0,
 				col: 0,
 				message: "It's test: IT IS SUCCESS",
-				raw: '',
+				raw: '<!-- code -->',
 			},
 		]);
 	});
