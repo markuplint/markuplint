@@ -306,7 +306,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
                 pm: [npm, yarn]
-                env: [esm, typescript]
+                env: [esm, ts, ts-config-ts]
         steps:
             - uses: actions/checkout@v4
               with:
