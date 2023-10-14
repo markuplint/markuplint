@@ -156,7 +156,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
                 node: [18]
                 include:
                     - node: 20
@@ -305,7 +308,7 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
-                pm: [npm, yarn]
+                pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
             - uses: actions/checkout@v4
@@ -335,96 +338,25 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
-            - name: Link Packages
-              run: |
-                  cd ${{ github.workspace }}/packages/markuplint; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/astro-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/config-presets; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/create-rule-helper; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ejs-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/erb-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/file-resolver; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/html-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/html-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/i18n; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/jsx-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/liquid-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-ast; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-config; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-core; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/mustache-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/nunjucks-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/parser-utils; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/php-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/pug-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/react-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/rule-textlint; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/rules; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/selector; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/shared; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/smarty-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/svelte-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/types; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/vue-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/vue-spec; ${{ matrix.pm }} link;
-
             - name: Create sandbox directory
               run: |
-                  mkdir -p ${{ github.workspace }}/../sandbox/${{ matrix.pm }}
-                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox/${{ matrix.pm }}
-                  ls -la ${{ github.workspace }}/../sandbox/${{ matrix.pm }}/test
+                  mkdir -p ${{ github.workspace }}/../sandbox
+                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
+                  ls -la ${{ github.workspace }}/../sandbox/test
+
+            - name: Install pnpm
+              if: matrix.pm == 'pnpm'
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+                  run_install: false
 
             - name: Create the lock file
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
                   ${{ matrix.pm }} install
 
-            - name: Reference packages
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
-              run: >-
-                  ${{ matrix.pm }} link
-                  markuplint
-                  @markuplint/astro-parser
-                  @markuplint/config-presets
-                  @markuplint/create-rule-helper
-                  @markuplint/ejs-parser
-                  @markuplint/erb-parser
-                  @markuplint/file-resolver
-                  @markuplint/html-parser
-                  @markuplint/html-spec
-                  @markuplint/i18n
-                  @markuplint/jsx-parser
-                  @markuplint/liquid-parser
-                  @markuplint/ml-ast
-                  @markuplint/ml-config
-                  @markuplint/ml-core
-                  @markuplint/ml-spec
-                  @markuplint/mustache-parser
-                  @markuplint/nunjucks-parser
-                  @markuplint/parser-utils
-                  @markuplint/php-parser
-                  @markuplint/pug-parser
-                  @markuplint/react-spec
-                  @markuplint/rule-textlint
-                  @markuplint/rules
-                  @markuplint/selector
-                  @markuplint/shared
-                  @markuplint/smarty-parser
-                  @markuplint/svelte-parser
-                  @markuplint/types
-                  @markuplint/vue-parser
-                  @markuplint/vue-spec
-
-            - name: Echo package list
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
-              run: |
-                  pwd
-                  ls -la
-                  ${{ matrix.pm }} list --depth=0
-                  ls -la node_modules
-
             - name: Test
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
                   ${{ matrix.pm }} test
