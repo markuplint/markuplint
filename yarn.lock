@@ -1329,14 +1329,14 @@
     "@types/node" "*"
 
 "@types/cli-color@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.3.tgz#2e9f8d171a19ba6daf2458affac4397a3cb848bd"
-  integrity sha512-JcGK/IFNVt5a99Xsz4wMCK8jfylpZ5E9AxzGcTVLD5nNYPYxXkylTRV7mcqA324rKLfqT3juU5KjQbI9CAV3SA==
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.4.tgz#47e3630ed3fbb07cb9ec8d6344e5f9aa068f6e58"
+  integrity sha512-wRHCHg6bPsi+PHozd4MYFnoPYAk1QOB/iI4UZHuMsI/+Bf07YbY425IrRg4+PZ0Qiwz0j7yNHAY4DfrBt06NzA==
 
 "@types/cli-progress@^3.11.2":
-  version "3.11.3"
-  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.11.3.tgz#2a982d4c68fb288048daa0b3293c0ce81c1785ee"
-  integrity sha512-/+C9xAdVtc+g5yHHkGBThgAA8rYpi5B+2ve3wLtybYj0JHEBs57ivR4x/zGfSsplRnV+psE91Nfin1soNKqz5Q==
+  version "3.11.4"
+  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.11.4.tgz#58d9e60bd5fd85a57984890ef9c9d831a0dda896"
+  integrity sha512-yufTxeeNCZuEIxx2uebK8lpSAsJM4lvzakm/VxzYhDtqhXCzwH9jpn7nPCxzrROuEbLATqhFq4MIPoG0tlrsvw==
   dependencies:
     "@types/node" "*"
 
