@@ -25,7 +25,6 @@
 		"@markuplint/ml-ast": "4.0.0-alpha.3",
 		"@markuplint/parser-utils": "4.0.0-alpha.3",
 		"pug-lexer": "^5.0.1",
-		"pug-parser": "^6.0.0",
-		"tslib": "^2.6.2"
+		"pug-parser": "^6.0.0"
 	}
 }
