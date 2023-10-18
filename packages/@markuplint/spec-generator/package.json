@@ -23,8 +23,8 @@
 	"devDependencies": {
 		"@markuplint/ml-spec": "4.0.0-alpha.3",
 		"@markuplint/test-tools": "4.0.0-alpha.3",
-		"@types/cheerio": "^0.22.32",
-		"@types/cli-progress": "^3.11.2",
+		"@types/cheerio": "^0.22.33",
+		"@types/cli-progress": "^3.11.4",
 		"@types/node-fetch": "^2.6.6",
 		"ajv": "^8.12.0",
 		"cheerio": "^1.0.0-rc.12",

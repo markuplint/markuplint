@@ -25,8 +25,8 @@
 		"schema": "ts-node './gen/types.ts'; json2ts './types.schema.json' > './src/types.schema.ts'; prettier './src/types.schema.ts' './types.schema.json' --write; eslint './src/types.schema.ts' --fix; tsc;"
 	},
 	"dependencies": {
-		"@types/css-tree": "^2.3.2",
-		"@types/debug": "^4.1.9",
+		"@types/css-tree": "^2.3.3",
+		"@types/debug": "^4.1.10",
 		"@types/whatwg-mimetype": "3.0.0",
 		"bcp-47": "^2.1.0",
 		"css-tree": "^2.3.1",

@@ -17,7 +17,7 @@
 		"@markuplint/parser-utils": "4.0.0-alpha.3",
 		"@markuplint/rules": "4.0.0-alpha.3",
 		"monaco-editor": "0.44.0",
-		"sass": "1.69.3",
+		"sass": "1.69.4",
 		"vite": "4.4.11"
 	}
 }
