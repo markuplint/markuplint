@@ -26,7 +26,6 @@
 		"@markuplint/parser-utils": "4.0.0-alpha.3",
 		"@typescript-eslint/types": "^6.8.0",
 		"@typescript-eslint/typescript-estree": "^6.8.0",
-		"ts-eslint-types-v5": "npm:@typescript-eslint/types@5",
-		"tslib": "^2.6.2"
+		"ts-eslint-types-v5": "npm:@typescript-eslint/types@5"
 	}
 }

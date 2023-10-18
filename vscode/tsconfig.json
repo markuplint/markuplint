@@ -2,7 +2,6 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "es2022",
-		"importHelpers": false,
 		"outDir": "./out",
 		"rootDir": "./src",
 		"strict": true,
