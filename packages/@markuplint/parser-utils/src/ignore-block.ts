@@ -93,7 +93,7 @@ export function restoreNode(
 				continue;
 			}
 			const parentNode = node.parentNode;
-			const index = nodeList.findIndex(n => n === node);
+			const index = nodeList.indexOf(node);
 			const insertList: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
 			let text = node.raw;
 			let pointer = 0;
