@@ -47,14 +47,7 @@ function withLocation(nodes: readonly string[], line: number, col: number): N[] 
 	const result: N[] = [];
 
 	for (const node of nodes) {
-		if (node[0] !== '<') {
-			result.push({
-				type: 'text',
-				raw: node,
-				line,
-				col,
-			});
-		} else {
+		if (node[0] === '<') {
 			const label = node.slice(1).slice(0, -1);
 
 			if (reTagName.test(label)) {
@@ -93,6 +86,13 @@ function withLocation(nodes: readonly string[], line: number, col: number): N[] 
 					col,
 				});
 			}
+		} else {
+			result.push({
+				type: 'text',
+				raw: node,
+				line,
+				col,
+			});
 		}
 		line = getEndLine(node, line);
 		col = getEndCol(node, col);

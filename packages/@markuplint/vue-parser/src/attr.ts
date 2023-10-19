@@ -65,7 +65,7 @@ export function attr(
 					const name = `v-bind:${potentialName}${modifier ?? ''}`;
 					return {
 						...attr,
-						potentialName: attr.name.raw !== name ? name : undefined,
+						potentialName: attr.name.raw === name ? undefined : name,
 						isDirective: true,
 						// @ts-ignore
 						_modifier: modifier,
@@ -100,7 +100,7 @@ export function attr(
 		if (slotName) {
 			return {
 				...attr,
-				potentialName: attr.name.raw !== name ? name : undefined,
+				potentialName: attr.name.raw === name ? undefined : name,
 				isDirective: true,
 			};
 		}

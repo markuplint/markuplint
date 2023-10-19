@@ -8,13 +8,13 @@ export function nodeListToDebugMaps(
 	return nodeList
 		.map(n => {
 			const r: string[] = [];
-			if (!n.isGhost) {
+			if (n.isGhost) {
+				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+			} else {
 				r.push(tokenDebug(n));
 				if (withAttr && 'attributes' in n) {
 					r.push(...attributesToDebugMaps(n.attributes).flat());
 				}
-			} else {
-				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
 			}
 			return r;
 		})

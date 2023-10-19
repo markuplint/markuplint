@@ -159,10 +159,10 @@ export function __createMessageValueExpected(
 						let expectedDigits: string | null = null;
 						if (lte != null && gte === lte) {
 							expectedDigits = t('{0} digits', gte);
-						} else if (lte != null) {
-							expectedDigits = t('{0} to {1} digits', gte, lte);
-						} else {
+						} else if (lte == null) {
 							expectedDigits = t('{0} or more digits', gte);
+						} else {
+							expectedDigits = t('{0} to {1} digits', gte, lte);
 						}
 						if (!expected) {
 							expected = expectedDigits;

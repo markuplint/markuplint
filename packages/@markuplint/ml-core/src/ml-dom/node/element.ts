@@ -3439,11 +3439,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
 						const _value =
-							value != null
-								? typeof value === 'string'
-									? value
-									: this.getAttribute(value.fromAttr) ?? ''
-								: '';
+							value == null
+								? ''
+								: typeof value === 'string'
+								? value
+								: this.getAttribute(value.fromAttr) ?? '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,

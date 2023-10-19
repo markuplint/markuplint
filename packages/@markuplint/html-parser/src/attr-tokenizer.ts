@@ -17,7 +17,7 @@ export default function attrTokenizer(raw: string, line: number, col: number, st
 	const spacesBeforeEqualChars = attrMatchedMap[3] ?? '';
 	const equalChars = attrMatchedMap[4] ?? null;
 	const spacesAfterEqualChars = attrMatchedMap[5] ?? '';
-	const quoteChars = attrMatchedMap[6] != null ? '"' : attrMatchedMap[7] != null ? "'" : null;
+	const quoteChars = attrMatchedMap[6] == null ? (attrMatchedMap[7] == null ? null : "'") : '"';
 	const valueChars = attrMatchedMap[6] ?? attrMatchedMap[7] ?? attrMatchedMap[8] ?? (quoteChars ? '' : null);
 
 	let offset = startOffset;

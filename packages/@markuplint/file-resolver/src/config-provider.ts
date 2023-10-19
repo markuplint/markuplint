@@ -233,7 +233,7 @@ export class ConfigProvider {
 			return { stack, errs: null };
 		}
 
-		const depKeys = config.extends !== null ? toNoEmptyStringArrayFromStringOrArray(config.extends) : null;
+		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
 		if (depKeys) {
 			for (const depKey of depKeys) {
 				const keys = await this._recursiveLoad(depKey, cache, depth + 1);

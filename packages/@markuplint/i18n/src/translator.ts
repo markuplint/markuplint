@@ -36,7 +36,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			if (isNaN(num)) {
 				return $0;
 			}
-			const keyword = keywords[num] != null ? toString(keywords[num]!, localeSet?.locale) : '';
+			const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
 			// No translate
 			if (noTranslateIndex.includes(number)) {
 				return keyword;

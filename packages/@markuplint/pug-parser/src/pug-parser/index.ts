@@ -460,7 +460,7 @@ function getLocationFromToken(
 	tokens: readonly PugLexToken[],
 	tokenType?: string | readonly string[],
 ) {
-	const tokenTypes = typeof tokenType === 'string' ? (tokenType !== '' ? [tokenType] : null) : tokenType ?? null;
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
 	let tokenOfCurrentNode: PugLexToken | null = null;
 	for (const token of tokens) {
 		if (

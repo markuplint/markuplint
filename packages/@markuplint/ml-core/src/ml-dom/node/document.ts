@@ -3248,7 +3248,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 					const globalRule = ruleset.rules[ruleName];
-					const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+					const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 					ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
 
@@ -3307,7 +3307,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							continue;
 						}
 						const globalRule = ruleset.rules[ruleName];
-						const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+						const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 						ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
 

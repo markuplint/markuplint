@@ -353,7 +353,7 @@ export function nodeize(
 					};
 				}
 			}
-			return endTag != null ? [startTag, endTag] : startTag;
+			return endTag == null ? startTag : [startTag, endTag];
 		}
 	}
 }

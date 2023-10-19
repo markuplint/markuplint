@@ -64,7 +64,7 @@ export function exchangeValueOnRule(
 		const exchangedValue = exchangeValue(result.reason, data);
 		result = {
 			...result,
-			reason: exchangedValue != null ? `${exchangedValue}` : undefined,
+			reason: exchangedValue == null ? undefined : `${exchangedValue}`,
 		};
 	}
 	deleteUndefProp(result);

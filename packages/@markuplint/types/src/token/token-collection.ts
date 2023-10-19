@@ -46,15 +46,15 @@ export class TokenCollection extends Array<Token> {
 				const res = pattern.exec(strings);
 				let value: string;
 
-				if (!res) {
+				if (res) {
+					if (res.index === 0) {
+						value = res[0] ?? '';
+					} else {
+						value = strings.slice(res.index + res[0].length);
+					}
+				} else {
 					isBroken = true;
 					value = '';
-				} else {
-					if (res.index !== 0) {
-						value = strings.slice(res.index + res[0].length);
-					} else {
-						value = res[0] ?? '';
-					}
 				}
 
 				const token = addToken(value);
