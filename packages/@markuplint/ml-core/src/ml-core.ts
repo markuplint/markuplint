@@ -141,6 +141,7 @@ export class MLCore {
 			log('%s Rule: verify end', rule.name);
 		}
 		if (resultLog.enabled) {
+			// eslint-disable-next-line unicorn/no-array-reduce
 			const { e, w, i } = violations.reduce(
 				(c, v) => {
 					if (v.severity === 'error') c.e += 1;
