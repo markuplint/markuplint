@@ -85,12 +85,15 @@ function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) 
 
 function toString(value: Primitive, locale = 'en') {
 	switch (typeof value) {
-		case 'string':
+		case 'string': {
 			return value;
-		case 'number':
+		}
+		case 'number': {
 			return toLocaleString(value, locale);
-		case 'boolean':
+		}
+		case 'boolean': {
 			return `${value}`;
+		}
 	}
 }
 

@@ -258,19 +258,24 @@ function createExpectedObject(
 
 function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType, List>>) {
 	switch (expect.type) {
-		case 'common':
+		case 'common': {
 			return expect.value;
-		case 'const':
+		}
+		case 'const': {
 			return expect.value ? `%${expect.value}%` : '';
-		case 'format':
+		}
+		case 'format': {
 			return t('the {0} format', expect.value);
-		case 'regexp':
+		}
+		case 'regexp': {
 			return t('{0} ({1})', 'regular expression', expect.value);
-		case 'syntax':
+		}
+		case 'syntax': {
 			if (isKeyword(type) && type[0] === '<') {
 				return t('the CSS Syntax "{0}"', expect.value);
 			}
 			return t('{0} syntax', expect.value);
+		}
 	}
 }
 

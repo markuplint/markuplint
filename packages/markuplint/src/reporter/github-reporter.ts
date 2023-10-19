@@ -19,10 +19,12 @@ export function githubReporter(results: MLResultInfo) {
 
 function severityToCommand(severity: Severity) {
 	switch (severity) {
-		case 'info':
+		case 'info': {
 			return 'notice';
+		}
 		case 'error':
-		case 'warning':
+		case 'warning': {
 			return severity;
+		}
 	}
 }

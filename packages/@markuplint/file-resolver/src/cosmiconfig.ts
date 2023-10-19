@@ -72,11 +72,12 @@ function cacheConfigError(fileOrDirPath: string) {
 	return (reason: unknown) => {
 		if (reason instanceof Error) {
 			switch (reason.name) {
-				case 'YAMLException':
+				case 'YAMLException': {
 					throw new ConfigParserError(reason.message, {
 						// @ts-ignore
 						filePath: reason.filepath ?? fileOrDirPath,
 					});
+				}
 			}
 			throw new ConfigLoadError(reason.message, fileOrDirPath);
 		}

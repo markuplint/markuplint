@@ -36,8 +36,9 @@ export class Token {
 		}
 		if (separators?.includes(value[0] ?? '')) {
 			switch (value[0]) {
-				case ',':
+				case ',': {
 					return Token.Comma;
+				}
 			}
 		}
 		return Token.Ident;
