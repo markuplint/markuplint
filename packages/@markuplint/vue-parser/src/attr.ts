@@ -111,7 +111,7 @@ export function attr(
 	/**
 	 * If directives
 	 */
-	if (/^v-/.test(attr.name.raw)) {
+	if (attr.name.raw.startsWith('v-')) {
 		return {
 			...attr,
 			isDirective: true,

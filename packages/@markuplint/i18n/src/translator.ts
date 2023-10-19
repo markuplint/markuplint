@@ -59,7 +59,7 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 			.map((place, index) => {
 				if (index === strings.raw.length - 1) return place;
 				const value = keys[i];
-				const cFlag = /^c:/.test(typeof value === 'string' ? value : '') ? ':c' : '';
+				const cFlag = (typeof value === 'string' ? value : '').startsWith('c:') ? ':c' : '';
 				return `${place}{${i++}${cFlag}}`;
 			})
 			.join('');
