@@ -98,29 +98,27 @@ export async function fetchHTMLElement(link: string) {
 	let deprecated: true | undefined;
 	let nonStandard: true | undefined;
 
-	/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 	if (isBcTableIsAvailable) {
-		experimental = !!$bcTableFirstRow.find('.ic-experimental').length || undefined;
-		obsolete = !!$bcTableFirstRow.find('.ic-obsolete').length || undefined;
-		deprecated = !!$bcTableFirstRow.find('.ic-deprecated').length || undefined;
-		nonStandard = !!$bcTableFirstRow.find('.ic-non-standard').length || undefined;
+		experimental = $bcTableFirstRow.find('.ic-experimental').length > 0 || undefined;
+		obsolete = $bcTableFirstRow.find('.ic-obsolete').length > 0 || undefined;
+		deprecated = $bcTableFirstRow.find('.ic-deprecated').length > 0 || undefined;
+		nonStandard = $bcTableFirstRow.find('.ic-non-standard').length > 0 || undefined;
 	} else {
 		experimental =
-			!!$article.find('.blockIndicator.experimental, > div .notecard.experimental').length || undefined;
+			$article.find('.blockIndicator.experimental, > div .notecard.experimental').length > 0 || undefined;
 		obsolete =
-			!!$article.find('.obsoleteHeader').length ||
+			$article.find('.obsoleteHeader').length > 0 ||
 			!!$('h1')
 				.text()
 				.match(/obsolete/i) ||
-			!!$article.find('> div:first-child .notecard.obsolete').length ||
+			$article.find('> div:first-child .notecard.obsolete').length > 0 ||
 			undefined;
 		deprecated =
-			!!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length ||
-			!!$article.find('h1').next().find('.notecard.deprecated').length ||
+			$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length > 0 ||
+			$article.find('h1').next().find('.notecard.deprecated').length > 0 ||
 			undefined;
-		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
+		nonStandard = $article.find('.nonStandardHeader, h4#Non-standard').length > 0 || undefined;
 	}
-	/* eslint-enable @typescript-eslint/strict-boolean-expressions */
 
 	const categories: Category[] = [];
 	const cat = getProperty($, 'Content categories');
@@ -207,21 +205,21 @@ function getAttributes(
 			if (!name) {
 				return null;
 			}
-			/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+
 			const $myHeading = getItsHeading($dt);
 			const experimental =
-				!!$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length || undefined;
+				$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length > 0 || undefined;
 			const obsolete =
-				!!$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length ||
-				!!$dt.find('.obsolete').length ||
+				$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length > 0 ||
+				$dt.find('.obsolete').length > 0 ||
 				$myHeading?.attr('id') === 'obsolete_attributes' ||
 				undefined;
 			const deprecated =
-				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length ||
+				$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length > 0 ||
 				$myHeading?.attr('id') === 'deprecated_attributes' ||
 				undefined;
 			const nonStandard =
-				!!$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length || undefined;
+				$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length > 0 || undefined;
 			const description = $dt
 				.next('dd')
 				.toArray()
@@ -229,7 +227,6 @@ function getAttributes(
 				.join('')
 				.trim()
 				.replace(/(?:\r?\n|\s)+/gi, ' ');
-			/* eslint-enable @typescript-eslint/strict-boolean-expressions */
 
 			const current = attributes[name];
 			if (!current) {

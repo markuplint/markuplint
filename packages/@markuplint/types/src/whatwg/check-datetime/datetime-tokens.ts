@@ -316,7 +316,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!(1 <= secondFP.length && secondFP.length <= 3)) {
+		if (!(secondFP.length > 0 && secondFP.length <= 3)) {
 			return secondFP.unmatched({
 				reason: { type: 'out-of-range-length-digit', gte: 1, lte: 3 },
 				expects: [],

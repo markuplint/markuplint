@@ -24,7 +24,7 @@ export const types: Defs = {
 
 	NoEmptyAny: {
 		ref: '',
-		is: value => (0 < value.length ? matched() : unmatched(value, 'empty-token')),
+		is: value => (value.length > 0 ? matched() : unmatched(value, 'empty-token')),
 	},
 
 	OneLineAny: {

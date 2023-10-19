@@ -197,7 +197,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 							});
 						}
 
-						if (!(1 <= fp.length && fp.length <= 3)) {
+						if (!(fp.length > 0 && fp.length <= 3)) {
 							return fp.unmatched({
 								reason: { type: 'out-of-range-length-digit', gte: 1, lte: 3 },
 								expects: [],
@@ -342,7 +342,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (!(1 <= fp.length && fp.length <= 3)) {
+					if (!(fp.length > 0 && fp.length <= 3)) {
 						return fp.unmatched({
 							reason: { type: 'out-of-range-length-digit', gte: 1, lte: 3 },
 							expects: [],

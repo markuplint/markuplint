@@ -29,7 +29,7 @@ export function choice(
 		if (
 			result.type === 'MATCHED' ||
 			result.type === 'MATCHED_ZERO' ||
-			(result.type === 'UNEXPECTED_EXTRA_NODE' && result.matched.length >= 1)
+			(result.type === 'UNEXPECTED_EXTRA_NODE' && result.matched.length > 0)
 		) {
 			choiceLog('Results[%s]: %s', i, choiceLogString(pattern.choice, i));
 
