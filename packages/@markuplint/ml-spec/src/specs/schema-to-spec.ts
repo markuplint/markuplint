@@ -21,8 +21,8 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
 				const gAttrs = { ...def['#globalAttrs'] };
 				gAttrs['#HTMLGlobalAttrs'] = {
-					...(def['#globalAttrs']?.['#HTMLGlobalAttrs'] ?? {}),
-					...(extendedSpec.def['#globalAttrs']?.['#extends'] ?? {}),
+					...def['#globalAttrs']?.['#HTMLGlobalAttrs'],
+					...extendedSpec.def['#globalAttrs']?.['#extends'],
 				};
 				def['#globalAttrs'] = gAttrs;
 			}
