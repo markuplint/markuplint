@@ -16,9 +16,9 @@ export const checkYearlessDateString: CustomSyntaxChecker = () =>
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// DD
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Yearless Date: "%s" => %O', tokens.value, tokens);

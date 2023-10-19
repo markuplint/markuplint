@@ -25,7 +25,7 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 }
 
 export function match(needle: string, pattern: string) {
-	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);
+	const matches = pattern.match(/^\/(.*)\/([gim])*$/);
 	if (matches && matches[1]) {
 		const re = matches[1];
 		const flag = matches[2];

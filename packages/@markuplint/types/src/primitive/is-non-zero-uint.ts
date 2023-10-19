@@ -4,5 +4,5 @@
  * @param value
  */
 export function isNonZeroUint(value: string) {
-	return /^[0-9]+$/.test(value) && !/^0+$/.test(value);
+	return /^\d+$/.test(value) && !/^0+$/.test(value);
 }

@@ -77,7 +77,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 			 * > feature-identifier = 1*( ALPHA / DIGIT / "-")
 			 * > ```
 			 */
-			/[^\s]*/,
+			/\S*/,
 
 			/**
 			 * RWS (Required whitespace)
@@ -104,7 +104,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		 * > feature-identifier = 1*( ALPHA / DIGIT / "-")
 		 * > ```
 		 */
-		if (!featureIdentifier || !featureIdentifier.match(/^[a-z0-9-]+$/i)) {
+		if (!featureIdentifier || !featureIdentifier.match(/^[\da-z-]+$/i)) {
 			return featureIdentifier!.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'feature-identifier' }],
@@ -130,7 +130,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 
 		const allowListPatterns = [
 			// Value
-			/[^\s]*/,
+			/\S*/,
 			// Separator
 			/\s*/,
 		];

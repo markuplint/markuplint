@@ -16,29 +16,29 @@ export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// DD
-			/[^T\s]*/,
+			/[^\sT]*/,
 			// T
-			/[^0-9]?/,
+			/\D?/,
 			// hh
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// mm
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// ss
 			/[^.]*/,
 			// .
-			/[^0-9]?/,
+			/\D?/,
 			// sss
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Local Date and Time: "%s" => %O', tokens.value, tokens);
@@ -78,29 +78,29 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// DD
 			/[^T]*/,
 			// T
-			/[^0-9]?/,
+			/\D?/,
 			// hh
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// mm
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// ss
 			/[^.]*/,
 			// .
-			/[^0-9]?/,
+			/\D?/,
 			// sss
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Normalized Local Date and Time: "%s" => %O', tokens.value, tokens);

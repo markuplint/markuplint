@@ -48,9 +48,7 @@ export default createRule({
 			if (!('scope' in targetNode && 'line' in targetNode && targetNode.line != null)) {
 				continue;
 			}
-			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|#x[0-9a-f]+);/gi, $0 =>
-				'*'.repeat($0.length),
-			);
+			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, $0 => '*'.repeat($0.length));
 			getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
 				report({
 					scope: targetNode.scope,

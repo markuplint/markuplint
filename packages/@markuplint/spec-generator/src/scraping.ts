@@ -55,7 +55,7 @@ export function fetchObsoleteElements(
 
 export async function fetchHTMLElement(link: string) {
 	const $ = await fetch(link);
-	let name = link.replace(/.+\/([a-z0-9_-]+)$/i, '$1').toLowerCase();
+	let name = link.replace(/.+\/([\w-]+)$/i, '$1').toLowerCase();
 	if (name === 'heading_elements') {
 		name = 'h1-h6';
 	}

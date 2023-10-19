@@ -4,7 +4,7 @@
  * @param value
  */
 export function isUint(value: string, options?: { readonly gt?: number }) {
-	const matched = /^[0-9]+$/.test(value);
+	const matched = /^\d+$/.test(value);
 	if (matched && options) {
 		const n = parseInt(value, 10);
 		if (options.gt != null) {

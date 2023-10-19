@@ -16,13 +16,13 @@ export const checkDateString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]/,
+			/\D/,
 			// DD
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Date: "%s" => %O', tokens.value, tokens);

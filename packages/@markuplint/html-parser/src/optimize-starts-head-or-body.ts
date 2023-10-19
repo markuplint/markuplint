@@ -11,7 +11,7 @@ export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string) {
 	const bodies: string[] = [];
 	const code = rawCode.replace(
 		// eslint-disable-next-line no-control-regex
-		/(?<=<\/?)(?:head|body)(?=\u0009|\u000A|\u000C|\u0020|\/|>|\u0000)/gi,
+		/(?<=<\/?)(?:head|body)(?=\u0009|\u000A|\u000C| |\/|>|\u0000)/gi,
 		tag => {
 			const prefix = `x-${UNDUPLICATED_CHAR}`;
 			let name: string;

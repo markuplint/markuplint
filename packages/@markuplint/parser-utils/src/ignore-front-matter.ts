@@ -18,7 +18,7 @@ export function ignoreFrontMatter(code: string) {
 	const frontMatter = code.slice(0, endPoint);
 	const afterCode = code.slice(endPoint);
 
-	const masked = frontMatter.replace(/[^\r\n]/g, ' ');
+	const masked = frontMatter.replace(/[^\n\r]/g, ' ');
 
 	return masked + afterCode;
 }

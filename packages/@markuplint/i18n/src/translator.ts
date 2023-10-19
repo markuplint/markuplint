@@ -23,7 +23,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
-		const noTranslateIndex = Array.from(messageTmpl.matchAll(/(?<=\{)[0-9]+(?=\*\})/g)).map(m => m[0]);
+		const noTranslateIndex = Array.from(messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)).map(m => m[0]);
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];
@@ -31,7 +31,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
-		message = messageTmpl.replace(/\{([0-9]+)(?::([c]))?\}/g, ($0, number, flag) => {
+		message = messageTmpl.replace(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
 			const num = parseInt(number);
 			if (isNaN(num)) {
 				return $0;
@@ -110,5 +110,5 @@ function toLocaleString(value: number, locale: string) {
 }
 
 function removeNoTranslateMark(message: string) {
-	return message.replace(/(?<=\{[0-9]+)\*(?=\})/g, '');
+	return message.replace(/(?<={\d+)\*(?=})/g, '');
 }

@@ -16,11 +16,11 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 		// PnDTnHnMnS
 		const tokens = TokenCollection.fromPatterns(value, [
 			// Start sign P
-			/[^0-9T]?/,
+			/[^\dT]?/,
 			// date part
 			/[^T]*/,
 			// Time sign T
-			/[^0-9]?/,
+			/\D?/,
 			// Time part
 			/.*/,
 		]);
@@ -49,7 +49,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					return;
 				}
 
-				const [num, sign, extra] = TokenCollection.fromPatterns(d, [/[0-9]+/, /./]);
+				const [num, sign, extra] = TokenCollection.fromPatterns(d, [/\d+/, /./]);
 
 				if (!num) {
 					return;
@@ -57,7 +57,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 				log('Date part: "%s" => %O', d.value, { num, sign });
 
-				if (!num.match(/^[0-9]+$/)) {
+				if (!num.match(/^\d+$/)) {
 					return num.unmatched({
 						reason: 'unexpected-token',
 						expects: [],
@@ -115,11 +115,11 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 				const timeTokens = TokenCollection.fromPatterns(time, [
 					// Hour part
-					/[0-9]+(\.[0-9]*)?[^0-9]?/,
+					/\d+(\.\d*)?\D?/,
 					// Minute part
-					/[0-9]+(\.[0-9]*)?[^0-9]?/,
+					/\d+(\.\d*)?\D?/,
 					// Second part
-					/[0-9]+(\.[0-9]*)?[^0-9]?/,
+					/\d+(\.\d*)?\D?/,
 				]);
 
 				log('Time part: "%s" => %O', timeTokens.value, timeTokens);
@@ -149,7 +149,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					const [num, dpfp, sign] = TokenCollection.fromPatterns(t, [/[0-9]+/, /(\.[0-9]*)?/, /[^0-9]+/]);
+					const [num, dpfp, sign] = TokenCollection.fromPatterns(t, [/\d+/, /(\.\d*)?/, /\D+/]);
 
 					if (!num) {
 						continue;
@@ -157,7 +157,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 					log('Time part (h|m|s): "%s" => %O', t.value, { num, dpfp, sign });
 
-					if (!num.match(/^[0-9]+$/)) {
+					if (!num.match(/^\d+$/)) {
 						return num.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'common', value: 'number' }],
@@ -166,7 +166,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					}
 
 					if (dpfp && dpfp.value) {
-						const [dp, fp] = TokenCollection.fromPatterns(dpfp, [/\./, /[0-9]+/]);
+						const [dp, fp] = TokenCollection.fromPatterns(dpfp, [/\./, /\d+/]);
 
 						if (!dp) {
 							continue;
@@ -189,7 +189,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 							});
 						}
 
-						if (!fp.match(/^[0-9]+$/)) {
+						if (!fp.match(/^\d+$/)) {
 							return fp.unmatched({
 								reason: 'unexpected-token',
 								expects: [],
@@ -268,16 +268,16 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 			// 2. One or more ASCII digits, representing a number of time units,
 			// scaled by the duration time component scale specified (see below)
 			// to represent a number of seconds.
-			/[0-9]+/,
+			/\d+/,
 			// 3. If the duration time component scale specified is 1 (i.e. the units are seconds),
 			// then, optionally, a U+002E FULL STOP character (.) followed by
 			// one, two, or three ASCII digits, representing a fraction of a second.
-			/(\.[0-9]*)?/,
+			/(\.\d*)?/,
 			// 4. Zero or more ASCII whitespace.
 			/\s*/,
 			// 5. One of the following characters, representing the duration time component scale
 			// of the time unit used in the numeric part of the duration time component:
-			/[^0-9]/,
+			/\D/,
 			// 6. Zero or more ASCII whitespace.
 			/\s*/,
 		];
@@ -325,7 +325,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					const [, fp] = TokenCollection.fromPatterns(dpfp, [/\./, /[0-9]+/]);
+					const [, fp] = TokenCollection.fromPatterns(dpfp, [/\./, /\d+/]);
 
 					if (!fp || !fp.value) {
 						return unmatched('', 'missing-token', {
@@ -334,7 +334,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (!fp.match(/[0-9]+/)) {
+					if (!fp.match(/\d+/)) {
 						return fp.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'common', value: 'fractional part' }],

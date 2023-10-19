@@ -22,13 +22,13 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 
 	const zoneTokens = TokenCollection.fromPatterns(zone, [
 		// Z + -
-		/[^0-9]?/,
+		/\D?/,
 		// hh
 		/[^:]{0,2}/,
 		// :
-		/[^0-9]?/,
+		/\D?/,
 		// mm
-		/.[0-9]*/,
+		/.\d*/,
 	]);
 
 	log('Time-zone Part: "%s" => %O', value, zoneTokens);

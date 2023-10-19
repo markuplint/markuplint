@@ -49,7 +49,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!year.match(/^[0-9]+$/)) {
+		if (!year.match(/^\d+$/)) {
 			return year.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -91,7 +91,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!month.match(/^[0-9]+$/)) {
+		if (!month.match(/^\d+$/)) {
 			return month.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -140,7 +140,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!date.match(/^[0-9]+$/)) {
+		if (!date.match(/^\d+$/)) {
 			return date.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -188,7 +188,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!hour.match(/^[0-9]+$/)) {
+		if (!hour.match(/^\d+$/)) {
 			return hour.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -228,7 +228,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!minute.match(/^[0-9]+$/)) {
+		if (!minute.match(/^\d+$/)) {
 			return minute.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -268,7 +268,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!second.match(/^[0-9]+$/)) {
+		if (!second.match(/^\d+$/)) {
 			return second.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -308,7 +308,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!secondFP.match(/^[0-9]+$/)) {
+		if (!secondFP.match(/^\d+$/)) {
 			return secondFP.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -338,7 +338,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!week.match(/^[0-9]+$/)) {
+		if (!week.match(/^\d+$/)) {
 			return week.unmatched({
 				reason: 'unexpected-token',
 				expects: [],

@@ -13,7 +13,7 @@ export function fileExists(filePath: string) {
 }
 
 export function toRegexp(pattern: string) {
-	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
+	const matched = pattern.match(/^\/(.+)\/([gi]*)$/i);
 	if (matched && matched[1]) {
 		return new RegExp(matched[1], matched[2]);
 	}

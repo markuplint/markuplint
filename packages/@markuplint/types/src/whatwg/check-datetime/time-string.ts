@@ -16,17 +16,17 @@ export const checkTimeString: CustomSyntaxChecker = () =>
 			// hh
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// mm
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// ss
 			/[^.]*/,
 			// .
-			/[^0-9]?/,
+			/\D?/,
 			// sss
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Time: "%s" => %O', tokens.value, tokens);
