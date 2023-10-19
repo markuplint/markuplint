@@ -104,7 +104,7 @@ export const types: Defs = {
 			// NameChar ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
 			const nameCharTail = /-|[\d.\u00B7]|[\u0300-\u036F\u203F\u2040]/;
 			// Name ::= NameStartChar (NameChar)*
-			const name = RegExp(`(?:${nameStartChar.source})(?:${nameCharTail})*`, 'u');
+			const name = new RegExp(`(?:${nameStartChar.source})(?:${nameCharTail})*`, 'u');
 			return name.test(value) ? matched() : unmatched(value, 'unexpected-token');
 		},
 	},
