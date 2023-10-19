@@ -73,7 +73,7 @@ describe('Watcher', () => {
 		await engine.close();
 		expect(result1st?.violations.length).toBe(6);
 		expect(result2nd.length).toBe(5);
-		return Promise.resolve();
+		return;
 	});
 });
 
