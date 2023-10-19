@@ -53,6 +53,7 @@ export function error(message: string) {
 	process.stderr.write(message + '\n');
 }
 
+// eslint-disable-next-line unicorn/no-process-exit
 error.exit = () => process.exit(1);
 
 export const head = (method: string, noColor?: boolean) =>

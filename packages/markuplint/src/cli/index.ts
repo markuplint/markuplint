@@ -8,6 +8,8 @@ import { createRule } from './create-rule/index.js';
 import { initialize } from './init/index.js';
 import search from './search/index.js';
 
+/* eslint-disable unicorn/no-process-exit */
+
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
 	if (cli.flags.v) {
@@ -79,6 +81,8 @@ import search from './search/index.js';
 		cli.showHelp(1);
 	}
 })();
+
+/* eslint-enable unicorn/no-process-exit */
 
 function usePipe() {
 	return !process.stdin.isTTY && process.stdout.isTTY;
