@@ -50,5 +50,5 @@ async function forceImportJsonInModule(modPath: string) {
 		return JSON.parse(fileContent);
 	}
 
-	return error.default ? error.default : error;
+	return error.default ?? error;
 }
