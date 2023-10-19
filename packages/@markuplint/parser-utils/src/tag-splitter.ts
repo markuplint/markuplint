@@ -57,34 +57,47 @@ function withLocation(nodes: readonly string[], line: number, col: number): N[] 
 					line,
 					col,
 				});
-			} else if (label[0] === '/') {
-				result.push({
-					type: 'endtag',
-					raw: node,
-					line,
-					col,
-				});
-			} else if (label[0] === '!') {
-				result.push({
-					type: 'comment',
-					raw: node,
-					line,
-					col,
-				});
-			} else if (label[0] === '?') {
-				result.push({
-					type: 'boguscomment',
-					raw: node,
-					line,
-					col,
-				});
 			} else {
-				result.push({
-					type: 'text',
-					raw: node,
-					line,
-					col,
-				});
+				switch (label[0]) {
+					case '/': {
+						result.push({
+							type: 'endtag',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					case '!': {
+						result.push({
+							type: 'comment',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					case '?': {
+						result.push({
+							type: 'boguscomment',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					default: {
+						result.push({
+							type: 'text',
+							raw: node,
+							line,
+							col,
+						});
+					}
+				}
 			}
 		} else {
 			result.push({
