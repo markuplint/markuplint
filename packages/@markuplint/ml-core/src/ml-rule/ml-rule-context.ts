@@ -53,7 +53,7 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	}
 
 	private _push(report: Report<T, O>) {
-		if (!this.#reports.find(r => is(r, report))) {
+		if (!this.#reports.some(r => is(r, report))) {
 			this.#reports.push(report);
 		}
 	}
