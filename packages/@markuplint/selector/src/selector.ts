@@ -828,6 +828,7 @@ function pseudoMatch(
 				`Unsupported pseudo ${pseudo.toString()} selector yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).`,
 			);
 		}
+		/* eslint-disable unicorn/no-useless-switch-case */
 		case ':dir':
 		case ':lang':
 		case ':any-link':
@@ -863,6 +864,7 @@ function pseudoMatch(
 			}
 			throw new Error(`Unsupported pseudo ${pseudo.toString()} selector.`);
 		}
+		/* eslint-enable unicorn/no-useless-switch-case */
 	}
 }
 

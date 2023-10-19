@@ -58,6 +58,7 @@ export function attr(
 						_modifier: modifier,
 					};
 				}
+				/* eslint-disable unicorn/no-useless-switch-case */
 				// TODO: Supporting for `prop` and `camel` https://github.com/markuplint/markuplint/pull/681
 				case '.prop':
 				case '.camel':
@@ -71,6 +72,7 @@ export function attr(
 						_modifier: modifier,
 					};
 				}
+				/* eslint-enable unicorn/no-useless-switch-case */
 			}
 		}
 	}
