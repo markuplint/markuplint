@@ -101,7 +101,7 @@ function toLocaleString(value: number, locale: string) {
 		if (error instanceof RangeError) {
 			try {
 				return value.toLocaleString('en');
-			} catch (_) {
+			} catch {
 				// void
 			}
 		}

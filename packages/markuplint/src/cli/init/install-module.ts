@@ -35,7 +35,7 @@ export async function installModule(module: readonly string[], dev = false): Pro
 				uninstallMods.push(mod);
 			}
 		}
-	} catch (_) {
+	} catch {
 		// void
 	}
 

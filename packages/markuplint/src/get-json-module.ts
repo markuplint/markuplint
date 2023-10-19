@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 export function getJsonModule<T extends {}>(modulePath: string): T | null {
 	try {
 		return require(modulePath);
-	} catch (_) {
+	} catch {
 		return null;
 	}
 }

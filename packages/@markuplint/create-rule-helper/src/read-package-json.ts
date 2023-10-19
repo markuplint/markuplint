@@ -9,7 +9,7 @@ export async function readPackageJson(dir: string) {
 		const data = JSON.parse(json);
 
 		return (data?.name as string) ?? null;
-	} catch (_) {
+	} catch {
 		return null;
 	}
 }
