@@ -58,8 +58,8 @@ export class MLCore {
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#filename = filename;
-		this.#rules = rules.slice();
-		this.#pretenders = pretenders.slice();
+		this.#rules = [...rules];
+		this.#pretenders = [...pretenders];
 
 		this._parse();
 		this._createDocument();
@@ -118,11 +118,11 @@ export class MLCore {
 			}
 
 			log('%s Rule: verify', rule.name);
-			const results = await rule.verify(this.#document, this.#locale, fix).catch(e => {
-				if (e instanceof ParserError) {
-					return e;
+			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
+				if (error instanceof ParserError) {
+					return error;
 				}
-				throw e;
+				throw error;
 			});
 
 			if (results instanceof ParserError) {
@@ -141,6 +141,7 @@ export class MLCore {
 			log('%s Rule: verify end', rule.name);
 		}
 		if (resultLog.enabled) {
+			// eslint-disable-next-line unicorn/no-array-reduce
 			const { e, w, i } = violations.reduce(
 				(c, v) => {
 					if (v.severity === 'error') c.e += 1;
@@ -169,11 +170,11 @@ export class MLCore {
 				booleanish: this.#parser.booleanish,
 				pretenders: this.#pretenders,
 			});
-		} catch (err) {
-			if (err instanceof ParserError) {
-				this.#document = err;
+		} catch (error) {
+			if (error instanceof ParserError) {
+				this.#document = error;
 			} else {
-				throw err;
+				throw error;
 			}
 		}
 	}
@@ -181,13 +182,13 @@ export class MLCore {
 	private _parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
-		} catch (err) {
-			log('Caught the parse error: %O', err);
+		} catch (error) {
+			log('Caught the parse error: %O', error);
 			this.#ast = null;
-			if (err instanceof ParserError) {
-				this.#document = err;
+			if (error instanceof ParserError) {
+				this.#document = error;
 			} else {
-				throw err;
+				throw error;
 			}
 		}
 	}

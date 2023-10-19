@@ -2710,7 +2710,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.fixedNodeName);
 			gap = gap + this.fixedNodeName.length - this.nodeName.length;
 		}
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
 			const fixedAttr = attr.toString();
 			if (attr.originRaw !== fixedAttr) {
@@ -2871,9 +2871,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	get textContent(): string {
-		return Array.from(this.childNodes)
-			.map(child => child.textContent ?? '')
-			.join('');
+		return [...this.childNodes].map(child => child.textContent ?? '').join('');
 	}
 
 	/**
@@ -3000,6 +2998,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0
 	 */
 	closest(selectors: string): MLElement<T, O> | null {
+		// eslint-disable-next-line unicorn/no-this-assignment
 		let el: MLElement<T, O> | null = this;
 
 		do {
@@ -3066,7 +3065,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattribute%E2%91%A0
 	 */
 	getAttribute(attrName: string) {
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
 				return attr.value;
 			}
@@ -3090,7 +3089,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattributenames%E2%91%A0
 	 */
 	getAttributeNames(): string[] {
-		return Array.from(this.attributes).map(attr => attr.name);
+		return [...this.attributes].map(attr => attr.name);
 	}
 
 	/**
@@ -3116,7 +3115,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getAttributePretended(attrName: string) {
-		for (const attr of Array.from(this.#attributes)) {
+		for (const attr of this.#attributes) {
 			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
 				return attr.value;
 			}
@@ -3163,7 +3162,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.#getChildElementsAndTextNodeWithoutWhitespacesCache;
 		}
 		const filteredNodes: (MLElement<T, O> | MLText<T, O>)[] = [];
-		this.childNodes.forEach(node => {
+		for (const node of this.childNodes) {
 			if (node.is(node.ELEMENT_NODE)) {
 				if (node.isOmitted) {
 					const children = node.getChildElementsAndTextNodeWithoutWhitespaces();
@@ -3175,7 +3174,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (node.is(node.TEXT_NODE) && !node.isWhitespace()) {
 				filteredNodes.push(node);
 			}
-		});
+		}
 		this.#getChildElementsAndTextNodeWithoutWhitespacesCache = filteredNodes;
 		return filteredNodes;
 	}
@@ -3272,7 +3271,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	hasMutableAttributes() {
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			if (!attr.nameNode) {
 				return true;
 			}
@@ -3289,7 +3288,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	hasMutableChildren(attr = false) {
-		for (const child of Array.from(this.childNodes)) {
+		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 				return true;
 			}
@@ -3393,7 +3392,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	isEmpty() {
-		for (const childNode of Array.from(this.childNodes)) {
+		for (const childNode of this.childNodes) {
 			if (!(childNode.is(childNode.TEXT_NODE) && childNode.textContent?.trim() === '')) {
 				return false;
 			}
@@ -3439,11 +3438,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
 						const _value =
-							value != null
-								? typeof value === 'string'
-									? value
-									: this.getAttribute(value.fromAttr) ?? ''
-								: '';
+							value == null
+								? ''
+								: typeof value === 'string'
+								? value
+								: this.getAttribute(value.fromAttr) ?? '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,

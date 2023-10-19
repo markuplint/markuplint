@@ -57,13 +57,13 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contained_by
 	 */
-	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b10_000;
+	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b1_0000;
 
 	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contains
 	 */
-	readonly DOCUMENT_POSITION_CONTAINS = 0b1_000;
+	readonly DOCUMENT_POSITION_CONTAINS = 0b1000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -81,7 +81,7 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_implementation_specific
 	 */
-	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b100_000;
+	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b10_0000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -259,6 +259,7 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
 	 */
 	get lastChild(): MLChildNode<T, O> | null {
+		// eslint-disable-next-line unicorn/prefer-at
 		return this.childNodes[this.childNodes.length - 1] ?? null;
 	}
 

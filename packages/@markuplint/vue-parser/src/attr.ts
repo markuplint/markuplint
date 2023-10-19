@@ -1,6 +1,6 @@
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
-const duplicatableAttrs = ['class', 'style'];
+const duplicatableAttrs = new Set(['class', 'style']);
 
 export function attr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -8,7 +8,7 @@ export function attr(
 ): MLASTAttr {
 	if (attr.type !== 'html-attr') {
 		const name = attr.potentialName;
-		if (duplicatableAttrs.includes(name)) {
+		if (duplicatableAttrs.has(name)) {
 			attr.isDuplicatable = true;
 		}
 		return attr;
@@ -36,7 +36,7 @@ export function attr(
 		 */
 		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]+))?$/i) ?? [];
 		if (directive && potentialName) {
-			if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
+			if (duplicatableAttrs.has(potentialName.toLowerCase())) {
 				attr.isDuplicatable = true;
 			}
 
@@ -58,6 +58,7 @@ export function attr(
 						_modifier: modifier,
 					};
 				}
+				/* eslint-disable unicorn/no-useless-switch-case */
 				// TODO: Supporting for `prop` and `camel` https://github.com/markuplint/markuplint/pull/681
 				case '.prop':
 				case '.camel':
@@ -65,12 +66,13 @@ export function attr(
 					const name = `v-bind:${potentialName}${modifier ?? ''}`;
 					return {
 						...attr,
-						potentialName: attr.name.raw !== name ? name : undefined,
+						potentialName: attr.name.raw === name ? undefined : name,
 						isDirective: true,
 						// @ts-ignore
 						_modifier: modifier,
 					};
 				}
+				/* eslint-enable unicorn/no-useless-switch-case */
 			}
 		}
 	}
@@ -95,12 +97,12 @@ export function attr(
 		/**
 		 * `v-slot`
 		 */
-		const [, , slotName] = attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [];
+		const slotName = (attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [])[2];
 		const name = `v-slot:${slotName}`;
 		if (slotName) {
 			return {
 				...attr,
-				potentialName: attr.name.raw !== name ? name : undefined,
+				potentialName: attr.name.raw === name ? undefined : name,
 				isDirective: true,
 			};
 		}
@@ -109,7 +111,7 @@ export function attr(
 	/**
 	 * If directives
 	 */
-	if (/^v-/.test(attr.name.raw)) {
+	if (attr.name.raw.startsWith('v-')) {
 		return {
 			...attr,
 			isDirective: true,

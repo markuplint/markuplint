@@ -35,7 +35,7 @@ export async function installModule(module: readonly string[], dev = false): Pro
 				uninstallMods.push(mod);
 			}
 		}
-	} catch (_) {
+	} catch {
 		// void
 	}
 
@@ -84,8 +84,8 @@ function isInstalled(module: string) {
 			}).then((exists: boolean) => {
 				resolve(exists);
 			});
-		} catch (err) {
-			reject(err);
+		} catch (error) {
+			reject(error);
 		}
 	});
 }

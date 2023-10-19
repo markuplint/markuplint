@@ -39,13 +39,13 @@ export default createRule<boolean, Options>({
 		}
 
 		const roles: RoleSet = {
-			complementary: Array.from(document.querySelectorAll(selectors.complementary.join(','))),
-			contentinfo: Array.from(document.querySelectorAll(selectors.contentinfo.join(','))),
-			form: Array.from(document.querySelectorAll(selectors.form.join(','))),
-			banner: Array.from(document.querySelectorAll(selectors.banner.join(','))),
-			main: Array.from(document.querySelectorAll(selectors.main.join(','))),
-			navigation: Array.from(document.querySelectorAll(selectors.navigation.join(','))),
-			region: Array.from(document.querySelectorAll(selectors.region.join(','))),
+			complementary: [...document.querySelectorAll(selectors.complementary.join(','))],
+			contentinfo: [...document.querySelectorAll(selectors.contentinfo.join(','))],
+			form: [...document.querySelectorAll(selectors.form.join(','))],
+			banner: [...document.querySelectorAll(selectors.banner.join(','))],
+			main: [...document.querySelectorAll(selectors.main.join(','))],
+			navigation: [...document.querySelectorAll(selectors.navigation.join(','))],
+			region: [...document.querySelectorAll(selectors.region.join(','))],
 		};
 
 		/**
@@ -60,7 +60,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const headers = Array.from(document.querySelectorAll('header')).filter(header => {
+		const headers = [...document.querySelectorAll('header')].filter(header => {
 			return !header.closest('article, aside, main, nav, section');
 		});
 		roles.banner.push(...headers);
@@ -77,7 +77,7 @@ export default createRule<boolean, Options>({
 		 * > - nav
 		 * > - section
 		 */
-		const footers = Array.from(document.querySelectorAll('footer')).filter(footer => {
+		const footers = [...document.querySelectorAll('footer')].filter(footer => {
 			return !footer.closest('article, aside, main, nav, section');
 		});
 		roles.contentinfo.push(...footers);
@@ -137,9 +137,7 @@ function landmarkRoleElementUUIDList(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	roleset: RoleSet,
 ) {
-	return Object.values(roleset)
-		.map(elements => elements.map(element => element.uuid))
-		.flat();
+	return Object.values(roleset).flatMap(elements => elements.map(element => element.uuid));
 }
 
 function hasLabel(

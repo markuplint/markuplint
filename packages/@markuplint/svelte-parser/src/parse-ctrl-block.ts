@@ -59,8 +59,7 @@ export function parseCtrlBlock(
 	let elseTag: MLASTPreprocessorSpecificBlock | null = null;
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset =
-			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
+		const elseTagStartOffset = children.length > 0 ? children.at(-1)?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		elseTag = {
@@ -155,8 +154,7 @@ function parseIfBlock(
 	const elseOrElseIfTags: MLASTPreprocessorSpecificBlock[] = [];
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset =
-			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
+		const elseTagStartOffset = children.length > 0 ? children.at(-1)?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		if (elseNode.children) {

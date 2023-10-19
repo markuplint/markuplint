@@ -18,7 +18,7 @@ function tagSplitterAsString(raw: string): string[] {
 	if (!tagMatches) {
 		return [raw];
 	}
-	const tokens = Array.from(tagMatches);
+	const tokens = [...tagMatches];
 
 	tokens.unshift(); // remove all match
 
@@ -47,14 +47,7 @@ function withLocation(nodes: readonly string[], line: number, col: number): N[] 
 	const result: N[] = [];
 
 	for (const node of nodes) {
-		if (node[0] !== '<') {
-			result.push({
-				type: 'text',
-				raw: node,
-				line,
-				col,
-			});
-		} else {
+		if (node[0] === '<') {
 			const label = node.slice(1).slice(0, -1);
 
 			if (reTagName.test(label)) {
@@ -64,35 +57,55 @@ function withLocation(nodes: readonly string[], line: number, col: number): N[] 
 					line,
 					col,
 				});
-			} else if (label[0] === '/') {
-				result.push({
-					type: 'endtag',
-					raw: node,
-					line,
-					col,
-				});
-			} else if (label[0] === '!') {
-				result.push({
-					type: 'comment',
-					raw: node,
-					line,
-					col,
-				});
-			} else if (label[0] === '?') {
-				result.push({
-					type: 'boguscomment',
-					raw: node,
-					line,
-					col,
-				});
 			} else {
-				result.push({
-					type: 'text',
-					raw: node,
-					line,
-					col,
-				});
+				switch (label[0]) {
+					case '/': {
+						result.push({
+							type: 'endtag',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					case '!': {
+						result.push({
+							type: 'comment',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					case '?': {
+						result.push({
+							type: 'boguscomment',
+							raw: node,
+							line,
+							col,
+						});
+
+						break;
+					}
+					default: {
+						result.push({
+							type: 'text',
+							raw: node,
+							line,
+							col,
+						});
+					}
+				}
 			}
+		} else {
+			result.push({
+				type: 'text',
+				raw: node,
+				line,
+				col,
+			});
 		}
 		line = getEndLine(node, line);
 		col = getEndCol(node, col);

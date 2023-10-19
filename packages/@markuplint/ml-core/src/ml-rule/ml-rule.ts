@@ -32,7 +32,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.name = o.name;
 		this.defaultSeverity = o.defaultSeverity ?? 'error';
 		// TODO: https://github.com/markuplint/markuplint/issues/808
-		this.defaultValue = (o.defaultValue !== undefined ? o.defaultValue : true) as T;
+		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;

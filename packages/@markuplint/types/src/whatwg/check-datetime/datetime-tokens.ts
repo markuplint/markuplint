@@ -49,7 +49,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!year.match(/^[0-9]+$/)) {
+		if (!year.matches(/^\d+$/)) {
 			return year.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -91,7 +91,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!month.match(/^[0-9]+$/)) {
+		if (!month.matches(/^\d+$/)) {
 			return month.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -140,7 +140,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!date.match(/^[0-9]+$/)) {
+		if (!date.matches(/^\d+$/)) {
 			return date.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -188,7 +188,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!hour.match(/^[0-9]+$/)) {
+		if (!hour.matches(/^\d+$/)) {
 			return hour.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -228,7 +228,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!minute.match(/^[0-9]+$/)) {
+		if (!minute.matches(/^\d+$/)) {
 			return minute.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -268,7 +268,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!second.match(/^[0-9]+$/)) {
+		if (!second.matches(/^\d+$/)) {
 			return second.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -308,7 +308,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!secondFP.match(/^[0-9]+$/)) {
+		if (!secondFP.matches(/^\d+$/)) {
 			return secondFP.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -316,7 +316,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!(1 <= secondFP.length && secondFP.length <= 3)) {
+		if (!(secondFP.length > 0 && secondFP.length <= 3)) {
 			return secondFP.unmatched({
 				reason: { type: 'out-of-range-length-digit', gte: 1, lte: 3 },
 				expects: [],
@@ -338,7 +338,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!week.match(/^[0-9]+$/)) {
+		if (!week.matches(/^\d+$/)) {
 			return week.unmatched({
 				reason: 'unexpected-token',
 				expects: [],
@@ -379,7 +379,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!hyphen.match('-')) {
+		if (!hyphen.matches('-')) {
 			return hyphen.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'hyphen' }],
@@ -400,7 +400,7 @@ export const datetimeTokenCheck: Record<
 				partName: 'time',
 			});
 		}
-		if (!colon.match(':')) {
+		if (!colon.matches(':')) {
 			return colon.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'colon' }],
@@ -419,7 +419,7 @@ export const datetimeTokenCheck: Record<
 			return matched();
 		}
 
-		if (!colon.match(':')) {
+		if (!colon.matches(':')) {
 			return colon.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'colon' }],
@@ -437,7 +437,7 @@ export const datetimeTokenCheck: Record<
 		if (!dot || !dot.value) {
 			return matched();
 		}
-		if (!dot.match('.')) {
+		if (!dot.matches('.')) {
 			return dot.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'decimal point' }],
@@ -461,7 +461,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!sep.match(['T', ' '])) {
+		if (!sep.matches(['T', ' '])) {
 			return sep.unmatched({
 				reason: 'unexpected-token',
 				expects: [
@@ -484,7 +484,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!sep.match('T')) {
+		if (!sep.matches('T')) {
 			return sep.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'const', value: 'T' }],
@@ -508,7 +508,7 @@ export const datetimeTokenCheck: Record<
 				partName: 'time-zone',
 			});
 		}
-		if (!colon.match(['+', '-'])) {
+		if (!colon.matches(['+', '-'])) {
 			return colon.unmatched({
 				reason: 'unexpected-token',
 				expects: [
@@ -533,7 +533,7 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		if (!weekSign.match('W')) {
+		if (!weekSign.matches('W')) {
 			return weekSign.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'const', value: 'W' }],
@@ -591,11 +591,11 @@ export function getMaxWeekNum(year: number) {
 		const day = d.getDay();
 		d.setDate(d.getDate() + 4 - (day > 0 ? day : 7));
 		const yearStart = new Date(d.getFullYear(), 0, 1);
-		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86400000 + 1) / 7);
+		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86_400_000 + 1) / 7);
 		if (weekNo !== 1) {
 			return weekNo;
 		}
 		date--;
 	}
-	return NaN;
+	return Number.NaN;
 }

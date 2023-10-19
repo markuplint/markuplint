@@ -25,4 +25,4 @@ export * from './types/aria.js';
 export * from './types/attributes.js';
 export * from './types/permitted-structures.js';
 export * from './utils/resolve-namespace.js';
-export * from './utils/validateAriaVersion.js';
+export * from './utils/validate-aria-version.js';

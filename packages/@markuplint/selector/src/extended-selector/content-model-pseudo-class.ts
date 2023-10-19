@@ -15,7 +15,7 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 
 			const selectors = contentModelCategoryToTagNames(`#${category}` as Category, specs.def);
 			const matched = selectors
-				.map<SelectorResult[]>(selector => {
+				.flatMap<SelectorResult>(selector => {
 					if (selector === '#custom') {
 						// @ts-ignore
 						if (el.isCustomElement) {
@@ -46,15 +46,14 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 
 					return createSelector(selector, specs).search(el);
 				})
-				.flat()
 				.filter((m): m is SelectorMatchedResult => m.matched);
 
 			if (matched.length > 0) {
 				return {
 					specificity: [0, 1, 0],
 					matched: true,
-					nodes: matched.map(m => (m.matched ? m.nodes : [])).flat(),
-					has: matched.map(m => (m.matched ? m.has : [])).flat(),
+					nodes: matched.flatMap(m => (m.matched ? m.nodes : [])),
+					has: matched.flatMap(m => (m.matched ? m.has : [])),
 				};
 			}
 

@@ -6,7 +6,7 @@ import { order } from './order.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return order(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
+	return order(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
 test('ordered requires', () => {

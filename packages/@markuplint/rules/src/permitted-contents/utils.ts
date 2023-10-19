@@ -27,7 +27,7 @@ export function getChildNodesWithoutWhitespaces(
 	if (nodes) {
 		return nodes;
 	}
-	nodes = Array.from(el.childNodes).filter(node => {
+	nodes = [...el.childNodes].filter(node => {
 		return !(node.is(node.TEXT_NODE) && node.isWhitespace());
 	});
 	getChildNodesWithoutWhitespacesCaches.set(el, nodes);
@@ -68,10 +68,8 @@ export function matches(
 	}
 
 	const not = selectorResult
-		.map(r => (r.matched ? [] : r.not ?? []))
-		.flat()
-		.map(descendants)
-		.flat()
+		.flatMap(r => (r.matched ? [] : r.not ?? []))
+		.flatMap(descendants)
 		.shift();
 
 	return {
@@ -84,7 +82,7 @@ function descendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	selectorResult: SelectorMatchedResult,
 ): ChildNode[] {
-	let nodes: ChildNode[] = selectorResult.nodes.slice() as ChildNode[];
+	let nodes: ChildNode[] = [...selectorResult.nodes] as ChildNode[];
 	while (selectorResult.has.length > 0) {
 		for (const dep of selectorResult.has) {
 			if (dep.has.length === 0) {
@@ -160,12 +158,12 @@ export function normalizeModel(
 	} else if (isOneOrMore(pattern)) {
 		model = pattern.oneOrMore;
 		min = 1;
-		max = Math.max(pattern.max ?? Infinity, 1);
+		max = Math.max(pattern.max ?? Number.POSITIVE_INFINITY, 1);
 		missingType = 'MISSING_NODE_ONE_OR_MORE';
 	} else if (isZeroOrMore(pattern)) {
 		model = pattern.zeroOrMore;
 		min = 0;
-		max = Math.max(pattern.max ?? Infinity, 1);
+		max = Math.max(pattern.max ?? Number.POSITIVE_INFINITY, 1);
 	} else {
 		throw new Error('Unreachable code');
 	}
@@ -209,11 +207,11 @@ export function mergeHints(
 
 export function cleanObject<T extends Object>(object: T): Partial<T> {
 	const newObject: Partial<T> = {};
-	Object.entries(object).forEach(([key, value]) => {
+	for (const [key, value] of Object.entries(object)) {
 		if (value !== undefined) {
 			newObject[key as keyof T] = value;
 		}
-	});
+	}
 	return newObject;
 }
 
@@ -227,12 +225,12 @@ export class Collection {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		origin: readonly ChildNode[],
 	) {
-		this.#origin = origin.slice();
+		this.#origin = [...origin];
 		this.#nodes = new Set(this.#origin);
 	}
 
 	get matched() {
-		return Array.from(this.#matched);
+		return [...this.#matched];
 	}
 
 	get matchedCount() {
@@ -240,11 +238,11 @@ export class Collection {
 	}
 
 	get nodes() {
-		return this.#origin.slice();
+		return [...this.#origin];
 	}
 
 	get unmatched() {
-		return Array.from(this.#nodes).filter(n => !this.#matched.has(n));
+		return [...this.#nodes].filter(n => !this.#matched.has(n));
 	}
 
 	addMatched(
@@ -273,14 +271,14 @@ export class Collection {
 	}
 
 	max(max: number) {
-		const sliced = Array.from(this.#matched).slice(max);
-		sliced.forEach(n => this.#matched.delete(n));
+		const sliced = [...this.#matched].slice(max);
+		for (const n of sliced) this.#matched.delete(n);
 	}
 
 	toString(highlightExtraNodes = false) {
 		const out: string[] = [];
 		for (const n of this.#origin) {
-			const raw = n.is(n.TEXT_NODE) ? `:text(${n.raw.replace(/\n/g, '\\n')})` : n.raw;
+			const raw = n.is(n.TEXT_NODE) ? `:text(${n.raw.replaceAll('\n', '\\n')})` : n.raw;
 			if (this.#locked.has(n)) {
 				if (transparentMode.has(n)) {
 					out.push(bgBlue.bold(raw));

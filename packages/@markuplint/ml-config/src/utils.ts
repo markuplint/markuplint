@@ -64,7 +64,7 @@ export function exchangeValueOnRule(
 		const exchangedValue = exchangeValue(result.reason, data);
 		result = {
 			...result,
-			reason: exchangedValue != null ? `${exchangedValue}` : undefined,
+			reason: exchangedValue == null ? undefined : `${exchangedValue}`,
 		};
 	}
 	deleteUndefProp(result);
@@ -164,9 +164,9 @@ function exchangeOption(optionValue: PlainData, data: Readonly<Record<string, st
 		return optionValue.map(v => exchangeOption(v, data));
 	}
 	const result: Record<string, PlainData> = {};
-	Object.keys(optionValue).forEach(key => {
+	for (const key of Object.keys(optionValue)) {
 		result[key] = exchangeOption(optionValue[key], data);
-	});
+	}
 	return result;
 }
 

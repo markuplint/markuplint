@@ -20,7 +20,7 @@ export function getIndent(
 			return null;
 		}
 
-		const matched = node.raw.match(/^(\s*(?:\r?\n)+\s*)(?:[^\s]+)/);
+		const matched = node.raw.match(/^(\s*(?:\r?\n)+\s*)\S+/);
 		if (matched) {
 			const spaces = matched[1];
 			if (spaces) {
@@ -42,8 +42,8 @@ export function getIndent(
 	// One or more newlines and zero or more spaces or tabs.
 	// Or, If textNode is first token and that is filled spaces, tabs and newlines only.
 	const matched = isFirstToken(prevToken)
-		? prevToken.raw.match(/^(?:[ \t]*\r?\n)*([ \t]*)$/)
-		: prevToken.raw.match(/\r?\n([ \t]*)$/);
+		? prevToken.raw.match(/^(?:[\t ]*\r?\n)*([\t ]*)$/)
+		: prevToken.raw.match(/\r?\n([\t ]*)$/);
 	// console.log({ [`${this}`]: matched, _: prevToken.raw, f: prevToken._isFirstToken() });
 	if (matched) {
 		// Spaces will include empty string.

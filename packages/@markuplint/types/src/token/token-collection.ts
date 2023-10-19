@@ -46,15 +46,15 @@ export class TokenCollection extends Array<Token> {
 				const res = pattern.exec(strings);
 				let value: string;
 
-				if (!res) {
+				if (res) {
+					if (res.index === 0) {
+						value = res[0] ?? '';
+					} else {
+						value = strings.slice(res.index + res[0].length);
+					}
+				} else {
 					isBroken = true;
 					value = '';
-				} else {
-					if (res.index !== 0) {
-						value = strings.slice(res.index + res[0].length);
-					} else {
-						value = res[0] ?? '';
-					}
 				}
 
 				const token = addToken(value);
@@ -130,7 +130,7 @@ export class TokenCollection extends Array<Token> {
 			}
 		}
 
-		const chars = value.split('');
+		const chars = [...value];
 		const values: string[] = [];
 		let char: string | undefined;
 		while ((char = chars.shift())) {
@@ -149,17 +149,16 @@ export class TokenCollection extends Array<Token> {
 			) {
 				values.push(last + char);
 			} else {
-				values.push(last);
-				values.push(char);
+				values.push(last, char);
 			}
 		}
 
 		let offset = 0;
-		values.forEach(v => {
+		for (const v of values) {
 			const token = new Token(v, offset, value, separators);
 			this.push(token);
 			offset += v.length;
-		});
+		}
 	}
 
 	get value() {
@@ -332,7 +331,7 @@ export class TokenCollection extends Array<Token> {
 			} else if (result && !firstUnmatched && result.matched) {
 				return result;
 			} else {
-				if (head?.value && !head.match(/^\s*$/)) {
+				if (head?.value && !head.matches(/^\s*$/)) {
 					passCount += 4 * wait;
 				}
 			}
@@ -398,7 +397,7 @@ export class TokenCollection extends Array<Token> {
 	 * @param value The token value or the token type or its list
 	 */
 	has(value: TokenValue) {
-		return this.some(t => t.match(value));
+		return this.some(t => t.matches(value));
 	}
 
 	headAndTail(): { head: Token | null; tail: TokenCollection } {

@@ -12,7 +12,7 @@ export function getLocationFromChars(
 ) {
 	const lines = text.split(/\r?\n/g);
 	const foundLocations: Location[] = [];
-	lines.forEach((lineText, i) => {
+	for (const [i, lineText] of lines.entries()) {
 		let offset = 0;
 		for (const char of lineText) {
 			if (searches.includes(char)) {
@@ -32,6 +32,6 @@ export function getLocationFromChars(
 			}
 			offset++;
 		}
-	});
+	}
 	return foundLocations;
 }

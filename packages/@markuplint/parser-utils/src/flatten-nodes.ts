@@ -84,9 +84,9 @@ export function flattenNodes(
 				 * create Last spaces
 				 */
 				let lastOffset = 0;
-				nodeOrders.forEach((node, i) => {
+				for (const node of nodeOrders) {
 					lastOffset = Math.max(node.endOffset, lastOffset);
-				});
+				}
 				// console.log(lastOffset);
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
@@ -124,8 +124,8 @@ export function flattenNodes(
 	 * concat text nodes
 	 */
 	const result: MLASTNode[] = [];
-	nodeOrders.forEach(node => {
-		const prevNode = result[result.length - 1] ?? null;
+	for (const node of nodeOrders) {
+		const prevNode = result.at(-1) ?? null;
 		if (node.type === 'text' && prevNode?.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
 			prevNode.endOffset = node.endOffset;
@@ -149,10 +149,10 @@ export function flattenNodes(
 			if (node.nextNode) {
 				node.nextNode.prevNode = prevNode;
 			}
-			return;
+			continue;
 		}
 		result.push(node);
-	});
+	}
 
 	{
 		/**
@@ -191,10 +191,14 @@ export function flattenNodes(
 			// Children
 			if (node.type === 'text') {
 				const parent = node.parentNode;
-				if (parent && parent.type === 'starttag' && parent.nodeName.toLowerCase() === 'html') {
-					if (parent.childNodes && !parent.childNodes.some(n => n.uuid === node.uuid)) {
-						parent.childNodes.push(node);
-					}
+				if (
+					parent &&
+					parent.type === 'starttag' &&
+					parent.nodeName.toLowerCase() === 'html' &&
+					parent.childNodes &&
+					!parent.childNodes.some(n => n.uuid === node.uuid)
+				) {
+					parent.childNodes.push(node);
 				}
 			}
 
@@ -286,5 +290,5 @@ function arrayize(
 		nodeOrders.push(node);
 	});
 
-	return nodeOrders.slice();
+	return [...nodeOrders];
 }

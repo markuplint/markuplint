@@ -133,7 +133,7 @@ test('getConsecutiveToken', () => {
 });
 
 test('fromPatterns', () => {
-	const patterns = [/\+|-/, /[0-9]{2}/, /:?/, /[0-9]{2}/];
+	const patterns = [/\+|-/, /\d{2}/, /:?/, /\d{2}/];
 	expect(TokenCollection.fromPatterns('+00:00', patterns).map(t => t.value)).toStrictEqual(['+', '00', ':', '00']);
 	expect(TokenCollection.fromPatterns('+0000', patterns).map(t => t.value)).toStrictEqual(['+', '00', '', '00']);
 	expect(TokenCollection.fromPatterns('+00/00', patterns).map(t => t.value)).toStrictEqual([

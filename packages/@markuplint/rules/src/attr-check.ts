@@ -102,11 +102,11 @@ export function attrCheck(
 		}
 	});
 
-	if (invalidList.some(i => i === false)) {
+	if (invalidList.includes(false)) {
 		return false;
 	}
 
-	const invalid = invalidList.find(i => i);
+	const invalid = invalidList.find(Boolean);
 
 	return invalid ?? false;
 }

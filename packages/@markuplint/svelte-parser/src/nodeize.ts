@@ -328,7 +328,7 @@ export function nodeize(
 					startTag.endCol = firstChild.startCol;
 					startTag.raw = rawHtml.slice(startTag.startOffset, startTag.endOffset);
 				}
-				const lastChild = startTag.childNodes[startTag.childNodes.length - 1];
+				const lastChild = startTag.childNodes.at(-1);
 				if (lastChild && lastChild.endOffset > startTag.endOffset) {
 					const startOffset = lastChild.endOffset;
 					const startLine = lastChild.endLine;
@@ -353,7 +353,7 @@ export function nodeize(
 					};
 				}
 			}
-			return endTag != null ? [startTag, endTag] : startTag;
+			return endTag == null ? startTag : [startTag, endTag];
 		}
 	}
 }

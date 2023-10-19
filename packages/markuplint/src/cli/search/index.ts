@@ -26,7 +26,7 @@ export default async function (files: readonly string[], options: CLIOptions, se
 						verify({ document }) {
 							const nodes = document.querySelectorAll(selectors);
 							locations.push(
-								...Array.from(nodes).map(node => {
+								...[...nodes].map(node => {
 									return {
 										file: document.filename ?? '_NO_FILE_',
 										line: node.startLine,
@@ -45,7 +45,7 @@ export default async function (files: readonly string[], options: CLIOptions, se
 			},
 		},
 	);
-	locations.forEach(loc => {
+	for (const loc of locations) {
 		process.stdout.write(`${loc.file}:${loc.line}:${loc.col}\n`);
-	});
+	}
 }

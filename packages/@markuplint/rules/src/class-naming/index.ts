@@ -22,7 +22,7 @@ export default createRule<Value>({
 				const classList = attr.value
 					.split(/\s+/g)
 					.map(c => c.trim())
-					.filter(c => c);
+					.filter(Boolean);
 				for (const className of classList) {
 					if (!classPatterns.some(pattern => match(className, pattern))) {
 						report({

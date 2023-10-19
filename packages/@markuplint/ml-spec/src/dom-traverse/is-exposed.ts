@@ -191,7 +191,7 @@ function isIncluding(
 			results.push(true);
 		}
 		// Has a global WAI-ARIA attribute
-		for (const attr of Array.from(el.attributes)) {
+		for (const attr of el.attributes) {
 			if (globalAria.some(aria => aria.name === attr.localName)) {
 				results.push(true);
 				break;

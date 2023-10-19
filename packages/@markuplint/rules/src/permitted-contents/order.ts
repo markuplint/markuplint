@@ -66,9 +66,9 @@ export function order(
 				'Result (%s): %s%s',
 				result.type,
 				collection.toString(true),
-				barelyMatchedResult.hint.missing?.barelyMatchedElements != null
-					? `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`
-					: '',
+				barelyMatchedResult.hint.missing?.barelyMatchedElements == null
+					? ''
+					: `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`,
 			);
 
 			return {

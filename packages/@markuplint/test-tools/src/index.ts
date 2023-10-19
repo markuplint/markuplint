@@ -40,7 +40,7 @@ export function createJSDOMElement(
 	const fragment = dom.window.document.createDocumentFragment();
 	const container = dom.window.document.createElement(containerTag);
 	container.innerHTML = html;
-	fragment.append(...Array.from(container.childNodes));
+	fragment.append(...container.childNodes);
 	if (selector) {
 		const el = fragment.querySelector(selector);
 		if (!el) {

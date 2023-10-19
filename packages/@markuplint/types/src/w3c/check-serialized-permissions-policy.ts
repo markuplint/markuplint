@@ -77,7 +77,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 			 * > feature-identifier = 1*( ALPHA / DIGIT / "-")
 			 * > ```
 			 */
-			/[^\s]*/,
+			/\S*/,
 
 			/**
 			 * RWS (Required whitespace)
@@ -104,7 +104,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		 * > feature-identifier = 1*( ALPHA / DIGIT / "-")
 		 * > ```
 		 */
-		if (!featureIdentifier || !featureIdentifier.match(/^[a-z0-9-]+$/i)) {
+		if (!featureIdentifier || !featureIdentifier.matches(/^[\da-z-]+$/i)) {
 			return featureIdentifier!.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'feature-identifier' }],
@@ -130,7 +130,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 
 		const allowListPatterns = [
 			// Value
-			/[^\s]*/,
+			/\S*/,
 			// Separator
 			/\s*/,
 		];
@@ -163,11 +163,11 @@ function _checkSerializedPermissionsPolicy(value: string) {
 				return origin;
 			}
 
-			if (allow.match(['*', "'self'", "'src'", "'none'"], true)) {
+			if (allow.matches(['*', "'self'", "'src'", "'none'"], true)) {
 				continue;
 			}
 
-			if (allow.match(['self', 'src', 'none'], true)) {
+			if (allow.matches(['self', 'src', 'none'], true)) {
 				return allow.unmatched({
 					reason: 'missing-token',
 					expects: [{ type: 'common', value: 'single-quote' }],

@@ -18,9 +18,9 @@ export const checkWeekString: CustomSyntaxChecker = () =>
 			// -
 			/[^W]?/,
 			// W
-			/[^0-9]?/,
+			/\D?/,
 			// ww
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Week: "%s" => %O', tokens.value, tokens);

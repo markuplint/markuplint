@@ -131,9 +131,7 @@ export function getComputedRole(
 	) {
 		const accname =
 			getAccname(el).trim() ||
-			Array.from(el.children)
-				.find(child => ['title', 'desc'].includes(child.localName))
-				?.textContent?.trim();
+			[...el.children].find(child => ['title', 'desc'].includes(child.localName))?.textContent?.trim();
 
 		if (!accname) {
 			return {
@@ -201,20 +199,20 @@ export function getComputedRole(
 	 */
 	if (explicitRole.role) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-		if (nonPresentationalAncestor.role && nonPresentationalAncestor.role?.requiredOwnedElements.length > 0) {
-			if (
-				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
-					// const ancestor = nonPresentationalAncestor.el;
-					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
-					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
-					return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
-				})
-			) {
-				return {
-					...implicitRole,
-					errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
-				};
-			}
+		if (
+			nonPresentationalAncestor.role &&
+			nonPresentationalAncestor.role?.requiredOwnedElements.length > 0 &&
+			nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+				// const ancestor = nonPresentationalAncestor.el;
+				// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
+				// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
+				return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
+			})
+		) {
+			return {
+				...implicitRole,
+				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 
@@ -229,7 +227,7 @@ export function getComputedRole(
 	 * > and an explicit non-presentational role is applied.
 	 */
 	const { props } = ariaSpecs(specs, version);
-	for (const attr of Array.from(el.attributes)) {
+	for (const attr of el.attributes) {
 		if (props.find(p => p.name === attr.name)?.isGlobal) {
 			return {
 				...implicitRole,

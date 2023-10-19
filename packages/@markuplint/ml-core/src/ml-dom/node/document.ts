@@ -2847,11 +2847,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		aria.name = name;
 		aria.focusable = focusable;
 
-		Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
-			if (!prop.required) {
-				if (prop.from === 'default') {
-					return;
-				}
+		for (const prop of Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion))) {
+			if (!prop.required && prop.from === 'default') {
+				continue;
 			}
 			aria.props = aria.props || {};
 
@@ -2861,7 +2859,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				value: prop.value ?? null,
 				required: prop.required,
 			};
-		});
+		}
 
 		return aria;
 	}
@@ -3126,7 +3124,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				return walker(node);
 			}
 			if (type === 'Attr' && node.is(node.ELEMENT_NODE)) {
-				return sequentialWalker(Array.from(node.attributes), attr => walker(attr));
+				return sequentialWalker([...node.attributes], attr => walker(attr));
 			}
 			if (type === 'ElementCloseTag' && node.is(node.ELEMENT_NODE) && node.closeTag) {
 				return walker(node.closeTag);
@@ -3176,10 +3174,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		const ruleMapper = new RuleMapper(this);
 
 		// global rules to #document
-		Object.keys(ruleset.rules).forEach(ruleName => {
+		for (const ruleName of Object.keys(ruleset.rules)) {
 			const rule = ruleset.rules[ruleName];
 			if (rule == null) {
-				return;
+				continue;
 			}
 
 			ruleMapper.set(this, ruleName, {
@@ -3187,7 +3185,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				specificity: [0, 0, 0],
 				rule,
 			});
-		});
+		}
 
 		// add rules to node
 		for (const node of this.nodeList) {
@@ -3196,10 +3194,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			}
 
 			// global rules to each element
-			Object.keys(ruleset.rules).forEach(ruleName => {
+			for (const ruleName of Object.keys(ruleset.rules)) {
 				const rule = ruleset.rules[ruleName];
 				if (rule == null) {
-					return;
+					continue;
 				}
 
 				ruleMapper.set(node, ruleName, {
@@ -3207,7 +3205,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					specificity: [0, 0, 0],
 					rule,
 				});
-			});
+			}
 
 			if (!node.is(node.ELEMENT_NODE) && !node.is(node.TEXT_NODE)) {
 				continue;
@@ -3216,13 +3214,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			const selectorTarget = node.is(node.ELEMENT_NODE) ? node : null;
 
 			// node specs and special rules for node by selector
-			ruleset.nodeRules.forEach(nodeRule => {
+			for (const nodeRule of ruleset.nodeRules) {
 				if (!nodeRule.rules) {
-					return;
+					continue;
 				}
 
 				if (!selectorTarget) {
-					return;
+					continue;
 				}
 
 				const selector = nodeRule.selector ?? nodeRule.regexSelector;
@@ -3230,7 +3228,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				const matches = matchSelector(selectorTarget, selector);
 
 				if (!matches.matched) {
-					return;
+					continue;
 				}
 
 				if (docLog.enabled) {
@@ -3250,7 +3248,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 					const globalRule = ruleset.rules[ruleName];
-					const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+					const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 					ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
 
@@ -3260,31 +3258,31 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						rule: mergedRule,
 					});
 				}
-			});
+			}
 
 			// overwrite rule to child node
 			if (selectorTarget && ruleset.childNodeRules.length > 0) {
 				const descendants: MLNode<T, O>[] = [];
-				const children = Array.from(selectorTarget.childNodes);
+				const children = [...selectorTarget.childNodes];
 				syncWalk(children, childNode => {
 					descendants.push(childNode);
 				});
 
-				ruleset.childNodeRules.forEach(nodeRule => {
+				for (const nodeRule of ruleset.childNodeRules) {
 					if (!nodeRule.rules) {
-						return;
+						continue;
 					}
 					const nodeRuleRules = nodeRule.rules;
 
 					const selector = nodeRule.selector ?? nodeRule.regexSelector;
 
 					if (selector == null) {
-						return;
+						continue;
 					}
 
 					const matches = matchSelector(selectorTarget, selector);
 					if (!matches.matched) {
-						return;
+						continue;
 					}
 
 					if (docLog.enabled) {
@@ -3298,30 +3296,30 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 					const targetDescendants = nodeRule.inheritance ? descendants : children;
 
-					Object.keys(nodeRuleRules).forEach(ruleName => {
+					for (const ruleName of Object.keys(nodeRuleRules)) {
 						const rule = nodeRuleRules[ruleName];
 						if (rule == null) {
-							return;
+							continue;
 						}
 
 						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
-							return;
+							continue;
 						}
 						const globalRule = ruleset.rules[ruleName];
-						const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+						const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 						ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
 
-						targetDescendants.forEach(descendant => {
+						for (const descendant of targetDescendants) {
 							ruleMapper.set(descendant, ruleName, {
 								from: 'childNodeRules',
 								specificity: matches.specificity,
 								rule: mergedRule,
 							});
-						});
-					});
-				});
+						}
+					}
+				}
 			}
 		}
 

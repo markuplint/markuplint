@@ -25,7 +25,7 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 }
 
 export function match(needle: string, pattern: string) {
-	const matches = pattern.match(/^\/(.*)\/(i|g|m)*$/);
+	const matches = pattern.match(/^\/(.*)\/([gim])*$/);
 	if (matches && matches[1]) {
 		const re = matches[1];
 		const flag = matches[2];
@@ -112,7 +112,7 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 
 	if (typeof spec.type === 'string') {
 		if (spec.type[0] === '<') {
-			normalized = normalized.toLowerCase().trim().replace(/\s+/g, ' ');
+			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');
 		}
 	} else {
 		if ('token' in spec.type) {
@@ -123,10 +123,10 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 				normalized = normalized.trim();
 			}
 			if (spec.type.separator === 'space') {
-				normalized = normalized.replace(/\s+/g, ' ');
+				normalized = normalized.replaceAll(/\s+/g, ' ');
 			}
 			if (spec.type.separator === 'comma') {
-				normalized = normalized.replace(/\s*,\s*/g, ',');
+				normalized = normalized.replaceAll(/\s*,\s*/g, ',');
 			}
 		}
 	}
@@ -196,7 +196,7 @@ export class Collection<T> {
 	}
 
 	toArray() {
-		return Object.freeze(Array.from(this.#items));
+		return Object.freeze([...this.#items]);
 	}
 }
 

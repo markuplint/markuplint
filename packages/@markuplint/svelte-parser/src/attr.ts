@@ -10,7 +10,7 @@ const mustacheTag = {
 	end: '}',
 };
 
-const specificBindDirective = ['bind:group', 'bind:this'];
+const specificBindDirective = new Set(['bind:group', 'bind:this']);
 
 export function attr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -47,7 +47,7 @@ export function attr(
 		token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
 	}
 
-	if (!specificBindDirective.includes(token.name.raw) && /^bind:/i.test(token.name.raw)) {
+	if (!specificBindDirective.has(token.name.raw) && /^bind:/i.test(token.name.raw)) {
 		// Remove "bind:"
 		token.potentialName = token.name.raw.slice(5);
 		token.isDirective = undefined;

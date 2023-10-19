@@ -23,6 +23,7 @@ export async function resolveParser(
 	let matched = false;
 
 	for (const pattern of Object.keys(parserConfig)) {
+		// eslint-disable-next-line unicorn/prefer-regexp-test
 		if (path.basename(file.path).match(toRegexp(pattern))) {
 			const modName = parserConfig[pattern];
 			if (!modName) {

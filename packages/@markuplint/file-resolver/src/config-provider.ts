@@ -44,7 +44,7 @@ export class ConfigProvider {
 		}
 		let configSet = await this._mergeConfigs(keys, cache);
 
-		const filePath = Array.from(configSet.files).reverse()[0];
+		const filePath = [...configSet.files].reverse()[0];
 		if (!filePath) {
 			throw new ConfigParserError('Config file not found', {
 				filePath: targetFile.path,
@@ -56,7 +56,7 @@ export class ConfigProvider {
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
 		if (this.#held.size > 0) {
-			const extendHelds = Array.from(this.#held.values());
+			const extendHelds = [...this.#held.values()];
 			for (const held of extendHelds) {
 				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];
 
@@ -179,9 +179,7 @@ export class ConfigProvider {
 				errs.push(...keySet.errs);
 			}
 		}
-		const configs = Array.from(resolvedKeys)
-			.map(name => this.#store.get(name))
-			.filter(nonNullableFilter);
+		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
 		let resultConfig: Config = {};
 		for (const config of configs) {
 			resultConfig = mergeConfig(resultConfig, config);
@@ -233,7 +231,7 @@ export class ConfigProvider {
 			return { stack, errs: null };
 		}
 
-		const depKeys = config.extends !== null ? toNoEmptyStringArrayFromStringOrArray(config.extends) : null;
+		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
 		if (depKeys) {
 			for (const depKey of depKeys) {
 				const keys = await this._recursiveLoad(depKey, cache, depth + 1);
@@ -252,22 +250,23 @@ export class ConfigProvider {
 
 	private _validateConfig(config: Config, filePath: string) {
 		const errors: ConfigParserError[] = [];
-		config.nodeRules?.forEach(rule => {
-			if (rule.selector) {
-				try {
-					createSelector(rule.selector);
-				} catch (error: unknown) {
-					if (error instanceof InvalidSelectorError) {
-						errors.push(
-							new ConfigParserError(error.message, {
-								filePath,
-								raw: rule.selector,
-							}),
-						);
+		if (config.nodeRules)
+			for (const rule of config.nodeRules) {
+				if (rule.selector) {
+					try {
+						createSelector(rule.selector);
+					} catch (error: unknown) {
+						if (error instanceof InvalidSelectorError) {
+							errors.push(
+								new ConfigParserError(error.message, {
+									filePath,
+									raw: rule.selector,
+								}),
+							);
+						}
 					}
 				}
 			}
-		});
 		return errors;
 	}
 }
@@ -336,21 +335,19 @@ async function resolve(dir: string, pathOrModName: string) {
 async function moduleExists(name: string) {
 	try {
 		await import(name);
-	} catch (err) {
-		if (err instanceof Error) {
-			if (/^Parse failure/i.test(err.message)) {
-				return true;
-			}
+	} catch (error) {
+		if (error instanceof Error && /^parse failure/i.test(error.message)) {
+			return true;
 		}
 
 		try {
 			require.resolve(name);
-		} catch (err) {
+		} catch (error) {
 			if (
 				// @ts-ignore
-				'code' in err &&
+				'code' in error &&
 				// @ts-ignore
-				err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+				error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
 			) {
 				// Even if there are issues with the fields,
 				// assume that the module exists and return true.
@@ -359,14 +356,14 @@ async function moduleExists(name: string) {
 
 			if (
 				// @ts-ignore
-				'code' in err &&
+				'code' in error &&
 				// @ts-ignore
-				err.code === 'MODULE_NOT_FOUND'
+				error.code === 'MODULE_NOT_FOUND'
 			) {
 				return false;
 			}
 
-			throw err;
+			throw error;
 		}
 	}
 

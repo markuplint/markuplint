@@ -23,7 +23,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
-		const noTranslateIndex = Array.from(messageTmpl.matchAll(/(?<=\{)[0-9]+(?=\*\})/g)).map(m => m[0]);
+		const noTranslateIndex = new Set([...messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)].map(m => m[0]));
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];
@@ -31,14 +31,14 @@ export function translator(localeSet?: LocaleSet): Translator {
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
-		message = messageTmpl.replace(/\{([0-9]+)(?::([c]))?\}/g, ($0, number, flag) => {
-			const num = parseInt(number);
-			if (isNaN(num)) {
+		message = messageTmpl.replaceAll(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
+			const num = Number.parseInt(number);
+			if (Number.isNaN(num)) {
 				return $0;
 			}
-			const keyword = keywords[num] != null ? toString(keywords[num]!, localeSet?.locale) : '';
+			const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
 			// No translate
-			if (noTranslateIndex.includes(number)) {
+			if (noTranslateIndex.has(number)) {
 				return keyword;
 			}
 			return translateKeyword(keyword, flag, localeSet);
@@ -59,7 +59,7 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 			.map((place, index) => {
 				if (index === strings.raw.length - 1) return place;
 				const value = keys[i];
-				const cFlag = /^c:/.test(typeof value === 'string' ? value : '') ? ':c' : '';
+				const cFlag = (typeof value === 'string' ? value : '').startsWith('c:') ? ':c' : '';
 				return `${place}{${i++}${cFlag}}`;
 			})
 			.join('');
@@ -70,10 +70,10 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) {
 	// No translate
 	if (/^%[^%]+%$/.test(keyword)) {
-		return keyword.replace(/^%|%$/g, '');
+		return keyword.replaceAll(/^%|%$/g, '');
 	}
 	// "%" prefix and suffix escaped
-	keyword = keyword.replace(/^%%|%%$/g, '%');
+	keyword = keyword.replaceAll(/^%%|%%$/g, '%');
 	const key = flag ? `${flag}:${keyword}` : keyword;
 	const replacedWord =
 		// finding with flag
@@ -85,23 +85,26 @@ function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) 
 
 function toString(value: Primitive, locale = 'en') {
 	switch (typeof value) {
-		case 'string':
+		case 'string': {
 			return value;
-		case 'number':
+		}
+		case 'number': {
 			return toLocaleString(value, locale);
-		case 'boolean':
+		}
+		case 'boolean': {
 			return `${value}`;
+		}
 	}
 }
 
 function toLocaleString(value: number, locale: string) {
 	try {
 		return value.toLocaleString(locale);
-	} catch (e: unknown) {
-		if (e instanceof RangeError) {
+	} catch (error: unknown) {
+		if (error instanceof RangeError) {
 			try {
 				return value.toLocaleString('en');
-			} catch (_) {
+			} catch {
 				// void
 			}
 		}
@@ -110,5 +113,5 @@ function toLocaleString(value: number, locale: string) {
 }
 
 function removeNoTranslateMark(message: string) {
-	return message.replace(/(?<=\{[0-9]+)\*(?=\})/g, '');
+	return message.replaceAll(/(?<={\d+)\*(?=})/g, '');
 }

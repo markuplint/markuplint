@@ -24,7 +24,7 @@ export function getAccname(
 		return '';
 	}
 	if (isFromContent(el, version)) {
-		return Array.from(el.childNodes)
+		return [...el.childNodes]
 			.map(child => {
 				if (child.is(child.ELEMENT_NODE)) {
 					return getAccname(child, version);
@@ -46,9 +46,9 @@ function safeGet(
 	try {
 		const name = get(el);
 		return name;
-	} catch (err) {
+	} catch (error) {
 		accnameLog('Raw: %s', el.raw);
-		accnameLog('Error: %O', err);
+		accnameLog('Error: %O', error);
 		return '';
 	}
 }

@@ -30,8 +30,8 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			const prev = lines[violation.line - 2] ?? '';
 			const line = lines[violation.line - 1] ?? '';
 			const next = lines[violation.line - 0] ?? '';
-			const before = line.substring(0, violation.col - 1);
-			const after = line.substring(violation.col - 1 + violation.raw.length);
+			const before = line.slice(0, Math.max(0, violation.col - 1));
+			const after = line.slice(Math.max(0, violation.col - 1 + violation.raw.length));
 			const logger = violation.severity === 'error' ? loggerError : loggerWarning;
 			const meg = messageToString(violation.message, violation.reason);
 

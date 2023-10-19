@@ -35,7 +35,7 @@ export async function fetchText(url: string) {
 			const res = await fetch(url);
 			text = await res.text();
 			cache.set(url, text);
-		} catch (e) {
+		} catch {
 			cache.set(url, '');
 			text = '';
 		}
@@ -49,5 +49,5 @@ export function getReferences() {
 	current += 1;
 	bar.update(current, { process: '🎉 Finished.' });
 	bar.stop();
-	return Array.from(cache.keys()).sort();
+	return [...cache.keys()].sort();
 }

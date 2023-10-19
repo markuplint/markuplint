@@ -5,7 +5,7 @@ import { reTag, reTagName, isPotentialCustomElementName, tokenizer } from '@mark
 import attrTokenizer from './attr-tokenizer.js';
 
 // eslint-disable-next-line no-control-regex
-const reAttrsInStartTag = /\s*[^\x00-\x1f\x7f-\x9f "'>/=]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^\s]*))?/;
+const reAttrsInStartTag = /\s*[^\u0000-\u001F "'/=>\u007F-\u009F]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|\S*))?/;
 const reEndTokens = /(\s*\/)?(\s*)>$/;
 
 type TagTokens = {
@@ -36,14 +36,14 @@ export default function parseRawTag(
 	}
 
 	// eslint-disable-next-line no-control-regex
-	const tagNameSplitted = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C\u0020/>]/);
+	const tagNameSplitted = tagWithAttrs.split(/[\u0000\u0009\u000A\u000C />]/);
 	const tagName = tagNameSplitted[0] || tagNameSplitted[1];
 	if (!tagName || (!reTagName.test(tagName) && !isPotentialCustomElementName(tagName))) {
 		throw new SyntaxError(`Invalid tag name: "${tagName}" in <${tagWithAttrs}>`);
 	}
 
 	const tagStartPos = tagWithAttrs.indexOf(tagName);
-	let rawAttrs = tagWithAttrs.substring(tagStartPos + tagName.length);
+	let rawAttrs = tagWithAttrs.slice(Math.max(0, tagStartPos + tagName.length));
 
 	// console.log({ raw, tagStartPos, tagName, rawAttrs });
 
@@ -60,7 +60,7 @@ export default function parseRawTag(
 			line = attr.endLine;
 			col = attr.endCol;
 			offset = attr.endOffset;
-			rawAttrs = rawAttrs.substr(rawAttr.length);
+			rawAttrs = rawAttrs.slice(rawAttr.length);
 			attrs.push(attr);
 		}
 	}

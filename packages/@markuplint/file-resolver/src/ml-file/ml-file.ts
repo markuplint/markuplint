@@ -111,7 +111,7 @@ export class MLFile {
 	}
 
 	private async _fetch() {
-		const code = await fs.readFile(this.path, { encoding: 'utf-8' });
+		const code = await fs.readFile(this.path, { encoding: 'utf8' });
 		this.#code = code;
 		return code;
 	}
@@ -128,16 +128,16 @@ export class MLFile {
 async function stat(filePath: string) {
 	try {
 		return await fs.stat(filePath);
-	} catch (err) {
+	} catch (error) {
 		if (
 			// @ts-ignore
-			'code' in err &&
+			'code' in error &&
 			// @ts-ignore
-			err.code === 'ENOENT'
+			error.code === 'ENOENT'
 		) {
 			return null;
 		}
-		throw err;
+		throw error;
 	}
 }
 

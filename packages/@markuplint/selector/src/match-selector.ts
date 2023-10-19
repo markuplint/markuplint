@@ -218,7 +218,7 @@ function uncombinedRegexSelect(
 
 	if (selector.attrName) {
 		const selectorAttrName = selector.attrName;
-		const matchedAttrNameList = Array.from(el.attributes).map(attr => {
+		const matchedAttrNameList = [...el.attributes].map(attr => {
 			const attrName = attr.name;
 			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName, isPureHTMLElement(el));
 
@@ -241,7 +241,7 @@ function uncombinedRegexSelect(
 
 	if (selector.attrValue) {
 		const selectorAttrValue = selector.attrValue;
-		const matchedAttrValueList = Array.from(el.attributes).map(attr => {
+		const matchedAttrValueList = [...el.attributes].map(attr => {
 			const attrName = attr.name;
 			const attrValue = attr.value;
 			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue, isPureHTMLElement(el));
@@ -263,7 +263,7 @@ function uncombinedRegexSelect(
 		}
 	}
 
-	const attrSelector = Array.from(specifiedAttr.entries())
+	const attrSelector = [...specifiedAttr.entries()]
 		.map(([name, value]) => {
 			return `[${name}${value ? `="${value}"` : ''}]`;
 		})

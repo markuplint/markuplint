@@ -16,7 +16,7 @@ export function syncWalk<T extends RuleConfigValue, O extends PlainData = undefi
 ) {
 	for (const node of nodeList) {
 		if (node.is(node.ELEMENT_NODE) || node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-			syncWalk(Array.from(node.childNodes), walker);
+			syncWalk([...node.childNodes], walker);
 		}
 		walker(node);
 	}

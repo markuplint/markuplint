@@ -91,7 +91,7 @@ export default createRule<Bullets, Options>({
 });
 
 function isMayListItem(text: string, bullets: Bullets, spaceNeededBullets: readonly string[]) {
-	const textArray = Array.from(text);
+	const textArray = [...text];
 	const firstLetter = textArray[0] ?? '';
 	const isBullet = bullets.includes(firstLetter);
 	const needSpace = spaceNeededBullets.includes(firstLetter);

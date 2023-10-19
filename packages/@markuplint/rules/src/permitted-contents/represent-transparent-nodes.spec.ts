@@ -6,7 +6,7 @@ import { representTransparentNodes, transparentMode } from './represent-transpar
 
 function c(html: string) {
 	const el = createTestElement(`<div>${html}</div>`);
-	const { nodes } = representTransparentNodes(Array.from(el.children), specs, { ignoreHasMutableChildren: true });
+	const { nodes } = representTransparentNodes([...el.children], specs, { ignoreHasMutableChildren: true });
 	return nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : ''));
 }
 

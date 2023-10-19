@@ -12,7 +12,7 @@ export async function fetchHTMLElementLinks() {
 	const $listHeading = $(
 		$('#sidebar-quicklinks summary')
 			.toArray()
-			.filter(el => /html elements/i.test($(el).text()))[0],
+			.find(el => /html elements/i.test($(el).text())),
 	);
 	const $list = $listHeading.siblings('ol,ul');
 	const lists = $list
@@ -55,7 +55,7 @@ export function fetchObsoleteElements(
 
 export async function fetchHTMLElement(link: string) {
 	const $ = await fetch(link);
-	let name = link.replace(/.+\/([a-z0-9_-]+)$/i, '$1').toLowerCase();
+	let name = link.replace(/.+\/([\w-]+)$/i, '$1').toLowerCase();
 	if (name === 'heading_elements') {
 		name = 'h1-h6';
 	}
@@ -68,26 +68,26 @@ export async function fetchHTMLElement(link: string) {
 			.find('> p:first-of-type')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('.seoSummary')
 			.closest('p')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('h1')
 			.next('div')
 			.find('> p:first-of-type')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('.section-content:eq(0)')
 			.find('> p:eq(0)')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ');
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
@@ -98,29 +98,25 @@ export async function fetchHTMLElement(link: string) {
 	let deprecated: true | undefined;
 	let nonStandard: true | undefined;
 
-	/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 	if (isBcTableIsAvailable) {
-		experimental = !!$bcTableFirstRow.find('.ic-experimental').length || undefined;
-		obsolete = !!$bcTableFirstRow.find('.ic-obsolete').length || undefined;
-		deprecated = !!$bcTableFirstRow.find('.ic-deprecated').length || undefined;
-		nonStandard = !!$bcTableFirstRow.find('.ic-non-standard').length || undefined;
+		experimental = $bcTableFirstRow.find('.ic-experimental').length > 0 || undefined;
+		obsolete = $bcTableFirstRow.find('.ic-obsolete').length > 0 || undefined;
+		deprecated = $bcTableFirstRow.find('.ic-deprecated').length > 0 || undefined;
+		nonStandard = $bcTableFirstRow.find('.ic-non-standard').length > 0 || undefined;
 	} else {
 		experimental =
-			!!$article.find('.blockIndicator.experimental, > div .notecard.experimental').length || undefined;
+			$article.find('.blockIndicator.experimental, > div .notecard.experimental').length > 0 || undefined;
 		obsolete =
-			!!$article.find('.obsoleteHeader').length ||
-			!!$('h1')
-				.text()
-				.match(/obsolete/i) ||
-			!!$article.find('> div:first-child .notecard.obsolete').length ||
+			$article.find('.obsoleteHeader').length > 0 ||
+			!!/obsolete/i.test($('h1').text()) ||
+			$article.find('> div:first-child .notecard.obsolete').length > 0 ||
 			undefined;
 		deprecated =
-			!!$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length ||
-			!!$article.find('h1').next().find('.notecard.deprecated').length ||
+			$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length > 0 ||
+			$article.find('h1').next().find('.notecard.deprecated').length > 0 ||
 			undefined;
-		nonStandard = !!$article.find('.nonStandardHeader, h4#Non-standard').length || undefined;
+		nonStandard = $article.find('.nonStandardHeader, h4#Non-standard').length > 0 || undefined;
 	}
-	/* eslint-enable @typescript-eslint/strict-boolean-expressions */
 
 	const categories: Category[] = [];
 	const cat = getProperty($, 'Content categories');
@@ -186,7 +182,7 @@ function getProperty(
 		.siblings('td')
 		.text()
 		.trim()
-		.replace(/(?:\r?\n|\s)+/gi, ' ');
+		.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 }
 
 function getAttributes(
@@ -198,69 +194,66 @@ function getAttributes(
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const attributes: Record<string, Attribute> = {};
-	$outline
-		.find('> div > dl > dt')
-		.toArray()
-		.forEach(dt => {
-			const $dt = $(dt);
-			const name = $dt.find('code').text().trim();
-			if (!name) {
-				return null;
-			}
-			/* eslint-disable @typescript-eslint/strict-boolean-expressions */
-			const $myHeading = getItsHeading($dt);
-			const experimental =
-				!!$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length || undefined;
-			const obsolete =
-				!!$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length ||
-				!!$dt.find('.obsolete').length ||
-				$myHeading?.attr('id') === 'obsolete_attributes' ||
-				undefined;
-			const deprecated =
-				!!$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length ||
-				$myHeading?.attr('id') === 'deprecated_attributes' ||
-				undefined;
-			const nonStandard =
-				!!$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length || undefined;
-			const description = $dt
-				.next('dd')
-				.toArray()
-				.map(el => $(el).text())
-				.join('')
-				.trim()
-				.replace(/(?:\r?\n|\s)+/gi, ' ');
-			/* eslint-enable @typescript-eslint/strict-boolean-expressions */
+	for (const dt of $outline.find('> div > dl > dt').toArray()) {
+		const $dt = $(dt);
+		const name = $dt.find('code').text().trim();
+		if (!name) {
+			null;
+			continue;
+		}
 
-			const current = attributes[name];
-			if (!current) {
-				attributes[name] = {
-					name,
-					type: 'Any',
-					// @ts-ignore
-					description,
-					experimental,
-					obsolete,
-					deprecated,
-					nonStandard,
-				};
-				return;
-			}
+		const $myHeading = getItsHeading($dt);
+		const experimental =
+			$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length > 0 || undefined;
+		const obsolete =
+			$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length > 0 ||
+			$dt.find('.obsolete').length > 0 ||
+			$myHeading?.attr('id') === 'obsolete_attributes' ||
+			undefined;
+		const deprecated =
+			$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length > 0 ||
+			$myHeading?.attr('id') === 'deprecated_attributes' ||
+			undefined;
+		const nonStandard =
+			$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length > 0 || undefined;
+		const description = $dt
+			.next('dd')
+			.toArray()
+			.map(el => $(el).text())
+			.join('')
+			.trim()
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 
-			if (typeof current === 'object' && 'name' in current) {
-				attributes[name] = {
-					// @ts-ignore for key order that "name" is first
-					name,
-					// @ts-ignore for key order that "description" is second
-					description,
-					experimental,
-					obsolete,
-					deprecated,
-					nonStandard,
-					// @ts-ignore
-					...current,
-				};
-			}
-		});
+		const current = attributes[name];
+		if (!current) {
+			attributes[name] = {
+				name,
+				type: 'Any',
+				// @ts-ignore
+				description,
+				experimental,
+				obsolete,
+				deprecated,
+				nonStandard,
+			};
+			continue;
+		}
+
+		if (typeof current === 'object' && 'name' in current) {
+			attributes[name] = {
+				// @ts-ignore for key order that "name" is first
+				name,
+				// @ts-ignore for key order that "description" is second
+				description,
+				experimental,
+				obsolete,
+				deprecated,
+				nonStandard,
+				// @ts-ignore
+				...current,
+			};
+		}
+	}
 	return { attributes };
 }
 

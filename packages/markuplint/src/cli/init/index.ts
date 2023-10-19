@@ -81,7 +81,7 @@ export async function initialize() {
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
-	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
+	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
 	write(`✨Created: ${filePath}`);
 
 	if (autoInstall) {
@@ -89,7 +89,7 @@ export async function initialize() {
 
 		const modules = selectModules(selectedLangs);
 
-		const result = await installModule(modules, true).catch(e => new Error(e));
+		const result = await installModule(modules, true).catch(error_ => new Error(error_));
 		if (result instanceof Error) {
 			error.exit();
 			return;

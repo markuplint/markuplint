@@ -22,7 +22,7 @@ class NodeStore {
 			nodeStoreError('Ref ID: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError(
 				'Map: %O',
-				Array.from(this.#store.entries()).map(([id, node]) => ({
+				[...this.#store.entries()].map(([id, node]) => ({
 					id,
 					name: node.nodeName,
 				})),
@@ -55,7 +55,7 @@ class NodeStore {
 			'Mapped: %s (%s: "%s")',
 			astNode.uuid,
 			astNode.nodeName,
-			astNode.raw.replace(/\n/g, '⏎').replace(/\t/g, '→'),
+			astNode.raw.replaceAll('\n', '⏎').replaceAll('\t', '→'),
 		);
 		this.#store.set(astNode.uuid, node);
 	}

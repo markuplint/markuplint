@@ -40,7 +40,7 @@ export function createTestElement(sourceCode: string, options?: CreateTestOption
 	if (el && el.is(el.ELEMENT_NODE)) {
 		return el;
 	}
-	throw TypeError(`Could not parse it to be an element from: ${sourceCode}`);
+	throw new TypeError(`Could not parse it to be an element from: ${sourceCode}`);
 }
 
 /**

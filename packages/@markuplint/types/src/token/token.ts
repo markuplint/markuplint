@@ -23,7 +23,7 @@ export class Token {
 
 	static getCol(value: string, offset: number) {
 		const lines = value.slice(0, offset).split(/\n/g);
-		return (lines[lines.length - 1] ?? '').length + 1;
+		return (lines.at(-1) ?? '').length + 1;
 	}
 
 	static getLine(value: string, offset: number) {
@@ -36,8 +36,9 @@ export class Token {
 		}
 		if (separators?.includes(value[0] ?? '')) {
 			switch (value[0]) {
-				case ',':
+				case ',': {
 					return Token.Comma;
+				}
 			}
 		}
 		return Token.Ident;
@@ -96,9 +97,9 @@ export class Token {
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	match(value: TokenValue, caseInsensitive?: boolean): boolean {
+	matches(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
-			return value.some(v => this.match(v));
+			return value.some(v => this.matches(v));
 		}
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
@@ -121,8 +122,8 @@ export class Token {
 	}
 
 	toNumber() {
-		const num = parseFloat(this.value);
-		return isNaN(num) ? 0 : num;
+		const num = Number.parseFloat(this.value);
+		return Number.isNaN(num) ? 0 : num;
 	}
 
 	unmatched(

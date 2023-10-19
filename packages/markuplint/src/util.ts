@@ -53,6 +53,7 @@ export function error(message: string) {
 	process.stderr.write(message + '\n');
 }
 
+// eslint-disable-next-line unicorn/no-process-exit
 error.exit = () => process.exit(1);
 
 export const head = (method: string, noColor?: boolean) =>
@@ -69,20 +70,20 @@ export function p(s: number | string, pad: number, start = false) {
 }
 
 export function w(s: string): number {
-	return s.replace(/./g, _ => '0'.repeat(eaw.characterLength(_))).length;
+	return s.replaceAll(/./g, _ => '0'.repeat(eaw.characterLength(_))).length;
 }
 
 export function space(str: string) {
 	return str
-		.replace(/\s+/g, $0 => {
+		.replaceAll(/\s+/g, $0 => {
 			return c.xterm(8)($0);
 		})
-		.replace(/ /g, $0 => '•')
-		.replace(/\t/g, $0 => '→   ');
+		.replaceAll(' ', $0 => '•')
+		.replaceAll('\t', $0 => '→   ');
 }
 
 export function invisibleSpace(str: string) {
-	return str.replace(/\t/g, $0 => '    ').replace(/./g, $0 => ' ');
+	return str.replaceAll('\t', $0 => '    ').replaceAll(/./g, $0 => ' ');
 }
 
 export function messageToString(message: string, reason?: string) {

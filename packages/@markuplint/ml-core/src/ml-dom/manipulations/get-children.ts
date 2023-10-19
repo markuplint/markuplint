@@ -9,7 +9,7 @@ export function getChildren<T extends RuleConfigValue, O extends PlainData = und
 	node: MLNode<T, O>,
 ): HTMLCollectionOf<MLElement<T, O>> {
 	return toHTMLCollection(
-		Array.from(node.childNodes).filter((child): child is MLElement<T, O> => {
+		[...node.childNodes].filter((child): child is MLElement<T, O> => {
 			return child.nodeType === child.ELEMENT_NODE;
 		}),
 	);

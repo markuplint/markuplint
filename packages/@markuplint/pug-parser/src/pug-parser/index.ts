@@ -32,7 +32,7 @@ function mergeTextNode(
 ) {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
-		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] ?? null;
+		const prevNode: ASTNode | null = baseNodes.at(-1) ?? null;
 		if (prevNode && prevNode.type === 'Text' && node.type === 'Text') {
 			prevNode.raw = pug.slice(prevNode.offset, node.endOffset);
 			prevNode.endColumn = node.endColumn;
@@ -460,7 +460,7 @@ function getLocationFromToken(
 	tokens: readonly PugLexToken[],
 	tokenType?: string | readonly string[],
 ) {
-	const tokenTypes = typeof tokenType === 'string' ? (tokenType !== '' ? [tokenType] : null) : tokenType ?? null;
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
 	let tokenOfCurrentNode: PugLexToken | null = null;
 	for (const token of tokens) {
 		if (

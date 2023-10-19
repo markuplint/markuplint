@@ -12,7 +12,7 @@ export const checkMonthString: CustomSyntaxChecker = () =>
 	function checkMonthString(value) {
 		log('CHECK: month-string');
 
-		const tokens = TokenCollection.fromPatterns(value, [/[^-]*/, /[^0-9]?/, /.[0-9]*/]);
+		const tokens = TokenCollection.fromPatterns(value, [/[^-]*/, /\D?/, /.\d*/]);
 
 		log('Month: "%s" => %O', tokens.value, tokens);
 

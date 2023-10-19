@@ -6,7 +6,7 @@ import { matchesSelector } from './matches-selector.js';
 
 function c(model: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`, { specs });
-	const child = Array.from(el.childNodes)[0];
+	const child = [...el.childNodes][0];
 	return matchesSelector(model, child, specs, 0);
 }
 

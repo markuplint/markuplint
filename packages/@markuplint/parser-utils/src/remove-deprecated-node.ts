@@ -24,16 +24,16 @@ export function removeDeprecatedNode(
 	 */
 	const stack: { [pos: string]: number } = {};
 	const removeIndexes: number[] = [];
-	nodeOrders.forEach((node, i) => {
+	for (const [i, node] of nodeOrders.entries()) {
 		if (node.isGhost) {
-			return;
+			continue;
 		}
 		const id = `${node.startLine}:${node.startCol}:${node.endLine}:${node.endCol}`;
 		if (stack[id] != null) {
 			removeIndexes.push(i);
 		}
 		stack[id] = i;
-	});
+	}
 	let r = nodeOrders.length;
 	while (r-- > 0) {
 		if (removeIndexes.includes(r)) {

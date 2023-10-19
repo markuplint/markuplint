@@ -10,7 +10,7 @@ export async function resolvePlugins(pluginPaths?: readonly (string | PluginConf
 
 	const plugins = await Promise.all(pluginPaths.map(p => importPlugin(p)));
 	// Clone
-	return plugins.slice();
+	return [...plugins];
 }
 
 export function cacheClear() {
@@ -41,7 +41,7 @@ async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> 
 		name = config.name
 			.toLowerCase()
 			.replace(/^(?:markuplint-rule-|@markuplint\/rule-)/i, '')
-			.replace(/\s+|\/|\\|\./g, '-');
+			.replaceAll(/\s+|\/|\\|\./g, '-');
 		// eslint-disable-next-line no-console
 		console.info(`The plugin name became "${name}"`);
 	}
@@ -59,7 +59,7 @@ function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
 }
 
 async function failSafeImport<T>(name: string) {
-	const res = await import(name).catch(e => e);
+	const res = await import(name).catch(error => error);
 	if ('code' in res && res === 'MODULE_NOT_FOUND') {
 		return null;
 	}

@@ -8,9 +8,7 @@ export function readJson<T = Record<string, any>>(filePath: string): T {
 	if (!path.isAbsolute(filePath)) {
 		throw new Error(`The path must be absolute path: ${filePath}`);
 	}
-	let json = fs.readFileSync(filePath, {
-		encoding: 'utf-8',
-	});
+	let json = fs.readFileSync(filePath, { encoding: 'utf8' });
 	json = strip(json);
 	return JSON.parse(json) as T;
 }

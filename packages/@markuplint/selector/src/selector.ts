@@ -63,11 +63,11 @@ class Ruleset {
 			parser(root => {
 				selectors.push(...root.nodes);
 			}).processSync(selector);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
+		} catch (error: unknown) {
+			if (error instanceof Error) {
 				throw new InvalidSelectorError(selector);
 			}
-			throw e;
+			throw error;
 		}
 		return new Ruleset(selectors, extended, 0);
 	}
@@ -80,13 +80,11 @@ class Ruleset {
 		const head = this.#selectorGroup[0];
 		this.headCombinator = head?.headCombinator ?? null;
 
-		if (this.headCombinator) {
-			if (depth <= 0) {
-				if (this.#selectorGroup[0]?.selector) {
-					throw new InvalidSelectorError(this.#selectorGroup[0]?.selector);
-				}
-				throw new Error('Combinated selector depth is not expected');
+		if (this.headCombinator && depth <= 0) {
+			if (this.#selectorGroup[0]?.selector) {
+				throw new InvalidSelectorError(this.#selectorGroup[0]?.selector);
 			}
+			throw new Error('Combinated selector depth is not expected');
 		}
 	}
 
@@ -120,12 +118,12 @@ class StructuredSelector {
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
 			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
-		const nodes = this.#selector.nodes.slice();
+		const nodes = [...this.#selector.nodes];
 		if (0 < depth && this.headCombinator) {
 			// eslint-disable-next-line import/no-named-as-default-member
 			nodes.unshift(parser.pseudo({ value: ':scope' }));
 		}
-		nodes.forEach(node => {
+		for (const node of nodes) {
 			switch (node.type) {
 				case 'combinator': {
 					const combinedTarget = new SelectorTarget(extended, depth);
@@ -147,7 +145,7 @@ class StructuredSelector {
 					this.#edge.add(node);
 				}
 			}
-		});
+		}
 	}
 
 	get selector() {
@@ -586,7 +584,7 @@ function attrMatch(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.attributes).some(attrOfEl => {
+	return [...el.attributes].some(attrOfEl => {
 		if (attr.attribute !== attrOfEl.localName) {
 			return false;
 		}
@@ -713,8 +711,8 @@ function pseudoMatch(
 			return {
 				specificity,
 				matched: matched.length > 0,
-				nodes: matched.map(m => m.nodes).flat(),
-				has: matched.map(m => m.has).flat(),
+				nodes: matched.flatMap(m => m.nodes),
+				has: matched.flatMap(m => m.has),
 			};
 		}
 		case ':has': {
@@ -723,9 +721,9 @@ function pseudoMatch(
 			switch (ruleset.headCombinator) {
 				case '+':
 				case '~': {
-					const has = getSiblings(el)
-						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
-						.flat();
+					const has = getSiblings(el).flatMap(sib =>
+						ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched),
+					);
 					if (has.length > 0) {
 						return {
 							specificity,
@@ -740,9 +738,9 @@ function pseudoMatch(
 					};
 				}
 				default: {
-					const has = getDescendants(el)
-						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
-						.flat();
+					const has = getDescendants(el).flatMap(sib =>
+						ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched),
+					);
 					if (has.length > 0) {
 						return {
 							specificity,
@@ -765,8 +763,8 @@ function pseudoMatch(
 			return {
 				specificity: [0, 0, 0],
 				matched: matched.length > 0,
-				nodes: matched.map(m => m.nodes).flat(),
-				has: matched.map(m => m.has).flat(),
+				nodes: matched.flatMap(m => m.nodes),
+				has: matched.flatMap(m => m.has),
 			};
 		}
 		case ':scope': {
@@ -830,6 +828,7 @@ function pseudoMatch(
 				`Unsupported pseudo ${pseudo.toString()} selector yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).`,
 			);
 		}
+		/* eslint-disable unicorn/no-useless-switch-case */
 		case ':dir':
 		case ':lang':
 		case ':any-link':
@@ -865,6 +864,7 @@ function pseudoMatch(
 			}
 			throw new Error(`Unsupported pseudo ${pseudo.toString()} selector.`);
 		}
+		/* eslint-enable unicorn/no-useless-switch-case */
 	}
 }
 
@@ -882,26 +882,21 @@ function getDescendants(
 	el: Element,
 	includeSelf = false,
 ): Element[] {
-	return [
-		...Array.from(el.children)
-			.map(child => getDescendants(child, true))
-			.flat(),
-		...(includeSelf ? [el] : []),
-	];
+	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
 function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.parentElement?.children ?? []);
+	return [...(el.parentElement?.children ?? [])];
 }
 
 function getSpecificity(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	results: readonly SelectorResult[],
 ) {
-	let specificity: Specificity | undefined = undefined;
+	let specificity: Specificity | undefined;
 	for (const result of results) {
 		if (specificity) {
 			const order = compareSpecificity(specificity, result.specificity);

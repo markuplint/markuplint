@@ -96,11 +96,11 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const violations = await core.verify(this.#options?.fix).catch(e => {
-			if (e instanceof Error) {
-				return e;
+		const violations = await core.verify(this.#options?.fix).catch(error => {
+			if (error instanceof Error) {
+				return error;
 			}
-			throw e;
+			throw error;
 		});
 
 		const sourceCode = await this.#file.getCode();
@@ -339,7 +339,7 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 		if (this.#options?.watch) {
 			// It doesn't watch the main HTML file because it may is watched and managed by a language server or text editor or more.
-			this.#watcher.add(Array.from(configSet.files));
+			this.#watcher.add([...configSet.files]);
 		}
 
 		return configSet;

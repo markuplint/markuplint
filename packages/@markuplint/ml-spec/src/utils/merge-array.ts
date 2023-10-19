@@ -7,7 +7,7 @@ export function mergeArray<T extends NamedDefinition>(
 	if (!b) {
 		return a;
 	}
-	const result: T[] = a.slice();
+	const result: T[] = [...a];
 	for (const bItem of b) {
 		const bName = getName(bItem);
 		const aIndex = result.findIndex(item => getName(item) === bName);

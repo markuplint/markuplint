@@ -10,7 +10,7 @@ import UnexpectedCallError from './unexpected-call-error.js';
  *
  * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
  */
-const rawTextElements = ['script', 'style'];
+const rawTextElements = new Set(['script', 'style']);
 
 export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLCharacterData<T, O, MLASTText>
@@ -64,7 +64,7 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
 	 */
 	isRawTextElementContent() {
-		return this.parentElement ? rawTextElements.includes(this.parentElement.nodeName.toLowerCase()) : false;
+		return this.parentElement ? rawTextElements.has(this.parentElement.nodeName.toLowerCase()) : false;
 	}
 
 	/**

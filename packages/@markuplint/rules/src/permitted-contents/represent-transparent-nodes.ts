@@ -51,7 +51,7 @@ export function representTransparentNodes(
 		let unmatched: ChildNode[];
 
 		if (noTransparentModels.length > 0) {
-			const result = order(noTransparentModels, collection.unmatched, specs, options, Infinity);
+			const result = order(noTransparentModels, collection.unmatched, specs, options, Number.POSITIVE_INFINITY);
 			unmatched = result.unmatched;
 		} else {
 			unmatched = collection.unmatched;
