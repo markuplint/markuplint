@@ -125,7 +125,7 @@ export function flattenNodes(
 	 */
 	const result: MLASTNode[] = [];
 	for (const node of nodeOrders) {
-		const prevNode = result[result.length - 1] ?? null;
+		const prevNode = result.at(-1) ?? null;
 		if (node.type === 'text' && prevNode?.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
 			prevNode.endOffset = node.endOffset;

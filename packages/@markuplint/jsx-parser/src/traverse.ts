@@ -21,7 +21,7 @@ export function traverse(
 
 		let node: MLASTNode;
 		if (Array.isArray(nodes)) {
-			const lastNode = nodes[nodes.length - 1];
+			const lastNode = nodes.at(-1);
 			if (!lastNode) {
 				continue;
 			}

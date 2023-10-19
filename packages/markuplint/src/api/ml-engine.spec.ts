@@ -52,7 +52,7 @@ describe('Watcher', () => {
 		// Get config file
 		const files = await configPromise;
 		engine.removeAllListeners();
-		const targetFile = files[files.length - 1]!;
+		const targetFile = files.at(-1)!;
 		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
 		const config = JSON.parse(targetFileOriginData);
 		const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {

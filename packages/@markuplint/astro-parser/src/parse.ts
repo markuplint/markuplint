@@ -160,7 +160,7 @@ function nodeize(
 			let closeExpression: MLASTPreprocessorSpecificBlock | null = null;
 
 			const firstChild = originNode.children[0];
-			const lastChild = originNode.children[originNode.children.length - 1];
+			const lastChild = originNode.children.at(-1);
 			if (firstChild && lastChild && firstChild !== lastChild) {
 				_endOffset = firstChild.position?.end?.offset ?? endOffset;
 				const startLoc = sliceFragment(rawHtml, startOffset, _endOffset);
@@ -312,7 +312,7 @@ function parseElement(
 	let childrenEnd: number;
 	if (originNode.children[0]) {
 		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
-		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
+		childrenEnd = (originNode.children.at(-1)?.position?.end?.offset ?? 0) + offset;
 		const startTagStartOffset = originNode.position.start.offset + offset;
 		const startTagEndOffset = childrenStart;
 		startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);

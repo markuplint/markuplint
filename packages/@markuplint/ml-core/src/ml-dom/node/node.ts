@@ -259,6 +259,7 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
 	 */
 	get lastChild(): MLChildNode<T, O> | null {
+		// eslint-disable-next-line unicorn/prefer-at
 		return this.childNodes[this.childNodes.length - 1] ?? null;
 	}
 

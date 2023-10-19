@@ -4,7 +4,7 @@ export function getLine(html: string, startOffset: number) {
 
 export function getCol(html: string, startOffset: number) {
 	const lines = html.slice(0, startOffset).split(/\n/g);
-	return (lines[lines.length - 1] ?? '').length + 1;
+	return (lines.at(-1) ?? '').length + 1;
 }
 
 export function getEndLine(html: string, line: number) {
