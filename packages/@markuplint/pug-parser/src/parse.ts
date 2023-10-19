@@ -155,12 +155,10 @@ class Parser {
 					offsetLine: originNode.line - 1,
 					offsetColumn: originNode.column - 1,
 				});
-				const nodes = htmlDoc.nodeList;
-				for (const node of nodes) {
-					if (!node.parentNode) {
-						node.parentNode = parentNode;
-					}
-				}
+				const nodes = htmlDoc.nodeList.filter(node => {
+					return node.parentNode == null && node.type !== 'endtag';
+				});
+
 				return nodes;
 			}
 			case 'Comment': {
