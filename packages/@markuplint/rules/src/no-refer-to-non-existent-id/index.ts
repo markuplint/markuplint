@@ -94,7 +94,7 @@ export default createRule({
 					const refs = value
 						.split(spec.type.separator === 'space' ? /\s/ : ',')
 						.map(id => id.trim())
-						.filter(_ => _);
+						.filter(Boolean);
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {
@@ -126,7 +126,7 @@ export default createRule({
 					const refs = value
 						.split(/\s/)
 						.map(id => id.trim())
-						.filter(_ => _);
+						.filter(Boolean);
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {

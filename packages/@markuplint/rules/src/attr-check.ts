@@ -106,7 +106,7 @@ export function attrCheck(
 		return false;
 	}
 
-	const invalid = invalidList.find(i => i);
+	const invalid = invalidList.find(Boolean);
 
 	return invalid ?? false;
 }

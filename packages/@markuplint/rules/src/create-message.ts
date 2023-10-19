@@ -32,7 +32,7 @@ export function createMessageValueExpected(
 	const expected = createExpectedObject(tokenType, matches, t);
 
 	const message = [listDescriptionPart, __createMessageValueExpected(t, target, expected, matches)]
-		.filter(s => s)
+		.filter(Boolean)
 		.join(t('. '));
 
 	return message;
@@ -212,7 +212,9 @@ export function __createMessageValueExpected(
 		fallbackToPart = t('The user agent will automatically use "{0*}" instead', matches.fallbackTo);
 	}
 
-	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart, fallbackToPart].filter(s => s).join(t('. '));
+	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart, fallbackToPart]
+		.filter(Boolean)
+		.join(t('. '));
 
 	if (matches.ref) {
 		message += ` (${matches.ref})`;
