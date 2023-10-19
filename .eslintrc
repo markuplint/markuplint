@@ -180,6 +180,12 @@
 				"@typescript-eslint/no-var-requires": 0,
 				"@typescript-eslint/prefer-readonly-parameter-types": 0
 			}
+		},
+		{
+			"files": ["./packages/@markuplint/create-rule-helper/scaffold/**/*"],
+			"rules": {
+				"unicorn/filename-case": 0
+			}
 		}
 	]
 }
