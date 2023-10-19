@@ -38,7 +38,7 @@
 		"@markuplint/shared": "4.0.0-alpha.3",
 		"@types/cli-color": "^2.0.4",
 		"@types/debug": "^4.1.10",
-		"@types/uuid": "^9.0.4",
+		"@types/uuid": "^9.0.6",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
@@ -53,7 +53,7 @@
 		"os-locale": "^6.0.2",
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "^7.1.0",
-		"type-fest": "^4.3.1",
+		"type-fest": "^4.5.0",
 		"uuid": "^9.0.1"
 	}
 }

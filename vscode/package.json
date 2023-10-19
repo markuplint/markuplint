@@ -86,8 +86,8 @@
 	},
 	"devDependencies": {
 		"@types/node": "18.15",
-		"@types/semver": "7.5.3",
-		"@types/vscode": "1.83.0",
+		"@types/semver": "7.5.4",
+		"@types/vscode": "1.83.1",
 		"@vscode/vsce": "2.21.1",
 		"typescript": "5.2.2"
 	},
