@@ -23,16 +23,16 @@ import search from './search/index.js';
 	}
 
 	if (cli.flags.init) {
-		await initialize().catch(err => {
-			process.stderr.write(err + '\n');
+		await initialize().catch(error => {
+			process.stderr.write(error + '\n');
 			process.exit(1);
 		});
 		return;
 	}
 
 	if (cli.flags.createRule) {
-		await createRule().catch(err => {
-			process.stderr.write(err + '\n');
+		await createRule().catch(error => {
+			process.stderr.write(error + '\n');
 			process.exit(1);
 		});
 		return;
@@ -41,15 +41,15 @@ import search from './search/index.js';
 	const files = cli.input;
 	if (files.length > 0) {
 		if (cli.flags.search) {
-			await search(files, cli.flags, cli.flags.search).catch(err => {
-				process.stderr.write(err + '\n');
+			await search(files, cli.flags, cli.flags.search).catch(error => {
+				process.stderr.write(error + '\n');
 				process.exit(1);
 			});
 			return;
 		}
 
-		const hasError = await command(files, cli.flags).catch(err => {
-			throw err;
+		const hasError = await command(files, cli.flags).catch(error => {
+			throw error;
 		});
 		process.exit(hasError ? 1 : 0);
 	}
@@ -61,8 +61,8 @@ import search from './search/index.js';
 					const hasError = await command([{ sourceCode: stdin }], {
 						...cli.flags,
 						ignoreExt: true,
-					}).catch(err => {
-						process.stderr.write(err + '\n');
+					}).catch(error => {
+						process.stderr.write(error + '\n');
 						process.exit(1);
 					});
 					process.exit(hasError ? 1 : 0);
@@ -70,9 +70,9 @@ import search from './search/index.js';
 				// result is empty
 				cli.showHelp(1);
 			})
-			.catch(reason => {
+			.catch(error => {
 				// eslint-disable-next-line no-console
-				console.warn(reason);
+				console.warn(error);
 				process.exit(1);
 			});
 	} else {

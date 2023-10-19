@@ -20,16 +20,16 @@ export const parse: Parse = (rawCode, options) => {
 
 	try {
 		ast = vueParse(rawCode);
-	} catch (err) {
-		if (err instanceof SyntaxError && 'lineNumber' in err && 'column' in err) {
+	} catch (error) {
+		if (error instanceof SyntaxError && 'lineNumber' in error && 'column' in error) {
 			throw new ParserError(
 				// @ts-ignore
-				err.message,
+				error.message,
 				{
 					// @ts-ignore
-					line: err.lineNumber,
+					line: error.lineNumber,
 					// @ts-ignore
-					col: err.column,
+					col: error.column,
 					raw: '',
 				},
 			);
@@ -37,7 +37,7 @@ export const parse: Parse = (rawCode, options) => {
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+			parseError: error instanceof Error ? error.message : new Error(`${error}`).message,
 		};
 	}
 

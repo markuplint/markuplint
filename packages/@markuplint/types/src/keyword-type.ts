@@ -42,12 +42,12 @@ function _checkKeywordType(value: string, type: KeywordDefinedType): Result {
 		log('The "%s" type is not defined in custom type identifier markuplint specified', type);
 		try {
 			return cssSyntaxMatch(value, type as CssSyntax);
-		} catch (e) {
-			if (e instanceof Error && e.message === 'MARKUPLINT_TYPE_NO_EXIST') {
+		} catch (error) {
+			if (error instanceof Error && error.message === 'MARKUPLINT_TYPE_NO_EXIST') {
 				log("Allow all of any value because the type doesn't exist");
 				return matched();
 			}
-			throw e;
+			throw error;
 		}
 	}
 

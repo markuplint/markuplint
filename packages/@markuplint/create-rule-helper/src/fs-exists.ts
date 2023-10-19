@@ -1,11 +1,11 @@
 import { stat } from 'node:fs/promises';
 
 export async function fsExists(path: string) {
-	const res = await stat(path).catch(e => {
-		if (e?.code === 'ENOENT') {
+	const res = await stat(path).catch(error => {
+		if (error?.code === 'ENOENT') {
 			return null;
 		}
-		throw e;
+		throw error;
 	});
 
 	return !!res;

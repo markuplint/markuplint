@@ -89,7 +89,7 @@ export async function initialize() {
 
 		const modules = selectModules(selectedLangs);
 
-		const result = await installModule(modules, true).catch(e => new Error(e));
+		const result = await installModule(modules, true).catch(error_ => new Error(error_));
 		if (result instanceof Error) {
 			error.exit();
 			return;

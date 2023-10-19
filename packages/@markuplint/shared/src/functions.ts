@@ -84,10 +84,10 @@ export function decodeEntities(text: string) {
 export function decodeHref(href: string) {
 	try {
 		return decodeURIComponent(href);
-	} catch (e: unknown) {
-		if (e instanceof URIError) {
+	} catch (error: unknown) {
+		if (error instanceof URIError) {
 			return href;
 		}
-		throw e;
+		throw error;
 	}
 }

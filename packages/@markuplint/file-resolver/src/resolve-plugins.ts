@@ -59,7 +59,7 @@ function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
 }
 
 async function failSafeImport<T>(name: string) {
-	const res = await import(name).catch(e => e);
+	const res = await import(name).catch(error => error);
 	if ('code' in res && res === 'MODULE_NOT_FOUND') {
 		return null;
 	}

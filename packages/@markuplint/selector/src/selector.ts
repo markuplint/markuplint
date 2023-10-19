@@ -63,11 +63,11 @@ class Ruleset {
 			parser(root => {
 				selectors.push(...root.nodes);
 			}).processSync(selector);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
+		} catch (error: unknown) {
+			if (error instanceof Error) {
 				throw new InvalidSelectorError(selector);
 			}
-			throw e;
+			throw error;
 		}
 		return new Ruleset(selectors, extended, 0);
 	}

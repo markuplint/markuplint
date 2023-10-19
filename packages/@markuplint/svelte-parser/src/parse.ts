@@ -27,18 +27,18 @@ export const parse: Parse = (rawCode, options) => {
 	let ast: SvelteNode[];
 	try {
 		ast = svelteParse(blocks.replaced);
-	} catch (err) {
-		if (err instanceof Error && 'start' in err && 'end' in err && 'frame' in err) {
+	} catch (error) {
+		if (error instanceof Error && 'start' in error && 'end' in error && 'frame' in error) {
 			// @ts-ignore
-			const raw = rawCode.slice(err.start.character, err.end.character);
+			const raw = rawCode.slice(error.start.character, error.end.character);
 			throw new ParserError(
 				// @ts-ignore
-				err.message + '\n' + err.frame,
+				error.message + '\n' + error.frame,
 				{
 					// @ts-ignore
-					line: err.start.line,
+					line: error.start.line,
 					// @ts-ignore
-					col: err.start.column,
+					col: error.start.column,
 					raw,
 				},
 			);
@@ -46,7 +46,7 @@ export const parse: Parse = (rawCode, options) => {
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+			parseError: error instanceof Error ? error.message : new Error(`${error}`).message,
 		};
 	}
 

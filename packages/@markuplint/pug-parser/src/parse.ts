@@ -33,23 +33,23 @@ export const parse: Parse = (rawCode, options) => {
 	try {
 		const parser = new Parser(rawCode);
 		nodeList = parser.getNodeList();
-	} catch (err) {
+	} catch (error) {
 		nodeList = [];
-		if (err instanceof Error && 'msg' in err && 'line' in err && 'column' in err && 'src' in err) {
+		if (error instanceof Error && 'msg' in error && 'line' in error && 'column' in error && 'src' in error) {
 			throw new ParserError(
 				// @ts-ignore
-				err.msg,
+				error.msg,
 				{
 					// @ts-ignore
-					line: err.line,
+					line: error.line,
 					// @ts-ignore
-					col: err.column,
+					col: error.column,
 					// @ts-ignore
-					raw: err.src,
+					raw: error.src,
 				},
 			);
 		}
-		unknownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
+		unknownParseError = error instanceof Error ? error.message : new Error(`${error}`).message;
 	}
 
 	return {

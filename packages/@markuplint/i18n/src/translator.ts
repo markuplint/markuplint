@@ -97,8 +97,8 @@ function toString(value: Primitive, locale = 'en') {
 function toLocaleString(value: number, locale: string) {
 	try {
 		return value.toLocaleString(locale);
-	} catch (e: unknown) {
-		if (e instanceof RangeError) {
+	} catch (error: unknown) {
+		if (error instanceof RangeError) {
 			try {
 				return value.toLocaleString('en');
 			} catch (_) {

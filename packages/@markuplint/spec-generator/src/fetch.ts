@@ -35,7 +35,7 @@ export async function fetchText(url: string) {
 			const res = await fetch(url);
 			text = await res.text();
 			cache.set(url, text);
-		} catch (e) {
+		} catch (error) {
 			cache.set(url, '');
 			text = '';
 		}

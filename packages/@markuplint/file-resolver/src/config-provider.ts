@@ -336,21 +336,21 @@ async function resolve(dir: string, pathOrModName: string) {
 async function moduleExists(name: string) {
 	try {
 		await import(name);
-	} catch (err) {
-		if (err instanceof Error) {
-			if (/^parse failure/i.test(err.message)) {
+	} catch (error) {
+		if (error instanceof Error) {
+			if (/^parse failure/i.test(error.message)) {
 				return true;
 			}
 		}
 
 		try {
 			require.resolve(name);
-		} catch (err) {
+		} catch (error) {
 			if (
 				// @ts-ignore
-				'code' in err &&
+				'code' in error &&
 				// @ts-ignore
-				err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+				error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
 			) {
 				// Even if there are issues with the fields,
 				// assume that the module exists and return true.
@@ -359,14 +359,14 @@ async function moduleExists(name: string) {
 
 			if (
 				// @ts-ignore
-				'code' in err &&
+				'code' in error &&
 				// @ts-ignore
-				err.code === 'MODULE_NOT_FOUND'
+				error.code === 'MODULE_NOT_FOUND'
 			) {
 				return false;
 			}
 
-			throw err;
+			throw error;
 		}
 	}
 

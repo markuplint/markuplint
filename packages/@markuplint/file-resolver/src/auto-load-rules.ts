@@ -26,8 +26,8 @@ export async function autoLoadRules(ruleset: Ruleset) {
 			if (!(seed && 'defaultValue' in seed && 'defaultOptions' in seed && 'verify' in seed)) {
 				seed = null;
 			}
-		} catch (e) {
-			errors.push(e);
+		} catch (error) {
+			errors.push(error);
 		}
 
 		if (seed) {
@@ -47,8 +47,8 @@ export async function autoLoadRules(ruleset: Ruleset) {
 			if (!(seed && 'defaultValue' in seed && 'defaultOptions' in seed && 'verify' in seed)) {
 				seed = null;
 			}
-		} catch (e) {
-			errors.push(e);
+		} catch (error) {
+			errors.push(error);
 		}
 
 		if (seed) {
