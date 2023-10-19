@@ -35,6 +35,7 @@ export async function mlTest(
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
+	// eslint-disable-next-line unicorn/no-object-as-default-parameter
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
 		rule?: Rule<T, Partial<O>>;
 		nodeRule?: NodeRule<T, Partial<O>>[];
