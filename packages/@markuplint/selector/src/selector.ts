@@ -901,7 +901,7 @@ function getSpecificity(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	results: readonly SelectorResult[],
 ) {
-	let specificity: Specificity | undefined = undefined;
+	let specificity: Specificity | undefined;
 	for (const result of results) {
 		if (specificity) {
 			const order = compareSpecificity(specificity, result.specificity);
