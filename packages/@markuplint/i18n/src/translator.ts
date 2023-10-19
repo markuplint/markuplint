@@ -31,7 +31,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
-		message = messageTmpl.replace(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
+		message = messageTmpl.replaceAll(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
 			const num = Number.parseInt(number);
 			if (Number.isNaN(num)) {
 				return $0;
@@ -70,10 +70,10 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
 function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) {
 	// No translate
 	if (/^%[^%]+%$/.test(keyword)) {
-		return keyword.replace(/^%|%$/g, '');
+		return keyword.replaceAll(/^%|%$/g, '');
 	}
 	// "%" prefix and suffix escaped
-	keyword = keyword.replace(/^%%|%%$/g, '%');
+	keyword = keyword.replaceAll(/^%%|%%$/g, '%');
 	const key = flag ? `${flag}:${keyword}` : keyword;
 	const replacedWord =
 		// finding with flag
@@ -110,5 +110,5 @@ function toLocaleString(value: number, locale: string) {
 }
 
 function removeNoTranslateMark(message: string) {
-	return message.replace(/(?<={\d+)\*(?=})/g, '');
+	return message.replaceAll(/(?<={\d+)\*(?=})/g, '');
 }

@@ -91,7 +91,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const description = $el
 			.find('.role-description p')
 			.toArray()
-			.map(p => $(p).text().trim().replace(/\s+/g, ' ').replace(/\t+/g, ''))
+			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
 		const $features = $el.find('.role-features tr');
 		const generalization = $features
@@ -115,7 +115,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.map(el => {
 				const text = $(el).text().trim();
 				if (/owned\s+by|with\s+parent/i.test(text)) {
-					return text.replace(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gim, '$2 > $1');
+					return text.replaceAll(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gim, '$2 > $1');
 				}
 				return text;
 			});
@@ -125,7 +125,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				$(el)
 					.text()
 					.trim()
-					.replace(/\s+(owning|→|with\s+child)\s+/gi, ' > '),
+					.replaceAll(/\s+(owning|→|with\s+child)\s+/gi, ' > '),
 			);
 		const accessibleNameRequired = !!/true/i.test($features.find('.role-namerequired').text());
 		const accessibleNameFromAuthor = !!/author/i.test($features.find('.role-namefrom').text());
@@ -221,7 +221,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			const name = $($tr)
 				.find('.value-name')
 				.text()
-				.replace(/\(default\)\s*:?/gi, '')
+				.replaceAll(/\(default\)\s*:?/gi, '')
 				.trim();
 			const desc = $($tr).find('.value-description').text().trim();
 			valueDescriptions[name] = desc;
@@ -234,7 +234,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 				.map(el =>
 					$(el)
 						.text()
-						.replace(/\(default\)\s*:?/gi, '')
+						.replaceAll(/\(default\)\s*:?/gi, '')
 						.trim(),
 				);
 			enumValues.push(...values);
@@ -243,7 +243,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 		const defaultValue =
 			$defaultValue
 				.text()
-				.replace(/\(default\)/gi, '')
+				.replaceAll(/\(default\)/gi, '')
 				.trim() || undefined;
 		const isGlobal = globalStatesAndProperties.has(name) || undefined;
 

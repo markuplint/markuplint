@@ -142,7 +142,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 function detectName(def: `<${string}>`) {
 	const isProp = def.search("<'") === 0;
-	const name = def.replace(/^<'?|'?>$/g, '');
+	const name = def.replaceAll(/^<'?|'?>$/g, '');
 	return {
 		isProp,
 		name,
@@ -170,9 +170,9 @@ function eachMimicCases(
 }
 
 function mimicCases(value: string) {
-	return value.replace(/[A-Z]/g, $0 => `${MIMIC_TAG_L}${$0}${MIMIC_TAG_R}`);
+	return value.replaceAll(/[A-Z]/g, $0 => `${MIMIC_TAG_L}${$0}${MIMIC_TAG_R}`);
 }
 
 function deMimicCases(value: string) {
-	return value.replace(new RegExp(`${MIMIC_TAG_L}([A-Z])${MIMIC_TAG_R}`, 'g'), (_, $1) => $1);
+	return value.replaceAll(new RegExp(`${MIMIC_TAG_L}([A-Z])${MIMIC_TAG_R}`, 'g'), (_, $1) => $1);
 }

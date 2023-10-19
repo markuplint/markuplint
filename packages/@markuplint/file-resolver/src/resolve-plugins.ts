@@ -41,7 +41,7 @@ async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> 
 		name = config.name
 			.toLowerCase()
 			.replace(/^(?:markuplint-rule-|@markuplint\/rule-)/i, '')
-			.replace(/\s+|\/|\\|\./g, '-');
+			.replaceAll(/\s+|\/|\\|\./g, '-');
 		// eslint-disable-next-line no-console
 		console.info(`The plugin name became "${name}"`);
 	}

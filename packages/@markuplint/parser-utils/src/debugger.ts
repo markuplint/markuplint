@@ -62,5 +62,5 @@ function tokenDebug<N extends MLToken>(n: N, type = '') {
 }
 
 function visibleWhiteSpace(chars: string) {
-	return chars.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣');
+	return chars.replaceAll('\n', '⏎').replaceAll('\t', '→').replaceAll(/\s/g, '␣');
 }

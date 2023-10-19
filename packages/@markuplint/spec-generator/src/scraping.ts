@@ -68,26 +68,26 @@ export async function fetchHTMLElement(link: string) {
 			.find('> p:first-of-type')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('.seoSummary')
 			.closest('p')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('h1')
 			.next('div')
 			.find('> p:first-of-type')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ') ||
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
 		$article
 			.find('.section-content:eq(0)')
 			.find('> p:eq(0)')
 			.text()
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ');
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
@@ -182,7 +182,7 @@ function getProperty(
 		.siblings('td')
 		.text()
 		.trim()
-		.replace(/(?:\r?\n|\s)+/gi, ' ');
+		.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 }
 
 function getAttributes(
@@ -222,7 +222,7 @@ function getAttributes(
 			.map(el => $(el).text())
 			.join('')
 			.trim()
-			.replace(/(?:\r?\n|\s)+/gi, ' ');
+			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
 
 		const current = attributes[name];
 		if (!current) {

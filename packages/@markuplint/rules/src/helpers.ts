@@ -112,7 +112,7 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 
 	if (typeof spec.type === 'string') {
 		if (spec.type[0] === '<') {
-			normalized = normalized.toLowerCase().trim().replace(/\s+/g, ' ');
+			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');
 		}
 	} else {
 		if ('token' in spec.type) {
@@ -123,10 +123,10 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 				normalized = normalized.trim();
 			}
 			if (spec.type.separator === 'space') {
-				normalized = normalized.replace(/\s+/g, ' ');
+				normalized = normalized.replaceAll(/\s+/g, ' ');
 			}
 			if (spec.type.separator === 'comma') {
-				normalized = normalized.replace(/\s*,\s*/g, ',');
+				normalized = normalized.replaceAll(/\s*,\s*/g, ',');
 			}
 		}
 	}

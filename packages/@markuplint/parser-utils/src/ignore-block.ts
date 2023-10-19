@@ -18,7 +18,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 			(startTag, taggedCode, endTag) => {
 				const mask =
 					maskChar.repeat(startTag.length) +
-					taggedCode.replace(/[^\n]/g, maskChar) +
+					taggedCode.replaceAll(/[^\n]/g, maskChar) +
 					maskChar.repeat((endTag ?? '').length);
 				return mask;
 			},
@@ -30,7 +30,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 		const text = maskText(tag.start, tag.end, replaced, (startTag, taggedCode, endTag) => {
 			const mask =
 				maskChar.repeat(startTag.length) +
-				taggedCode.replace(/[^\n]/g, maskChar) +
+				taggedCode.replaceAll(/[^\n]/g, maskChar) +
 				maskChar.repeat((endTag ?? '').length);
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;

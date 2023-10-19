@@ -40,7 +40,7 @@ async function forceImportJsonInModule(modPath: string) {
 
 		const normalizePath = absPath
 			.replace(/^file:\/\//, '')
-			.replace(/\//g, path.sep)
+			.replaceAll('/', path.sep)
 			// Windows
 			.replace(/^[/\\][a-z]:/i, '');
 		log('Find JSON file path: %s', normalizePath);

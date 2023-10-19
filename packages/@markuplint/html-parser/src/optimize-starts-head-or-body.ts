@@ -9,7 +9,7 @@ export function isStartsHeadTagOrBodyTag(rawCode: string) {
 export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string) {
 	const heads: string[] = [];
 	const bodies: string[] = [];
-	const code = rawCode.replace(
+	const code = rawCode.replaceAll(
 		// eslint-disable-next-line no-control-regex
 		/(?<=<\/?)(?:head|body)(?=\u0009|\u000A|\u000C| |\/|>|\u0000)/gi,
 		tag => {

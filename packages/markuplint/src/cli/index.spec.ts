@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint.mjs');
 
-const escape = (path: string) => path.replace(/\\/g, '\\\\'); // For Windows
+const escape = (path: string) => path.replaceAll('\\', '\\\\'); // For Windows
 
 describe('STDOUT Test', () => {
 	test('empty', async () => {

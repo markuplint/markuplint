@@ -55,7 +55,7 @@ class NodeStore {
 			'Mapped: %s (%s: "%s")',
 			astNode.uuid,
 			astNode.nodeName,
-			astNode.raw.replace(/\n/g, '⏎').replace(/\t/g, '→'),
+			astNode.raw.replaceAll('\n', '⏎').replaceAll('\t', '→'),
 		);
 		this.#store.set(astNode.uuid, node);
 	}
