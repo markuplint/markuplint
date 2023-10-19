@@ -591,7 +591,7 @@ export function getMaxWeekNum(year: number) {
 		const day = d.getDay();
 		d.setDate(d.getDate() + 4 - (day > 0 ? day : 7));
 		const yearStart = new Date(d.getFullYear(), 0, 1);
-		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86400000 + 1) / 7);
+		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86_400_000 + 1) / 7);
 		if (weekNo !== 1) {
 			return weekNo;
 		}
