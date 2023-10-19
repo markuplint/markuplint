@@ -43,7 +43,7 @@ export default function parseRawTag(
 	}
 
 	const tagStartPos = tagWithAttrs.indexOf(tagName);
-	let rawAttrs = tagWithAttrs.substring(tagStartPos + tagName.length);
+	let rawAttrs = tagWithAttrs.slice(Math.max(0, tagStartPos + tagName.length));
 
 	// console.log({ raw, tagStartPos, tagName, rawAttrs });
 
@@ -60,7 +60,7 @@ export default function parseRawTag(
 			line = attr.endLine;
 			col = attr.endCol;
 			offset = attr.endOffset;
-			rawAttrs = rawAttrs.substr(rawAttr.length);
+			rawAttrs = rawAttrs.slice(rawAttr.length);
 			attrs.push(attr);
 		}
 	}
