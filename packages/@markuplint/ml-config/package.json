@@ -27,10 +27,10 @@
 		"@markuplint/ml-ast": "4.0.0-alpha.3",
 		"@markuplint/selector": "4.0.0-alpha.3",
 		"@markuplint/shared": "4.0.0-alpha.3",
-		"@types/mustache": "^4.2.3",
+		"@types/mustache": "^4.2.4",
 		"deepmerge": "^4.3.1",
 		"is-plain-object": "^5.0.0",
 		"mustache": "^4.2.0",
-		"type-fest": "^4.4.0"
+		"type-fest": "^4.5.0"
 	}
 }
