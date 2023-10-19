@@ -36,7 +36,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					});
 				}
 
-				if (!p.match('P', false)) {
+				if (!p.matches('P', false)) {
 					return p.unmatched({
 						reason: 'unexpected-token',
 						expects: [{ type: 'const', value: 'P' }],
@@ -57,7 +57,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 				log('Date part: "%s" => %O', d.value, { num, sign });
 
-				if (!num.match(/^\d+$/)) {
+				if (!num.matches(/^\d+$/)) {
 					return num.unmatched({
 						reason: 'unexpected-token',
 						expects: [],
@@ -72,7 +72,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					});
 				}
 
-				if (!sign.match('D', false)) {
+				if (!sign.matches('D', false)) {
 					return sign.unmatched({
 						reason: 'unexpected-token',
 						expects: [{ type: 'const', value: 'D' }],
@@ -94,7 +94,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					});
 				}
 
-				if (!t.match('T', false)) {
+				if (!t.matches('T', false)) {
 					return t.unmatched({
 						reason: 'unexpected-token',
 						expects: [{ type: 'const', value: 'T' }],
@@ -157,7 +157,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 					log('Time part (h|m|s): "%s" => %O', t.value, { num, dpfp, sign });
 
-					if (!num.match(/^\d+$/)) {
+					if (!num.matches(/^\d+$/)) {
 						return num.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'common', value: 'number' }],
@@ -174,7 +174,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 
 						log('Second fractional part (h|m|s): "%s" => %O', dpfp.value, { dp, fp });
 
-						if (!dp.match('.')) {
+						if (!dp.matches('.')) {
 							return dp.unmatched({
 								reason: 'unexpected-token',
 								expects: [],
@@ -189,7 +189,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 							});
 						}
 
-						if (!fp.match(/^\d+$/)) {
+						if (!fp.matches(/^\d+$/)) {
 							return fp.unmatched({
 								reason: 'unexpected-token',
 								expects: [],
@@ -219,7 +219,7 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (specified.has('M') && sign.match('H', false)) {
+					if (specified.has('M') && sign.matches('H', false)) {
 						return sign.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'const', value: 'S' }],
@@ -228,9 +228,9 @@ export const checkDurationISO8601LikeString: CustomSyntaxChecker = () =>
 					}
 
 					if (
-						!sign.match(['H', 'M', 'S'], false) ||
-						(sign.match('H', false) && specified.has('H')) ||
-						(sign.match('M', false) && specified.has('M'))
+						!sign.matches(['H', 'M', 'S'], false) ||
+						(sign.matches('H', false) && specified.has('H')) ||
+						(sign.matches('M', false) && specified.has('M'))
 					) {
 						return sign.unmatched({
 							reason: 'unexpected-token',
@@ -335,7 +335,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (!fp.match(/\d+/)) {
+					if (!fp.matches(/\d+/)) {
 						return fp.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'common', value: 'fractional part' }],
@@ -380,7 +380,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (dpfp && dpfp.value && unit.match(['w', 'd', 'h', 'm'])) {
+					if (dpfp && dpfp.value && unit.matches(['w', 'd', 'h', 'm'])) {
 						return unit.unmatched({
 							reason: 'unexpected-token',
 							expects: [{ type: 'const', value: 's' }],
@@ -388,7 +388,7 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 						});
 					}
 
-					if (!unit.match(['w', 'd', 'h', 'm', 's'])) {
+					if (!unit.matches(['w', 'd', 'h', 'm', 's'])) {
 						return unit.unmatched({
 							reason: 'unexpected-token',
 							expects,

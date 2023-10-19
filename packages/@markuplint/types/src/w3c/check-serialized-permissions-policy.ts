@@ -104,7 +104,7 @@ function _checkSerializedPermissionsPolicy(value: string) {
 		 * > feature-identifier = 1*( ALPHA / DIGIT / "-")
 		 * > ```
 		 */
-		if (!featureIdentifier || !featureIdentifier.match(/^[\da-z-]+$/i)) {
+		if (!featureIdentifier || !featureIdentifier.matches(/^[\da-z-]+$/i)) {
 			return featureIdentifier!.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'common', value: 'feature-identifier' }],
@@ -163,11 +163,11 @@ function _checkSerializedPermissionsPolicy(value: string) {
 				return origin;
 			}
 
-			if (allow.match(['*', "'self'", "'src'", "'none'"], true)) {
+			if (allow.matches(['*', "'self'", "'src'", "'none'"], true)) {
 				continue;
 			}
 
-			if (allow.match(['self', 'src', 'none'], true)) {
+			if (allow.matches(['self', 'src', 'none'], true)) {
 				return allow.unmatched({
 					reason: 'missing-token',
 					expects: [{ type: 'common', value: 'single-quote' }],

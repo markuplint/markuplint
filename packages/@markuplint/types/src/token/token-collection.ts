@@ -331,7 +331,7 @@ export class TokenCollection extends Array<Token> {
 			} else if (result && !firstUnmatched && result.matched) {
 				return result;
 			} else {
-				if (head?.value && !head.match(/^\s*$/)) {
+				if (head?.value && !head.matches(/^\s*$/)) {
 					passCount += 4 * wait;
 				}
 			}
@@ -397,7 +397,7 @@ export class TokenCollection extends Array<Token> {
 	 * @param value The token value or the token type or its list
 	 */
 	has(value: TokenValue) {
-		return this.some(t => t.match(value));
+		return this.some(t => t.matches(value));
 	}
 
 	headAndTail(): { head: Token | null; tail: TokenCollection } {

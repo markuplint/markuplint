@@ -46,7 +46,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				});
 			}
 
-			if (sign.match('Z')) {
+			if (sign.matches('Z')) {
 				if (tail.value) {
 					return (
 						tail[0]?.unmatched({
@@ -58,7 +58,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				return matched();
 			}
 
-			if (!sign.match(['+', '-'])) {
+			if (!sign.matches(['+', '-'])) {
 				return sign.unmatched({
 					reason: 'unexpected-token',
 					expects: [
@@ -75,7 +75,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				return;
 			}
 
-			if (!colon.match(':')) {
+			if (!colon.matches(':')) {
 				return colon.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'const', value: ':' }],

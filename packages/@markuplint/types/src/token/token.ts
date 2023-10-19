@@ -96,9 +96,9 @@ export class Token {
 	 *
 	 * @param value The token value or the token type or its list
 	 */
-	match(value: TokenValue, caseInsensitive?: boolean): boolean {
+	matches(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
-			return value.some(v => this.match(v));
+			return value.some(v => this.matches(v));
 		}
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
