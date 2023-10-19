@@ -290,7 +290,8 @@ export const checkDurationComponentListString: CustomSyntaxChecker = () =>
 		for (const component of components) {
 			log('Duration Component: "%s" => %O', component.value, component);
 
-			const [, , dpfp, , unit] = component;
+			const dpfp = component[2];
+			const unit = component[4];
 
 			const res = component.eachCheck(
 				ws => {},

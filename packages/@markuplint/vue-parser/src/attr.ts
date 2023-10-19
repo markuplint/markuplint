@@ -95,7 +95,7 @@ export function attr(
 		/**
 		 * `v-slot`
 		 */
-		const [, , slotName] = attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [];
+		const slotName = (attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [])[2];
 		const name = `v-slot:${slotName}`;
 		if (slotName) {
 			return {

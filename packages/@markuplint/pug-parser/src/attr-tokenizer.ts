@@ -10,7 +10,7 @@ export default function attrTokenizer(
 	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
 		let value: string | undefined = '';
 		if (typeof attr.val === 'string') {
-			[, , value] = attr.val.match(/(["'`]?)([^\1]+)(\1)/) ?? ['', '', ''];
+			value = attr.val.match(/(["'`]?)([^\1]+)(\1)/)?.[2] ?? '';
 		} else {
 			value = `${attr.val}`;
 		}
