@@ -554,3 +554,32 @@ html
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 });
+
+describe('Issues', () => {
+	test('#1221', () => {
+		const doc = parse('html: p <span>text</span>');
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)html: html',
+			'[1:7]>[1:8](6,7)p: p',
+			'[1:9]>[1:15](8,14)span: <span>',
+			'[1:15]>[1:19](14,18)#text: text',
+			'[1:19]>[1:26](18,25)span: </span>',
+		]);
+
+		const html = doc.nodeList[0];
+		const p = doc.nodeList[1];
+		const span = doc.nodeList[2];
+		const text = doc.nodeList[3];
+		const spanClose = doc.nodeList[4];
+
+		expect(html.uuid).toBe(p.parentNode.uuid);
+		expect(html.childNodes.length).toBe(1);
+		expect(p.uuid).toBe(html.childNodes[0].uuid);
+		expect(p.childNodes.length).toBe(1);
+		expect(span.uuid).toBe(p.childNodes[0].uuid);
+		expect(span.childNodes.length).toBe(1);
+		expect(text.uuid).toBe(span.childNodes[0].uuid);
+		expect(spanClose.uuid).toBe(span.pearNode.uuid);
+	});
+});
