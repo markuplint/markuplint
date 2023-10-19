@@ -102,7 +102,7 @@ export function attrCheck(
 		}
 	});
 
-	if (invalidList.some(i => i === false)) {
+	if (invalidList.includes(false)) {
 		return false;
 	}
 
