@@ -32,6 +32,15 @@
 
 		"node/no-unsupported-features/es-syntax": 0,
 
+		"unicorn/consistent-destructuring": 0,
+		"unicorn/consistent-function-scoping": 0,
+		"unicorn/no-array-callback-reference": 0,
+		"unicorn/no-nested-ternary": 0,
+		"unicorn/no-null": 0,
+		"unicorn/prefer-query-selector": 0,
+		"unicorn/prefer-ternary": 0,
+		"unicorn/prevent-abbreviations": 0,
+
 		"eslint-comments/disable-enable-pair": "error",
 		"eslint-comments/no-duplicate-disable": "error",
 		"eslint-comments/no-unlimited-disable": "error",
