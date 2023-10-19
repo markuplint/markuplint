@@ -12,7 +12,7 @@ export async function fetchHTMLElementLinks() {
 	const $listHeading = $(
 		$('#sidebar-quicklinks summary')
 			.toArray()
-			.filter(el => /html elements/i.test($(el).text()))[0],
+			.find(el => /html elements/i.test($(el).text())),
 	);
 	const $list = $listHeading.siblings('ol,ul');
 	const lists = $list
