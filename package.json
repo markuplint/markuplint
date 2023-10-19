@@ -93,9 +93,5 @@
 		"typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
 		"typescript": "^5.2.2",
 		"wrap-ansi": "8.1.0"
-	},
-	"resolutions": {
-		"lerna/**/string-width": "4",
-		"lerna/**/wrap-ansi": "7"
 	}
 }
