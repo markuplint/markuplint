@@ -1404,10 +1404,10 @@
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
   integrity sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==
 
-"@types/jsdom@21.1.3":
-  version "21.1.3"
-  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-21.1.3.tgz#a88c5dc65703e1b10b2a7839c12db49662b43ff0"
-  integrity sha512-1zzqSP+iHJYV4lB3lZhNBa012pubABkj9yG/GuXuf6LZH1cSPIJBqFDrm5JX65HHt6VOnNYdTui/0ySerRbMgA==
+"@types/jsdom@21.1.4":
+  version "21.1.4"
+  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-21.1.4.tgz#82105c8fb5a1072265dde1a180336ca74a8fbabf"
+  integrity sha512-NzAMLEV0KQ4cBaDx3Ls8VfJUElyDUm1xrtYRmcMK0gF8L5xYbujFVaQlJ50yinQ/d47j2rEP1XUzkiYrw4YRFA==
   dependencies:
     "@types/node" "*"
     "@types/tough-cookie" "*"
