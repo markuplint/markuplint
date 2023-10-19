@@ -64,7 +64,7 @@ export async function installScaffold(
 			devDependencies.push('typescript');
 		}
 
-		await fs.writeFile(packageJson, JSON.stringify(packageContent, null, 2), { encoding: 'utf-8' });
+		await fs.writeFile(packageJson, JSON.stringify(packageContent, null, 2), { encoding: 'utf8' });
 
 		transferred.push({
 			ext: '.json',

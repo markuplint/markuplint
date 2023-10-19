@@ -45,7 +45,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		return null;
 	}
 
-	let contents = await fs.readFile(file.filePath, { encoding: 'utf-8' });
+	let contents = await fs.readFile(file.filePath, { encoding: 'utf8' });
 
 	if (options?.replacer) {
 		for (const [before, after] of Object.entries(options?.replacer)) {
@@ -118,7 +118,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		await fs.mkdir(newFile.destDir, { recursive: true });
 	}
 
-	await fs.writeFile(dest, contents, { encoding: 'utf-8' });
+	await fs.writeFile(dest, contents, { encoding: 'utf8' });
 
 	return newFile;
 }

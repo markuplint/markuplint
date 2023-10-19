@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const textFilePath = path.resolve(__dirname, '..', 'test', 'fixture.html');
-const text = await fs.readFile(textFilePath, 'utf-8');
+const text = await fs.readFile(textFilePath, 'utf8');
 
 test('Manual', async () => {
 	const { violations } = await mlTest(text, {

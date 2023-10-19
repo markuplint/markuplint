@@ -111,7 +111,7 @@ export class MLFile {
 	}
 
 	private async _fetch() {
-		const code = await fs.readFile(this.path, { encoding: 'utf-8' });
+		const code = await fs.readFile(this.path, { encoding: 'utf8' });
 		this.#code = code;
 		return code;
 	}

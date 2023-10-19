@@ -81,7 +81,7 @@ export async function initialize() {
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
-	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
+	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
 	write(`✨Created: ${filePath}`);
 
 	if (autoInstall) {

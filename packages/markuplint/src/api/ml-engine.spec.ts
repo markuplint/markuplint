@@ -53,7 +53,7 @@ describe('Watcher', () => {
 		const files = await configPromise;
 		engine.removeAllListeners();
 		const targetFile = files.at(-1)!;
-		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf-8' });
+		const targetFileOriginData = await fs.readFile(targetFile, { encoding: 'utf8' });
 		const config = JSON.parse(targetFileOriginData);
 		const result2ndPromise = new Promise<ReadonlyArray<Violation>>(resolve => {
 			engine.on('lint', (_, __, violations) => {
@@ -65,11 +65,11 @@ describe('Watcher', () => {
 			...config,
 			rules: {},
 		};
-		await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf-8' });
+		await fs.writeFile(targetFile, JSON.stringify(config2), { encoding: 'utf8' });
 		// Second evaluation
 		const result2nd = await result2ndPromise;
 		// Revert the file
-		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf-8' });
+		await fs.writeFile(targetFile, targetFileOriginData, { encoding: 'utf8' });
 		await engine.close();
 		expect(result1st?.violations.length).toBe(6);
 		expect(result2nd.length).toBe(5);

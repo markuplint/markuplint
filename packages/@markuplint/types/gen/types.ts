@@ -60,7 +60,7 @@ fs.writeFileSync(
 			},
 		},
 	}),
-	{ encoding: 'utf-8' },
+	{ encoding: 'utf8' },
 );
 
 function oneOf(...keys: readonly string[]) {
