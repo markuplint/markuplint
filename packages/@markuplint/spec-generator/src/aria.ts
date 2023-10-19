@@ -202,10 +202,12 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 
 	const { implicitProps } = await getAriaInHtml();
 
-	const globalStatesAndProperties = $('#global_states li a')
-		.toArray()
-		.map(el => $(el).attr('href')?.replace('#', ''))
-		.filter((s): s is string => !!s);
+	const globalStatesAndProperties = new Set(
+		$('#global_states li a')
+			.toArray()
+			.map(el => $(el).attr('href')?.replace('#', ''))
+			.filter((s): s is string => !!s),
+	);
 	const arias = Array.from(ariaNameList)
 		.sort()
 		.map((name): ARIAProperty => {
@@ -245,7 +247,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 					.text()
 					.replace(/\(default\)/gi, '')
 					.trim() || undefined;
-			const isGlobal = globalStatesAndProperties.includes(name) || undefined;
+			const isGlobal = globalStatesAndProperties.has(name) || undefined;
 
 			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
 			const implicitOwnProps = implicitProps.filter(p => p.name === name);

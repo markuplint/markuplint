@@ -23,7 +23,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
-		const noTranslateIndex = Array.from(messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)).map(m => m[0]);
+		const noTranslateIndex = new Set(Array.from(messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)).map(m => m[0]));
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];
@@ -38,7 +38,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			}
 			const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
 			// No translate
-			if (noTranslateIndex.includes(number)) {
+			if (noTranslateIndex.has(number)) {
 				return keyword;
 			}
 			return translateKeyword(keyword, flag, localeSet);

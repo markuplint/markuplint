@@ -1,7 +1,7 @@
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#void-elements
  */
-const voidElements = [
+const voidElements = new Set([
 	'area',
 	'base',
 	'br',
@@ -15,11 +15,11 @@ const voidElements = [
 	'source',
 	'track',
 	'wbr',
-];
+]);
 
 export function isVoidElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return voidElements.includes(el.localName);
+	return voidElements.has(el.localName);
 }

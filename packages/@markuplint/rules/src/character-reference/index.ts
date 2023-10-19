@@ -3,14 +3,14 @@ import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 const defaultChars = ['"', '&', '<', '>'];
-const ignoreParentElement = ['script', 'style'];
+const ignoreParentElement = new Set(['script', 'style']);
 
 export default createRule({
 	async verify({ document, report, t }) {
 		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
-			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
+			if (node.parentNode && ignoreParentElement.has(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
 			const severity = node.rule.severity;

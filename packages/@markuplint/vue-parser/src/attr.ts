@@ -1,6 +1,6 @@
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
-const duplicatableAttrs = ['class', 'style'];
+const duplicatableAttrs = new Set(['class', 'style']);
 
 export function attr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -8,7 +8,7 @@ export function attr(
 ): MLASTAttr {
 	if (attr.type !== 'html-attr') {
 		const name = attr.potentialName;
-		if (duplicatableAttrs.includes(name)) {
+		if (duplicatableAttrs.has(name)) {
 			attr.isDuplicatable = true;
 		}
 		return attr;
@@ -36,7 +36,7 @@ export function attr(
 		 */
 		const [, directive, potentialName, modifier] = attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]+))?$/i) ?? [];
 		if (directive && potentialName) {
-			if (duplicatableAttrs.includes(potentialName.toLowerCase())) {
+			if (duplicatableAttrs.has(potentialName.toLowerCase())) {
 				attr.isDuplicatable = true;
 			}
 
