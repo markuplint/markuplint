@@ -108,9 +108,7 @@ export async function fetchHTMLElement(link: string) {
 			$article.find('.blockIndicator.experimental, > div .notecard.experimental').length > 0 || undefined;
 		obsolete =
 			$article.find('.obsoleteHeader').length > 0 ||
-			!!$('h1')
-				.text()
-				.match(/obsolete/i) ||
+			!!/obsolete/i.test($('h1').text()) ||
 			$article.find('> div:first-child .notecard.obsolete').length > 0 ||
 			undefined;
 		deprecated =

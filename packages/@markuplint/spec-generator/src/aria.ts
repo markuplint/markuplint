@@ -114,7 +114,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(el => {
 				const text = $(el).text().trim();
-				if (text.match(/owned\s+by|with\s+parent/i)) {
+				if (/owned\s+by|with\s+parent/i.test(text)) {
 					return text.replace(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gim, '$2 > $1');
 				}
 				return text;
@@ -127,23 +127,14 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 					.trim()
 					.replace(/\s+(owning|→|with\s+child)\s+/gi, ' > '),
 			);
-		const accessibleNameRequired = !!$features.find('.role-namerequired').text().match(/true/i);
-		const accessibleNameFromAuthor = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/author/i);
-		const accessibleNameFromContent = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/content/i);
-		const accessibleNameProhibited = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/prohibited/i);
+		const accessibleNameRequired = !!/true/i.test($features.find('.role-namerequired').text());
+		const accessibleNameFromAuthor = !!/author/i.test($features.find('.role-namefrom').text());
+		const accessibleNameFromContent = !!/content/i.test($features.find('.role-namefrom').text());
+		const accessibleNameProhibited = !!/prohibited/i.test($features.find('.role-namefrom').text());
 		const $childrenPresentational = $features.find('.role-childpresentational').text();
-		const childrenPresentational = $childrenPresentational.match(/true/i)
+		const childrenPresentational = /true/i.test($childrenPresentational)
 			? true
-			: $childrenPresentational.match(/false/i)
+			: /false/i.test($childrenPresentational)
 			? false
 			: undefined;
 		const ownedProperties = arrayUnique(

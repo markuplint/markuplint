@@ -47,6 +47,7 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 			extendedSpecs.push(spec);
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
+				// eslint-disable-next-line unicorn/prefer-regexp-test
 				if (path.basename(filePath).match(toRegexp(pattern))) {
 					const specModName = specConfig[pattern];
 					if (!specModName) {
