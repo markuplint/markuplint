@@ -183,8 +183,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXElement: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 
 				const hasSpreadAttr = node.openingElement.attributes.some(
 					attr => attr.type === AST_NODE_TYPES.JSXSpreadAttribute,
@@ -198,8 +197,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXFragment: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 				continue;
 			}
 			case AST_NODE_TYPES.VariableDeclarator: {
@@ -257,8 +255,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TemplateLiteral: {
-				jsxList.push(...recursiveSearchJSXElements(node.expressions, parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.quasis, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.expressions, parentId),
+					...recursiveSearchJSXElements(node.quasis, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TaggedTemplateExpression: {
@@ -319,8 +319,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchStatement: {
-				jsxList.push(...recursiveSearchJSXElements(node.cases, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.discriminant], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.cases, parentId),
+					...recursiveSearchJSXElements([node.discriminant], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchCase: {
@@ -396,8 +398,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSDeclareFunction: {
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.params, parentId),
+					...recursiveSearchJSXElements([node.body ?? null], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSImportEqualsDeclaration: {
@@ -405,8 +409,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSMethodSignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements([node.key], parentId),
+					...recursiveSearchJSXElements(node.params, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSModuleDeclaration: {

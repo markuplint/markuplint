@@ -149,8 +149,7 @@ export class TokenCollection extends Array<Token> {
 			) {
 				values.push(last + char);
 			} else {
-				values.push(last);
-				values.push(char);
+				values.push(last, char);
 			}
 		}
 

@@ -15,10 +15,13 @@ export function nodeListToDebugMaps(
 			}
 			r.push(tokenDebug(n));
 			if (n.is(n.ELEMENT_NODE)) {
-				r.push(`  namespaceURI: ${!!n.namespaceURI}`);
-				r.push(`  elementType: ${n.elementType}`);
-				r.push(`  isInFragmentDocument: ${n.isInFragmentDocument()}`);
-				r.push(`  isForeignElement: ${!!n.isForeignElement}`);
+				r.push(
+					//
+					`  namespaceURI: ${!!n.namespaceURI}`,
+					`  elementType: ${n.elementType}`,
+					`  isInFragmentDocument: ${n.isInFragmentDocument()}`,
+					`  isForeignElement: ${!!n.isForeignElement}`,
+				);
 				if (withAttr) {
 					r.push(
 						...attributesToDebugMaps(n.attributes)
@@ -75,8 +78,11 @@ function attributesToDebugMaps(
 				r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
 			}
 			if (n.spacesBeforeName) {
-				r.push(`  isDirective: ${!!n.isDirective}`);
-				r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
+				r.push(
+					//
+					`  isDirective: ${!!n.isDirective}`,
+					`  isDynamicValue: ${!!n.isDynamicValue}`,
+				);
 			}
 			if (n.candidate) {
 				r.push(`  candidate: ${visibleWhiteSpace(n.candidate)}`);
