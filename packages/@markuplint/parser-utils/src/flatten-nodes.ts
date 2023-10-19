@@ -191,10 +191,14 @@ export function flattenNodes(
 			// Children
 			if (node.type === 'text') {
 				const parent = node.parentNode;
-				if (parent && parent.type === 'starttag' && parent.nodeName.toLowerCase() === 'html') {
-					if (parent.childNodes && !parent.childNodes.some(n => n.uuid === node.uuid)) {
-						parent.childNodes.push(node);
-					}
+				if (
+					parent &&
+					parent.type === 'starttag' &&
+					parent.nodeName.toLowerCase() === 'html' &&
+					parent.childNodes &&
+					!parent.childNodes.some(n => n.uuid === node.uuid)
+				) {
+					parent.childNodes.push(node);
 				}
 			}
 

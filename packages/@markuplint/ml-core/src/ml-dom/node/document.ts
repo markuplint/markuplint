@@ -2848,10 +2848,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		aria.focusable = focusable;
 
 		for (const prop of Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion))) {
-			if (!prop.required) {
-				if (prop.from === 'default') {
-					continue;
-				}
+			if (!prop.required && prop.from === 'default') {
+				continue;
 			}
 			aria.props = aria.props || {};
 

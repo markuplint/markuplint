@@ -71,17 +71,19 @@ export const checkingImplicitProps: AttrChecker<
 						t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 					),
 				};
-			} else if (value === 'true') {
-				if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
-					return {
-						scope: attr,
-						message: t(
-							'{0} contradicts {1}',
-							t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
-							t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
-						),
-					};
-				}
+			} else if (
+				value === 'true' &&
+				!equivalentHtmlAttr.isNotStrictEquivalent &&
+				htmlAttrSpec?.type === 'Boolean'
+			) {
+				return {
+					scope: attr,
+					message: t(
+						'{0} contradicts {1}',
+						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
+						t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+					),
+				};
 			}
 		}
 	};

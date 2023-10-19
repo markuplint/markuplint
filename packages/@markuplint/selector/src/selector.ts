@@ -80,13 +80,11 @@ class Ruleset {
 		const head = this.#selectorGroup[0];
 		this.headCombinator = head?.headCombinator ?? null;
 
-		if (this.headCombinator) {
-			if (depth <= 0) {
-				if (this.#selectorGroup[0]?.selector) {
-					throw new InvalidSelectorError(this.#selectorGroup[0]?.selector);
-				}
-				throw new Error('Combinated selector depth is not expected');
+		if (this.headCombinator && depth <= 0) {
+			if (this.#selectorGroup[0]?.selector) {
+				throw new InvalidSelectorError(this.#selectorGroup[0]?.selector);
 			}
+			throw new Error('Combinated selector depth is not expected');
 		}
 	}
 

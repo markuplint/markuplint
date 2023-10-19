@@ -201,20 +201,20 @@ export function getComputedRole(
 	 */
 	if (explicitRole.role) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-		if (nonPresentationalAncestor.role && nonPresentationalAncestor.role?.requiredOwnedElements.length > 0) {
-			if (
-				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
-					// const ancestor = nonPresentationalAncestor.el;
-					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
-					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
-					return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
-				})
-			) {
-				return {
-					...implicitRole,
-					errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
-				};
-			}
+		if (
+			nonPresentationalAncestor.role &&
+			nonPresentationalAncestor.role?.requiredOwnedElements.length > 0 &&
+			nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+				// const ancestor = nonPresentationalAncestor.el;
+				// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
+				// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
+				return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
+			})
+		) {
+			return {
+				...implicitRole,
+				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 

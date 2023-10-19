@@ -18,11 +18,13 @@ export const isAbsURL: FormattedPrimitiveTypeCreator = () => {
 		try {
 			new URL(value);
 		} catch (error: unknown) {
-			if (error && typeof error === 'object' && 'code' in error) {
-				// @ts-ignore
-				if (error.code === 'ERR_INVALID_URL') {
-					return false;
-				}
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error && // @ts-ignore
+				error.code === 'ERR_INVALID_URL'
+			) {
+				return false;
 			}
 			throw error;
 		}

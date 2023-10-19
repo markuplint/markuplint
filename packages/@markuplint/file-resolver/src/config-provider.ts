@@ -338,10 +338,8 @@ async function moduleExists(name: string) {
 	try {
 		await import(name);
 	} catch (error) {
-		if (error instanceof Error) {
-			if (/^parse failure/i.test(error.message)) {
-				return true;
-			}
+		if (error instanceof Error && /^parse failure/i.test(error.message)) {
+			return true;
 		}
 
 		try {
