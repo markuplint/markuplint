@@ -711,8 +711,8 @@ function pseudoMatch(
 			return {
 				specificity,
 				matched: matched.length > 0,
-				nodes: matched.map(m => m.nodes).flat(),
-				has: matched.map(m => m.has).flat(),
+				nodes: matched.flatMap(m => m.nodes),
+				has: matched.flatMap(m => m.has),
 			};
 		}
 		case ':has': {
@@ -721,9 +721,9 @@ function pseudoMatch(
 			switch (ruleset.headCombinator) {
 				case '+':
 				case '~': {
-					const has = getSiblings(el)
-						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
-						.flat();
+					const has = getSiblings(el).flatMap(sib =>
+						ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched),
+					);
 					if (has.length > 0) {
 						return {
 							specificity,
@@ -738,9 +738,9 @@ function pseudoMatch(
 					};
 				}
 				default: {
-					const has = getDescendants(el)
-						.map(sib => ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched))
-						.flat();
+					const has = getDescendants(el).flatMap(sib =>
+						ruleset.match(sib, el).filter((m): m is SelectorMatchedResult => m.matched),
+					);
 					if (has.length > 0) {
 						return {
 							specificity,
@@ -763,8 +763,8 @@ function pseudoMatch(
 			return {
 				specificity: [0, 0, 0],
 				matched: matched.length > 0,
-				nodes: matched.map(m => m.nodes).flat(),
-				has: matched.map(m => m.has).flat(),
+				nodes: matched.flatMap(m => m.nodes),
+				has: matched.flatMap(m => m.has),
 			};
 		}
 		case ':scope': {
@@ -882,12 +882,7 @@ function getDescendants(
 	el: Element,
 	includeSelf = false,
 ): Element[] {
-	return [
-		...Array.from(el.children)
-			.map(child => getDescendants(child, true))
-			.flat(),
-		...(includeSelf ? [el] : []),
-	];
+	return [...Array.from(el.children).flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
 function getSiblings(

@@ -5,20 +5,18 @@ export function nodeListToDebugMaps(
 	nodeList: MLASTNode[],
 	withAttr = false,
 ) {
-	return nodeList
-		.map(n => {
-			const r: string[] = [];
-			if (n.isGhost) {
-				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
-			} else {
-				r.push(tokenDebug(n));
-				if (withAttr && 'attributes' in n) {
-					r.push(...attributesToDebugMaps(n.attributes).flat());
-				}
+	return nodeList.flatMap(n => {
+		const r: string[] = [];
+		if (n.isGhost) {
+			r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+		} else {
+			r.push(tokenDebug(n));
+			if (withAttr && 'attributes' in n) {
+				r.push(...attributesToDebugMaps(n.attributes).flat());
 			}
-			return r;
-		})
-		.flat();
+		}
+		return r;
+	});
 }
 
 export function attributesToDebugMaps(

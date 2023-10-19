@@ -137,9 +137,7 @@ function landmarkRoleElementUUIDList(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	roleset: RoleSet,
 ) {
-	return Object.values(roleset)
-		.map(elements => elements.map(element => element.uuid))
-		.flat();
+	return Object.values(roleset).flatMap(elements => elements.map(element => element.uuid));
 }
 
 function hasLabel(
