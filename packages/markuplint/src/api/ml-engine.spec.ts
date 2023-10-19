@@ -18,7 +18,7 @@ describe('Event notification', () => {
 		const engine = new MLEngine(file!);
 		const configPromise = new Promise(resolve => {
 			engine.on('config', (_, configSet) => {
-				resolve(Array.from(configSet.files));
+				resolve([...configSet.files]);
 			});
 		});
 		await engine.exec();
@@ -44,7 +44,7 @@ describe('Watcher', () => {
 		});
 		const configPromise = new Promise<string[]>(resolve => {
 			engine.on('config', (_, configSet) => {
-				resolve(Array.from(configSet.files));
+				resolve([...configSet.files]);
 			});
 		});
 		// First evaluation

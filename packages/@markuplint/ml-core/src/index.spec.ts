@@ -77,7 +77,7 @@ describe('AST', () => {
 
 	test('classList', () => {
 		const el = createTestElement('<div class="a b c"></div>');
-		expect(Array.from(el.classList)).toStrictEqual(['a', 'b', 'c']);
+		expect([...el.classList]).toStrictEqual(['a', 'b', 'c']);
 	});
 
 	test('fixNodeName', () => {

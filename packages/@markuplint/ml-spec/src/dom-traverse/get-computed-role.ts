@@ -131,9 +131,7 @@ export function getComputedRole(
 	) {
 		const accname =
 			getAccname(el).trim() ||
-			Array.from(el.children)
-				.find(child => ['title', 'desc'].includes(child.localName))
-				?.textContent?.trim();
+			[...el.children].find(child => ['title', 'desc'].includes(child.localName))?.textContent?.trim();
 
 		if (!accname) {
 			return {
@@ -229,7 +227,7 @@ export function getComputedRole(
 	 * > and an explicit non-presentational role is applied.
 	 */
 	const { props } = ariaSpecs(specs, version);
-	for (const attr of Array.from(el.attributes)) {
+	for (const attr of el.attributes) {
 		if (props.find(p => p.name === attr.name)?.isGlobal) {
 			return {
 				...implicitRole,

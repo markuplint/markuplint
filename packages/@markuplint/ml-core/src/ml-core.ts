@@ -58,8 +58,8 @@ export class MLCore {
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#filename = filename;
-		this.#rules = rules.slice();
-		this.#pretenders = pretenders.slice();
+		this.#rules = [...rules];
+		this.#pretenders = [...pretenders];
 
 		this._parse();
 		this._createDocument();

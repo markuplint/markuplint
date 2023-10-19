@@ -22,7 +22,7 @@ class NodeStore {
 			nodeStoreError('Ref ID: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError(
 				'Map: %O',
-				Array.from(this.#store.entries()).map(([id, node]) => ({
+				[...this.#store.entries()].map(([id, node]) => ({
 					id,
 					name: node.nodeName,
 				})),

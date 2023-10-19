@@ -18,7 +18,7 @@ function tagSplitterAsString(raw: string): string[] {
 	if (!tagMatches) {
 		return [raw];
 	}
-	const tokens = Array.from(tagMatches);
+	const tokens = [...tagMatches];
 
 	tokens.unshift(); // remove all match
 

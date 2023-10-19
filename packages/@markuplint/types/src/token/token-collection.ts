@@ -130,7 +130,7 @@ export class TokenCollection extends Array<Token> {
 			}
 		}
 
-		const chars = value.split('');
+		const chars = [...value];
 		const values: string[] = [];
 		let char: string | undefined;
 		while ((char = chars.shift())) {

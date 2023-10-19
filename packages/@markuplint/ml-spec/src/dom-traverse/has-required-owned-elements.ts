@@ -88,7 +88,7 @@ function getClosestNonPresentationalDescendants(
 	version: ARIAVersion,
 ): ComputedRole[] {
 	const owned: ComputedRole[] = [];
-	for (const child of Array.from(el.children)) {
+	for (const child of el.children) {
 		const implicitRole = getImplicitRole(specs, child, version);
 		const explicitRole = getExplicitRole(specs, child, version);
 		const computed = explicitRole.role ? explicitRole : implicitRole;

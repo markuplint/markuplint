@@ -27,10 +27,7 @@ fs.writeFileSync(
 		definitions: {
 			'css-syntax': {
 				type: 'string',
-				enum: [
-					...Array.from(new Set([...props, ...types])),
-					...Object.keys(tokenizers).map(t => `<${t}>`),
-				].sort(),
+				enum: [...new Set([...props, ...types]), ...Object.keys(tokenizers).map(t => `<${t}>`)].sort(),
 			},
 			'extended-type': {
 				type: 'string',

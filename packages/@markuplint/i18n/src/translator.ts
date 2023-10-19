@@ -23,7 +23,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
-		const noTranslateIndex = new Set(Array.from(messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)).map(m => m[0]));
+		const noTranslateIndex = new Set([...messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)].map(m => m[0]));
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];

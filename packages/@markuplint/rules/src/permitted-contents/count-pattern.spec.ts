@@ -6,7 +6,7 @@ import { countPattern } from './count-pattern.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return countPattern(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
+	return countPattern(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
 test('require: a', () => {

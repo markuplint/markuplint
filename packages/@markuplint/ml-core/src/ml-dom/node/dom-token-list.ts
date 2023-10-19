@@ -57,7 +57,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	 */
 	allTokens() {
 		let offset = 0;
-		const tokens = Array.from(this);
+		const tokens = [...this];
 		const locs: Scope[] = [];
 		while (tokens.length > 0) {
 			const token = tokens.shift();

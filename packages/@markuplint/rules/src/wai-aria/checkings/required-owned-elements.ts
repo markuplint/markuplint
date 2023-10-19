@@ -45,7 +45,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
+		const children: OwnedElement[] = [...el.childNodes].map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
 				if (child.matches('[aria-busy="true" i]')) {
 					return [child, 'BUSY'];
@@ -142,7 +142,7 @@ function mayBeBeforeCreated(
 		return true;
 	}
 
-	return Array.from(el.children).every(child => {
+	return [...el.children].every(child => {
 		return ['script', 'template'].includes(child.localName);
 	});
 }

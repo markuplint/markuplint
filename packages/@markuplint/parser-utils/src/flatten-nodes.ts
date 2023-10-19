@@ -290,5 +290,5 @@ function arrayize(
 		nodeOrders.push(node);
 	});
 
-	return nodeOrders.slice();
+	return [...nodeOrders];
 }

@@ -24,7 +24,7 @@ export function getAccname(
 		return '';
 	}
 	if (isFromContent(el, version)) {
-		return Array.from(el.childNodes)
+		return [...el.childNodes]
 			.map(child => {
 				if (child.is(child.ELEMENT_NODE)) {
 					return getAccname(child, version);

@@ -196,7 +196,7 @@ export class Collection<T> {
 	}
 
 	toArray() {
-		return Object.freeze(Array.from(this.#items));
+		return Object.freeze([...this.#items]);
 	}
 }
 

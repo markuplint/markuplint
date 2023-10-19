@@ -10,7 +10,7 @@ export function checkEnum(value: string, type: ReadonlyDeep<Enum>, ref?: string)
 	if (!disallowToSurroundBySpaces) {
 		value = value.trim();
 	}
-	let values = type.enum.slice();
+	let values = [...type.enum];
 	if (caseInsensitive) {
 		value = value.toLowerCase();
 		values = type.enum.map(v => v.toLowerCase());

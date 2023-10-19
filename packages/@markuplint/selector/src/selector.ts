@@ -118,7 +118,7 @@ class StructuredSelector {
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
 			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
-		const nodes = this.#selector.nodes.slice();
+		const nodes = [...this.#selector.nodes];
 		if (0 < depth && this.headCombinator) {
 			// eslint-disable-next-line import/no-named-as-default-member
 			nodes.unshift(parser.pseudo({ value: ':scope' }));
@@ -584,7 +584,7 @@ function attrMatch(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.attributes).some(attrOfEl => {
+	return [...el.attributes].some(attrOfEl => {
 		if (attr.attribute !== attrOfEl.localName) {
 			return false;
 		}
@@ -882,14 +882,14 @@ function getDescendants(
 	el: Element,
 	includeSelf = false,
 ): Element[] {
-	return [...Array.from(el.children).flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
+	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
 function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ) {
-	return Array.from(el.parentElement?.children ?? []);
+	return [...(el.parentElement?.children ?? [])];
 }
 
 function getSpecificity(

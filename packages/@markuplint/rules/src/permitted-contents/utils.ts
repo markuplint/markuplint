@@ -27,7 +27,7 @@ export function getChildNodesWithoutWhitespaces(
 	if (nodes) {
 		return nodes;
 	}
-	nodes = Array.from(el.childNodes).filter(node => {
+	nodes = [...el.childNodes].filter(node => {
 		return !(node.is(node.TEXT_NODE) && node.isWhitespace());
 	});
 	getChildNodesWithoutWhitespacesCaches.set(el, nodes);
@@ -82,7 +82,7 @@ function descendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	selectorResult: SelectorMatchedResult,
 ): ChildNode[] {
-	let nodes: ChildNode[] = selectorResult.nodes.slice() as ChildNode[];
+	let nodes: ChildNode[] = [...selectorResult.nodes] as ChildNode[];
 	while (selectorResult.has.length > 0) {
 		for (const dep of selectorResult.has) {
 			if (dep.has.length === 0) {
@@ -225,12 +225,12 @@ export class Collection {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		origin: readonly ChildNode[],
 	) {
-		this.#origin = origin.slice();
+		this.#origin = [...origin];
 		this.#nodes = new Set(this.#origin);
 	}
 
 	get matched() {
-		return Array.from(this.#matched);
+		return [...this.#matched];
 	}
 
 	get matchedCount() {
@@ -238,11 +238,11 @@ export class Collection {
 	}
 
 	get nodes() {
-		return this.#origin.slice();
+		return [...this.#origin];
 	}
 
 	get unmatched() {
-		return Array.from(this.#nodes).filter(n => !this.#matched.has(n));
+		return [...this.#nodes].filter(n => !this.#matched.has(n));
 	}
 
 	addMatched(
@@ -271,7 +271,7 @@ export class Collection {
 	}
 
 	max(max: number) {
-		const sliced = Array.from(this.#matched).slice(max);
+		const sliced = [...this.#matched].slice(max);
 		for (const n of sliced) this.#matched.delete(n);
 	}
 

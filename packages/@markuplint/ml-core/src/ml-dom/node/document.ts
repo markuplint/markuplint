@@ -3124,7 +3124,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				return walker(node);
 			}
 			if (type === 'Attr' && node.is(node.ELEMENT_NODE)) {
-				return sequentialWalker(Array.from(node.attributes), attr => walker(attr));
+				return sequentialWalker([...node.attributes], attr => walker(attr));
 			}
 			if (type === 'ElementCloseTag' && node.is(node.ELEMENT_NODE) && node.closeTag) {
 				return walker(node.closeTag);
@@ -3263,7 +3263,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			// overwrite rule to child node
 			if (selectorTarget && ruleset.childNodeRules.length > 0) {
 				const descendants: MLNode<T, O>[] = [];
-				const children = Array.from(selectorTarget.childNodes);
+				const children = [...selectorTarget.childNodes];
 				syncWalk(children, childNode => {
 					descendants.push(childNode);
 				});

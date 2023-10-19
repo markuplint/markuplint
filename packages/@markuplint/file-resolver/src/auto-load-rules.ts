@@ -65,8 +65,8 @@ export async function autoLoadRules(ruleset: Ruleset) {
 
 	return {
 		// Clone
-		rules: rules.slice(),
+		rules: [...rules],
 		// Clone
-		errors: errors.slice(),
+		errors: [...errors],
 	};
 }

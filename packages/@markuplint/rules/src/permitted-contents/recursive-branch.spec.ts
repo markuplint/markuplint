@@ -6,7 +6,7 @@ import { recursiveBranch } from './recursive-branch.js';
 
 function c(models: any, innerHtml: string) {
 	const el = createTestElement(`<div>${innerHtml}</div>`);
-	return recursiveBranch(models, Array.from(el.childNodes), specs, { ignoreHasMutableChildren: true }, 0);
+	return recursiveBranch(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
 test('a', () => {

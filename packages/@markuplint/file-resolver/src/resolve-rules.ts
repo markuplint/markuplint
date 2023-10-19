@@ -35,12 +35,12 @@ export async function resolveRules(
 		}
 	}
 	// Clone
-	return rules.slice();
+	return [...rules];
 }
 
 async function importPresetRules() {
 	if (cachedPresetRules) {
-		return cachedPresetRules.slice();
+		return [...cachedPresetRules];
 	}
 	const modName = '@markuplint/rules';
 	const mod = await import(modName);
@@ -54,5 +54,5 @@ async function importPresetRules() {
 	});
 	cachedPresetRules = ruleList;
 	// Clone
-	return ruleList.slice();
+	return [...ruleList];
 }

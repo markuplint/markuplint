@@ -10,7 +10,7 @@ export async function resolvePlugins(pluginPaths?: readonly (string | PluginConf
 
 	const plugins = await Promise.all(pluginPaths.map(p => importPlugin(p)));
 	// Clone
-	return plugins.slice();
+	return [...plugins];
 }
 
 export function cacheClear() {

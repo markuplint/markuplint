@@ -336,13 +336,10 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 	} else if (!hasPartOfAddress) {
 		expects.unshift(
-			...partOfAddress
-				.slice()
-				.reverse()
-				.map(token => ({
-					type: 'const' as const,
-					value: token,
-				})),
+			...[...partOfAddress].reverse().map(token => ({
+				type: 'const' as const,
+				value: token,
+			})),
 		);
 
 		candidate = getCandidate(

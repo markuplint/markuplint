@@ -339,7 +339,7 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 		if (this.#options?.watch) {
 			// It doesn't watch the main HTML file because it may is watched and managed by a language server or text editor or more.
-			this.#watcher.add(Array.from(configSet.files));
+			this.#watcher.add([...configSet.files]);
 		}
 
 		return configSet;

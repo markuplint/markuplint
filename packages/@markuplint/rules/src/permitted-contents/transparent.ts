@@ -12,7 +12,7 @@ export function transparent(
 		transparentLog('Skipped');
 		return {
 			type: nodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',
-			matched: nodes.slice(),
+			matched: [...nodes],
 			unmatched: [],
 			zeroMatch: nodes.length === 0,
 			query: 'transparent',
@@ -24,7 +24,7 @@ export function transparent(
 
 	return {
 		type: 'MATCHED',
-		matched: nodes.slice(),
+		matched: [...nodes],
 		unmatched: [],
 		zeroMatch: false,
 		query: 'transparent',

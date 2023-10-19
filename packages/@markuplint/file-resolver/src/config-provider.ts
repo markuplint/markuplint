@@ -44,7 +44,7 @@ export class ConfigProvider {
 		}
 		let configSet = await this._mergeConfigs(keys, cache);
 
-		const filePath = Array.from(configSet.files).reverse()[0];
+		const filePath = [...configSet.files].reverse()[0];
 		if (!filePath) {
 			throw new ConfigParserError('Config file not found', {
 				filePath: targetFile.path,
@@ -56,7 +56,7 @@ export class ConfigProvider {
 		const plugins = await resolvePlugins(configSet.config.plugins);
 
 		if (this.#held.size > 0) {
-			const extendHelds = Array.from(this.#held.values());
+			const extendHelds = [...this.#held.values()];
 			for (const held of extendHelds) {
 				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];
 
@@ -179,9 +179,7 @@ export class ConfigProvider {
 				errs.push(...keySet.errs);
 			}
 		}
-		const configs = Array.from(resolvedKeys)
-			.map(name => this.#store.get(name))
-			.filter(nonNullableFilter);
+		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
 		let resultConfig: Config = {};
 		for (const config of configs) {
 			resultConfig = mergeConfig(resultConfig, config);

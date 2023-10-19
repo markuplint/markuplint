@@ -148,7 +148,7 @@ export abstract class MLParentNode<
 		) => N | null | void,
 	): ReadonlyArray<N> {
 		const nodeList: N[] = [];
-		syncWalk(Array.from(this.childNodes), node => {
+		syncWalk([...this.childNodes], node => {
 			if (filter) {
 				const filtered = filter(node);
 				if (filtered) {

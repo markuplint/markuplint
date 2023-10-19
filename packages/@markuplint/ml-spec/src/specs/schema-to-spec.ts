@@ -70,7 +70,7 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 			result.def = def;
 		}
 		if (extendedSpec.specs) {
-			const exSpecs = extendedSpec.specs.slice();
+			const exSpecs = [...extendedSpec.specs];
 			const specs: ElementSpec[] = [];
 			for (const elSpec of result.specs) {
 				const tagName = elSpec.name.toLowerCase();
@@ -104,7 +104,7 @@ function mergeAttrSpec(
 	ex: Readonly<Record<string, Partial<Attribute>>> = {},
 ): Record<string, Readonly<Attribute>> {
 	const result: Record<string, Attribute> = {};
-	const keys = Array.from(new Set([...Object.keys(std), ...Object.keys(ex)]));
+	const keys = [...new Set([...Object.keys(std), ...Object.keys(ex)])];
 	for (const key of keys) {
 		const _std = std[key]!;
 		const _ex = ex[key];

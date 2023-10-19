@@ -208,93 +208,91 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			.map(el => $(el).attr('href')?.replace('#', ''))
 			.filter((s): s is string => !!s),
 	);
-	const arias = Array.from(ariaNameList)
-		.sort()
-		.map((name): ARIAProperty => {
-			const $section = $(`#${name}`);
-			const className = $section.attr('class');
-			const type = className && /property/i.test(className) ? 'property' : 'state';
-			const deprecated = (className && /deprecated/i.test(className)) || undefined;
-			const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
-			const value = $value.text().trim() as ARIAAttributeValue;
-			const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
-			const valueDescriptions: Record<string, string> = {};
-			$valueDescriptions.each((_, $tr) => {
-				const name = $($tr)
-					.find('.value-name')
-					.text()
-					.replace(/\(default\)\s*:?/gi, '')
-					.trim();
-				const desc = $($tr).find('.value-description').text().trim();
-				valueDescriptions[name] = desc;
-			});
-			const enumValues: string[] = [];
-			if (value === 'token' || value === 'token list') {
-				const values = $valueDescriptions
-					.find('.value-name')
-					.toArray()
-					.map(el =>
-						$(el)
-							.text()
-							.replace(/\(default\)\s*:?/gi, '')
-							.trim(),
-					);
-				enumValues.push(...values);
-			}
-			const $defaultValue = $section.find('table.value-descriptions .value-name .default');
-			const defaultValue =
-				$defaultValue
-					.text()
-					.replace(/\(default\)/gi, '')
-					.trim() || undefined;
-			const isGlobal = globalStatesAndProperties.has(name) || undefined;
-
-			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
-			const implicitOwnProps = implicitProps.filter(p => p.name === name);
-			if (implicitOwnProps.length > 0) {
-				equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
-					htmlAttrName: attr.htmlAttrName,
-					value: attr.value,
-				}));
-			}
-
-			const aria: WritableDeep<ARIAProperty> = {
-				name,
-				type,
-				deprecated,
-				value,
-				enum: enumValues,
-				defaultValue,
-				isGlobal,
-				equivalentHtmlAttrs,
-				valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
-			};
-
-			// Conditional Value
-			switch (name) {
-				case 'aria-checked': {
-					aria.value = 'true/false';
-					aria.conditionalValue = [
-						{
-							role: ['checkbox', 'menuitemcheckbox'],
-							value: 'tristate',
-						},
-					];
-					break;
-				}
-				case 'aria-hidden': {
-					if (aria.equivalentHtmlAttrs)
-						for (const attr of aria.equivalentHtmlAttrs) {
-							if (attr.htmlAttrName === 'hidden') {
-								attr.isNotStrictEquivalent = true;
-							}
-						}
-					break;
-				}
-			}
-
-			return aria;
+	const arias = [...ariaNameList].sort().map((name): ARIAProperty => {
+		const $section = $(`#${name}`);
+		const className = $section.attr('class');
+		const type = className && /property/i.test(className) ? 'property' : 'state';
+		const deprecated = (className && /deprecated/i.test(className)) || undefined;
+		const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
+		const value = $value.text().trim() as ARIAAttributeValue;
+		const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
+		const valueDescriptions: Record<string, string> = {};
+		$valueDescriptions.each((_, $tr) => {
+			const name = $($tr)
+				.find('.value-name')
+				.text()
+				.replace(/\(default\)\s*:?/gi, '')
+				.trim();
+			const desc = $($tr).find('.value-description').text().trim();
+			valueDescriptions[name] = desc;
 		});
+		const enumValues: string[] = [];
+		if (value === 'token' || value === 'token list') {
+			const values = $valueDescriptions
+				.find('.value-name')
+				.toArray()
+				.map(el =>
+					$(el)
+						.text()
+						.replace(/\(default\)\s*:?/gi, '')
+						.trim(),
+				);
+			enumValues.push(...values);
+		}
+		const $defaultValue = $section.find('table.value-descriptions .value-name .default');
+		const defaultValue =
+			$defaultValue
+				.text()
+				.replace(/\(default\)/gi, '')
+				.trim() || undefined;
+		const isGlobal = globalStatesAndProperties.has(name) || undefined;
+
+		let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
+		const implicitOwnProps = implicitProps.filter(p => p.name === name);
+		if (implicitOwnProps.length > 0) {
+			equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
+				htmlAttrName: attr.htmlAttrName,
+				value: attr.value,
+			}));
+		}
+
+		const aria: WritableDeep<ARIAProperty> = {
+			name,
+			type,
+			deprecated,
+			value,
+			enum: enumValues,
+			defaultValue,
+			isGlobal,
+			equivalentHtmlAttrs,
+			valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
+		};
+
+		// Conditional Value
+		switch (name) {
+			case 'aria-checked': {
+				aria.value = 'true/false';
+				aria.conditionalValue = [
+					{
+						role: ['checkbox', 'menuitemcheckbox'],
+						value: 'tristate',
+					},
+				];
+				break;
+			}
+			case 'aria-hidden': {
+				if (aria.equivalentHtmlAttrs)
+					for (const attr of aria.equivalentHtmlAttrs) {
+						if (attr.htmlAttrName === 'hidden') {
+							attr.isNotStrictEquivalent = true;
+						}
+					}
+				break;
+			}
+		}
+
+		return aria;
+	});
 
 	arias.sort(nameCompare);
 
