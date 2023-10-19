@@ -158,12 +158,12 @@ export function normalizeModel(
 	} else if (isOneOrMore(pattern)) {
 		model = pattern.oneOrMore;
 		min = 1;
-		max = Math.max(pattern.max ?? Infinity, 1);
+		max = Math.max(pattern.max ?? Number.POSITIVE_INFINITY, 1);
 		missingType = 'MISSING_NODE_ONE_OR_MORE';
 	} else if (isZeroOrMore(pattern)) {
 		model = pattern.zeroOrMore;
 		min = 0;
-		max = Math.max(pattern.max ?? Infinity, 1);
+		max = Math.max(pattern.max ?? Number.POSITIVE_INFINITY, 1);
 	} else {
 		throw new Error('Unreachable code');
 	}

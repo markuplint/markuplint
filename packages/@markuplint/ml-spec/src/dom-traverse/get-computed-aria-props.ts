@@ -113,7 +113,7 @@ function isValidAriaValue(spec: ARIAProperty, role: string, value: string | unde
 		}
 		case 'integer':
 		case 'number': {
-			return !isNaN(parseFloat(value));
+			return !Number.isNaN(Number.parseFloat(value));
 		}
 		case 'token':
 		case 'token list': {

@@ -99,10 +99,10 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return ['true', 'false', 'undefined'].includes(value);
 		}
 		case 'integer': {
-			return parseInt(value).toString() === value;
+			return Number.parseInt(value).toString() === value;
 		}
 		case 'number': {
-			return parseFloat(value).toString() === value;
+			return Number.parseFloat(value).toString() === value;
 		}
 	}
 	// For skipping checking

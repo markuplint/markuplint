@@ -597,5 +597,5 @@ export function getMaxWeekNum(year: number) {
 		}
 		date--;
 	}
-	return NaN;
+	return Number.NaN;
 }

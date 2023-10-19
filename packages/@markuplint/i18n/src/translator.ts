@@ -32,8 +32,8 @@ export function translator(localeSet?: LocaleSet): Translator {
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
 		message = messageTmpl.replace(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
-			const num = parseInt(number);
-			if (isNaN(num)) {
+			const num = Number.parseInt(number);
+			if (Number.isNaN(num)) {
 				return $0;
 			}
 			const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
