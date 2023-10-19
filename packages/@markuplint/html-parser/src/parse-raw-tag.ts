@@ -5,7 +5,7 @@ import { reTag, reTagName, isPotentialCustomElementName, tokenizer } from '@mark
 import attrTokenizer from './attr-tokenizer.js';
 
 // eslint-disable-next-line no-control-regex
-const reAttrsInStartTag = /\s*[^\x00-\x1F "'/=>\x7F-\x9F]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|\S*))?/;
+const reAttrsInStartTag = /\s*[^\u0000-\u001F "'/=>\u007F-\u009F]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|\S*))?/;
 const reEndTokens = /(\s*\/)?(\s*)>$/;
 
 type TagTokens = {

@@ -4,9 +4,9 @@ import { attrTokenizer } from '@markuplint/html-parser';
 import { tokenizer, uuid } from '@markuplint/parser-utils';
 
 // eslint-disable-next-line no-control-regex
-const reNameOnly = /^[^\x00-\x1F /=>{\x7F-\x9F]+/;
+const reNameOnly = /^[^\u0000-\u001F /=>{\u007F-\u009F]+/;
 // eslint-disable-next-line no-control-regex
-const reBeforeStructure = /^(\s*)([^\x00-\x1F /=>{\x7F-\x9F]+)(\s*)(=)(\s*){(\s*)$/;
+const reBeforeStructure = /^(\s*)([^\u0000-\u001F /=>{\u007F-\u009F]+)(\s*)(=)(\s*){(\s*)$/;
 const reBeforeStructureWithoutName = /^{(\s*)$/;
 const reAfterStructure = /(\s*)}/;
 

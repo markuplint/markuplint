@@ -4,7 +4,7 @@ import { tokenizer, uuid } from '@markuplint/parser-utils';
 
 const reAttrsInStartTag =
 	// eslint-disable-next-line no-control-regex
-	/(\s*)([^\x00-\x1F "'/=>\x7F-\x9F]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|(\S*)))?/;
+	/(\s*)([^\u0000-\u001F "'/=>\u007F-\u009F]+)(?:(\s*)(=)(\s*)(?:(?:"([^"]*)")|(?:'([^']*)')|(\S*)))?/;
 
 export default function attrTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTHTMLAttr {
 	const attrMatchedMap = raw.match(reAttrsInStartTag);
