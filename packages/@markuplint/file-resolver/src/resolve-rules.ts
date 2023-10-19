@@ -16,23 +16,23 @@ export async function resolveRules(
 	autoLoad: boolean,
 ) {
 	const rules = importPreset ? await importPresetRules() : [];
-	plugins.forEach(plugin => {
+	for (const plugin of plugins) {
 		if (!plugin.rules) {
-			return;
+			continue;
 		}
-		Object.entries(plugin.rules).forEach(([name, seed]) => {
+		for (const [name, seed] of Object.entries(plugin.rules)) {
 			const rule = new MLRule({
 				name: `${plugin.name}/${name}`,
 				...seed,
 			});
 			rules.push(rule);
-		});
-	});
+		}
+	}
 	if (autoLoad) {
 		const { rules: additionalRules } = await autoLoadRules(ruleset);
-		additionalRules.forEach(rule => {
+		for (const rule of additionalRules) {
 			rules.push(rule);
-		});
+		}
 	}
 	// Clone
 	return rules.slice();

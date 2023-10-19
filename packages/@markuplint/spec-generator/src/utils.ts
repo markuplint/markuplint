@@ -20,10 +20,10 @@ export function sortObjectByKey<T>(o: T): T {
 	keys.sort(nameCompare);
 	// @ts-ignore
 	const newObj: T = {};
-	keys.forEach(key => {
+	for (const key of keys) {
 		// @ts-ignore
 		newObj[key] = o[key];
-	});
+	}
 	return newObj;
 }
 
@@ -53,7 +53,7 @@ export function getThisOutline(
 		els.push($next.clone());
 		$next = $next.next();
 	}
-	els.forEach(el => $container.append(el));
+	for (const el of els) $container.append(el);
 	return $container;
 }
 

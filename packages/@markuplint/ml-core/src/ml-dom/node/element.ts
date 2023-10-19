@@ -3163,7 +3163,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.#getChildElementsAndTextNodeWithoutWhitespacesCache;
 		}
 		const filteredNodes: (MLElement<T, O> | MLText<T, O>)[] = [];
-		this.childNodes.forEach(node => {
+		for (const node of this.childNodes) {
 			if (node.is(node.ELEMENT_NODE)) {
 				if (node.isOmitted) {
 					const children = node.getChildElementsAndTextNodeWithoutWhitespaces();
@@ -3175,7 +3175,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (node.is(node.TEXT_NODE) && !node.isWhitespace()) {
 				filteredNodes.push(node);
 			}
-		});
+		}
 		this.#getChildElementsAndTextNodeWithoutWhitespacesCache = filteredNodes;
 		return filteredNodes;
 	}

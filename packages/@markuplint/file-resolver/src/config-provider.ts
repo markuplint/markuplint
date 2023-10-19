@@ -252,22 +252,23 @@ export class ConfigProvider {
 
 	private _validateConfig(config: Config, filePath: string) {
 		const errors: ConfigParserError[] = [];
-		config.nodeRules?.forEach(rule => {
-			if (rule.selector) {
-				try {
-					createSelector(rule.selector);
-				} catch (error: unknown) {
-					if (error instanceof InvalidSelectorError) {
-						errors.push(
-							new ConfigParserError(error.message, {
-								filePath,
-								raw: rule.selector,
-							}),
-						);
+		if (config.nodeRules)
+			for (const rule of config.nodeRules) {
+				if (rule.selector) {
+					try {
+						createSelector(rule.selector);
+					} catch (error: unknown) {
+						if (error instanceof InvalidSelectorError) {
+							errors.push(
+								new ConfigParserError(error.message, {
+									filePath,
+									raw: rule.selector,
+								}),
+							);
+						}
 					}
 				}
 			}
-		});
 		return errors;
 	}
 }

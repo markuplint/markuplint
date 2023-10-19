@@ -203,9 +203,10 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedProperties?.forEach(prop => {
-			ariaNameList.add(prop.name);
-		});
+		if (role.ownedProperties)
+			for (const prop of role.ownedProperties) {
+				ariaNameList.add(prop.name);
+			}
 	}
 
 	const { implicitProps } = await getAriaInHtml();
@@ -289,11 +290,12 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 					break;
 				}
 				case 'aria-hidden': {
-					aria.equivalentHtmlAttrs?.forEach(attr => {
-						if (attr.htmlAttrName === 'hidden') {
-							attr.isNotStrictEquivalent = true;
+					if (aria.equivalentHtmlAttrs)
+						for (const attr of aria.equivalentHtmlAttrs) {
+							if (attr.htmlAttrName === 'hidden') {
+								attr.isNotStrictEquivalent = true;
+							}
 						}
-					});
 					break;
 				}
 			}

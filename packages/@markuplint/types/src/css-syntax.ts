@@ -38,19 +38,19 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 			...tokenizers,
 			...type.syntax.def,
 		};
-		Object.keys(types).forEach(key => {
+		for (const key of Object.keys(types)) {
 			const valueOrChecker = types[key];
 			if (typeof valueOrChecker === 'string') {
 				typesExtended[key] = valueOrChecker;
 			} else if (valueOrChecker) {
 				typesCheckers[key] = valueOrChecker;
 			}
-		});
+		}
 		propsExtended = { ...type.syntax.properties };
 		if (type.caseSensitive) {
 			caseSensitive = true;
-			Object.keys(typesExtended).forEach(key => eachMimicCases(key, typesExtended));
-			Object.keys(propsExtended).forEach(key => eachMimicCases(key, propsExtended));
+			for (const key of Object.keys(typesExtended)) eachMimicCases(key, typesExtended);
+			for (const key of Object.keys(propsExtended)) eachMimicCases(key, propsExtended);
 			value = mimicCases(value);
 		}
 		ref = type.ref;
@@ -62,14 +62,14 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		properties: propsExtended,
 	}).lexer;
 
-	Object.keys(typesCheckers).forEach(key => {
+	for (const key of Object.keys(typesCheckers)) {
 		const checker = typesCheckers[key];
 		// @ts-ignore
 		lexer.addType_(
 			key,
 			(token: CSSSyntaxToken, getNextToken: GetNextToken) => checker?.(token, getNextToken, cssSyntaxMatch),
 		);
-	});
+	}
 
 	const { isProp, name } = detectName(defName);
 

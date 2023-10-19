@@ -196,68 +196,66 @@ function getAttributes(
 	const $heading = $(heading);
 	const $outline = getThisOutline($, $heading);
 	const attributes: Record<string, Attribute> = {};
-	$outline
-		.find('> div > dl > dt')
-		.toArray()
-		.forEach(dt => {
-			const $dt = $(dt);
-			const name = $dt.find('code').text().trim();
-			if (!name) {
-				return null;
-			}
+	for (const dt of $outline.find('> div > dl > dt').toArray()) {
+		const $dt = $(dt);
+		const name = $dt.find('code').text().trim();
+		if (!name) {
+			null;
+			continue;
+		}
 
-			const $myHeading = getItsHeading($dt);
-			const experimental =
-				$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length > 0 || undefined;
-			const obsolete =
-				$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length > 0 ||
-				$dt.find('.obsolete').length > 0 ||
-				$myHeading?.attr('id') === 'obsolete_attributes' ||
-				undefined;
-			const deprecated =
-				$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length > 0 ||
-				$myHeading?.attr('id') === 'deprecated_attributes' ||
-				undefined;
-			const nonStandard =
-				$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length > 0 || undefined;
-			const description = $dt
-				.next('dd')
-				.toArray()
-				.map(el => $(el).text())
-				.join('')
-				.trim()
-				.replace(/(?:\r?\n|\s)+/gi, ' ');
+		const $myHeading = getItsHeading($dt);
+		const experimental =
+			$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length > 0 || undefined;
+		const obsolete =
+			$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length > 0 ||
+			$dt.find('.obsolete').length > 0 ||
+			$myHeading?.attr('id') === 'obsolete_attributes' ||
+			undefined;
+		const deprecated =
+			$dt.find('.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated').length > 0 ||
+			$myHeading?.attr('id') === 'deprecated_attributes' ||
+			undefined;
+		const nonStandard =
+			$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length > 0 || undefined;
+		const description = $dt
+			.next('dd')
+			.toArray()
+			.map(el => $(el).text())
+			.join('')
+			.trim()
+			.replace(/(?:\r?\n|\s)+/gi, ' ');
 
-			const current = attributes[name];
-			if (!current) {
-				attributes[name] = {
-					name,
-					type: 'Any',
-					// @ts-ignore
-					description,
-					experimental,
-					obsolete,
-					deprecated,
-					nonStandard,
-				};
-				return;
-			}
+		const current = attributes[name];
+		if (!current) {
+			attributes[name] = {
+				name,
+				type: 'Any',
+				// @ts-ignore
+				description,
+				experimental,
+				obsolete,
+				deprecated,
+				nonStandard,
+			};
+			continue;
+		}
 
-			if (typeof current === 'object' && 'name' in current) {
-				attributes[name] = {
-					// @ts-ignore for key order that "name" is first
-					name,
-					// @ts-ignore for key order that "description" is second
-					description,
-					experimental,
-					obsolete,
-					deprecated,
-					nonStandard,
-					// @ts-ignore
-					...current,
-				};
-			}
-		});
+		if (typeof current === 'object' && 'name' in current) {
+			attributes[name] = {
+				// @ts-ignore for key order that "name" is first
+				name,
+				// @ts-ignore for key order that "description" is second
+				description,
+				experimental,
+				obsolete,
+				deprecated,
+				nonStandard,
+				// @ts-ignore
+				...current,
+			};
+		}
+	}
 	return { attributes };
 }
 

@@ -15,9 +15,9 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
-				document.getElementsByTagName('div').forEach(el => {
+				for (const el of document.getElementsByTagName('div')) {
 					expect(el.rule.value).toStrictEqual([1, 2, 3]);
-				});
+				}
 
 				return;
 			},
@@ -43,9 +43,9 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([4, 5, 6]);
 
-				document.getElementsByTagName('div').forEach(el => {
+				for (const el of document.getElementsByTagName('div')) {
 					expect(el.rule.value).toStrictEqual([4, 5, 6]);
-				});
+				}
 
 				return;
 			},
@@ -71,9 +71,9 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
-				document.getElementsByTagName('div').forEach(el => {
+				for (const el of document.getElementsByTagName('div')) {
 					expect(el.rule.value).toStrictEqual([1, 2, 3]);
-				});
+				}
 
 				return;
 			},
@@ -99,9 +99,9 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([]);
 
-				document.getElementsByTagName('div').forEach(el => {
+				for (const el of document.getElementsByTagName('div')) {
 					expect(el.rule.value).toStrictEqual([]);
-				});
+				}
 
 				return;
 			},

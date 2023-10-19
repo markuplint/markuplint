@@ -48,9 +48,9 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 	let contents = await fs.readFile(file.filePath, { encoding: 'utf-8' });
 
 	if (options?.replacer) {
-		Object.entries(options?.replacer).forEach(([before, after]) => {
+		for (const [before, after] of Object.entries(options?.replacer)) {
 			if (!after) {
-				return;
+				continue;
 			}
 			// Hyphenation to camel-case for variables
 			// `rule-name` => `ruleName`
@@ -60,7 +60,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 				after.replace(/-+([a-z])/gi, (_, $1) => $1.toUpperCase()).replace(/^[a-z]/, $0 => $0.toLowerCase()),
 			);
 			contents = contents.replace(new RegExp(`__${before}__`, 'g'), after);
-		});
+		}
 	}
 
 	// Remove prettier ignore comment

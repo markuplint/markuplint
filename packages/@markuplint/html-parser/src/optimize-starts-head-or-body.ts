@@ -40,19 +40,19 @@ export function optimizeStartsHeadTagOrBodyTagResume(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	replacements: ReturnType<typeof optimizeStartsHeadTagOrBodyTagSetup>,
 ) {
-	nodeList.forEach(node => {
+	for (const node of nodeList) {
 		if (!node.nodeName.startsWith(`x-${UNDUPLICATED_CHAR}`)) {
-			return;
+			continue;
 		}
 		const realName =
 			node.nodeName === `x-${UNDUPLICATED_CHAR}h` ? replacements.heads.shift() : replacements.bodies.shift();
 		if (!realName) {
-			return;
+			continue;
 		}
 		node.raw = node.raw.replace(node.nodeName, realName);
 		node.nodeName = realName;
 		if (node.type === 'starttag') {
 			node.elementType = 'html';
 		}
-	});
+	}
 }

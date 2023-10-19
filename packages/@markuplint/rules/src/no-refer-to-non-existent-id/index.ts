@@ -23,10 +23,10 @@ export default createRule({
 			return;
 		}
 
-		document.querySelectorAll('[id]').forEach(el => {
+		for (const el of document.querySelectorAll('[id]')) {
 			const attr = el.getAttributeNode('id');
 			if (!attr) {
-				return;
+				continue;
 			}
 			if (attr.isDynamicValue) {
 				hasDynamicId = true;
@@ -34,16 +34,16 @@ export default createRule({
 			if (attr.valueType !== 'code') {
 				idList.add(decodeEntities(attr.value));
 			}
-		});
+		}
 
 		if (hasDynamicId) {
 			return;
 		}
 
-		document.querySelectorAll('[name]').forEach(el => {
+		for (const el of document.querySelectorAll('[name]')) {
 			const attr = el.getAttributeNode('name');
 			if (!attr) {
-				return;
+				continue;
 			}
 			if (attr.isDynamicValue) {
 				hasDynamicName = true;
@@ -51,7 +51,7 @@ export default createRule({
 			if (attr.valueType !== 'code') {
 				nameList.add(decodeEntities(attr.value));
 			}
-		});
+		}
 
 		await document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);

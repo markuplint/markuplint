@@ -33,21 +33,21 @@ export class RuleMapper {
 	apply() {
 		ruleMapperLog('ruleTree:');
 
-		this.#nodeList.forEach(node => {
+		for (const node of this.#nodeList) {
 			const rules = this.#ruleMap.get(node.uuid);
 			if (!rules) {
-				return;
+				continue;
 			}
 			ruleMapperNodeLog('<%s>', node.nodeName);
-			Object.keys(rules).forEach(ruleName => {
+			for (const ruleName of Object.keys(rules)) {
 				const rule = rules[ruleName];
 				if (!rule) {
-					return;
+					continue;
 				}
 				node.rules[ruleName] = rule.rule;
 				ruleMapperNodeRuleLog('[from: %s(%s)] %s: %o', rule.from, rule.specificity, ruleName, rule.rule);
-			});
-		});
+			}
+		}
 	}
 
 	set(

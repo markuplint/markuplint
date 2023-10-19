@@ -164,9 +164,9 @@ function exchangeOption(optionValue: PlainData, data: Readonly<Record<string, st
 		return optionValue.map(v => exchangeOption(v, data));
 	}
 	const result: Record<string, PlainData> = {};
-	Object.keys(optionValue).forEach(key => {
+	for (const key of Object.keys(optionValue)) {
 		result[key] = exchangeOption(optionValue[key], data);
-	});
+	}
 	return result;
 }
 

@@ -49,13 +49,13 @@ export default createRule({
 				continue;
 			}
 			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, $0 => '*'.repeat($0.length));
-			getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
+			for (const location of getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col)) {
 				report({
 					scope: targetNode.scope,
 					message: targetNode.message,
 					...location,
 				});
-			});
+			}
 		}
 	},
 });

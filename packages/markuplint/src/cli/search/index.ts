@@ -45,7 +45,7 @@ export default async function (files: readonly string[], options: CLIOptions, se
 			},
 		},
 	);
-	locations.forEach(loc => {
+	for (const loc of locations) {
 		process.stdout.write(`${loc.file}:${loc.line}:${loc.col}\n`);
-	});
+	}
 }

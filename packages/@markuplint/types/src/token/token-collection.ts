@@ -155,11 +155,11 @@ export class TokenCollection extends Array<Token> {
 		}
 
 		let offset = 0;
-		values.forEach(v => {
+		for (const v of values) {
 			const token = new Token(v, offset, value, separators);
 			this.push(token);
 			offset += v.length;
-		});
+		}
 	}
 
 	get value() {

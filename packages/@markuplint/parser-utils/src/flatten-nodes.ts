@@ -84,9 +84,9 @@ export function flattenNodes(
 				 * create Last spaces
 				 */
 				let lastOffset = 0;
-				nodeOrders.forEach((node, i) => {
+				for (const node of nodeOrders) {
 					lastOffset = Math.max(node.endOffset, lastOffset);
-				});
+				}
 				// console.log(lastOffset);
 				const lastTextContent = rawHtml.slice(lastOffset);
 				// console.log(`"${lastTextContent}"`);
@@ -124,7 +124,7 @@ export function flattenNodes(
 	 * concat text nodes
 	 */
 	const result: MLASTNode[] = [];
-	nodeOrders.forEach(node => {
+	for (const node of nodeOrders) {
 		const prevNode = result[result.length - 1] ?? null;
 		if (node.type === 'text' && prevNode?.type === 'text') {
 			prevNode.raw = prevNode.raw + node.raw;
@@ -149,10 +149,10 @@ export function flattenNodes(
 			if (node.nextNode) {
 				node.nextNode.prevNode = prevNode;
 			}
-			return;
+			continue;
 		}
 		result.push(node);
-	});
+	}
 
 	{
 		/**

@@ -14,16 +14,16 @@ export default createRule<boolean, Options>({
 		langs: undefined,
 	},
 	verify({ document, report, t }) {
-		document.querySelectorAll('time:not([datetime])').forEach(time => {
+		for (const time of document.querySelectorAll('time:not([datetime])')) {
 			if (time.hasMutableChildren()) {
-				return;
+				continue;
 			}
 
 			const content = time.textContent.trim();
 			const result = check(content, 'DateTime');
 
 			if (result.matched) {
-				return;
+				continue;
 			}
 
 			const candidate = getCandidateDatetimeString(content, time.rule.options.langs);
@@ -33,13 +33,13 @@ export default createRule<boolean, Options>({
 					scope: time,
 					message: t('need {0*}', `datetime="${candidate}"`),
 				});
-				return;
+				continue;
 			}
 
 			report({
 				scope: time,
 				message: t('need {0}', t('the "{0*}" {1}', 'datetime', 'attribute')),
 			});
-		});
+		}
 	},
 });

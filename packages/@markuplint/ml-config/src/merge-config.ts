@@ -135,7 +135,9 @@ function concatArray<T extends any>(
 		newArray.splice(existedIndex, 1, merged);
 	}
 
+	// eslint-disable-next-line unicorn/no-array-for-each
 	a?.forEach(concat);
+	// eslint-disable-next-line unicorn/no-array-for-each
 	b?.forEach(concat);
 
 	return newArray.length === 0 ? undefined : newArray;

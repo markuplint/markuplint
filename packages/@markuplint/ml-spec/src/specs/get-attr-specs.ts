@@ -49,13 +49,13 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 			if (!global) {
 				continue;
 			}
-			catAttrs.forEach(selectedName => {
+			for (const selectedName of catAttrs) {
 				const selected = global[selectedName];
 				attrs[selectedName] = {
 					...attrs[selectedName],
 					...selected,
 				};
-			});
+			}
 			continue;
 		}
 	}

@@ -6,7 +6,7 @@ export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boole
 	if (!matched) {
 		return null;
 	}
-	matched.forEach((val, i) => (res[`$${i}`] = val));
+	for (const [i, val] of matched.entries()) res[`$${i}`] = val;
 	return {
 		...res,
 		...matched.groups,

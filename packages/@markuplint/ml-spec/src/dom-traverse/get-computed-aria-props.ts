@@ -32,10 +32,10 @@ export function getComputedAriaProps(
 
 	const props: ARIAProps = {};
 
-	role.ownedProperties.forEach(ownedProp => {
+	for (const ownedProp of role.ownedProperties) {
 		const spec = ariaSpecs.props.find(propSpec => propSpec.name === ownedProp.name);
 		if (!spec) {
-			return;
+			continue;
 		}
 
 		if (el.hasAttribute(spec.name)) {
@@ -48,7 +48,7 @@ export function getComputedAriaProps(
 					required: !!ownedProp.required,
 					from: 'aria-attr',
 				};
-				return;
+				continue;
 			}
 		}
 
@@ -66,7 +66,7 @@ export function getComputedAriaProps(
 					required: !!ownedProp.required,
 					from: 'html-attr',
 				};
-				return;
+				continue;
 			}
 		}
 
@@ -86,7 +86,7 @@ export function getComputedAriaProps(
 			required: !!ownedProp.required,
 			from: 'default',
 		};
-	});
+	}
 
 	return props;
 }

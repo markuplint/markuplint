@@ -209,11 +209,11 @@ export function mergeHints(
 
 export function cleanObject<T extends Object>(object: T): Partial<T> {
 	const newObject: Partial<T> = {};
-	Object.entries(object).forEach(([key, value]) => {
+	for (const [key, value] of Object.entries(object)) {
 		if (value !== undefined) {
 			newObject[key as keyof T] = value;
 		}
-	});
+	}
 	return newObject;
 }
 
@@ -274,7 +274,7 @@ export class Collection {
 
 	max(max: number) {
 		const sliced = Array.from(this.#matched).slice(max);
-		sliced.forEach(n => this.#matched.delete(n));
+		for (const n of sliced) this.#matched.delete(n);
 	}
 
 	toString(highlightExtraNodes = false) {

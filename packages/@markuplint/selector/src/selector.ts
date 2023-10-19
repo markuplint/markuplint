@@ -125,7 +125,7 @@ class StructuredSelector {
 			// eslint-disable-next-line import/no-named-as-default-member
 			nodes.unshift(parser.pseudo({ value: ':scope' }));
 		}
-		nodes.forEach(node => {
+		for (const node of nodes) {
 			switch (node.type) {
 				case 'combinator': {
 					const combinedTarget = new SelectorTarget(extended, depth);
@@ -147,7 +147,7 @@ class StructuredSelector {
 					this.#edge.add(node);
 				}
 			}
-		});
+		}
 	}
 
 	get selector() {
