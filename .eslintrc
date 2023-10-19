@@ -1,12 +1,17 @@
 {
-	"extends": ["eslint:recommended", "plugin:import/recommended", "plugin:import/typescript"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:unicorn/recommended",
+		"plugin:import/recommended",
+		"plugin:import/typescript"
+	],
 	"env": {
 		"browser": false,
 		"es6": true,
 		"node": true,
 		"commonjs": false
 	},
-	"plugins": ["@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
+	"plugins": ["unicorn", "@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
 	"parserOptions": {
 		"ecmaVersion": 13
 	},
