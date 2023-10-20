@@ -36650,7 +36650,7 @@
 		{
 			"name": "dialog",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-			"description": "The <dialog> HTML element represents a dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
+			"description": "The <dialog> HTML element represents a modal or non-modal dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": [
