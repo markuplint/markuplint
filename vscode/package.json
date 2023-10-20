@@ -75,6 +75,20 @@
 							"markuplint:recommended"
 						]
 					}
+				},
+				"markuplint.hover.accessibility.enable": {
+					"type": "boolean",
+					"markdownDescription": "Enable the feature that **popup Accessibility Object**",
+					"default": true
+				},
+				"markuplint.hover.accessibility.ariaVersion": {
+					"type": "string",
+					"markdownDescription": "Set `1.1` or `1.2` WAI-ARIA version; Default is `1.2`.",
+					"enum": [
+						"1.1",
+						"1.2"
+					],
+					"default": "1.2"
 				}
 			}
 		},
