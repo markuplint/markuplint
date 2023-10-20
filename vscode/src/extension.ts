@@ -7,8 +7,8 @@ import path from 'node:path';
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
 import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
-import { Logger } from './Logger';
-import { StatusBar } from './StatusBar';
+import { Logger } from './Logger__';
+import { StatusBar } from './StatusBar__';
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
 	ID,
