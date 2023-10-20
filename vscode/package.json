@@ -20,25 +20,7 @@
 		"Linters"
 	],
 	"activationEvents": [
-		"onLanguage:html",
-		"onLanguage:vue",
-		"onLanguage:jade",
-		"onLanguage:svelte",
-		"onLanguage:astro",
-		"onLanguage:nunjucks",
-		"onLanguage:liquid",
-		"onLanguage:handlebars",
-		"onLanguage:mustache",
-		"onLanguage:ejs",
-		"onLanguage:haml",
-		"onLanguage:jstl",
-		"onLanguage:php",
-		"onLanguage:smarty",
-		"onLanguage:ruby",
-		"onLanguage:javascript",
-		"onLanguage:javascriptreact",
-		"onLanguage:typescript",
-		"onLanguage:typescriptreact"
+		"onLanguage"
 	],
 	"main": "./out/extension",
 	"contributes": {
@@ -56,6 +38,34 @@
 					"type": "boolean",
 					"description": "Enable debug mode.",
 					"default": false
+				},
+				"markuplint.targetLanguages": {
+					"type": "array",
+					"description": "Target languages.",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"astro",
+						"ejs",
+						"haml",
+						"handlebars",
+						"html",
+						"jade",
+						"javascript",
+						"javascriptreact",
+						"jstl",
+						"liquid",
+						"mustache",
+						"nunjucks",
+						"php",
+						"ruby",
+						"smarty",
+						"svelte",
+						"typescript",
+						"typescriptreact",
+						"vue"
+					]
 				},
 				"markuplint.defaultConfig": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json",

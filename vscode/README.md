@@ -7,6 +7,7 @@
 - `markuplint.enable`: Control whether Markuplint is enabled for HTML files or not
 - `markuplint.debug`: Enable debug mode
 - `markuplint.defaultConfig`: It's the configuration specified if configuration files do not exist
+- `markuplint.targetLanguages`: Specify the target languages
 - `markuplint.showAccessibility`: Enable the feature that **popup Accessibility Object**
 - `markuplint.showAccessibility.ariaVersion`: Set `1.1` or `1.2` WAI-ARIA version; Default is `1.2`.
 
