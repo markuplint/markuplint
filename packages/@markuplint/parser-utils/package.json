@@ -21,9 +21,9 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "3.2.0",
 		"@markuplint/types": "3.10.0",
-		"@types/uuid": "^9.0.3",
+		"@types/uuid": "^9.0.6",
 		"tslib": "^2.6.2",
-		"type-fest": "^4.3.1",
-		"uuid": "^9.0.0"
+		"type-fest": "^4.5.0",
+		"uuid": "^9.0.1"
 	}
 }

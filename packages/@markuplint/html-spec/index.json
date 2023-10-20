@@ -35491,18 +35491,6 @@
 				"href": {
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
 				},
-				"hreflang": {
-					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
-					"deprecated": true
-				},
-				"name": {
-					"description": "Define a names for the clickable area so that it can be scripted by older browsers.",
-					"deprecated": true
-				},
-				"nohref": {
-					"description": "Indicates that no hyperlink exists for the associated area. Note: The nohref attribute is not necessary, as omitting the href attribute is sufficient.",
-					"deprecated": true
-				},
 				"ping": {
 					"description": "Contains a space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking."
 				},
@@ -36662,7 +36650,7 @@
 		{
 			"name": "dialog",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-			"description": "The <dialog> HTML element represents a dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
+			"description": "The <dialog> HTML element represents a modal or non-modal dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": [
