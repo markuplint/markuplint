@@ -39019,7 +39019,11 @@
 				},
 				"blocking": {
 					"type": {
-						"enum": ["render"]
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
 					},
 					"condition": "[rel~='stylesheet' i]"
 				},
@@ -40481,7 +40485,11 @@
 				},
 				"blocking": {
 					"type": {
-						"enum": ["render"]
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
 					}
 				},
 				"charset": {
@@ -40926,7 +40934,11 @@
 			"attributes": {
 				"blocking": {
 					"type": {
-						"enum": ["render"]
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
 					}
 				},
 				"media": {
