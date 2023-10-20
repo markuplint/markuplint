@@ -1,6 +1,6 @@
 import type { List } from './types.schema.js';
 
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { checkList } from './list.js';
 
@@ -133,5 +133,27 @@ test('Missing comma', () => {
 		raw: 'a/z',
 		reason: 'missing-comma',
 		ref: null,
+	});
+});
+
+describe('Issues', () => {
+	test('#391', () => {
+		const type: List = {
+			token: {
+				enum: ['a', 'b'],
+			},
+			separator: 'space',
+			unique: true,
+		};
+
+		expect(checkList('a', type).matched).toBe(true);
+		expect(checkList('a b', type).matched).toBe(true);
+		expect(checkList('a   b', type).matched).toBe(true);
+		expect(checkList('a   b c', type).matched).toBe(false);
+		expect(checkList('a a', type).matched).toBe(false);
+		expect(checkList('b', type).matched).toBe(true);
+		expect(checkList('b a', type).matched).toBe(true);
+		expect(checkList('b a c', type).matched).toBe(false);
+		expect(checkList('c', type).matched).toBe(false);
 	});
 });

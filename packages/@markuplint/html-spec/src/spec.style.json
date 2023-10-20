@@ -19,10 +19,14 @@
 		"media": {
 			"type": "<media-query-list>"
 		},
-		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		"blocking": {
 			"type": {
-				"enum": ["render"]
+				"token": {
+					"enum": ["render"]
+				},
+				"separator": "space",
+				"unique": true
 			}
 		}
 	},
