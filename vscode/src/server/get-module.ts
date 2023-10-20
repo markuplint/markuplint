@@ -23,21 +23,21 @@ export async function getModule(baseDir: string, log: Log): Promise<OldModule | 
 			modPath,
 			ariaRecommendedVersion: '1.2',
 		};
-	} catch (_e) {
+	} catch {
 		try {
 			require('markuplint');
-		} catch (e) {
-			if (e && typeof e === 'object' && 'code' in e) {
-				switch (e.code) {
+		} catch (error) {
+			if (error && typeof error === 'object' && 'code' in error) {
+				switch (error.code) {
 					case 'ERR_PACKAGE_PATH_NOT_EXPORTED': {
-						if ('message' in e && typeof e.message === 'string') {
-							const matched = /^No "exports" main defined in (.+)\/package\.json$/i.exec(e.message);
+						if ('message' in error && typeof error.message === 'string') {
+							const matched = /^no "exports" main defined in (.+)\/package\.json$/i.exec(error.message);
 							log(`Found package as ESM: ${matched?.[1]}`, 'debug');
 						}
 					}
 				}
 			} else {
-				throw e;
+				throw error;
 			}
 		}
 

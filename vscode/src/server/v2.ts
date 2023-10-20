@@ -88,7 +88,7 @@ export async function onDidOpen(
 
 	console.log('exec (onDidOpen)');
 
-	engine.exec().catch((e: unknown) => notFoundParserError(e));
+	engine.exec().catch((error: unknown) => notFoundParserError(error));
 }
 
 let debounceTimer: NodeJS.Timer;
@@ -112,9 +112,9 @@ export function onDidChangeContent(
 		try {
 			await engine.setCode(code);
 			console.log('exec (onDidChangeContent)');
-			engine.exec().catch((e: unknown) => notFoundParserError(e));
-		} catch (e) {
-			console.log(e);
+			engine.exec().catch((error: unknown) => notFoundParserError(error));
+		} catch (error) {
+			console.log(error);
 			// continue;
 		}
 	}, 300);

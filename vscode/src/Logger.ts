@@ -38,6 +38,7 @@ export class Logger {
 				this.#channel.clear();
 				break;
 			}
+			// eslint-disable-next-line unicorn/no-useless-switch-case
 			case 'info':
 			default: {
 				this.#channel.info(message);

@@ -79,6 +79,7 @@ export function bootServer() {
 			});
 
 			documents.onDidOpen(e => onDidOpen(e.document));
+			// eslint-disable-next-line unicorn/no-array-for-each
 			documents.all().forEach(onDidOpen);
 
 			documents.onDidChangeContent(e => onDidChangeContent(e.document));
