@@ -34,6 +34,10 @@ export function activate(
 ) {
 	const config = workspace.getConfiguration(ID);
 
+	if (!config.get('enable')) {
+		return;
+	}
+
 	const logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
 	const dignosticslogger = new Logger(
 		window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }),
