@@ -13,9 +13,9 @@ export function getFilePath(uri: string, langId: string) {
 	const decodePath = fileURLToPath(decodeURIComponent(uri));
 	let filePath: string;
 	let untitled = false;
-	if (/^file:/.test(decodePath)) {
+	if (decodePath.startsWith('file:')) {
 		filePath = decodePath.replace(/^file:\/+/i, '/');
-	} else if (/^untitled:/.test(decodePath)) {
+	} else if (decodePath.startsWith('untitled:')) {
 		filePath = decodePath.replace(/^untitled:/i, '');
 		untitled = true;
 	} else {

@@ -37,7 +37,7 @@ function getLocaleSet(langCode: string): LocaleSet {
 		if (loadLocaleSet) {
 			return loadLocaleSet;
 		}
-	} catch (_) {
+	} catch {
 		// Avoid
 	}
 	return require('../locales/en.json');

@@ -135,10 +135,10 @@ export async function onDidOpen(
 
 	log('Run `engine.exec()` in `onDidOpen`', 'debug');
 
-	engine.exec().catch((e: unknown) => {
-		log(String(e), 'error');
-		notFoundParserError(e);
-		throw e;
+	engine.exec().catch((error: unknown) => {
+		log(String(error), 'error');
+		notFoundParserError(error);
+		throw error;
 	});
 }
 
@@ -164,13 +164,13 @@ export function onDidChangeContent(
 		try {
 			await engine.setCode(code);
 			log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
-			engine.exec().catch((e: unknown) => notFoundParserError(e));
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				log(e.message, 'error');
+			engine.exec().catch((error: unknown) => notFoundParserError(error));
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				log(error.message, 'error');
 				return;
 			}
-			log(`UnknownError: ${e}`, 'error');
+			log(`UnknownError: ${error}`, 'error');
 		}
 	}, 300);
 }
@@ -221,10 +221,10 @@ export async function getNodeWithAccessibilityProps(
 		: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
 	labels.focusable = `\`${aria.focusable}\``;
 
-	Object.entries(aria.props ?? {}).forEach(([propName, { value, required }]) => {
+	for (const [propName, { value, required }] of Object.entries(aria.props ?? {})) {
 		labels[propName] =
 			value === undefined ? t('Undefined') + (required ? ` ${requiredLabel}` : '') : `\`${value}\``;
-	});
+	}
 
 	return {
 		nodeName: node,

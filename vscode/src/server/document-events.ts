@@ -123,16 +123,14 @@ export function createEventHandlers(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			params: HoverParams,
 		) {
-			const showAccessibility = options.langConfigs['html']?.showAccessibility ?? true;
+			const enable = options.langConfigs['html']?.hover.accessibility.enable;
 
-			if (showAccessibility === false) {
+			if (!enable) {
 				return;
 			}
 
 			const ariaVersion =
-				typeof showAccessibility === 'boolean'
-					? options.mod.ariaRecommendedVersion
-					: showAccessibility.ariaVersion;
+				options.langConfigs['html']?.hover.accessibility.ariaVersion ?? options.mod.ariaRecommendedVersion;
 
 			if (options.mod.type === 'v4') {
 				const aria = await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);

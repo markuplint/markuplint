@@ -7,8 +7,6 @@ import path from 'node:path';
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
 import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
-import { Logger } from './Logger';
-import { StatusBar } from './StatusBar';
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
 	ID,
@@ -16,6 +14,7 @@ import {
 	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
+import { Logger } from './logger';
 import {
 	configs,
 	errorToPopup,
@@ -25,6 +24,7 @@ import {
 	status,
 	warningToPopup,
 } from './lsp';
+import { StatusBar } from './status-bar';
 
 let client: LanguageClient;
 

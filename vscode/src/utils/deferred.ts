@@ -24,6 +24,7 @@ export default class Deferred<T = undefined> implements PromiseLike<T> {
 		this.#resolve(value);
 	}
 
+	// eslint-disable-next-line unicorn/no-thenable
 	then<TResult1 = T, TResult2 = never>(
 		onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
 		onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
