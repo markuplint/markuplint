@@ -30,6 +30,7 @@ export class MLCore {
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
+	#configErrors: Readonly<Error>[];
 
 	constructor({
 		parser,
@@ -42,6 +43,7 @@ export class MLCore {
 		pretenders,
 		filename,
 		debug,
+		configErrors,
 	}: MLCoreParams) {
 		if (debug) {
 			enableDebug();
@@ -60,6 +62,7 @@ export class MLCore {
 		this.#filename = filename;
 		this.#rules = [...rules];
 		this.#pretenders = [...pretenders];
+		this.#configErrors = [...(configErrors ?? [])];
 
 		this._parse();
 		this._createDocument();
@@ -75,7 +78,7 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
+	update({ parser, ruleset, rules, locale, schemas, parserOptions, configErrors }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#ruleset = {
 			rules: ruleset?.rules ?? this.#ruleset.rules,
@@ -85,6 +88,8 @@ export class MLCore {
 		this.#rules = rules?.slice() ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
+		this.#configErrors = [...(configErrors ?? [])];
+
 		if (
 			parserOptions &&
 			(parserOptions.ignoreFrontMatter !== this.#parserOptions.ignoreFrontMatter ||
@@ -109,6 +114,17 @@ export class MLCore {
 			});
 			log('verify: error %o', this.#document.message);
 			return violations;
+		}
+
+		for (const error of this.#configErrors) {
+			violations.push({
+				ruleId: 'config-error',
+				severity: 'warning',
+				message: error.message,
+				col: 1,
+				line: 1,
+				raw: '',
+			});
 		}
 
 		for (const rule of this.#rules) {
