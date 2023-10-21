@@ -92,15 +92,22 @@ export type PretenderContextPretended<
 	readonly origin: N;
 };
 
-export type AccessibilityProperties = {
+export type AccessibilityProperties = ClearlyAccessibilityProperties | UnknownAccessibilityProperties;
+
+export type ClearlyAccessibilityProperties = {
+	unknown: false;
 	exposedToTree: boolean;
 	role?: string;
 	roleDescription?: string;
-	name?: string;
+	name?: string | { unknown: true };
 	nameRequired?: boolean;
 	nameProhibited?: boolean;
 	focusable?: boolean;
 	props?: Record<string, AccessibilityProperty>;
+};
+
+export type UnknownAccessibilityProperties = {
+	unknown: true;
 };
 
 export type AccessibilityProperty = {

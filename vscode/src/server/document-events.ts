@@ -140,16 +140,19 @@ export function createEventHandlers(
 
 				const heading = `\`<${aria.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
 
-				const props = aria.exposed
-					? `${Object.entries(aria.labels)
-							.map(([key, value]) => `- ${key}: ${value}`)
-							.join('\n')}`
-					: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
+				const body =
+					'unknown' in aria
+						? `\n**${t('Unknown')}**`
+						: aria.exposed
+						? `${Object.entries(aria.labels)
+								.map(([key, value]) => `- ${key}: ${value}`)
+								.join('\n')}`
+						: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
 
 				return {
 					contents: {
 						kind: MarkupKind.Markdown,
-						value: heading + props,
+						value: heading + body,
 					},
 				};
 			} else {

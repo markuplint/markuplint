@@ -181,11 +181,18 @@ export async function getNodeWithAccessibilityProps(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	position: Position,
 	ariaVersion: ARIAVersion,
-): Promise<{
-	nodeName: string;
-	exposed: boolean;
-	labels: Record<string, string>;
-} | null> {
+): Promise<
+	| {
+			nodeName: string;
+			exposed: boolean;
+			labels: Record<string, string>;
+	  }
+	| {
+			nodeName: string;
+			unknown: true;
+	  }
+	| null
+> {
 	const key = textDocument.uri;
 	const engine = engines.get(key);
 
@@ -200,6 +207,13 @@ export async function getNodeWithAccessibilityProps(
 	}
 
 	const { node, aria } = a11y;
+
+	if (aria.unknown) {
+		return {
+			nodeName: node,
+			unknown: true,
+		};
+	}
 
 	if (!aria.exposedToTree) {
 		return {
@@ -217,7 +231,9 @@ export async function getNodeWithAccessibilityProps(
 	labels.name = aria.nameProhibited
 		? `**${t('Prohibited')}**`
 		: aria.name
-		? `\`"${aria.name}"\``
+		? typeof aria.name === 'string'
+			? `\`"${aria.name}"\``
+			: `**${t('Unknown')}**`
 		: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
 	labels.focusable = `\`${aria.focusable}\``;
 

@@ -147,6 +147,7 @@
 				"transparent model": { "type": "string" },
 				"type": { "type": "string" },
 				"unit": { "type": "string" },
+				"unknown": { "type": "string" },
 				"uppercase": { "type": "string" },
 				"url who schema is an http(s) schema": { "type": "string" },
 				"use": { "type": "string" },

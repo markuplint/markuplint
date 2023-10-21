@@ -2923,6 +2923,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-slot-assignednodes
+	 */
+	assignedNodes() {
+		if (this.localName !== 'slot') {
+			throw new TypeError('assignedNodes is not a function');
+		}
+
+		return [];
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @deprecated
