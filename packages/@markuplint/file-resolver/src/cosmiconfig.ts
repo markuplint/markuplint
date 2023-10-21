@@ -27,14 +27,15 @@ const explorer = cosmiconfig('markuplint', {
 
 type CosmiConfig = ReturnType<LoaderSync>;
 
-export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) {
+export async function search<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
 	if (cacheClear) {
 		explorer.clearCaches();
 	}
-	dir = path.dirname(dir);
+
+	const dir = path.dirname(filePath);
 
 	searchLog('Search dir: %s', dir);
-	const result = await explorer.search(dir).catch(cacheConfigError(dir));
+	const result = await explorer.search(dir).catch(cacheConfigError(dir, filePath));
 
 	searchLog('Search result: %O', result);
 
@@ -47,13 +48,13 @@ export async function search<T = CosmiConfig>(dir: string, cacheClear: boolean) 
 	};
 }
 
-export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolean) {
+export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolean, referrer: string) {
 	if (cacheClear) {
 		explorer.clearCaches();
 	}
-	const result = await explorer.load(filePath).catch(cacheConfigError(filePath));
+	const result = await explorer.load(filePath).catch(cacheConfigError(filePath, referrer));
 	if (!result || result.isEmpty) {
-		return null;
+		return new ConfigLoadError('Config file is empty', filePath, referrer);
 	}
 	return {
 		filePath: result.filepath,
@@ -61,14 +62,18 @@ export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolea
 	};
 }
 
-class ConfigLoadError extends Error {
+export class ConfigLoadError extends Error {
+	filePath: string;
 	name = 'ConfigLoadError';
-	constructor(message: string, filePath: string) {
-		super(message + ` in ${filePath}`);
+	referrer: string;
+	constructor(message: string, filePath: string, referrer: string) {
+		super(message + ` in ${referrer}`);
+		this.filePath = filePath;
+		this.referrer = referrer;
 	}
 }
 
-function cacheConfigError(fileOrDirPath: string) {
+function cacheConfigError(fileOrDirPath: string, referrer: string) {
 	return (reason: unknown) => {
 		if (reason instanceof Error) {
 			switch (reason.name) {
@@ -79,7 +84,7 @@ function cacheConfigError(fileOrDirPath: string) {
 					});
 				}
 			}
-			throw new ConfigLoadError(reason.message, fileOrDirPath);
+			throw new ConfigLoadError(reason.message, fileOrDirPath, referrer);
 		}
 		throw reason;
 	};

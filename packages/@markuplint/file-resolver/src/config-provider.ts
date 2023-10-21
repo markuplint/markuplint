@@ -12,7 +12,7 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { load as loadConfig, search } from './cosmiconfig.js';
+import { ConfigLoadError, load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
@@ -27,7 +27,59 @@ export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
-	#store = new Map<string, Config>();
+	#store = new Map<string, Config | ConfigLoadError>();
+
+	async recursiveLoad(
+		key: string,
+		cache: boolean,
+		referrer: string,
+		depth = 1,
+	): Promise<{ stack: Set<string>; errs: Error[] }> {
+		const stack = new Set<string>();
+		const errs: Error[] = [];
+
+		const ancestorDepth = this.#recursiveLoadKeyAndDepth.get(key);
+		if (ancestorDepth != null && ancestorDepth < depth) {
+			return {
+				stack,
+				errs: [new CircularReferenceError(`Circular reference detected: ${key}`)],
+			};
+		}
+
+		this.#recursiveLoadKeyAndDepth.set(key, depth);
+
+		let config = this.#store.get(key);
+
+		if (!config) {
+			config = await this._load(key, cache, referrer);
+		}
+
+		if (!config) {
+			return { stack, errs: [] };
+		}
+
+		if (config instanceof ConfigLoadError) {
+			stack.add(config.filePath);
+			return {
+				stack,
+				errs: [config],
+			};
+		}
+
+		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
+		if (depKeys) {
+			for (const depKey of depKeys) {
+				const keys = await this.recursiveLoad(depKey, cache, key, depth + 1);
+				for (const key of keys.stack) {
+					stack.add(key);
+				}
+				errs.push(...keys.errs);
+			}
+		}
+
+		stack.add(key);
+		return { stack, errs };
+	}
 
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
@@ -42,7 +94,7 @@ export class ConfigProvider {
 		if (currentConfig) {
 			return currentConfig;
 		}
-		let configSet = await this._mergeConfigs(keys, cache);
+		let configSet = await this._mergeConfigs(keys, cache, targetFile.path);
 
 		const filePath = [...configSet.files].reverse()[0];
 		if (!filePath) {
@@ -72,7 +124,7 @@ export class ConfigProvider {
 				}
 			}
 
-			configSet = await this._mergeConfigs([...keys, ...extendHelds], cache);
+			configSet = await this._mergeConfigs([...keys, ...extendHelds], cache, targetFile.path);
 
 			this.#held.clear();
 		}
@@ -131,7 +183,7 @@ export class ConfigProvider {
 		return key;
 	}
 
-	private async _load(filePath: string, cache: boolean) {
+	private async _load(filePath: string, cache: boolean, referrer: string) {
 		const entity = this.#store.get(filePath);
 		if (entity) {
 			return entity;
@@ -148,16 +200,17 @@ export class ConfigProvider {
 
 		if (isPlugin(filePath)) {
 			this.#held.add(filePath);
-			return null;
+			return;
 		}
 
 		if (!(await moduleExists(filePath)) && !path.isAbsolute(filePath)) {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
 
-		const config = await load(filePath, cache);
-		if (!config) {
-			return null;
+		const config = await load(filePath, cache, referrer);
+
+		if (config instanceof ConfigLoadError) {
+			return config;
 		}
 
 		const pathResolvedConfig = await this._pathResolve(config, filePath);
@@ -166,22 +219,25 @@ export class ConfigProvider {
 		return pathResolvedConfig;
 	}
 
-	private async _mergeConfigs(keys: readonly string[], cache: boolean) {
+	private async _mergeConfigs(keys: readonly string[], cache: boolean, referrer: string) {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
 			this.#recursiveLoadKeyAndDepth.clear();
-			const keySet = await this._recursiveLoad(key, cache);
+			const keySet = await this.recursiveLoad(key, cache, referrer);
 			for (const k of keySet.stack) {
 				resolvedKeys.add(k);
 			}
-			if (keySet.errs) {
-				errs.push(...keySet.errs);
-			}
+			errs.push(...keySet.errs);
 		}
 		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
 		let resultConfig: Config = {};
 		for (const config of configs) {
+			if (config instanceof ConfigLoadError) {
+				errs.push(config);
+				continue;
+			}
+
 			resultConfig = mergeConfig(resultConfig, config);
 		}
 		return {
@@ -202,50 +258,6 @@ export class ConfigProvider {
 			excludeFiles: await pathResolve(dir, config.excludeFiles),
 			overrides: await pathResolve(dir, config.overrides, undefined, true),
 		};
-	}
-
-	private async _recursiveLoad(
-		key: string,
-		cache: boolean,
-		depth = 1,
-	): Promise<{ stack: Set<string>; errs: CircularReferenceError[] | null }> {
-		const stack = new Set<string>();
-		const errs: CircularReferenceError[] = [];
-
-		const ancestorDepth = this.#recursiveLoadKeyAndDepth.get(key);
-		if (ancestorDepth != null && ancestorDepth < depth) {
-			return {
-				stack,
-				errs: [new CircularReferenceError(`Circular reference detected: ${key}`)],
-			};
-		}
-
-		this.#recursiveLoadKeyAndDepth.set(key, depth);
-
-		let config = this.#store.get(key) ?? null;
-		if (!config) {
-			config = await this._load(key, cache);
-		}
-
-		if (!config) {
-			return { stack, errs: null };
-		}
-
-		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
-		if (depKeys) {
-			for (const depKey of depKeys) {
-				const keys = await this._recursiveLoad(depKey, cache, depth + 1);
-				for (const key of keys.stack) {
-					stack.add(key);
-				}
-				if (keys.errs) {
-					errs.push(...keys.errs);
-				}
-			}
-		}
-
-		stack.add(key);
-		return { stack, errs };
 	}
 
 	private _validateConfig(config: Config, filePath: string) {
@@ -271,16 +283,24 @@ export class ConfigProvider {
 	}
 }
 
-async function load(filePath: string, cache: boolean) {
+async function load(filePath: string, cache: boolean, referrer: string): Promise<Config | ConfigLoadError> {
 	if (!fileExists(filePath) && (await moduleExists(filePath))) {
 		const mod = await import(filePath);
-		const config: Config | null = mod?.default ?? null;
+		const config: Config | ConfigLoadError =
+			mod?.default ?? new ConfigLoadError('Module is not found', filePath, referrer);
 		return config;
 	}
-	const res = await loadConfig<Config>(filePath, !cache);
-	if (!res) {
-		return null;
+	const res = await loadConfig<Config>(filePath, !cache, referrer).catch((error: unknown) => {
+		if (error instanceof ConfigLoadError) {
+			return error;
+		}
+		throw error;
+	});
+
+	if (res instanceof ConfigLoadError) {
+		return res;
 	}
+
 	return res.config;
 }
 

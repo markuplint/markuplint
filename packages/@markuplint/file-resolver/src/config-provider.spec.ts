@@ -1,3 +1,5 @@
+import type { ConfigLoadError } from './cosmiconfig.js';
+
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -225,4 +227,23 @@ test('TypeScript (markuplint.config.ts)', async () => {
 	const file = getFile(path.resolve(testDir, '009', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
 	expect(configSet.config.rules?.foo).toBe(false);
+});
+
+test('Link', async () => {
+	const configProvider = new ConfigProvider();
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures', '010');
+	const start = path.resolve(testDir, 'a.json');
+	const files = await configProvider.recursiveLoad(start, false, 'path/to/index.html');
+
+	expect([...files.stack].map(f => path.relative(testDir, f))).toStrictEqual([
+		'd.json',
+		'404.json',
+		'f.json',
+		'e.json',
+		'c.json',
+		'b.json',
+		'a.json',
+	]);
+
+	expect([...files.errs].map(e => path.relative(testDir, (e as ConfigLoadError).referrer))).toStrictEqual(['e.json']);
 });
