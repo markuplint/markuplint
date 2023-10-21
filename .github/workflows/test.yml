@@ -7,10 +7,11 @@ on:
             - v3
             - next
         paths:
-            - '**'
-            - '!**/*.md'
-            - '!vscode/**'
-            - '!website/**'
+            - '.github/workflows/test.yml'
+            - 'packages/**'
+            - 'playground/**'
+            - 'test/**'
+            - 'yarn.lock'
 
 env:
     NODE_BUILD_VERSION: 18
