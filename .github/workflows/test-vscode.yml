@@ -1,0 +1,37 @@
+name: VS Code Extension Running Test
+
+on:
+    pull_request:
+        branches:
+            - dev
+        paths:
+            - '.github/workflows/test-vscode.yml'
+            - 'vscode/**'
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Install Xvfb
+              run: sudo apt-get update && sudo apt-get install -y xvfb
+
+            - name: Start Xvfb
+              run: |
+                  Xvfb :99 &
+                  echo "DISPLAY=:99.0" >> $GITHUB_ENV
+
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile && yarn build
+
+            - name: Run tests
+              run: cd vscode && yarn vscode:build && yarn vscode:test
