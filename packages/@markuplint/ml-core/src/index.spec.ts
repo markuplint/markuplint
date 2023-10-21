@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import specs from '@markuplint/html-spec';
 import { describe, test, expect } from 'vitest';
 
 import { createRule } from './ml-rule/create-test-rule.js';
@@ -610,6 +611,26 @@ describe('Rule', () => {
 		});
 		const pugRules = pug.nodeList.map(node => node.nodeName.toLowerCase() + ':' + node.rules['ruleA']);
 		expect(pugRules).toStrictEqual(['x-a:global', 'x-b:a', 'x-c:b']);
+	});
+});
+
+describe('Accessibility', () => {
+	test('props', () => {
+		const doc = createTestDocument('<button>This is button</button>', { specs });
+		const el = doc.querySelector('button');
+		const a11y = doc.getAccessibilityProp(el);
+
+		expect(a11y.role).toBe('button');
+		expect(a11y.name).toBe('This is button');
+	});
+
+	test('has <slot>', () => {
+		const doc = createTestDocument('<button><slot></slot></button>', { specs });
+		const el = doc.querySelector('button');
+		const a11y = doc.getAccessibilityProp(el);
+
+		expect(a11y.role).toBe('button');
+		expect(a11y.name.unknown).toBe(true);
 	});
 });
 

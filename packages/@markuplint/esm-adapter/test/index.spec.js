@@ -63,6 +63,7 @@ describe('test', () => {
 		expect(aria).toStrictEqual({
 			node: 'button',
 			aria: {
+				unknown: false,
 				exposedToTree: true,
 				role: 'button',
 				name: 'It is button',

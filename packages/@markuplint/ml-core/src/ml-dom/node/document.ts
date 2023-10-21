@@ -2822,15 +2822,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			return null;
 		}
 
+		if (['slot'].includes(node.localName)) {
+			return {
+				unknown: true,
+			};
+		}
+
 		const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
 
 		if (!exposed) {
 			return {
+				unknown: false,
 				exposedToTree: false,
 			};
 		}
 
 		const aria: AccessibilityProperties = {
+			unknown: false,
 			exposedToTree: true,
 		};
 
@@ -2841,10 +2849,18 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
 		const nameProhibited = role.role?.accessibleNameProhibited ?? false;
 
+		const hasSlot = !!node.querySelector('slot');
+
 		aria.role = role.role?.name;
 		aria.nameRequired = nameRequired;
 		aria.nameProhibited = nameProhibited;
-		aria.name = name;
+		aria.name =
+			name ||
+			(hasSlot
+				? {
+						unknown: true,
+				  }
+				: '');
 		aria.focusable = focusable;
 
 		for (const prop of Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion))) {
