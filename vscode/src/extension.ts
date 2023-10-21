@@ -15,15 +15,7 @@ import {
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
 import { Logger } from './logger';
-import {
-	configs,
-	errorToPopup,
-	infoToPopup,
-	logToDiagnosticsChannel,
-	logToPrimaryChannel,
-	status,
-	warningToPopup,
-} from './lsp';
+import { errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from './lsp';
 import { StatusBar } from './status-bar';
 
 let client: LanguageClient;
@@ -88,8 +80,6 @@ export function activate(
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);
 
 	void client.start().then(() => {
-		void client.sendRequest(configs, langConfigs);
-
 		const statusBar = new StatusBar(
 			window.createStatusBarItem(StatusBarAlignment.Right, 0),
 			COMMAND_NAME_OPEN_LOG_COMMAND,
