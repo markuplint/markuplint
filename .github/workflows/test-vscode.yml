@@ -17,7 +17,7 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Install dependencies and Xvfb
+            - name: Install Xvfb
               run: sudo apt-get update && sudo apt-get install -y xvfb
 
             - name: Start Xvfb
