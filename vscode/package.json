@@ -103,22 +103,27 @@
 		"vscode:prepublish": "npm run vscode:build",
 		"vscode:build": "tsc -p ./",
 		"vscode:dev": "tsc -watch -p ./",
+		"vscode:test": "node ./out/test/run-tests.js",
 		"vscode:login": "vsce login yusukehirao",
 		"vscode:package": "vsce package --no-yarn",
 		"vscode:release": "vsce publish --no-yarn",
 		"vscode:up": "yarn upgrade-interactive --latest"
 	},
 	"devDependencies": {
+		"@types/mocha": "^10.0.3",
 		"@types/node": "18.15",
 		"@types/semver": "7.5.4",
 		"@types/vscode": "1.83.1",
+		"@vscode/test-electron": "^2.3.5",
 		"@vscode/vsce": "2.21.1",
 		"typescript": "5.2.2"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.0-alpha.3",
 		"debug": "^4.3.4",
+		"glob": "^10.3.10",
 		"markuplint": "4.0.0-alpha.3",
+		"mocha": "^10.2.0",
 		"semver": "7.5.4",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
