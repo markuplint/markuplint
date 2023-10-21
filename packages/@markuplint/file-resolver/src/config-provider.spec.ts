@@ -211,18 +211,18 @@ test('Config Presets', async () => {
 	expect(configSet.config.rules?.['wai-aria']).toBe(true);
 });
 
-// test('TypeScript (.markuplintrc.ts)', async () => {
-// 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
-// 	const key = path.resolve(testDir, '008', '.markuplintrc.ts');
-// 	const file = getFile(path.resolve(testDir, '008', 'target.html'));
-// 	const configSet = await configProvider.resolve(file, [key]);
-// 	expect(configSet.config.rules.foo).toBe(false);
-// });
+test('TypeScript (.markuplintrc.ts)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '008', '.markuplintrc.ts');
+	const file = getFile(path.resolve(testDir, '008', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules?.foo).toBe(false);
+});
 
-// test('TypeScript (markuplint.config.ts)', async () => {
-// 	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
-// 	const key = path.resolve(testDir, '009', 'markuplint.config.ts');
-// 	const file = getFile(path.resolve(testDir, '009', 'target.html'));
-// 	const configSet = await configProvider.resolve(file, [key]);
-// 	expect(configSet.config.rules.foo).toBe(false);
-// });
+test('TypeScript (markuplint.config.ts)', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const key = path.resolve(testDir, '009', 'markuplint.config.ts');
+	const file = getFile(path.resolve(testDir, '009', 'target.html'));
+	const configSet = await configProvider.resolve(file, [key]);
+	expect(configSet.config.rules?.foo).toBe(false);
+});
