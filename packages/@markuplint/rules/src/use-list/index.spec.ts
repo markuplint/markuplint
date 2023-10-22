@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
@@ -107,4 +107,33 @@ test('emoji (surrogate pair character)', async () => {
 			)
 		).violations.length,
 	).toBe(3);
+});
+
+describe('Issues', () => {
+	test('#957', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
+					parser: {
+						'.*': '@markuplint/svelte-parser',
+					},
+				})
+			).violations.length,
+		).toBe(0);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
+					rule: {
+						options: {
+							prevCodeBlock: true,
+						},
+					},
+					parser: {
+						'.*': '@markuplint/svelte-parser',
+					},
+				})
+			).violations.length,
+		).toBe(1);
+	});
 });

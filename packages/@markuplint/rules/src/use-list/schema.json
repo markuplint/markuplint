@@ -24,6 +24,30 @@
 					"default": "[\"-\", \"*\", \"+\"]",
 					"description": "Bullets that require space to detect as a list item.",
 					"description:ja": "リストとして検出するためにスペースを必要とする文字。"
+				},
+				"noPrev": {
+					"type": "boolean",
+					"default": true,
+					"description": "Consider it a list if the text containing characters is the first child of the element.",
+					"description:ja": "文字が含まれてるテキストが要素の最初の子であればリストと見做す。"
+				},
+				"prevElement": {
+					"type": "boolean",
+					"default": true,
+					"description": "Consider it a list even if the text containing characters appears as the node following the element.",
+					"description:ja": "文字が含まれてるテキストが要素の次に現れるノードであってもリストと見做す。"
+				},
+				"prevComment": {
+					"type": "boolean",
+					"default": true,
+					"description": "Consider it a list even if the text containing characters appears as the node following a comment.",
+					"description:ja": "文字が含まれてるテキストがコメントの次に現れるノードであってもリストと見做す。"
+				},
+				"prevCodeBlock": {
+					"type": "boolean",
+					"default": false,
+					"description": "Consider it a list even if the text containing characters appears as the node following a special block.",
+					"description:ja": "文字が含まれてるテキストが特殊ブロックの次に現れるノードであってもリストと見做す。"
 				}
 			}
 		}

@@ -5,6 +5,10 @@ type Bullets = readonly string[];
 
 type Options = {
 	spaceNeededBullets?: string[];
+	noPrev?: boolean;
+	prevElement?: boolean;
+	prevComment?: boolean;
+	prevCodeBlock?: boolean;
 };
 
 export default createRule<Bullets, Options>({
@@ -61,6 +65,10 @@ export default createRule<Bullets, Options>({
 			'*', // asterisks
 			'+', // plus signs
 		],
+		noPrev: true,
+		prevElement: true,
+		prevComment: true,
+		prevCodeBlock: false,
 	},
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
@@ -74,6 +82,25 @@ export default createRule<Bullets, Options>({
 
 			if (text.length === 1) {
 				// character only
+				return;
+			}
+
+			if (textNode.rule.options.noPrev === false && !textNode.prevNode) {
+				return;
+			}
+
+			if (textNode.rule.options.prevElement === false && textNode.prevNode?.is(textNode.ELEMENT_NODE)) {
+				return;
+			}
+
+			if (textNode.rule.options.prevComment === false && textNode.prevNode?.is(textNode.COMMENT_NODE)) {
+				return;
+			}
+
+			if (
+				textNode.rule.options.prevCodeBlock === false &&
+				textNode.prevNode?.is(textNode.MARKUPLINT_PREPROCESSOR_BLOCK)
+			) {
 				return;
 			}
 
