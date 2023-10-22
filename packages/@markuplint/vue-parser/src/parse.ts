@@ -1,4 +1,4 @@
-import type { ASTNode, VueTokens } from './vue-parser/index.js';
+import type { ASTNode, VueTokens, ASTComment } from './vue-parser/index.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -7,6 +7,7 @@ import type {
 	MLASTText,
 	ParserOptions,
 	Parse,
+	MLASTComment,
 } from '@markuplint/ml-ast';
 
 import { parseRawTag } from '@markuplint/html-parser';
@@ -42,7 +43,7 @@ export const parse: Parse = (rawCode, options) => {
 	}
 
 	const nodeList: MLASTNode[] = ast.templateBody
-		? flattenNodes(traverse(ast.templateBody, null, rawCode, options), rawCode)
+		? flattenNodes(traverse(ast.templateBody, null, rawCode, ast.templateBody.comments, options), rawCode)
 		: [];
 
 	// Remove `</template>`
@@ -68,6 +69,8 @@ function traverse(
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	comments: ReadonlyArray<ASTComment>,
 	options?: ParserOptions,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
@@ -78,16 +81,57 @@ function traverse(
 
 	let prevNode: MLASTNode | null = null;
 	for (const vNode of rootNode.children) {
-		const node = nodeize(vNode, prevNode, parentNode, rawHtml, options);
+		const node = nodeize(vNode, prevNode, parentNode, rawHtml, comments, options);
 		if (!node) {
 			continue;
 		}
+
+		const lastOffset = prevNode?.endOffset ?? parentNode?.endOffset ?? 0;
+
+		const betweenComment = comments.find(comment => {
+			return lastOffset <= comment.range[0] && comment.range[1] <= node.startOffset;
+		});
+
+		if (betweenComment) {
+			const comment: MLASTComment = {
+				uuid: uuid(),
+				raw: `<!--${betweenComment.value}-->`,
+				startOffset: betweenComment.range[0],
+				endOffset: betweenComment.range[1],
+				startLine: betweenComment.loc.start.line,
+				endLine: betweenComment.loc.end.line,
+				startCol: betweenComment.loc.start.column + 1,
+				endCol: betweenComment.loc.end.column + 1,
+				nodeName: '#comment',
+				type: 'comment',
+				parentNode,
+				prevNode,
+				nextNode: node,
+				isFragment: false,
+				isGhost: false,
+			};
+
+			comment.parentNode = parentNode;
+			comment.prevNode = prevNode;
+			comment.nextNode = node;
+
+			if (prevNode) {
+				prevNode.nextNode = comment;
+			}
+
+			nodeList.push(comment);
+
+			prevNode = comment;
+		}
+
 		if (prevNode) {
 			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
+
 			node.prevNode = prevNode;
 		}
+
 		prevNode = node;
 		nodeList.push(node);
 	}
@@ -102,6 +146,8 @@ function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	comments: ReadonlyArray<ASTComment>,
 	options?: ParserOptions,
 ): MLASTNode | null {
 	const nextNode = null;
@@ -239,7 +285,7 @@ function nodeize(
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(originNode, startTag, rawHtml, options);
+			startTag.childNodes = traverse(originNode, startTag, rawHtml, comments, options);
 			return startTag;
 		}
 	}
