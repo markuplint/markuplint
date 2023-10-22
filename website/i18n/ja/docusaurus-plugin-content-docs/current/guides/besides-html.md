@@ -24,7 +24,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 | テンプレートエンジンまたは構文                                                             | パーサ                        | スペック                 |
 | ------------------------------------------------------------------------------------------ | ----------------------------- | ------------------------ |
-| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                   | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
+| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
 | [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`      | `@markuplint/vue-spec`   |
 | [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`   | -                        |
 | [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`    | -                        |
