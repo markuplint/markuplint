@@ -1,4 +1,4 @@
-import { parentPort } from 'worker_threads';
+import { parentPort } from 'node:worker_threads';
 
 import { MLEngine as DefaultMLEngine, version as defaultVersion } from 'default-markuplint';
 

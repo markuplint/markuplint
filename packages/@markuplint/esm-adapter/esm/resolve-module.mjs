@@ -10,19 +10,19 @@ export function resolveModule(id) {
 	let modulePath;
 	try {
 		modulePath = require.resolve(id);
-	} catch (err) {
-		if (err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
-			const message = err.message.replaceAll(sep, '/');
+	} catch (error) {
+		if (error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+			const message = error.message.replaceAll(sep, '/');
 
-			const matched = /^No "exports" main defined in (.+)\/package\.json$/i.exec(message);
+			const matched = /^no "exports" main defined in (.+)\/package\.json$/i.exec(message);
 
 			if (!matched) {
-				throw err;
+				throw error;
 			}
 
 			modulePath = matched[1];
 		} else {
-			throw err;
+			throw error;
 		}
 	}
 

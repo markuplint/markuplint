@@ -13,7 +13,7 @@ const currents = await glob('preset.*.json,!preset.___json');
 await Promise.all(currents.map(current => rm(current)));
 
 const files = await glob('*.json', { cwd: srcDir });
-const md = await readFile(path.resolve(srcDir, 'README.md'), { encoding: 'utf-8' });
+const md = await readFile(path.resolve(srcDir, 'README.md'), { encoding: 'utf8' });
 
 files.sort();
 
@@ -23,12 +23,12 @@ const extended = {};
 
 for (const file of files) {
 	const filename = path.basename(file);
-	const code = await readFile(path.resolve(srcDir, filename), { encoding: 'utf-8' });
+	const code = await readFile(path.resolve(srcDir, filename), { encoding: 'utf8' });
 	const json = JSON.parse(stripComments(code));
 	const compressed = JSON.stringify(json);
-	await writeFile(path.resolve(dirname, filename), compressed, { encoding: 'utf-8' });
+	await writeFile(path.resolve(dirname, filename), compressed, { encoding: 'utf8' });
 
-	const name = filename.replace(/^preset\.|\.json/g, '');
+	const name = filename.replaceAll(/^preset\.|\.json/g, '');
 	presets.push(name);
 	extended[name] = (json['extends'] ?? []).map(name => name.replace('markuplint:', ''));
 
@@ -36,13 +36,13 @@ for (const file of files) {
 		code,
 		{
 			onComment(offset, length) {
-				const comment = code.substring(offset, offset + length);
+				const comment = code.slice(offset, offset + length);
 				const line = comment.split('\n');
 				const [heading = '', desc = ''] = comment
 					.split(/\n\s*\*\s*\n/g)
 					.map(section => cleanComment(section))
 					.filter(s => !/^@see\s/.test(s));
-				const text = line.map(line => cleanComment(line)).filter(s => s);
+				const text = line.map(line => cleanComment(line)).filter(Boolean);
 				const url = (text.find(t => /^@see\s/i.test(t)) ?? '').replace(/^@see\s/i, '');
 
 				if (!heading) {
@@ -74,10 +74,12 @@ presets.sort((a, b) => {
 const renderMd = mustache.render(md, {
 	presets: () => {
 		const line = [];
-		line.push(`Ruleset|Description|${presets.map(p => `\`${p}\``).join('|')}|`);
-		line.push(`---|---|${'---|'.repeat(presets.length)}`);
+		line.push(
+			`Ruleset|Description|${presets.map(p => `\`${p}\``).join('|')}|`,
+			`---|---|${'---|'.repeat(presets.length)}`,
+		);
 
-		Object.entries(rules).forEach(([name, context]) => {
+		for (const [name, context] of Object.entries(rules)) {
 			const title = context.url ? `[${name}](${context.url})` : name;
 			const checks = presets.map(preset => {
 				const configs = [preset, ...extended[preset]];
@@ -85,7 +87,7 @@ const renderMd = mustache.render(md, {
 				return has ? '✅' : '❌';
 			});
 			line.push(`${title}|${context.desc || ' '}|${checks.join('|')}|`);
-		});
+		}
 
 		return line.join('\n');
 	},
@@ -98,10 +100,10 @@ const renderMd = mustache.render(md, {
  */
 function cleanComment(text) {
 	const t1 = text.trim();
-	const t2 = t1.replace(/^\/\*\*(?:[\n\s]*\*[\n\s]*)?|^\*\/|^\*|^\*[\s\n]*|[\s\n]*\*\/$/g, '');
-	const t3 = t2.replace(/\s*\n\s*(?:\*\s*)?/g, ' ');
+	const t2 = t1.replaceAll(/^\/\*{2}(?:\s*\*\s*)?|^\*\/|^\*|^\*\s*|\s*\*\/$/g, '');
+	const t3 = t2.replaceAll(/\s*\n\s*(?:\*\s*)?/g, ' ');
 	const t4 = t3.trim();
 	return t4;
 }
 
-await writeFile('README.md', renderMd, { encoding: 'utf-8' });
+await writeFile('README.md', renderMd, { encoding: 'utf8' });

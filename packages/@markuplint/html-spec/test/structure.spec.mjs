@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { resolveNamespace, getAttrSpecsByNames } from '@markuplint/ml-spec';
 import { glob } from '@markuplint/test-tools';
@@ -9,6 +10,9 @@ import strip from 'strip-json-comments';
 import { describe, test, expect } from 'vitest';
 
 import htmlSpec from '../index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const require = createRequire(import.meta.url);
 
@@ -41,14 +45,14 @@ const schemas = {
 
 test('structure', () => {
 	// eslint-disable-next-line import/no-named-as-default-member
-	htmlSpec.specs.forEach(el => {
+	for (const el of htmlSpec.specs) {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
 		try {
 			getAttrSpecsByNames(localName, namespaceURI, htmlSpec);
-		} catch (e) {
+		} catch {
 			throw el;
 		}
-	});
+	}
 });
 
 describe('schema', () => {
@@ -65,7 +69,7 @@ describe('schema', () => {
 					schemas.types,
 				],
 			}).getSchema(schemas.element.$id),
-			// eslint-disable-next-line no-restricted-globals
+
 			path.resolve(__dirname, 'spec.*.json'),
 		],
 		[
@@ -73,7 +77,7 @@ describe('schema', () => {
 			new Ajv({
 				schemas: [schemas.globalAttributes, schemas.attributes, schemas.types],
 			}).getSchema(schemas.globalAttributes.$id),
-			// eslint-disable-next-line no-restricted-globals
+
 			path.resolve(__dirname, 'spec-common.attributes.json'),
 		],
 	];

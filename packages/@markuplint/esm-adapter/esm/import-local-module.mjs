@@ -10,12 +10,12 @@ import { sep, resolve } from 'node:path';
 export async function importLocalModule(id, baseDir) {
 	baseDir = baseDir ?? process.cwd();
 	const dirArray = baseDir.split(sep);
-	while (dirArray.length) {
+	while (dirArray.length > 0) {
 		try {
 			const modDir = [...dirArray, 'node_modules', id].join(sep);
 			const { module, modPath } = await importFromDirectory(modDir);
 			return { module, modPath };
-		} catch (e) {
+		} catch {
 			dirArray.pop();
 		}
 	}

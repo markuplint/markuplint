@@ -10,8 +10,8 @@
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix './packages/**/*.ts' './playground/**/*.ts'; yarn spellcheck; prettier --write './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}';",
-		"lint:check": "eslint './packages/**/*.ts' './playground/**/*.ts' && yarn spellcheck && prettier --check './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}'",
+		"lint": "eslint --fix './packages/**/*.{ts,mjs,cjs,spec.js}' './playground/**/*.ts'; yarn spellcheck; prettier --write './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}';",
+		"lint:check": "eslint './packages/**/*.{ts,mjs,cjs,spec.js}' './playground/**/*.ts' && yarn spellcheck && prettier --check './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}'",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
@@ -43,7 +43,7 @@
 		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
 			"prettier --write"
 		],
-		"./{packages,website,playground}/**/*.{ts,tsx}": [
+		"./{packages,website,playground}/**/*.{ts,mjs,cjs,spec.js}": [
 			"eslint --fix"
 		],
 		"./test/**/*.{pug,html}": [

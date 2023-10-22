@@ -42,7 +42,7 @@ class MLEngine extends Emitter {
 	 */
 	static async setModule(moduleName, baseDir) {
 		if (this.#moduleName === moduleName) {
-			return Promise.resolve();
+			return;
 		}
 
 		const [result] = await MLEngine.#add('setModule', null, true, moduleName, baseDir);
