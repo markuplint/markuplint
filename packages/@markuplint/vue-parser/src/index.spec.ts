@@ -108,7 +108,9 @@ describe('parser', () => {
 			'[3:3]>[3:11](15,23)script: <script>',
 			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
-			'[5:12]>[7:3](51,72)#text: ⏎→→⏎→→',
+			'[5:12]>[6:3](51,54)#text: ⏎→→',
+			'[6:3]>[6:18](54,69)#comment: <!--comment-node-->',
+			'[6:18]>[7:3](69,72)#text: ⏎→→',
 			'[7:3]>[7:23](72,92)#vue-expression-container: {{␣CodeExpression␣}}',
 			'[7:23]>[8:3](92,95)#text: ⏎→→',
 			'[8:3]>[8:8](95,100)div: <div>',
@@ -152,7 +154,9 @@ describe('parser', () => {
 			'[24:3]>[24:11](296,304)table: </table>',
 			'[24:11]>[25:3](304,307)#text: ⏎→→',
 			'[25:3]>[25:24](307,328)img: <img␣src="path/to"␣/>',
-			"[25:24]>[33:12](328,451)#text: ⏎→→→→invalid-indent⏎⏎→→text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
+			'[25:24]>[28:3](328,351)#text: ⏎→→→→invalid-indent⏎⏎→→',
+			'[28:3]>[29:31](351,400)#comment: <!--?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value"-->',
+			"[29:31]>[33:12](400,451)#text: text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](451,470)html: <html␣attr="value">',
 			'[33:31]>[33:35](470,474)#text: text',
 			'[33:35]>[33:42](474,481)html: </html>',
@@ -209,7 +213,11 @@ describe('parser', () => {
 			'[3:3]>[3:11](15,23)script: <script>',
 			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
-			'[5:12]>[8:3](51,96)#text: ⏎→→⏎→→⏎→→',
+			'[5:12]>[6:3](51,54)#text: ⏎→→',
+			'[6:3]>[6:18](54,69)#comment: <!--comment-node-->',
+			'[6:18]>[7:3](69,72)#text: ⏎→→',
+			'[7:3]>[7:24](72,93)#comment: <!--␣html-comment␣-->',
+			'[7:24]>[8:3](93,96)#text: ⏎→→',
 			'[8:3]>[8:8](96,101)div: <div>',
 			'[8:8]>[10:3](101,120)#text: ⏎→→→text&amp;div⏎→→',
 			'[10:3]>[10:9](120,126)div: </div>',
@@ -251,7 +259,9 @@ describe('parser', () => {
 			'[24:3]>[24:11](297,305)table: </table>',
 			'[24:11]>[25:3](305,308)#text: ⏎→→',
 			'[25:3]>[25:24](308,329)img: <img␣src="path/to"␣/>',
-			"[25:24]>[33:12](329,452)#text: ⏎→→→→invalid-indent⏎⏎→→text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
+			'[25:24]>[28:3](329,352)#text: ⏎→→→→invalid-indent⏎⏎→→',
+			'[28:3]>[29:31](352,401)#comment: <!--?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value"-->',
+			"[29:31]>[33:12](401,452)#text: text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](452,471)html: <html␣attr="value">',
 			'[33:31]>[33:35](471,475)#text: text',
 			'[33:35]>[33:42](475,482)html: </html>',
@@ -454,5 +464,37 @@ describe('Issues', () => {
 			'[3:54]>[3:63](66,75)button: </button>',
 			'[3:63]>[4:2](75,77)#text: ⏎→',
 		]);
+	});
+
+	test('#1048', () => {
+		const doc = parse(`
+	<template>
+		<ul v-if="props.examples.length > 0">
+			<!-- Error if comment inserted inside ul element -->
+			<li v-for="item in props.examples" :key="item.id">
+				{{ item.name }}
+			</li>
+		</ul>
+	</template>
+	`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:40](15,52)ul: <ul␣v-if="props.examples.length␣>␣0">',
+			'[3:40]>[4:4](52,56)#text: ⏎→→→',
+			'[4:4]>[4:56](56,108)#comment: <!--␣Error␣if␣comment␣inserted␣inside␣ul␣element␣-->',
+			'[4:56]>[5:4](108,112)#text: ⏎→→→',
+			'[5:4]>[5:54](112,162)li: <li␣v-for="item␣in␣props.examples"␣:key="item.id">',
+			'[5:54]>[6:5](162,167)#text: ⏎→→→→',
+			'[6:5]>[6:20](167,182)#vue-expression-container: {{␣item.name␣}}',
+			'[6:20]>[7:4](182,186)#text: ⏎→→→',
+			'[7:4]>[7:9](186,191)li: </li>',
+			'[7:9]>[8:3](191,194)#text: ⏎→→',
+			'[8:3]>[8:8](194,199)ul: </ul>',
+			'[8:8]>[9:2](199,201)#text: ⏎→',
+		]);
+
+		const ul = doc.nodeList[1];
+		expect(ul.childNodes.length).toBe(5);
 	});
 });

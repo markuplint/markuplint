@@ -11,3 +11,5 @@ export type ASTNode =
 	| VueESLintParser.AST.VElement
 	| VueESLintParser.AST.VText
 	| VueESLintParser.AST.VExpressionContainer;
+
+export type ASTComment = VueESLintParser.AST.Token & VueESLintParser.AST.HasLocation;
