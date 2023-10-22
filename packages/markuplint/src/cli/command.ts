@@ -21,8 +21,9 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const ignoreExt = options.ignoreExt;
 	const importPresetRules = options.importPresetRules;
 	const verbose = options.verbose;
+	const ignoreGlob = options.includeNodeModules ? undefined : 'node_modules/**';
 
-	const fileList = await resolveFiles(files);
+	const fileList = await resolveFiles(files, ignoreGlob);
 
 	if (fileList.length === 0 && !options.allowEmptyInput) {
 		process.stderr.write('Markuplint: No target files.\n');
