@@ -6,11 +6,18 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"type": "module",
+	"main": "./lib/cjs/index.js",
+	"types": "./lib/cjs/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./lib/index.js",
-			"require": "./lib/cjs/index.js"
+			"import": {
+				"default": "./lib/index.js",
+				"types": "./lib/index.d.ts"
+			},
+			"require": {
+				"default": "./lib/cjs/index.js",
+				"types": "./lib/cjs/index.d.ts"
+			}
 		},
 		"./locales/en.json": {
 			"import": "./locales/en.json",
@@ -21,7 +28,6 @@
 			"require": "./locales/ja.json"
 		}
 	},
-	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
