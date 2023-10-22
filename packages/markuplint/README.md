@@ -25,7 +25,7 @@
 $ npx markuplint target.html
 ```
 
-Supported for _Node.js_ `v14.6.0` or later.
+Supported for _Node.js_ `v18.12.0` or later.
 
 ## Usage
 
