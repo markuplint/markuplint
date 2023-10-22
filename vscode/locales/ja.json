@@ -7,6 +7,7 @@
 		"none": "なし",
 		"prohibited": "禁止",
 		"required": "必須",
+		"unknown": "不明",
 		"undefined": "未定義"
 	},
 	"sentences": {
