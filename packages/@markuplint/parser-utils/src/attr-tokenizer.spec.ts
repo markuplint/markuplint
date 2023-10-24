@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import attrTokenizer from './attr-tokenizer.js';
+import { attrTokenizer } from './attr-tokenizer.js';
 
 test('void attribute', () => {
 	expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({

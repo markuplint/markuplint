@@ -1,4 +1,3 @@
-export { default as attrTokenizer } from './attr-tokenizer.js';
 export { default as isDocumentFragment } from './is-document-fragment.js';
 export { default as parseRawTag } from './parse-raw-tag.js';
 export { getNamespace } from './get-namespace.js';

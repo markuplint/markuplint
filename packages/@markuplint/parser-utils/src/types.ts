@@ -18,3 +18,8 @@ export type IgnoreBlock = {
 	readonly stack: readonly Code[];
 	readonly maskChar: string;
 };
+
+export type QuoteSet = {
+	readonly start: string;
+	readonly end: string;
+};
