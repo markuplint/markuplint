@@ -138,7 +138,7 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: 'starttag',
 				namespace,
-				elementType: detectElementType(originNode.name, options?.authoredElementName, /[A-Z]|\./),
+				elementType: detectElementType(originNode.name, options?.authoredElementName, /[.A-Z]/),
 				attributes,
 				hasSpreadAttr,
 				parentNode,
@@ -256,7 +256,8 @@ export function nodeize(
 				}
 			}
 
-			const reEndTag = new RegExp('{/await}$', 'i');
+			// eslint-disable-next-line regexp/strict
+			const reEndTag = /{\/await}$/i;
 			let endTag: MLASTPreprocessorSpecificBlock | null = null;
 			if (reEndTag.test(raw)) {
 				const endTagRawMatched = raw.match(reEndTag);

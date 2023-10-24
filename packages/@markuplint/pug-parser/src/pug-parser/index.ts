@@ -16,7 +16,7 @@ export function pugParse(pug: string) {
 }
 
 function getOffsetsFromLines(pug: string): number[] {
-	const lines = pug.split(/\n/g);
+	const lines = pug.split(/\n/);
 	let chars = 0;
 	const result = lines.map(line => {
 		chars += line.length + 1;

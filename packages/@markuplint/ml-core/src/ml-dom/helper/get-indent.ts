@@ -20,7 +20,9 @@ export function getIndent(
 			return null;
 		}
 
-		const matched = node.raw.match(/^(\s*(?:\r?\n)+\s*)\S+/);
+		const matched = node.raw.match(
+			/^([\t\v\f\r \u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\n\s*)\S+/,
+		);
 		if (matched) {
 			const spaces = matched[1];
 			if (spaces) {

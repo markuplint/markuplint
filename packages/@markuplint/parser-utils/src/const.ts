@@ -96,8 +96,7 @@ export const svgElementList = [
 	'vkern',
 ];
 
-// eslint-disable-next-line no-control-regex
-export const reTagName = /^[a-z][^\u0000\u0009\u000A\u000C />]*/i;
+export const reTagName = /^[a-z][^\0\t\n\f />]*/i;
 
 export const reSplitterTag = /<[^>]+>/g;
 

@@ -1,9 +1,9 @@
 export function getLine(html: string, startOffset: number) {
-	return html.slice(0, startOffset).split(/\n/g).length;
+	return html.slice(0, startOffset).split(/\n/).length;
 }
 
 export function getCol(html: string, startOffset: number) {
-	const lines = html.slice(0, startOffset).split(/\n/g);
+	const lines = html.slice(0, startOffset).split(/\n/);
 	return (lines.at(-1) ?? '').length + 1;
 }
 

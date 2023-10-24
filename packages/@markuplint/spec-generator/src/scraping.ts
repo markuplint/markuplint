@@ -55,39 +55,17 @@ export function fetchObsoleteElements(
 
 export async function fetchHTMLElement(link: string) {
 	const $ = await fetch(link);
-	let name = link.replace(/.+\/([\w-]+)$/i, '$1').toLowerCase();
+	let name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
 	if (name === 'heading_elements') {
 		name = 'h1-h6';
 	}
 	const $article = $(MAIN_ARTICLE_SELECTOR);
 	$article.find('p:empty').remove();
 	const description =
-		$article
-			.find('h2#summary')
-			.next('div')
-			.find('> p:first-of-type')
-			.text()
-			.trim()
-			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
-		$article
-			.find('.seoSummary')
-			.closest('p')
-			.text()
-			.trim()
-			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
-		$article
-			.find('h1')
-			.next('div')
-			.find('> p:first-of-type')
-			.text()
-			.trim()
-			.replaceAll(/(?:\r?\n|\s)+/gi, ' ') ||
-		$article
-			.find('.section-content:eq(0)')
-			.find('> p:eq(0)')
-			.text()
-			.trim()
-			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
+		$article.find('h2#summary').next('div').find('> p:first-of-type').text().trim().replaceAll(/\s+/g, ' ') ||
+		$article.find('.seoSummary').closest('p').text().trim().replaceAll(/\s+/g, ' ') ||
+		$article.find('h1').next('div').find('> p:first-of-type').text().trim().replaceAll(/\s+/g, ' ') ||
+		$article.find('.section-content:eq(0)').find('> p:eq(0)').text().trim().replaceAll(/\s+/g, ' ');
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
@@ -178,11 +156,7 @@ function getProperty(
 			.toArray()
 			.filter(el => new RegExp(prop, 'i').test($(el).text())),
 	);
-	return $th
-		.siblings('td')
-		.text()
-		.trim()
-		.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
+	return $th.siblings('td').text().trim().replaceAll(/\s+/g, ' ');
 }
 
 function getAttributes(
@@ -222,7 +196,7 @@ function getAttributes(
 			.map(el => $(el).text())
 			.join('')
 			.trim()
-			.replaceAll(/(?:\r?\n|\s)+/gi, ' ');
+			.replaceAll(/\s+/g, ' ');
 
 		const current = attributes[name];
 		if (!current) {

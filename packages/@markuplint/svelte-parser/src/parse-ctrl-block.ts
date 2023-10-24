@@ -35,7 +35,8 @@ export function parseCtrlBlock(
 	}
 
 	const children = originNode.children ?? [];
-	const reEndTag = new RegExp('{/each}$', 'i');
+	// eslint-disable-next-line regexp/strict
+	const reEndTag = /{\/each}$/i;
 	const startTagEndOffset =
 		children.length > 0 ? children[0]?.start ?? 0 : raw.replace(reEndTag, '').length + startOffset;
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);

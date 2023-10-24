@@ -218,7 +218,7 @@ function hasDisplayNodeOrVisibilityHidden(
 		return false;
 	}
 	// TODO: Improve accuracy
-	return /display\s*:\s*none|visibility\s*:\s*hidden/gi.test(style);
+	return /display\s*:\s*none|visibility\s*:\s*hidden/i.test(style);
 }
 
 function isExposedElement(

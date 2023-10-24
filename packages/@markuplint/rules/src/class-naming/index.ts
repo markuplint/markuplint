@@ -20,7 +20,7 @@ export default createRule<Value>({
 				}
 				const classAttr = attr.valueNode;
 				const classList = attr.value
-					.split(/\s+/g)
+					.split(/\s+/)
 					.map(c => c.trim())
 					.filter(Boolean);
 				for (const className of classList) {

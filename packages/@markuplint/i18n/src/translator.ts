@@ -23,7 +23,14 @@ export function translator(localeSet?: LocaleSet): Translator {
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
-		const noTranslateIndex = new Set([...messageTmpl.matchAll(/(?<={)\d+(?=\*})/g)].map(m => m[0]));
+		const noTranslateIndex = new Set(
+			[
+				...messageTmpl.matchAll(
+					// eslint-disable-next-line regexp/strict
+					/(?<={)\d+(?=\*})/g,
+				),
+			].map(m => m[0]),
+		);
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
 		const sentence = localeSet?.sentences?.[key];
@@ -31,18 +38,22 @@ export function translator(localeSet?: LocaleSet): Translator {
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
-		message = messageTmpl.replaceAll(/{(\d+)(?::(c))?}/g, ($0, number, flag) => {
-			const num = Number.parseInt(number);
-			if (Number.isNaN(num)) {
-				return $0;
-			}
-			const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
-			// No translate
-			if (noTranslateIndex.has(number)) {
-				return keyword;
-			}
-			return translateKeyword(keyword, flag, localeSet);
-		});
+		message = messageTmpl.replaceAll(
+			// eslint-disable-next-line regexp/strict
+			/{(\d+)(?::(c))?}/g,
+			($0, number, flag) => {
+				const num = Number.parseInt(number);
+				if (Number.isNaN(num)) {
+					return $0;
+				}
+				const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
+				// No translate
+				if (noTranslateIndex.has(number)) {
+					return keyword;
+				}
+				return translateKeyword(keyword, flag, localeSet);
+			},
+		);
 
 		return message;
 	};
@@ -113,5 +124,9 @@ function toLocaleString(value: number, locale: string) {
 }
 
 function removeNoTranslateMark(message: string) {
-	return message.replaceAll(/(?<={\d+)\*(?=})/g, '');
+	return message.replaceAll(
+		// eslint-disable-next-line regexp/strict
+		/(?<={\d+)\*(?=})/g,
+		'',
+	);
 }
