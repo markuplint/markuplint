@@ -10,8 +10,15 @@ import type {
 	MLASTComment,
 } from '@markuplint/ml-ast';
 
-import { parseRawTag } from '@markuplint/html-parser';
-import { flattenNodes, getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
+import {
+	flattenNodes,
+	getEndCol,
+	getEndLine,
+	uuid,
+	ParserError,
+	detectElementType,
+	tagParser,
+} from '@markuplint/parser-utils';
 
 import { attr } from './attr.js';
 import vueParse from './vue-parser/index.js';
@@ -202,13 +209,13 @@ function nodeize(
 		default: {
 			const tagLoc = originNode.startTag;
 			const startTagRaw = rawHtml.slice(tagLoc.range[0], tagLoc.range[1]);
-			const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
+			const tagTokens = tagParser(startTagRaw, startLine, startCol, startOffset);
 			const tagName = tagTokens.tagName;
 			let endTag: MLASTElementCloseTag | null = null;
 			const endTagLoc = originNode.endTag;
 			if (endTagLoc) {
 				const endTagRaw = rawHtml.slice(endTagLoc.range[0], endTagLoc.range[1]);
-				const endTagTokens = parseRawTag(
+				const endTagTokens = tagParser(
 					endTagRaw,
 					endTagLoc.loc.start.line,
 					endTagLoc.loc.start.column,
@@ -276,7 +283,7 @@ function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
 				isGhost: false,
 				tagOpenChar: '<',

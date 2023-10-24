@@ -10,8 +10,8 @@ import type {
 	ParserOptions,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { getNamespace } from '@markuplint/html-parser';
+import { detectElementType, sliceFragment, uuid, tagParser } from '@markuplint/parser-utils';
 
 import { attr } from './attr.js';
 import { parseCtrlBlock } from './parse-ctrl-block.js';
@@ -123,7 +123,7 @@ export function nodeize(
 			const attributes = directives.filter((d): d is MLASTAttr => !('__spreadAttr' in d));
 			const hasSpreadAttr = directives.some(d => '__spreadAttr' in d);
 
-			const tagTokens = parseRawTag(
+			const tagTokens = tagParser(
 				startTagLocation.raw,
 				startTagLocation.startLine,
 				startTagLocation.startCol,
@@ -146,7 +146,7 @@ export function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
 				isGhost: false,
 				tagOpenChar: '<',

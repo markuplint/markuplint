@@ -8,8 +8,8 @@ import type {
 	ParserOptions,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { getNamespace } from '@markuplint/html-parser';
+import { detectElementType, sliceFragment, uuid, tagParser } from '@markuplint/parser-utils';
 
 import { attr } from './attr.js';
 import { getAttr, getName } from './jsx.js';
@@ -106,7 +106,7 @@ export function nodeize(
 			}
 
 			const { attrs /*hasSpreadAttr*/ } = getAttr(originNode.openingElement.attributes);
-			const tagTokens = parseRawTag(
+			const tagTokens = tagParser(
 				startTagLocation.raw,
 				startTagLocation.startLine,
 				startTagLocation.startCol,
@@ -138,7 +138,7 @@ export function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				// hasSpreadAttr,
 				isFragment: false,
 				isGhost: false,
