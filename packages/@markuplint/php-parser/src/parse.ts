@@ -7,17 +7,17 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'php-tag',
-			start: /<\?php/,
+			start: '<?php',
 			end: /\?>|$/,
 		},
 		{
 			type: 'php-echo',
-			start: /<\?=/,
-			end: /\?>/,
+			start: '<?=',
+			end: '?>',
 		},
 		{
 			type: 'php-short-tag',
-			start: /<\?/,
+			start: '<?',
 			end: /\?>|$/,
 		},
 	]);

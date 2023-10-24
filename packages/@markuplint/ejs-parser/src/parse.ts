@@ -7,28 +7,28 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'ejs-whitespace-slurping',
-			start: /<%_/,
-			end: /%>/,
+			start: '<%_',
+			end: '%>',
 		},
 		{
 			type: 'ejs-output-value',
-			start: /<%=/,
-			end: /%>/,
+			start: '<%=',
+			end: '%>',
 		},
 		{
 			type: 'ejs-output-unescaped',
-			start: /<%-/,
-			end: /%>/,
+			start: '<%-',
+			end: '%>',
 		},
 		{
 			type: 'ejs-comment',
-			start: /<%#/,
-			end: /%>/,
+			start: '<%#',
+			end: '%>',
 		},
 		{
 			type: 'ejs-scriptlet',
 			start: /<%(?!%)/,
-			end: /%>/,
+			end: '%>',
 		},
 	]);
 	const doc = htmlParse(blocks.replaced, options);

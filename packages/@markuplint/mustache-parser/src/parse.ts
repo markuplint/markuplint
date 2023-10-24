@@ -7,18 +7,18 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'mustache-comment',
-			start: /{{!/,
-			end: /}}/,
+			start: '{{!',
+			end: '}}',
 		},
 		{
 			type: 'mustache-unescaped',
-			start: /{{{/,
-			end: /}}}/,
+			start: '{{{',
+			end: '}}}',
 		},
 		{
 			type: 'mustache-tag',
-			start: /{{/,
-			end: /}}/,
+			start: '{{',
+			end: '}}',
 		},
 	]);
 	const doc = htmlParse(blocks.replaced, options);
