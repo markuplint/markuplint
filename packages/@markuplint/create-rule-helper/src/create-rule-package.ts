@@ -3,7 +3,7 @@ import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js
 import path from 'node:path';
 
 import { CreateRuleHelperError } from './create-rule-helper-error.js';
-import glob from './glob.js';
+import { glob } from './glob.js';
 import { installScaffold } from './install-scaffold.js';
 
 export async function createRulePackage({

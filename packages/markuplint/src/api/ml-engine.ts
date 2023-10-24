@@ -27,7 +27,7 @@ export type FromCodeOptions = APIOptions &
 		readonly dirname?: string;
 	};
 
-export default class MLEngine extends Emitter<MLEngineEventMap> {
+export class MLEngine extends Emitter<MLEngineEventMap> {
 	static async fromCode(sourceCode: string, options?: FromCodeOptions) {
 		if (options?.debug) {
 			verbosely();

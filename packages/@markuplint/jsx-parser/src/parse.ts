@@ -3,7 +3,7 @@ import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, ParserError, walk } from '@markuplint/parser-utils';
 
-import jsxParser from './jsx.js';
+import { jsxParser } from './jsx.js';
 import { traverse } from './traverse.js';
 
 export const parse: Parse = (rawCode, options) => {

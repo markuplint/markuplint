@@ -6,7 +6,7 @@ import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { AccessibilityProperties, DocumentNodeType } from './types.js';
 import type { MLRule } from '../../ml-rule/index.js';
-import type Ruleset from '../../ruleset/index.js';
+import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
@@ -35,7 +35,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');

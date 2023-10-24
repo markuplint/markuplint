@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import jsxParser, { getName } from './jsx.js';
+import { jsxParser, getName } from './jsx.js';
 
 describe('jsxParser', () => {
 	test('spreadAttribute', () => {

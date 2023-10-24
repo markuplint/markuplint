@@ -3,7 +3,7 @@ import type { Parse } from '@markuplint/ml-ast';
 import { ignoreFrontMatter, flattenNodes } from '@markuplint/parser-utils';
 
 import { createTree } from './create-tree.js';
-import isDocumentFragment from './is-document-fragment.js';
+import { isDocumentFragment } from './is-document-fragment.js';
 import {
 	isStartsHeadTagOrBodyTag,
 	optimizeStartsHeadTagOrBodyTagResume,

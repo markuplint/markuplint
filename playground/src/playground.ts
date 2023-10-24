@@ -61,7 +61,7 @@ const defaultSample = `<!doctype html>
 </html>
 `;
 
-export default class Playground {
+export class Playground {
 	#rulesetString: string;
 	#ruleset: Ruleset;
 	#editor: editor.IStandaloneCodeEditor;

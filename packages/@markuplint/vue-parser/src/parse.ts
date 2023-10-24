@@ -21,7 +21,7 @@ import {
 } from '@markuplint/parser-utils';
 
 import { attr } from './attr.js';
-import vueParse from './vue-parser/index.js';
+import { vueParse } from './vue-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let ast: VueTokens;

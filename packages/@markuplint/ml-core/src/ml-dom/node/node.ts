@@ -13,7 +13,7 @@ import { MLToken } from '../token/token.js';
 import { isChildNode } from './child-node.js';
 import { toNodeList } from './node-list.js';
 import { nodeStore } from './node-store.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLNode<
 		T extends RuleConfigValue,

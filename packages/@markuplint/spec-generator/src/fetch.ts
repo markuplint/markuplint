@@ -14,7 +14,7 @@ const bar = new Bar(
 );
 bar.start(total, current, { process: '🚀 Started.' });
 
-export default async function (url: string) {
+export async function fetch(url: string) {
 	if (domCache.has(url)) {
 		return domCache.get(url)!;
 	}
@@ -32,7 +32,7 @@ export async function fetchText(url: string) {
 		text = cache.get(url)!;
 	} else {
 		try {
-			const res = await fetch(url);
+			const res = await global.fetch(url);
 			text = await res.text();
 			cache.set(url, text);
 		} catch {

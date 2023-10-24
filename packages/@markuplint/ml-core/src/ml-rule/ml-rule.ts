@@ -1,6 +1,6 @@
 import type { RuleSeed } from './types.js';
 import type { MLDocument } from '../ml-dom/node/document.js';
-import type Ruleset from '../ruleset/index.js';
+import type { Ruleset } from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
 	GlobalRuleInfo,

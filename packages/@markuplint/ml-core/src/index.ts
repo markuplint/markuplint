@@ -10,7 +10,7 @@ export {
 	getSpec,
 	resolveNamespace,
 } from '@markuplint/ml-spec';
-export { default as Ruleset } from './ruleset/index.js';
+export { Ruleset } from './ruleset/index.js';
 export { enableDebug } from './debug.js';
 export { getIndent } from './ml-dom/helper/get-indent.js';
 export * from './configs.js';

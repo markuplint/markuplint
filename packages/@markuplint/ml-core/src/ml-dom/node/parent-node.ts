@@ -7,7 +7,7 @@ import { getChildren } from '../manipulations/get-children.js';
 
 import { toNodeList } from './node-list.js';
 import { MLNode } from './node.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  *

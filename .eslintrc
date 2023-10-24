@@ -49,6 +49,7 @@
 		"eslint-comments/no-use": "off",
 
 		"import/no-named-as-default": 0,
+		"import/no-default-export": 2,
 		"import/order": [
 			"error",
 			{

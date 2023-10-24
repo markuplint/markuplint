@@ -19,7 +19,7 @@ import {
 	removeDeprecatedNode,
 } from '@markuplint/parser-utils';
 
-import attrTokenizer from './attr-tokenizer.js';
+import { attrTokenizer } from './attr-tokenizer.js';
 import { pugParse } from './pug-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {

@@ -3,7 +3,7 @@ import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, ParserError, ignoreBlock, restoreNode } from '@markuplint/parser-utils';
 
-import svelteParse from './svelte-parser/index.js';
+import { svelteParse } from './svelte-parser/index.js';
 import { traverse } from './traverse.js';
 
 export const parse: Parse = (rawCode, options) => {

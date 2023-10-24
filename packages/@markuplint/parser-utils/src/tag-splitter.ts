@@ -9,7 +9,7 @@ export interface N {
 	col: number;
 }
 
-export default function tagSplitter(raw: string, line: number, col: number): N[] {
+export function tagSplitter(raw: string, line: number, col: number): N[] {
 	return withLocation(tagSplitterAsString(raw), line, col);
 }
 

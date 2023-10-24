@@ -6,7 +6,7 @@ import { cli } from './bootstrap.js';
 import { command } from './command.js';
 import { createRule } from './create-rule/index.js';
 import { initialize } from './init/index.js';
-import search from './search/index.js';
+import { search } from './search/index.js';
 
 /* eslint-disable unicorn/no-process-exit */
 

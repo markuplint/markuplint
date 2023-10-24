@@ -1,5 +1,5 @@
 import type { MLRule } from './ml-rule/index.js';
-import type Ruleset from './ruleset/index.js';
+import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';

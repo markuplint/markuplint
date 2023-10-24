@@ -28,7 +28,7 @@ import { MLDomTokenList } from './dom-token-list.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
