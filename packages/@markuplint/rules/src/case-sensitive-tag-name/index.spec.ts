@@ -67,9 +67,24 @@ describe('verify', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('custom elements', async () => {
+	test('no custom elements (Started upper-case)', async () => {
 		const { violations } = await mlRuleTest(rule, '<XXX-hoge>lorem</XXX-hoge>');
-		expect(violations.length).toBe(0);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 2,
+				message: 'Tag names of HTML elements should be lowercase',
+				raw: 'XXX-hoge',
+			},
+			{
+				severity: 'warning',
+				line: 1,
+				col: 16,
+				message: 'Tag names of HTML elements should be lowercase',
+				raw: '</XXX-hoge>',
+			},
+		]);
 	});
 });
 
