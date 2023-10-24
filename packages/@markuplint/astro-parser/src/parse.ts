@@ -18,8 +18,16 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { parseRawTag, parse as htmlParse } from '@markuplint/html-parser';
-import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { parse as htmlParse } from '@markuplint/html-parser';
+import {
+	flattenNodes,
+	detectElementType,
+	getEndCol,
+	getEndLine,
+	sliceFragment,
+	uuid,
+	tagParser,
+} from '@markuplint/parser-utils';
 
 import { astroParse } from './astro-parser.js';
 import { attrTokenizer } from './attr-tokenizer.js';
@@ -350,12 +358,12 @@ function parseElement(
 		// });
 	}
 
-	const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
+	const tagTokens = tagParser(startTagRaw, startLine, startCol, startOffset);
 	const tagName = tagTokens.tagName;
 	let endTag: MLASTElementCloseTag | null = null;
 	if (childrenEnd < (originNode.position.end?.offset ?? 0) + offset) {
 		const endTagLoc = sliceFragment(rawHtml, childrenEnd, (originNode.position.end?.offset ?? 0) + offset);
-		const endTagTokens = parseRawTag(endTagLoc.raw, endTagLoc.startLine, endTagLoc.startCol, endTagLoc.startOffset);
+		const endTagTokens = tagParser(endTagLoc.raw, endTagLoc.startLine, endTagLoc.startCol, endTagLoc.startOffset);
 		const endTagName = endTagTokens.tagName;
 		endTag = {
 			uuid: uuid(),
@@ -414,7 +422,7 @@ function parseElement(
 		nextNode,
 		pearNode: endTag,
 		selfClosingSolidus: tagTokens.selfClosingSolidus,
-		endSpace: tagTokens.endSpace,
+		endSpace: tagTokens.afterAttrSpaces,
 		isFragment: false,
 		isGhost: false,
 		tagOpenChar: '<',

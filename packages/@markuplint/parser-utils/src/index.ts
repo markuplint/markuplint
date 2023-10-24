@@ -1,3 +1,5 @@
+export * from './attr-parser.js';
+export * from './attr-tokenizer.js';
 export * from './const.js';
 export * from './create-token.js';
 export * from './debugger.js';
@@ -12,5 +14,7 @@ export * from './ignore-front-matter.js';
 export * from './parse-attr.js';
 export * from './parser-error.js';
 export * from './remove-deprecated-node.js';
+export * from './script-parser.js';
+export * from './tag-parser.js';
 export * from './tag-splitter.js';
 export * from './walker.js';

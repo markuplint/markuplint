@@ -22,10 +22,8 @@ import type {
 } from 'parse5/dist/tree-adapters/default';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { detectElementType, getEndCol, getEndLine, sliceFragment, tagParser, uuid } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
-
-import parseRawTag from './parse-raw-tag.js';
 
 interface TraversalNode {
 	readonly childNodes?: readonly P5Node[];
@@ -205,7 +203,7 @@ function nodeize(
 			const startTagRaw = tagLoc
 				? rawHtml.slice(tagLoc.startOffset, tagLoc.endOffset)
 				: rawHtml.slice(startOffset, endOffset ?? startOffset);
-			const tagTokens = parseRawTag(
+			const tagTokens = tagParser(
 				startTagRaw,
 				startLine,
 				startCol,
@@ -238,7 +236,7 @@ function nodeize(
 			if (endTagLoc) {
 				const { startOffset, endOffset, startLine, endLine, startCol, endCol } = endTagLoc;
 				const endTagRaw = rawHtml.slice(startOffset, endOffset);
-				const endTagTokens = parseRawTag(
+				const endTagTokens = tagParser(
 					endTagRaw,
 					startLine,
 					startCol,

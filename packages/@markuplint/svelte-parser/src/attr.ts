@@ -3,7 +3,7 @@ import type { MLASTAttr, MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { defaultValueDelimiters, parseAttr, sliceFragment } from '@markuplint/parser-utils';
 
-import directiveTokenizer from './directive-tokenizer.js';
+import { directiveTokenizer } from './directive-tokenizer.js';
 
 const mustacheTag = {
 	start: '{',

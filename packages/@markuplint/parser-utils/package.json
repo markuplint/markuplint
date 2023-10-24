@@ -27,6 +27,7 @@
 		"@markuplint/ml-ast": "4.0.0-alpha.4",
 		"@markuplint/types": "4.0.0-alpha.4",
 		"@types/uuid": "^9.0.6",
+		"espree": "^9.6.1",
 		"type-fest": "^4.5.0",
 		"uuid": "^9.0.1"
 	}

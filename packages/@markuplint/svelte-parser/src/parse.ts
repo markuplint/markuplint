@@ -12,13 +12,13 @@ export const parse: Parse = (rawCode, options) => {
 		[
 			{
 				type: 'Script',
-				start: /<script/,
-				end: /<\/script>/,
+				start: '<script',
+				end: '</script>',
 			},
 			{
 				type: 'Style',
-				start: /<style/,
-				end: /<\/style>/,
+				start: '<style',
+				end: '</style>',
 			},
 		],
 		'-',

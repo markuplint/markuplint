@@ -7,18 +7,18 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'nunjucks-block',
-			start: /{%/,
-			end: /%}/,
+			start: '{%',
+			end: '%}',
 		},
 		{
 			type: 'nunjucks-output',
-			start: /{{/,
-			end: /}}/,
+			start: '{{',
+			end: '}}',
 		},
 		{
 			type: 'nunjucks-comment',
-			start: /{#/,
-			end: /#}/,
+			start: '{#',
+			end: '#}',
 		},
 	]);
 	const doc = htmlParse(blocks.replaced, options);

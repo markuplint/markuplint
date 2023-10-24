@@ -7,18 +7,18 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'smarty-literal',
-			start: /{literal}/,
-			end: /{\/literal}/,
+			start: '{literal}',
+			end: '{/literal}',
 		},
 		{
 			type: 'smarty-comment',
-			start: /{\*/,
-			end: /\*}/,
+			start: '{*',
+			end: '*}',
 		},
 		{
 			type: 'smarty-scriptlet',
-			start: /{/,
-			end: /}/,
+			start: '{',
+			end: '}',
 		},
 	]);
 	const doc = htmlParse(blocks.replaced, options);

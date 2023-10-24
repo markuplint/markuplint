@@ -49,8 +49,8 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 }
 
 function maskText(
-	start: Readonly<RegExp>,
-	end: Readonly<RegExp>,
+	start: Readonly<RegExp> | string,
+	end: Readonly<RegExp> | string,
 	replaced: string,
 	masking: (startTag: string, taggedCode: string, endTag?: string) => string,
 ) {
@@ -232,18 +232,31 @@ function snap(str: string, reg: Readonly<RegExp>): [number, string] | [number, s
 	return [index, above, snapPoint, below];
 }
 
-function removeGlobalOption(reg: Readonly<RegExp>) {
+function removeGlobalOption(reg: Readonly<RegExp> | string) {
+	if (typeof reg === 'string') {
+		return new RegExp(escapeRegExpForStr(reg));
+	}
 	return new RegExp(reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function prepend(reg: Readonly<RegExp>, str: string) {
+function prepend(reg: Readonly<RegExp> | string, str: string) {
+	if (typeof reg === 'string') {
+		return new RegExp(str + escapeRegExpForStr(reg));
+	}
 	return new RegExp(str + reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function append(reg: Readonly<RegExp>, str: string) {
+function append(reg: Readonly<RegExp> | string, str: string) {
+	if (typeof reg === 'string') {
+		return new RegExp(escapeRegExpForStr(reg) + str);
+	}
 	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 
 function hasIgnoreBlock(textContent: string, maskChar: string) {
 	return textContent.includes(maskChar);
+}
+
+function escapeRegExpForStr(str: string) {
+	return str.replaceAll(/[!$()*+./:=?[\\\]^{|}]/g, '\\$&');
 }

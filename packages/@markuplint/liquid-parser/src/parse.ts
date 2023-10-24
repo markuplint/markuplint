@@ -7,13 +7,13 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'liquid-block',
-			start: /{%/,
-			end: /%}/,
+			start: '{%',
+			end: '%}',
 		},
 		{
 			type: 'liquid-output',
-			start: /{{/,
-			end: /}}/,
+			start: '{{',
+			end: '}}',
 		},
 	]);
 	const doc = htmlParse(blocks.replaced, options);
