@@ -39,7 +39,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(1);
 		expect(doc.nodeList[0].attributes.length).toBe(1);
 		expect(doc.nodeList[0].attributes[0].name.raw).toBe('data-attr');
-		expect(doc.nodeList[0].attributes[0].value.raw).toBe('value');
+		expect(doc.nodeList[0].attributes[0].value.raw).toBe('"value"');
 	});
 
 	test('with dynamic attribute', () => {
@@ -59,7 +59,7 @@ describe('parser', () => {
 		expect(doc.nodeList[0].attributes[2].name.raw).toBe('data-attr3');
 		expect(doc.nodeList[0].attributes[2].value.raw).toBe('');
 		expect(doc.nodeList[0].attributes[3].name.raw).toBe('data-attr4');
-		expect(doc.nodeList[0].attributes[3].value.raw).toBe('${variable5}');
+		expect(doc.nodeList[0].attributes[3].value.raw).toBe('`${variable5}`');
 	});
 
 	test('ID and Classes', () => {
@@ -456,9 +456,9 @@ else
 		expect(attr.raw).toEqual('data-hoge="content"');
 		expect(attr.name.raw).toEqual('data-hoge');
 		expect(attr.equal.raw).toEqual('=');
-		expect(attr.startQuote.raw).toEqual('"');
-		expect(attr.value.raw).toEqual('content');
-		expect(attr.endQuote.raw).toEqual('"');
+		expect(attr.startQuote.raw).toEqual('');
+		expect(attr.value.raw).toEqual('"content"');
+		expect(attr.endQuote.raw).toEqual('');
 	});
 
 	test('attribute 2', () => {
@@ -470,9 +470,9 @@ else
 		expect(attr.raw).toEqual("data-hoge='content'");
 		expect(attr.name.raw).toEqual('data-hoge');
 		expect(attr.equal.raw).toEqual('=');
-		expect(attr.startQuote.raw).toEqual("'");
-		expect(attr.value.raw).toEqual('content');
-		expect(attr.endQuote.raw).toEqual("'");
+		expect(attr.startQuote.raw).toEqual('');
+		expect(attr.value.raw).toEqual("'content'");
+		expect(attr.endQuote.raw).toEqual('');
 	});
 
 	test('attribute 3', () => {
@@ -495,6 +495,48 @@ else
 		expect(attr.value.startCol).toEqual(19);
 		expect(attr.endQuote.raw).toEqual('"');
 		expect(attr.endQuote.startCol).toEqual(24);
+	});
+
+	test('attribute 4', () => {
+		const doc = parse('div(attr = cond ? a : b, attr2=`abc${def}ghi`, attr3="abc"+def+\'ghi\')');
+		const map = nodeListToDebugMaps(doc.nodeList, true);
+		expect(doc.unknownParseError).toBeUndefined();
+		expect(map).toStrictEqual([
+			'[1:1]>[1:70](0,69)div: div(attr␣=␣cond␣?␣a␣:␣b,␣attr2=`abc${def}ghi`,␣attr3="abc"+def+\'ghi\')',
+			'[1:5]>[1:24](4,23)attr: attr␣=␣cond␣?␣a␣:␣b',
+			'  [1:5]>[1:5](4,4)bN: ',
+			'  [1:5]>[1:9](4,8)name: attr',
+			'  [1:9]>[1:10](8,9)bE: ␣',
+			'  [1:10]>[1:11](9,10)equal: =',
+			'  [1:11]>[1:12](10,11)aE: ␣',
+			'  [1:12]>[1:12](11,11)sQ: ',
+			'  [1:12]>[1:24](11,23)value: cond␣?␣a␣:␣b',
+			'  [1:24]>[1:24](23,23)eQ: ',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:26]>[1:46](25,45)attr2: attr2=`abc${def}ghi`',
+			'  [1:26]>[1:26](25,25)bN: ',
+			'  [1:26]>[1:31](25,30)name: attr2',
+			'  [1:31]>[1:31](30,30)bE: ',
+			'  [1:31]>[1:32](30,31)equal: =',
+			'  [1:32]>[1:32](31,31)aE: ',
+			'  [1:32]>[1:32](31,31)sQ: ',
+			'  [1:32]>[1:46](31,45)value: `abc${def}ghi`',
+			'  [1:46]>[1:46](45,45)eQ: ',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:48]>[1:69](47,68)attr3: attr3="abc"+def+\'ghi\'',
+			'  [1:48]>[1:48](47,47)bN: ',
+			'  [1:48]>[1:53](47,52)name: attr3',
+			'  [1:53]>[1:53](52,52)bE: ',
+			'  [1:53]>[1:54](52,53)equal: =',
+			'  [1:54]>[1:54](53,53)aE: ',
+			'  [1:54]>[1:54](53,53)sQ: ',
+			'  [1:54]>[1:69](53,68)value: "abc"+def+\'ghi\'',
+			'  [1:69]>[1:69](68,68)eQ: ',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+		]);
 	});
 
 	test('add space to below', () => {
