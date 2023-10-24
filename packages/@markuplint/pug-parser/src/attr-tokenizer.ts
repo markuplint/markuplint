@@ -3,7 +3,7 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 
 import { tokenizer, uuid, scriptParser, removeQuote } from '@markuplint/parser-utils';
 
-export default function attrTokenizer(
+export function attrTokenizer(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	attr: ASTAttr,
 ): MLASTAttr {

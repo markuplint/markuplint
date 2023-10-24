@@ -10,7 +10,7 @@ import type {
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import fetch from './fetch.js';
+import { fetch } from './fetch.js';
 import { arrayUnique, nameCompare } from './utils.js';
 
 export async function getAria() {

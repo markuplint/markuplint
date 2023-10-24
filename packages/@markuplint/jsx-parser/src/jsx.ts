@@ -21,7 +21,7 @@ export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
-export default function jsxParser(jsxCode: string): JSXNode[] {
+export function jsxParser(jsxCode: string): JSXNode[] {
 	const ast = parse(jsxCode, {
 		comment: true,
 		errorOnUnknownASTType: false,

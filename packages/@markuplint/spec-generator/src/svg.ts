@@ -1,4 +1,4 @@
-import fetch from './fetch.js';
+import { fetch } from './fetch.js';
 import { getThisOutline } from './utils.js';
 
 export async function getSVGElementList() {

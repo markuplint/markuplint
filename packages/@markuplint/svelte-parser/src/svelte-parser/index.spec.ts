@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import svelteParse from './index.js';
+import { svelteParse } from './index.js';
 
 describe('parser', () => {
 	test('if', () => {

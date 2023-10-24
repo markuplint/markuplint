@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { test, expect, afterAll, beforeAll } from 'vitest';
 
-import glob from './glob.js';
+import { glob } from './glob.js';
 import { transfer } from './transfer.js';
 
 const __filename = fileURLToPath(import.meta.url);

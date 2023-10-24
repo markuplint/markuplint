@@ -3,7 +3,7 @@ import type { MLASTNode, MLASTText } from '@markuplint/ml-ast';
 import { uuid } from './create-token.js';
 import { getEndCol, getEndLine } from './get-location.js';
 import { removeDeprecatedNode } from './remove-deprecated-node.js';
-import tagSplitter from './tag-splitter.js';
+import { tagSplitter } from './tag-splitter.js';
 import { walk } from './walker.js';
 
 export function flattenNodes(

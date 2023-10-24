@@ -4,7 +4,7 @@ import { parse } from 'svelte/compiler';
 
 export type SvelteNode = TemplateNode;
 
-export default function svelteParse(template: string): SvelteNode[] {
+export function svelteParse(template: string): SvelteNode[] {
 	const ast = parse(template, { customElement: true });
 
 	const start = ast.html.start;

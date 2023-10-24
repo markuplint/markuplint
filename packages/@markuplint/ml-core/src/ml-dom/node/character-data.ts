@@ -12,7 +12,7 @@ import {
 } from '../manipulations/child-node-methods.js';
 
 import { MLNode } from './node.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,

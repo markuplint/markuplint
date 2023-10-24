@@ -2,7 +2,7 @@ import type { MLElement } from '../node/element.js';
 import type { MLNode } from '../node/node.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import UnexpectedCallError from '../node/unexpected-call-error.js';
+import { UnexpectedCallError } from '../node/unexpected-call-error.js';
 
 /**
  *

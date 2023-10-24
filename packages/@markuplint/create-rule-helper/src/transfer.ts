@@ -8,7 +8,7 @@ import { format } from 'prettier';
 import tsc from 'typescript';
 
 import { fsExists } from './fs-exists.js';
-import glob from './glob.js';
+import { glob } from './glob.js';
 
 type TransferOptions = {
 	readonly transpile?: boolean;

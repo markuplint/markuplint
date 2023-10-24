@@ -3,7 +3,7 @@
 import { describe, test, expect } from 'vitest';
 
 import { parseCtrlBlock } from './parse-ctrl-block.js';
-import svelteParse from './svelte-parser/index.js';
+import { svelteParse } from './svelte-parser/index.js';
 
 describe('parser', () => {
 	test('if', () => {

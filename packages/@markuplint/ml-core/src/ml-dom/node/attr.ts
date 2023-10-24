@@ -9,7 +9,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTAttr>

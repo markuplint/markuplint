@@ -1,5 +1,5 @@
 import { createMonaco } from './monaco.js';
-import Playground from './playground.js';
+import { Playground } from './playground.js';
 import './style.scss';
 
 document.addEventListener('DOMContentLoaded', async () => {

@@ -3,7 +3,7 @@ import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLCharacterData } from './character-data.js';
-import UnexpectedCallError from './unexpected-call-error.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  * Raw text elements
