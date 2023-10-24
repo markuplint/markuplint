@@ -10,7 +10,7 @@ export function getLocationFromChars(
 	currentLine: number,
 	currentCol: number,
 ) {
-	const lines = text.split(/\r?\n/g);
+	const lines = text.split(/\r?\n/);
 	const foundLocations: Location[] = [];
 	for (const [i, lineText] of lines.entries()) {
 		let offset = 0;

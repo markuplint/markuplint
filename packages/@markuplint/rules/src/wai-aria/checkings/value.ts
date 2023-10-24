@@ -72,7 +72,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return tokenEnum.includes(value);
 		}
 		case 'token list': {
-			const list = value.split(/\s+/g).map(s => s.trim());
+			const list = value.split(/\s+/).map(s => s.trim());
 			return list.every(token => tokenEnum.includes(token));
 		}
 		case 'string':

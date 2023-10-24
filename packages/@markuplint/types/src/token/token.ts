@@ -22,12 +22,12 @@ export class Token {
 	static readonly whitespace: ReadonlyArray<string> = ['\u0009', '\u000A', '\u000C', '\u000D', '\u0020'];
 
 	static getCol(value: string, offset: number) {
-		const lines = value.slice(0, offset).split(/\n/g);
+		const lines = value.slice(0, offset).split(/\n/);
 		return (lines.at(-1) ?? '').length + 1;
 	}
 
 	static getLine(value: string, offset: number) {
-		return value.slice(0, offset).split(/\n/g).length;
+		return value.slice(0, offset).split(/\n/).length;
 	}
 
 	static getType(value: string, separators?: readonly string[]) {

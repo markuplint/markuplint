@@ -100,7 +100,7 @@ const renderMd = mustache.render(md, {
  */
 function cleanComment(text) {
 	const t1 = text.trim();
-	const t2 = t1.replaceAll(/^\/\*{2}(?:\s*\*\s*)?|^\*\/|^\*|^\*\s*|\s*\*\/$/g, '');
+	const t2 = t1.replaceAll(/^\/\*{2}(?:\s*\*\s*)?|^\*\/|^\*|\s*\*\/$/g, '');
 	const t3 = t2.replaceAll(/\s*\n\s*(?:\*\s*)?/g, ' ');
 	const t4 = t3.trim();
 	return t4;
