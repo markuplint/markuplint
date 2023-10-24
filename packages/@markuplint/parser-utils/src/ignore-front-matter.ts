@@ -1,5 +1,5 @@
 export function ignoreFrontMatter(code: string) {
-	const reStart = /^(?:\s*\r?\n)?---\r?\n/.exec(code);
+	const reStart = /^(?:\s*\n)?---\r?\n/.exec(code);
 	if (!reStart) {
 		return code;
 	}

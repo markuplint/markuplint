@@ -19,7 +19,7 @@ function matchesCondition(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	const conditions = condition.split(/\s+>\s+/g).reverse();
+	const conditions = condition.split(/\s+>\s+/).reverse();
 
 	while (conditions.length > 0) {
 		if (!parentEl) {

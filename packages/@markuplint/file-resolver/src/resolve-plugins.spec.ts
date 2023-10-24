@@ -18,5 +18,5 @@ test('resolvePlugins', async () => {
 test('resolve name', async () => {
 	const filePath = path.resolve(__dirname, '..', 'test', 'plugins', '002.js');
 	const plugins = await resolvePlugins([filePath]);
-	expect(plugins[0]?.name).toBe(filePath.toLowerCase().replaceAll(/\s+|\/|\\|\./g, '-'));
+	expect(plugins[0]?.name).toBe(filePath.toLowerCase().replaceAll(/\s+|[./\\]/g, '-'));
 });

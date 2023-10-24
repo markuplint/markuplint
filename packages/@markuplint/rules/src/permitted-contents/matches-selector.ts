@@ -169,7 +169,9 @@ const conditionWithoutSpecs: Record<string, Condition> = {
 		hasText: true,
 	},
 };
+
 const optConditionSpecsBaseCaches = new Map<Specs, Map<string, Condition>>();
+
 function optCondition(query: string, specs: Specs): Readonly<Condition> {
 	const condWithoutSpecs = conditionWithoutSpecs[query];
 	if (condWithoutSpecs) {
@@ -185,7 +187,7 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 	let hasCustom = false;
 	let hasText = false;
 
-	const selector = query.replace(/^(?::model\(([^)]+)\)|#([a-z-]+))(.*)$/, (_, $model, _model, $last) => {
+	const selector = query.replace(/^:model\(([^)]+)\)|^#([a-z-]+)/, (_, $model, _model) => {
 		const _selectors = contentModelCategoryToTagNames(`#${$model ?? _model}` as Category, specs.def);
 		if (_selectors.length === 0) {
 			throw new Error(`${$model ?? _model} is empty`);
@@ -204,7 +206,7 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 			selectors.push(selector);
 		}
 
-		return `:is(${selectors.join(',')})${$last ?? ''}`;
+		return `:is(${selectors.join(',')})`;
 	});
 
 	const result: Condition = {
