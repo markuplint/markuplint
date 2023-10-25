@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/smarty-parser",
-	"version": "4.0.0-alpha.4",
+	"version": "4.0.0-alpha.5",
 	"description": "Smarty parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,8 +21,8 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.0.0-alpha.4",
-		"@markuplint/ml-ast": "4.0.0-alpha.4",
-		"@markuplint/parser-utils": "4.0.0-alpha.4"
+		"@markuplint/html-parser": "4.0.0-alpha.5",
+		"@markuplint/ml-ast": "4.0.0-alpha.5",
+		"@markuplint/parser-utils": "4.0.0-alpha.5"
 	}
 }
