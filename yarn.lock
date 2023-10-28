@@ -1578,6 +1578,7 @@
     ts-api-utils "^1.0.1"
 
 "@typescript-eslint/types@5.62.0", "@typescript-eslint/types@^5.0.0", "ts-eslint-types-v5@npm:@typescript-eslint/types@5":
+  name ts-eslint-types-v5
   version "5.62.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.62.0.tgz#258607e60effa309f067608931c3df6fed41fd2f"
   integrity sha512-87NVngcbVXUahrRTqIK27gD2t5Cu1yuCXxbLcFtCzZGlfyVWWh8mLHkoxzjsB6DDNnvdL+fW8MiwPEJyGJQDgQ==
@@ -1704,10 +1705,10 @@
     jszip "^3.10.1"
     semver "^7.5.2"
 
-"@vscode/vsce@2.21.1":
-  version "2.21.1"
-  resolved "https://registry.yarnpkg.com/@vscode/vsce/-/vsce-2.21.1.tgz#793c78d992483b428611a3927211a9640041be14"
-  integrity sha512-f45/aT+HTubfCU2oC7IaWnH9NjOWp668ML002QiFObFRVUCoLtcwepp9mmql/ArFUy+HCHp54Xrq4koTcOD6TA==
+"@vscode/vsce@2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@vscode/vsce/-/vsce-2.22.0.tgz#1eb3ebc6b89581a150bb44dd7d731a064019b617"
+  integrity sha512-8df4uJiM3C6GZ2Sx/KilSKVxsetrTBBIUb3c0W4B1EWHcddioVs5mkyDKtMNP0khP/xBILVSzlXxhV+nm2rC9A==
   dependencies:
     azure-devops-node-api "^11.0.1"
     chalk "^2.4.2"
