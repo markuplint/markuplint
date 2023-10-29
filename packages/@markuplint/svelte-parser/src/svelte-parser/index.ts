@@ -1,10 +1,10 @@
-import type { Directive, TemplateNode } from 'svelte/types/compiler/interfaces';
+import type { Directive, TemplateNode, Attribute, SpreadAttribute } from 'svelte/types/compiler/interfaces';
 
 import { parse } from 'svelte/compiler';
 
 export type SvelteNode = TemplateNode;
 
-export default function svelteParse(template: string) {
+export function svelteParse(template: string): SvelteNode[] {
 	const ast = parse(template, { customElement: true });
 
 	const start = ast.html.start;
@@ -16,4 +16,4 @@ export default function svelteParse(template: string) {
 	return children;
 }
 
-export type SvelteDirective = Directive;
+export type SvelteDirective = Directive | Attribute | SpreadAttribute;

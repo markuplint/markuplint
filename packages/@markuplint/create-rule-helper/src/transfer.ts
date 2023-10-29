@@ -1,20 +1,23 @@
-import type { File } from './types';
+import type { File } from './types.js';
 
 import { statSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { resolve, extname, basename, relative, dirname, sep } from 'node:path';
 
 import { format } from 'prettier';
-import { transpile, ScriptTarget } from 'typescript';
+import tsc from 'typescript';
 
-import { fsExists } from './fs-exists';
-import glob from './glob';
+import { fsExists } from './fs-exists.js';
+import { glob } from './glob.js';
 
 type TransferOptions = {
 	readonly transpile?: boolean;
 	readonly test?: boolean;
 	readonly replacer?: Readonly<Record<string, string | void>>;
 };
+
+// eslint-disable-next-line import/no-named-as-default-member
+const { transpile, ScriptTarget } = tsc;
 
 export async function transfer(
 	scaffoldType: 'core' | 'project' | 'package',
@@ -42,22 +45,22 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		return null;
 	}
 
-	let contents = await fs.readFile(file.filePath, { encoding: 'utf-8' });
+	let contents = await fs.readFile(file.filePath, { encoding: 'utf8' });
 
 	if (options?.replacer) {
-		Object.entries(options?.replacer).forEach(([before, after]) => {
+		for (const [before, after] of Object.entries(options?.replacer)) {
 			if (!after) {
-				return;
+				continue;
 			}
 			// Hyphenation to camel-case for variables
 			// `rule-name` => `ruleName`
-			contents = contents.replace(
+			contents = contents.replaceAll(
 				new RegExp(`__${before}__c`, 'g'),
 				// Camelize
-				after.replace(/-+([a-z])/gi, (_, $1) => $1.toUpperCase()).replace(/^[a-z]/, $0 => $0.toLowerCase()),
+				after.replaceAll(/-+([a-z])/gi, (_, $1) => $1.toUpperCase()).replace(/^[a-z]/, $0 => $0.toLowerCase()),
 			);
-			contents = contents.replace(new RegExp(`__${before}__`, 'g'), after);
-		});
+			contents = contents.replaceAll(new RegExp(`__${before}__`, 'g'), after);
+		}
 	}
 
 	// Remove prettier ignore comment
@@ -87,10 +90,10 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		);
 
 		// Insert new line before comments and the export keyword
-		contents = contents.replace(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
+		contents = contents.replaceAll(/(\n)(\s+\/\*\*|export)/g, '$1\n$2');
 	}
 
-	const candidateName = options?.replacer?.[newFile.name.replace(/_/g, '')];
+	const candidateName = options?.replacer?.[newFile.name.replaceAll('_', '')];
 	if (candidateName) {
 		newFile.name = candidateName;
 		newFile.fileName = candidateName + (newFile.test ? '.spec' : '');
@@ -109,13 +112,13 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 				? 'babel'
 				: 'typescript'
 			: undefined;
-	contents = format(contents, { parser, filepath: dest });
+	contents = await format(contents, { parser, filepath: dest });
 
 	if (!(await fsExists(newFile.destDir))) {
 		await fs.mkdir(newFile.destDir, { recursive: true });
 	}
 
-	await fs.writeFile(dest, contents, { encoding: 'utf-8' });
+	await fs.writeFile(dest, contents, { encoding: 'utf8' });
 
 	return newFile;
 }

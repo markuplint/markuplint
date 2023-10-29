@@ -1,9 +1,9 @@
-import type { CLIOptions } from '../cli/bootstrap';
-import type { MLResultInfo } from '../types';
+import type { CLIOptions } from '../cli/bootstrap.js';
+import type { MLResultInfo } from '../types.js';
 
 import c from 'cli-color';
 
-import { invisibleSpace, markuplint, messageToString, p, space, w } from '../util';
+import { invisibleSpace, markuplint, messageToString, p, space, w } from '../util.js';
 
 const loggerError = c.red;
 const loggerWarning = c.xterm(208);
@@ -25,13 +25,13 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 	const out: string[] = [];
 
 	if (results.violations.length > 0) {
-		const lines = results.sourceCode.split(/\r?\n/g);
+		const lines = results.sourceCode.split(/\r?\n/);
 		for (const violation of results.violations) {
 			const prev = lines[violation.line - 2] ?? '';
 			const line = lines[violation.line - 1] ?? '';
 			const next = lines[violation.line - 0] ?? '';
-			const before = line.substring(0, violation.col - 1);
-			const after = line.substring(violation.col - 1 + violation.raw.length);
+			const before = line.slice(0, Math.max(0, violation.col - 1));
+			const after = line.slice(Math.max(0, violation.col - 1 + violation.raw.length));
 			const logger = violation.severity === 'error' ? loggerError : loggerWarning;
 			const meg = messageToString(violation.message, violation.reason);
 

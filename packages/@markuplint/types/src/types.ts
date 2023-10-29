@@ -1,6 +1,6 @@
-import type { cssSyntaxMatch } from './css-syntax';
+import type { cssSyntaxMatch } from './css-syntax.js';
 
-export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number } from './types.schema';
+export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number } from './types.schema.js';
 
 export type Result = UnmatchedResult | MatchedResult;
 
@@ -21,6 +21,7 @@ export type UnmatchedResultOptions = {
 	readonly expects?: readonly Expect[];
 	readonly extra?: Expect;
 	readonly candidate?: string;
+	readonly fallbackTo?: string;
 };
 
 export type UnmatchedResultReason =

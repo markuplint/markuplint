@@ -1,17 +1,17 @@
-import type { Result } from './types';
-import type { Number } from './types.schema';
+import type { Result } from './types.js';
+import type { Number as TypeNumber } from './types.schema.js';
 
-import { matched, unmatched } from './match-result';
-import { isFloat, isInt } from './primitive';
+import { matched, unmatched } from './match-result.js';
+import { isFloat, isInt } from './primitive/index.js';
 
-export function checkNumber(value: string, type: Readonly<Number>, ref?: string): Result {
+export function checkNumber(value: string, type: Readonly<TypeNumber>, ref?: string): Result {
 	if (!value) {
 		return unmatched(value, 'empty-token');
 	}
 	const syntaxMatched = type.type === 'float' ? isFloat(value) : isInt(value);
 	if (syntaxMatched) {
-		const n = parseFloat(value);
-		if (!isFinite(n)) {
+		const n = Number.parseFloat(value);
+		if (!Number.isFinite(n)) {
 			return unmatched(value, 'unexpected-token');
 		}
 

@@ -24,7 +24,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 | テンプレートエンジンまたは構文                                                             | パーサ                        | スペック                 |
 | ------------------------------------------------------------------------------------------ | ----------------------------- | ------------------------ |
-| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                   | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
+| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
 | [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`      | `@markuplint/vue-spec`   |
 | [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`   | -                        |
 | [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`    | -                        |
@@ -102,10 +102,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```json class=config title="Reactでつかう"
 {
   "parser": {
-    ".jsx$": "@markuplint/jsx-parser"
+    "\\.jsx$": "@markuplint/jsx-parser"
   },
   "specs": {
-    ".jsx$": "@markuplint/react-spec"
+    "\\.jsx$": "@markuplint/react-spec"
   }
 }
 ```
@@ -113,10 +113,10 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```json class=config title="Vueでつかう"
 {
   "parser": {
-    ".vue$": "@markuplint/vue-parser"
+    "\\.vue$": "@markuplint/vue-parser"
   },
   "specs": {
-    ".vue$": "@markuplint/vue-spec"
+    "\\.vue$": "@markuplint/vue-spec"
   }
 }
 ```

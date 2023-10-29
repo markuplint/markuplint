@@ -1,6 +1,6 @@
-import type { ChildNode, Result } from './types';
+import type { ChildNode, Result } from './types.js';
 
-import { cmLog } from './debug';
+import { cmLog } from './debug.js';
 
 const transparentLog = cmLog.extend('transparent');
 
@@ -12,7 +12,7 @@ export function transparent(
 		transparentLog('Skipped');
 		return {
 			type: nodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',
-			matched: nodes.slice(),
+			matched: [...nodes],
 			unmatched: [],
 			zeroMatch: nodes.length === 0,
 			query: 'transparent',
@@ -24,7 +24,7 @@ export function transparent(
 
 	return {
 		type: 'MATCHED',
-		matched: nodes.slice(),
+		matched: [...nodes],
 		unmatched: [],
 		zeroMatch: false,
 		query: 'transparent',

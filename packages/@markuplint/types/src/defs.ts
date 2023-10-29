@@ -1,19 +1,20 @@
-import type { Defs, CssSyntaxTokenizer } from './types';
+import type { Defs, CssSyntaxTokenizer } from './types.js';
 
-import { checkMultiTypes } from './check-multi-types';
-import { getCandidate } from './get-candidate';
-import { matched, matches, unmatched } from './match-result';
-import { splitUnit, isFloat, isUint, isInt } from './primitive';
-import { isBCP47 } from './rfc/is-bcp-47';
-import { Token, TokenCollection } from './token';
-import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy';
-import { checkAutoComplete } from './whatwg/check-autocomplete';
-import { checkDateTime } from './whatwg/check-datetime';
-import { checkMIMEType } from './whatwg/check-mime-type';
-import { isAbsURL } from './whatwg/is-abs-url';
-import { isBrowserContextName } from './whatwg/is-browser-context-name';
-import { isCustomElementName } from './whatwg/is-custom-element-name';
-import { isItempropName } from './whatwg/is-itemprop-name';
+import { checkMultiTypes } from './check-multi-types.js';
+import { getCandidate } from './get-candidate.js';
+import { matched, matches, unmatched } from './match-result.js';
+import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
+import { isBCP47 } from './rfc/is-bcp-47.js';
+import { Token, TokenCollection } from './token/index.js';
+import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
+import { checkAutoComplete } from './whatwg/check-autocomplete.js';
+import { checkDateTime } from './whatwg/check-datetime/index.js';
+import { checkMIMEType } from './whatwg/check-mime-type.js';
+import { isAbsURL } from './whatwg/is-abs-url.js';
+import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
+import { isCustomElementName } from './whatwg/is-custom-element-name.js';
+import { isItempropName } from './whatwg/is-itemprop-name.js';
+import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 
 export const types: Defs = {
 	Any: {
@@ -23,7 +24,7 @@ export const types: Defs = {
 
 	NoEmptyAny: {
 		ref: '',
-		is: value => (0 < value.length ? matched() : unmatched(value, 'empty-token')),
+		is: value => (value.length > 0 ? matched() : unmatched(value, 'empty-token')),
 	},
 
 	OneLineAny: {
@@ -97,13 +98,14 @@ export const types: Defs = {
 			},
 		],
 		is: value => {
-			// NameStartChar ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
-			const nameStartChar =
-				/[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]/u;
-			// NameChar ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
-			const nameCharTail = /-|[.0-9\u00B7]|[\u0300-\u036F\u203F-\u2040]/;
-			// Name ::= NameStartChar (NameChar)*
-			const name = RegExp(`(?:${nameStartChar.source})(?:${nameCharTail})*`, 'u');
+			/**
+			 * NameStartChar ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+			 * NameChar ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+			 * Name ::= NameStartChar (NameChar)*
+			 */
+			const name =
+				// eslint-disable-next-line no-misleading-character-class
+				/[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}][\d.\u00B7\u0300-\u036F\u203F\u2040-]*/u;
 			return name.test(value) ? matched() : unmatched(value, 'unexpected-token');
 		},
 	},
@@ -225,6 +227,26 @@ export const types: Defs = {
 		is: () => matched(),
 	},
 
+	/**
+	 * Fail if it inclides "data" or "javascript" scheme.
+	 *
+	 * > If any of the following are true:
+	 * >   urlRecord is failure;
+	 * >     urlRecord's scheme is "data" or "javascript"; or
+	 * >     running Is base allowed for Document? on urlRecord and document returns "Blocked",
+	 * >     then set element's frozen base URL to document's fallback base URL and return.
+	 */
+	BaseURL: {
+		ref: 'https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url',
+		is(value) {
+			value = value.toLowerCase().trim();
+			if (value.startsWith('data:') || value.startsWith('javascript:')) {
+				return unmatched(value, 'unexpected-token');
+			}
+			return matched();
+		},
+	},
+
 	AbsoluteURL: {
 		ref: 'https://url.spec.whatwg.org/#syntax-url-absolute',
 		is: matches(isAbsURL()),
@@ -263,6 +285,21 @@ export const types: Defs = {
 		is: matches(isCustomElementName()),
 	},
 
+	NavigableTargetName: {
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name',
+		expects: [
+			{
+				type: 'common',
+				value: 'navigable target name',
+			},
+		],
+		// <iframe name="[HERE]">
+		is: matches(isNavigableTargetName()),
+	},
+
+	/**
+	 * @deprecated Use {@link types.NavigableTargetName} instead.
+	 */
 	BrowsingContextName: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#browsing-context-names',
 		expects: [
@@ -271,10 +308,45 @@ export const types: Defs = {
 				value: 'browsing context name',
 			},
 		],
-		// <iframe name="[HERE]">
 		is: matches(isBrowserContextName()),
 	},
 
+	NavigableTargetNameOrKeyword: {
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword',
+		expects: [
+			{ type: 'const', value: '_blank' },
+			{ type: 'const', value: '_self' },
+			{ type: 'const', value: '_parent' },
+			{ type: 'const', value: '_top' },
+			{
+				type: 'common',
+				value: 'navigable target name',
+			},
+		],
+		// <a target="[HERE]">
+		is(value) {
+			value = value.toLowerCase();
+			const keywords = ['_blank', '_self', '_parent', '_top'];
+			if (keywords.includes(value)) {
+				return matched();
+			}
+			if (value[0] === '_') {
+				const candidate = getCandidate(value, keywords);
+				return unmatched(value, 'unexpected-token', { candidate });
+			}
+			const res = matches(isNavigableTargetName())(value);
+			if (!res.matched) {
+				// @see https://html.spec.whatwg.org/multipage/semantics.html#get-an-element's-target
+				// > If target is not null, and contains an ASCII tab or newline and a U+003C (<), then set target to "_blank".
+				return unmatched(value, 'unexpected-token', { fallbackTo: '_blank' });
+			}
+			return res;
+		},
+	},
+
+	/**
+	 * @deprecated Use {@link types.NavigableTargetNameOrKeyword} instead.
+	 */
 	BrowsingContextNameOrKeyword: {
 		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword',
 		expects: [
@@ -287,7 +359,6 @@ export const types: Defs = {
 				value: 'browsing context name',
 			},
 		],
-		// <a target="[HERE]">
 		is(value) {
 			value = value.toLowerCase();
 			const keywords = ['_blank', '_self', '_parent', '_top'];
@@ -423,8 +494,16 @@ export const types: Defs = {
 			apply: '<source-size-list>',
 			def: {
 				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value>',
-				'source-size-value': '<length>',
+				'source-size': '<media-condition> <source-size-value> | auto',
+				/**
+				 * > Percentages are not allowed in a `<source-size-value>`,
+				 * > to avoid confusion about what it would be relative to.
+				 * > The 'vw' unit can be used for sizes relative to the viewport width.
+				 *
+				 * `<length>` doesn't allow percentages.
+				 * @see https://csstree.github.io/docs/syntax/#Type:length
+				 */
+				'source-size-value': '<length> | auto',
 			},
 		},
 	},

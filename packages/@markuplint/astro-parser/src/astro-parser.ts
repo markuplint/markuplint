@@ -1,4 +1,4 @@
-import type { RootNode } from '@astrojs/compiler/shared/ast';
+import type { RootNode } from '@astrojs/compiler/types';
 
 import { ParserError } from '@markuplint/parser-utils';
 import { parseTemplate } from 'astro-eslint-parser';
@@ -12,7 +12,7 @@ export type {
 	FragmentNode,
 	AttributeNode,
 	Node,
-} from '@astrojs/compiler/shared/ast';
+} from '@astrojs/compiler/types';
 
 export function astroParse(code: string): RootNode {
 	const { result } = parseTemplate(code);

@@ -1,6 +1,6 @@
 import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-import { createTokenFromRawCode, tokenizer, uuid } from './create-token';
+import { createTokenFromRawCode, tokenizer, uuid } from './create-token.js';
 
 type ParseAttrOptions = {
 	readonly booleanish?: boolean;
@@ -93,7 +93,7 @@ export function tokenize(raw: string, options?: ParseAttrOptions) {
 
 	let state: 'b-name' | 'name' | 'a-name' | 'value-start' | 'value' = 'b-name';
 
-	const charactors = raw.split('');
+	const charactors = [...raw];
 	let beforeName = '';
 	let name = '';
 	let afterName = '';

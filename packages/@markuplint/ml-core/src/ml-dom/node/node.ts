@@ -1,19 +1,19 @@
-import type { MLBlock } from './block';
-import type { MLChildNode } from './child-node';
-import type { MLDocument } from './document';
-import type { MLDocumentFragment } from './document-fragment';
-import type { MLElement } from './element';
-import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
-import type { RuleInfo } from '../..';
+import type { MLBlock } from './block.js';
+import type { MLChildNode } from './child-node.js';
+import type { MLDocumentFragment } from './document-fragment.js';
+import type { MLDocument } from './document.js';
+import type { MLElement } from './element.js';
+import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
+import type { RuleInfo } from '../../index.js';
 import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLToken } from '../token/token';
+import { MLToken } from '../token/token.js';
 
-import { isChildNode } from './child-node';
-import { toNodeList } from './node-list';
-import { nodeStore } from './node-store';
-import UnexpectedCallError from './unexpected-call-error';
+import { isChildNode } from './child-node.js';
+import { toNodeList } from './node-list.js';
+import { nodeStore } from './node-store.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLNode<
 		T extends RuleConfigValue,
@@ -57,13 +57,13 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contained_by
 	 */
-	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b10_000;
+	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b1_0000;
 
 	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contains
 	 */
-	readonly DOCUMENT_POSITION_CONTAINS = 0b1_000;
+	readonly DOCUMENT_POSITION_CONTAINS = 0b1000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -81,7 +81,7 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_implementation_specific
 	 */
-	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b100_000;
+	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b10_0000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -259,6 +259,7 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
 	 */
 	get lastChild(): MLChildNode<T, O> | null {
+		// eslint-disable-next-line unicorn/prefer-at
 		return this.childNodes[this.childNodes.length - 1] ?? null;
 	}
 

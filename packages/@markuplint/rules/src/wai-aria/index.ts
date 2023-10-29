@@ -1,24 +1,24 @@
-import type { Options } from './types';
+import type { Options } from './types.js';
 
 import { createRule, getAttrSpecs, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
-import { Collection } from '../helpers';
+import { Collection } from '../helpers.js';
 
-import { checkingAbstractRole } from './checkings/abstract-role';
-import { checkingDefaultValue } from './checkings/default-value';
-import { checkingDeprecatedProps } from './checkings/deprecated-props';
-import { checkingDisallowedProp } from './checkings/disallowed-prop';
-import { checkingImplicitProps } from './checkings/implicit-props';
-import { checkingImplicitRole } from './checkings/implicit-role';
-import { checkingInteractionInHidden } from './checkings/interaction-in-hidden';
-import { checkingNoGlobalProp } from './checkings/no-global-prop';
-import { checkingNonExistentRole } from './checkings/non-existent-role';
-import { checkingPermittedRoles } from './checkings/permitted-roles';
-import { checkingPresentationalChildren } from './checkings/presentational-children';
-import { checkingRequiredOwnedElements } from './checkings/required-owned-elements';
-import { checkingRequiredProp } from './checkings/required-prop';
-import { checkingValue } from './checkings/value';
+import { checkingAbstractRole } from './checkings/abstract-role.js';
+import { checkingDefaultValue } from './checkings/default-value.js';
+import { checkingDeprecatedProps } from './checkings/deprecated-props.js';
+import { checkingDisallowedProp } from './checkings/disallowed-prop.js';
+import { checkingImplicitProps } from './checkings/implicit-props.js';
+import { checkingImplicitRole } from './checkings/implicit-role.js';
+import { checkingInteractionInHidden } from './checkings/interaction-in-hidden.js';
+import { checkingNoGlobalProp } from './checkings/no-global-prop.js';
+import { checkingNonExistentRole } from './checkings/non-existent-role.js';
+import { checkingPermittedRoles } from './checkings/permitted-roles.js';
+import { checkingPresentationalChildren } from './checkings/presentational-children.js';
+import { checkingRequiredOwnedElements } from './checkings/required-owned-elements.js';
+import { checkingRequiredProp } from './checkings/required-prop.js';
+import { checkingValue } from './checkings/value.js';
 
 export default createRule<boolean, Options>({
 	defaultOptions: {

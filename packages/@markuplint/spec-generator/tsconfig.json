@@ -3,9 +3,7 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src",
-		"target": "ES2022",
-		"module": "NodeNext"
+		"rootDir": "./src"
 	},
 	"references": [
 		{

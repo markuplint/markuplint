@@ -1,4 +1,4 @@
-import type { ASTNode, VueTokens } from './vue-parser';
+import type { ASTNode, VueTokens, ASTComment } from './vue-parser/index.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -7,29 +7,37 @@ import type {
 	MLASTText,
 	ParserOptions,
 	Parse,
+	MLASTComment,
 } from '@markuplint/ml-ast';
 
-import { parseRawTag } from '@markuplint/html-parser';
-import { flattenNodes, getEndCol, getEndLine, uuid, ParserError, detectElementType } from '@markuplint/parser-utils';
+import {
+	flattenNodes,
+	getEndCol,
+	getEndLine,
+	uuid,
+	ParserError,
+	detectElementType,
+	tagParser,
+} from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import vueParse from './vue-parser';
+import { attr } from './attr.js';
+import { vueParse } from './vue-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let ast: VueTokens;
 
 	try {
 		ast = vueParse(rawCode);
-	} catch (err) {
-		if (err instanceof SyntaxError && 'lineNumber' in err && 'column' in err) {
+	} catch (error) {
+		if (error instanceof SyntaxError && 'lineNumber' in error && 'column' in error) {
 			throw new ParserError(
 				// @ts-ignore
-				err.message,
+				error.message,
 				{
 					// @ts-ignore
-					line: err.lineNumber,
+					line: error.lineNumber,
 					// @ts-ignore
-					col: err.column,
+					col: error.column,
 					raw: '',
 				},
 			);
@@ -37,12 +45,12 @@ export const parse: Parse = (rawCode, options) => {
 		return {
 			nodeList: [],
 			isFragment: true,
-			parseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+			parseError: error instanceof Error ? error.message : new Error(`${error}`).message,
 		};
 	}
 
 	const nodeList: MLASTNode[] = ast.templateBody
-		? flattenNodes(traverse(ast.templateBody, null, rawCode, options), rawCode)
+		? flattenNodes(traverse(ast.templateBody, null, rawCode, ast.templateBody.comments, options), rawCode)
 		: [];
 
 	// Remove `</template>`
@@ -68,6 +76,8 @@ function traverse(
 	rootNode: ASTNode,
 	parentNode: MLASTParentNode | null = null,
 	rawHtml: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	comments: ReadonlyArray<ASTComment>,
 	options?: ParserOptions,
 ): MLASTNode[] {
 	const nodeList: MLASTNode[] = [];
@@ -78,16 +88,57 @@ function traverse(
 
 	let prevNode: MLASTNode | null = null;
 	for (const vNode of rootNode.children) {
-		const node = nodeize(vNode, prevNode, parentNode, rawHtml, options);
+		const node = nodeize(vNode, prevNode, parentNode, rawHtml, comments, options);
 		if (!node) {
 			continue;
 		}
+
+		const lastOffset = prevNode?.endOffset ?? parentNode?.endOffset ?? 0;
+
+		const betweenComment = comments.find(comment => {
+			return lastOffset <= comment.range[0] && comment.range[1] <= node.startOffset;
+		});
+
+		if (betweenComment) {
+			const comment: MLASTComment = {
+				uuid: uuid(),
+				raw: `<!--${betweenComment.value}-->`,
+				startOffset: betweenComment.range[0],
+				endOffset: betweenComment.range[1],
+				startLine: betweenComment.loc.start.line,
+				endLine: betweenComment.loc.end.line,
+				startCol: betweenComment.loc.start.column + 1,
+				endCol: betweenComment.loc.end.column + 1,
+				nodeName: '#comment',
+				type: 'comment',
+				parentNode,
+				prevNode,
+				nextNode: node,
+				isFragment: false,
+				isGhost: false,
+			};
+
+			comment.parentNode = parentNode;
+			comment.prevNode = prevNode;
+			comment.nextNode = node;
+
+			if (prevNode) {
+				prevNode.nextNode = comment;
+			}
+
+			nodeList.push(comment);
+
+			prevNode = comment;
+		}
+
 		if (prevNode) {
 			if (node.type !== 'endtag') {
 				prevNode.nextNode = node;
 			}
+
 			node.prevNode = prevNode;
 		}
+
 		prevNode = node;
 		nodeList.push(node);
 	}
@@ -102,6 +153,8 @@ function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parentNode: MLASTParentNode | null,
 	rawHtml: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	comments: ReadonlyArray<ASTComment>,
 	options?: ParserOptions,
 ): MLASTNode | null {
 	const nextNode = null;
@@ -156,13 +209,13 @@ function nodeize(
 		default: {
 			const tagLoc = originNode.startTag;
 			const startTagRaw = rawHtml.slice(tagLoc.range[0], tagLoc.range[1]);
-			const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
+			const tagTokens = tagParser(startTagRaw, startLine, startCol, startOffset);
 			const tagName = tagTokens.tagName;
 			let endTag: MLASTElementCloseTag | null = null;
 			const endTagLoc = originNode.endTag;
 			if (endTagLoc) {
 				const endTagRaw = rawHtml.slice(endTagLoc.range[0], endTagLoc.range[1]);
-				const endTagTokens = parseRawTag(
+				const endTagTokens = tagParser(
 					endTagRaw,
 					endTagLoc.loc.start.line,
 					endTagLoc.loc.start.column,
@@ -230,7 +283,7 @@ function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
 				isGhost: false,
 				tagOpenChar: '<',
@@ -239,7 +292,7 @@ function nodeize(
 			if (endTag) {
 				endTag.pearNode = startTag;
 			}
-			startTag.childNodes = traverse(originNode, startTag, rawHtml, options);
+			startTag.childNodes = traverse(originNode, startTag, rawHtml, comments, options);
 			return startTag;
 		}
 	}

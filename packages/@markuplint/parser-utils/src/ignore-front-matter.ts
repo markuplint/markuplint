@@ -1,5 +1,5 @@
 export function ignoreFrontMatter(code: string) {
-	const reStart = /^(?:\s*\r?\n)?---\r?\n/.exec(code);
+	const reStart = /^(?:\s*\n)?---\r?\n/.exec(code);
 	if (!reStart) {
 		return code;
 	}
@@ -18,7 +18,7 @@ export function ignoreFrontMatter(code: string) {
 	const frontMatter = code.slice(0, endPoint);
 	const afterCode = code.slice(endPoint);
 
-	const masked = frontMatter.replace(/[^\r\n]/g, ' ');
+	const masked = frontMatter.replaceAll(/[^\n\r]/g, ' ');
 
 	return masked + afterCode;
 }

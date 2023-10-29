@@ -1,11 +1,11 @@
-import type { Type, Result, List, CustomSyntax, CustomCssSyntax, Enum, KeywordDefinedType, Number } from './types';
+import type { Type, Result, List, CustomSyntax, CustomCssSyntax, Enum, KeywordDefinedType, Number } from './types.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { log } from './debug';
-import { checkEnum } from './enum';
-import { checkKeywordType } from './keyword-type';
-import { checkList } from './list';
-import { checkNumber } from './number';
+import { log } from './debug.js';
+import { checkEnum } from './enum.js';
+import { checkKeywordType } from './keyword-type.js';
+import { checkList } from './list.js';
+import { checkNumber } from './number.js';
 
 export function check(value: string, type: ReadonlyDeep<Type>, ref?: string, cache = true): Result {
 	if (isKeyword(type)) {

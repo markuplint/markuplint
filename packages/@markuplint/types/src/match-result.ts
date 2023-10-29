@@ -4,7 +4,7 @@ import type {
 	UnmatchedResult,
 	UnmatchedResultOptions,
 	UnmatchedResultReason,
-} from './types';
+} from './types.js';
 
 export function matches(
 	checker: FormattedPrimitiveTypeCheck,

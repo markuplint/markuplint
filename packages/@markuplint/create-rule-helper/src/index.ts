@@ -1,3 +1,3 @@
-export * from './create-rule-helper';
-export * from './types';
-export { isMarkuplintRepo } from './is-markuplint-repo';
+export * from './create-rule-helper.js';
+export * from './types.js';
+export { isMarkuplintRepo } from './is-markuplint-repo.js';

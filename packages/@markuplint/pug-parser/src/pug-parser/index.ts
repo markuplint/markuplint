@@ -3,7 +3,7 @@ import lexer from 'pug-lexer';
 // @ts-ignore
 import parser from 'pug-parser';
 
-import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col';
+import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.js';
 
 export function pugParse(pug: string) {
 	const lexOrigin = lexer(pug);
@@ -16,7 +16,7 @@ export function pugParse(pug: string) {
 }
 
 function getOffsetsFromLines(pug: string): number[] {
-	const lines = pug.split(/\n/g);
+	const lines = pug.split(/\n/);
 	let chars = 0;
 	const result = lines.map(line => {
 		chars += line.length + 1;
@@ -32,7 +32,7 @@ function mergeTextNode(
 ) {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
-		const prevNode: ASTNode | null = baseNodes[baseNodes.length - 1] ?? null;
+		const prevNode: ASTNode | null = baseNodes.at(-1) ?? null;
 		if (prevNode && prevNode.type === 'Text' && node.type === 'Text') {
 			prevNode.raw = pug.slice(prevNode.offset, node.endOffset);
 			prevNode.endColumn = node.endColumn;
@@ -460,7 +460,7 @@ function getLocationFromToken(
 	tokens: readonly PugLexToken[],
 	tokenType?: string | readonly string[],
 ) {
-	const tokenTypes = typeof tokenType === 'string' ? (tokenType !== '' ? [tokenType] : null) : tokenType ?? null;
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
 	let tokenOfCurrentNode: PugLexToken | null = null;
 	for (const token of tokens) {
 		if (

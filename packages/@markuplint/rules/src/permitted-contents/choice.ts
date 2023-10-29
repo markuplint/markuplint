@@ -1,10 +1,10 @@
-import type { ChildNode, MatchedReason, Options, Result, Specs } from './types';
+import type { ChildNode, MatchedReason, Options, Result, Specs } from './types.js';
 import type { PermittedContentChoice } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { bgBlue, bgGreen, cmLog } from './debug';
-import { order } from './order';
-import { Collection, modelLog } from './utils';
+import { bgBlue, bgGreen, cmLog } from './debug.js';
+import { order } from './order.js';
+import { Collection, modelLog } from './utils.js';
 
 const indexes = new WeakMap<Result<MatchedReason>, number>();
 
@@ -17,9 +17,7 @@ export function choice(
 	depth: number,
 ): Result {
 	const choiceLog = cmLog.extend(`choice#${depth}`);
-
 	const collection = new Collection(elements);
-
 	const unmatchedResults: Result[] = [];
 
 	let i = 0;
@@ -28,13 +26,17 @@ export function choice(
 
 		const result = order(some, collection.unmatched, specs, options, depth + 1);
 
-		if (result.type === 'UNEXPECTED_EXTRA_NODE' || result.type === 'MATCHED' || result.type === 'MATCHED_ZERO') {
+		if (
+			result.type === 'MATCHED' ||
+			result.type === 'MATCHED_ZERO' ||
+			(result.type === 'UNEXPECTED_EXTRA_NODE' && result.matched.length > 0)
+		) {
 			choiceLog('Results[%s]: %s', i, choiceLogString(pattern.choice, i));
-			collection.addMatched(result.matched);
+
 			return {
 				type: result.type,
-				matched: collection.matched,
-				unmatched: collection.unmatched,
+				matched: result.matched,
+				unmatched: result.unmatched,
 				zeroMatch: result.zeroMatch,
 				query: result.query,
 				hint: result.hint,
@@ -42,12 +44,21 @@ export function choice(
 		}
 
 		unmatchedResults.push(result);
+		collection.addMatched(result.matched);
 
 		indexes.set(result, i);
 		i++;
 	}
 
 	const barelyMatchedResult = unmatchedResults.sort((a, b) => {
+		if (a.type !== b.type) {
+			if (a.type === 'UNEXPECTED_EXTRA_NODE') {
+				return -1;
+			}
+			if (b.type === 'UNEXPECTED_EXTRA_NODE') {
+				return 1;
+			}
+		}
 		const computed1 = b.matched.length - a.matched.length;
 		if (computed1 !== 0) {
 			return computed1;

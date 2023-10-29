@@ -1,7 +1,7 @@
-import type { CustomSyntaxCheck, UnmatchedResult } from './types';
+import type { CustomSyntaxCheck, UnmatchedResult } from './types.js';
 
-import { log } from './debug';
-import { matched } from './match-result';
+import { log } from './debug.js';
+import { matched } from './match-result.js';
 
 export function checkMultiTypes(value: string, checks: readonly CustomSyntaxCheck[]) {
 	let unmatched: UnmatchedResult | undefined;

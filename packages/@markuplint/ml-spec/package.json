@@ -1,12 +1,17 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "3.9.0",
+	"version": "4.0.0-alpha.5",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
 	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -25,15 +30,14 @@
 		"schema": "run-s schema:*"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "3.1.0",
-		"@markuplint/types": "3.7.0",
-		"dom-accessibility-api": "^0.5.16",
+		"@markuplint/ml-ast": "4.0.0-alpha.5",
+		"@markuplint/types": "4.0.0-alpha.5",
+		"dom-accessibility-api": "^0.6.3",
 		"is-plain-object": "^5.0.0",
-		"tslib": "^2.5.0",
-		"type-fest": "^3.10.0"
+		"type-fest": "^4.5.0"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "3.4.0",
-		"json-schema-to-typescript": "13.0.1"
+		"@markuplint/test-tools": "4.0.0-alpha.5",
+		"json-schema-to-typescript": "13.1.1"
 	}
 }

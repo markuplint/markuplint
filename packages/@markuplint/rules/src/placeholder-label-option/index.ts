@@ -4,20 +4,20 @@ import { createRule } from '@markuplint/ml-core';
 
 export default createRule<boolean>({
 	verify({ document, report, t }) {
-		document.querySelectorAll('select').forEach(select => {
+		for (const select of document.querySelectorAll('select')) {
 			if (hasPlaceholderLabelOption(select)) {
-				return;
+				continue;
 			}
 
 			if (!needPlaceholderLabelOption(select)) {
-				return;
+				continue;
 			}
 
 			report({
 				scope: select,
 				message: t('need {0}', t('the {0}', 'placeholder label option')),
 			});
-		});
+		}
 	},
 });
 

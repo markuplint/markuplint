@@ -4,27 +4,6 @@ export const NAME = 'Markuplint';
 export const OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME = NAME;
 export const OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME = `${NAME} Diagnostics` as const;
 export const COMMAND_NAME_OPEN_LOG_COMMAND = `${ID}.openLog` as const;
-export const LANGUAGE_LIST = [
-	'html',
-	'vue',
-	'jade',
-	'svelte',
-	'astro',
-	'nunjucks',
-	'liquid',
-	'handlebars',
-	'mustache',
-	'ejs',
-	'haml',
-	'jstl',
-	'php',
-	'smarty',
-	'ruby',
-	'javascript',
-	'javascriptreact',
-	'typescript',
-	'typescriptreact',
-] as const;
 
 // Paths
 export const WATCHING_CONFIGURATION_GLOB =

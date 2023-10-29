@@ -110,6 +110,7 @@ export interface MLASTHTMLAttr extends MLASTAbstractNode {
 	isDynamicValue?: true;
 	isDirective?: true;
 	potentialName?: string;
+	potentialValue?: string;
 	candidate?: string;
 	isDuplicatable: boolean;
 	parentNode: null;

@@ -1,12 +1,17 @@
 {
 	"name": "@markuplint/shared",
-	"version": "3.6.0",
+	"version": "4.0.0-alpha.5",
 	"description": "Shared functions for Markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
 	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -19,6 +24,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"html-entities": "^2.3.3"
+		"html-entities": "^2.4.0"
 	}
 }

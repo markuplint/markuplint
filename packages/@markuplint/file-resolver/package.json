@@ -1,13 +1,18 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "3.10.0",
+	"version": "4.0.0-alpha.5",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -19,20 +24,22 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "20.0.0"
+		"@types/node": "20.8.8"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "3.8.0",
-		"@markuplint/ml-ast": "3.1.0",
-		"@markuplint/ml-config": "3.9.0",
-		"@markuplint/ml-core": "3.10.0",
-		"@markuplint/ml-spec": "3.9.0",
-		"@markuplint/shared": "3.6.0",
-		"cosmiconfig": "^8.1.3",
-		"cosmiconfig-typescript-loader": "^4.3.0",
-		"glob": "^10.2.2",
+		"@markuplint/html-parser": "4.0.0-alpha.5",
+		"@markuplint/ml-ast": "4.0.0-alpha.5",
+		"@markuplint/ml-config": "4.0.0-alpha.5",
+		"@markuplint/ml-core": "4.0.0-alpha.5",
+		"@markuplint/ml-spec": "4.0.0-alpha.5",
+		"@markuplint/parser-utils": "4.0.0-alpha.5",
+		"@markuplint/selector": "4.0.0-alpha.5",
+		"@markuplint/shared": "4.0.0-alpha.5",
+		"cosmiconfig": "^8.3.6",
+		"debug": "^4.3.4",
+		"glob": "^10.3.6",
+		"ignore": "^5.2.4",
 		"jsonc": "^2.0.0",
-		"minimatch": "^9.0.0",
-		"tslib": "^2.5.0"
+		"minimatch": "^9.0.3"
 	}
 }

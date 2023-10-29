@@ -6,7 +6,7 @@ export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boole
 	if (!matched) {
 		return null;
 	}
-	matched.forEach((val, i) => (res[`$${i}`] = val));
+	for (const [i, val] of matched.entries()) res[`$${i}`] = val;
 	return {
 		...res,
 		...matched.groups,
@@ -14,7 +14,7 @@ export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boole
 }
 
 function toRegexp(pattern: string) {
-	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
+	const matched = pattern.match(/^\/(.+)\/([gi]*)$/i);
 	if (matched && matched[1]) {
 		return new RegExp(matched[1], matched[2]);
 	}

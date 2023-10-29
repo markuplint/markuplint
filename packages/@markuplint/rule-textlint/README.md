@@ -47,18 +47,24 @@ $ yarn add -D textlint-rule-prh
 #### Use independent textlint config
 
 ```js markuplint.config.js
-const path = require('path');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-module.exports = {
+import Prh from 'textlint-rule-prh';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   rules: {
     textlint: {
-      option: {
+      options: {
         rules: [
           {
             ruleId: 'prh',
-            rule: require('textlint-rule-prh'),
+            rule: Prh,
             options: {
-              rulePaths: [path.resolve(__dirname, '../', 'prh.yml')],
+              rulePaths: [path.resolve(__dirname, '..', 'prh.yml')],
             },
           },
         ],

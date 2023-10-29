@@ -1,7 +1,7 @@
-import type { MLMLSpec, Attribute } from '../types';
+import type { MLMLSpec, Attribute } from '../types/index.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 
-import { resolveNamespace } from '../utils/resolve-namespace';
+import { resolveNamespace } from '../utils/resolve-namespace.js';
 
 const cacheMap = new Map<string, readonly Attribute[] | null>();
 const schemaCache = new WeakSet<MLMLSpec>();
@@ -49,13 +49,13 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 			if (!global) {
 				continue;
 			}
-			catAttrs.forEach(selectedName => {
+			for (const selectedName of catAttrs) {
 				const selected = global[selectedName];
 				attrs[selectedName] = {
 					...attrs[selectedName],
 					...selected,
 				};
-			});
+			}
 			continue;
 		}
 	}

@@ -1,10 +1,10 @@
-import type { Code, IgnoreBlock, IgnoreTag } from './types';
+import type { Code, IgnoreBlock, IgnoreTag } from './types.js';
 import type { MLASTNode, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
 
-import { MASK_CHAR } from './const';
-import { uuid } from './create-token';
-import { sliceFragment } from './get-location';
-import { siblingsCorrection } from './siblings-correction';
+import { MASK_CHAR } from './const.js';
+import { uuid } from './create-token.js';
+import { sliceFragment } from './get-location.js';
+import { siblingsCorrection } from './siblings-correction.js';
 
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
@@ -18,7 +18,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 			(startTag, taggedCode, endTag) => {
 				const mask =
 					maskChar.repeat(startTag.length) +
-					taggedCode.replace(/[^\n]/g, maskChar) +
+					taggedCode.replaceAll(/[^\n]/g, maskChar) +
 					maskChar.repeat((endTag ?? '').length);
 				return mask;
 			},
@@ -30,7 +30,7 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 		const text = maskText(tag.start, tag.end, replaced, (startTag, taggedCode, endTag) => {
 			const mask =
 				maskChar.repeat(startTag.length) +
-				taggedCode.replace(/[^\n]/g, maskChar) +
+				taggedCode.replaceAll(/[^\n]/g, maskChar) +
 				maskChar.repeat((endTag ?? '').length);
 			const taggedMask = `<!${mask.slice(2).slice(0, -1)}>`;
 			return taggedMask;
@@ -49,8 +49,8 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 }
 
 function maskText(
-	start: Readonly<RegExp>,
-	end: Readonly<RegExp>,
+	start: Readonly<RegExp> | string,
+	end: Readonly<RegExp> | string,
 	replaced: string,
 	masking: (startTag: string, taggedCode: string, endTag?: string) => string,
 ) {
@@ -85,7 +85,7 @@ export function restoreNode(
 	nodeList: MLASTNode[],
 	ignoreBlock: IgnoreBlock,
 ) {
-	nodeList = nodeList.slice();
+	nodeList = [...nodeList];
 	const { source, stack, maskChar } = ignoreBlock;
 	for (const node of nodeList) {
 		if (node.type === 'comment' || node.type === 'text' || node.type === 'psblock') {
@@ -93,7 +93,7 @@ export function restoreNode(
 				continue;
 			}
 			const parentNode = node.parentNode;
-			const index = nodeList.findIndex(n => n === node);
+			const index = nodeList.indexOf(node);
 			const insertList: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
 			let text = node.raw;
 			let pointer = 0;
@@ -232,18 +232,31 @@ function snap(str: string, reg: Readonly<RegExp>): [number, string] | [number, s
 	return [index, above, snapPoint, below];
 }
 
-function removeGlobalOption(reg: Readonly<RegExp>) {
+function removeGlobalOption(reg: Readonly<RegExp> | string) {
+	if (typeof reg === 'string') {
+		return new RegExp(escapeRegExpForStr(reg));
+	}
 	return new RegExp(reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function prepend(reg: Readonly<RegExp>, str: string) {
+function prepend(reg: Readonly<RegExp> | string, str: string) {
+	if (typeof reg === 'string') {
+		return new RegExp(str + escapeRegExpForStr(reg));
+	}
 	return new RegExp(str + reg.source, reg.ignoreCase ? 'i' : '');
 }
 
-function append(reg: Readonly<RegExp>, str: string) {
+function append(reg: Readonly<RegExp> | string, str: string) {
+	if (typeof reg === 'string') {
+		return new RegExp(escapeRegExpForStr(reg) + str);
+	}
 	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 
 function hasIgnoreBlock(textContent: string, maskChar: string) {
 	return textContent.includes(maskChar);
+}
+
+function escapeRegExpForStr(str: string) {
+	return str.replaceAll(/[!$()*+./:=?[\\\]^{|}]/g, '\\$&');
 }

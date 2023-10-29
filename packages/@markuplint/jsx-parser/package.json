@@ -1,12 +1,17 @@
 {
 	"name": "@markuplint/jsx-parser",
-	"version": "3.7.0",
+	"version": "4.0.0-alpha.5",
 	"description": "JSX parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "BSD-2-Clause",
 	"private": false,
-	"main": "lib/index.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
 	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -16,11 +21,11 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "3.8.0",
-		"@markuplint/ml-ast": "3.1.0",
-		"@markuplint/parser-utils": "3.8.0",
-		"@typescript-eslint/types": "^5.59.2",
-		"@typescript-eslint/typescript-estree": "^5.59.2",
-		"tslib": "^2.5.0"
+		"@markuplint/html-parser": "4.0.0-alpha.5",
+		"@markuplint/ml-ast": "4.0.0-alpha.5",
+		"@markuplint/parser-utils": "4.0.0-alpha.5",
+		"@typescript-eslint/types": "^6.9.0",
+		"@typescript-eslint/typescript-estree": "^6.9.0",
+		"ts-eslint-types-v5": "npm:@typescript-eslint/types@5"
 	}
 }

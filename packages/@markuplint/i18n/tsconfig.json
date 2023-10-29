@@ -1,8 +1,9 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
+		"module": "ESNext",
 		"composite": true,
-		"outDir": "./lib",
+		"outDir": "./esm",
 		"rootDir": "./src"
 	},
 	"references": [
@@ -11,5 +12,5 @@
 		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "esm", "cjs", "./src/**/*.spec.ts"]
 }

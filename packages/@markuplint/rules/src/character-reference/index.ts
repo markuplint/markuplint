@@ -3,14 +3,14 @@ import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 const defaultChars = ['"', '&', '<', '>'];
-const ignoreParentElement = ['script', 'style'];
+const ignoreParentElement = new Set(['script', 'style']);
 
 export default createRule({
 	async verify({ document, report, t }) {
 		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
-			if (node.parentNode && ignoreParentElement.includes(node.parentNode.nodeName.toLowerCase())) {
+			if (node.parentNode && ignoreParentElement.has(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
 			const severity = node.rule.severity;
@@ -48,14 +48,16 @@ export default createRule({
 			if (!('scope' in targetNode && 'line' in targetNode && targetNode.line != null)) {
 				continue;
 			}
-			const escapedText = targetNode.raw.replace(/&(?:[a-z]+|#[0-9]+|x[0-9]);/gi, $0 => '*'.repeat($0.length));
-			getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col).forEach(location => {
+			const escapedText = targetNode.raw.replaceAll(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, $0 =>
+				'*'.repeat($0.length),
+			);
+			for (const location of getLocationFromChars(defaultChars, escapedText, targetNode.line, targetNode.col)) {
 				report({
 					scope: targetNode.scope,
 					message: targetNode.message,
 					...location,
 				});
-			});
+			}
 		}
 	},
 });

@@ -1,6 +1,6 @@
-import type { ElementSpec } from '../types';
+import type { ElementSpec } from '../types/index.js';
 
-import { resolveNamespace } from '../utils/resolve-namespace';
+import { resolveNamespace } from '../utils/resolve-namespace.js';
 
 const cache = new Map<string, any>();
 

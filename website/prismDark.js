@@ -1,7 +1,7 @@
-const darkTheme = require('prism-react-renderer/themes/vsDark');
+const { themes } = require('prism-react-renderer');
 
 module.exports = {
-  ...darkTheme,
+  ...themes.vsDark,
 
   // Plain text
   plain: {
@@ -9,7 +9,7 @@ module.exports = {
     backgroundColor: '#202025',
   },
   styles: [
-    ...darkTheme.styles,
+    ...themes.vsDark.styles,
 
     // HTML
     {

@@ -71,7 +71,15 @@
 		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname
 		"dirname": {
-			"condition": [":not([type])", "[type='text' i]", "[type='search' i]"]
+			"condition": [
+				":not([type])",
+				"[type='text' i]",
+				"[type='search' i]",
+				"[type='hidden' i]",
+				"[type='tel' i]",
+				"[type='url' i]",
+				"[type='email' i]"
+			]
 		},
 		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-height
 		"height": {

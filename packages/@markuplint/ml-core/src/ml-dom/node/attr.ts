@@ -1,15 +1,15 @@
-import type { MLElement } from './element';
-import type { AttributeNodeType } from './types';
+import type { MLElement } from './element.js';
+import type { AttributeNodeType } from './types.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
 
-import { MLToken } from '../token/token';
+import { MLToken } from '../token/token.js';
 
-import { MLDomTokenList } from './dom-token-list';
-import { MLNode } from './node';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLDomTokenList } from './dom-token-list.js';
+import { MLNode } from './node.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTAttr>
@@ -66,7 +66,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.isDirective = this._astToken.isDirective;
 			this.candidate = this._astToken.candidate;
 			this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
-			this.#potentialValue = this._astToken.value.raw ?? '';
+			this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
 		} else {
 			this.valueType = this._astToken.valueType;
 			this.isDuplicatable = this._astToken.isDuplicatable;

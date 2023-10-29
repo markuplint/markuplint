@@ -9,9 +9,9 @@ import { resolve } from 'node:path';
 import { isMarkuplintRepo, createRuleHelper } from '@markuplint/create-rule-helper';
 import c from 'cli-color';
 
-import { write, head } from '../../util';
-import { installModule } from '../init/install-module';
-import { input, select, confirm } from '../prompt';
+import { write, head } from '../../util.js';
+import { installModule } from '../init/install-module.js';
+import { input, select, confirm } from '../prompt.js';
 
 const icons: Record<string, string> = {
 	README: '📝',
@@ -42,9 +42,9 @@ export async function createRule() {
 	const dirQuestion = purpose === 'ADD_TO_PROJECT' ? 'What is the directory name?' : 'What is the plugin name?';
 
 	const pluginName =
-		purpose === 'CONTRIBUTE_TO_CORE' ? '' : await input(dirQuestion, /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
+		purpose === 'CONTRIBUTE_TO_CORE' ? '' : await input(dirQuestion, /^[a-z][\da-z]*(?:-[a-z][\da-z]*)*$/i);
 
-	const ruleName = await input('What is the rule name?', /^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/i);
+	const ruleName = await input('What is the rule name?', /^[a-z][\da-z]*(?:-[a-z][\da-z]*)*$/i);
 
 	const core: CreateRuleCreatorCoreParams | undefined =
 		purpose === 'CONTRIBUTE_TO_CORE'

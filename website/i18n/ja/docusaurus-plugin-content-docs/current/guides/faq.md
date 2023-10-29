@@ -61,13 +61,13 @@
 
 ## OGPで怒られます
 
-Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/ja/rules/invalid-attr#open-graph%E3%83%97%E3%83%AD%E3%83%88%E3%82%B3%E3%83%AB)がありますので参考にしてください。
+Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/invalid-attr#open-graph%E3%83%97%E3%83%AD%E3%83%88%E3%82%B3%E3%83%AB)がありますので参考にしてください。
 
 ## `invalid-attr`ルールで怒られます
 
-[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/ja/rules/invalid-attr#attrs%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A8%AD%E5%AE%9A)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
+[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/docs/rules/invalid-attr#attrs%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A8%AD%E5%AE%9A)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
 
-また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/ja/guides/besides-html#%E3%81%AA%E3%81%9C%E3%82%B9%E3%83%9A%E3%83%83%E3%82%AF%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E3%81%AE%E3%81%A7%E3%81%99%E3%81%8B)）
+また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/besides-html#%E3%81%AA%E3%81%9C%E3%82%B9%E3%83%9A%E3%83%83%E3%82%AF%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E3%81%AE%E3%81%A7%E3%81%99%E3%81%8B)）
 
 もしも構文やフレームワーク（[Next.js](https://nextjs.org/)や[Nuxt](https://nuxtjs.org/)など）のスペックプラグインがあると便利になるのであれば[リクエスト](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Features%3A+Proposal&template=feature.md&title=Supporting+for)してください。
 
@@ -94,39 +94,6 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 | `input`    | `label`要素            | 可能（**推奨しない**） |
 | `select`   | `label`要素            | 可能（**推奨しない**） |
 | `textarea` | `label`要素            | 可能（**推奨しない**） |
-| `svg`      | なし                   | 可能                   |
-
-また、SVG要素に関してほとんどのグラフィック要素はアクセシブルな名前を要求します。
-
-```html
-<svg>
-  <!-- svg要素にアクセシブルな名前が必要 -->
-  <rect />
-  <!-- rect要素にアクセシブルな名前が必要 -->
-  <path />
-  <!-- path要素にアクセシブルな名前が必要 -->
-</svg>
-```
-
-その場合、そのままの要求に従えば、全ての要素に適切なアクセシブルな名前をつけることになります。
-
-```html
-<svg aria-label="図形の総合的な名前">
-  <rect aria-label="図形の一部の矩形の名前" />
-  <path aria-label="図形の一部の線の名前" />
-</svg>
-```
-
-しかし、ほとんどの場合それは現実的な解決方法ではありません。そのため、`svg`要素に`img`ロールをつけることによって、[プレゼンテーショナルな子](https://momdo.github.io/wai-aria-1.2/#childrenArePresentational)の性質を利用して、SVGをひとつの画像と見做すことでアクセシブルな名前をひとつにまとめる解決方法があります。
-
-```html
-<svg role="img" aria-label="図形の名前">
-  <rect />
-  <!-- rect要素にアクセシブルな名前は要求されない -->
-  <path />
-  <!-- path要素にアクセシブルな名前は要求されない -->
-</svg>
-```
 
 ## CLIでglob形式が期待通りに動きません
 

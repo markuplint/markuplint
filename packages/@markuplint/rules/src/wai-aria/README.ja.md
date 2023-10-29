@@ -22,8 +22,6 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 - プリファレンス
   - プロパティ/ステートのデフォルト値を明示的に指定した場合
 
-**ARIA in HTML**に関しては、[`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。またこの仕様はまだドラフトであるため、任意に無効化できます。
-
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

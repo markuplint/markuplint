@@ -11,7 +11,13 @@
 		"#ARIAAttrs": true,
 		"#HTMLLinkAndFetchingAttrs": ["href", "target"]
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#attr-base-href
+		"href": {
+			// https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url
+			"type": "BaseURL"
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": false,

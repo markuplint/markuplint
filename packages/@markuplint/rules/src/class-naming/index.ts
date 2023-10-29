@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { match } from '../helpers';
+import { match } from '../helpers.js';
 
 export type Value = string | string[] | null;
 
@@ -20,9 +20,9 @@ export default createRule<Value>({
 				}
 				const classAttr = attr.valueNode;
 				const classList = attr.value
-					.split(/\s+/g)
+					.split(/\s+/)
 					.map(c => c.trim())
-					.filter(c => c);
+					.filter(Boolean);
 				for (const className of classList) {
 					if (!classPatterns.some(pattern => match(className, pattern))) {
 						report({

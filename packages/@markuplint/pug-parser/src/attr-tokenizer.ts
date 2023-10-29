@@ -1,19 +1,15 @@
-import type { ASTAttr } from './pug-parser';
+import type { ASTAttr } from './pug-parser/index.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
-import { tokenizer, uuid } from '@markuplint/parser-utils';
+import { tokenizer, uuid, scriptParser, removeQuote } from '@markuplint/parser-utils';
 
-export default function attrTokenizer(
+export function attrTokenizer(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	attr: ASTAttr,
 ): MLASTAttr {
 	if (attr.raw[0] === '#' || attr.raw[0] === '.') {
-		let value: string | undefined = '';
-		if (typeof attr.val === 'string') {
-			[, , value] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) ?? ['', '', ''];
-		} else {
-			value = `${attr.val}`;
-		}
+		const value = `${attr.val}`;
+		const potentialValue = removeQuote(value);
 		return {
 			type: 'ps-attr',
 			uuid: uuid(),
@@ -25,7 +21,7 @@ export default function attrTokenizer(
 			startCol: attr.column,
 			endCol: attr.endColumn,
 			potentialName: attr.name,
-			potentialValue: value ?? '',
+			potentialValue,
 			valueType: 'string',
 			isDuplicatable: attr.raw[0] === '.',
 			nodeName: '#pug-special-attr',
@@ -42,34 +38,37 @@ export default function attrTokenizer(
 	let spacesBeforeEqualChars: string;
 	let equalChars: string;
 	let spacesAfterEqualChars: string;
-	let quoteChars: string;
+	const quoteChars = '';
 	let valueChars: string;
+	let potentialValue: string;
 	let isDynamicValue: true | undefined = undefined;
 
 	if (attr.val === true) {
 		spacesBeforeEqualChars = '';
 		equalChars = '';
 		spacesAfterEqualChars = '';
-		quoteChars = '';
 		valueChars = '';
+		potentialValue = '';
 	} else {
 		const withoutName = attr.raw.slice(attr.name.length);
 		const valueOffset = withoutName.indexOf(attr.val);
 		const equalAndBeforeSpaceAfterSpace = withoutName.slice(0, valueOffset);
 		const [, before, equal, after] = equalAndBeforeSpaceAfterSpace.match(/^(\s*)(=)(\s*)$/) ?? ['', '', '', ''];
-		const [, quote, coreValue] = attr.val.match(/(['"`]?)([^\1]+)(\1)/) ?? ['', '', ''];
+
+		const valueTokens = scriptParser(attr.val);
+
 		spacesBeforeEqualChars = before ?? '';
 		equalChars = equal ?? '';
 		spacesAfterEqualChars = after ?? '';
-		quoteChars = quote ?? '';
-		valueChars = coreValue ?? '';
-		if (quote === '`' || quote === '') {
+		valueChars = attr.val;
+		potentialValue = removeQuote(attr.val);
+		if (valueTokens.length > 1 || valueTokens[0].type !== 'String') {
 			isDynamicValue = true;
 		}
 	}
 
 	const invalid =
-		!!(valueChars && quoteChars === null && /["'=<>`]/.test(valueChars)) ||
+		!!(valueChars && quoteChars === null && /["'<=>`]/.test(valueChars)) ||
 		!!(equalChars && quoteChars === null && valueChars === null);
 
 	if (invalid) {
@@ -147,6 +146,7 @@ export default function attrTokenizer(
 		endQuote,
 		isDynamicValue,
 		isDuplicatable,
+		potentialValue,
 		nodeName: name.raw,
 		parentNode: null,
 		nextNode: null,

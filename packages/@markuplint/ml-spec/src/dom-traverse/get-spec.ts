@@ -1,6 +1,6 @@
-import type { ElementSpec } from '../types';
+import type { ElementSpec } from '../types/index.js';
 
-import { getSpecByTagName } from '../specs/get-spec-by-tag-name';
+import { getSpecByTagName } from '../specs/get-spec-by-tag-name.js';
 
 export function getSpec<K extends keyof ElementSpec>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -4,8 +4,8 @@ import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
 
-import { lint } from '../api';
-import { getGlobal } from '../global-settings';
+import { lint } from '../api/index.js';
+import { getGlobal } from '../global-settings.js';
 
 export async function mlTest(
 	sourceCode: string,
@@ -35,6 +35,7 @@ export async function mlTest(
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
+	// eslint-disable-next-line unicorn/no-object-as-default-parameter
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
 		rule?: Rule<T, Partial<O>>;
 		nodeRule?: NodeRule<T, Partial<O>>[];
@@ -46,39 +47,39 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 	const _config: Config = {
 		...config,
 		rules:
-			config.rule !== undefined
-				? {
+			config.rule === undefined
+				? config.rule === undefined && config.nodeRule === undefined && config.childNodeRule === undefined
+					? {
+							'<current-rule>': true,
+					  }
+					: undefined
+				: {
 						'<current-rule>': config.rule,
-				  }
-				: config.rule === undefined && config.nodeRule === undefined && config.childNodeRule === undefined
-				? {
-						'<current-rule>': true,
-				  }
-				: undefined,
+				  },
 		nodeRules:
-			config.nodeRule !== undefined
-				? config.nodeRule.map(nodeConfig => ({
+			config.nodeRule === undefined
+				? undefined
+				: config.nodeRule.map(nodeConfig => ({
 						...nodeConfig,
 						rules:
-							nodeConfig.rule !== undefined
-								? {
+							nodeConfig.rule === undefined
+								? undefined
+								: {
 										'<current-rule>': nodeConfig.rule,
-								  }
-								: undefined,
-				  }))
-				: undefined,
+								  },
+				  })),
 		childNodeRules:
-			config.childNodeRule !== undefined
-				? config.childNodeRule.map(childNodeConfig => ({
+			config.childNodeRule === undefined
+				? undefined
+				: config.childNodeRule.map(childNodeConfig => ({
 						...childNodeConfig,
 						rules:
-							childNodeConfig.rule !== undefined
-								? {
+							childNodeConfig.rule === undefined
+								? undefined
+								: {
 										'<current-rule>': childNodeConfig.rule,
-								  }
-								: undefined,
-				  }))
-				: undefined,
+								  },
+				  })),
 	};
 
 	const res = await mlTest(

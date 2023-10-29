@@ -1,4 +1,4 @@
-import type { ASTBlock, ASTNode } from './pug-parser';
+import type { ASTBlock, ASTNode } from './pug-parser/index.js';
 import type {
 	MLASTDoctype,
 	MLASTNode,
@@ -8,7 +8,7 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parse as htmlParser, isDocumentFragment } from '@markuplint/html-parser';
+import { getNamespace, parse as htmlParse, isDocumentFragment } from '@markuplint/html-parser';
 import {
 	detectElementType,
 	ignoreFrontMatter,
@@ -19,8 +19,8 @@ import {
 	removeDeprecatedNode,
 } from '@markuplint/parser-utils';
 
-import attrTokenizer from './attr-tokenizer';
-import { pugParse } from './pug-parser';
+import { attrTokenizer } from './attr-tokenizer.js';
+import { pugParse } from './pug-parser/index.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let unknownParseError: string | undefined;
@@ -33,23 +33,23 @@ export const parse: Parse = (rawCode, options) => {
 	try {
 		const parser = new Parser(rawCode);
 		nodeList = parser.getNodeList();
-	} catch (err) {
+	} catch (error) {
 		nodeList = [];
-		if (err instanceof Error && 'msg' in err && 'line' in err && 'column' in err && 'src' in err) {
+		if (error instanceof Error && 'msg' in error && 'line' in error && 'column' in error && 'src' in error) {
 			throw new ParserError(
 				// @ts-ignore
-				err.msg,
+				error.msg,
 				{
 					// @ts-ignore
-					line: err.line,
+					line: error.line,
 					// @ts-ignore
-					col: err.column,
+					col: error.column,
 					// @ts-ignore
-					raw: err.src,
+					raw: error.src,
 				},
 			);
 		}
-		unknownParseError = err instanceof Error ? err.message : new Error(`${err}`).message;
+		unknownParseError = error instanceof Error ? error.message : new Error(`${error}`).message;
 	}
 
 	return {
@@ -150,17 +150,15 @@ class Parser {
 						isGhost: false,
 					};
 				}
-				const htmlDoc = htmlParser(originNode.raw, {
+				const htmlDoc = htmlParse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line - 1,
 					offsetColumn: originNode.column - 1,
 				});
-				const nodes = htmlDoc.nodeList;
-				for (const node of nodes) {
-					if (!node.parentNode) {
-						node.parentNode = parentNode;
-					}
-				}
+				const nodes = htmlDoc.nodeList.filter(node => {
+					return node.parentNode == null && node.type !== 'endtag';
+				});
+
 				return nodes;
 			}
 			case 'Comment': {
@@ -261,7 +259,7 @@ class Parser {
 
 			let node: MLASTNode;
 			if (Array.isArray(nodes)) {
-				const lastNode = nodes[nodes.length - 1];
+				const lastNode = nodes.at(-1);
 				if (!lastNode) {
 					continue;
 				}

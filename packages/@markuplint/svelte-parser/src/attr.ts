@@ -1,12 +1,16 @@
-import type { SvelteDirective } from './svelte-parser';
-import type { MLASTAttr } from '@markuplint/ml-ast';
+import type { SvelteDirective } from './svelte-parser/index.js';
+import type { MLASTAttr, MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-import { attrTokenizer } from '@markuplint/html-parser';
-import { sliceFragment } from '@markuplint/parser-utils';
+import { defaultValueDelimiters, parseAttr, sliceFragment } from '@markuplint/parser-utils';
 
-import directiveTokenizer from './directive-tokenizer';
+import { directiveTokenizer } from './directive-tokenizer.js';
 
-const specificBindDirective = ['bind:group', 'bind:this'];
+const mustacheTag = {
+	start: '{',
+	end: '}',
+};
+
+const specificBindDirective = new Set(['bind:group', 'bind:this']);
 
 export function attr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -20,33 +24,30 @@ export function attr(
 
 	const { start, end } = attr;
 
-	// @ts-ignore
 	if (attr.type === 'Spread') {
 		return {
 			__spreadAttr: true,
 		};
 	}
 
-	// @ts-ignore TODO solve type
+	let token: MLASTHTMLAttr;
+
 	if (attr.type === 'Attribute' && !isShorthand) {
+		const { raw } = sliceFragment(rawHTML, start, end);
+		token = parseAttr(raw, start, rawHTML, {
+			valueDelimiters: [...defaultValueDelimiters, mustacheTag],
+		});
+	} else {
 		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
-		const token = attrTokenizer(raw, startLine, startCol, startOffset);
-		return token;
+		const valueToken = isShorthand
+			? attr.name
+			: attr.expression && 'start' in attr.expression && 'end' in attr.expression
+			? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
+			: '';
+		token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
 	}
-	const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
-	const valueToken = isShorthand
-		? attr.name
-		: // @ts-ignore TODO solve type
-		attr.type === 'Spread'
-		? raw.slice(1).slice(0, -1)
-		: attr.expression && 'start' in attr.expression && 'end' in attr.expression
-		? // @ts-ignore
-		  sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
-		: '';
 
-	const token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
-
-	if (!specificBindDirective.includes(token.name.raw) && /^bind:/i.test(token.name.raw)) {
+	if (!specificBindDirective.has(token.name.raw) && /^bind:/i.test(token.name.raw)) {
 		// Remove "bind:"
 		token.potentialName = token.name.raw.slice(5);
 		token.isDirective = undefined;
@@ -67,6 +68,10 @@ export function attr(
 			token.potentialName = 'class';
 			token.isDynamicValue = true;
 		}
+	}
+
+	if (token.startQuote.raw === '{' && token.endQuote.raw === '}') {
+		token.isDynamicValue = true;
 	}
 
 	return {

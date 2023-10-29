@@ -1,4 +1,4 @@
-import type { AttributeNode } from './astro-parser';
+import type { AttributeNode } from './astro-parser.js';
 import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { defaultValueDelimiters, getSpaceBefore, parseAttr, sliceFragment } from '@markuplint/parser-utils';

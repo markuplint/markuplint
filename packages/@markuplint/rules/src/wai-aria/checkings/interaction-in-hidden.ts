@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { Attr, Element, ElementChecker } from '@markuplint/ml-core';
 
 import { mayBeFocusable } from '@markuplint/ml-spec';

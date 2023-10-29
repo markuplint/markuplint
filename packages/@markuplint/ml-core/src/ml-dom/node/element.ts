@@ -1,7 +1,9 @@
-import type { MLDocument } from './document';
-import type { MLNamedNodeMap } from './named-node-map';
-import type { MLText } from './text';
-import type { ElementNodeType, PretenderContext } from './types';
+/* global StylePropertyMap, StylePropertyMapReadOnly */
+
+import type { MLDocument } from './document.js';
+import type { MLNamedNodeMap } from './named-node-map.js';
+import type { MLText } from './text.js';
+import type { ElementNodeType, PretenderContext } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
@@ -9,8 +11,8 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
-import { stringSplice } from '../../utils/string-splice';
-import { getAccname } from '../helper/accname';
+import { stringSplice } from '../../utils/string-splice.js';
+import { getAccname } from '../helper/accname.js';
 import {
 	after,
 	before,
@@ -18,15 +20,15 @@ import {
 	previousElementSibling,
 	remove,
 	replaceWith,
-} from '../manipulations/child-node-methods';
-import { MLToken } from '../token/token';
+} from '../manipulations/child-node-methods.js';
+import { MLToken } from '../token/token.js';
 
-import { MLAttr } from './attr';
-import { MLDomTokenList } from './dom-token-list';
-import { toNamedNodeMap } from './named-node-map';
-import { toHTMLCollection } from './node-list';
-import { MLParentNode } from './parent-node';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLAttr } from './attr.js';
+import { MLDomTokenList } from './dom-token-list.js';
+import { toNamedNodeMap } from './named-node-map.js';
+import { toHTMLCollection } from './node-list.js';
+import { MLParentNode } from './parent-node.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -576,6 +578,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get assignedSlot(): HTMLSlotElement | null {
 		throw new UnexpectedCallError('Not supported "assignedSlot" property');
+	}
+
+	get attributeStyleMap(): StylePropertyMap {
+		throw new UnexpectedCallError('Not supported "attributeStyleMap" property');
 	}
 
 	/**
@@ -2202,6 +2208,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
+	get onscrollend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onscrollend" property');
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -2654,6 +2671,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-popover
+	 */
+	get popover(): string | null {
+		throw new UnexpectedCallError('Not supported "popover" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-prefix%E2%91%A0
 	 */
 	get prefix(): string | null {
@@ -2682,7 +2710,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.fixedNodeName);
 			gap = gap + this.fixedNodeName.length - this.nodeName.length;
 		}
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
 			const fixedAttr = attr.toString();
 			if (attr.originRaw !== fixedAttr) {
@@ -2843,9 +2871,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	get textContent(): string {
-		return Array.from(this.childNodes)
-			.map(child => child.textContent ?? '')
-			.join('');
+		return [...this.childNodes].map(child => child.textContent ?? '').join('');
 	}
 
 	/**
@@ -2894,6 +2920,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		options?: number | KeyframeAnimationOptions,
 	): Animation {
 		throw new UnexpectedCallError('Not supported "animate" method');
+	}
+
+	/**
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-slot-assignednodes
+	 */
+	assignedNodes() {
+		if (this.localName !== 'slot') {
+			throw new TypeError('assignedNodes is not a function');
+		}
+
+		return [];
 	}
 
 	/**
@@ -2972,6 +3009,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0
 	 */
 	closest(selectors: string): MLElement<T, O> | null {
+		// eslint-disable-next-line unicorn/no-this-assignment
 		let el: MLElement<T, O> | null = this;
 
 		do {
@@ -2982,6 +3020,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		} while (el !== null && el.is(el.ELEMENT_NODE));
 
 		return null;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	computedStyleMap(): StylePropertyMapReadOnly {
+		throw new UnexpectedCallError('Not supported "computedStyleMap" method');
 	}
 
 	fixNodeName(name: string) {
@@ -3028,7 +3076,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattribute%E2%91%A0
 	 */
 	getAttribute(attrName: string) {
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
 				return attr.value;
 			}
@@ -3052,7 +3100,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattributenames%E2%91%A0
 	 */
 	getAttributeNames(): string[] {
-		return Array.from(this.attributes).map(attr => attr.name);
+		return [...this.attributes].map(attr => attr.name);
 	}
 
 	/**
@@ -3078,7 +3126,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getAttributePretended(attrName: string) {
-		for (const attr of Array.from(this.#attributes)) {
+		for (const attr of this.#attributes) {
 			if (attr.name.toLowerCase() === attrName.toLowerCase()) {
 				return attr.value;
 			}
@@ -3125,7 +3173,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.#getChildElementsAndTextNodeWithoutWhitespacesCache;
 		}
 		const filteredNodes: (MLElement<T, O> | MLText<T, O>)[] = [];
-		this.childNodes.forEach(node => {
+		for (const node of this.childNodes) {
 			if (node.is(node.ELEMENT_NODE)) {
 				if (node.isOmitted) {
 					const children = node.getChildElementsAndTextNodeWithoutWhitespaces();
@@ -3137,7 +3185,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (node.is(node.TEXT_NODE) && !node.isWhitespace()) {
 				filteredNodes.push(node);
 			}
-		});
+		}
 		this.#getChildElementsAndTextNodeWithoutWhitespacesCache = filteredNodes;
 		return filteredNodes;
 	}
@@ -3234,7 +3282,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	hasMutableAttributes() {
-		for (const attr of Array.from(this.attributes)) {
+		for (const attr of this.attributes) {
 			if (!attr.nameNode) {
 				return true;
 			}
@@ -3251,7 +3299,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	hasMutableChildren(attr = false) {
-		for (const child of Array.from(this.childNodes)) {
+		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 				return true;
 			}
@@ -3259,7 +3307,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (attr && child.hasMutableAttributes()) {
 					return true;
 				}
-				if (child.hasMutableChildren()) {
+				if (child.hasMutableChildren(attr)) {
+					return true;
+				}
+				if (child.localName === 'slot') {
 					return true;
 				}
 			}
@@ -3276,6 +3327,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	hasPointerCapture(pointerId: number): boolean {
 		throw new UnexpectedCallError('Not supported "hasPointerCapture" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-hidepopover
+	 */
+	hidePopover(): void {
+		throw new UnexpectedCallError('Not supported "hidePopover" method');
 	}
 
 	/**
@@ -3341,7 +3403,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	isEmpty() {
-		for (const childNode of Array.from(this.childNodes)) {
+		for (const childNode of this.childNodes) {
 			if (!(childNode.is(childNode.TEXT_NODE) && childNode.textContent?.trim() === '')) {
 				return false;
 			}
@@ -3387,11 +3449,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				attributes.push(
 					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
 						const _value =
-							value != null
-								? typeof value === 'string'
-									? value
-									: this.getAttribute(value.fromAttr) ?? ''
-								: '';
+							value == null
+								? ''
+								: typeof value === 'string'
+								? value
+								: this.getAttribute(value.fromAttr) ?? '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
@@ -3666,6 +3728,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-showpopover
+	 */
+	showPopover(): void {
+		throw new UnexpectedCallError('Not supported "showPopover" method');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	toNormalizeString(): string {
@@ -3706,6 +3779,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	toggleAttribute(qualifiedName: string, force?: boolean): boolean {
 		throw new UnexpectedCallError('Not supported "toggleAttribute" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-togglepopover
+	 */
+	togglePopover(force?: boolean): void {
+		throw new UnexpectedCallError('Not supported "togglePopover" method');
 	}
 
 	/**

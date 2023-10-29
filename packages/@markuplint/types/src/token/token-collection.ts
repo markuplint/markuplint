@@ -1,11 +1,9 @@
-import type { TokenValue } from './types';
-import type { UnmatchedResult } from '..';
-import type { Expect, Result, List } from '../types';
-import type { ReadonlyDeep } from 'type-fest';
+import type { TokenValue } from './types.js';
+import type { Expect, Result, List, UnmatchedResult } from '../types.js';
 
-import { matched, unmatched } from '../match-result';
+import { matched, unmatched } from '../match-result.js';
 
-import { Token } from './token';
+import { Token } from './token.js';
 
 type TokenCollectionOptions = Partial<
 	Omit<List, 'token'> & {
@@ -13,13 +11,18 @@ type TokenCollectionOptions = Partial<
 	}
 >;
 
-export type TokenEachCheck = (head: Readonly<Token> | null, tail: ReadonlyDeep<TokenCollection>) => Result | void;
+export type TokenEachCheck = (
+	head: Readonly<Token> | null,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	tail: TokenCollection,
+) => Result | void;
 
 export class TokenCollection extends Array<Token> {
 	static fromPatterns(
 		value: Readonly<Token> | string,
 		patterns: readonly Readonly<RegExp>[],
-		typeOptions?: ReadonlyDeep<Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean }>,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: Omit<TokenCollectionOptions, 'specificSeparator'> & { repeat?: boolean },
 	) {
 		const originalValue = typeof value === 'string' ? value : value.originalValue;
 		let strings = typeof value === 'string' ? value : value.value;
@@ -43,15 +46,15 @@ export class TokenCollection extends Array<Token> {
 				const res = pattern.exec(strings);
 				let value: string;
 
-				if (!res) {
+				if (res) {
+					if (res.index === 0) {
+						value = res[0] ?? '';
+					} else {
+						value = strings.slice(res.index + res[0].length);
+					}
+				} else {
 					isBroken = true;
 					value = '';
-				} else {
-					if (res.index !== 0) {
-						value = strings.slice(res.index + res[0].length);
-					} else {
-						value = res[0] ?? '';
-					}
 				}
 
 				const token = addToken(value);
@@ -83,9 +86,18 @@ export class TokenCollection extends Array<Token> {
 	readonly separator: NonNullable<List['separator']>;
 	readonly unique: NonNullable<List['unique']>;
 
-	constructor(value?: string, typeOptions?: ReadonlyDeep<TokenCollectionOptions>);
+	constructor(
+		value?: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: TokenCollectionOptions,
+	);
+
 	constructor(value?: number); // for map method etc.
-	constructor(value?: string | number, typeOptions?: ReadonlyDeep<TokenCollectionOptions>) {
+	constructor(
+		value?: string | number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		typeOptions?: TokenCollectionOptions,
+	) {
 		super();
 
 		this.disallowToSurroundBySpaces = typeOptions?.disallowToSurroundBySpaces ?? false;
@@ -118,7 +130,7 @@ export class TokenCollection extends Array<Token> {
 			}
 		}
 
-		const chars = value.split('');
+		const chars = [...value];
 		const values: string[] = [];
 		let char: string | undefined;
 		while ((char = chars.shift())) {
@@ -137,17 +149,16 @@ export class TokenCollection extends Array<Token> {
 			) {
 				values.push(last + char);
 			} else {
-				values.push(last);
-				values.push(char);
+				values.push(last, char);
 			}
 		}
 
 		let offset = 0;
-		values.forEach(v => {
+		for (const v of values) {
 			const token = new Token(v, offset, value, separators);
 			this.push(token);
 			offset += v.length;
-		});
+		}
 	}
 
 	get value() {
@@ -320,7 +331,7 @@ export class TokenCollection extends Array<Token> {
 			} else if (result && !firstUnmatched && result.matched) {
 				return result;
 			} else {
-				if (head?.value && !head.match(/^\s*$/)) {
+				if (head?.value && !head.matches(/^\s*$/)) {
 					passCount += 4 * wait;
 				}
 			}
@@ -342,7 +353,7 @@ export class TokenCollection extends Array<Token> {
 		return matched();
 	}
 
-	filter(callback: Parameters<Array<Token>['filter']>[0]) {
+	filter(callback: Parameters<Array<Token>['filter']>[0]): TokenCollection {
 		return TokenCollection._new(super.filter(callback), this);
 	}
 
@@ -386,7 +397,7 @@ export class TokenCollection extends Array<Token> {
 	 * @param value The token value or the token type or its list
 	 */
 	has(value: TokenValue) {
-		return this.some(t => t.match(value));
+		return this.some(t => t.matches(value));
 	}
 
 	headAndTail(): { head: Token | null; tail: TokenCollection } {
@@ -442,7 +453,11 @@ export class TokenCollection extends Array<Token> {
 		return this.map(t => t.toJSON());
 	}
 
-	private static _new(tokens: readonly Readonly<Token>[], old?: ReadonlyDeep<TokenCollection>) {
+	private static _new(
+		tokens: readonly Readonly<Token>[],
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		old?: TokenCollection,
+	) {
 		const newCollection = new TokenCollection('', old);
 		newCollection.push(...tokens);
 		return newCollection;

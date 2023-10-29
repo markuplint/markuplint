@@ -1,6 +1,6 @@
 import { createRule } from '@markuplint/ml-core';
 
-import { match } from '../helpers';
+import { match } from '../helpers.js';
 
 type Options = {
 	ignore?: string | string[];

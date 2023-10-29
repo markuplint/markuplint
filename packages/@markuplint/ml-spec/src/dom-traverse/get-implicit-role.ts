@@ -1,8 +1,8 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
-import { getImplicitRole as _getImplicitRole } from '../specs/get-implicit-role';
-import { getRoleSpec } from '../specs/get-role-spec';
-import { resolveNamespace } from '../utils/resolve-namespace';
+import { getImplicitRole as _getImplicitRole } from '../specs/get-implicit-role.js';
+import { getRoleSpec } from '../specs/get-role-spec.js';
+import { resolveNamespace } from '../utils/resolve-namespace.js';
 
 export function getImplicitRole(
 	specs: MLMLSpec,

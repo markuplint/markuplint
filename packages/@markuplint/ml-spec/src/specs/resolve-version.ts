@@ -1,5 +1,5 @@
-import type { ARIAVersion } from '../types';
-import type { ARIA } from '../types/aria';
+import type { ARIA } from '../types/aria.js';
+import type { ARIAVersion } from '../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
 export function resolveVersion(aria: ReadonlyDeep<ARIA>, version: ARIAVersion): Omit<ReadonlyDeep<ARIA>, ARIAVersion> {

@@ -1,4 +1,11 @@
-import type { Node, ElementNode, ComponentNode, FragmentNode, CustomElementNode, AttributeNode } from './astro-parser';
+import type {
+	Node,
+	ElementNode,
+	ComponentNode,
+	FragmentNode,
+	CustomElementNode,
+	AttributeNode,
+} from './astro-parser.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -11,11 +18,19 @@ import type {
 	Parse,
 } from '@markuplint/ml-ast';
 
-import { parseRawTag, parse as htmlParse } from '@markuplint/html-parser';
-import { flattenNodes, detectElementType, getEndCol, getEndLine, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { parse as htmlParse } from '@markuplint/html-parser';
+import {
+	flattenNodes,
+	detectElementType,
+	getEndCol,
+	getEndLine,
+	sliceFragment,
+	uuid,
+	tagParser,
+} from '@markuplint/parser-utils';
 
-import { astroParse } from './astro-parser';
-import { attrTokenizer } from './attr-tokenizer';
+import { astroParse } from './astro-parser.js';
+import { attrTokenizer } from './attr-tokenizer.js';
 
 export const parse: Parse = (rawCode, options = {}) => {
 	const ast = astroParse(rawCode);
@@ -153,7 +168,7 @@ function nodeize(
 			let closeExpression: MLASTPreprocessorSpecificBlock | null = null;
 
 			const firstChild = originNode.children[0];
-			const lastChild = originNode.children[originNode.children.length - 1];
+			const lastChild = originNode.children.at(-1);
 			if (firstChild && lastChild && firstChild !== lastChild) {
 				_endOffset = firstChild.position?.end?.offset ?? endOffset;
 				const startLoc = sliceFragment(rawHtml, startOffset, _endOffset);
@@ -305,7 +320,7 @@ function parseElement(
 	let childrenEnd: number;
 	if (originNode.children[0]) {
 		childrenStart = (originNode.children[0].position?.start?.offset ?? 0) + offset;
-		childrenEnd = (originNode.children[originNode.children.length - 1]?.position?.end?.offset ?? 0) + offset;
+		childrenEnd = (originNode.children.at(-1)?.position?.end?.offset ?? 0) + offset;
 		const startTagStartOffset = originNode.position.start.offset + offset;
 		const startTagEndOffset = childrenStart;
 		startTagRaw = rawHtml.slice(startTagStartOffset, startTagEndOffset);
@@ -343,12 +358,12 @@ function parseElement(
 		// });
 	}
 
-	const tagTokens = parseRawTag(startTagRaw, startLine, startCol, startOffset);
+	const tagTokens = tagParser(startTagRaw, startLine, startCol, startOffset);
 	const tagName = tagTokens.tagName;
 	let endTag: MLASTElementCloseTag | null = null;
 	if (childrenEnd < (originNode.position.end?.offset ?? 0) + offset) {
 		const endTagLoc = sliceFragment(rawHtml, childrenEnd, (originNode.position.end?.offset ?? 0) + offset);
-		const endTagTokens = parseRawTag(endTagLoc.raw, endTagLoc.startLine, endTagLoc.startCol, endTagLoc.startOffset);
+		const endTagTokens = tagParser(endTagLoc.raw, endTagLoc.startLine, endTagLoc.startCol, endTagLoc.startOffset);
 		const endTagName = endTagTokens.tagName;
 		endTag = {
 			uuid: uuid(),
@@ -407,7 +422,7 @@ function parseElement(
 		nextNode,
 		pearNode: endTag,
 		selfClosingSolidus: tagTokens.selfClosingSolidus,
-		endSpace: tagTokens.endSpace,
+		endSpace: tagTokens.afterAttrSpaces,
 		isFragment: false,
 		isGhost: false,
 		tagOpenChar: '<',

@@ -1,5 +1,5 @@
-import type { APIOptions, MLEngineEventMap } from './types';
-import type { MLResultInfo } from '../types';
+import type { APIOptions, MLEngineEventMap } from './types.js';
+import type { MLResultInfo } from '../types.js';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
@@ -9,8 +9,8 @@ import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { Emitter } from 'strict-event-emitter';
 
-import { log as coreLog, verbosely } from '../debug';
-import { i18n } from '../i18n';
+import { log as coreLog, verbosely } from '../debug.js';
+import { i18n } from '../i18n.js';
 
 const log = coreLog.extend('ml-engine');
 const fileLog = log.extend('file');
@@ -21,7 +21,34 @@ type MLEngineOptions = {
 	readonly watch?: boolean;
 };
 
-export default class MLEngine extends Emitter<MLEngineEventMap> {
+export type FromCodeOptions = APIOptions &
+	MLEngineOptions & {
+		readonly name?: string;
+		readonly dirname?: string;
+	};
+
+export class MLEngine extends Emitter<MLEngineEventMap> {
+	static async fromCode(sourceCode: string, options?: FromCodeOptions) {
+		if (options?.debug) {
+			verbosely();
+		}
+		log('[fromCode] Creates: %O', options);
+
+		const file = await MLEngine.toMLFile({
+			sourceCode,
+			name: options?.name,
+			workspace: options?.dirname,
+		});
+
+		if (!file) {
+			throw new Error('Never reach error');
+		}
+
+		log('[fromCode] Created file: %s', file.path);
+		const engine = new MLEngine(file, options);
+		return engine;
+	}
+
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
 		return files[0];
@@ -35,14 +62,17 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
+
+		if (this.#options?.debug) {
+			verbosely();
+		}
+
 		this.#file = file;
 		this.#options = options;
 		this.#configProvider = new ConfigProvider();
 		this.watchMode(!!this.#options?.watch);
 
-		if (this.#options?.debug) {
-			verbosely();
-		}
+		log('[MLEngine] Initialized: %s', this.#file.path);
 	}
 
 	get document(): Document<RuleConfigValue, PlainData> | null {
@@ -66,11 +96,11 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const violations = await core.verify(this.#options?.fix).catch(e => {
-			if (e instanceof Error) {
-				return e;
+		const violations = await core.verify(this.#options?.fix).catch(error => {
+			if (error instanceof Error) {
+				return error;
 			}
-			throw e;
+			throw error;
 		});
 
 		const sourceCode = await this.#file.getCode();
@@ -181,7 +211,23 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	private async provide(cache = true): Promise<MLFabric | null> {
-		const configSet = await this.resolveConfig(cache);
+		let configSet: ConfigSet;
+
+		try {
+			configSet = await this.resolveConfig(cache);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				configSet = {
+					config: {},
+					plugins: [],
+					files: new Set(),
+					errs: [error],
+				};
+			} else {
+				throw error;
+			}
+		}
+
 		fileLog('Fetched Config files: %O', configSet.files);
 		fileLog('Resolved Config: %O', configSet.config);
 		fileLog('Resolved Plugins: %O', configSet.plugins);
@@ -195,12 +241,9 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// Exclude
 		const excludeFiles = configSet.config.excludeFiles ?? [];
-		for (const excludeFile of excludeFiles) {
-			if (this.#file.matches(excludeFile)) {
-				this.emit('exclude', this.#file.path, excludeFile);
-				fileLog('Excludes the file: %s', this.#file.path);
-				return null;
-			}
+		if (this.#file.ignored(excludeFiles)) {
+			fileLog('Excludes the file: %s', this.#file.path);
+			return null;
 		}
 
 		const { parser, parserOptions, matched } = await this.resolveParser(configSet);
@@ -258,13 +301,19 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	private async resolveConfig(cache: boolean) {
+		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
+		configLog('configProvider: %s', this.#configProvider);
+
 		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
+		const targetConfig = await this.#configProvider.search(this.#file);
+		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
 			? defaultConfigKey ?? null
-			: (await this.#configProvider.search(this.#file)) ?? defaultConfigKey;
+			: targetConfig ?? defaultConfigKey;
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
@@ -290,7 +339,7 @@ export default class MLEngine extends Emitter<MLEngineEventMap> {
 
 		if (this.#options?.watch) {
 			// It doesn't watch the main HTML file because it may is watched and managed by a language server or text editor or more.
-			this.#watcher.add(Array.from(configSet.files));
+			this.#watcher.add([...configSet.files]);
 		}
 
 		return configSet;

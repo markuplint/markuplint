@@ -1,15 +1,18 @@
-import type { Category, DefaultRules, Langs, RuleSettingMode } from './types';
+import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import fs from 'node:fs';
+import module from 'node:module';
+import path from 'node:path';
+import util from 'node:util';
 
-import { head, write, error } from '../../util';
-import { confirm, confirmSequence, multiSelect } from '../prompt';
+import { head, write, error } from '../../util.js';
+import { confirm, confirmSequence, multiSelect } from '../prompt.js';
 
-import { createConfig, langs } from './create-config';
-import { getDefaultRules } from './get-default-rules';
-import { installModule, selectModules } from './install-module';
+import { createConfig, langs } from './create-config.js';
+import { getDefaultRules } from './get-default-rules.js';
+import { installModule, selectModules } from './install-module.js';
+
+const require = module.createRequire(import.meta.url);
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -71,7 +74,6 @@ export async function initialize() {
 
 	let defaultRules: DefaultRules = {};
 	if (ruleSettingMode !== 'recommended') {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const rulesVersion: string = require('../../../package.json').version;
 		defaultRules = await getDefaultRules(rulesVersion);
 	}
@@ -79,7 +81,7 @@ export async function initialize() {
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
-	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
+	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
 	write(`✨Created: ${filePath}`);
 
 	if (autoInstall) {
@@ -87,7 +89,7 @@ export async function initialize() {
 
 		const modules = selectModules(selectedLangs);
 
-		const result = await installModule(modules, true).catch(e => new Error(e));
+		const result = await installModule(modules, true).catch(error_ => new Error(error_));
 		if (result instanceof Error) {
 			error.exit();
 			return;

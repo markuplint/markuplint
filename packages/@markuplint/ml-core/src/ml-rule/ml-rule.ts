@@ -1,6 +1,6 @@
-import type { RuleSeed } from './types';
-import type { Ruleset } from '..';
-import type { MLDocument } from '../ml-dom/node/document';
+import type { RuleSeed } from './types.js';
+import type { MLDocument } from '../ml-dom/node/document.js';
+import type { Ruleset } from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
 	GlobalRuleInfo,
@@ -15,9 +15,10 @@ import type {
 } from '@markuplint/ml-config';
 
 import { deleteUndefProp } from '@markuplint/ml-config';
+// @ts-ignore
 import { isPlainObject } from 'is-plain-object';
 
-import { MLRuleContext } from './ml-rule-context';
+import { MLRuleContext } from './ml-rule-context.js';
 
 export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	readonly defaultOptions: O;
@@ -31,7 +32,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.name = o.name;
 		this.defaultSeverity = o.defaultSeverity ?? 'error';
 		// TODO: https://github.com/markuplint/markuplint/issues/808
-		this.defaultValue = (o.defaultValue !== undefined ? o.defaultValue : true) as T;
+		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;
@@ -77,7 +78,12 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 			return {
 				disabled: false,
 				severity: configSettings.severity ?? this.defaultSeverity,
-				value: configSettings.value !== undefined ? configSettings.value : this.defaultValue,
+				value:
+					configSettings.value === undefined ||
+					// @ts-ignore
+					configSettings.value === true
+						? this.defaultValue
+						: configSettings.value,
 				options: mergeOptions(this.defaultOptions, configSettings.options),
 				reason: configSettings.reason,
 			};

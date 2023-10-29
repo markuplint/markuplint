@@ -86,9 +86,9 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 プラグイン名とルール名は以下のように定義されます。
 
 ```js title="./plugin.js"
-const { createPlugin, createRule } = require('@markuplint/ml-core');
+import { createPlugin, createRule } from '@markuplint/ml-core';
 
-module.exports = createPlugin({
+export default createPlugin({
   name: 'my-plugin',
   create(settings) {
     return {

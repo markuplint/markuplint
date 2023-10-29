@@ -16,7 +16,7 @@ npx markuplint target.html
 
 ### 必須スペック
 
-- **Node.js** v14.6.0以上
+- **Node.js** v18.12.0以上
 
 ### プロジェクトでつかう
 

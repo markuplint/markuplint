@@ -7,18 +7,18 @@ export const parse: Parse = (rawCode, options) => {
 	const blocks = ignoreBlock(rawCode, [
 		{
 			type: 'erb-ruby-expression',
-			start: /<%=/,
-			end: /%>/,
+			start: '<%=',
+			end: '%>',
 		},
 		{
 			type: 'erb-comment',
-			start: /<%#/,
-			end: /%>/,
+			start: '<%#',
+			end: '%>',
 		},
 		{
 			type: 'erb-ruby-code',
 			start: /<%(?!%)/,
-			end: /%>/,
+			end: '%>',
 		},
 		// WIP. If it use trim_mode.
 		// {

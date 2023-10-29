@@ -1,4 +1,4 @@
-import type { FormattedPrimitiveTypeCreator } from '../types';
+import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
  * @see https://url.spec.whatwg.org/#syntax-url-absolute
@@ -17,14 +17,16 @@ export const isAbsURL: FormattedPrimitiveTypeCreator = () => {
 	return value => {
 		try {
 			new URL(value);
-		} catch (e: unknown) {
-			if (e && typeof e === 'object' && 'code' in e) {
-				// @ts-ignore
-				if (e.code === 'ERR_INVALID_URL') {
-					return false;
-				}
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error && // @ts-ignore
+				error.code === 'ERR_INVALID_URL'
+			) {
+				return false;
 			}
-			throw e;
+			throw error;
 		}
 		return true;
 	};

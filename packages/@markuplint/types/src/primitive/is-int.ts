@@ -4,5 +4,5 @@
  * @param value
  */
 export function isInt(value: string) {
-	return /^-?[0-9]+$/.test(value);
+	return /^-?\d+$/.test(value);
 }

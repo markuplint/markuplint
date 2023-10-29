@@ -1,7 +1,7 @@
-import type { MLResultInfo } from '../types';
+import type { MLResultInfo } from '../types.js';
 import type { Severity } from '@markuplint/ml-config';
 
-import { messageToString } from '../util';
+import { messageToString } from '../util.js';
 
 export function githubReporter(results: MLResultInfo) {
 	const out: string[] = [];
@@ -19,10 +19,12 @@ export function githubReporter(results: MLResultInfo) {
 
 function severityToCommand(severity: Severity) {
 	switch (severity) {
-		case 'info':
+		case 'info': {
 			return 'notice';
+		}
 		case 'error':
-		case 'warning':
+		case 'warning': {
 			return severity;
+		}
 	}
 }

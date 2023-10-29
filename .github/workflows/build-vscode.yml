@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - v3
         paths:
             - 'vscode/**'
 
@@ -11,15 +12,15 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Install Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 18
 
             - name: Install dependencies
               run: yarn vscode:package

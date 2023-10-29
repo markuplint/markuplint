@@ -7,7 +7,7 @@ export default createRule<boolean, null>({
 		// Element
 		await document.walkOn('Element', el => {
 			const raw = el.raw.trim();
-			if (/./i.test(raw)) {
+			if (/./.test(raw)) {
 				report({
 					scope: el,
 					message: t('It is {0}', 'issue'),
@@ -17,7 +17,7 @@ export default createRule<boolean, null>({
 
 		// Attribute
 		await document.walkOn('Attr', attr => {
-			if (/./i.test(attr.name)) {
+			if (/./.test(attr.name)) {
 				report({
 					scope: attr,
 					line: attr.nameNode?.startLine,

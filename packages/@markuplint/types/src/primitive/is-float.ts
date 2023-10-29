@@ -4,5 +4,5 @@
  * @param value
  */
 export function isFloat(value: string) {
-	return value === value.trim() && Number.isFinite(parseFloat(value));
+	return value === value.trim() && Number.isFinite(Number.parseFloat(value));
 }

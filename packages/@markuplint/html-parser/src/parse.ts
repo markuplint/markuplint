@@ -2,13 +2,13 @@ import type { Parse } from '@markuplint/ml-ast';
 
 import { ignoreFrontMatter, flattenNodes } from '@markuplint/parser-utils';
 
-import { createTree } from './create-tree';
-import isDocumentFragment from './is-document-fragment';
+import { createTree } from './create-tree.js';
+import { isDocumentFragment } from './is-document-fragment.js';
 import {
 	isStartsHeadTagOrBodyTag,
 	optimizeStartsHeadTagOrBodyTagResume,
 	optimizeStartsHeadTagOrBodyTagSetup,
-} from './optimize-starts-head-or-body';
+} from './optimize-starts-head-or-body.js';
 
 export const parse: Parse = (rawCode, options) => {
 	if (options?.ignoreFrontMatter) {

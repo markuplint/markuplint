@@ -145,9 +145,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyph",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphDef",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/altGlyphItem",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
@@ -632,6 +629,30 @@
 				"onwheel": {
 					"type": "FunctionBody"
 				},
+				"onanimationstart": {
+					"type": "FunctionBody"
+				},
+				"onanimationiteration": {
+					"type": "FunctionBody"
+				},
+				"onanimationend": {
+					"type": "FunctionBody"
+				},
+				"onanimationcancel": {
+					"type": "FunctionBody"
+				},
+				"ontransitionrun": {
+					"type": "FunctionBody"
+				},
+				"ontransitionstart": {
+					"type": "FunctionBody"
+				},
+				"ontransitionend": {
+					"type": "FunctionBody"
+				},
+				"ontransitioncancel": {
+					"type": "FunctionBody"
+				},
 				"onwebkitanimationend": {
 					"type": "FunctionBody",
 					"deprecated": true
@@ -654,7 +675,7 @@
 					"type": "URL"
 				},
 				"target": {
-					"type": "BrowsingContextNameOrKeyword",
+					"type": "NavigableTargetNameOrKeyword",
 					"condition": "[href]"
 				},
 				"download": {
@@ -715,7 +736,7 @@
 							"unsafe-url"
 						]
 					},
-					"condition": "[href]",
+					"condition": "[href], [src]",
 					"defaultValue": "strict-origin-when-cross-origin"
 				},
 				"loading": {
@@ -817,7 +838,7 @@
 					"type": "Boolean"
 				},
 				"formtarget": {
-					"type": "BrowsingContextNameOrKeyword"
+					"type": "NavigableTargetNameOrKeyword"
 				},
 				"name": {
 					"type": "NoEmptyAny"
@@ -2770,9 +2791,9 @@
 					},
 					{
 						"name": "caption",
-						"description": "Visible content that names, or describes a group, figure, table, grid, radiogroup, or treegrid.\n\nWhen using caption authors SHOULD ensure:\n\nIf the caption represents an accessible name for its containing element, authors SHOULD specify aria-labelledby on the containing element to reference the element with role caption.\n\nIf a caption contains content that serves as both a name and description for its containing element, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-describedby to reference an element within the caption that represents the descriptive content.\n\nIf the caption represents a long-form description, or if the description contains semantic elements which are important in understanding the description, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-details to reference an element within the caption that represents the descriptive content.\n\nIf a caption contains only a description, without a suitable text string to serve as the accessible name for its containing element, then aria-label or aria-labelledby MAY be used to provide an accessible name, and the caption MAY be treated solely as descriptive content, referenced via aria-details.",
+						"description": "Visible content that names, or describes a figure, grid, group, radiogroup, table or treegrid.\n\nWhen using caption authors SHOULD ensure:\n\nIf the caption represents an accessible name for its containing element, authors SHOULD specify aria-labelledby on the containing element to reference the element with role caption.\n\nIf a caption contains content that serves as both a name and description for its containing element, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-describedby to reference an element within the caption that represents the descriptive content.\n\nIf the caption represents a long-form description, or if the description contains semantic elements which are important in understanding the description, authors MAY instead specify aria-labelledby to reference an element within the caption that represents the \"name\" of the containing element, and specify aria-details to reference an element within the caption that represents the descriptive content.\n\nIf a caption contains only a description, without a suitable text string to serve as the accessible name for its containing element, then aria-label or aria-labelledby MAY be used to provide an accessible name, and the caption MAY be treated solely as descriptive content, referenced via aria-details.",
 						"generalization": ["section"],
-						"requiredContextRole": ["figure", "grid", "table", "treegrid"],
+						"requiredContextRole": ["figure", "grid", "group", "radiogroup", "table", "treegrid"],
 						"requiredOwnedElements": [],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": false,
@@ -2781,10 +2802,6 @@
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -2872,7 +2889,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "cell",
@@ -3145,10 +3162,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -3233,7 +3246,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "columnheader",
@@ -4108,10 +4121,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4196,7 +4205,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "deletion",
@@ -4214,10 +4223,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4302,7 +4307,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "dialog",
@@ -4666,10 +4671,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -4754,7 +4755,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "feed",
@@ -5100,7 +5101,7 @@
 					},
 					{
 						"name": "generic",
-						"description": "A nameless container element that has no semantic meaning on its own.\n\nThe generic role is intended for use as the implicit role of generic elements in host languages (such as HTML div or span), so is primarily for implementors of user agents. Authors SHOULD NOT use this role in content. Authors MAY use presentation or none to remove implicit accessibility semantics, or a semantic container role such as group to semantically group descendants in a named container.\n\nLike an element with role presentation, an element with role generic can provide a limited number of accessible states and properties for its descendants, such as aria-live attributes. However, unlike elements with role presentation, generic elements are exposed in accessibility APIs so that assistive technologies can gather certain properties such as layout and bounds.",
+						"description": "A nameless container element that has no semantic meaning on its own.\n\nThe generic role is intended for use as the implicit role of generic elements in host languages (such as HTML div or span), so is primarily for implementors of user agents. Authors SHOULD NOT use this role in content. Authors MAY use presentation or none to remove implicit accessibility semantics, or a semantic container role such as group to semantically group descendants in a named container.\n\nLike an element with role presentation, an element with role generic can provide a limited number of accessible states and properties for its descendants, such as aria-live attributes.\n\nHowever, unlike elements with role presentation, user agents expose generic elements in accessibility APIs when permitted accessibility attributes have been specified. User agents MAY otherwise ignore generic elements if such permitted attributes have not been specified.",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -5111,10 +5112,6 @@
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -5195,6 +5192,7 @@
 							}
 						],
 						"prohibitedProperties": [
+							"aria-braillelabel",
 							"aria-brailleroledescription",
 							"aria-label",
 							"aria-labelledby",
@@ -5964,10 +5962,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -6052,7 +6046,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "landmark",
@@ -6889,10 +6883,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -6977,7 +6967,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "marquee",
@@ -8089,7 +8079,7 @@
 					},
 					{
 						"name": "none",
-						"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym presentation.\n\nIn ARIA 1.1, the working group introduced none as a synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and we believe role=\"none\" conveys the actual meaning more unambiguously.",
+						"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym presentation.\n\nIn ARIA 1.1, the working group introduced none as a synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and we believe role=\"none\" conveys the actual meaning more unambiguously.\n\nThe intended use is when an element is used to change the look of the page but does not have all the functional, interactive, or structural relevance implied by the element type, or can be used to provide for an accessible fallback in older browsers that do not support WAI-ARIA.\n\nExample use cases:\n\nFor any element with a role of none/presentation and which is not focusable, the user agent MUST NOT expose the implicit native semantics of the element (the role and its states and properties) to accessibility APIs. However, the user agent MUST expose content and descendant elements that do not have an explicit or inherited role of none/presentation. Thus, the none/presentation role causes a given element to be treated as having no role or to be removed from the accessibility tree, but does not cause the content contained within the element to be removed from the accessibility tree.\n\nFor example, the following two markup snippets will be exposed similarly to an accessibility API.\n\nIn HTML, the <img> element is treated as a single entity regardless of the type of image file. Consequently, using role=\"none\" or role=\"presentation\" on an HTML img is equivalent to using aria-hidden=\"true\". In order to make the image contents accessible, authors can embed the object using an <object> or <iframe> element, or use inline SVG code, and follow the accessibility guidelines for the image content.\n\nAuthors SHOULD NOT provide meaningful alternative text (for example, use alt=\"\" in HTML) when the none/presentation role is applied to an image.\n\nIn the following code sample, the containing img and is appropriately labeled by the caption paragraph. In this example the img element can be marked as none/presentation because the role and the text alternatives are provided by the containing element.\n\nIn the following code sample, because the anchor (HTML a element) is acting as the treeitem, the list item (HTML li element) is assigned an explicit WAI-ARIA role of none/presentation to override the user agent's implicit native semantics for list items.\n\nThe none/presentation role is used on an element that has implicit native semantics, meaning that there is a default accessibility API role for the element. Some elements are only complete when additional descendant elements are provided. For example, in HTML, table elements (matching the table role) require tr descendants (which have an implicit row role), which in turn require th or td children (the columnheader or rowheader and cell roles, respectively). Similarly, lists require list item children. The descendant elements that complete the semantics of an element are described in WAI-ARIA as Allowed Accessibility Child Roles.\n\nWhen an explicit or inherited role of none/presentation is applied to an element with the implicit semantic of a WAI-ARIA role that has Allowed Accessibility Child Roles, in addition to the element with the explicit role of none/presentation, the user agent MUST apply an inherited role of none to any owned elements that do not have an explicit role defined. Also, when an explicit or inherited role of none/presentation is applied to a host language element which has specifically allowed children as defined by the host language specification, in addition to the element with the explicit role of none/presentation, the user agent MUST apply an inherited role of none to any specifically allowed children that do not have an explicit role defined.\n\nFor any element with an explicit or inherited role of none/presentation and which is not focusable, user agents MUST ignore role-specific WAI-ARIA states and properties for that element. For example, in HTML, a ul or ol element with a role of none/presentation will have the implicit native semantics of its li elements removed because the list role to which the ul or ol corresponds has an Allowed Accessibility Child Role of listitem. Likewise, the implicit native semantics of an HTML table element's thead/tbody/tfoot/tr/th/td descendants will also be removed, because the HTML specification indicates that these are required structural descendants of the table element.\n\nOnly the implicit native semantics of elements that correspond to WAI-ARIA Allowed Accessibility Child Roles are removed. All other content remains intact, including nested tables or lists, unless those elements also have an explicit role of none/presentation specified.\n\nFor example, according to an accessibility API, the following markup elements might have identical or very similar role semantics (generic or none role) and identical content.\n\nThere are other WAI-ARIA roles with specific allowed children for which this situation is applicable (e.g., feeds and listboxes), but tables and lists are the most common real-world cases in which the none/presentation inheritance is likely to apply.\n\nFor any element with an explicit or inherited role of none/presentation, user agents MUST apply an inherited role of none to all host-language-specific labeling elements for the presentational element. For example, a table element with a role of none/presentation will have the implicit native semantics of its caption element removed, because the caption is merely a label for the presentational table.\n\nInformation about resolving conflicts in the none/presentation role has been moved to Handling Author Errors",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -8100,10 +8090,6 @@
 						"ownedProperties": [
 							{
 								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
 								"inherited": true
 							},
 							{
@@ -8191,7 +8177,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "note",
@@ -8449,10 +8435,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -8537,11 +8519,11 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "presentation",
-						"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym none.\n\nIn ARIA 1.1, the working group introduced none as a synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and we believe role=\"none\" conveys the actual meaning more unambiguously.\n\nThe intended use is when an element is used to change the look of the page but does not have all the functional, interactive, or structural relevance implied by the element type, or can be used to provide for an accessible fallback in older browsers that do not support WAI-ARIA.\n\nExample use cases:\n\nFor any element with a role of presentation and which is not focusable, the user agent MUST NOT expose the implicit native semantics of the element (the role and its states and properties) to accessibility APIs. However, the user agent MUST expose content and descendant elements that do not have an explicit or inherited role of presentation. Thus, the presentation role causes a given element to be treated as having no role or to be removed from the accessibility tree, but does not cause the content contained within the element to be removed from the accessibility tree.\n\nFor example, the following two markup snippets will be exposed similarly to an accessibility API.\n\nIn HTML, the <img> element is treated as a single entity regardless of the type of image file. Consequently, using role=\"presentation\" or role=\"none\" on an HTML img is equivalent to using aria-hidden=\"true\". In order to make the image contents accessible, authors can embed the object using an <object> or <iframe> element, or use inline SVG code, and follow the accessibility guidelines for the image content.\n\nAuthors SHOULD NOT provide meaningful alternative text (for example, use alt=\"\" in HTML) when the presentation role is applied to an image.\n\nIn the following code sample, the containing img and is appropriately labeled by the caption paragraph. In this example the img element can be marked as presentation because the role and the text alternatives are provided by the containing element.\n\nIn the following code sample, because the anchor (HTML a element) is acting as the treeitem, the list item (HTML li element) is assigned an explicit WAI-ARIA role of presentation to override the user agent's implicit native semantics for list items.\n\nThe presentation role is used on an element that has implicit native semantics, meaning that there is a default accessibility API role for the element. Some elements are only complete when additional descendant elements are provided. For example, in HTML, table elements (matching the table role) require tr descendants (which have an implicit row role), which in turn require th or td children (the columnheader or rowheader and cell roles, respectively). Similarly, lists require list item children. The descendant elements that complete the semantics of an element are described in WAI-ARIA as Allowed Accessibility Child Roles.\n\nWhen an explicit or inherited role of presentation is applied to an element with the implicit semantic of a WAI-ARIA role that has Allowed Accessibility Child Roles, in addition to the element with the explicit role of presentation, the user agent MUST apply an inherited role of presentation to any owned elements that do not have an explicit role defined. Also, when an explicit or inherited role of presentation is applied to a host language element which has specifically allowed children as defined by the host language specification, in addition to the element with the explicit role of presentation, the user agent MUST apply an inherited role of presentation to any specifically allowed children that do not have an explicit role defined.\n\nFor any element with an explicit or inherited role of presentation and which is not focusable, user agents MUST ignore role-specific WAI-ARIA states and properties for that element. For example, in HTML, a ul or ol element with a role of presentation will have the implicit native semantics of its li elements removed because the list role to which the ul or ol corresponds has an Allowed Accessibility Child Role of listitem. Likewise, the implicit native semantics of an HTML table element's thead/tbody/tfoot/tr/th/td descendants will also be removed, because the HTML specification indicates that these are required structural descendants of the table element.\n\nOnly the implicit native semantics of elements that correspond to WAI-ARIA Allowed Accessibility Child Roles are removed. All other content remains intact, including nested tables or lists, unless those elements also have an explicit role of presentation specified.\n\nFor example, according to an accessibility API, the following markup elements would appear to have identical role semantics (no roles) and identical content.\n\nThere are other WAI-ARIA roles with specific allowed children for which this situation is applicable (e.g., feeds and listboxes), but tables and lists are the most common real-world cases in which the presentation inheritance is likely to apply.\n\nFor any element with an explicit or inherited role of presentation, user agents MUST apply an inherited role of presentation to all host-language-specific labeling elements for the presentational element. For example, a table element with a role of presentation will have the implicit native semantics of its caption element removed, because the caption is merely a label for the presentational table.\n\nInformation about resolving conflicts in the presentation role has been moved to Handling Author Errors",
+						"description": "An element whose implicit native role semantics will not be mapped to the accessibility API. See synonym none.\n\nIn ARIA 1.1, the working group introduced none as the preferred synonym to the presentation role, due to author confusion surrounding the intended meaning of the word \"presentation\" or \"presentational.\" Many individuals erroneously consider role=\"presentation\" to be synonymous with aria-hidden=\"true\", and the ARIA Working Group believes role=\"none\" conveys the actual meaning more unambiguously.",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -8555,10 +8537,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -8643,7 +8621,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "progressbar",
@@ -11016,10 +10994,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11104,7 +11078,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "structure",
@@ -11237,10 +11211,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11325,7 +11295,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "suggestion",
@@ -11343,10 +11313,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11431,7 +11397,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "superscript",
@@ -11449,10 +11415,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -11537,7 +11499,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "switch",
@@ -12163,10 +12125,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -12251,7 +12209,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "textbox",
@@ -12394,10 +12352,6 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
 								"name": "aria-brailleroledescription",
 								"inherited": true
 							},
@@ -12482,7 +12436,7 @@
 								"inherited": true
 							}
 						],
-						"prohibitedProperties": ["aria-label", "aria-labelledby"]
+						"prohibitedProperties": ["aria-braillelabel", "aria-label", "aria-labelledby"]
 					},
 					{
 						"name": "timer",
@@ -13473,7 +13427,6 @@
 						"type": "property",
 						"value": "true/false",
 						"enum": [],
-						"defaultValue": "false",
 						"isGlobal": true,
 						"valueDescriptions": {
 							"false": "Assistive technologies will present only the changed node or nodes.",
@@ -35350,7 +35303,7 @@
 					"description": "Causes the browser to treat the linked URL as a download. Can be used with or without a filename value: Without a value, the browser will suggest a filename/extension, generated from various sources: The Content-Disposition HTTP header The final segment in the URL path The media type (from the Content-Type header, the start of a data: URL, or Blob.type for a blob: URL) filename: defining a value suggests it as the filename. / and \\ characters are converted to underscores (_). Filesystems may forbid other characters in filenames, so browsers will adjust the suggested name if necessary. Note: download only works for same-origin URLs, or the blob: and data: schemes. How browsers treat downloads varies by browser, user settings, and other factors. The user may be prompted before a download starts, or the file may be saved automatically, or it may open automatically, either in an external application or in the browser itself. If the Content-Disposition header has different information from the download attribute, resulting behavior may differ: If the header specifies a filename, it takes priority over a filename specified in the download attribute. If the header specifies a disposition of inline, Chrome and Firefox prioritize the attribute and treat it as a download. Old Firefox versions (before 82) prioritize the header and will display the content inline."
 				},
 				"href": {
-					"description": "The URL that the hyperlink points to. Links are not restricted to HTTP-based URLs — they can use any URL scheme supported by browsers: Sections of a page with document fragments Specific text portions with text fragments Pieces of media files with media fragments Telephone numbers with tel: URLs Email addresses with mailto: URLs While web browsers may not support other URL schemes, websites can with registerProtocolHandler()"
+					"description": "The URL that the hyperlink points to. Links are not restricted to HTTP-based URLs — they can use any URL scheme supported by browsers: Sections of a page with document fragments Specific text portions with text fragments Pieces of media files with media fragments Telephone numbers with tel: URLs Email addresses with mailto: URLs SMS text messages with sms: URLs While web browsers may not support other URL schemes, websites can with registerProtocolHandler()"
 				},
 				"hreflang": {
 					"description": "Hints at the human language of the linked URL. No built-in functionality. Allowed values are the same as the global lang attribute."
@@ -35457,7 +35410,7 @@
 		{
 			"name": "applet",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The obsolete HTML Applet Element (<applet>) embeds a Java applet into the document; this element has been deprecated in favor of <object>.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35469,68 +35422,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"align": {
-					"description": "This attribute is used to position the applet on the page relative to content that might flow around it. The HTML 4.01 specification defines values of bottom, left, middle, right, and top, whereas Microsoft and Netscape also might support absbottom, absmiddle, baseline, center, and texttop.",
-					"deprecated": true
-				},
-				"alt": {
-					"description": "This attribute causes a descriptive text alternate to be displayed on browsers that do not support Java. Page designers should also remember that content enclosed within the <applet> element may also be rendered as alternative text.",
-					"deprecated": true
-				},
-				"archive": {
-					"description": "This attribute refers to an archived or compressed version of the applet and its associated class files, which might help reduce download time.",
-					"deprecated": true
-				},
-				"code": {
-					"description": "This attribute specifies the URL of the applet's class file to be loaded and executed. Applet filenames are identified by a .class filename extension. The URL specified by code might be relative to the codebase attribute.",
-					"deprecated": true
-				},
-				"codebase": {
-					"description": "This attribute gives the absolute or relative URL of the directory where applets' .class files referenced by the code attribute are stored.",
-					"deprecated": true
-				},
-				"datafld": {
-					"description": "This attribute, supported by Internet Explorer 4 and higher, specifies the column name from the data source object that supplies the bound data. This attribute might be used to specify the various <param> elements passed to the Java applet.",
-					"deprecated": true
-				},
-				"datasrc": {
-					"description": "Like datafld, this attribute is used for data binding under Internet Explorer 4. It indicates the id of the data source object that supplies the data that is bound to the <param> elements associated with the applet.",
-					"deprecated": true
-				},
-				"height": {
-					"description": "This attribute specifies the height, in pixels, that the applet needs.",
-					"deprecated": true
-				},
-				"hspace": {
-					"description": "This attribute specifies additional horizontal space, in pixels, to be reserved on either side of the applet.",
-					"deprecated": true
-				},
-				"mayscript": {
-					"description": "In the Netscape implementation, this attribute allows access to an applet by programs in a scripting language embedded in the document.",
-					"deprecated": true
-				},
-				"name": {
-					"description": "This attribute assigns a name to the applet so that it can be identified by other resources; particularly scripts.",
-					"deprecated": true
-				},
-				"object": {
-					"description": "This attribute specifies the URL of a serialized representation of an applet.",
-					"deprecated": true
-				},
-				"src": {
-					"description": "As defined for Internet Explorer 4 and higher, this attribute specifies a URL for an associated file for the applet. The meaning and use is unclear and not part of the HTML standard.",
-					"deprecated": true
-				},
-				"vspace": {
-					"description": "This attribute specifies additional vertical space, in pixels, to be reserved above and below the applet.",
-					"deprecated": true
-				},
-				"width": {
-					"description": "This attribute specifies in pixels the width that the applet needs.",
-					"deprecated": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "area",
@@ -35599,18 +35491,6 @@
 				"href": {
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
 				},
-				"hreflang": {
-					"description": "Indicates the language of the linked resource. Allowed values are defined by RFC 5646: Tags for Identifying Languages (also known as BCP 47). Use this attribute only if the href attribute is present.",
-					"deprecated": true
-				},
-				"name": {
-					"description": "Define a names for the clickable area so that it can be scripted by older browsers.",
-					"deprecated": true
-				},
-				"nohref": {
-					"description": "Indicates that no hyperlink exists for the associated area. Note: The nohref attribute is not necessary, as omitting the href attribute is sufficient.",
-					"deprecated": true
-				},
 				"ping": {
 					"description": "Contains a space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking."
 				},
@@ -35629,10 +35509,6 @@
 				},
 				"target": {
 					"description": "A keyword or author-defined name of the browsing context to display the linked resource. The following keywords have special meanings: _self (default): Show the resource in the current browsing context. _blank: Show the resource in a new, unnamed browsing context. _parent: Show the resource in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the resource in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self. Use this attribute only if the href attribute is present. Note: Setting target=\"_blank\" on <area> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener. See browser compatibility for support status."
-				},
-				"type": {
-					"description": "Hint for the type of the referenced resource. Ignored by browsers.",
-					"deprecated": true
 				}
 			}
 		},
@@ -35814,7 +35690,7 @@
 			},
 			"attributes": {
 				"href": {
-					"description": "The base URL to be used throughout the document for relative URLs. Absolute and relative URLs are allowed."
+					"type": "BaseURL"
 				},
 				"target": {
 					"description": "A keyword or author-defined name of the default browsing context to show the results of navigation from <a>, <area>, or <form> elements without explicit target attributes. The following keywords have special meanings: _self (default): Show the result in the current browsing context. _blank: Show the result in a new, unnamed browsing context. _parent: Show the result in the parent browsing context of the current one, if the current page is inside a frame. If there is no parent, acts the same as _self. _top: Show the result in the topmost browsing context (the browsing context that is an ancestor of the current one and has no parent). If there is no parent, acts the same as _self."
@@ -35824,7 +35700,7 @@
 		{
 			"name": "basefont",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "CSS Fonts is a module of CSS that defines font-related properties and how font resources are loaded. It lets you define the style of a font, such as its family, size and weight, line height, and the glyph variants to use when multiple are available for a single character.",
+			"description": "The CSS fonts module defines font-related properties and how font resources are loaded. It lets you define the style of a font, such as its family, size and weight, and the glyph variants to use when multiple are available for a single character.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35901,7 +35777,7 @@
 		{
 			"name": "bgsound",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <bgsound> HTML element is deprecated. It sets up a sound file to play in the background while the page is used; use <audio> instead.",
+			"description": "The <audio> HTML element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35914,17 +35790,35 @@
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
-				"balance": {
-					"description": "This attribute defines a number between -10,000 and +10,000 that determines how the volume will be divided between the speakers."
+				"autoplay": {
+					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay."
+				},
+				"controls": {
+					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
+				},
+				"controlslist": {
+					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback.",
+					"experimental": true,
+					"nonStandard": true
+				},
+				"crossorigin": {
+					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
+				},
+				"disableremoteplayback": {
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. Note: In Safari, you can use x-webkit-airplay=\"deny\" as a fallback.",
+					"experimental": true
 				},
 				"loop": {
-					"description": "This attribute indicates the number of times a sound is to be played and either has a numeric value or the keyword infinite."
+					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
+				},
+				"muted": {
+					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
+				},
+				"preload": {
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g. length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
 				},
 				"src": {
-					"description": "This attribute specifies the URL of the sound file to be played, which must be one of the following types: .wav, .au, or .mid."
-				},
-				"volume": {
-					"description": "This attribute defines a number between -10,000 and 0 that determines the loudness of a page's background sound."
+					"description": "The URL of the audio to embed. This is subject to HTTP access controls. This is optional; you may instead use the <source> element within the audio block to specify the audio to embed."
 				}
 			}
 		},
@@ -35948,7 +35842,7 @@
 		{
 			"name": "blink",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <blink> HTML element is a non-standard element which causes the enclosed text to flash slowly.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -36260,7 +36154,7 @@
 					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), specifies how to encode the form data that is submitted. Possible values: application/x-www-form-urlencoded: The default if the attribute is not used. multipart/form-data: Used to submit <input> elements with their type attributes set to file. text/plain: Specified as a debugging aid; shouldn't be used for real form submission. If this attribute is specified, it overrides the enctype attribute of the button's form owner."
 				},
 				"formmethod": {
-					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. If specified, this attribute overrides the method attribute of the button's form owner."
+					"description": "If the button is a submit button (it's inside/associated with a <form> and doesn't have type=\"button\"), this attribute specifies the HTTP method used to submit the form. Possible values: post: The data from the form are included in the body of the HTTP request when sent to the server. Use when the form contains information that shouldn't be public, like login credentials. get: The form data are appended to the form's action URL, with a ? as a separator, and the resulting URL is sent to the server. Use this method when the form has no side effects, like search forms. dialog: This method is used to indicate that the button closes the dialog with which it is associated, and does not transmit the form data at all. If specified, this attribute overrides the method attribute of the button's form owner."
 				},
 				"formnovalidate": {
 					"description": "If the button is a submit button, this Boolean attribute specifies that the form is not to be validated when it is submitted. If this attribute is specified, it overrides the novalidate attribute of the button's form owner. This attribute is also available on <input type=\"image\"> and <input type=\"submit\"> elements."
@@ -36756,7 +36650,7 @@
 		{
 			"name": "dialog",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-			"description": "The <dialog> HTML element represents a dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
+			"description": "The <dialog> HTML element represents a modal or non-modal dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": [
@@ -37288,7 +37182,7 @@
 					}
 				},
 				"target": {
-					"type": "BrowsingContextNameOrKeyword"
+					"type": "NavigableTargetNameOrKeyword"
 				}
 			}
 		},
@@ -37367,7 +37261,7 @@
 		{
 			"name": "h1",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37394,7 +37288,7 @@
 		{
 			"name": "h2",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37421,7 +37315,7 @@
 		{
 			"name": "h3",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37448,7 +37342,7 @@
 		{
 			"name": "h4",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37475,7 +37369,7 @@
 		{
 			"name": "h5",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37502,7 +37396,7 @@
 		{
 			"name": "h6",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6",
-			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.",
+			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37833,7 +37727,7 @@
 					"deprecated": true
 				},
 				"name": {
-					"type": "BrowsingContextName"
+					"type": "NavigableTargetName"
 				},
 				"referrerpolicy": {
 					"description": "Indicates which referrer to send when fetching the frame's resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
@@ -38587,7 +38481,15 @@
 					"condition": ["[type='checkbox' i]", "[type='radio' i]"]
 				},
 				"dirname": {
-					"condition": [":not([type])", "[type='text' i]", "[type='search' i]"]
+					"condition": [
+						":not([type])",
+						"[type='text' i]",
+						"[type='search' i]",
+						"[type='hidden' i]",
+						"[type='tel' i]",
+						"[type='url' i]",
+						"[type='email' i]"
+					]
 				},
 				"disabled": {
 					"description": "A Boolean attribute which, if present, indicates that the user should not be able to interact with the input. Disabled inputs are typically rendered with a dimmer color or using some other form of indication that the field is not available for use. Specifically, disabled inputs do not receive the click event, and disabled inputs are not submitted with the form. Note: Although not required by the specification, Firefox will by default persist the dynamic disabled state of an <input> across page loads. Use the autocomplete attribute to control this feature."
@@ -38693,7 +38595,7 @@
 					"condition": ["[type='email' i]", "[type='file' i]"]
 				},
 				"name": {
-					"description": "A string specifying a name for the input control. This name is submitted along with the control's value when the form data is submitted. Consider the name a required attribute (even though it's not). If an input has no name specified, or name is empty, the input's value is not submitted with the form! (Disabled controls, unchecked radio buttons, unchecked checkboxes, and reset buttons are also not sent.) There are two special cases: _charset_ : If used as the name of an <input> element of type hidden, the input's value is automatically set by the user agent to the character encoding being used to submit the form. isindex: For historical reasons, the name isindex is not allowed. The name attribute creates a unique behavior for radio buttons. Only one radio button in a same-named group of radio buttons can be checked at a time. Selecting any radio button in that group automatically deselects any currently-selected radio button in the same group. The value of that one checked radio button is sent along with the name if the form is submitted, When tabbing into a series of same-named group of radio buttons, if one is checked, that one will receive focus. If they aren't grouped together in source order, if one of the group is checked, tabbing into the group starts when the first one in the group is encountered, skipping all those that aren't checked. In other words, if one is checked, tabbing skips the unchecked radio buttons in the group. If none are checked, the radio button group receives focus when the first button in the same name group is reached. Once one of the radio buttons in a group has focus, using the arrow keys will navigate through all the radio buttons of the same name, even if the radio buttons are not grouped together in the source order. When an input element is given a name, that name becomes a property of the owning form element's HTMLFormElement.elements property. If you have an input whose name is set to guest and another whose name is hat-size, the following code can be used: let form = document.querySelector(\"form\"); let guestName = form.elements.guest; let hatSize = form.elements[\"hat-size\"]; When this code has run, guestName will be the HTMLInputElement for the guest field, and hatSize the object for the hat-size field. Warning: Avoid giving form elements a name that corresponds to a built-in property of the form, since you would then override the predefined property or method with this reference to the corresponding input."
+					"description": "A string specifying a name for the input control. This name is submitted along with the control's value when the form data is submitted. Consider the name a required attribute (even though it's not). If an input has no name specified, or name is empty, the input's value is not submitted with the form! (Disabled controls, unchecked radio buttons, unchecked checkboxes, and reset buttons are also not sent.) There are two special cases: _charset_ : If used as the name of an <input> element of type hidden, the input's value is automatically set by the user agent to the character encoding being used to submit the form. isindex: For historical reasons, the name isindex is not allowed. The name attribute creates a unique behavior for radio buttons. Only one radio button in a same-named group of radio buttons can be checked at a time. Selecting any radio button in that group automatically deselects any currently-selected radio button in the same group. The value of that one checked radio button is sent along with the name if the form is submitted, When tabbing into a series of same-named group of radio buttons, if one is checked, that one will receive focus. If they aren't grouped together in source order, if one of the group is checked, tabbing into the group starts when the first one in the group is encountered, skipping all those that aren't checked. In other words, if one is checked, tabbing skips the unchecked radio buttons in the group. If none are checked, the radio button group receives focus when the first button in the same name group is reached. Once one of the radio buttons in a group has focus, using the arrow keys will navigate through all the radio buttons of the same name, even if the radio buttons are not grouped together in the source order. When an input element is given a name, that name becomes a property of the owning form element's HTMLFormElement.elements property. If you have an input whose name is set to guest and another whose name is hat-size, the following code can be used: jslet form = document.querySelector(\"form\"); let guestName = form.elements.guest; let hatSize = form.elements[\"hat-size\"]; When this code has run, guestName will be the HTMLInputElement for the guest field, and hatSize the object for the hat-size field. Warning: Avoid giving form elements a name that corresponds to a built-in property of the form, since you would then override the predefined property or method with this reference to the corresponding input."
 				},
 				"orient": {
 					"description": "Similar to the -moz-orient non-standard CSS property impacting the <progress> and <meter> elements, the orient attribute defines the orientation of the range slider. Values include horizontal, meaning the range is rendered horizontally, and vertical, where the range is rendered vertically.",
@@ -38944,7 +38846,7 @@
 		{
 			"name": "keygen",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <keygen> HTML element exists to facilitate generation of key material, and submission of the public key as part of an HTML form. This mechanism is designed for use with Web-based certificate management systems. It is expected that the <keygen> element will be used in an HTML form along with other information needed to construct a certificate request, and that the result of the process will be a signed certificate.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -38956,26 +38858,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"autofocus": {
-					"description": "This Boolean attribute lets you specify that the control should have input focus when the page loads, unless the user overrides it, for example by typing in a different control. Only one form element in a document can have the autofocus attribute, which is a Boolean."
-				},
-				"challenge": {
-					"description": "A challenge string that is submitted along with the public key. Defaults to an empty string if not specified."
-				},
-				"disabled": {
-					"description": "This Boolean attribute indicates that the form control is not available for interaction."
-				},
-				"form": {
-					"description": "The form element that this element is associated with (its form owner). The value of the attribute must be an id of a <form> element in the same document. If this attribute is not specified, this element must be a descendant of a <form> element. This attribute enables you to place <keygen> elements anywhere within a document, not just as descendants of their form elements."
-				},
-				"keytype": {
-					"description": "The type of key generated. The default value is RSA."
-				},
-				"name": {
-					"description": "The name of the control, which is submitted with the form data."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "label",
@@ -39136,8 +39019,13 @@
 				},
 				"blocking": {
 					"type": {
-						"enum": ["render"]
-					}
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
+					},
+					"condition": "[rel~='stylesheet' i]"
 				},
 				"charset": {
 					"description": "This attribute defines the character encoding of the linked resource. The value is a space- and/or comma-delimited list of character sets as defined in RFC 2045. The default value is iso-8859-1. Note: To produce the same effect as this obsolete attribute, use the Content-Type HTTP header on the linked resource.",
@@ -39187,10 +39075,6 @@
 					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
 					"deprecated": true,
 					"nonStandard": true
-				},
-				"prefetch": {
-					"description": "Identifies a resource that might be required by the next navigation and that the user agent should retrieve it. This allows the user agent to respond faster when the resource is requested in the future.",
-					"experimental": true
 				},
 				"referrerpolicy": {
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins."
@@ -39650,6 +39534,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"form": {
+					"description": "This optional attribute is used to explicitly set a <form> owner for the <meter> element. If omitted, the <meter> is associated with its ancestor <form> element or the form association set by the form attribute on another ancestor element, such as on a <fieldset>, if any. If included, the value must be the id of a <form> in the same tree."
+				},
 				"high": {
 					"type": "Number"
 				},
@@ -39867,7 +39754,7 @@
 					"description": "The height of the displayed resource, in CSS pixels. — (Absolute values only. NO percentages)"
 				},
 				"name": {
-					"type": "BrowsingContextName"
+					"type": "NavigableTargetName"
 				},
 				"standby": {
 					"description": "A message that the browser can show while loading the object's implementation and data.",
@@ -40030,7 +39917,7 @@
 				"permittedRoles": false,
 				"properties": false,
 				"conditions": {
-					"datalist > option": {
+					":is(select, select > option, datalist) > option": {
 						"implicitRole": "option",
 						"properties": {
 							"global": true,
@@ -40598,7 +40485,11 @@
 				},
 				"blocking": {
 					"type": {
-						"enum": ["render"]
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
 					}
 				},
 				"charset": {
@@ -40652,8 +40543,8 @@
 		{
 			"name": "search",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
-			"description": "",
-			"categories": [],
+			"description": "The <search> HTML element is a container representing the parts of the document or application with form controls or other content related to performing a search or filtering operation. The <search> element semantically identifies the purpose of the element's contents as having search or filtering capabilities. The search or filtering functionality can be for the website or application, the current web page or document, or the entire Internet or subsection thereof.",
+			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
 					{
@@ -40907,8 +40798,7 @@
 					"condition": "picture > source"
 				},
 				"media": {
-					"type": "<media-query-list>",
-					"condition": "picture > source"
+					"type": "<media-query-list>"
 				},
 				"sizes": {
 					"condition": "picture > source"
@@ -40931,7 +40821,7 @@
 		{
 			"name": "spacer",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <spacer> HTML element is an obsolete HTML element which allowed insertion of empty spaces on pages. It was devised by Netscape to accomplish the same effect as a single-pixel layout image, which was something web designers used to use to add white spaces to web pages without actually using an image. However, <spacer> is no longer supported by any major browser and the same effects can now be achieved using simple CSS.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40943,28 +40833,12 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"align": {
-					"description": "This attribute determines alignment of spacer. Possible values are left, right and center."
-				},
-				"height": {
-					"description": "This attribute can be used for defining height of spacer in pixels when type is block."
-				},
-				"size": {
-					"description": "This attribute can be used for defining size of spacer in pixels when type is horizontal or vertical."
-				},
-				"type": {
-					"description": "This attribute determines type of spacer. Possible values are horizontal, vertical and block."
-				},
-				"width": {
-					"description": "This attribute can be used for defining width of spacer in pixels when type is block."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "span",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
-			"description": "The <span> HTML element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline element.",
+			"description": "The <span> HTML element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline-level element.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": [
@@ -41060,7 +40934,11 @@
 			"attributes": {
 				"blocking": {
 					"type": {
-						"enum": ["render"]
+						"token": {
+							"enum": ["render"]
+						},
+						"separator": "space",
+						"unique": true
 					}
 				},
 				"media": {
@@ -41238,7 +41116,7 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute indicates how the table must be aligned inside the containing document. It may have the following values: left: the table is displayed on the left side of the document; center: the table is displayed in the center of the document; right: the table is displayed on the right side of the document. Set margin-left and margin-right to auto or margin to 0 auto to achieve an effect that is similar to the align attribute.",
+					"description": "This enumerated attribute indicates how the table must be aligned inside the containing document. It may have the following values: left: the table is displayed on the left side of the document; center: the table is displayed in the center of the document; right: the table is displayed on the right side of the document. Set margin-left and margin-right to achieve an effect that is similar to the align attribute: left: margin-right: auto; margin-left: 0; center: margin-right: auto; margin-left: auto; right: margin-right: 0; margin-left: auto;",
 					"deprecated": true
 				},
 				"bgcolor": {
@@ -41482,6 +41360,9 @@
 					},
 					"defaultValue": "20"
 				},
+				"dirname": {
+					"description": "This attribute is used to indicate the text directionality of the element contents similar to the dirname attribute of the <input> element. For more information, see the dirname attribute."
+				},
 				"disabled": {
 					"description": "This Boolean attribute indicates that the user cannot interact with the control. If this attribute is not specified, the control inherits its setting from the containing element, for example <fieldset>; if there is no containing element when the disabled attribute is set, the control is enabled."
 				},
@@ -41489,10 +41370,10 @@
 					"description": "The form element that the <textarea> element is associated with (its \"form owner\"). The value of the attribute must be the id of a form element in the same document. If this attribute is not specified, the <textarea> element must be a descendant of a form element. This attribute enables you to place <textarea> elements anywhere within a document, not just as descendants of form elements."
 				},
 				"maxlength": {
-					"description": "The maximum number of characters (UTF-16 code units) that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters."
+					"description": "The maximum string length (measured in UTF-16 code units) that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters."
 				},
 				"minlength": {
-					"description": "The minimum number of characters (UTF-16 code units) required that the user should enter."
+					"description": "The minimum string length (measured in UTF-16 code units) required that the user should enter."
 				},
 				"name": {
 					"description": "The name of the control."
@@ -42310,92 +42191,6 @@
 			}
 		},
 		{
-			"name": "svg:altGlyph",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyph> SVG element allows sophisticated selection of the glyphs used to render its child character data.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {
-				"dx": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"dy": {
-					"description": "This attribute indicates a shift along the x-axis on the position of the element. Value type: <list-of-coordinates> ; Default value: Relative y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"format": {
-					"description": "The format of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"glyphRef": {
-					"description": "The glyph identifier, the format of which is dependent on the format defined by the format attribute of the given font. Value type: <string> ; Default value: none; Animatable: no",
-					"deprecated": true
-				},
-				"rotate": {
-					"description": "This attribute defines the supplemental rotation that will be applied to the element. Value type: <list-of-numbers> ; Default value: none; Animatable: yes (non-additive)",
-					"deprecated": true
-				},
-				"x": {
-					"description": "This attribute defines the corresponding absolute x-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute x-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				},
-				"xlink:href": {
-					"description": "An <iri> reference either to a <glyph> element in an SVG document or to an <altGlyphDef> element. If the reference is to a <glyph> element and that glyph is available, then that glyph is rendered instead of the character(s) that are inside of the <altGlyph> element. If the reference is to an <altGlyphDef> element, then if an appropriate set of alternate glyphs is located from processing the <altGlyphDef> element, then those alternate glyphs are rendered instead of the character(s) that are inside of the <altGlyph> element. Value type: <iri> ; Default value: none; Animatable: no"
-				},
-				"y": {
-					"description": "This attribute defines the corresponding absolute y-coordinates for rendering the element. Value type: <list-of-coordinates> ; Default value: Absolute y-coordinate of ancestor <text> or <tspan>; Animatable: yes",
-					"deprecated": true
-				}
-			}
-		},
-		{
-			"name": "svg:altGlyphDef",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphDef> SVG element defines a substitution representation for glyphs.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:altGlyphItem",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <altGlyphItem> element provides a set of candidates for glyph substitution by the <altGlyph> element.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
 			"name": "svg:animate",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
@@ -43020,7 +42815,7 @@
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-			"description": "The <discard> SVG element allows authors to specify the time at which particular elements are to be discarded, thereby reducing the resources required by an SVG user agent. This is particularly useful to help SVG viewers conserve memory while displaying long-running documents.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -46372,7 +46167,8 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes"
+					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"deprecated": true
 				},
 				"y1": {
 					"type": ["<svg-length>", "<percentage>"],
@@ -47442,7 +47238,8 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes"
+					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"deprecated": true
 				}
 			}
 		},

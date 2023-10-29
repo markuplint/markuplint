@@ -20,6 +20,7 @@ Options
 	--allow-warnings                       Return status code 0 even if there are warnings.
 	--allow-empty-input                    Return status code 1 even if there are no input files.
 	--verbose                              Output with detailed information.
+	--include-node-modules                 Include files in node_modules directory. Default: false.
 
 	--init                                 Initialize settings interactively.
 	--create-rule                          Add the scaffold of a custom rule.
@@ -34,10 +35,11 @@ Examples
 `;
 
 export const cli = meow(help, {
+	importMeta: import.meta,
 	flags: {
 		config: {
 			type: 'string',
-			alias: 'c',
+			shortFlag: 'c',
 		},
 		fix: {
 			type: 'boolean',
@@ -45,7 +47,7 @@ export const cli = meow(help, {
 		},
 		format: {
 			type: 'string',
-			alias: 'f',
+			shortFlag: 'f',
 		},
 		searchConfig: {
 			type: 'boolean',
@@ -68,7 +70,7 @@ export const cli = meow(help, {
 		},
 		problemOnly: {
 			type: 'boolean',
-			alias: 'p',
+			shortFlag: 'p',
 			default: false,
 		},
 		allowWarnings: {
@@ -94,6 +96,10 @@ export const cli = meow(help, {
 		},
 		search: {
 			type: 'string',
+		},
+		includeNodeModules: {
+			type: 'boolean',
+			default: false,
 		},
 	},
 });

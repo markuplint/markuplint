@@ -1,9 +1,9 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types.js';
 
 import { getContentModel } from '@markuplint/ml-spec';
 
-import { order } from './order';
-import { Collection, getChildNodesWithoutWhitespaces, isTransparent, matches } from './utils';
+import { order } from './order.js';
+import { Collection, getChildNodesWithoutWhitespaces, isTransparent, matches } from './utils.js';
 
 export const transparentMode = new Map<ChildNode, true>();
 
@@ -51,7 +51,7 @@ export function representTransparentNodes(
 		let unmatched: ChildNode[];
 
 		if (noTransparentModels.length > 0) {
-			const result = order(noTransparentModels, collection.unmatched, specs, options, Infinity);
+			const result = order(noTransparentModels, collection.unmatched, specs, options, Number.POSITIVE_INFINITY);
 			unmatched = result.unmatched;
 		} else {
 			unmatched = collection.unmatched;

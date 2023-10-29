@@ -5,20 +5,18 @@ export function nodeListToDebugMaps(
 	nodeList: MLASTNode[],
 	withAttr = false,
 ) {
-	return nodeList
-		.map(n => {
-			const r: string[] = [];
-			if (!n.isGhost) {
-				r.push(tokenDebug(n));
-				if (withAttr && 'attributes' in n) {
-					r.push(...attributesToDebugMaps(n.attributes).flat());
-				}
-			} else {
-				r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+	return nodeList.flatMap(n => {
+		const r: string[] = [];
+		if (n.isGhost) {
+			r.push(`[N/A]>[N/A](N/A)${n.nodeName}: ${visibleWhiteSpace(n.raw)}`);
+		} else {
+			r.push(tokenDebug(n));
+			if (withAttr && 'attributes' in n) {
+				r.push(...attributesToDebugMaps(n.attributes).flat());
 			}
-			return r;
-		})
-		.flat();
+		}
+		return r;
+	});
 }
 
 export function attributesToDebugMaps(
@@ -33,16 +31,18 @@ export function attributesToDebugMaps(
 			}),
 		];
 		if (n.type === 'html-attr') {
-			r.push(`  ${tokenDebug(n.spacesBeforeName, 'bN')}`);
-			r.push(`  ${tokenDebug(n.name, 'name')}`);
-			r.push(`  ${tokenDebug(n.spacesBeforeEqual, 'bE')}`);
-			r.push(`  ${tokenDebug(n.equal, 'equal')}`);
-			r.push(`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`);
-			r.push(`  ${tokenDebug(n.startQuote, 'sQ')}`);
-			r.push(`  ${tokenDebug(n.value, 'value')}`);
-			r.push(`  ${tokenDebug(n.endQuote, 'eQ')}`);
-			r.push(`  isDirective: ${!!n.isDirective}`);
-			r.push(`  isDynamicValue: ${!!n.isDynamicValue}`);
+			r.push(
+				`  ${tokenDebug(n.spacesBeforeName, 'bN')}`,
+				`  ${tokenDebug(n.name, 'name')}`,
+				`  ${tokenDebug(n.spacesBeforeEqual, 'bE')}`,
+				`  ${tokenDebug(n.equal, 'equal')}`,
+				`  ${tokenDebug(n.spacesAfterEqual, 'aE')}`,
+				`  ${tokenDebug(n.startQuote, 'sQ')}`,
+				`  ${tokenDebug(n.value, 'value')}`,
+				`  ${tokenDebug(n.endQuote, 'eQ')}`,
+				`  isDirective: ${!!n.isDirective}`,
+				`  isDynamicValue: ${!!n.isDynamicValue}`,
+			);
 		}
 		if (n.potentialName != null) {
 			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);
@@ -62,5 +62,5 @@ function tokenDebug<N extends MLToken>(n: N, type = '') {
 }
 
 function visibleWhiteSpace(chars: string) {
-	return chars.replace(/\n/g, '⏎').replace(/\t/g, '→').replace(/\s/g, '␣');
+	return chars.replaceAll('\n', '⏎').replaceAll('\t', '→').replaceAll(/\s/g, '␣');
 }

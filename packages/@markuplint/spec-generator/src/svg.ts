@@ -1,4 +1,4 @@
-import fetch from './fetch.js';
+import { fetch } from './fetch.js';
 import { getThisOutline } from './utils.js';
 
 export async function getSVGElementList() {
@@ -14,6 +14,6 @@ export async function getSVGElementList() {
 	const deprecatedList = $deprecatedIndex
 		.find('div > a')
 		.toArray()
-		.map(el => 'svg_' + $(el).text().trim().replace(/<|>/g, ''));
+		.map(el => 'svg_' + $(el).text().trim().replaceAll(/<|>/g, ''));
 	return deprecatedList;
 }

@@ -1,32 +1,32 @@
-import type { JSXNode } from './jsx';
+import type { JSXNode } from './jsx.js';
 import type { MLASTNode, Parse } from '@markuplint/ml-ast';
 
 import { flattenNodes, ParserError, walk } from '@markuplint/parser-utils';
 
-import jsxParser from './jsx';
-import { traverse } from './traverse';
+import { jsxParser } from './jsx.js';
+import { traverse } from './traverse.js';
 
 export const parse: Parse = (rawCode, options) => {
 	let ast: JSXNode[];
 	try {
 		ast = jsxParser(rawCode);
-	} catch (err) {
-		if (err instanceof Error && 'lineNumber' in err && 'column' in err) {
+	} catch (error) {
+		if (error instanceof Error && 'lineNumber' in error && 'column' in error) {
 			throw new ParserError(
 				// @ts-ignore
-				err.message,
+				error.message,
 				{
 					// @ts-ignore
-					line: err.lineNumber,
+					line: error.lineNumber,
 					// @ts-ignore
-					col: err.column,
+					col: error.column,
 				},
 			);
 		}
 		return {
 			nodeList: [],
 			isFragment: true,
-			unknownParseError: err instanceof Error ? err.message : new Error(`${err}`).message,
+			unknownParseError: error instanceof Error ? error.message : new Error(`${error}`).message,
 		};
 	}
 

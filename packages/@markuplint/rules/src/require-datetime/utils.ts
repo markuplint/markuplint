@@ -1,4 +1,4 @@
-import type { DateTime, DateTimeData, DateTimeKey, Lang } from './types';
+import type { DateTime, DateTimeData, DateTimeKey, Lang } from './types.js';
 
 import * as chrono from 'chrono-node';
 
@@ -128,7 +128,7 @@ function parseTryMultipleLangs(content: string, langs: readonly Lang[], base?: R
 		const results = chrono[lang].casual.parse(content, base);
 
 		// Is not multiple datetime contents
-		if (results.length < 1) {
+		if (results.length === 0) {
 			continue;
 		}
 

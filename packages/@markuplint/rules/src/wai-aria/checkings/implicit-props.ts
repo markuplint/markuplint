@@ -1,8 +1,8 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
-import { isValidAttr } from '../../helpers';
+import { isValidAttr } from '../../helpers.js';
 
 export const checkingImplicitProps: AttrChecker<
 	boolean,
@@ -71,17 +71,19 @@ export const checkingImplicitProps: AttrChecker<
 						t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 					),
 				};
-			} else if (value === 'true') {
-				if (!equivalentHtmlAttr.isNotStrictEquivalent && htmlAttrSpec?.type === 'Boolean') {
-					return {
-						scope: attr,
-						message: t(
-							'{0} contradicts {1}',
-							t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
-							t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
-						),
-					};
-				}
+			} else if (
+				value === 'true' &&
+				!equivalentHtmlAttr.isNotStrictEquivalent &&
+				htmlAttrSpec?.type === 'Boolean'
+			) {
+				return {
+					scope: attr,
+					message: t(
+						'{0} contradicts {1}',
+						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
+						t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+					),
+				};
 			}
 		}
 	};

@@ -25,7 +25,7 @@
 $ npx markuplint target.html
 ```
 
-Supported for _Node.js_ `v14.6.0` or later.
+Supported for _Node.js_ `v18.12.0` or later.
 
 ## Usage
 
@@ -77,11 +77,13 @@ Options
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
+	--allow-warnings                       Return status code 0 even if there are warnings.
 	--no-import-preset-rules               No import preset rules.
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
 	--verbose                              Output with detailed information.
+	--include-node-modules                 Include files in node_modules directory. Default: false.
 
 	--init                                 Initialize settings interactively.
 	--create-rule                          Add the scaffold of a custom rule.
@@ -120,8 +122,10 @@ Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 ### Personal Supporters
 
 [<img width="36" src="https://avatars.githubusercontent.com/u/91733847" alt="Tokitake" />](https://github.com/Tokitake)
-[<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="yamanoku" />](https://github.com/yamanoku)
+[<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="Okuto Oyama" />](https://github.com/yamanoku)
 [<img width="36" src="https://avatars.githubusercontent.com/u/6581173" alt="miita" />](https://github.com/mikimhk)
+[<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
+[<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
 
 ## Thanks
 

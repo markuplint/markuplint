@@ -1,0 +1,3 @@
+{
+	"extends": ["./404.json", "./f.json"]
+}

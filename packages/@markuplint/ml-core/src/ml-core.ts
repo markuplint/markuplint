@@ -1,14 +1,14 @@
-import type { MLRule } from './ml-rule';
-import type Ruleset from './ruleset';
-import type { MLFabric, MLSchema } from './types';
+import type { MLRule } from './ml-rule/index.js';
+import type { Ruleset } from './ruleset/index.js';
+import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
-import { log, enableDebug } from './debug';
-import { Document } from './ml-dom';
+import { log, enableDebug } from './debug.js';
+import { Document } from './ml-dom/index.js';
 
 const resultLog = log.extend('result');
 
@@ -30,6 +30,7 @@ export class MLCore {
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
 	#sourceCode: string;
+	#configErrors: Readonly<Error>[];
 
 	constructor({
 		parser,
@@ -42,6 +43,7 @@ export class MLCore {
 		pretenders,
 		filename,
 		debug,
+		configErrors,
 	}: MLCoreParams) {
 		if (debug) {
 			enableDebug();
@@ -58,8 +60,9 @@ export class MLCore {
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#filename = filename;
-		this.#rules = rules.slice();
-		this.#pretenders = pretenders.slice();
+		this.#rules = [...rules];
+		this.#pretenders = [...pretenders];
+		this.#configErrors = [...(configErrors ?? [])];
 
 		this._parse();
 		this._createDocument();
@@ -75,7 +78,7 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	update({ parser, ruleset, rules, locale, schemas, parserOptions }: Partial<MLFabric>) {
+	update({ parser, ruleset, rules, locale, schemas, parserOptions, configErrors }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#ruleset = {
 			rules: ruleset?.rules ?? this.#ruleset.rules,
@@ -85,6 +88,8 @@ export class MLCore {
 		this.#rules = rules?.slice() ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
+		this.#configErrors = [...(configErrors ?? [])];
+
 		if (
 			parserOptions &&
 			(parserOptions.ignoreFrontMatter !== this.#parserOptions.ignoreFrontMatter ||
@@ -111,6 +116,17 @@ export class MLCore {
 			return violations;
 		}
 
+		for (const error of this.#configErrors) {
+			violations.push({
+				ruleId: 'config-error',
+				severity: 'warning',
+				message: error.message,
+				col: 1,
+				line: 1,
+				raw: '',
+			});
+		}
+
 		for (const rule of this.#rules) {
 			const ruleInfo = rule.getRuleInfo(this.#ruleset, rule.name);
 			if (ruleInfo.disabled && ruleInfo.nodeRules.length === 0 && ruleInfo.childNodeRules.length === 0) {
@@ -118,11 +134,11 @@ export class MLCore {
 			}
 
 			log('%s Rule: verify', rule.name);
-			const results = await rule.verify(this.#document, this.#locale, fix).catch(e => {
-				if (e instanceof ParserError) {
-					return e;
+			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
+				if (error instanceof ParserError) {
+					return error;
 				}
-				throw e;
+				throw error;
 			});
 
 			if (results instanceof ParserError) {
@@ -141,6 +157,7 @@ export class MLCore {
 			log('%s Rule: verify end', rule.name);
 		}
 		if (resultLog.enabled) {
+			// eslint-disable-next-line unicorn/no-array-reduce
 			const { e, w, i } = violations.reduce(
 				(c, v) => {
 					if (v.severity === 'error') c.e += 1;
@@ -169,11 +186,11 @@ export class MLCore {
 				booleanish: this.#parser.booleanish,
 				pretenders: this.#pretenders,
 			});
-		} catch (err) {
-			if (err instanceof ParserError) {
-				this.#document = err;
+		} catch (error) {
+			if (error instanceof ParserError) {
+				this.#document = error;
 			} else {
-				throw err;
+				throw error;
 			}
 		}
 	}
@@ -181,13 +198,13 @@ export class MLCore {
 	private _parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
-		} catch (err) {
-			log('Caught the parse error: %O', err);
+		} catch (error) {
+			log('Caught the parse error: %O', error);
 			this.#ast = null;
-			if (err instanceof ParserError) {
-				this.#document = err;
+			if (error instanceof ParserError) {
+				this.#document = error;
 			} else {
-				throw err;
+				throw error;
 			}
 		}
 	}

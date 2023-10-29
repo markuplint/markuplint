@@ -1,15 +1,16 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
-import { ariaSpecs } from '../specs/aria-specs';
-import { isPresentational } from '../specs/is-presentational';
+import { ariaSpecs } from '../specs/aria-specs.js';
+import { isPresentational } from '../specs/is-presentational.js';
 
-import { getAttrSpecs } from './get-attr-specs';
-import { getExplicitRole } from './get-explicit-role';
-import { getImplicitRole } from './get-implicit-role';
-import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
-import { isRequiredOwnedElement } from './has-required-owned-elements';
-import { matchesContextRole } from './matches-context-role';
-import { mayBeFocusable } from './may-be-focusable';
+import { getAccname } from './accname-computation.js';
+import { getAttrSpecs } from './get-attr-specs.js';
+import { getExplicitRole } from './get-explicit-role.js';
+import { getImplicitRole } from './get-implicit-role.js';
+import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
+import { isRequiredOwnedElement } from './has-required-owned-elements.js';
+import { matchesContextRole } from './matches-context-role.js';
+import { mayBeFocusable } from './may-be-focusable.js';
 
 export function getComputedRole(
 	specs: MLMLSpec,
@@ -92,6 +93,54 @@ export function getComputedRole(
 		}
 	}
 
+	/**
+	 * SVG: Including Elements in the Accessibility Tree
+	 *
+	 * > Many SVG elements—although rendered to the screen—
+	 * > do not have an intrinsic semantic meaning. Instead,
+	 * > they represent components of the visual presentation of the document.
+	 * > To simplify the accessible representation of the document,
+	 * > these purely presentational elements should normally be omitted
+	 * > from the accessibility tree, unless the author explicitly provides semantic content.
+	 * >
+	 * > However, any rendered SVG element may have semantic meaning.
+	 * > Authors indicate the significance of the element
+	 * > by including alternative text content or WAI-ARIA attributes.
+	 * > This section defines the rules for including normally-omitted elements
+	 * > in the accessibility tree.
+	 * >
+	 * > The following graphical and container elements
+	 * > in the SVG namespace SHOULD NOT be included in the accessibility tree,
+	 * > except as described in this section:
+	 * >
+	 * > - shape elements (circle, ellipse, line, path, polygon, polyline, rect)
+	 * > - the use element
+	 * > - the grouping (g) element
+	 * > - the image element
+	 * > - the mesh element
+	 * > - text formatting elements (textPath, tspan)
+	 * > - the foreignObject element
+	 *
+	 * @see https://www.w3.org/TR/svg-aam-1.0/#include_elements
+	 */
+	if (
+		// It doesn't been specified a valid explicit role.
+		(explicitRole.role === null || explicitRole.errorType != null) &&
+		// It is an SVG element.
+		el.namespaceURI === 'http://www.w3.org/2000/svg'
+	) {
+		const accname =
+			getAccname(el).trim() ||
+			[...el.children].find(child => ['title', 'desc'].includes(child.localName))?.textContent?.trim();
+
+		if (!accname) {
+			return {
+				el,
+				role: null,
+			};
+		}
+	}
+
 	if (computedRole.role && !isPresentational(computedRole.role.name)) {
 		return computedRole;
 	}
@@ -150,20 +199,20 @@ export function getComputedRole(
 	 */
 	if (explicitRole.role) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-		if (nonPresentationalAncestor.role && nonPresentationalAncestor.role?.requiredOwnedElements.length > 0) {
-			if (
-				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
-					// const ancestor = nonPresentationalAncestor.el;
-					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
-					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
-					return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
-				})
-			) {
-				return {
-					...implicitRole,
-					errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
-				};
-			}
+		if (
+			nonPresentationalAncestor.role &&
+			nonPresentationalAncestor.role?.requiredOwnedElements.length > 0 &&
+			nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+				// const ancestor = nonPresentationalAncestor.el;
+				// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
+				// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
+				return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
+			})
+		) {
+			return {
+				...implicitRole,
+				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 
@@ -178,7 +227,7 @@ export function getComputedRole(
 	 * > and an explicit non-presentational role is applied.
 	 */
 	const { props } = ariaSpecs(specs, version);
-	for (const attr of Array.from(el.attributes)) {
+	for (const attr of el.attributes) {
 		if (props.find(p => p.name === attr.name)?.isGlobal) {
 			return {
 				...implicitRole,

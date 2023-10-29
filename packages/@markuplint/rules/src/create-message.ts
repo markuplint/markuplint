@@ -32,7 +32,7 @@ export function createMessageValueExpected(
 	const expected = createExpectedObject(tokenType, matches, t);
 
 	const message = [listDescriptionPart, __createMessageValueExpected(t, target, expected, matches)]
-		.filter(s => s)
+		.filter(Boolean)
 		.join(t('. '));
 
 	return message;
@@ -42,13 +42,14 @@ export function __createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
 	expected: string | null,
-	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra'>,
+	matches: Pick<UnmatchedResult, 'partName' | 'reason' | 'raw' | 'candidate' | 'ref' | 'extra' | 'fallbackTo'>,
 ) {
 	let target = baseTarget;
 	let reasonPart: string | undefined;
 	let expectPart: string | undefined;
 	let unnecessaryPart: string | undefined;
 	let candidatePart: string | undefined;
+	let fallbackToPart: string | undefined;
 	let expectOrNeed: 'expects' | 'needs' = 'expects';
 
 	if (matches.partName) {
@@ -158,10 +159,10 @@ export function __createMessageValueExpected(
 						let expectedDigits: string | null = null;
 						if (lte != null && gte === lte) {
 							expectedDigits = t('{0} digits', gte);
-						} else if (lte != null) {
-							expectedDigits = t('{0} to {1} digits', gte, lte);
-						} else {
+						} else if (lte == null) {
 							expectedDigits = t('{0} or more digits', gte);
+						} else {
+							expectedDigits = t('{0} to {1} digits', gte, lte);
 						}
 						if (!expected) {
 							expected = expectedDigits;
@@ -207,7 +208,13 @@ export function __createMessageValueExpected(
 		candidatePart = t('Did you mean "{0*}"?', matches.candidate);
 	}
 
-	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart].filter(s => s).join(t('. '));
+	if (matches.fallbackTo) {
+		fallbackToPart = t('The user agent will automatically use "{0*}" instead', matches.fallbackTo);
+	}
+
+	let message = [reasonPart, unnecessaryPart, expectPart, candidatePart, fallbackToPart]
+		.filter(Boolean)
+		.join(t('. '));
 
 	if (matches.ref) {
 		message += ` (${matches.ref})`;
@@ -251,19 +258,24 @@ function createExpectedObject(
 
 function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType, List>>) {
 	switch (expect.type) {
-		case 'common':
+		case 'common': {
 			return expect.value;
-		case 'const':
+		}
+		case 'const': {
 			return expect.value ? `%${expect.value}%` : '';
-		case 'format':
+		}
+		case 'format': {
 			return t('the {0} format', expect.value);
-		case 'regexp':
+		}
+		case 'regexp': {
 			return t('{0} ({1})', 'regular expression', expect.value);
-		case 'syntax':
+		}
+		case 'syntax': {
 			if (isKeyword(type) && type[0] === '<') {
 				return t('the CSS Syntax "{0}"', expect.value);
 			}
 			return t('{0} syntax', expect.value);
+		}
 	}
 }
 

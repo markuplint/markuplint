@@ -1,18 +1,23 @@
 {
 	"name": "markuplint",
-	"version": "3.10.0",
+	"version": "4.0.0-alpha.5",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"private": false,
 	"repository": "git@github.com:markuplint/markuplint.git",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
 	"typedoc": {
 		"entryPoint": "./src/index.ts"
 	},
 	"bin": {
-		"markuplint": "bin/markuplint"
+		"markuplint": "./bin/markuplint.mjs"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -20,38 +25,35 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/create-rule-helper": "3.10.0",
-		"@markuplint/file-resolver": "3.10.0",
-		"@markuplint/html-parser": "3.8.0",
-		"@markuplint/html-spec": "3.9.0",
-		"@markuplint/i18n": "3.8.0",
-		"@markuplint/ml-ast": "3.1.0",
-		"@markuplint/ml-config": "3.9.0",
-		"@markuplint/ml-core": "3.10.0",
-		"@markuplint/ml-spec": "3.9.0",
-		"@markuplint/rules": "3.10.0",
-		"@markuplint/shared": "3.6.0",
-		"@types/cli-color": "^2.0.2",
-		"@types/debug": "^4.1.7",
-		"@types/has-yarn": "^1.0.1",
-		"@types/meow": "^6.0.0",
-		"@types/uuid": "^9.0.1",
+		"@markuplint/create-rule-helper": "4.0.0-alpha.5",
+		"@markuplint/file-resolver": "4.0.0-alpha.5",
+		"@markuplint/html-parser": "4.0.0-alpha.5",
+		"@markuplint/html-spec": "4.0.0-alpha.5",
+		"@markuplint/i18n": "4.0.0-alpha.5",
+		"@markuplint/ml-ast": "4.0.0-alpha.5",
+		"@markuplint/ml-config": "4.0.0-alpha.5",
+		"@markuplint/ml-core": "4.0.0-alpha.5",
+		"@markuplint/ml-spec": "4.0.0-alpha.5",
+		"@markuplint/rules": "4.0.0-alpha.5",
+		"@markuplint/shared": "4.0.0-alpha.5",
+		"@types/cli-color": "^2.0.4",
+		"@types/debug": "^4.1.10",
+		"@types/uuid": "^9.0.6",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
 		"detect-installed": "^2.0.4",
 		"eastasianwidth": "^0.2.0",
-		"enquirer": "^2.3.6",
-		"get-stdin": "8",
+		"enquirer": "^2.4.1",
+		"get-stdin": "^9.0.0",
 		"gray-matter": "^4.0.3",
-		"has-yarn": "2",
-		"meow": "9",
-		"node-fetch": "2",
-		"os-locale": "5",
-		"strict-event-emitter": "^0.5.0",
-		"strip-ansi": "6",
-		"tslib": "^2.5.0",
-		"type-fest": "^3.10.0",
-		"uuid": "^9.0.0"
+		"has-yarn": "^3.0.0",
+		"meow": "^12.1.1",
+		"node-fetch": "^3.3.2",
+		"os-locale": "^6.0.2",
+		"strict-event-emitter": "^0.5.1",
+		"strip-ansi": "^7.1.0",
+		"type-fest": "^4.5.0",
+		"uuid": "^9.0.1"
 	}
 }

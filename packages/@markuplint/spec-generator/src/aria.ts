@@ -10,7 +10,7 @@ import type {
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import fetch from './fetch.js';
+import { fetch } from './fetch.js';
 import { arrayUnique, nameCompare } from './utils.js';
 
 export async function getAria() {
@@ -91,7 +91,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const description = $el
 			.find('.role-description p')
 			.toArray()
-			.map(p => $(p).text().trim().replace(/\s+/g, ' ').replace(/\t+/g, ''))
+			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
 		const $features = $el.find('.role-features tr');
 		const generalization = $features
@@ -114,8 +114,8 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(el => {
 				const text = $(el).text().trim();
-				if (text.match(/owned\s+by|with\s+parent/i)) {
-					return text.replace(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gim, '$2 > $1');
+				if (/owned\s+by|with\s+parent/i.test(text)) {
+					return text.replaceAll(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gi, '$2 > $1');
 				}
 				return text;
 			});
@@ -125,25 +125,16 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				$(el)
 					.text()
 					.trim()
-					.replace(/\s+(owning|→|with\s+child)\s+/gi, ' > '),
+					.replaceAll(/\s+(?:owning|→|with\s+child)\s+/gi, ' > '),
 			);
-		const accessibleNameRequired = !!$features.find('.role-namerequired').text().match(/true/i);
-		const accessibleNameFromAuthor = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/author/i);
-		const accessibleNameFromContent = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/content/i);
-		const accessibleNameProhibited = !!$features
-			.find('.role-namefrom')
-			.text()
-			.match(/prohibited/i);
+		const accessibleNameRequired = !!/true/i.test($features.find('.role-namerequired').text());
+		const accessibleNameFromAuthor = !!/author/i.test($features.find('.role-namefrom').text());
+		const accessibleNameFromContent = !!/content/i.test($features.find('.role-namefrom').text());
+		const accessibleNameProhibited = !!/prohibited/i.test($features.find('.role-namefrom').text());
 		const $childrenPresentational = $features.find('.role-childpresentational').text();
-		const childrenPresentational = $childrenPresentational.match(/true/i)
+		const childrenPresentational = /true/i.test($childrenPresentational)
 			? true
-			: $childrenPresentational.match(/false/i)
+			: /false/i.test($childrenPresentational)
 			? false
 			: undefined;
 		const ownedProperties = arrayUnique(
@@ -171,14 +162,26 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	});
 
 	// the "none" role is synonym
-	const presentationRole = roles.find(role => role.name === 'presentation');
-	if (presentationRole) {
-		const noneRoleIndex = roles.findIndex(role => role.name === 'none');
-		roles[noneRoleIndex] = {
-			...presentationRole,
-			name: 'none',
-			description: roles[noneRoleIndex]?.description,
-		};
+	if (version === '1.1' || version === '1.2') {
+		const presentationRole = roles.find(role => role.name === 'presentation');
+		if (presentationRole) {
+			const noneRoleIndex = roles.findIndex(role => role.name === 'none');
+			roles[noneRoleIndex] = {
+				...presentationRole,
+				name: 'none',
+				description: roles[noneRoleIndex]?.description,
+			};
+		}
+	} else {
+		const noneRole = roles.find(role => role.name === 'none');
+		if (noneRole) {
+			const noneRoleIndex = roles.findIndex(role => role.name === 'presentation');
+			roles[noneRoleIndex] = {
+				...noneRole,
+				name: 'presentation',
+				description: roles[noneRoleIndex]?.description,
+			};
+		}
 	}
 
 	roles.sort(nameCompare);
@@ -191,103 +194,105 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {
-		role.ownedProperties?.forEach(prop => {
-			ariaNameList.add(prop.name);
-		});
+		if (role.ownedProperties)
+			for (const prop of role.ownedProperties) {
+				ariaNameList.add(prop.name);
+			}
 	}
 
 	const { implicitProps } = await getAriaInHtml();
 
-	const globalStatesAndProperties = $('#global_states li a')
-		.toArray()
-		.map(el => $(el).attr('href')?.replace('#', ''))
-		.filter((s): s is string => !!s);
-	const arias = Array.from(ariaNameList)
-		.sort()
-		.map((name): ARIAProperty => {
-			const $section = $(`#${name}`);
-			const className = $section.attr('class');
-			const type = className && /property/i.test(className) ? 'property' : 'state';
-			const deprecated = (className && /deprecated/i.test(className)) || undefined;
-			const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
-			const value = $value.text().trim() as ARIAAttributeValue;
-			const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
-			const valueDescriptions: Record<string, string> = {};
-			$valueDescriptions.each((_, $tr) => {
-				const name = $($tr)
-					.find('.value-name')
-					.text()
-					.replace(/\(default\)\s*:?/gi, '')
-					.trim();
-				const desc = $($tr).find('.value-description').text().trim();
-				valueDescriptions[name] = desc;
-			});
-			const enumValues: string[] = [];
-			if (value === 'token' || value === 'token list') {
-				const values = $valueDescriptions
-					.find('.value-name')
-					.toArray()
-					.map(el =>
-						$(el)
-							.text()
-							.replace(/\(default\)\s*:?/gi, '')
-							.trim(),
-					);
-				enumValues.push(...values);
+	const globalStatesAndProperties = new Set(
+		$('#global_states li a')
+			.toArray()
+			.map(el => $(el).attr('href')?.replace('#', ''))
+			.filter((s): s is string => !!s),
+	);
+	const arias = [...ariaNameList].sort().map((name): ARIAProperty => {
+		const $section = $(`#${name}`);
+		const className = $section.attr('class');
+		const type = className && /property/i.test(className) ? 'property' : 'state';
+		const deprecated = (className && /deprecated/i.test(className)) || undefined;
+		const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
+		const value = $value.text().trim() as ARIAAttributeValue;
+		const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
+		const valueDescriptions: Record<string, string> = {};
+		$valueDescriptions.each((_, $tr) => {
+			const name = $($tr)
+				.find('.value-name')
+				.text()
+				.replaceAll(/\(default\)\s*:?/gi, '')
+				.trim();
+			const desc = $($tr).find('.value-description').text().trim();
+			valueDescriptions[name] = desc;
+		});
+		const enumValues: string[] = [];
+		if (value === 'token' || value === 'token list') {
+			const values = $valueDescriptions
+				.find('.value-name')
+				.toArray()
+				.map(el =>
+					$(el)
+						.text()
+						.replaceAll(/\(default\)\s*:?/gi, '')
+						.trim(),
+				);
+			enumValues.push(...values);
+		}
+		const $defaultValue = $section.find('table.value-descriptions .value-name .default');
+		const defaultValue =
+			$defaultValue
+				.text()
+				.replaceAll(/\(default\)/gi, '')
+				.trim() || undefined;
+		const isGlobal = globalStatesAndProperties.has(name) || undefined;
+
+		let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
+		const implicitOwnProps = implicitProps.filter(p => p.name === name);
+		if (implicitOwnProps.length > 0) {
+			equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
+				htmlAttrName: attr.htmlAttrName,
+				value: attr.value,
+			}));
+		}
+
+		const aria: WritableDeep<ARIAProperty> = {
+			name,
+			type,
+			deprecated,
+			value,
+			enum: enumValues,
+			defaultValue,
+			isGlobal,
+			equivalentHtmlAttrs,
+			valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
+		};
+
+		// Conditional Value
+		switch (name) {
+			case 'aria-checked': {
+				aria.value = 'true/false';
+				aria.conditionalValue = [
+					{
+						role: ['checkbox', 'menuitemcheckbox'],
+						value: 'tristate',
+					},
+				];
+				break;
 			}
-			const $defaultValue = $section.find('table.value-descriptions .value-name .default');
-			const defaultValue =
-				$defaultValue
-					.text()
-					.replace(/\(default\)/gi, '')
-					.trim() || undefined;
-			const isGlobal = globalStatesAndProperties.includes(name) || undefined;
-
-			let equivalentHtmlAttrs: EquivalentHtmlAttr[] | undefined;
-			const implicitOwnProps = implicitProps.filter(p => p.name === name);
-			if (implicitOwnProps.length > 0) {
-				equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
-					htmlAttrName: attr.htmlAttrName,
-					value: attr.value,
-				}));
-			}
-
-			const aria: WritableDeep<ARIAProperty> = {
-				name,
-				type,
-				deprecated,
-				value,
-				enum: enumValues,
-				defaultValue,
-				isGlobal,
-				equivalentHtmlAttrs,
-				valueDescriptions: Object.keys(valueDescriptions).length > 0 ? valueDescriptions : undefined,
-			};
-
-			// Conditional Value
-			switch (name) {
-				case 'aria-checked': {
-					aria.value = 'true/false';
-					aria.conditionalValue = [
-						{
-							role: ['checkbox', 'menuitemcheckbox'],
-							value: 'tristate',
-						},
-					];
-					break;
-				}
-				case 'aria-hidden': {
-					aria.equivalentHtmlAttrs?.forEach(attr => {
+			case 'aria-hidden': {
+				if (aria.equivalentHtmlAttrs)
+					for (const attr of aria.equivalentHtmlAttrs) {
 						if (attr.htmlAttrName === 'hidden') {
 							attr.isNotStrictEquivalent = true;
 						}
-					});
-					break;
-				}
+					}
+				break;
 			}
+		}
 
-			return aria;
-		});
+		return aria;
+	});
 
 	arias.sort(nameCompare);
 

@@ -1,9 +1,9 @@
-import type { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser/index.js';
 import type { MLASTNode, MLASTParentNode, MLASTPreprocessorSpecificBlock, ParserOptions } from '@markuplint/ml-ast';
 
 import { sliceFragment, uuid } from '@markuplint/parser-utils';
 
-import { traverse } from './traverse';
+import { traverse } from './traverse.js';
 
 export function parseCtrlBlock(
 	ctrlName: 'if' | 'each',
@@ -35,7 +35,8 @@ export function parseCtrlBlock(
 	}
 
 	const children = originNode.children ?? [];
-	const reEndTag = new RegExp('{/each}$', 'i');
+	// eslint-disable-next-line regexp/strict
+	const reEndTag = /{\/each}$/i;
 	const startTagEndOffset =
 		children.length > 0 ? children[0]?.start ?? 0 : raw.replace(reEndTag, '').length + startOffset;
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
@@ -59,8 +60,7 @@ export function parseCtrlBlock(
 	let elseTag: MLASTPreprocessorSpecificBlock | null = null;
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset =
-			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
+		const elseTagStartOffset = children.length > 0 ? children.at(-1)?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		elseTag = {
@@ -155,8 +155,7 @@ function parseIfBlock(
 	const elseOrElseIfTags: MLASTPreprocessorSpecificBlock[] = [];
 	if (originNode.else) {
 		const elseNode = originNode.else;
-		const elseTagStartOffset =
-			children.length > 0 ? children[children.length - 1]?.end ?? 0 : startTagLocation.endOffset;
+		const elseTagStartOffset = children.length > 0 ? children.at(-1)?.end ?? 0 : startTagLocation.endOffset;
 		const elseTagLocation = sliceFragment(rawHtml, elseTagStartOffset, elseNode.start);
 
 		if (elseNode.children) {

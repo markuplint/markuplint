@@ -1,12 +1,12 @@
-import type { MLDocument } from './document';
-import type { MLElement } from './element';
-import type { DocumentTypeNodeType } from './types';
+import type { MLDocument } from './document.js';
+import type { MLElement } from './element.js';
+import type { DocumentTypeNodeType } from './types.js';
 import type { MLASTDoctype } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { after, before, remove, replaceWith } from '../manipulations/child-node-methods';
+import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
 
-import { MLNode } from './node';
+import { MLNode } from './node.js';
 
 export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTDoctype>

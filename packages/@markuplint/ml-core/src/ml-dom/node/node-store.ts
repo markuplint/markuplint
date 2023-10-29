@@ -1,11 +1,11 @@
-import type { MLNode } from './node';
-import type { MappedNode } from './types';
+import type { MLNode } from './node.js';
+import type { MappedNode } from './types.js';
 import type { MLASTAbstractNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { ParserError } from '@markuplint/parser-utils';
+import { TargetParserError } from '@markuplint/parser-utils';
 
-import { log } from '../../debug';
+import { log } from '../../debug.js';
 
 const nodeStoreLog = log.extend('node-store');
 const nodeStoreError = nodeStoreLog.extend('error');
@@ -22,12 +22,12 @@ class NodeStore {
 			nodeStoreError('Ref ID: %s (%s: "%s")', astNode.uuid, astNode.nodeName, astNode.raw);
 			nodeStoreError(
 				'Map: %O',
-				Array.from(this.#store.entries()).map(([id, node]) => ({
+				[...this.#store.entries()].map(([id, node]) => ({
 					id,
 					name: node.nodeName,
 				})),
 			);
-			throw new ParserError('Broke mapping nodes.', {
+			throw new TargetParserError('Broke mapping nodes.', {
 				line: astNode.startLine,
 				col: astNode.startCol,
 				raw: astNode.raw,
@@ -55,7 +55,7 @@ class NodeStore {
 			'Mapped: %s (%s: "%s")',
 			astNode.uuid,
 			astNode.nodeName,
-			astNode.raw.replace(/\n/g, '⏎').replace(/\t/g, '→'),
+			astNode.raw.replaceAll('\n', '⏎').replaceAll('\t', '→'),
 		);
 		this.#store.set(astNode.uuid, node);
 	}

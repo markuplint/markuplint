@@ -42,7 +42,7 @@ const obsoleteList = [
 
 export async function getElements(filePattern: string) {
 	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body) => {
-		const name = file.replace(/^.+spec\.([a-z0-9_-]+)+\.json$/i, '$1');
+		const name = file.replace(/^.+spec\.([\w-]+)\.json$/i, '$1');
 		return {
 			// @ts-ignore
 			name,

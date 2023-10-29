@@ -8,11 +8,11 @@ import type {
 	JSXSpreadAttribute,
 	JSXTagNameExpression,
 	Node,
-} from '@typescript-eslint/types/dist/generated/ast-spec';
+} from 'ts-eslint-types-v5/dist/generated/ast-spec.js';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type { JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec';
+export type { JSXAttribute } from 'ts-eslint-types-v5/dist/generated/ast-spec.js';
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 	__alreadyNodeized?: true;
@@ -21,7 +21,7 @@ export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
-export default function jsxParser(jsxCode: string): JSXNode[] {
+export function jsxParser(jsxCode: string): JSXNode[] {
 	const ast = parse(jsxCode, {
 		comment: true,
 		errorOnUnknownASTType: false,
@@ -33,6 +33,8 @@ export default function jsxParser(jsxCode: string): JSXNode[] {
 		useJSXTextNode: true,
 	});
 
+	// TODO: Remove dependency {"ts-eslint-types-v5": "npm:@typescript-eslint/types@5"}
+	// @ts-ignore
 	return recursiveSearchJSXElements(ast.body, null);
 }
 
@@ -181,8 +183,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXElement: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 
 				const hasSpreadAttr = node.openingElement.attributes.some(
 					attr => attr.type === AST_NODE_TYPES.JSXSpreadAttribute,
@@ -196,8 +197,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXFragment: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 				continue;
 			}
 			case AST_NODE_TYPES.VariableDeclarator: {
@@ -255,8 +255,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TemplateLiteral: {
-				jsxList.push(...recursiveSearchJSXElements(node.expressions, parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.quasis, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.expressions, parentId),
+					...recursiveSearchJSXElements(node.quasis, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TaggedTemplateExpression: {
@@ -317,8 +319,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchStatement: {
-				jsxList.push(...recursiveSearchJSXElements(node.cases, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.discriminant], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.cases, parentId),
+					...recursiveSearchJSXElements([node.discriminant], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchCase: {
@@ -394,8 +398,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSDeclareFunction: {
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.params, parentId),
+					...recursiveSearchJSXElements([node.body ?? null], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSImportEqualsDeclaration: {
@@ -403,8 +409,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSMethodSignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements([node.key], parentId),
+					...recursiveSearchJSXElements(node.params, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSModuleDeclaration: {

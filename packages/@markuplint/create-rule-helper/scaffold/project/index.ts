@@ -1,6 +1,6 @@
 import { createPlugin } from '@markuplint/ml-core';
 
-import { __ruleName__c } from './rules/__ruleName__';
+import { __ruleName__c } from './rules/__ruleName__.js';
 
 export default createPlugin({
 	name: '__pluginName__',

@@ -8,8 +8,8 @@ export type Code = {
 
 export type IgnoreTag = {
 	readonly type: string;
-	readonly start: Readonly<RegExp>;
-	readonly end: Readonly<RegExp>;
+	readonly start: Readonly<RegExp> | string;
+	readonly end: Readonly<RegExp> | string;
 };
 
 export type IgnoreBlock = {
@@ -17,4 +17,9 @@ export type IgnoreBlock = {
 	readonly replaced: string;
 	readonly stack: readonly Code[];
 	readonly maskChar: string;
+};
+
+export type QuoteSet = {
+	readonly start: string;
+	readonly end: string;
 };

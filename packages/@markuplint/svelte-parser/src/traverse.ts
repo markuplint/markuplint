@@ -1,7 +1,7 @@
-import type { SvelteNode } from './svelte-parser';
+import type { SvelteNode } from './svelte-parser/index.js';
 import type { MLASTNode, MLASTParentNode, ParserOptions } from '@markuplint/ml-ast';
 
-import { nodeize } from './nodeize';
+import { nodeize } from './nodeize.js';
 
 export function traverse(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -21,7 +21,7 @@ export function traverse(
 
 		let node: MLASTNode;
 		if (Array.isArray(nodes)) {
-			const lastNode = nodes[nodes.length - 1];
+			const lastNode = nodes.at(-1);
 			if (!lastNode) {
 				continue;
 			}

@@ -1,32 +1,41 @@
-import type { MLAttr } from './attr';
-import type { MLComment } from './comment';
-import type { MLDocumentType } from './document-type';
-import type { MLElement } from './element';
-import type { MLNode } from './node';
-import type { MLText } from './text';
-import type { DocumentNodeType } from './types';
-import type { MLRule } from '../../ml-rule';
-import type Ruleset from '../../ruleset';
-import type { MLSchema } from '../../types';
-import type { Walker } from '../helper/walkers';
-import type { MLToken } from '../token/token';
+import type { MLAttr } from './attr.js';
+import type { MLComment } from './comment.js';
+import type { MLDocumentType } from './document-type.js';
+import type { MLElement } from './element.js';
+import type { MLNode } from './node.js';
+import type { MLText } from './text.js';
+import type { AccessibilityProperties, DocumentNodeType } from './types.js';
+import type { MLRule } from '../../ml-rule/index.js';
+import type { Ruleset } from '../../ruleset/index.js';
+import type { MLSchema } from '../../types.js';
+import type { Walker } from '../helper/walkers.js';
+import type { MLToken } from '../token/token.js';
 import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
-import { schemaToSpec } from '@markuplint/ml-spec';
-import { matchSelector } from '@markuplint/selector';
+import {
+	schemaToSpec,
+	getAccname,
+	getComputedRole,
+	mayBeFocusable,
+	getComputedAriaProps,
+	isExposed,
+	ARIA_RECOMMENDED_VERSION,
+} from '@markuplint/ml-spec';
+import { ConfigParserError } from '@markuplint/parser-utils';
+import { InvalidSelectorError, matchSelector } from '@markuplint/selector';
 
-import { log as coreLog } from '../../debug';
-import { createNode } from '../helper/create-node';
-import { nodeListToDebugMaps } from '../helper/debug';
-import { sequentialWalker, syncWalk } from '../helper/walkers';
+import { log as coreLog } from '../../debug.js';
+import { createNode } from '../helper/create-node.js';
+import { nodeListToDebugMaps } from '../helper/debug.js';
+import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 
-import { nodeListToHTMLCollection } from './node-list';
-import { MLParentNode } from './parent-node';
-import { RuleMapper } from './rule-mapper';
-import UnexpectedCallError from './unexpected-call-error';
+import { nodeListToHTMLCollection } from './node-list.js';
+import { MLParentNode } from './parent-node.js';
+import { RuleMapper } from './rule-mapper.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -163,7 +172,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		);
 
 		this._pretending(options?.pretenders);
-		this._ruleMapping(ruleset);
+
+		try {
+			this._ruleMapping(ruleset);
+		} catch (error: unknown) {
+			if (error instanceof InvalidSelectorError) {
+				throw new ConfigParserError(error.message, {
+					filePath: 'the configuration',
+				});
+			}
+			throw error;
+		}
 	}
 
 	/**
@@ -1885,6 +1904,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		throw new UnexpectedCallError('Not supported "onscroll" property');
 	}
 
+	get onscrollend():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onscrollend" property');
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -2630,7 +2660,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	createNSResolver(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		nodeResolver: Node,
-	): XPathNSResolver {
+	): Node {
 		throw new UnexpectedCallError('Not supported "createNSResolver" method');
 	}
 
@@ -2781,6 +2811,73 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	exitPointerLock(): void {
 		throw new UnexpectedCallError('Not supported "exitPointerLock" method');
+	}
+
+	getAccessibilityProp(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: MLNode<T, O>,
+		ariaVersion = ARIA_RECOMMENDED_VERSION,
+	): AccessibilityProperties | null {
+		if (!node.is(node.ELEMENT_NODE)) {
+			return null;
+		}
+
+		if (['slot'].includes(node.localName)) {
+			return {
+				unknown: true,
+			};
+		}
+
+		const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
+
+		if (!exposed) {
+			return {
+				unknown: false,
+				exposedToTree: false,
+			};
+		}
+
+		const aria: AccessibilityProperties = {
+			unknown: false,
+			exposedToTree: true,
+		};
+
+		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
+		const name = getAccname(node).trim();
+		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
+
+		const nameRequired = role.role?.accessibleNameRequired ?? false;
+		const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+
+		const hasSlot = !!node.querySelector('slot');
+
+		aria.role = role.role?.name;
+		aria.nameRequired = nameRequired;
+		aria.nameProhibited = nameProhibited;
+		aria.name =
+			name ||
+			(hasSlot
+				? {
+						unknown: true,
+				  }
+				: '');
+		aria.focusable = focusable;
+
+		for (const prop of Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion))) {
+			if (!prop.required && prop.from === 'default') {
+				continue;
+			}
+			aria.props = aria.props || {};
+
+			const propName = prop.name.replace('aria-', '');
+
+			aria.props[propName] = {
+				value: prop.value ?? null,
+				required: prop.required,
+			};
+		}
+
+		return aria;
 	}
 
 	/**
@@ -3043,7 +3140,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				return walker(node);
 			}
 			if (type === 'Attr' && node.is(node.ELEMENT_NODE)) {
-				return sequentialWalker(Array.from(node.attributes), attr => walker(attr));
+				return sequentialWalker([...node.attributes], attr => walker(attr));
 			}
 			if (type === 'ElementCloseTag' && node.is(node.ELEMENT_NODE) && node.closeTag) {
 				return walker(node.closeTag);
@@ -3093,10 +3190,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		const ruleMapper = new RuleMapper(this);
 
 		// global rules to #document
-		Object.keys(ruleset.rules).forEach(ruleName => {
+		for (const ruleName of Object.keys(ruleset.rules)) {
 			const rule = ruleset.rules[ruleName];
 			if (rule == null) {
-				return;
+				continue;
 			}
 
 			ruleMapper.set(this, ruleName, {
@@ -3104,7 +3201,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				specificity: [0, 0, 0],
 				rule,
 			});
-		});
+		}
 
 		// add rules to node
 		for (const node of this.nodeList) {
@@ -3113,10 +3210,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			}
 
 			// global rules to each element
-			Object.keys(ruleset.rules).forEach(ruleName => {
+			for (const ruleName of Object.keys(ruleset.rules)) {
 				const rule = ruleset.rules[ruleName];
 				if (rule == null) {
-					return;
+					continue;
 				}
 
 				ruleMapper.set(node, ruleName, {
@@ -3124,7 +3221,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					specificity: [0, 0, 0],
 					rule,
 				});
-			});
+			}
 
 			if (!node.is(node.ELEMENT_NODE) && !node.is(node.TEXT_NODE)) {
 				continue;
@@ -3133,13 +3230,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			const selectorTarget = node.is(node.ELEMENT_NODE) ? node : null;
 
 			// node specs and special rules for node by selector
-			ruleset.nodeRules.forEach(nodeRule => {
+			for (const nodeRule of ruleset.nodeRules) {
 				if (!nodeRule.rules) {
-					return;
+					continue;
 				}
 
 				if (!selectorTarget) {
-					return;
+					continue;
 				}
 
 				const selector = nodeRule.selector ?? nodeRule.regexSelector;
@@ -3147,7 +3244,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				const matches = matchSelector(selectorTarget, selector);
 
 				if (!matches.matched) {
-					return;
+					continue;
 				}
 
 				if (docLog.enabled) {
@@ -3167,7 +3264,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 					const globalRule = ruleset.rules[ruleName];
-					const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+					const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 					ruleLog('↑ nodeRule (%s): %O', ruleName, mergedRule);
 
@@ -3177,31 +3274,31 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						rule: mergedRule,
 					});
 				}
-			});
+			}
 
 			// overwrite rule to child node
 			if (selectorTarget && ruleset.childNodeRules.length > 0) {
 				const descendants: MLNode<T, O>[] = [];
-				const children = Array.from(selectorTarget.childNodes);
+				const children = [...selectorTarget.childNodes];
 				syncWalk(children, childNode => {
 					descendants.push(childNode);
 				});
 
-				ruleset.childNodeRules.forEach(nodeRule => {
+				for (const nodeRule of ruleset.childNodeRules) {
 					if (!nodeRule.rules) {
-						return;
+						continue;
 					}
 					const nodeRuleRules = nodeRule.rules;
 
 					const selector = nodeRule.selector ?? nodeRule.regexSelector;
 
 					if (selector == null) {
-						return;
+						continue;
 					}
 
 					const matches = matchSelector(selectorTarget, selector);
 					if (!matches.matched) {
-						return;
+						continue;
 					}
 
 					if (docLog.enabled) {
@@ -3215,30 +3312,30 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 					const targetDescendants = nodeRule.inheritance ? descendants : children;
 
-					Object.keys(nodeRuleRules).forEach(ruleName => {
+					for (const ruleName of Object.keys(nodeRuleRules)) {
 						const rule = nodeRuleRules[ruleName];
 						if (rule == null) {
-							return;
+							continue;
 						}
 
 						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
-							return;
+							continue;
 						}
 						const globalRule = ruleset.rules[ruleName];
-						const mergedRule = globalRule != null ? mergeRule(globalRule, convertedRule) : convertedRule;
+						const mergedRule = globalRule == null ? convertedRule : mergeRule(globalRule, convertedRule);
 
 						ruleLog('↑ childNodeRule (%s): %O', ruleName, mergedRule);
 
-						targetDescendants.forEach(descendant => {
+						for (const descendant of targetDescendants) {
 							ruleMapper.set(descendant, ruleName, {
 								from: 'childNodeRules',
 								specificity: matches.specificity,
 								rule: mergedRule,
 							});
-						});
-					});
-				});
+						}
+					}
+				}
 			}
 		}
 

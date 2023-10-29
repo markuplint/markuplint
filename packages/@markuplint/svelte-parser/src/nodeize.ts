@@ -1,4 +1,4 @@
-import type { SvelteDirective, SvelteNode } from './svelte-parser';
+import type { SvelteDirective, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTAttr,
 	MLASTElementCloseTag,
@@ -10,12 +10,12 @@ import type {
 	ParserOptions,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { getNamespace } from '@markuplint/html-parser';
+import { detectElementType, sliceFragment, uuid, tagParser } from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import { parseCtrlBlock } from './parse-ctrl-block';
-import { traverse } from './traverse';
+import { attr } from './attr.js';
+import { parseCtrlBlock } from './parse-ctrl-block.js';
+import { traverse } from './traverse.js';
 
 export function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -76,6 +76,7 @@ export function nodeize(
 				isGhost: false,
 			};
 		}
+		case 'InlineComponent':
 		case 'Element': {
 			const children = originNode.children ?? [];
 			const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
@@ -122,7 +123,7 @@ export function nodeize(
 			const attributes = directives.filter((d): d is MLASTAttr => !('__spreadAttr' in d));
 			const hasSpreadAttr = directives.some(d => '__spreadAttr' in d);
 
-			const tagTokens = parseRawTag(
+			const tagTokens = tagParser(
 				startTagLocation.raw,
 				startTagLocation.startLine,
 				startTagLocation.startCol,
@@ -137,7 +138,7 @@ export function nodeize(
 				nodeName: originNode.name,
 				type: 'starttag',
 				namespace,
-				elementType: detectElementType(originNode.name, options?.authoredElementName, /[A-Z]|\./),
+				elementType: detectElementType(originNode.name, options?.authoredElementName, /[.A-Z]/),
 				attributes,
 				hasSpreadAttr,
 				parentNode,
@@ -145,7 +146,7 @@ export function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
 				isGhost: false,
 				tagOpenChar: '<',
@@ -255,7 +256,8 @@ export function nodeize(
 				}
 			}
 
-			const reEndTag = new RegExp('{/await}$', 'i');
+			// eslint-disable-next-line regexp/strict
+			const reEndTag = /{\/await}$/i;
 			let endTag: MLASTPreprocessorSpecificBlock | null = null;
 			if (reEndTag.test(raw)) {
 				const endTagRawMatched = raw.match(reEndTag);
@@ -300,7 +302,7 @@ export function nodeize(
 			return tags;
 		}
 		default: {
-			return {
+			const startTag: MLASTPreprocessorSpecificBlock = {
 				uuid: uuid(),
 				raw,
 				startOffset,
@@ -317,6 +319,42 @@ export function nodeize(
 				isFragment: false,
 				isGhost: false,
 			};
+			let endTag: MLASTPreprocessorSpecificBlock | null = null;
+			if (originNode.children) {
+				startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
+				const firstChild = startTag.childNodes[0];
+				if (firstChild) {
+					startTag.endOffset = firstChild.startOffset;
+					startTag.endLine = firstChild.startLine;
+					startTag.endCol = firstChild.startCol;
+					startTag.raw = rawHtml.slice(startTag.startOffset, startTag.endOffset);
+				}
+				const lastChild = startTag.childNodes.at(-1);
+				if (lastChild && lastChild.endOffset > startTag.endOffset) {
+					const startOffset = lastChild.endOffset;
+					const startLine = lastChild.endLine;
+					const startCol = lastChild.endCol;
+					const raw = rawHtml.slice(startOffset, endOffset);
+					endTag = {
+						uuid: uuid(),
+						raw,
+						startOffset,
+						endOffset,
+						startLine,
+						endLine,
+						startCol,
+						endCol,
+						nodeName: originNode.name || originNode.type,
+						type: 'psblock',
+						parentNode,
+						prevNode,
+						nextNode,
+						isFragment: false,
+						isGhost: false,
+					};
+				}
+			}
+			return endTag == null ? startTag : [startTag, endTag];
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
@@ -72,7 +72,7 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return tokenEnum.includes(value);
 		}
 		case 'token list': {
-			const list = value.split(/\s+/g).map(s => s.trim());
+			const list = value.split(/\s+/).map(s => s.trim());
 			return list.every(token => tokenEnum.includes(token));
 		}
 		case 'string':
@@ -99,10 +99,10 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return ['true', 'false', 'undefined'].includes(value);
 		}
 		case 'integer': {
-			return parseInt(value).toString() === value;
+			return Number.parseInt(value).toString() === value;
 		}
 		case 'number': {
-			return parseFloat(value).toString() === value;
+			return Number.parseFloat(value).toString() === value;
 		}
 	}
 	// For skipping checking

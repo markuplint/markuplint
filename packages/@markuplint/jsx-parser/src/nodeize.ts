@@ -1,4 +1,4 @@
-import type { JSXNode } from './jsx';
+import type { JSXNode } from './jsx.js';
 import type {
 	MLASTElementCloseTag,
 	MLASTNode,
@@ -8,12 +8,12 @@ import type {
 	ParserOptions,
 } from '@markuplint/ml-ast';
 
-import { getNamespace, parseRawTag } from '@markuplint/html-parser';
-import { detectElementType, sliceFragment, uuid } from '@markuplint/parser-utils';
+import { getNamespace } from '@markuplint/html-parser';
+import { detectElementType, sliceFragment, uuid, tagParser } from '@markuplint/parser-utils';
 
-import { attr } from './attr';
-import { getAttr, getName } from './jsx';
-import { traverse } from './traverse';
+import { attr } from './attr.js';
+import { getAttr, getName } from './jsx.js';
+import { traverse } from './traverse.js';
 
 export function nodeize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -106,7 +106,7 @@ export function nodeize(
 			}
 
 			const { attrs /*hasSpreadAttr*/ } = getAttr(originNode.openingElement.attributes);
-			const tagTokens = parseRawTag(
+			const tagTokens = tagParser(
 				startTagLocation.raw,
 				startTagLocation.startLine,
 				startTagLocation.startCol,
@@ -138,7 +138,7 @@ export function nodeize(
 				nextNode,
 				pearNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
-				endSpace: tagTokens.endSpace,
+				endSpace: tagTokens.afterAttrSpaces,
 				// hasSpreadAttr,
 				isFragment: false,
 				isGhost: false,

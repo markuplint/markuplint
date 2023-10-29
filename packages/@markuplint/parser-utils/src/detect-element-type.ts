@@ -1,6 +1,6 @@
 import type { ElementType, ParserAuthoredElementNameDistinguishing } from '@markuplint/ml-ast';
 
-import { isPotentialCustomElementName } from './decision';
+import { isPotentialCustomElementName } from './decision.js';
 
 export function detectElementType(
 	name: string,
@@ -42,7 +42,7 @@ function _distinguishAuthoredName(name: string, patterns: ParserAuthoredElementN
 }
 
 function toRegexp(pattern: string) {
-	const matched = pattern.match(/^\/(.+)\/([ig]*)$/i);
+	const matched = pattern.match(/^\/(.+)\/([gi]*)$/i);
 	if (matched && matched[1]) {
 		return new RegExp(matched[1], matched[2]);
 	}

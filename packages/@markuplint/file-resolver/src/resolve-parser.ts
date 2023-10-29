@@ -1,10 +1,10 @@
-import type { MLFile } from './ml-file';
+import type { MLFile } from './ml-file/index.js';
 import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
 import type { ParserConfig } from '@markuplint/ml-config';
 
-import path from 'path';
+import path from 'node:path';
 
-import { toRegexp } from './utils';
+import { toRegexp } from './utils.js';
 
 const parsers = new Map<string, MLMarkupLanguageParser>();
 
@@ -23,6 +23,7 @@ export async function resolveParser(
 	let matched = false;
 
 	for (const pattern of Object.keys(parserConfig)) {
+		// eslint-disable-next-line unicorn/prefer-regexp-test
 		if (path.basename(file.path).match(toRegexp(pattern))) {
 			const modName = parserConfig[pattern];
 			if (!modName) {
