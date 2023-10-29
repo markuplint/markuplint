@@ -59,7 +59,6 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"playground",
 		"vscode"
 	],
 	"devDependencies": {

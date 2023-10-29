@@ -17,4 +17,9 @@ export default defineConfig({
 			plugins: [tailwindcss, autoprefixer],
 		},
 	},
+	resolve: {
+		alias: {
+			'@markuplint/html-spec': '@markuplint/html-spec/index.json',
+		},
+	},
 });

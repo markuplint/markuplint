@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
+		"target": "ES2021",
 		"useDefineForClassFields": true,
 		"module": "ESNext",
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"lib": ["ES2021", "DOM", "DOM.Iterable"],
 		"skipLibCheck": true,
+		"jsx": "react-jsx",
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
