@@ -1,4 +1,8 @@
+// This file is executed in WebContainer.
+
+// NOTE: Actually, it refers to the installed packages in WebContainer.
 import { MLEngine } from 'markuplint';
+import { createJsonPayload } from './extract-json.mjs';
 
 main();
 
@@ -8,8 +12,12 @@ function main() {
 	process.stdin.setRawMode(true);
 	process.stdin.resume();
 	process.stdin.on('data', data => {
-		if (data === 'ready?') {
-			process.stdout.write('ready');
+		if (
+			data === 'ready?' ||
+			data.includes('ready?')
+			// FIXME: only data === 'ready?' is correct, but it doesn't work. Sometimes data is 'ready?ready?'.
+		) {
+			process.stdout.write(createJsonPayload('ready'));
 			return;
 		}
 		void (async () => {
@@ -17,7 +25,7 @@ function main() {
 			const file = await MLEngine.toMLFile(target);
 			const engine = new MLEngine(file, { locale: options.locale });
 			const result = await engine.exec();
-			process.stdout.write(JSON.stringify(result.violations));
+			process.stdout.write(createJsonPayload(result.violations));
 		})();
 	});
 

@@ -1,6 +1,7 @@
 import type { FileSystemTree, WebContainerProcess } from '@webcontainer/api';
 
 import { WebContainer } from '@webcontainer/api';
+import { extractJson } from './linter/extract-json.mjs';
 
 let webContainer: WebContainer;
 
@@ -13,8 +14,19 @@ type ConsoleMethods = {
 export const setupContainerServer = async ({ appendLine, append, clear }: ConsoleMethods) => {
 	clear();
 	appendLine('Starting WebContainer...');
-	webContainer = await WebContainer.boot();
-	appendLine('WebContainer started');
+	try {
+		webContainer = await WebContainer.boot();
+		appendLine('WebContainer started');
+	} catch (e) {
+		if ((e as { message: string }).message === 'WebContainer already booted') {
+			// for local development
+			appendLine('WebContainer already booted');
+			appendLine('Reloading...');
+			window.location.reload();
+		} else {
+			throw e;
+		}
+	}
 
 	const linterFiles = import.meta.glob('./linter/*', { as: 'raw', eager: true });
 	const linterDir: FileSystemTree = {};
@@ -108,7 +120,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 				throw new Error('Installation failed');
 			}
 
-			const result = await linterServer.request(path, () => true);
+			const result = await linterServer.request(path, output => Array.isArray(extractJson(output)));
 			return result;
 		},
 		restart: async () => {
@@ -143,9 +155,20 @@ class LinterServer {
 	private async start() {
 		const locale = navigator.language;
 		const localeWithoutRegion = locale.split('-')[0];
-		const process = await webContainer.spawn('node', ['./linter/index.mjs', '--locale', localeWithoutRegion]);
 		const callbacks: ((output: string) => void)[] = [];
+		const process = await webContainer.spawn('node', ['./linter/index.mjs', '--locale', localeWithoutRegion]);
 		const writer = process.input.getWriter();
+		void process.output.pipeTo(
+			new WritableStream({
+				write(data) {
+					callbacks.forEach(callback => callback(data));
+				},
+			}),
+		);
+
+		/**
+		 * Pass input to the linter process and wait for the output to match the test.
+		 */
 		const request = (input: string, test: (output: string) => boolean) => {
 			const promise = new Promise<string>(resolve => {
 				const callback = (output: string) => {
@@ -159,13 +182,10 @@ class LinterServer {
 			void writer.write(input);
 			return promise;
 		};
-		void process.output.pipeTo(
-			new WritableStream({
-				write(data) {
-					callbacks.forEach(callback => callback(data));
-				},
-			}),
-		);
+
+		/**
+		 * Wait for the linter process to be ready.
+		 */
 		const ready = async () => {
 			await request('ready?', output => output === 'ready');
 		};

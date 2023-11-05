@@ -19,6 +19,7 @@ import { ProblemsOutput } from './components/ProblemsOutput';
 import { examples } from './examples';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
+import { extractJson } from './server/linter/extract-json.mjs';
 
 let boot = false;
 let containerServer: Awaited<ReturnType<typeof setupContainerServer>>;
@@ -64,8 +65,10 @@ function App() {
 			codeEditorRef.current?.getFilename() ?? 'code.html',
 			codeEditorRef.current?.getValue() ?? '',
 		);
-		const newViolations: Violations = JSON.parse(data.replaceAll(ansiRegex(), ''));
-		setViolations(newViolations);
+		const maybeViolations = extractJson(data.replaceAll(ansiRegex(), ''));
+		if (Array.isArray(maybeViolations)) {
+			setViolations(maybeViolations);
+		}
 		setSelectedOutputTab(1);
 	};
 

@@ -4,6 +4,7 @@ import type { editor } from 'monaco-editor';
 import { getEndCol, getEndLine } from '@markuplint/parser-utils';
 
 export type Violations = MLResultInfo['violations'];
+export type Violation = Violations[number];
 type MarkerData = Readonly<editor.IMarkerData>;
 
 export const convertToMarkerData = (violations: Violations) => {
@@ -11,7 +12,7 @@ export const convertToMarkerData = (violations: Violations) => {
 		info: 2,
 		warning: 4,
 		error: 8,
-	};
+	} as const satisfies Record<Violation['severity'], MarkerData['severity']>;
 
 	const reports: MarkerData[] = violations.map(violation => ({
 		severity: SEVERITY_MAP[violation.severity],
