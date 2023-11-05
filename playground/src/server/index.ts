@@ -1,6 +1,8 @@
 import type { FileSystemTree, WebContainerProcess } from '@webcontainer/api';
 
 import { WebContainer } from '@webcontainer/api';
+// FIXME:
+// @ts-ignore
 import { extractJson } from './linter/extract-json.mjs';
 
 let webContainer: WebContainer;

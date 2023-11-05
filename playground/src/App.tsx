@@ -19,6 +19,8 @@ import { ProblemsOutput } from './components/ProblemsOutput';
 import { examples } from './examples';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
+// FIXME:
+// @ts-ignore
 import { extractJson } from './server/linter/extract-json.mjs';
 
 let boot = false;
