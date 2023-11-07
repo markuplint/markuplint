@@ -13,6 +13,10 @@ body,
 	grid-template-rows: auto minmax(0, 1fr);
 }
 
+.xterm {
+	height: 100%;
+}
+
 @layer utilities {
 	.icon-open-in-new {
 		line-height: 1;

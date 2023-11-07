@@ -1,5 +1,7 @@
-import ansiRegex from 'ansi-regex';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import 'xterm/css/xterm.css';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
 
 export type ConsoleOutputRef = {
 	appendLine: (string: string) => void;
@@ -9,51 +11,56 @@ export type ConsoleOutputRef = {
 
 type Props = {};
 
-const CHA = '\u001b[1G'; // Cursor Horizontal Absolute
-let nextCHA = false;
-
 export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
-	const [log, setLog] = useState<string>('');
+	const terminalRef = useRef<Terminal | null>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (wrapperRef.current) {
+			const elementStyle = window.getComputedStyle(wrapperRef.current);
+			const terminal = new Terminal({
+				theme: {
+					background: elementStyle.backgroundColor,
+					foreground: elementStyle.color,
+				},
+			});
+			terminalRef.current = terminal;
+			const fitAddon = new FitAddon();
+			terminal.loadAddon(fitAddon);
+
+			terminal.open(wrapperRef.current);
+			fitAddon.fit();
+
+			const resizeObserver = new ResizeObserver(() => {
+				fitAddon.fit();
+			});
+			resizeObserver.observe(wrapperRef.current);
+
+			return () => {
+				terminal.dispose();
+				terminalRef.current = null;
+				resizeObserver.disconnect();
+			};
+		}
+	}, []);
 
 	useImperativeHandle(
 		ref,
 		() => {
 			return {
 				appendLine: (line: string) => {
-					setLog(log => `${log ? `${log}\n` : ''}${line}\n`);
-					wrapperRef.current?.scrollTo({ top: wrapperRef.current.scrollHeight });
+					terminalRef.current?.writeln(line);
 				},
 				append: (string: string) => {
-					const CHALines = `${nextCHA ? CHA : ''}${string}`.split(CHA);
-					CHALines.forEach((line, index) => {
-						if (index !== 0) {
-							setLog(log => {
-								const cursorPosition = log.lastIndexOf('\n');
-								if (cursorPosition !== -1) {
-									return `${log.slice(0, cursorPosition + 1)}`;
-								} else {
-									return log;
-								}
-							});
-						}
-
-						setLog(log => `${log}${line.replaceAll(ansiRegex(), '')}`);
-					});
-					nextCHA = string.endsWith(CHA);
-					wrapperRef.current?.scrollTo({ top: wrapperRef.current.scrollHeight });
+					terminalRef.current?.write(string);
 				},
 				clear: () => {
-					setLog('');
+					terminalRef.current?.clear();
 				},
 			};
 		},
 		[],
 	);
 
-	return (
-		<div className="overflow-y-auto h-full" ref={wrapperRef}>
-			<pre className="whitespace-pre-wrap p-2">{log}</pre>
-		</div>
-	);
+	return <div className="h-full p-2" ref={wrapperRef}></div>;
 });
