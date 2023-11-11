@@ -3,7 +3,7 @@ import type { FC } from 'react';
 
 import { examples } from '../examples';
 
-type Props = { onSelect?: (files: ExampleData) => void; disabled?: boolean };
+type Props = { onSelect?: (files: Readonly<ExampleData>) => void; disabled?: boolean };
 
 export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 	return (

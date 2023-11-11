@@ -32,7 +32,7 @@ function classNames(...classes: readonly string[]) {
 	return classes.filter(Boolean).join(' ');
 }
 
-function App() {
+export function App() {
 	const configEditorRef = useRef<ConfigEditorRef>(null);
 	const consoleRef = useRef<ConsoleOutputRef>(null);
 	const codeEditorRef = useRef<CodeEditorRef>(null);
@@ -232,5 +232,3 @@ function App() {
 		</>
 	);
 }
-
-export default App;

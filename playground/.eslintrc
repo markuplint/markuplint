@@ -40,6 +40,12 @@
 			"rules": {
 				"import/no-named-as-default-member": 0
 			}
+		},
+		{
+			"files": ["./**/*.tsx"],
+			"rules": {
+				"unicorn/filename-case": 0
+			}
 		}
 	]
 }

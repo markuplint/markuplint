@@ -24,7 +24,8 @@ const exampleDir: {
 		metadata: Readonly<Metadata>;
 	};
 } = {};
-Object.entries(exampleFiles).forEach(([path, load]) => {
+for (const [path, load] of Object.entries(exampleFiles)) {
+	// eslint-disable-next-line unicorn/no-unreadable-array-destructuring
 	const [, , category, dirOrMetadata, file] = path.split('/');
 	exampleDir[category] = exampleDir[category] ?? { examples: {}, metadata: {} };
 	if (dirOrMetadata === 'metadata.json') {
@@ -44,5 +45,5 @@ Object.entries(exampleFiles).forEach(([path, load]) => {
 			exampleDir[category]['examples'][dir].codeFilename = file;
 		}
 	}
-});
+}
 export const examples = exampleDir;

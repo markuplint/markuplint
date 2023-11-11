@@ -15,7 +15,7 @@ const decode = (string: string): Partial<PlaygroundValues> => {
 	try {
 		const parsed = JSON.parse(decoded);
 		return typeof parsed === 'object' && parsed !== null ? parsed : {};
-	} catch (e) {
+	} catch {
 		return {};
 	}
 };
