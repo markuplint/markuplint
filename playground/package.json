@@ -6,7 +6,7 @@
 	"scripts": {
 		"pg:dev": "vite",
 		"pg:build": "tsc && vite build",
-		"pg:lint": "eslint src --ext ts,tsx",
+		"pg:lint": "eslint src --ext ts,tsx; markuplint 'src/**/*.tsx'",
 		"pg:preview": "vite preview"
 	},
 	"dependencies": {
@@ -24,6 +24,8 @@
 		"xterm-addon-fit": "^0.8.0"
 	},
 	"devDependencies": {
+		"@markuplint/jsx-parser": "^4.0.0-alpha.5",
+		"@markuplint/react-spec": "^4.0.0-alpha.5",
 		"@types/react": "^18.0.28",
 		"@types/react-dom": "^18.0.11",
 		"@typescript-eslint/eslint-plugin": "^5.57.1",
