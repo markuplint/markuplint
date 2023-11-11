@@ -3,16 +3,16 @@ import type { FC } from 'react';
 
 export const ProblemsOutput: FC<{ violations: Violations }> = ({ violations }) => {
 	return (
-		<div className="overflow-y-auto h-full">
-			<ul className="grid gap-1 p-3 pb-6">
+		<div className="overflow-y-auto h-full text-sm">
+			<ul className="grid gap-2 p-3 pb-6">
 				{[...violations]
 					.sort((a, b) => {
 						const lineDiff = a.line - b.line;
 						const colDiff = a.col - b.col;
-						if (lineDiff !== 0) {
-							return lineDiff;
-						} else {
+						if (lineDiff === 0) {
 							return colDiff;
+						} else {
+							return lineDiff;
 						}
 					})
 					.map((violation, i) => (

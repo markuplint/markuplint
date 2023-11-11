@@ -29,10 +29,12 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 			terminal.loadAddon(fitAddon);
 
 			terminal.open(wrapperRef.current);
-			fitAddon.fit();
+			// FIXME:
+			// fitAddon.fit();
 
 			const resizeObserver = new ResizeObserver(() => {
-				fitAddon.fit();
+				// FIXME:
+				// fitAddon.fit();
 			});
 			resizeObserver.observe(wrapperRef.current);
 

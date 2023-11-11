@@ -35,35 +35,44 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 	);
 
 	return (
-		<div className="h-full grid grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)] grid-cols-[minmax(0,auto)]">
+		<div>
 			<p className="py-2 px-4">
 				<code>package.json</code> &gt; <code>devDependencies</code>
 			</p>
-			<MonacoEditor
-				language="json"
-				theme="vs-dark"
-				options={{
-					minimap: { enabled: false },
-					fontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
-				}}
-				onMount={(editor, _monaco) => {
-					editorRef.current = editor;
-				}}
-				onChange={debounce(value => {
-					if (typeof value !== 'undefined') {
-						onChangeValue?.(value);
-					}
-				}, 500)}
-			/>
-			<div className="py-2 px-4 overflow-y-auto">
+			<div className="grid min-h-[10rem]">
+				<MonacoEditor
+					language="json"
+					theme="vs-dark"
+					options={{
+						minimap: { enabled: false },
+						lineNumbers: 'off',
+						fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+					}}
+					onMount={(editor, _monaco) => {
+						editorRef.current = editor;
+					}}
+					onChange={debounce(value => {
+						if (value !== undefined) {
+							onChangeValue?.(value);
+						}
+					}, 500)}
+				/>
+			</div>
+			<div className="py-2 px-4">
 				{status === 'loading' ? (
-					<p>Loading...</p>
+					<p>Installing...</p>
 				) : status === 'error' ? (
 					<p>Error loading packages</p>
 				) : status === 'success' ? (
 					<>
 						<p>Installed:</p>
-						<pre>{JSON.stringify(installedPackages, null, 2)}</pre>
+						<ul>
+							{Object.entries(installedPackages).map(([name, version]) => (
+								<li key={name}>
+									{name}@{version}
+								</li>
+							))}
+						</ul>
 					</>
 				) : null}
 			</div>

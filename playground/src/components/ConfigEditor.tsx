@@ -45,9 +45,9 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 	);
 
 	return (
-		<div className="h-full grid grid-rows-[auto,minmax(0,1fr)] grid-cols-[minmax(0,auto)]">
-			<label className="py-2 px-4 grid grid-flow-col gap-1 justify-start items-center">
-				Filename:
+		<div>
+			<label className="py-2 px-4 flex flex-wrap gap-1 justify-start items-center">
+				Config filename:
 				<select
 					className="border border-gray-400 rounded-md px-1"
 					value={filenameState}
@@ -63,22 +63,25 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 					))}
 				</select>
 			</label>
-			<MonacoEditor
-				language={getLanguage(filenameState) ?? 'json'}
-				theme="vs-dark"
-				options={{
-					minimap: { enabled: false },
-					fontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
-				}}
-				onMount={(editor, _monaco) => {
-					editorRef.current = editor;
-				}}
-				onChange={debounce(value => {
-					if (typeof value !== 'undefined') {
-						onChangeValue?.(value);
-					}
-				}, 500)}
-			/>
+			<div className="grid min-h-[10rem]">
+				<MonacoEditor
+					language={getLanguage(filenameState) ?? 'json'}
+					theme="vs-dark"
+					options={{
+						minimap: { enabled: false },
+						lineNumbers: 'off',
+						fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+					}}
+					onMount={(editor, _monaco) => {
+						editorRef.current = editor;
+					}}
+					onChange={debounce(value => {
+						if (value !== undefined) {
+							onChangeValue?.(value);
+						}
+					}, 500)}
+				/>
+			</div>
 		</div>
 	);
 });

@@ -1,17 +1,18 @@
 import type { FileSystemTree, WebContainerProcess } from '@webcontainer/api';
 
 import { WebContainer } from '@webcontainer/api';
+
 // FIXME:
 // @ts-ignore
 import { extractJson } from './linter/extract-json.mjs';
 
 let webContainer: WebContainer;
 
-type ConsoleMethods = {
+type ConsoleMethods = Readonly<{
 	appendLine: (string: string) => void;
 	append: (string: string) => void;
 	clear: () => void;
-};
+}>;
 
 export const setupContainerServer = async ({ appendLine, append, clear }: ConsoleMethods) => {
 	clear();
@@ -19,25 +20,25 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 	try {
 		webContainer = await WebContainer.boot();
 		appendLine('WebContainer started');
-	} catch (e) {
-		if ((e as { message: string }).message === 'WebContainer already booted') {
+	} catch (error) {
+		if ((error as { message: string }).message === 'WebContainer already booted') {
 			// for local development
 			appendLine('WebContainer already booted');
 			appendLine('Reloading...');
 			window.location.reload();
 		} else {
-			throw e;
+			throw error;
 		}
 	}
 
 	const linterFiles = import.meta.glob('./linter/*', { as: 'raw', eager: true });
 	const linterDir: FileSystemTree = {};
-	Object.entries(linterFiles).forEach(([path, load]) => {
+	for (const [path, load] of Object.entries(linterFiles)) {
 		const file = path.split('/').pop() as string;
 		linterDir[file] = {
 			file: { contents: load },
 		};
-	});
+	}
 	const serverFiles: FileSystemTree = {
 		linter: { directory: linterDir },
 		code: { directory: {} },
@@ -55,12 +56,23 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 		installationExit: Promise.resolve(-1),
 		updateDeps: async (contents: string) => {
 			updatingDeps = (async () => {
-				await webContainer.fs.writeFile('package.json', `{ "devDependencies": ${contents} }`, 'utf-8');
+				await webContainer.fs.writeFile('package.json', `{ "devDependencies": ${contents} }`, 'utf8');
 				if (installProcess) {
 					installProcess.kill();
 				}
 				clear();
 				appendLine('Installing dependencies...');
+
+				try {
+					await webContainer.fs.rm('node_modules', { recursive: true });
+				} catch {
+					// ignore if it doesn't exist
+				}
+				try {
+					await webContainer.fs.rm('package-lock.json');
+				} catch {
+					// ignore if it doesn't exist
+				}
 				installProcess = await webContainer.spawn('npm', ['install']);
 				void installProcess.output.pipeTo(
 					new WritableStream({
@@ -70,28 +82,28 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 					}),
 				);
 				containerServer.installationExit = installProcess.exit;
-				if ((await containerServer.installationExit) !== 0) {
-					appendLine('Installation failed');
-					return {};
-				} else {
+				if ((await containerServer.installationExit) === 0) {
 					appendLine('Installation succeeded');
 					const installedPackages: Record<string, string> = {};
 					const deps = JSON.parse(contents);
 					for (const dep of Object.keys(deps)) {
-						const json = await webContainer.fs.readFile(`/node_modules/${dep}/package.json`, 'utf-8');
+						const json = await webContainer.fs.readFile(`/node_modules/${dep}/package.json`, 'utf8');
 						const parsed = JSON.parse(json);
 						installedPackages[parsed.name] = parsed.version;
 					}
 					return installedPackages;
+				} else {
+					appendLine('Installation failed');
+					return {};
 				}
 			})();
 			const result = await updatingDeps;
-			if ((await containerServer.installationExit) !== 0) {
-				throw new Error('Installation failed');
-			} else {
+			if ((await containerServer.installationExit) === 0) {
 				appendLine('Restarting server...');
 				restartingServer = linterServer.restart();
 				await restartingServer;
+			} else {
+				throw new Error('Installation failed');
 			}
 			return result;
 		},
@@ -101,21 +113,21 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 					await webContainer.fs.rm(filename);
 					configFilename = filename;
 				}
-				await webContainer.fs.writeFile(filename, contents, 'utf-8');
+				await webContainer.fs.writeFile(filename, contents, 'utf8');
 			})();
 			await updatingConfig;
 
-			if ((await containerServer.installationExit) !== 0) {
-				throw new Error('Installation failed');
-			} else {
+			if ((await containerServer.installationExit) === 0) {
 				appendLine('Restarting server...');
 				restartingServer = linterServer.restart();
 				await restartingServer;
+			} else {
+				throw new Error('Installation failed');
 			}
 		},
 		lint: async (filename: string, contents: string) => {
 			const path = `code/${filename}`;
-			await webContainer.fs.writeFile(path, contents, 'utf-8');
+			await webContainer.fs.writeFile(path, contents, 'utf8');
 
 			await Promise.all([updatingDeps, updatingConfig, restartingServer]);
 			if ((await containerServer.installationExit) !== 0) {
@@ -163,7 +175,7 @@ class LinterServer {
 		void process.output.pipeTo(
 			new WritableStream({
 				write(data) {
-					callbacks.forEach(callback => callback(data));
+					for (const callback of callbacks) callback(data);
 				},
 			}),
 		);
