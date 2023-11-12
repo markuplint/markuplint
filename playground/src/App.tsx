@@ -18,6 +18,7 @@ import { DepsEditor } from './components/DepsEditor';
 import { ExampleSelector } from './components/ExampleSelector';
 import { FilenameEditor } from './components/FilenameEditor';
 import { ProblemsOutput } from './components/ProblemsOutput';
+import { SchemaEditor } from './components/SchemaEditor';
 import { examples } from './examples';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
@@ -45,6 +46,8 @@ export function App() {
 	const OUTPUT_TAB_INDEX_PROBLEMS = 0;
 	const OUTPUT_TAB_INDEX_CONSOLE = 1;
 	const [selectedOutputTab, setSelectedOutputTab] = useState(OUTPUT_TAB_INDEX_CONSOLE);
+	// TODO: get version from installed package
+	const markuplintVersion = 'v3.0.0';
 
 	useEffect(() => {
 		if (!boot) {
@@ -119,6 +122,7 @@ export function App() {
 						/>
 					</details>
 					<details open>
+						<SchemaEditor markuplintVersion={markuplintVersion} />
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
 						<FilenameEditor
 							ref={filenameEditorRef}
