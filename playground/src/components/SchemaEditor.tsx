@@ -16,8 +16,8 @@ const SchemaEditorRaw = ({ markuplintVersion, onChange }: Readonly<Props>) => {
 	const [schema, setSchema] = useState<JSONSchema | null>(null);
 	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const rulesDefinition = schema?.properties?.rules;
-	const rules = typeof rulesDefinition === 'boolean' ? null : rulesDefinition?.properties;
-
+	const rulesDefaultDefinition = typeof rulesDefinition === 'boolean' ? null : rulesDefinition?.oneOf?.[0];
+	const ruleSchemas = typeof rulesDefaultDefinition === 'boolean' ? null : rulesDefaultDefinition?.properties;
 	useEffect(() => {
 		onChange?.(rulesConfig ?? {});
 	}, [rulesConfig, onChange]);
@@ -30,8 +30,6 @@ const SchemaEditorRaw = ({ markuplintVersion, onChange }: Readonly<Props>) => {
 		void (async () => {
 			try {
 				const url = `https://raw.githubusercontent.com/markuplint/markuplint/${markuplintVersion}/config.schema.json`;
-				// const res = await fetch(url);
-				// const json = await res.json();
 				const dereferencedSchema = await fetchDereferencedSchema(new URL(url));
 				if (dereferencedSchema !== undefined && typeof dereferencedSchema !== 'boolean') {
 					setSchema(dereferencedSchema);
@@ -56,13 +54,13 @@ const SchemaEditorRaw = ({ markuplintVersion, onChange }: Readonly<Props>) => {
 
 	return (
 		<div>
-			{rules == null ? (
+			{ruleSchemas == null ? (
 				<p>Loading...</p>
 			) : (
-				Object.entries(rules).map(
-					([key, rule]) =>
-						typeof rule !== 'boolean' && (
-							<ConfigRule key={key} name={key} schema={rule} onChange={handleChange} />
+				Object.entries(ruleSchemas).map(
+					([key, ruleSchema]) =>
+						typeof ruleSchema !== 'boolean' && (
+							<ConfigRule key={key} name={key} schema={ruleSchema} onChange={handleChange} />
 						),
 				)
 			)}
