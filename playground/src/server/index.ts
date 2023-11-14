@@ -110,7 +110,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 		updateConfig: async (filename: string, contents: string) => {
 			updatingConfig = (async () => {
 				if (filename !== configFilename) {
-					await webContainer.fs.rm(filename);
+					await webContainer.fs.rm(configFilename);
 					configFilename = filename;
 				}
 				await webContainer.fs.writeFile(filename, contents, 'utf8');

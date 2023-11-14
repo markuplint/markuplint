@@ -9,4 +9,4 @@ export const configFormats = [
 	'markuplint.config.js',
 	'markuplint.config.cjs',
 	'markuplint.config.ts',
-];
+] as const;

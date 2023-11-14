@@ -1,11 +1,12 @@
 import type { ExampleData } from '../examples';
-import type { FC } from 'react';
+
+import { memo, type FC } from 'react';
 
 import { examples } from '../examples';
 
 type Props = { onSelect?: (files: Readonly<ExampleData>) => void; disabled?: boolean };
 
-export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
+const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 	return (
 		<ul className="grid gap-12 px-8 pt-4 pb-12">
 			{Object.keys(examples)
@@ -54,3 +55,5 @@ export const ExampleSelector: FC<Props> = ({ onSelect, disabled = false }) => {
 		</ul>
 	);
 };
+
+export const ExampleSelector = memo(ExampleSelectorRaw);

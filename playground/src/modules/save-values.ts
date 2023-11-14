@@ -3,7 +3,6 @@ type PlaygroundValues = Readonly<{
 	codeFilename: string;
 	config: string;
 	configFilename: string;
-	deps: string;
 }>;
 
 const encode = (values: PlaygroundValues): string => {

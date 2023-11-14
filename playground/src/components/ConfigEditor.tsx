@@ -1,48 +1,20 @@
 import type { editor } from 'monaco-editor';
 
 import MonacoEditor from '@monaco-editor/react';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { configFormats } from '../modules/config-formats';
-import { debounce } from '../modules/debounce';
 import { getLanguage } from '../modules/monaco-editor';
 
-export type ConfigEditorRef = {
-	getValue: () => string;
-	setValue: (code: string) => void;
-	getFilename: () => string;
-	setFilename: (filename: string) => void;
-};
-
-type Props = {
+type Props = Readonly<{
+	value: string;
 	onChangeValue?: (code: string) => void;
+	filename: string;
 	onChangeFilename?: (filename: string) => void;
-};
+}>;
 
-export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue, onChangeFilename }, ref) => {
+export const ConfigEditor = ({ value, onChangeValue, filename, onChangeFilename }: Props) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-	const [filenameState, setFilenameState] = useState<string>(configFormats[0]);
-
-	useImperativeHandle(
-		ref,
-		() => {
-			return {
-				getValue: () => {
-					return editorRef.current?.getValue() ?? '';
-				},
-				setValue: (code: string) => {
-					editorRef.current?.setValue(code);
-				},
-				getFilename: () => {
-					return filenameState;
-				},
-				setFilename: (filename: string) => {
-					setFilenameState(filename);
-				},
-			};
-		},
-		[filenameState],
-	);
 
 	return (
 		<div>
@@ -50,38 +22,38 @@ export const ConfigEditor = forwardRef<ConfigEditorRef, Props>(({ onChangeValue,
 				Config filename:
 				<select
 					className="border border-gray-400 rounded-md px-1"
-					value={filenameState}
+					value={filename}
 					onChange={e => {
-						setFilenameState(e.target.value);
 						onChangeFilename?.(e.target.value);
 					}}
 				>
-					{configFormats.map(filename => (
-						<option key={filename} value={filename}>
-							{filename}
+					{configFormats.map(name => (
+						<option key={name} value={name}>
+							{name}
 						</option>
 					))}
 				</select>
 			</label>
 			<div className="grid min-h-[10rem]">
 				<MonacoEditor
-					language={getLanguage(filenameState) ?? 'json'}
+					language={getLanguage(filename) ?? 'json'}
 					theme="vs-dark"
 					options={{
 						minimap: { enabled: false },
 						lineNumbers: 'off',
 						fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
 					}}
+					value={value}
 					onMount={(editor, _monaco) => {
 						editorRef.current = editor;
 					}}
-					onChange={debounce(value => {
+					onChange={value => {
 						if (value !== undefined) {
 							onChangeValue?.(value);
 						}
-					}, 500)}
+					}}
 				/>
 			</div>
 		</div>
 	);
-});
+};

@@ -1,63 +1,22 @@
-import type { editor } from 'monaco-editor';
-
-import MonacoEditor from '@monaco-editor/react';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
-
-import { debounce } from '../modules/debounce';
-
-export type DepsEditorRef = {
-	getValue: () => string;
-	setValue: (code: string) => void;
-};
-
-type Props = {
+type Props = Readonly<{
 	status: 'success' | 'loading' | 'error';
-	installedPackages: Record<string, string>;
-	onChangeValue?: (code: string) => void;
-};
+	installedPackages: Readonly<Record<string, string>>;
+	enableNextVersion?: boolean;
+	onChange?: (value: boolean) => void;
+}>;
 
-export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, installedPackages, status }, ref) => {
-	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
-	useImperativeHandle(
-		ref,
-		() => {
-			return {
-				getValue: () => {
-					return editorRef.current?.getValue() ?? '';
-				},
-				setValue: (code: string) => {
-					editorRef.current?.setValue(code);
-				},
-			};
-		},
-		[],
-	);
-
+export const DepsEditor = ({ installedPackages, status, enableNextVersion = false, onChange }: Props) => {
 	return (
 		<div>
 			<p className="py-2 px-4">
-				<code>package.json</code> &gt; <code>devDependencies</code>
+				<code>package.json</code>
 			</p>
-			<div className="grid min-h-[10rem]">
-				<MonacoEditor
-					language="json"
-					theme="vs-dark"
-					options={{
-						minimap: { enabled: false },
-						lineNumbers: 'off',
-						fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
-					}}
-					onMount={(editor, _monaco) => {
-						editorRef.current = editor;
-					}}
-					onChange={debounce(value => {
-						if (value !== undefined) {
-							onChangeValue?.(value);
-						}
-					}, 500)}
-				/>
-			</div>
+			<p>
+				<label>
+					Enable <code>next</code> version{' '}
+					<input type="checkbox" checked={enableNextVersion} onChange={e => onChange?.(e.target.checked)} />
+				</label>
+			</p>
 			<div className="py-2 px-4">
 				{status === 'loading' ? (
 					<p>Installing...</p>
@@ -66,16 +25,24 @@ export const DepsEditor = forwardRef<DepsEditorRef, Props>(({ onChangeValue, ins
 				) : status === 'success' ? (
 					<>
 						<p>Installed:</p>
-						<ul>
+						{/* <ul>
 							{Object.entries(installedPackages).map(([name, version]) => (
 								<li key={name}>
 									{name}@{version}
 								</li>
 							))}
-						</ul>
+						</ul> */}
+						<pre>
+							<code>{JSON.stringify({ devDependencies: installedPackages }, null, 2)}</code>
+						</pre>
 					</>
 				) : null}
 			</div>
+			{Object.keys(installedPackages).length > 0 && (
+				<code>{`npm install -D ${Object.keys(installedPackages)
+					.map(name => `${name}@${enableNextVersion ? 'next' : 'latest'}`)
+					.join(' ')}`}</code>
+			)}
 		</div>
 	);
-});
+};

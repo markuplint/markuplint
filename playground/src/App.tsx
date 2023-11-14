@@ -1,13 +1,10 @@
-import type { CodeEditorRef } from './components/CodeEditor';
-import type { ConfigEditorRef } from './components/ConfigEditor';
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
-import type { DepsEditorRef } from './components/DepsEditor';
-import type { FilenameEditorRef } from './components/FilenameEditor';
 import type { Violations } from './modules/violations';
+// import type { Config, Rules } from '@markuplint/ml-config';
 
 import { Tab } from '@headlessui/react';
 import ansiRegex from 'ansi-regex';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -20,35 +17,48 @@ import { FilenameEditor } from './components/FilenameEditor';
 import { ProblemsOutput } from './components/ProblemsOutput';
 import { SchemaEditor } from './components/SchemaEditor';
 import { examples } from './examples';
+import { configFormats } from './modules/config-formats';
+import { debounce } from './modules/debounce';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
 // FIXME:
 // @ts-ignore
 import { extractJson } from './server/linter/extract-json.mjs';
 
+const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
+const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
+
 let boot = false;
-let containerServer: Awaited<ReturnType<typeof setupContainerServer>>;
+let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
 
 function classNames(...classes: readonly string[]) {
 	return classes.filter(Boolean).join(' ');
 }
 
+const OUTPUT_TAB_INDICES = {
+	PROBLEMS: 0,
+	CONSOLE: 1,
+} as const;
+
 export function App() {
-	const configEditorRef = useRef<ConfigEditorRef>(null);
 	const consoleRef = useRef<ConsoleOutputRef>(null);
-	const codeEditorRef = useRef<CodeEditorRef>(null);
-	const depsEditorRef = useRef<DepsEditorRef>(null);
-	const filenameEditorRef = useRef<FilenameEditorRef>(null);
+	const [code, setCode] = useState('');
+	const [filename, setFilename] = useState('code.html');
+	const [configFilename, setConfigFilename] = useState<string>(configFormats[0]);
+	const [configString, setConfigString] = useState('');
+	const [depsPackages, setDepsPackages] = useState<readonly [string, ...string[]]>(['markuplint']);
+	const [enableNextVersion, setEnableNextVersion] = useState(false);
 	const [violations, setViolations] = useState<Violations>([]);
 	const [serverReady, setServerReady] = useState(false);
-	const [installedPackages, setInstalledPackages] = useState<Record<string, string>>({});
+	const [lintTrigger, setLintTrigger] = useState(0);
+	// const [parsedConfig, setParsedConfig] = useState<Config>({});
+	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
-	const OUTPUT_TAB_INDEX_PROBLEMS = 0;
-	const OUTPUT_TAB_INDEX_CONSOLE = 1;
-	const [selectedOutputTab, setSelectedOutputTab] = useState(OUTPUT_TAB_INDEX_CONSOLE);
-	// TODO: get version from installed package
-	const markuplintVersion = 'v3.0.0';
+	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
+	const markuplintVersion = installedPackages['markuplint'] ? (`v${installedPackages['markuplint']}` as const) : null;
+	const [isInitialized, setIsInitialized] = useState(false);
 
+	// boot container server
 	useEffect(() => {
 		if (!boot) {
 			boot = true;
@@ -56,40 +66,121 @@ export function App() {
 				containerServer = await setupContainerServer(consoleRef.current!);
 				setServerReady(true);
 
-				const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
-				const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
 				const initialValues = loadValues() ?? defaultExample;
-				const { deps, configFilename, config, codeFilename, code } = initialValues;
-				deps && depsEditorRef.current?.setValue(deps);
-				configFilename && configEditorRef.current?.setFilename(configFilename);
-				config && configEditorRef.current?.setValue(config);
-				codeFilename && filenameEditorRef.current?.setFilename(codeFilename);
-				code && codeEditorRef.current?.setValue(code);
+				const { configFilename, config, codeFilename, code } = initialValues;
+				configFilename && setConfigFilename(configFilename);
+				config && setConfigString(config);
+				codeFilename && setFilename(codeFilename);
+				code && setCode(code);
+				setIsInitialized(true);
 			})();
 		}
 	}, []);
 
-	const lintCode = async () => {
-		const data = await containerServer.lint(
-			filenameEditorRef.current?.getFilename() ?? 'code.html',
-			codeEditorRef.current?.getValue() ?? '',
-		);
-		const maybeViolations = extractJson(data.replaceAll(ansiRegex(), ''));
-		if (Array.isArray(maybeViolations)) {
-			setViolations(maybeViolations);
-		}
-		setSelectedOutputTab(OUTPUT_TAB_INDEX_PROBLEMS);
-	};
+	// update dependencies when config changed
+	useEffect(() => {
+		// find @markuplint/* packages from config
+		const packages = configString.match(/@markuplint\/[^"]+/g);
+		setDepsPackages(['markuplint', ...(packages ?? [])]);
+	}, [configString]);
 
-	const saveCurrentValues = () => {
-		saveValues({
-			deps: depsEditorRef.current?.getValue() ?? '',
-			configFilename: configEditorRef.current?.getFilename() ?? '',
-			config: configEditorRef.current?.getValue() ?? '',
-			codeFilename: filenameEditorRef.current?.getFilename() ?? '',
-			code: codeEditorRef.current?.getValue() ?? '',
+	useEffect(() => {
+		if (!containerServer) {
+			return;
+		}
+
+		const isConfigValid = (() => {
+			try {
+				JSON.parse(configString);
+				// JSON is valid
+				return true;
+			} catch {
+				// JSON is invalid
+				return false;
+			}
+		})();
+		if (isConfigValid) {
+			void (async () => {
+				setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
+				try {
+					await containerServer.updateConfig(configFilename, configString);
+				} catch (error) {
+					// eslint-disable-next-line no-console
+					console.error(error);
+				}
+				setLintTrigger(prev => prev + 1);
+			})();
+		}
+	}, [configString, configFilename]);
+
+	// npm install when dependencies changed
+	useEffect(() => {
+		if (!containerServer) {
+			return;
+		}
+
+		const dependencies = Object.fromEntries(
+			depsPackages.map(name => {
+				return [name, enableNextVersion ? 'next' : 'latest'];
+			}),
+		);
+		const depsString = JSON.stringify(dependencies, null, 2);
+
+		setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
+		setDepsStatus('loading');
+		setViolations([]);
+
+		void (async () => {
+			const installed = await containerServer.updateDeps(depsString);
+			setInstalledPackages(installed);
+			if (Object.keys(installed).length > 0) {
+				setDepsStatus('success');
+				setLintTrigger(prev => prev + 1);
+			} else {
+				setDepsStatus('error');
+			}
+		})();
+	}, [depsPackages, enableNextVersion]);
+
+	// lint when code or config changed
+	useEffect(() => {
+		if (!containerServer) {
+			return;
+		}
+		void (async () => {
+			const data = await containerServer.lint(filename, code);
+			const maybeViolations = extractJson(data.replaceAll(ansiRegex(), ''));
+			if (Array.isArray(maybeViolations)) {
+				setViolations(maybeViolations);
+				setSelectedOutputTab(OUTPUT_TAB_INDICES.PROBLEMS);
+			}
+		})();
+	}, [code, filename, lintTrigger]);
+
+	// save values
+	const debouncedSaveValues = useMemo(() => debounce(saveValues, 200), []);
+	useEffect(() => {
+		if (!isInitialized) {
+			return;
+		}
+		debouncedSaveValues({
+			configFilename: configFilename,
+			config: configString,
+			codeFilename: filename,
+			code: code,
 		});
-	};
+	}, [configFilename, configString, filename, code, debouncedSaveValues, isInitialized]);
+
+	const handleRulesChange = useCallback(() =>
+		// rules: Rules
+		{
+			// setParsedConfig(prev => {
+			// 	return {
+			// 		...prev,
+			// 		rules: rules,
+			// 	};
+			// });
+		}, []);
 
 	return (
 		<>
@@ -113,73 +204,31 @@ export function App() {
 						<ExampleSelector
 							disabled={!serverReady}
 							onSelect={example => {
-								depsEditorRef.current?.setValue(example.deps);
-								configEditorRef.current?.setFilename(example.configFilename);
-								configEditorRef.current?.setValue(example.config);
-								filenameEditorRef.current?.setFilename(example.codeFilename);
-								codeEditorRef.current?.setValue(example.code);
+								setConfigFilename(example.configFilename);
+								setConfigString(example.config);
+								setFilename(example.codeFilename);
+								setCode(example.code);
 							}}
 						/>
 					</details>
 					<details open>
-						<SchemaEditor markuplintVersion={markuplintVersion} />
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
-						<FilenameEditor
-							ref={filenameEditorRef}
-							onChangeFilename={() => {
-								void lintCode();
-								saveCurrentValues();
-							}}
-						/>
+						<details>
+							<summary>Rules</summary>
+							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleRulesChange} />
+						</details>
+						<FilenameEditor value={filename} onChange={setFilename} />
 						<ConfigEditor
-							ref={configEditorRef}
-							onChangeValue={code => {
-								void (async () => {
-									if (configEditorRef.current) {
-										setSelectedOutputTab(OUTPUT_TAB_INDEX_CONSOLE);
-										await containerServer.updateConfig(configEditorRef.current.getFilename(), code);
-									}
-									void lintCode();
-									saveCurrentValues();
-								})();
-							}}
-							onChangeFilename={filename => {
-								void (async () => {
-									if (configEditorRef.current) {
-										setSelectedOutputTab(OUTPUT_TAB_INDEX_CONSOLE);
-										await containerServer.updateConfig(
-											filename,
-											configEditorRef.current.getValue(),
-										);
-									}
-									void lintCode();
-									saveCurrentValues();
-								})();
-							}}
+							filename={configFilename}
+							value={configString}
+							onChangeValue={setConfigString}
+							onChangeFilename={setConfigFilename}
 						/>
 						<DepsEditor
-							ref={depsEditorRef}
 							status={depsStatus}
 							installedPackages={installedPackages}
-							onChangeValue={value => {
-								if (value) {
-									void (async () => {
-										setSelectedOutputTab(OUTPUT_TAB_INDEX_CONSOLE);
-										setDepsStatus('loading');
-										const installed = await containerServer.updateDeps(value);
-										setInstalledPackages(installed);
-										if ((await containerServer.installationExit) === 0) {
-											setDepsStatus('success');
-											void lintCode();
-										} else {
-											setDepsStatus('error');
-										}
-									})();
-								} else {
-									setInstalledPackages({});
-									setDepsStatus('error');
-								}
-							}}
+							enableNextVersion={enableNextVersion}
+							onChange={setEnableNextVersion}
 						/>
 					</details>
 				</section>
@@ -194,15 +243,7 @@ export function App() {
 					gutterStyle={() => ({})}
 				>
 					<section>
-						<CodeEditor
-							filename={filenameEditorRef.current?.getFilename() ?? 'code.html'}
-							ref={codeEditorRef}
-							violations={violations}
-							onChangeValue={() => {
-								void lintCode();
-								saveCurrentValues();
-							}}
-						/>
+						<CodeEditor value={code} filename={filename} violations={violations} onChange={setCode} />
 					</section>
 					<section className="grid grid-rows-[auto_minmax(0,1fr)]">
 						<Tab.Group selectedIndex={selectedOutputTab} onChange={setSelectedOutputTab}>

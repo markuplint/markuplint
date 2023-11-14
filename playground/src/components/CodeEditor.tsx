@@ -2,41 +2,21 @@ import type { Violations } from '../modules/violations';
 import type { editor } from 'monaco-editor';
 
 import MonacoEditor, { type Monaco } from '@monaco-editor/react';
-import { forwardRef, useRef, useEffect, useImperativeHandle } from 'react';
+import { useRef, useEffect } from 'react';
 
-import { debounce } from '../modules/debounce';
 import { getLanguage } from '../modules/monaco-editor';
 import { convertToMarkerData } from '../modules/violations';
 
-export type CodeEditorRef = {
-	getValue: () => string;
-	setValue: (code: string) => void;
-};
-
-type Props = {
+type Props = Readonly<{
+	value: string;
 	filename: string;
 	violations: Violations;
-	onChangeValue?: (code: string) => void;
-};
+	onChange?: (code: string) => void;
+}>;
 
-export const CodeEditor = forwardRef<CodeEditorRef, Props>(({ filename, violations, onChangeValue }, ref) => {
+export const CodeEditor = ({ value, filename, violations, onChange }: Props) => {
 	const monacoRef = useRef<Monaco | null>(null);
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-
-	useImperativeHandle(
-		ref,
-		() => {
-			return {
-				getValue: () => {
-					return editorRef.current?.getValue() ?? '';
-				},
-				setValue: (code: string) => {
-					editorRef.current?.setValue(code);
-				},
-			};
-		},
-		[],
-	);
 
 	useEffect(() => {
 		const markers = convertToMarkerData(violations);
@@ -55,16 +35,17 @@ export const CodeEditor = forwardRef<CodeEditorRef, Props>(({ filename, violatio
 					minimap: { enabled: false },
 					fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
 				}}
+				value={value}
 				onMount={(editor, monaco) => {
 					editorRef.current = editor;
 					monacoRef.current = monaco;
 				}}
-				onChange={debounce(value => {
+				onChange={value => {
 					if (value !== undefined) {
-						onChangeValue?.(value);
+						onChange?.(value);
 					}
-				}, 200)}
+				}}
 			/>
 		</div>
 	);
-});
+};

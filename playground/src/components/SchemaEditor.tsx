@@ -1,26 +1,26 @@
 import type { JSONSchema } from '../modules/json-schema';
+import type { Rules } from '@markuplint/ml-config';
 
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import { fetchDereferencedSchema } from '../modules/json-schema';
 
 import { ConfigRule } from './ConfigRule';
 
-export type SchemaEditorRef = {
-	getValue: () => string;
-	setValue: (code: string) => void;
-};
-
 type Props = {
 	markuplintVersion: `v${string}` | null;
-	onChangeValue?: (code: string) => void;
-	onChangeFilename?: (filename: string) => void;
+	onChange?: (rules: Rules) => void;
 };
 
-export const SchemaEditor = forwardRef<SchemaEditorRef, Props>(({ markuplintVersion }, ref) => {
+const SchemaEditorRaw = ({ markuplintVersion, onChange }: Readonly<Props>) => {
 	const [schema, setSchema] = useState<JSONSchema | null>(null);
+	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const rulesDefinition = schema?.properties?.rules;
 	const rules = typeof rulesDefinition === 'boolean' ? null : rulesDefinition?.properties;
+
+	useEffect(() => {
+		onChange?.(rulesConfig ?? {});
+	}, [rulesConfig, onChange]);
 
 	useEffect(() => {
 		setSchema(null);
@@ -43,32 +43,31 @@ export const SchemaEditor = forwardRef<SchemaEditorRef, Props>(({ markuplintVers
 		})();
 	}, [markuplintVersion]);
 
-	useImperativeHandle(
-		ref,
-		() => {
-			return {
-				getValue: () => {
-					// TODO
-					return '';
-				},
-				setValue: (code: string) => {
-					// TODO
-					console.log(code);
-				},
-			};
-		},
-		[],
-	);
+	const handleChange = useCallback((name: string, value: any | undefined) => {
+		if (value === undefined || value === null) {
+			setRulesConfig(prev => {
+				const { [name]: _, ...updated } = prev ?? {};
+				return updated;
+			});
+		} else {
+			setRulesConfig(prev => ({ ...prev, [name]: value }));
+		}
+	}, []);
 
 	return (
 		<div>
 			{rules == null ? (
-				<div>Loading...</div>
+				<p>Loading...</p>
 			) : (
 				Object.entries(rules).map(
-					([key, rule]) => typeof rule !== 'boolean' && <ConfigRule key={key} name={key} schema={rule} />,
+					([key, rule]) =>
+						typeof rule !== 'boolean' && (
+							<ConfigRule key={key} name={key} schema={rule} onChange={handleChange} />
+						),
 				)
 			)}
 		</div>
 	);
-});
+};
+
+export const SchemaEditor = memo(SchemaEditorRaw);
