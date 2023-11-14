@@ -2,7 +2,8 @@
 
 // NOTE: Actually, it refers to the installed packages in WebContainer.
 import { MLEngine } from 'markuplint';
-import { createJsonPayload } from './extract-json.mjs';
+
+import constants from './constants.json' assert { type: 'json' };
 
 main();
 
@@ -22,14 +23,17 @@ function main() {
 		}
 		void (async () => {
 			const target = data;
-			const file = await MLEngine.toMLFile(target);
-			const engine = new MLEngine(file, { locale: options.locale });
-			const result = await engine.exec();
-			process.stdout.write(createJsonPayload(result.violations));
+			try {
+				const file = await MLEngine.toMLFile(target);
+				const engine = new MLEngine(file, { locale: options.locale });
+				const result = await engine.exec();
+				process.stdout.write(createJsonPayload(result.violations));
+			} catch (error) {
+				process.stdout.write(createJsonPayload('error'));
+				throw error;
+			}
 		})();
 	});
-
-	process.stdout.write('ready');
 }
 
 /**
@@ -54,4 +58,12 @@ function getOptions() {
 		}
 	}
 	return options;
+}
+
+/**
+ * Convert the linter output to distinguish it from other logs.
+ */
+export function createJsonPayload(payload) {
+	const { DIRECTIVE_OPEN, DIRECTIVE_CLOSE } = constants;
+	return `${DIRECTIVE_OPEN}${JSON.stringify(payload)}${DIRECTIVE_CLOSE}`;
 }

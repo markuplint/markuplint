@@ -1,10 +1,9 @@
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
 import type { Violations } from './modules/violations';
-// import type { Config, Rules } from '@markuplint/ml-config';
+import type { Rules } from '@markuplint/ml-config';
 
 import { Tab } from '@headlessui/react';
-import ansiRegex from 'ansi-regex';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -21,12 +20,18 @@ import { configFormats } from './modules/config-formats';
 import { debounce } from './modules/debounce';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
-// FIXME:
-// @ts-ignore
-import { extractJson } from './server/linter/extract-json.mjs';
 
 const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
 const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
+
+const isValidJson = (maybeJson: string) => {
+	try {
+		JSON.parse(maybeJson);
+		return true;
+	} catch {
+		return false;
+	}
+};
 
 let boot = false;
 let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
@@ -40,23 +45,28 @@ const OUTPUT_TAB_INDICES = {
 	CONSOLE: 1,
 } as const;
 
+type StringSet = Readonly<ReadonlySet<string>>;
+const areSetsEqual = (set1: StringSet, set2: StringSet) => {
+	if (set1.size !== set2.size) return false;
+	return [...set1].every(item => set2.has(item));
+};
+
 export function App() {
 	const consoleRef = useRef<ConsoleOutputRef>(null);
 	const [code, setCode] = useState('');
 	const [filename, setFilename] = useState('code.html');
 	const [configFilename, setConfigFilename] = useState<string>(configFormats[0]);
 	const [configString, setConfigString] = useState('');
-	const [depsPackages, setDepsPackages] = useState<readonly [string, ...string[]]>(['markuplint']);
+	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
 	const [enableNextVersion, setEnableNextVersion] = useState(false);
 	const [violations, setViolations] = useState<Violations>([]);
-	const [serverReady, setServerReady] = useState(false);
 	const [lintTrigger, setLintTrigger] = useState(0);
-	// const [parsedConfig, setParsedConfig] = useState<Config>({});
+	const [rules, setRules] = useState<Rules>({});
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
 	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
 	const markuplintVersion = installedPackages['markuplint'] ? (`v${installedPackages['markuplint']}` as const) : null;
-	const [isInitialized, setIsInitialized] = useState(false);
+	const [initialized, setInitialized] = useState(false);
 
 	// boot container server
 	useEffect(() => {
@@ -64,7 +74,6 @@ export function App() {
 			boot = true;
 			void (async () => {
 				containerServer = await setupContainerServer(consoleRef.current!);
-				setServerReady(true);
 
 				const initialValues = loadValues() ?? defaultExample;
 				const { configFilename, config, codeFilename, code } = initialValues;
@@ -72,7 +81,7 @@ export function App() {
 				config && setConfigString(config);
 				codeFilename && setFilename(codeFilename);
 				code && setCode(code);
-				setIsInitialized(true);
+				setInitialized(true);
 			})();
 		}
 	}, []);
@@ -80,28 +89,23 @@ export function App() {
 	// update dependencies when config changed
 	useEffect(() => {
 		// find @markuplint/* packages from config
-		const packages = configString.match(/@markuplint\/[^"]+/g);
-		setDepsPackages(['markuplint', ...(packages ?? [])]);
-	}, [configString]);
+		const additionalPackages = configString.match(/@markuplint\/[^"]+/g) ?? [];
+		const candidate = new Set(['markuplint', ...additionalPackages]);
+		if (!areSetsEqual(depsPackages, candidate)) {
+			setDepsPackages(candidate);
+		}
+	}, [configString, depsPackages]);
 
+	// update config when config changed
 	useEffect(() => {
 		if (!containerServer) {
 			return;
 		}
 
-		const isConfigValid = (() => {
-			try {
-				JSON.parse(configString);
-				// JSON is valid
-				return true;
-			} catch {
-				// JSON is invalid
-				return false;
-			}
-		})();
-		if (isConfigValid) {
+		if (isValidJson(configString)) {
 			void (async () => {
 				setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
+				setViolations([]);
 				try {
 					await containerServer.updateConfig(configFilename, configString);
 				} catch (error) {
@@ -115,12 +119,11 @@ export function App() {
 
 	// npm install when dependencies changed
 	useEffect(() => {
-		if (!containerServer) {
+		if (!containerServer || !initialized) {
 			return;
 		}
-
 		const dependencies = Object.fromEntries(
-			depsPackages.map(name => {
+			[...depsPackages].sort().map(name => {
 				return [name, enableNextVersion ? 'next' : 'latest'];
 			}),
 		);
@@ -140,27 +143,24 @@ export function App() {
 				setDepsStatus('error');
 			}
 		})();
-	}, [depsPackages, enableNextVersion]);
+	}, [depsPackages, enableNextVersion, initialized]);
 
-	// lint when code or config changed
+	// lint
 	useEffect(() => {
 		if (!containerServer) {
 			return;
 		}
 		void (async () => {
-			const data = await containerServer.lint(filename, code);
-			const maybeViolations = extractJson(data.replaceAll(ansiRegex(), ''));
-			if (Array.isArray(maybeViolations)) {
-				setViolations(maybeViolations);
-				setSelectedOutputTab(OUTPUT_TAB_INDICES.PROBLEMS);
-			}
+			const result = await containerServer.lint(filename, code);
+			setViolations(result);
+			setSelectedOutputTab(OUTPUT_TAB_INDICES.PROBLEMS);
 		})();
 	}, [code, filename, lintTrigger]);
 
 	// save values
 	const debouncedSaveValues = useMemo(() => debounce(saveValues, 200), []);
 	useEffect(() => {
-		if (!isInitialized) {
+		if (!initialized) {
 			return;
 		}
 		debouncedSaveValues({
@@ -169,18 +169,20 @@ export function App() {
 			codeFilename: filename,
 			code: code,
 		});
-	}, [configFilename, configString, filename, code, debouncedSaveValues, isInitialized]);
+	}, [configFilename, configString, filename, code, debouncedSaveValues, initialized]);
 
-	const handleRulesChange = useCallback(() =>
-		// rules: Rules
-		{
-			// setParsedConfig(prev => {
-			// 	return {
-			// 		...prev,
-			// 		rules: rules,
-			// 	};
-			// });
-		}, []);
+	// update config when rules changed
+	useEffect(() => {
+		if (isValidJson(configString)) {
+			const parsedConfig = JSON.parse(configString);
+			if (Object.keys(rules).length === 0) {
+				delete parsedConfig.rules;
+			} else {
+				parsedConfig.rules = rules;
+			}
+			setConfigString(JSON.stringify(parsedConfig, null, 2));
+		}
+	}, [configString, rules]);
 
 	return (
 		<>
@@ -202,7 +204,7 @@ export function App() {
 					<details>
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Examples</summary>
 						<ExampleSelector
-							disabled={!serverReady}
+							disabled={!initialized}
 							onSelect={example => {
 								setConfigFilename(example.configFilename);
 								setConfigString(example.config);
@@ -215,7 +217,7 @@ export function App() {
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
 						<details>
 							<summary>Rules</summary>
-							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleRulesChange} />
+							<SchemaEditor markuplintVersion={markuplintVersion} onChange={setRules} />
 						</details>
 						<FilenameEditor value={filename} onChange={setFilename} />
 						<ConfigEditor

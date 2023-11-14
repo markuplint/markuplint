@@ -2,9 +2,19 @@ import type { FileSystemTree, WebContainerProcess } from '@webcontainer/api';
 
 import { WebContainer } from '@webcontainer/api';
 
-// FIXME:
-// @ts-ignore
-import { extractJson } from './linter/extract-json.mjs';
+import constants from './linter/constants.json';
+
+/**
+ * Extracts a JSON object from the linter output.
+ */
+const extractJson = (str: string) => {
+	const { DIRECTIVE_OPEN, DIRECTIVE_CLOSE } = constants;
+	if (str.startsWith(DIRECTIVE_OPEN) && str.endsWith(DIRECTIVE_CLOSE)) {
+		return JSON.parse(str.slice(DIRECTIVE_OPEN.length, -DIRECTIVE_CLOSE.length));
+	} else {
+		return null;
+	}
+};
 
 let webContainer: WebContainer;
 
@@ -20,15 +30,13 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 	try {
 		webContainer = await WebContainer.boot();
 		appendLine('WebContainer started');
-	} catch (error) {
-		if ((error as { message: string }).message === 'WebContainer already booted') {
-			// for local development
-			appendLine('WebContainer already booted');
-			appendLine('Reloading...');
-			window.location.reload();
-		} else {
-			throw error;
-		}
+	} catch {
+		// For local development
+		// eslint-disable-next-line no-console
+		console.warn('WebContainer already booted');
+		appendLine('WebContainer already booted');
+		appendLine('Reloading...');
+		window.location.reload();
 	}
 
 	const linterFiles = import.meta.glob('./linter/*', { as: 'raw', eager: true });
@@ -133,8 +141,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			if ((await containerServer.installationExit) !== 0) {
 				throw new Error('Installation failed');
 			}
-
-			const result = await linterServer.request(path, output => Array.isArray(extractJson(output)));
+			const result = await linterServer.request(path, (output): output is any[] => Array.isArray(output));
 			return result;
 		},
 		restart: async () => {
@@ -150,7 +157,7 @@ class LinterServer {
 
 	constructor() {}
 
-	public async request(input: string, test: (output: string) => boolean) {
+	public async request<T>(input: string, test: (output: any) => output is T) {
 		if (!this.serverInternal) {
 			this.serverInternal = await this.start();
 		}
@@ -169,13 +176,18 @@ class LinterServer {
 	private async start() {
 		const locale = navigator.language;
 		const localeWithoutRegion = locale.split('-')[0];
-		const callbacks: ((output: string) => void)[] = [];
+		const callbacks: ((output: any) => void)[] = [];
 		const process = await webContainer.spawn('node', ['./linter/index.mjs', '--locale', localeWithoutRegion]);
 		const writer = process.input.getWriter();
+		const DEBUG_LOG = false;
 		void process.output.pipeTo(
 			new WritableStream({
 				write(data) {
-					for (const callback of callbacks) callback(data);
+					if (DEBUG_LOG) {
+						// eslint-disable-next-line no-console
+						console.log('debug log:', data);
+					}
+					for (const callback of callbacks) callback(extractJson(data));
 				},
 			}),
 		);
@@ -183,12 +195,16 @@ class LinterServer {
 		/**
 		 * Pass input to the linter process and wait for the output to match the test.
 		 */
-		const request = (input: string, test: (output: string) => boolean) => {
-			const promise = new Promise<string>(resolve => {
-				const callback = (output: string) => {
+		const request = <T>(input: string, test: (output: any) => output is T) => {
+			const promise = new Promise<T>(resolve => {
+				const callback = (output: any) => {
 					if (test(output)) {
 						callbacks.splice(callbacks.indexOf(callback), 1);
 						resolve(output);
+						if (DEBUG_LOG) {
+							// eslint-disable-next-line no-console
+							console.log('test passed', output);
+						}
 					}
 				};
 				callbacks.push(callback);
@@ -201,7 +217,7 @@ class LinterServer {
 		 * Wait for the linter process to be ready.
 		 */
 		const ready = async () => {
-			await request('ready?', output => output === 'ready');
+			await request('ready?', (output): output is 'ready' => output === 'ready');
 		};
 
 		return { process, request, ready };
