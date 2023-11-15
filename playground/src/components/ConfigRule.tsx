@@ -11,12 +11,12 @@ const assertNever = (_x: never) => {
 };
 
 type Mode = 'unset' | 'enable' | 'custom';
-// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types -- JSONSchema cannot be readonly
-export const ConfigRule = ({
-	name,
-	schema,
-	onChange,
-}: Readonly<{ name: string; schema: Readonly<JSONSchema>; onChange?: (name: string, rule: AnyRule) => void }>) => {
+type Props = Readonly<{
+	name: string;
+	schema: JSONSchema;
+	onChange?: (name: string, rule: AnyRule) => void;
+}>;
+export const ConfigRule = ({ name, schema, onChange }: Props) => {
 	const [mode, setMode] = useState<Mode>('unset');
 	const [ruleConfig, setRuleConfig] = useState<AnyRule | null>(null);
 	const [customConfig, setCustomConfig] = useState<any>({});
@@ -24,16 +24,15 @@ export const ConfigRule = ({
 		onChange?.(name, ruleConfig);
 	}, [ruleConfig, onChange, name]);
 
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types -- JSONSchema cannot be readonly
 	const Nested = ({
 		schema,
 		depth = 0,
 		name,
-	}: {
+	}: Readonly<{
 		schema: JSONSchema7Definition;
 		depth?: number;
 		name?: string;
-	}): ReactNode => {
+	}>): ReactNode => {
 		const handleChange = (name: string, value: any | undefined) => {
 			if (value === undefined) {
 				const { [name]: _, ...updated } = customConfig;

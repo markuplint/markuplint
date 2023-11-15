@@ -42,8 +42,7 @@ async function fetchSchema(urlString: string): Promise<JSONSchema | JSONSchema7D
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-export async function fetchDereferencedSchema(url: Readonly<URL>) {
+export async function fetchDereferencedSchema(url: URL) {
 	const schema = await fetchSchema(url.toString());
 	if (schema === undefined) {
 		return schema;
@@ -62,10 +61,8 @@ const isURLString = (value: string) => {
 };
 
 export async function dereference(
-	/* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
 	schema: JSONSchema | JSONSchema7Definition,
-	url: Readonly<URL>,
-	/* eslint-enable @typescript-eslint/prefer-readonly-parameter-types */
+	url: URL,
 ): Promise<JSONSchema | JSONSchema7Definition> {
 	// Already dereferenced
 	if (schema == null || typeof schema === 'boolean') {
@@ -134,8 +131,8 @@ export async function dereference(
 	return schema;
 }
 
-// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-async function recursive(properties: Record<string, JSONSchema7Definition>, url: Readonly<URL>) {
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types -- intentionally mutable
+async function recursive(properties: Record<string, JSONSchema7Definition>, url: URL) {
 	const keys = Object.keys(properties);
 	for (const key of keys) {
 		properties[key] = await dereference(properties[key], url);
