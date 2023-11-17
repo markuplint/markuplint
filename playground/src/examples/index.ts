@@ -14,7 +14,6 @@ export type ExampleData = {
 	code: string;
 	configFilename: string;
 	config: string;
-	deps: string;
 	metadata: Readonly<Metadata>;
 };
 
@@ -36,8 +35,6 @@ for (const [path, load] of Object.entries(exampleFiles)) {
 		if (configFormats.includes(file)) {
 			exampleDir[category]['examples'][dir].config = load;
 			exampleDir[category]['examples'][dir].configFilename = file;
-		} else if (file === 'deps.json') {
-			exampleDir[category]['examples'][dir].deps = load;
 		} else if (file === 'metadata.json') {
 			exampleDir[category]['examples'][dir].metadata = JSON.parse(load);
 		} else {
