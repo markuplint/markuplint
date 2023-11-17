@@ -1,46 +1,47 @@
+import type { PlaygroundValues } from '../modules/save-values';
+
 import { configFormats } from '../modules/config-formats';
 
 const exampleFiles = import.meta.glob(['./files/**/*', './files/**/.markuplintrc'], { as: 'raw', eager: true });
 
-type Metadata = {
+type Metadata = Readonly<{
 	title: string;
 	description?: string;
 	docLink?: string;
 	docText?: string;
-};
+}>;
 
-export type ExampleData = {
-	codeFilename: string;
-	code: string;
-	configFilename: string;
-	config: string;
-	metadata: Readonly<Metadata>;
-};
+export type ExampleData = PlaygroundValues &
+	Readonly<{
+		metadata: Metadata;
+	}>;
 
 const exampleDir: {
-	[category in string]: {
+	[category in string]: Readonly<{
 		examples: { [example in string]: ExampleData };
-		metadata: Readonly<Metadata>;
-	};
+		metadata: Metadata;
+	}>;
 } = {};
 for (const [path, load] of Object.entries(exampleFiles)) {
 	// eslint-disable-next-line unicorn/no-unreadable-array-destructuring
 	const [, , category, dirOrMetadata, file] = path.split('/');
 	exampleDir[category] = exampleDir[category] ?? { examples: {}, metadata: {} };
 	if (dirOrMetadata === 'metadata.json') {
-		exampleDir[category].metadata = JSON.parse(load);
+		const metadata = exampleDir[category]['metadata'];
+		Object.assign(metadata, JSON.parse(load));
 	} else {
-		const dir = dirOrMetadata;
-		exampleDir[category]['examples'][dir] = exampleDir[category]['examples'][dir] ?? {};
+		const dirName = dirOrMetadata;
+		const dirObj = exampleDir[category]['examples'][dirName] ?? {};
+		exampleDir[category]['examples'][dirName] = dirObj;
 		if (configFormats.includes(file)) {
-			exampleDir[category]['examples'][dir].config = load;
-			exampleDir[category]['examples'][dir].configFilename = file;
+			Object.assign(dirObj, { config: load, configFilename: file });
 		} else if (file === 'metadata.json') {
-			exampleDir[category]['examples'][dir].metadata = JSON.parse(load);
+			Object.assign(dirObj, { metadata: JSON.parse(load) });
 		} else {
-			exampleDir[category]['examples'][dir].code = load;
-			exampleDir[category]['examples'][dir].codeFilename = file;
+			Object.assign(dirObj, { code: load, codeFilename: file });
 		}
 	}
 }
-export const examples = exampleDir;
+
+const examples = Object.freeze(exampleDir);
+export { examples };

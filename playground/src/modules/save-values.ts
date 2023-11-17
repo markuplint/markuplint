@@ -1,4 +1,4 @@
-type PlaygroundValues = Readonly<{
+export type PlaygroundValues = Readonly<{
 	code: string;
 	codeFilename: string;
 	config: string;
