@@ -1,6 +1,8 @@
+export const fileTypes = ['.html', '.jsx', '.vue', '.svelte'] as const;
+
 export type PlaygroundValues = Readonly<{
 	code: string;
-	codeFilename: string;
+	codeFileType: string;
 	config: string;
 	configFilename: string;
 }>;

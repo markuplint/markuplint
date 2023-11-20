@@ -1,6 +1,5 @@
-import type { PlaygroundValues } from '../modules/save-values';
-
 import { configFormats } from '../modules/config-formats';
+import { fileTypes, type PlaygroundValues } from '../modules/save-values';
 
 const exampleFiles = import.meta.glob(['./files/**/*', './files/**/.markuplintrc'], { as: 'raw', eager: true });
 
@@ -34,11 +33,16 @@ for (const [path, load] of Object.entries(exampleFiles)) {
 		const dirObj = exampleDir[category]['examples'][dirName] ?? {};
 		exampleDir[category]['examples'][dirName] = dirObj;
 		if (configFormats.includes(file)) {
-			Object.assign(dirObj, { config: load, configFilename: file });
+			Object.assign(dirObj, { config: load, configFilename: file } as const satisfies Partial<ExampleData>);
 		} else if (file === 'metadata.json') {
-			Object.assign(dirObj, { metadata: JSON.parse(load) });
+			Object.assign(dirObj, { metadata: JSON.parse(load) } as const satisfies Partial<ExampleData>);
 		} else {
-			Object.assign(dirObj, { code: load, codeFilename: file });
+			const ext = file.toLowerCase().split('.').pop();
+			const maybeFileType = `.${ext}`;
+			Object.assign(dirObj, { code: load } as const satisfies Partial<ExampleData>);
+			if (fileTypes.includes(maybeFileType)) {
+				Object.assign(dirObj, { codeFileType: maybeFileType } as const satisfies Partial<ExampleData>);
+			}
 		}
 	}
 }

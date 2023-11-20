@@ -54,7 +54,8 @@ const areSetsEqual = (set1: StringSet, set2: StringSet) => {
 export function App() {
 	const consoleRef = useRef<ConsoleOutputRef>(null);
 	const [code, setCode] = useState('');
-	const [filename, setFilename] = useState('code.html');
+	const [fileType, setFileType] = useState<string>('.html');
+	const filename = `index${fileType}`;
 	const [configFilename, setConfigFilename] = useState<string>(configFormats[0]);
 	const [configString, setConfigString] = useState('');
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
@@ -76,10 +77,10 @@ export function App() {
 				containerServer = await setupContainerServer(consoleRef.current!);
 
 				const initialValues = loadValues() ?? defaultExample;
-				const { configFilename, config, codeFilename, code } = initialValues;
+				const { configFilename, config, codeFileType, code } = initialValues;
 				configFilename && setConfigFilename(configFilename);
 				config && setConfigString(config);
-				codeFilename && setFilename(codeFilename);
+				codeFileType && setFileType(codeFileType);
 				code && setCode(code);
 				setInitialized(true);
 			})();
@@ -166,10 +167,10 @@ export function App() {
 		debouncedSaveValues({
 			configFilename: configFilename,
 			config: configString,
-			codeFilename: filename,
+			codeFileType: fileType,
 			code: code,
 		});
-	}, [configFilename, configString, filename, code, debouncedSaveValues, initialized]);
+	}, [configFilename, configString, code, debouncedSaveValues, initialized, fileType]);
 
 	// update config when rules changed
 	useEffect(() => {
@@ -208,7 +209,7 @@ export function App() {
 							onSelect={example => {
 								setConfigFilename(example.configFilename);
 								setConfigString(example.config);
-								setFilename(example.codeFilename);
+								setFileType(example.codeFileType);
 								setCode(example.code);
 							}}
 						/>
@@ -219,7 +220,7 @@ export function App() {
 							<summary>Rules</summary>
 							<SchemaEditor markuplintVersion={markuplintVersion} onChange={setRules} />
 						</details>
-						<FilenameEditor value={filename} onChange={setFilename} />
+						<FilenameEditor value={fileType} onChange={setFileType} />
 						<ConfigEditor
 							filename={configFilename}
 							value={configString}
