@@ -3,7 +3,7 @@ import type { Violations } from './modules/violations';
 import type { Rules } from '@markuplint/ml-config';
 
 import { Tab } from '@headlessui/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -62,7 +62,6 @@ export function App() {
 	const [enableNextVersion, setEnableNextVersion] = useState(false);
 	const [violations, setViolations] = useState<Violations>([]);
 	const [lintTrigger, setLintTrigger] = useState(0);
-	const [rules, setRules] = useState<Rules>({});
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
 	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
@@ -173,17 +172,20 @@ export function App() {
 	}, [configFilename, configString, code, debouncedSaveValues, initialized, fileType]);
 
 	// update config when rules changed
-	useEffect(() => {
-		if (isValidJson(configString)) {
-			const parsedConfig = JSON.parse(configString);
-			if (Object.keys(rules).length === 0) {
-				delete parsedConfig.rules;
-			} else {
-				parsedConfig.rules = rules;
+	const handleChangeRules = useCallback(
+		(rules: Rules) => {
+			if (isValidJson(configString)) {
+				const parsedConfig = JSON.parse(configString);
+				if (Object.keys(rules).length === 0) {
+					delete parsedConfig.rules;
+				} else {
+					parsedConfig.rules = rules;
+				}
+				setConfigString(JSON.stringify(parsedConfig, null, 2));
 			}
-			setConfigString(JSON.stringify(parsedConfig, null, 2));
-		}
-	}, [configString, rules]);
+		},
+		[configString],
+	);
 
 	return (
 		<>
@@ -218,7 +220,7 @@ export function App() {
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
 						<details>
 							<summary>Rules</summary>
-							<SchemaEditor markuplintVersion={markuplintVersion} onChange={setRules} />
+							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleChangeRules} />
 						</details>
 						<FilenameEditor value={fileType} onChange={setFileType} />
 						<ConfigEditor
