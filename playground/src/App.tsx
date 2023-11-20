@@ -16,7 +16,6 @@ import { FilenameEditor } from './components/FilenameEditor';
 import { ProblemsOutput } from './components/ProblemsOutput';
 import { SchemaEditor } from './components/SchemaEditor';
 import { examples } from './examples';
-import { configFormats } from './modules/config-formats';
 import { debounce } from './modules/debounce';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
@@ -56,7 +55,6 @@ export function App() {
 	const [code, setCode] = useState('');
 	const [fileType, setFileType] = useState<string>('.html');
 	const filename = `index${fileType}`;
-	const [configFilename, setConfigFilename] = useState<string>(configFormats[0]);
 	const [configString, setConfigString] = useState('');
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
 	const [enableNextVersion, setEnableNextVersion] = useState(false);
@@ -76,8 +74,7 @@ export function App() {
 				containerServer = await setupContainerServer(consoleRef.current!);
 
 				const initialValues = loadValues() ?? defaultExample;
-				const { configFilename, config, codeFileType, code } = initialValues;
-				configFilename && setConfigFilename(configFilename);
+				const { config, codeFileType, code } = initialValues;
 				config && setConfigString(config);
 				codeFileType && setFileType(codeFileType);
 				code && setCode(code);
@@ -107,7 +104,7 @@ export function App() {
 				setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
 				setViolations([]);
 				try {
-					await containerServer.updateConfig(configFilename, configString);
+					await containerServer.updateConfig('.markuplintrc', configString);
 				} catch (error) {
 					// eslint-disable-next-line no-console
 					console.error(error);
@@ -115,7 +112,7 @@ export function App() {
 				setLintTrigger(prev => prev + 1);
 			})();
 		}
-	}, [configString, configFilename]);
+	}, [configString]);
 
 	// npm install when dependencies changed
 	useEffect(() => {
@@ -164,12 +161,11 @@ export function App() {
 			return;
 		}
 		debouncedSaveValues({
-			configFilename: configFilename,
 			config: configString,
 			codeFileType: fileType,
 			code: code,
 		});
-	}, [configFilename, configString, code, debouncedSaveValues, initialized, fileType]);
+	}, [configString, code, debouncedSaveValues, initialized, fileType]);
 
 	// update config when rules changed
 	const handleChangeRules = useCallback(
@@ -209,7 +205,6 @@ export function App() {
 						<ExampleSelector
 							disabled={!initialized}
 							onSelect={example => {
-								setConfigFilename(example.configFilename);
 								setConfigString(example.config);
 								setFileType(example.codeFileType);
 								setCode(example.code);
@@ -223,12 +218,7 @@ export function App() {
 							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleChangeRules} />
 						</details>
 						<FilenameEditor value={fileType} onChange={setFileType} />
-						<ConfigEditor
-							filename={configFilename}
-							value={configString}
-							onChangeValue={setConfigString}
-							onChangeFilename={setConfigFilename}
-						/>
+						<ConfigEditor value={configString} onChange={setConfigString} />
 						<DepsEditor
 							status={depsStatus}
 							installedPackages={installedPackages}

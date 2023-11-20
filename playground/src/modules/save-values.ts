@@ -4,7 +4,6 @@ export type PlaygroundValues = Readonly<{
 	code: string;
 	codeFileType: string;
 	config: string;
-	configFilename: string;
 }>;
 
 const encode = (values: PlaygroundValues): string => {
