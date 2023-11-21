@@ -13,6 +13,7 @@ import { ConsoleOutput } from './components/ConsoleOutput';
 import { DepsEditor } from './components/DepsEditor';
 import { ExampleSelector } from './components/ExampleSelector';
 import { FilenameEditor } from './components/FilenameEditor';
+import { PresetsEditor } from './components/PresetsEditor';
 import { ProblemsOutput } from './components/ProblemsOutput';
 import { SchemaEditor } from './components/SchemaEditor';
 import { examples } from './examples';
@@ -227,7 +228,29 @@ export function App() {
 		},
 		[configString],
 	);
-
+	const presets = useMemo((): readonly string[] => {
+		if (isValidJson(configString)) {
+			const parsedConfig = JSON.parse(configString);
+			const presets = parsedConfig.extends ?? [];
+			return presets;
+		} else {
+			return [];
+		}
+	}, [configString]);
+	const handleChangePresets = useCallback(
+		(newPresets: readonly string[]) => {
+			if (isValidJson(configString)) {
+				const parsedConfig = JSON.parse(configString);
+				if (newPresets.length === 0) {
+					delete parsedConfig.extends;
+				} else {
+					parsedConfig.extends = newPresets;
+				}
+				setConfigString(JSON.stringify(parsedConfig, null, 2));
+			}
+		},
+		[configString],
+	);
 	return (
 		<>
 			<header className="border-b border-b-slate-300 px-4 py-2">
@@ -262,6 +285,7 @@ export function App() {
 							<summary>Rules</summary>
 							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleChangeRules} />
 						</details>
+						<PresetsEditor fileType={fileType} value={presets} onChange={handleChangePresets} />
 						<FilenameEditor value={fileType} onChange={handleChangeFileType} />
 						<ConfigEditor value={configString} onChange={setConfigString} />
 						<DepsEditor
