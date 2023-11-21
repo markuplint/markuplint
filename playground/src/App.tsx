@@ -183,6 +183,51 @@ export function App() {
 		[configString],
 	);
 
+	const handleChangeFileType = useCallback(
+		(newFileType: string) => {
+			setFileType(newFileType);
+			if (isValidJson(configString)) {
+				const parsedConfig = JSON.parse(configString);
+				const parserAndSpecs =
+					{
+						'.jsx': {
+							parser: {
+								'\\.jsx$': '@markuplint/jsx-parser',
+							},
+							specs: {
+								'\\.jsx$': '@markuplint/react-spec',
+							},
+						},
+						'.vue': {
+							parser: {
+								'\\.vue$': '@markuplint/vue-parser',
+							},
+							specs: {
+								'\\.vue$': '@markuplint/vue-spec',
+							},
+						},
+						'.svelte': {
+							parser: {
+								'\\.svelte$': '@markuplint/svelte-parser',
+							},
+						},
+					}[newFileType] ?? {};
+				if ('parser' in parserAndSpecs) {
+					parsedConfig.parser = parserAndSpecs.parser;
+				} else {
+					delete parsedConfig.parser;
+				}
+				if ('specs' in parserAndSpecs) {
+					parsedConfig.specs = parserAndSpecs.specs;
+				} else {
+					delete parsedConfig.specs;
+				}
+				setConfigString(JSON.stringify(parsedConfig, null, 2));
+			}
+		},
+		[configString],
+	);
+
 	return (
 		<>
 			<header className="border-b border-b-slate-300 px-4 py-2">
@@ -217,7 +262,7 @@ export function App() {
 							<summary>Rules</summary>
 							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleChangeRules} />
 						</details>
-						<FilenameEditor value={fileType} onChange={setFileType} />
+						<FilenameEditor value={fileType} onChange={handleChangeFileType} />
 						<ConfigEditor value={configString} onChange={setConfigString} />
 						<DepsEditor
 							status={depsStatus}
