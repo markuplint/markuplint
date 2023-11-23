@@ -1,21 +1,34 @@
+import type { DistTag } from '../modules/dist-tag';
+
 type Props = Readonly<{
 	status: 'success' | 'loading' | 'error';
+	depsPackages: Readonly<ReadonlySet<string>>;
 	installedPackages: Readonly<Record<string, string>>;
-	enableNextVersion?: boolean;
-	onChange?: (value: boolean) => void;
+	distTag?: DistTag;
+	onChange?: (value: DistTag) => void;
 }>;
 
-export const DepsEditor = ({ installedPackages, status, enableNextVersion = false, onChange }: Props) => {
+export const DepsEditor = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
 	return (
-		<div>
-			<p className="py-2 px-4">
-				<code>package.json</code>
-			</p>
+		<section>
+			<p>Command:</p>
+			{depsPackages.size > 0 && (
+				<div className="bg-slate-50 rounded p-2 leading-tight">
+					<code>{`npm install -D ${[...depsPackages].map(name => `${name}@${distTag}`).join(' ')}`}</code>
+				</div>
+			)}
 			<p>
 				<label>
-					Enable <code>next</code> version{' '}
-					<input type="checkbox" checked={enableNextVersion} onChange={e => onChange?.(e.target.checked)} />
+					<input
+						type="checkbox"
+						checked={distTag === 'next'}
+						onChange={e => onChange?.(e.target.checked ? 'next' : 'latest')}
+					/>{' '}
+					Enable <code>next</code> version
 				</label>
+			</p>
+			<p className="py-2 px-4">
+				<code>package.json</code>
 			</p>
 			<div className="py-2 px-4">
 				{status === 'loading' ? (
@@ -24,25 +37,12 @@ export const DepsEditor = ({ installedPackages, status, enableNextVersion = fals
 					<p>Error loading packages</p>
 				) : status === 'success' ? (
 					<>
-						<p>Installed:</p>
-						{/* <ul>
-							{Object.entries(installedPackages).map(([name, version]) => (
-								<li key={name}>
-									{name}@{version}
-								</li>
-							))}
-						</ul> */}
 						<pre>
 							<code>{JSON.stringify({ devDependencies: installedPackages }, null, 2)}</code>
 						</pre>
 					</>
 				) : null}
 			</div>
-			{Object.keys(installedPackages).length > 0 && (
-				<code>{`npm install -D ${Object.keys(installedPackages)
-					.map(name => `${name}@${enableNextVersion ? 'next' : 'latest'}`)
-					.join(' ')}`}</code>
-			)}
-		</div>
+		</section>
 	);
 };

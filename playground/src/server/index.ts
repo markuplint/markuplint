@@ -62,26 +62,29 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 
 	const containerServer = {
 		installationExit: Promise.resolve(-1),
-		updateDeps: async (contents: string) => {
+		updateDeps: async (packages: readonly string[], reset = false) => {
 			updatingDeps = (async () => {
-				await webContainer.fs.writeFile('package.json', `{ "devDependencies": ${contents} }`, 'utf8');
 				if (installProcess) {
 					installProcess.kill();
 				}
 				clear();
-				appendLine('Installing dependencies...');
+				const args = ['install', '-D', ...packages];
+				appendLine(`npm ${args.join(' ')}`);
 
-				try {
-					await webContainer.fs.rm('node_modules', { recursive: true });
-				} catch {
-					// ignore if it doesn't exist
+				if (reset) {
+					try {
+						await webContainer.fs.rm('node_modules', { recursive: true });
+					} catch {
+						// ignore if it doesn't exist
+					}
+					try {
+						await webContainer.fs.rm('package-lock.json');
+					} catch {
+						// ignore if it doesn't exist
+					}
 				}
-				try {
-					await webContainer.fs.rm('package-lock.json');
-				} catch {
-					// ignore if it doesn't exist
-				}
-				installProcess = await webContainer.spawn('npm', ['install']);
+
+				installProcess = await webContainer.spawn('npm', args);
 				void installProcess.output.pipeTo(
 					new WritableStream({
 						write(data) {
@@ -92,14 +95,9 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 				containerServer.installationExit = installProcess.exit;
 				if ((await containerServer.installationExit) === 0) {
 					appendLine('Installation succeeded');
-					const installedPackages: Record<string, string> = {};
-					const deps = JSON.parse(contents);
-					for (const dep of Object.keys(deps)) {
-						const json = await webContainer.fs.readFile(`/node_modules/${dep}/package.json`, 'utf8');
-						const parsed = JSON.parse(json);
-						installedPackages[parsed.name] = parsed.version;
-					}
-					return installedPackages;
+					const json = await webContainer.fs.readFile('package.json', 'utf8');
+					const parsed = JSON.parse(json);
+					return parsed.devDependencies;
 				} else {
 					appendLine('Installation failed');
 					return {};

@@ -1,4 +1,5 @@
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
+import type { DistTag } from './modules/dist-tag';
 import type { Violations } from './modules/violations';
 import type { Rules } from '@markuplint/ml-config';
 
@@ -58,13 +59,15 @@ export function App() {
 	const filename = `index${fileType}`;
 	const [configString, setConfigString] = useState('');
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
-	const [enableNextVersion, setEnableNextVersion] = useState(false);
+	const [distTag, setDistTag] = useState<DistTag>('latest');
 	const [violations, setViolations] = useState<Violations>([]);
 	const [lintTrigger, setLintTrigger] = useState(0);
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
 	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
-	const markuplintVersion = installedPackages['markuplint'] ? (`v${installedPackages['markuplint']}` as const) : null;
+	const markuplintVersion = installedPackages['markuplint']
+		? (`v${installedPackages['markuplint'].replace('^', '')}` as const)
+		: null;
 	const [initialized, setInitialized] = useState(false);
 
 	// boot container server
@@ -120,19 +123,14 @@ export function App() {
 		if (!containerServer || !initialized) {
 			return;
 		}
-		const dependencies = Object.fromEntries(
-			[...depsPackages].sort().map(name => {
-				return [name, enableNextVersion ? 'next' : 'latest'];
-			}),
-		);
-		const depsString = JSON.stringify(dependencies, null, 2);
+		const dependencies = [...depsPackages].map(name => `${name}@${distTag}`);
 
 		setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
 		setDepsStatus('loading');
 		setViolations([]);
 
 		void (async () => {
-			const installed = await containerServer.updateDeps(depsString);
+			const installed = await containerServer.updateDeps(dependencies);
 			setInstalledPackages(installed);
 			if (Object.keys(installed).length > 0) {
 				setDepsStatus('success');
@@ -141,7 +139,7 @@ export function App() {
 				setDepsStatus('error');
 			}
 		})();
-	}, [depsPackages, enableNextVersion, initialized]);
+	}, [depsPackages, distTag, initialized]);
 
 	// lint
 	useEffect(() => {
@@ -291,8 +289,9 @@ export function App() {
 						<DepsEditor
 							status={depsStatus}
 							installedPackages={installedPackages}
-							enableNextVersion={enableNextVersion}
-							onChange={setEnableNextVersion}
+							distTag={distTag}
+							depsPackages={depsPackages}
+							onChange={setDistTag}
 						/>
 					</details>
 				</section>
