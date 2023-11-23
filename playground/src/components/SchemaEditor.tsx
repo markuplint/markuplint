@@ -1,3 +1,4 @@
+import type { DistTag } from '../modules/dist-tag';
 import type { JSONSchema } from '../modules/json-schema';
 import type { Rules, AnyRule } from '@markuplint/ml-config';
 
@@ -8,11 +9,11 @@ import { fetchDereferencedSchema } from '../modules/json-schema';
 import { ConfigRule } from './ConfigRule';
 
 type Props = Readonly<{
-	markuplintVersion: `v${string}` | null;
+	distTag: DistTag;
 	onChange?: (rules: Rules) => void;
 }>;
 
-const SchemaEditorRaw = ({ markuplintVersion, onChange }: Props) => {
+const SchemaEditorRaw = ({ distTag, onChange }: Props) => {
 	const [schema, setSchema] = useState<JSONSchema | null>(null);
 	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const rulesDefinition = schema?.properties?.rules;
@@ -21,12 +22,24 @@ const SchemaEditorRaw = ({ markuplintVersion, onChange }: Props) => {
 
 	useEffect(() => {
 		setSchema(null);
-		if (!markuplintVersion) {
+		if (!distTag) {
 			return;
 		}
 		void (async () => {
 			try {
-				const url = `https://raw.githubusercontent.com/markuplint/markuplint/${markuplintVersion}/config.schema.json`;
+				// get version
+				const version = await (async () => {
+					const response = await fetch('https://registry.npmjs.org/markuplint');
+					const json = await response.json();
+					const version = json['dist-tags'][distTag];
+					if (typeof version !== 'string') {
+						throw new TypeError('Invalid version');
+					}
+					return version;
+				})();
+
+				// get schema
+				const url = `https://raw.githubusercontent.com/markuplint/markuplint/v${version}/config.schema.json`;
 				const dereferencedSchema = await fetchDereferencedSchema(new URL(url));
 				if (dereferencedSchema !== undefined && typeof dereferencedSchema !== 'boolean') {
 					setSchema(dereferencedSchema);
@@ -36,7 +49,7 @@ const SchemaEditorRaw = ({ markuplintVersion, onChange }: Props) => {
 				console.error(error);
 			}
 		})();
-	}, [markuplintVersion]);
+	}, [distTag]);
 
 	const handleChange = useCallback(
 		(name: string) => (rule: AnyRule) => {

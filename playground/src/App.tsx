@@ -65,9 +65,6 @@ export function App() {
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
 	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
-	const markuplintVersion = installedPackages['markuplint']
-		? (`v${installedPackages['markuplint'].replace('^', '')}` as const)
-		: null;
 	const [initialized, setInitialized] = useState(false);
 
 	// boot container server
@@ -281,7 +278,7 @@ export function App() {
 						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
 						<details>
 							<summary>Rules</summary>
-							<SchemaEditor markuplintVersion={markuplintVersion} onChange={handleChangeRules} />
+							<SchemaEditor distTag={distTag} onChange={handleChangeRules} />
 						</details>
 						<PresetsEditor fileType={fileType} value={presets} onChange={handleChangePresets} />
 						<FilenameEditor value={fileType} onChange={handleChangeFileType} />
