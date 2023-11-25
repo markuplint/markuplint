@@ -26,13 +26,13 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "4.0.0-alpha.5",
-		"@types/debug": "^4.1.10",
+		"@types/debug": "^4.1.12",
 		"debug": "^4.3.4",
 		"postcss-selector-parser": "^6.0.13",
-		"type-fest": "^4.5.0"
+		"type-fest": "^4.8.2"
 	},
 	"devDependencies": {
-		"@types/jsdom": "21.1.4",
+		"@types/jsdom": "21.1.6",
 		"jsdom": "22.1.0"
 	}
 }
