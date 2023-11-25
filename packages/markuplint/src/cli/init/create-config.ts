@@ -41,6 +41,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 		if (!ext) {
 			continue;
 		}
+		// @ts-ignore
 		parser[ext] = `@markuplint/${lang}-parser`;
 
 		if (lang === 'vue') {
@@ -76,6 +77,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 				continue;
 			}
 			if (mode.includes(rule.category)) {
+				// @ts-ignore
 				rules[ruleName] = rule.defaultValue;
 			}
 		}
@@ -88,6 +90,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			if (!rule) {
 				continue;
 			}
+			// @ts-ignore
 			rules[ruleName] = rule.defaultValue;
 		}
 	}
