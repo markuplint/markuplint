@@ -1,7 +1,6 @@
 import 'xterm/css/xterm.css';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
 
 export type ConsoleOutputRef = {
 	appendLine: (string: string) => void;
@@ -25,23 +24,11 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 				},
 			});
 			terminalRef.current = terminal;
-			const fitAddon = new FitAddon();
-			terminal.loadAddon(fitAddon);
-
 			terminal.open(wrapperRef.current);
-			// FIXME:
-			// fitAddon.fit();
-
-			const resizeObserver = new ResizeObserver(() => {
-				// FIXME:
-				// fitAddon.fit();
-			});
-			resizeObserver.observe(wrapperRef.current);
 
 			return () => {
 				terminal.dispose();
 				terminalRef.current = null;
-				resizeObserver.disconnect();
 			};
 		}
 	}, []);
@@ -64,5 +51,5 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 		[],
 	);
 
-	return <div className="h-full p-2" ref={wrapperRef}></div>;
+	return <div className="p-4 bg-slate-900 text-white" style={{ colorScheme: 'dark' }} ref={wrapperRef}></div>;
 });

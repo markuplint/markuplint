@@ -45,11 +45,11 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 		.find(one => one.default !== undefined)?.default;
 
 	return (
-		<div className="p-4 border-t">
-			<div className="p-1 mb-2 flex flex-wrap">
-				<h4 className="grow min-w-[13rem]">
+		<div className="pt-3 pb-4 px-4 border-t">
+			<div className="flex flex-wrap gap-2">
+				<h4 className="grow min-w-[13em]">
 					<a
-						className="underline text-blue-600"
+						className="underline text-ml-blue"
 						href={`https://markuplint.dev${localeWithoutRegion === 'ja' ? '/ja' : ''}/docs/rules/${name}`}
 						target="_blank"
 						rel="noreferrer"
@@ -59,7 +59,7 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 				</h4>
 				{/* FIXME: this select element has no accessible name */}
 				<select
-					className="border-2 w-[10rem]"
+					className="select-arrow border border-slate-300 rounded-md w-[8em]"
 					onChange={e => {
 						const value = e.currentTarget.value;
 						let newRuleConfig: AnyRule | null;
@@ -113,7 +113,7 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 				</select>
 			</div>
 			{customs !== undefined && (
-				<div hidden={mode !== 'custom'}>
+				<div className="mt-2" hidden={mode !== 'custom'}>
 					<div className="grid gap-2 pl-4">
 						<Nested schema={customs} onChange={handleChangeCustom} />
 					</div>
@@ -180,7 +180,7 @@ const Nested = ({
 				return (
 					<>
 						<select
-							className="border-2"
+							className="select-arrow border border-slate-300 rounded-md "
 							onChange={e => {
 								let value: boolean | undefined;
 								if (e.currentTarget.value === 'true') {
@@ -209,7 +209,7 @@ const Nested = ({
 					const defaultValue = schema.default;
 					return (
 						<select
-							className="border-2"
+							className="select-arrow border border-slate-300 rounded-md"
 							onChange={e => {
 								const value = e.currentTarget.value;
 								const newConfigValue = value === '' ? undefined : value;
@@ -232,7 +232,7 @@ const Nested = ({
 				} else {
 					return (
 						<input
-							className="border-2"
+							className="border border-slate-300 rounded-md px-1 py-0.5"
 							type="text"
 							onChange={e => {
 								const value = e.currentTarget.value;
@@ -248,7 +248,11 @@ const Nested = ({
 			case 'integer': {
 				return (
 					<>
-						<input className="border-2" type="number" min={schema.minimum} />
+						<input
+							className="border border-slate-300 rounded-md px-1 py-0.5"
+							type="number"
+							min={schema.minimum}
+						/>
 					</>
 				);
 			}

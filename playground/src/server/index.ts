@@ -35,8 +35,8 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 		// eslint-disable-next-line no-console
 		console.warn('WebContainer already booted');
 		appendLine('WebContainer already booted');
-		appendLine('Reloading...');
-		window.location.reload();
+		// appendLine('Reloading...');
+		// window.location.reload();
 	}
 
 	const linterFiles = import.meta.glob('./linter/*', { as: 'raw', eager: true });

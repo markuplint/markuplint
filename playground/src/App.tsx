@@ -3,7 +3,7 @@ import type { DistTag } from './modules/dist-tag';
 import type { Violations } from './modules/violations';
 import type { Rules } from '@markuplint/ml-config';
 
-import { Tab } from '@headlessui/react';
+import { Popover, Tab } from '@headlessui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
@@ -37,15 +37,6 @@ const isValidJson = (maybeJson: string) => {
 let boot = false;
 let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
 
-function classNames(...classes: readonly string[]) {
-	return classes.filter(Boolean).join(' ');
-}
-
-const OUTPUT_TAB_INDICES = {
-	PROBLEMS: 0,
-	CONSOLE: 1,
-} as const;
-
 type StringSet = Readonly<ReadonlySet<string>>;
 const areSetsEqual = (set1: StringSet, set2: StringSet) => {
 	if (set1.size !== set2.size) return false;
@@ -60,12 +51,15 @@ export function App() {
 	const [configString, setConfigString] = useState('');
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
 	const [distTag, setDistTag] = useState<DistTag>('latest');
-	const [violations, setViolations] = useState<Violations>([]);
+	const [violations, setViolations] = useState<Violations | null>(null);
 	const [lintTrigger, setLintTrigger] = useState(0);
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
-	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading'>('success');
-	const [selectedOutputTab, setSelectedOutputTab] = useState<number>(OUTPUT_TAB_INDICES.CONSOLE);
+	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading' | null>(null);
+	const [status, setStatus] = useState<
+		'not-started' | 'installing-deps' | 'install-error' | 'lint-server-preparing' | 'linting' | 'checked' | 'error'
+	>('not-started');
 	const [initialized, setInitialized] = useState(false);
+	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
 	// boot container server
 	useEffect(() => {
@@ -102,8 +96,7 @@ export function App() {
 
 		if (isValidJson(configString)) {
 			void (async () => {
-				setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
-				setViolations([]);
+				setViolations(null);
 				try {
 					await containerServer.updateConfig('.markuplintrc', configString);
 				} catch (error) {
@@ -122,9 +115,9 @@ export function App() {
 		}
 		const dependencies = [...depsPackages].map(name => `${name}@${distTag}`);
 
-		setSelectedOutputTab(OUTPUT_TAB_INDICES.CONSOLE);
 		setDepsStatus('loading');
-		setViolations([]);
+		setViolations(null);
+		setStatus('installing-deps');
 
 		void (async () => {
 			const installed = await containerServer.updateDeps(dependencies);
@@ -143,12 +136,15 @@ export function App() {
 		if (!containerServer) {
 			return;
 		}
+		if (depsStatus !== 'success') {
+			return;
+		}
 		void (async () => {
 			const result = await containerServer.lint(filename, code);
+			setStatus('checked');
 			setViolations(result);
-			setSelectedOutputTab(OUTPUT_TAB_INDICES.PROBLEMS);
 		})();
-	}, [code, filename, lintTrigger]);
+	}, [code, depsStatus, filename, lintTrigger]);
 
 	// save values
 	const debouncedSaveValues = useMemo(() => debounce(saveValues, 200), []);
@@ -248,8 +244,8 @@ export function App() {
 	);
 	return (
 		<>
-			<header className="border-b border-b-slate-300 px-4 py-2">
-				<h1 className="text-2xl leading-normal font-bold">
+			<header className="sticky top-0 z-10 flex justify-between items-center bg-white border-b border-b-slate-300 px-4 py-2">
+				<h1 className="text-lg md:text-xl leading-normal font-bold">
 					<img
 						src={logo}
 						alt="Markuplint"
@@ -260,37 +256,113 @@ export function App() {
 					/>{' '}
 					Playground
 				</h1>
+				<ExampleSelector
+					disabled={!initialized}
+					onSelect={example => {
+						setConfigString(example.config);
+						setFileType(example.codeFileType);
+						setCode(example.code);
+					}}
+				/>
 			</header>
 			<main className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:grid-rows-[minmax(0,auto)]">
-				<section className="overflow-y-auto" style={{ scrollbarGutter: 'stable' }}>
-					<details>
-						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Examples</summary>
-						<ExampleSelector
-							disabled={!initialized}
-							onSelect={example => {
-								setConfigString(example.config);
-								setFileType(example.codeFileType);
-								setCode(example.code);
-							}}
-						/>
-					</details>
-					<details open>
-						<summary className="bg-slate-100 text-xl font-bold px-8 py-3">Settings</summary>
-						<details>
-							<summary>Rules</summary>
-							<SchemaEditor distTag={distTag} onChange={handleChangeRules} />
-						</details>
-						<PresetsEditor fileType={fileType} value={presets} onChange={handleChangePresets} />
-						<FilenameEditor value={fileType} onChange={handleChangeFileType} />
-						<ConfigEditor value={configString} onChange={setConfigString} />
-						<DepsEditor
-							status={depsStatus}
-							installedPackages={installedPackages}
-							distTag={distTag}
-							depsPackages={depsPackages}
-							onChange={setDistTag}
-						/>
-					</details>
+				<button
+					type="button"
+					className="md:hidden flex justify-between items-center py-2 px-4 font-medium w-full bg-slate-200"
+					aria-expanded={isSettingsOpen}
+					onClick={() => setIsSettingsOpen(prev => !prev)}
+				>
+					<span>Settings</span>
+					<span className="icon-heroicons-solid-bars-3"></span>
+				</button>
+				{/* desktop: always shown, mobile: toggle */}
+				<section className="overflow-y-auto md:block" hidden={!isSettingsOpen}>
+					<Tab.Group>
+						<Tab.List className="flex flex-wrap gap-1 pt-1 px-4 border-b bg-slate-100">
+							<Tab className="flex items-center gap-2 py-2 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
+								<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
+								Config
+							</Tab>
+							<Tab className="flex items-center gap-2 py-2 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
+								<span className=" icon-majesticons-box text-xl text-slate-500"></span>
+								Packages
+							</Tab>
+						</Tab.List>
+						<Tab.Panels>
+							<Tab.Panel unmount={false}>
+								<Tab.Group>
+									<Tab.List className="flex gap-0.5 py-2 px-4">
+										<Tab className="flex gap-1 items-center py-1 px-2 border text-black text-opacity-60 rounded-s-lg aria-selected:bg-slate-100 aria-selected:text-opacity-100">
+											<span className=" icon-heroicons-solid-adjustments-horizontal"></span>
+											Visual
+										</Tab>
+										<Tab className="flex gap-1 items-center py-1 px-2 border rounded-e-lg aria-selected:bg-slate-100 text-black text-opacity-60  aria-selected:text-opacity-100">
+											<span className=" icon-majesticons-curly-braces"></span>
+											JSON
+										</Tab>
+									</Tab.List>
+									<Tab.Panels>
+										<Tab.Panel unmount={false} className="px-4 py-4">
+											<div className="grid gap-2">
+												<details open className="border rounded-lg overflow-hidden group">
+													<summary
+														className="
+													flex justify-between items-center gap-2 font-medium -outline-offset-2 
+													py-2 px-4 border-slate-300 bg-slate-100
+												"
+													>
+														Parser &amp; Specs
+														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+													</summary>
+													<FilenameEditor value={fileType} onChange={handleChangeFileType} />
+												</details>
+												<details open className="border rounded-lg overflow-hidden group">
+													<summary
+														className="
+												flex justify-between items-center gap-2 font-medium -outline-offset-2 
+												py-2 px-4 border-slate-300 bg-slate-100
+											"
+													>
+														Presets
+														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+													</summary>
+													<PresetsEditor
+														fileType={fileType}
+														value={presets}
+														onChange={handleChangePresets}
+													/>
+												</details>
+												<details open className="border rounded-lg overflow-hidden group">
+													<summary
+														className="
+													flex justify-between items-center gap-2 font-medium -outline-offset-2 
+													py-2 px-4 border-slate-300 bg-slate-100
+												"
+													>
+														Rules
+														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+													</summary>
+													<SchemaEditor distTag={distTag} onChange={handleChangeRules} />
+												</details>
+											</div>
+										</Tab.Panel>
+										<Tab.Panel unmount={false}>
+											<ConfigEditor value={configString} onChange={setConfigString} />
+										</Tab.Panel>
+									</Tab.Panels>
+								</Tab.Group>
+							</Tab.Panel>
+							<Tab.Panel unmount={false}>
+								<DepsEditor
+									status={depsStatus}
+									installedPackages={installedPackages}
+									distTag={distTag}
+									depsPackages={depsPackages}
+									onChange={setDistTag}
+								/>
+							</Tab.Panel>
+						</Tab.Panels>
+					</Tab.Group>
 				</section>
 				<Split
 					direction="vertical"
@@ -301,39 +373,61 @@ export function App() {
 						return gutterElement;
 					}}
 					gutterStyle={() => ({})}
+					className="h-[70vh] md:h-auto"
 				>
 					<section>
-						<CodeEditor value={code} filename={filename} violations={violations} onChange={setCode} />
+						<CodeEditor value={code} filename={filename} violations={violations ?? []} onChange={setCode} />
 					</section>
-					<section className="grid grid-rows-[auto_minmax(0,1fr)]">
-						<Tab.Group selectedIndex={selectedOutputTab} onChange={setSelectedOutputTab}>
-							<Tab.List className="bg-slate-100 overflow-x-auto overflow-y-hidden flex gap-2 px-2">
-								{['Problems', 'Console'].map(label => (
-									<Tab
-										key={label}
-										className={({ selected }) =>
-											classNames(
-												'h-full px-[min(3%,1.5rem)] py-2 leading-tight border-b-2',
-												selected ? 'border-blue-500' : 'hover:bg-white',
-											)
-										}
-									>
-										{label}
-									</Tab>
-								))}
-							</Tab.List>
-							<Tab.Panels className="grid grid-rows-[minmax(0,1fr)]">
-								<Tab.Panel unmount={false}>
-									<ProblemsOutput violations={violations} />
-								</Tab.Panel>
-								<Tab.Panel unmount={false}>
-									<ConsoleOutput ref={consoleRef} />
-								</Tab.Panel>
-							</Tab.Panels>
-						</Tab.Group>
-					</section>
+					<div className="grid grid-rows-1">
+						<ProblemsOutput violations={violations} />
+					</div>
 				</Split>
 			</main>
+			<footer className="sticky bottom-0 p-2 flex justify-end items-center text-sm bg-white border-t">
+				<output className="flex justify-end items-center gap-1">
+					{
+						{
+							'not-started': 'Not started',
+							'installing-deps': (
+								<>
+									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
+										<span className="animate-spin absolute inset-0 icon-custom-loading text-slate-500"></span>
+									</span>
+									Installing dependencies...
+								</>
+							),
+							'install-error': 'Install error',
+							'lint-server-preparing': 'Preparing lint server',
+							linting: 'Linting',
+							checked: (
+								<>
+									<span className=" icon-heroicons-solid-check"></span>
+									Checked!
+								</>
+							),
+							error: 'Error',
+						}[status]
+					}
+				</output>
+				<Popover>
+					<Popover.Button
+						className="
+						flex items-center gap-1 shadow-sm
+						px-2 py-1 ml-2 rounded-md bg-slate-100 text-slate-900
+						hover:bg-slate-200 hover:text-slate-800
+					"
+					>
+						<span className="icon-heroicons-solid-command-line"></span>
+						Console
+					</Popover.Button>
+					<Popover.Panel
+						unmount={false}
+						className="absolute right-4 w-[calc(100%-3rem)] max-w-4xl bottom-[calc(100%+1rem)] z-10 border bg-white overflow-hidden rounded-lg shadow-lg"
+					>
+						<ConsoleOutput ref={consoleRef} />
+					</Popover.Panel>{' '}
+				</Popover>
+			</footer>
 		</>
 	);
 }

@@ -6,8 +6,6 @@ const exampleFiles = import.meta.glob(['./files/**/*', './files/**/.markuplintrc
 type Metadata = Readonly<{
 	title: string;
 	description?: string;
-	docLink?: string;
-	docText?: string;
 }>;
 
 export type ExampleData = PlaygroundValues &
