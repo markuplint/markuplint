@@ -35,7 +35,7 @@ export const langs: Record<Langs, string> = {
 export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
 	let config: Writable<Config> = {};
 
-	const parser: Writable<Config['parser']> = { ...config.parser };
+	const parser: Writable<NonNullable<Config['parser']>> = { ...config.parser };
 	for (const lang of langs) {
 		const ext = extRExp[lang];
 		if (!ext) {
@@ -66,7 +66,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 		config.parser = parser;
 	}
 
-	const rules: Writable<Config['rules']> = { ...config.rules };
+	const rules: Writable<NonNullable<Config['rules']>> = { ...config.rules };
 	if (Array.isArray(mode)) {
 		const ruleNames = Object.keys(defaultRules);
 
