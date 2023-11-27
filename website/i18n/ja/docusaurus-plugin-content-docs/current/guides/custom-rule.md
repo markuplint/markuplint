@@ -28,7 +28,7 @@ npx markuplint --create-rule
 
 すると、以下のファイルが作成されます。
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📂 `[dir-name]`
@@ -37,7 +37,7 @@ npx markuplint --create-rule
       - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
-</file-tree>
+</FileTree>
 
 :::info
 
@@ -87,7 +87,7 @@ export default createPlugin({
 
 最終的に以下のファイルが作成されます。
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📄 `README.md`
@@ -99,7 +99,7 @@ export default createPlugin({
       - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
-</file-tree>
+</FileTree>
 
 ## 基本的な評価方法
 

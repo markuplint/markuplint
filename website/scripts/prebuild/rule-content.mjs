@@ -62,6 +62,9 @@ function type(value, escape = false) {
   }
 
   if (value.type === 'object') {
+    if (typeof value._type === 'string') {
+      return value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
     return value._type ?? 'Object';
   }
 

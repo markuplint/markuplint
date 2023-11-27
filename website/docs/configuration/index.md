@@ -6,19 +6,19 @@ The configuration file is for specifying the rules and options that apply to. Th
 
 The automatic loading is **recursively searching up from a directory that the target exists**. In other words, it applies the configuration files closest to each target.
 
-<file-tree>
+<FileTree>
 
 - 📂 `A`
   - 📄 `.markuplintrc` # (1)
   - 📂 `B`
-    - 📄 `index.html` # <- Apply (1) `A/.markuplintrc`
+    - 📄 `index.html` # &lt;- Apply (1) `A/.markuplintrc`
     - 📂 `C`
-      - 📄 `index.html` # <- Apply (1) `A/.markuplintrc`
+      - 📄 `index.html` # &lt;- Apply (1) `A/.markuplintrc`
       - 📂 `D`
         - 📄 `.markuplintrc` # (2)
-        - 📄 `index.html` # <- Apply (2) `A/B/C/D/.markuplintrc`
+        - 📄 `index.html` # &lt;- Apply (2) `A/B/C/D/.markuplintrc`
 
-</file-tree>
+</FileTree>
 
 :::note
 **Markuplint** stops searching files if found it what is closest. It is **different** from the default of [**ESLint**](https://eslint.org/docs/latest/user-guide/configuring/configuration-files#cascading-and-hierarchy). Its behavior is the same as ESLint is specified as `{ "root": true }`.

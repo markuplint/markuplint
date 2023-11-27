@@ -6,19 +6,19 @@
 
 自動読み込みは、**ターゲットが存在するディレクトリから再帰的に検索していきます**。つまり、各ターゲットに最も近い設定ファイルを適用します。
 
-<file-tree>
+<FileTree>
 
 - 📂 `A`
   - 📄 `.markuplintrc` # ①
   - 📂 `B`
-    - 📄 `index.html` # <- ① `A/.markuplintrc` が適用される
+    - 📄 `index.html` # &lt;- ① `A/.markuplintrc` が適用される
     - 📂 `C`
-      - 📄 `index.html` # <- ① `A/.markuplintrc` が適用される
+      - 📄 `index.html` # &lt;- ① `A/.markuplintrc` が適用される
       - 📂 `D`
         - 📄 `.markuplintrc` # ②
-        - 📄 `index.html` # <- ② `A/B/C/D/.markuplintrc` が適用される
+        - 📄 `index.html` # &lt;- ② `A/B/C/D/.markuplintrc` が適用される
 
-</file-tree>
+</FileTree>
 
 :::note
 
@@ -66,7 +66,7 @@ extends:
 
 ```js class=config
 module.exports = {
-  extends: ['markuplint:recommended']
+  extends: ['markuplint:recommended'],
 };
 ```
 
@@ -76,7 +76,7 @@ module.exports = {
 import type { Config } from '@markuplint/ml-config';
 
 const config: Config = {
-  extends: ['markuplint:recommended']
+  extends: ['markuplint:recommended'],
 };
 
 export default config;
