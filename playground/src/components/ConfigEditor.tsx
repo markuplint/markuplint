@@ -24,6 +24,8 @@ export const ConfigEditor = ({ value, onChange }: Props) => {
 						minimap: { enabled: false },
 						lineNumbers: 'off',
 						fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+						tabSize: 2,
+						renderWhitespace: 'all',
 					}}
 					value={value}
 					onMount={(editor, _monaco) => {

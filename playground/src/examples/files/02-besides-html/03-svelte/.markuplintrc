@@ -1,6 +1,6 @@
 {
-	"extends": ["markuplint:recommended-svelte"],
-	"parser": {
-		"\\.svelte$": "@markuplint/svelte-parser"
-	}
+  "extends": ["markuplint:recommended-svelte"],
+  "parser": {
+    "\\.svelte$": "@markuplint/svelte-parser"
+  }
 }

@@ -8,7 +8,7 @@
 	"arrowParens": "avoid",
 	"overrides": [
 		{
-			"files": "*.{md,mdx}",
+			"files": ["*.{md,mdx}", "playground/src/examples/files/**"],
 			"options": {
 				"tabWidth": 2,
 				"useTabs": false

@@ -43,6 +43,8 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 				options={{
 					minimap: { enabled: false },
 					fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+					tabSize: 2,
+					renderWhitespace: 'all',
 				}}
 				value={value}
 				onMount={(editor, monaco) => {
