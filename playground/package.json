@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/playground",
-	"version": "4.0.0-alpha.5",
+	"version": "4.0.0-alpha.6",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -9,13 +9,13 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.0.0-alpha.5",
-		"@markuplint/html-spec": "4.0.0-alpha.5",
-		"@markuplint/i18n": "4.0.0-alpha.5",
-		"@markuplint/ml-config": "4.0.0-alpha.5",
-		"@markuplint/ml-core": "4.0.0-alpha.5",
-		"@markuplint/parser-utils": "4.0.0-alpha.5",
-		"@markuplint/rules": "4.0.0-alpha.5",
+		"@markuplint/html-parser": "4.0.0-alpha.6",
+		"@markuplint/html-spec": "4.0.0-alpha.6",
+		"@markuplint/i18n": "4.0.0-alpha.6",
+		"@markuplint/ml-config": "4.0.0-alpha.6",
+		"@markuplint/ml-core": "4.0.0-alpha.6",
+		"@markuplint/parser-utils": "4.0.0-alpha.6",
+		"@markuplint/rules": "4.0.0-alpha.6",
 		"monaco-editor": "0.44.0",
 		"sass": "1.69.5",
 		"vite": "5.0.2"
