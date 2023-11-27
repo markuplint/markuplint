@@ -10,9 +10,9 @@
  */
 export function rewriteRuleContent(content, name, value, options, severity, lang) {
   // Replace internal page URL
-  content = content.replace(/\(https:\/\/markuplint\.dev\//g, '(/');
+  content = content.replaceAll('(https://markuplint.dev/', '(/');
 
-  const separator = /\n\n---\n\n/m;
+  const separator = /\n\n---\n\n/;
   const target = content.search(separator) === -1 ? /$/ : separator;
 
   content = content.replace(

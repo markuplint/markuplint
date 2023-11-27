@@ -110,23 +110,25 @@ const config = {
         links: [
           {
             html: /* html */ `
-            <a
-              href="https://github.com/markuplint/markuplint"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="iconLink iconLink--github"
-              >GitHub</a
-            >`,
+              <a
+                href="https://github.com/markuplint/markuplint"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="iconLink iconLink--github"
+                >GitHub</a
+              >
+            `,
           },
           {
             html: /* html */ `
-            <a
-              href="https://twitter.com/markuplint"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="iconLink iconLink--twitter"
-              >Twitter</a
-            >`,
+              <a
+                href="https://twitter.com/markuplint"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="iconLink iconLink--twitter"
+                >Twitter</a
+              >
+            `,
           },
         ],
         copyright: `© ${new Date().getFullYear()} Markuplint.`,
@@ -197,7 +199,7 @@ const config = {
               return [existingPath.replace('/docs', '')];
             }
           }
-          return undefined;
+          return;
         },
       }),
     ],

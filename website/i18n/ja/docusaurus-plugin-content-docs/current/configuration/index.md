@@ -54,6 +54,7 @@
   "extends": ["markuplint:recommended"]
 }
 ```
+
 #### YAML
 
 ```yaml class=config
