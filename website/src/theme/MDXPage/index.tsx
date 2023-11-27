@@ -8,7 +8,7 @@ import React from 'react';
 export default function MDXPageWrapper(props: Props) {
   return (
     <>
-      <OgImg title={props.content.metadata.title} />
+      <OgImg title={props.content.metadata.title ?? ''} />
       <MDXPage {...props} />
     </>
   );
