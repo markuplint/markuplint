@@ -36,9 +36,9 @@
 		"@markuplint/ml-spec": "4.0.0-alpha.5",
 		"@markuplint/rules": "4.0.0-alpha.5",
 		"@markuplint/shared": "4.0.0-alpha.5",
-		"@types/cli-color": "^2.0.4",
-		"@types/debug": "^4.1.10",
-		"@types/uuid": "^9.0.6",
+		"@types/cli-color": "^2.0.6",
+		"@types/debug": "^4.1.12",
+		"@types/uuid": "^9.0.7",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
@@ -53,7 +53,7 @@
 		"os-locale": "^6.0.2",
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "^7.1.0",
-		"type-fest": "^4.5.0",
+		"type-fest": "^4.8.2",
 		"uuid": "^9.0.1"
 	}
 }

@@ -114,8 +114,11 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(el => {
 				const text = $(el).text().trim();
-				if (/owned\s+by|with\s+parent/i.test(text)) {
-					return text.replaceAll(/([a-z]+)\s+(?:owned\s+by|with\s+parent)\s+([a-z]+)/gi, '$2 > $1');
+				if (/owned\s+by|with\s+parent|with\s+accessibility\s+parent/i.test(text)) {
+					return text.replaceAll(
+						/([a-z]+)\s+(?:owned\s+by|with\s+parent|with\s+accessibility\s+parent)\s+([a-z]+)/gi,
+						'$2 > $1',
+					);
 				}
 				return text;
 			});
@@ -125,7 +128,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				$(el)
 					.text()
 					.trim()
-					.replaceAll(/\s+(?:owning|→|with\s+child)\s+/gi, ' > '),
+					.replaceAll(/\s+(?:owning|→|with\s+child|with\s+accessibility\s+child)\s+/gi, ' > '),
 			);
 		const accessibleNameRequired = !!/true/i.test($features.find('.role-namerequired').text());
 		const accessibleNameFromAuthor = !!/author/i.test($features.find('.role-namefrom').text());
@@ -135,8 +138,8 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const childrenPresentational = /true/i.test($childrenPresentational)
 			? true
 			: /false/i.test($childrenPresentational)
-			? false
-			: undefined;
+			  ? false
+			  : undefined;
 		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);

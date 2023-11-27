@@ -24,12 +24,12 @@
 	"dependencies": {
 		"@markuplint/ml-core": "4.0.0-alpha.5",
 		"glob": "^10.3.6",
-		"prettier": "^3.0.3",
+		"prettier": "^3.1.0",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.2.2"
+		"typescript": "^5.3.2"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^11.0.3",
+		"@types/fs-extra": "^11.0.4",
 		"fs-extra": "^11.1.1"
 	}
 }
