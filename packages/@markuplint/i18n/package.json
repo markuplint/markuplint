@@ -32,11 +32,9 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "yarn build:esm; yarn build:cjs; yarn rename:esm; yarn replaceext:esm",
+		"build": "yarn build:esm; yarn build:cjs; node ./esm.mjs",
 		"build:esm": "tsc",
 		"build:cjs": "tsc --module commonjs --outDir cjs",
-		"rename:esm": "find ./esm -type f -name \"*.js\" -exec sh -c 'mv \"$0\" \"${0%.js}.mjs\"' {} \\;",
-		"replaceext:esm": "find ./esm -type f -name \"*.mjs\" -exec sed -i '' 's/\\.js/\\.mjs/g' {} \\;",
 		"clean": "tsc --build --clean"
 	}
 }
