@@ -1,4 +1,4 @@
-FROM node:21.1
+FROM node:21.2
 
 COPY . /markuplint
 
