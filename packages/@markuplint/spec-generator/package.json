@@ -1,11 +1,11 @@
 {
 	"name": "@markuplint/spec-generator",
 	"version": "4.0.0-alpha.5",
-	"description": "Generates @markuplint/ml-spec",
+	"description": "Generates @markuplint/html-spec",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": true,
+	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
