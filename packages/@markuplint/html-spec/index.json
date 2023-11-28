@@ -38476,12 +38476,14 @@
 				"dirname": {
 					"condition": [
 						":not([type])",
+						"[type='hidden' i]",
 						"[type='text' i]",
 						"[type='search' i]",
-						"[type='hidden' i]",
 						"[type='tel' i]",
 						"[type='url' i]",
-						"[type='email' i]"
+						"[type='email' i]",
+						"[type='password' i]",
+						"[type='submit' i]"
 					]
 				},
 				"disabled": {
