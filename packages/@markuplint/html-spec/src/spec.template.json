@@ -10,7 +10,20 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootmode
+		"shadowrootmode": {
+			"type": {
+				"enum": ["open", "closed"],
+				"missingValueDefault": "none",
+				"invalidValueDefault": "none"
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootdelegatesfocus
+		"shadowrootdelegatesfocus": {
+			"type": "Boolean"
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": false,
