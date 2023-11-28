@@ -706,7 +706,8 @@
 								"opener",
 								"prev",
 								"search",
-								"tag"
+								"tag",
+								"terms-of-service"
 							]
 						},
 						"unique": true,
@@ -36611,6 +36612,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"name": {
+					"type": "NoEmptyAny"
+				},
 				"open": {
 					"type": "Boolean"
 				}
@@ -38476,12 +38480,14 @@
 				"dirname": {
 					"condition": [
 						":not([type])",
+						"[type='hidden' i]",
 						"[type='text' i]",
 						"[type='search' i]",
-						"[type='hidden' i]",
 						"[type='tel' i]",
 						"[type='url' i]",
-						"[type='email' i]"
+						"[type='email' i]",
+						"[type='password' i]",
+						"[type='submit' i]"
 					]
 				},
 				"disabled": {
@@ -39095,7 +39101,8 @@
 									"prerender",
 									"prev",
 									"search",
-									"stylesheet"
+									"stylesheet",
+									"terms-of-service"
 								]
 							},
 							"unique": true,
@@ -41296,7 +41303,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {
+				"shadowrootdelegatesfocus": {
+					"type": "Boolean"
+				},
+				"shadowrootmode": {
+					"type": {
+						"enum": ["open", "closed"],
+						"missingValueDefault": "none",
+						"invalidValueDefault": "none"
+					}
+				}
+			}
 		},
 		{
 			"name": "textarea",
