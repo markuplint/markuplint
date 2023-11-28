@@ -2,6 +2,9 @@
 	"parser": {
 		".svelte$": "@markuplint/svelte-parser"
 	},
+	"specs": {
+		".svelte$": "@markuplint/svelte-spec"
+	},
 	"rules": {
 		"attr-duplication": true,
 		"character-reference": true,
