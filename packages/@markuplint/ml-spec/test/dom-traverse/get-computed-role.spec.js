@@ -254,7 +254,7 @@ describe('1.3', () => {
 		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.3')).toStrictEqual([
 			['table', 'none'],
 			['tbody', null, 'NO_OWNER'],
-			['tr', null, 'INVALID_REQUIRED_CONTEXT_ROLE'],
+			['tr', 'row'],
 			['td', null /* NOT MATCHING THE CONDITIONS */],
 		]);
 		expect(
