@@ -41296,7 +41296,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {
+				"shadowrootdelegatesfocus": {
+					"type": "Boolean"
+				},
+				"shadowrootmode": {
+					"type": {
+						"enum": ["open", "closed"],
+						"missingValueDefault": "none",
+						"invalidValueDefault": "none"
+					}
+				}
+			}
 		},
 		{
 			"name": "textarea",
