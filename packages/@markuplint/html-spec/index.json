@@ -9337,14 +9337,7 @@
 						"name": "row",
 						"description": "A row of cells in a tabular container.\n\nRows contain cell or gridcell elements, and thus serve to organize a table, grid, or treegrid.\n\nWhile the row role can be used in a table, grid, or treegrid, the semantics of aria-expanded, aria-posinset, aria-setsize, and aria-level are only applicable to the hierarchical structure of an interactive tree grid. Therefore, authors MUST NOT apply aria-expanded, aria-posinset, aria-setsize, and aria-level to a row that descends from a table or grid, and user agents SHOULD NOT expose any of these four properties to assistive technologies unless the row descends from a treegrid.\n\nAuthors MUST ensure elements with role row are accessibility children of an element with the role table, grid, rowgroup, or treegrid.\n\nWhile aria-disabled is currently supported on row, in a future version the working group plans to prohibit its on elements with role row except when the element is in the context of a grid or treegrid.",
 						"generalization": ["group", "widget"],
-						"requiredContextRole": [
-							"grid",
-							"table",
-							"treegrid",
-							"grid > rowgroup",
-							"table > rowgroup",
-							"treegrid > rowgroup"
-						],
+						"requiredContextRole": ["grid", "table", "treegrid", "rowgroup"],
 						"requiredOwnedElements": ["cell", "columnheader", "gridcell", "rowheader"],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": true,
