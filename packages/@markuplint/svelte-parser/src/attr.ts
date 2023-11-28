@@ -42,8 +42,8 @@ export function attr(
 		const valueToken = isShorthand
 			? attr.name
 			: attr.expression && 'start' in attr.expression && 'end' in attr.expression
-			? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
-			: '';
+			  ? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
+			  : '';
 		token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
 	}
 

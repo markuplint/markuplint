@@ -27,6 +27,6 @@
 		"jsdom": "21",
 		"strip-json-comments": "3",
 		"textlint-rule-prh": "^5.3.0",
-		"type-fest": "^4.5.0"
+		"type-fest": "^4.8.2"
 	}
 }

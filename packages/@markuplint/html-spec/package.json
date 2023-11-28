@@ -17,7 +17,7 @@
 		"gen:prettier": "prettier --write index.json"
 	},
 	"devDependencies": {
-		"@markuplint/spec-generator": "3.13.0",
+		"@markuplint/spec-generator": "4.0.0-dev.0+7c596917",
 		"@markuplint/test-tools": "3.7.0"
 	},
 	"dependencies": {

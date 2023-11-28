@@ -51,10 +51,10 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 						'<current-rule>': config.rule,
 				  }
 				: config.rule === undefined && config.nodeRule === undefined && config.childNodeRule === undefined
-				? {
-						'<current-rule>': true,
-				  }
-				: undefined,
+				  ? {
+							'<current-rule>': true,
+				    }
+				  : undefined,
 		nodeRules:
 			config.nodeRule !== undefined
 				? config.nodeRule.map(nodeConfig => ({

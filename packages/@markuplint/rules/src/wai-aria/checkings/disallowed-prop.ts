@@ -38,8 +38,8 @@ export const checkingDisallowedProp: AttrChecker<
 									ignore.type === 'must-not'
 										? '{0} must not {1}'
 										: ignore.type === 'should-not'
-										? '{0} should not {1}'
-										: '{0} is not recommended to {1}',
+										  ? '{0} should not {1}'
+										  : '{0} is not recommended to {1}',
 									// {0}
 									t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
 									// {1}

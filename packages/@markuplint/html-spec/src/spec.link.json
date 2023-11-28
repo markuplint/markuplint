@@ -45,7 +45,8 @@
 							"prerender",
 							"prev",
 							"search",
-							"stylesheet"
+							"stylesheet",
+							"terms-of-service"
 						]
 					},
 					"unique": true,
@@ -115,10 +116,14 @@
 			// If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`
 			"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 		},
-		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-blocking
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		"blocking": {
 			"type": {
-				"enum": ["render"]
+				"token": {
+					"enum": ["render"]
+				},
+				"separator": "space",
+				"unique": true
 			},
 			// > It is used by link type stylesheet, and it must only be specified on link elements that have a rel attribute containing that keyword.
 			"condition": "[rel~='stylesheet' i]"
