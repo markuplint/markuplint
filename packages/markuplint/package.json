@@ -31,11 +31,11 @@
 		"@markuplint/ml-spec": "3.12.0",
 		"@markuplint/rules": "3.13.0",
 		"@markuplint/shared": "3.8.0",
-		"@types/cli-color": "^2.0.4",
-		"@types/debug": "^4.1.10",
+		"@types/cli-color": "^2.0.6",
+		"@types/debug": "^4.1.12",
 		"@types/has-yarn": "^1.0.1",
 		"@types/meow": "^6.0.0",
-		"@types/uuid": "^9.0.6",
+		"@types/uuid": "^9.0.7",
 		"chokidar": "^3.5.3",
 		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
@@ -51,7 +51,7 @@
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "6",
 		"tslib": "^2.6.2",
-		"type-fest": "^4.5.0",
+		"type-fest": "^4.8.2",
 		"uuid": "^9.0.1"
 	}
 }

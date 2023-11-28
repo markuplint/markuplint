@@ -144,8 +144,8 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const childrenPresentational = $childrenPresentational.match(/true/i)
 			? true
 			: $childrenPresentational.match(/false/i)
-			? false
-			: undefined;
+			  ? false
+			  : undefined;
 		const ownedProperties = arrayUnique(
 			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
 		);
