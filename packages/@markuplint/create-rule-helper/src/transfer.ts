@@ -103,12 +103,12 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		newFile.ext === '.md'
 			? 'markdown'
 			: newFile.ext === '.json'
-			? 'json'
-			: newFile.ext === '.ts'
-			? options?.transpile
-				? 'babel'
-				: 'typescript'
-			: undefined;
+			  ? 'json'
+			  : newFile.ext === '.ts'
+			    ? options?.transpile
+						? 'babel'
+						: 'typescript'
+			    : undefined;
 	contents = await format(contents, { parser, filepath: dest });
 
 	if (!(await fsExists(newFile.destDir))) {

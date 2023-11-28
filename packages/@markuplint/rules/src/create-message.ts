@@ -248,8 +248,8 @@ function createExpectedObject(
 		expectedObject.length === 0
 			? null
 			: 1 < expectedObject.length
-			? t('either {0}', t(expectedObject))
-			: expectedObject[0] ?? null;
+			  ? t('either {0}', t(expectedObject))
+			  : expectedObject[0] ?? null;
 
 	return expects;
 }
