@@ -706,7 +706,8 @@
 								"opener",
 								"prev",
 								"search",
-								"tag"
+								"tag",
+								"terms-of-service"
 							]
 						},
 						"unique": true,
@@ -39095,7 +39096,8 @@
 									"prerender",
 									"prev",
 									"search",
-									"stylesheet"
+									"stylesheet",
+									"terms-of-service"
 								]
 							},
 							"unique": true,

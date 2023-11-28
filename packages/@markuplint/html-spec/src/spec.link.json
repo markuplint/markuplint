@@ -45,7 +45,8 @@
 							"prerender",
 							"prev",
 							"search",
-							"stylesheet"
+							"stylesheet",
+							"terms-of-service"
 						]
 					},
 					"unique": true,
