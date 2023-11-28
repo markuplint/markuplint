@@ -21,6 +21,10 @@
 		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-open
 		"open": {
 			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-name
+		"name": {
+			"type": "NoEmptyAny"
 		}
 	},
 	"aria": {

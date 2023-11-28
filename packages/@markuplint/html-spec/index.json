@@ -36611,6 +36611,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"name": {
+					"type": "NoEmptyAny"
+				},
 				"open": {
 					"type": "Boolean"
 				}
