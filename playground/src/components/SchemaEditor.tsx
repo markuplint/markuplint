@@ -1,4 +1,3 @@
-import type { DistTag } from '../modules/dist-tag';
 import type { JSONSchema } from '../modules/json-schema';
 import type { Rules, AnyRule } from '@markuplint/ml-config';
 
@@ -9,11 +8,11 @@ import { fetchDereferencedSchema } from '../modules/json-schema';
 import { ConfigRule } from './ConfigRule';
 
 type Props = Readonly<{
-	distTag: DistTag;
+	version: string;
 	onChange?: (rules: Rules) => void;
 }>;
 
-const SchemaEditorRaw = ({ distTag, onChange }: Props) => {
+const SchemaEditorRaw = ({ version, onChange }: Props) => {
 	const [schema, setSchema] = useState<JSONSchema | null>(null);
 	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const rulesDefinition = schema?.properties?.rules;
@@ -22,22 +21,8 @@ const SchemaEditorRaw = ({ distTag, onChange }: Props) => {
 
 	useEffect(() => {
 		setSchema(null);
-		if (!distTag) {
-			return;
-		}
 		void (async () => {
 			try {
-				// get version
-				const version = await (async () => {
-					const response = await fetch('https://registry.npmjs.org/markuplint');
-					const json = await response.json();
-					const version = json['dist-tags'][distTag];
-					if (typeof version !== 'string') {
-						throw new TypeError('Invalid version');
-					}
-					return version;
-				})();
-
 				// get schema
 				const url = `https://raw.githubusercontent.com/markuplint/markuplint/v${version}/config.schema.json`;
 				const dereferencedSchema = await fetchDereferencedSchema(new URL(url));
@@ -49,7 +34,7 @@ const SchemaEditorRaw = ({ distTag, onChange }: Props) => {
 				console.error(error);
 			}
 		})();
-	}, [distTag]);
+	}, [version]);
 
 	const handleChange = useCallback(
 		(name: string) => (rule: AnyRule) => {

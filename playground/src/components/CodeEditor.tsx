@@ -28,9 +28,9 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 
 	return (
 		<div className="h-full grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
-			<hgroup className="flex gap-2 items-baseline py-2 px-4 bg-slate-100">
-				<h2 className="text-xl font-bold flex items-center gap-2">
-					<span className=" icon-heroicons-solid-code text-slate-500 text-xl translate-y-px"></span>
+			<hgroup className="flex gap-2 items-baseline py-1 px-4 bg-slate-100">
+				<h2 className="text-lg font-bold flex items-baseline gap-2">
+					<span className=" icon-heroicons-solid-code text-slate-500 text-xl translate-y-[0.15em]"></span>
 					Code
 				</h2>
 				<p className="text-sm">
@@ -45,6 +45,7 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 					fontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
 					tabSize: 2,
 					renderWhitespace: 'all',
+					lineNumbersMinChars: 4,
 				}}
 				value={value}
 				onMount={(editor, monaco) => {

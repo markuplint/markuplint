@@ -14,18 +14,16 @@ summary::-webkit-details-marker {
 	display: none;
 }
 
-@media (min-width: 768px) {
-	:root,
-	body,
-	#root {
-		height: 100%;
-	}
-
-	#root {
-		display: grid;
-		grid-template-rows: auto minmax(0, 1fr) auto;
-		grid-template-columns: minmax(0, auto);
-	}
+:root,
+body,
+#root {
+	height: 100%;
+	min-height: 30rem;
+}
+#root {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, auto);
 }
 
 .monaco-editor,

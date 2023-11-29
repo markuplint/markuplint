@@ -59,7 +59,44 @@ export function App() {
 		'not-started' | 'installing-deps' | 'install-error' | 'lint-server-preparing' | 'linting' | 'checked' | 'error'
 	>('not-started');
 	const [initialized, setInitialized] = useState(false);
-	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
+	const [version, setVersion] = useState<string>();
+	const tabsRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		// get version
+		void (async () => {
+			const response = await fetch('https://registry.npmjs.org/markuplint');
+			const json = await response.json();
+			const version = json['dist-tags'][distTag];
+			if (typeof version !== 'string') {
+				throw new TypeError('Invalid version');
+			}
+			setVersion(version);
+		})();
+	}, [distTag]);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			entries => {
+				const entry = entries[0];
+				if (entry.isIntersecting) {
+					// mobile
+					setSelectedTab('code');
+				} else {
+					// desktop
+					setSelectedTab(null);
+				}
+			},
+			{ root: document.body },
+		);
+		if (tabsRef.current) {
+			observer.observe(tabsRef.current);
+		}
+		return () => {
+			observer.disconnect();
+		};
+	}, []);
 
 	// boot container server
 	useEffect(() => {
@@ -265,125 +302,155 @@ export function App() {
 					}}
 				/>
 			</header>
-			<main className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:grid-rows-[minmax(0,auto)]">
-				<button
-					type="button"
-					className="md:hidden flex justify-between items-center py-2 px-4 font-medium w-full bg-slate-200"
-					aria-expanded={isSettingsOpen}
-					onClick={() => setIsSettingsOpen(prev => !prev)}
-				>
-					<span>Settings</span>
-					<span className="icon-heroicons-solid-bars-3"></span>
-				</button>
-				{/* desktop: always shown, mobile: toggle */}
-				<section className="overflow-y-auto md:block" hidden={!isSettingsOpen}>
-					<Tab.Group>
-						<Tab.List className="flex flex-wrap gap-1 pt-1 px-4 border-b bg-slate-100">
-							<Tab className="flex items-center gap-2 py-2 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
+			<main className="grid md:block grid-rows-[auto_minmax(0,1fr)] grid-cols-1">
+				<nav ref={tabsRef} className="md:hidden border-b bg-slate-100">
+					<ul className="flex flex-wrap gap-1 pt-1 px-4">
+						<li>
+							<button
+								type="button"
+								onClick={() => {
+									setSelectedTab('code');
+								}}
+								className="flex items-center gap-2 py-1 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue"
+							>
+								<span className=" icon-heroicons-solid-code text-xl text-slate-500"></span>
+								Code
+							</button>
+						</li>
+						<li>
+							<button
+								onClick={() => {
+									setSelectedTab('config');
+								}}
+								className="flex items-center gap-2 py-1 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue"
+							>
 								<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
 								Config
-							</Tab>
-							<Tab className="flex items-center gap-2 py-2 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
-								<span className=" icon-majesticons-box text-xl text-slate-500"></span>
-								Packages
-							</Tab>
-						</Tab.List>
-						<Tab.Panels>
-							<Tab.Panel unmount={false}>
-								<Tab.Group>
-									<Tab.List className="flex gap-0.5 py-2 px-4">
-										<Tab className="flex gap-1 items-center py-1 px-2 border text-black text-opacity-60 rounded-s-lg aria-selected:bg-slate-100 aria-selected:text-opacity-100">
-											<span className=" icon-heroicons-solid-adjustments-horizontal"></span>
-											Visual
-										</Tab>
-										<Tab className="flex gap-1 items-center py-1 px-2 border rounded-e-lg aria-selected:bg-slate-100 text-black text-opacity-60  aria-selected:text-opacity-100">
-											<span className=" icon-majesticons-curly-braces"></span>
-											JSON
-										</Tab>
-									</Tab.List>
-									<Tab.Panels>
-										<Tab.Panel unmount={false} className="px-4 py-4">
-											<div className="grid gap-2">
-												<details open className="border rounded-lg overflow-hidden group">
-													<summary
-														className="
-													flex justify-between items-center gap-2 font-medium -outline-offset-2 
-													py-2 px-4 border-slate-300 bg-slate-100
-												"
-													>
-														Parser &amp; Specs
-														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-													</summary>
-													<FilenameEditor value={fileType} onChange={handleChangeFileType} />
-												</details>
-												<details open className="border rounded-lg overflow-hidden group">
-													<summary
-														className="
-												flex justify-between items-center gap-2 font-medium -outline-offset-2 
-												py-2 px-4 border-slate-300 bg-slate-100
-											"
-													>
-														Presets
-														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-													</summary>
-													<PresetsEditor
-														fileType={fileType}
-														value={presets}
-														onChange={handleChangePresets}
-													/>
-												</details>
-												<details open className="border rounded-lg overflow-hidden group">
-													<summary
-														className="
-													flex justify-between items-center gap-2 font-medium -outline-offset-2 
-													py-2 px-4 border-slate-300 bg-slate-100
-												"
-													>
-														Rules
-														<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-													</summary>
-													<SchemaEditor distTag={distTag} onChange={handleChangeRules} />
-												</details>
-											</div>
-										</Tab.Panel>
-										<Tab.Panel unmount={false}>
-											<ConfigEditor value={configString} onChange={setConfigString} />
-										</Tab.Panel>
-									</Tab.Panels>
-								</Tab.Group>
-							</Tab.Panel>
-							<Tab.Panel unmount={false}>
-								<DepsEditor
-									status={depsStatus}
-									installedPackages={installedPackages}
-									distTag={distTag}
-									depsPackages={depsPackages}
-									onChange={setDistTag}
-								/>
-							</Tab.Panel>
-						</Tab.Panels>
-					</Tab.Group>
-				</section>
+							</button>
+						</li>
+					</ul>
+				</nav>
 				<Split
-					direction="vertical"
+					direction="horizontal"
+					sizes={[60, 40]}
 					gutter={() => {
 						const gutterElement = document.createElement('div');
 						gutterElement.className =
-							'w-full h-[2px] box-content border-y-4 border-transparent bg-slate-300 cursor-row-resize hover:bg-ml-blue';
+							'w-[2px] box-content border-x-4 border-transparent bg-slate-300 cursor-col-resize hover:bg-ml-blue hidden md:block';
 						return gutterElement;
 					}}
 					gutterStyle={() => ({})}
-					className="h-[70vh] md:h-auto"
+					className="h-full flex"
+					minSize={0}
 				>
-					<section>
-						<CodeEditor value={code} filename={filename} violations={violations ?? []} onChange={setCode} />
+					<Split
+						direction="vertical"
+						sizes={[60, 40]}
+						gutter={() => {
+							const gutterElement = document.createElement('div');
+							gutterElement.className =
+								'w-full h-[2px] box-content border-y-4 border-transparent bg-slate-300 cursor-row-resize hover:bg-ml-blue';
+							return gutterElement;
+						}}
+						gutterStyle={() => ({})}
+						className={
+							selectedTab === null ? 'overflow-x-hidden' : selectedTab === 'code' ? '!w-full' : 'hidden'
+						}
+					>
+						<section>
+							<CodeEditor
+								value={code}
+								filename={filename}
+								violations={violations ?? []}
+								onChange={setCode}
+							/>
+						</section>
+						<div className="grid grid-rows-1">
+							<ProblemsOutput violations={violations} />
+						</div>
+					</Split>
+					<section
+						className={`grid grid-rows-[auto_minmax(0,1fr)] ${
+							selectedTab === null ? '' : selectedTab === 'config' ? '!w-full' : 'hidden'
+						}`}
+					>
+						<Tab.Group>
+							<div className="flex justify-between items-center gap-2 py-1 px-4 bg-slate-100">
+								<hgroup className="flex items-baseline flex-wrap">
+									<h2 className="flex items-baseline gap-2 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
+										<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500 translate-y-[0.15em]"></span>
+										Config
+									</h2>
+									<p className="text-xs tracking-tight">
+										<code>.markuplintrc</code>
+									</p>
+								</hgroup>
+								<Tab.List className="flex border rounded-lg">
+									<Tab className="flex gap-1 overflow-hidden justify-center items-center py-1 px-2 text-sm first:rounded-s-lg last:rounded-e-lg text-black text-opacity-60 aria-selected:bg-white  aria-selected:text-opacity-100">
+										<span className=" icon-majesticons-curly-braces shrink-0"></span>
+										JSON
+									</Tab>
+									<Tab className="flex gap-1 overflow-hidden justify-center items-center py-1 px-2 text-sm first:rounded-s-lg last:rounded-e-lg text-black text-opacity-60 aria-selected:bg-white aria-selected:text-opacity-100">
+										<span className=" icon-heroicons-solid-adjustments-horizontal shrink-0"></span>
+										Visual
+									</Tab>
+								</Tab.List>
+							</div>
+
+							<Tab.Panels className="overflow-x-hidden">
+								<Tab.Panel unmount={false} className="h-full grid">
+									<ConfigEditor value={configString} onChange={setConfigString} />
+								</Tab.Panel>
+								<Tab.Panel unmount={false} className="px-4 py-4 ">
+									<div className="grid gap-2">
+										<details open className="border rounded-lg overflow-hidden group">
+											<summary
+												className="
+													flex justify-between items-center gap-2 font-medium -outline-offset-2 
+													py-2 px-4 border-slate-300 bg-slate-100
+												"
+											>
+												Parser &amp; Specs
+												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+											</summary>
+											<FilenameEditor value={fileType} onChange={handleChangeFileType} />
+										</details>
+										<details open className="border rounded-lg overflow-hidden group">
+											<summary
+												className="
+												flex justify-between items-center gap-2 font-medium -outline-offset-2 
+												py-2 px-4 border-slate-300 bg-slate-100
+											"
+											>
+												Presets
+												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+											</summary>
+											<PresetsEditor
+												fileType={fileType}
+												value={presets}
+												onChange={handleChangePresets}
+											/>
+										</details>
+										<details open className="border rounded-lg overflow-hidden group">
+											<summary
+												className="
+													flex justify-between items-center gap-2 font-medium -outline-offset-2 
+													py-2 px-4 border-slate-300 bg-slate-100
+												"
+											>
+												Rules
+												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+											</summary>
+											{version && <SchemaEditor version={version} onChange={handleChangeRules} />}
+										</details>
+									</div>
+								</Tab.Panel>
+							</Tab.Panels>
+						</Tab.Group>
 					</section>
-					<div className="grid grid-rows-1">
-						<ProblemsOutput violations={violations} />
-					</div>
 				</Split>
 			</main>
-			<footer className="sticky bottom-0 p-2 flex justify-end items-center text-sm bg-white border-t">
+			<footer className="sticky bottom-0 px-4 py-1 flex justify-end items-center text-sm bg-white border-t">
 				<output className="flex justify-end items-center gap-1">
 					{
 						{
@@ -425,7 +492,31 @@ export function App() {
 						className="absolute right-4 w-[calc(100%-3rem)] max-w-4xl bottom-[calc(100%+1rem)] z-10 border bg-white overflow-hidden rounded-lg shadow-lg"
 					>
 						<ConsoleOutput ref={consoleRef} />
-					</Popover.Panel>{' '}
+					</Popover.Panel>
+				</Popover>
+				<Popover>
+					<Popover.Button
+						className="
+						flex items-center gap-1 shadow-sm
+						px-2 py-1 ml-2 rounded-md bg-slate-100 text-slate-900
+						hover:bg-slate-200 hover:text-slate-800
+					"
+					>
+						<span className=" icon-heroicons-solid-tag"></span>
+						{`v${version}`}
+					</Popover.Button>
+					<Popover.Panel
+						unmount={false}
+						className="absolute left-4 right-4 ml-auto w-fit bottom-[calc(100%+1rem)] z-10 border bg-white overflow-hidden rounded-lg shadow-lg"
+					>
+						<DepsEditor
+							status={depsStatus}
+							installedPackages={installedPackages}
+							distTag={distTag}
+							depsPackages={depsPackages}
+							onChange={setDistTag}
+						/>
+					</Popover.Panel>
 				</Popover>
 			</footer>
 		</>
