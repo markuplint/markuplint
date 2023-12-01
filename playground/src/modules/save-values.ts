@@ -21,7 +21,7 @@ const decode = (string: string): Partial<PlaygroundValues> => {
 };
 
 export const saveValues = (values: PlaygroundValues) => {
-	location.hash = encode(values);
+	history.replaceState(null, '', `#${encode(values)}`);
 };
 export const loadValues = (): Partial<PlaygroundValues> | null => {
 	return location.hash ? decode(location.hash.slice(1)) : null;
