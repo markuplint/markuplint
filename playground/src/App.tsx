@@ -405,12 +405,12 @@ export function App() {
 								</Tab.List>
 							</div>
 
-							<Tab.Panels className="overflow-x-hidden">
+							<Tab.Panels>
 								<Tab.Panel unmount={false} className="h-full grid">
 									<ConfigEditor value={configString} onChange={setConfigString} />
 								</Tab.Panel>
-								<Tab.Panel unmount={false} className="px-4 py-4 ">
-									<div className="grid gap-2">
+								<Tab.Panel unmount={false} className="overflow-y-auto h-full">
+									<div className="px-4 py-4 grid gap-2">
 										<details open className="border rounded-lg overflow-hidden group">
 											<summary
 												className="
