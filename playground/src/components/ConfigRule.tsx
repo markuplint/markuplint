@@ -3,25 +3,21 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { useCallback, useState } from 'react';
-
-const assertNever = (_x: never) => {
-	throw new Error('This code should not be called');
-};
+import { useCallback, useEffect, useState } from 'react';
 
 const locale = navigator.language;
 const localeWithoutRegion = locale.split('-')[0];
 
-type Mode = 'unset' | 'enable' | 'custom';
 type Props = Readonly<{
+	value: AnyRule;
 	name: string;
 	schema: JSONSchema;
 	onChange?: (rule: AnyRule) => void;
 }>;
-export const ConfigRule = ({ name, schema, onChange }: Props) => {
-	const [mode, setMode] = useState<Mode>('unset');
+export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
+	const [valueSelect, setValueSelect] = useState<string>('unset');
 	const [, setRuleConfig] = useState<AnyRule | null>(null);
-	const [customConfig, setCustomConfig] = useState<any>({});
+	const [customConfig, setCustomConfig] = useState<object>({});
 	const handleChangeCustom = useCallback(
 		(value: any | undefined) => {
 			const newCustomConfig = value ?? {};
@@ -30,6 +26,32 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 		},
 		[onChange],
 	);
+
+	useEffect(() => {
+		switch (value) {
+			case true: {
+				setValueSelect('true');
+				break;
+			}
+			case false: {
+				setValueSelect('false');
+				break;
+			}
+			case null:
+			case undefined: {
+				setValueSelect('unset');
+				break;
+			}
+			default: {
+				if (typeof value === 'string') {
+					setValueSelect(value);
+				} else if (typeof value === 'object') {
+					setValueSelect('custom');
+					setCustomConfig(value);
+				}
+			}
+		}
+	}, [value]);
 
 	// Rule's schema has `oneOf` property
 	if (!schema.oneOf) {
@@ -60,25 +82,30 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 				{/* FIXME: this select element has no accessible name */}
 				<select
 					className="select-arrow border border-slate-300 rounded-md w-[8em]"
+					value={valueSelect}
 					onChange={e => {
 						const value = e.currentTarget.value;
-						let newRuleConfig: AnyRule | null;
-						if (value === 'custom') {
-							setMode('custom');
-							newRuleConfig = customConfig;
-						} else if (value === 'unset') {
-							setMode('unset');
-							newRuleConfig = null;
-						} else {
-							setMode('enable');
-							if (value === 'true') {
-								newRuleConfig = true;
-							} else if (value === 'false') {
-								newRuleConfig = false;
-							} else {
-								newRuleConfig = value;
+						const newRuleConfig = (() => {
+							switch (value) {
+								case 'custom': {
+									return customConfig;
+								}
+								case 'unset': {
+									return null;
+								}
+								case 'true': {
+									return true;
+								}
+								case 'false': {
+									return false;
+								}
+								default: {
+									return value;
+								}
 							}
-						}
+						})();
+
+						setValueSelect(value);
 						setRuleConfig(newRuleConfig);
 						onChange?.(newRuleConfig);
 					}}
@@ -113,7 +140,7 @@ export const ConfigRule = ({ name, schema, onChange }: Props) => {
 				</select>
 			</div>
 			{customs !== undefined && (
-				<div className="mt-2" hidden={mode !== 'custom'}>
+				<div className="mt-2" hidden={valueSelect !== 'custom'}>
 					<div className="grid gap-2 pl-4">
 						<Nested schema={customs} onChange={handleChangeCustom} />
 					</div>
@@ -303,7 +330,8 @@ const Nested = ({
 				return null;
 			}
 			default: {
-				assertNever(schema.type);
+				schema.type satisfies never;
+				throw new Error('This code should not be called');
 			}
 		}
 	} else {

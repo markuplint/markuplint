@@ -9,11 +9,12 @@ import { fetchDereferencedSchema, isJSONSchema } from '../modules/json-schema';
 import { ConfigRule } from './ConfigRule';
 
 type Props = Readonly<{
+	value: Rules;
 	version: string;
 	onChange?: (rules: Rules) => void;
 }>;
 
-const SchemaEditorRaw = ({ version, onChange }: Props) => {
+const SchemaEditorRaw = ({ value, version, onChange }: Props) => {
 	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const [ruleSchemas, setRuleSchemas] = useState<Record<string, JSONSchema7Definition> | null>(null);
 	useEffect(() => {
@@ -68,7 +69,13 @@ const SchemaEditorRaw = ({ version, onChange }: Props) => {
 				Object.entries(ruleSchemas).map(
 					([key, ruleSchema]) =>
 						typeof ruleSchema !== 'boolean' && (
-							<ConfigRule key={key} name={key} schema={ruleSchema} onChange={handleChange(key)} />
+							<ConfigRule
+								key={key}
+								name={key}
+								schema={ruleSchema}
+								value={value[key]}
+								onChange={handleChange(key)}
+							/>
 						),
 				)
 			)}

@@ -265,6 +265,14 @@ export function App() {
 			return [];
 		}
 	}, [configString]);
+	const rules = useMemo((): Rules => {
+		if (isValidJson(configString)) {
+			const parsedConfig = JSON.parse(configString);
+			const rules = parsedConfig.rules ?? {};
+			return rules;
+		}
+		return {};
+	}, [configString]);
 	const handleChangePresets = useCallback(
 		(newPresets: readonly string[]) => {
 			if (isValidJson(configString)) {
@@ -441,7 +449,13 @@ export function App() {
 												Rules
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
-											{version && <SchemaEditor version={version} onChange={handleChangeRules} />}
+											{version && (
+												<SchemaEditor
+													value={rules}
+													version={version}
+													onChange={handleChangeRules}
+												/>
+											)}
 										</details>
 									</div>
 								</Tab.Panel>
