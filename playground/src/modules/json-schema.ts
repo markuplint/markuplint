@@ -1,6 +1,15 @@
 import type { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 export type JSONSchema = JSONSchema7;
 
+export const isJSONSchema = (value: JSONSchema7Definition | undefined): value is JSONSchema => {
+	if (value != null && typeof value !== 'boolean') {
+		value satisfies JSONSchema;
+		return true;
+	} else {
+		return false;
+	}
+};
+
 const definitionMap = new Map<string, Readonly<JSONSchema | JSONSchema7Definition>>();
 const jsonCache = new Map<string, JSONSchema>();
 
