@@ -2,7 +2,7 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { useCallback, useEffect, useId, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useId, useState } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
 
@@ -159,18 +159,16 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 const Nested = ({
 	value,
 	schema,
-	depth = 0,
 	onChange,
 }: Readonly<{
 	value: any;
 	schema: JSONSchema7Definition;
-	depth?: number;
 	onChange?: (value: any) => void;
 }>): ReactNode => {
 	if (typeof schema === 'boolean') {
 		return null;
 	} else if (schema.oneOf) {
-		return <NestedOneOf depth={depth} schemas={schema.oneOf} value={value} onChange={onChange} />;
+		return <NestedOneOf schemas={schema.oneOf} value={value} onChange={onChange} />;
 	} else if (
 		schema.type !== undefined &&
 		!Array.isArray(schema.type) // array is not supported
@@ -193,11 +191,11 @@ const Nested = ({
 				} else if (schema.items === undefined) {
 					return null;
 				} else {
-					return <NestedArray schema={schema.items} depth={depth + 1} value={value} onChange={onChange} />;
+					return <NestedArray schema={schema.items} value={value} onChange={onChange} />;
 				}
 			}
 			case 'object': {
-				return <NestedObject schema={schema} depth={depth + 1} value={value} onChange={onChange} />;
+				return <NestedObject schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'null': {
 				return null;
@@ -215,11 +213,9 @@ const Nested = ({
 const NestedArray = ({
 	value,
 	schema,
-	depth,
 	onChange,
 }: Readonly<{
 	value: readonly any[];
-	depth: number;
 	schema: JSONSchema7Definition;
 	onChange?: (value: readonly any[]) => void;
 }>): ReactNode => {
@@ -257,7 +253,7 @@ const NestedArray = ({
 			<ul className="grid gap-1">
 				{values.map((v, i) => (
 					<li key={i} className="flex items-baseline gap-2">
-						<Nested schema={schema} depth={depth} value={v} onChange={handleChange(i)} />
+						<Nested schema={schema} value={v} onChange={handleChange(i)} />
 						<button
 							type="button"
 							onClick={handleRemove(i)}
@@ -287,12 +283,10 @@ const NestedArray = ({
 
 const NestedOneOf = ({
 	value,
-	depth,
 	schemas,
 	onChange,
 }: Readonly<{
 	value: any;
-	depth: number;
 	schemas: readonly JSONSchema7Definition[];
 	onChange?: (value: any) => void;
 }>): ReactNode => {
@@ -330,7 +324,7 @@ const NestedOneOf = ({
 						}}
 					/>
 					<fieldset disabled={selected !== String(i)}>
-						<Nested schema={s} depth={depth} value={valueStates[i]} onChange={handleChange(i)} />
+						<Nested schema={s} value={valueStates[i]} onChange={handleChange(i)} />
 					</fieldset>
 				</li>
 			))}
@@ -338,17 +332,18 @@ const NestedOneOf = ({
 	);
 };
 
+const DepthContext = createContext(0);
+
 const NestedObject = ({
 	value,
 	schema,
-	depth = 0,
 	onChange,
 }: Readonly<{
 	value: Readonly<Record<string, JsonValue>> | undefined;
 	schema: JSONSchema;
-	depth?: number;
 	onChange?: (value: Readonly<Record<string, JsonValue>> | undefined) => void;
 }>): ReactNode => {
+	const depth = useContext(DepthContext);
 	const [valueState, setValueState] = useState<Record<string, JsonValue>>(value ?? {});
 	useEffect(() => {
 		setValueState(value ?? {});
@@ -391,12 +386,9 @@ const NestedObject = ({
 							)}
 						</div>
 						<div className="min-w-[10rem]">
-							<Nested
-								schema={property}
-								depth={depth}
-								onChange={handleChange(key)}
-								value={valueState?.[key]}
-							/>
+							<DepthContext.Provider value={depth + 1}>
+								<Nested schema={property} onChange={handleChange(key)} value={valueState?.[key]} />
+							</DepthContext.Provider>
 						</div>
 					</li>
 				),
