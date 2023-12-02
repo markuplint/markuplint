@@ -1,5 +1,6 @@
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
 import type { DistTag } from './modules/dist-tag';
+import type { PlaygroundValues } from './modules/save-values';
 import type { Violations } from './modules/violations';
 import type { Rules, Config } from '@markuplint/ml-config';
 
@@ -47,6 +48,17 @@ const isValidJson = (maybeJson: string) => {
 let boot = false;
 let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
 
+const fallbackValues = {
+	code: '',
+	codeFileType: '.html',
+	config: '',
+} as const satisfies PlaygroundValues;
+const initialValues = {
+	...fallbackValues,
+	...(loadValues() ?? defaultExample),
+} as const;
+const { config: initialConfig, codeFileType: initialCodeFileType, code: initialCode } = initialValues;
+
 type StringSet = Readonly<ReadonlySet<string>>;
 const areSetsEqual = (set1: StringSet, set2: StringSet) => {
 	if (set1.size !== set2.size) return false;
@@ -55,10 +67,10 @@ const areSetsEqual = (set1: StringSet, set2: StringSet) => {
 
 export function App() {
 	const consoleRef = useRef<ConsoleOutputRef>(null);
-	const [code, setCode] = useState('');
-	const [fileType, setFileType] = useState<string>('.html');
+	const [code, setCode] = useState(initialCode);
+	const [fileType, setFileType] = useState<string>(initialCodeFileType);
 	const filename = `index${fileType}`;
-	const [configString, setConfigString] = useState('');
+	const [configString, setConfigString] = useState(initialConfig);
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
 	const [distTag, setDistTag] = useState<DistTag>('latest');
 	const [violations, setViolations] = useState<Violations | null>(null);
@@ -114,12 +126,6 @@ export function App() {
 			boot = true;
 			void (async () => {
 				containerServer = await setupContainerServer(consoleRef.current!);
-
-				const initialValues = loadValues() ?? defaultExample;
-				const { config, codeFileType, code } = initialValues;
-				config && setConfigString(config);
-				codeFileType && setFileType(codeFileType);
-				code && setCode(code);
 				setInitialized(true);
 			})();
 		}

@@ -1,3 +1,5 @@
+import { isJsonObject, parseJson } from './json';
+
 export const fileTypes = ['.html', '.jsx', '.vue', '.svelte'] as const;
 
 export type PlaygroundValues = Readonly<{
@@ -13,8 +15,8 @@ const decode = (string: string): Partial<PlaygroundValues> => {
 	const decoded = decodeURIComponent(window.atob(string));
 
 	try {
-		const parsed = JSON.parse(decoded);
-		return typeof parsed === 'object' && parsed !== null ? parsed : {};
+		const parsed = parseJson(decoded);
+		return isJsonObject(parsed) ? parsed : {};
 	} catch {
 		return {};
 	}
