@@ -100,7 +100,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 					return parsed.devDependencies;
 				} else {
 					appendLine('Installation failed');
-					return {};
+					throw new Error('Installation failed');
 				}
 			})();
 			const result = await updatingDeps;

@@ -66,7 +66,7 @@ export function App() {
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading' | null>(null);
 	const [status, setStatus] = useState<
-		'not-started' | 'installing-deps' | 'install-error' | 'lint-server-preparing' | 'linting' | 'checked' | 'error'
+		'not-started' | 'deps-installing' | 'deps-error' | 'config-updating' | 'lint-checked' | 'config-error'
 	>('not-started');
 	const [initialized, setInitialized] = useState(false);
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
@@ -144,6 +144,7 @@ export function App() {
 		if (isValidJson(configString)) {
 			void (async () => {
 				setViolations(null);
+				setStatus('config-updating');
 				try {
 					await containerServer.updateConfig('.markuplintrc', configString);
 				} catch (error) {
@@ -152,6 +153,8 @@ export function App() {
 				}
 				setLintTrigger(prev => prev + 1);
 			})();
+		} else {
+			setStatus('config-error');
 		}
 	}, [configString]);
 
@@ -160,20 +163,21 @@ export function App() {
 		if (!containerServer || !initialized) {
 			return;
 		}
-		const dependencies = [...depsPackages].map(name => `${name}@${distTag}`);
 
-		setDepsStatus('loading');
 		setViolations(null);
-		setStatus('installing-deps');
+		setDepsStatus('loading');
+		setStatus('deps-installing');
 
 		void (async () => {
-			const installed = await containerServer.updateDeps(dependencies);
-			setInstalledPackages(installed);
-			if (Object.keys(installed).length > 0) {
+			try {
+				const dependencies = [...depsPackages].map(name => `${name}@${distTag}`);
+				const installed = await containerServer.updateDeps(dependencies);
+				setInstalledPackages(installed);
 				setDepsStatus('success');
 				setLintTrigger(prev => prev + 1);
-			} else {
+			} catch {
 				setDepsStatus('error');
+				setStatus('deps-error');
 			}
 		})();
 	}, [depsPackages, distTag, initialized]);
@@ -188,7 +192,7 @@ export function App() {
 		}
 		void (async () => {
 			const result = await containerServer.lint(filename, code);
-			setStatus('checked');
+			setStatus('lint-checked');
 			setViolations(result);
 		})();
 	}, [code, depsStatus, filename, lintTrigger]);
@@ -455,25 +459,41 @@ export function App() {
 				<output className="flex justify-end items-center gap-1">
 					{
 						{
-							'not-started': 'Not started',
-							'installing-deps': (
+							'not-started': <></>,
+							'deps-installing': (
 								<>
 									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
-										<span className="animate-spin absolute inset-0 icon-custom-loading text-slate-500"></span>
+										<span className="animate-spin absolute inset-0 icon-custom-loading text-ml-blue"></span>
 									</span>
 									Installing dependencies...
 								</>
 							),
-							'install-error': 'Install error',
-							'lint-server-preparing': 'Preparing lint server',
-							linting: 'Linting',
-							checked: (
+							'deps-error': (
 								<>
-									<span className=" icon-heroicons-solid-check"></span>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									Install error!
+								</>
+							),
+							'config-updating': (
+								<>
+									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
+										<span className="animate-spin absolute inset-0 icon-custom-loading text-ml-blue"></span>
+									</span>
+									Updating config...
+								</>
+							),
+							'config-error': (
+								<>
+									<span className=" icon-heroicons-solid-x-circle  text-red-500"></span>
+									Config file is invalid!
+								</>
+							),
+							'lint-checked': (
+								<>
+									<span className=" icon-heroicons-solid-check text-green-700"></span>
 									Checked!
 								</>
 							),
-							error: 'Error',
 						}[status]
 					}
 				</output>
