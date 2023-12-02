@@ -2,7 +2,7 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
 
@@ -170,23 +170,7 @@ const Nested = ({
 	if (typeof schema === 'boolean') {
 		return null;
 	} else if (schema.oneOf) {
-		// list
-		return (
-			<ul>
-				{schema.oneOf.map((s, i) => (
-					<li key={i} className="relative pt-6 first:pt-0">
-						{i > 0 && (
-							<div className="absolute top-0 right-0 left-0 px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4 before:block before:bg-slate-300 before:h-[1px] after:block after:bg-slate-300 after:h-[1px]">
-								OR
-							</div>
-						)}
-						<div>
-							<Nested schema={s} depth={depth + 1} value={value} onChange={onChange} />
-						</div>
-					</li>
-				))}
-			</ul>
-		);
+		return <NestedOneOf depth={depth} schemas={schema.oneOf} value={value} onChange={onChange} />;
 	} else if (
 		schema.type !== undefined &&
 		!Array.isArray(schema.type) // array is not supported
@@ -231,6 +215,59 @@ const Nested = ({
 	} else {
 		return <p>Sorry! This option is not supported on this playground</p>;
 	}
+};
+
+const NestedOneOf = ({
+	value,
+	depth,
+	schemas,
+	onChange,
+}: Readonly<{
+	value: any;
+	depth: number;
+	schemas: readonly JSONSchema7Definition[];
+	onChange?: (value: any) => void;
+}>): ReactNode => {
+	const id = useId();
+
+	const [selected, setSelected] = useState<string>('0');
+	const [valueStates, setValueStates] = useState<any[]>(Array.from({ length: schemas.length }).fill(null));
+	useEffect(() => {
+		// not supported
+		// TODO: support this pattern
+	}, [value]);
+	const handleChange = useCallback(
+		(index: number) => (value: any) => {
+			onChange?.(value);
+			const newValue = [...valueStates];
+			newValue[index] = value;
+			setValueStates(newValue);
+		},
+		[onChange, valueStates],
+	);
+
+	return (
+		<ul className="grid gap-2">
+			{schemas.map((s, i) => (
+				<li key={i} className="grid grid-cols-[auto_1fr] gap-2 items-baseline">
+					<input
+						type="radio"
+						// id={id}
+						name={id}
+						value={i}
+						checked={selected === String(i)}
+						onChange={e => {
+							setSelected(e.currentTarget.value);
+							handleChange(i)(valueStates[i]);
+						}}
+					/>
+					<fieldset disabled={selected !== String(i)}>
+						<Nested schema={s} depth={depth} value={valueStates[i]} onChange={handleChange(i)} />
+					</fieldset>
+				</li>
+			))}
+		</ul>
+	);
 };
 
 const NestedObject = ({
