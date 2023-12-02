@@ -33,7 +33,7 @@ type Props = Readonly<{
 }>;
 
 export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
-	const [presets, setPresets] = useState<readonly string[]>([]);
+	const presets = value;
 	const [implicitPresets, setImplicitPresets] = useState<readonly string[]>([]);
 	const handleChange = useCallback(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -54,14 +54,12 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 			} else {
 				newPresets = presets.filter(p => p !== value);
 			}
-			setPresets(newPresets);
 			setImplicitPresets(getImplicitPresets(newPresets));
 			onChange?.(newPresets);
 		},
 		[onChange, presets],
 	);
 	useEffect(() => {
-		setPresets(value);
 		setImplicitPresets(getImplicitPresets(value));
 	}, [value]);
 
@@ -73,7 +71,6 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 			)
 		) {
 			const newPresets = presets.filter(p => !Object.values(specificRecommendedPresets).includes(p));
-			setPresets(newPresets);
 			onChange?.(newPresets);
 		}
 	}, [fileType, onChange, presets]);
