@@ -24,8 +24,11 @@ export const ConfigEditor = ({ value, onChange }: Props) => {
 					renderWhitespace: 'all',
 				}}
 				value={value}
-				onMount={(editor, _monaco) => {
+				onMount={(editor, monaco) => {
 					editorRef.current = editor;
+					monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+						comments: 'ignore',
+					});
 				}}
 				onChange={value => {
 					if (value !== undefined) {

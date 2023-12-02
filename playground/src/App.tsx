@@ -1,11 +1,12 @@
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
 import type { DistTag } from './modules/dist-tag';
 import type { Violations } from './modules/violations';
-import type { Rules } from '@markuplint/ml-config';
+import type { Rules, Config } from '@markuplint/ml-config';
 
 import { Popover, Tab } from '@headlessui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
+import stripJsonComments from 'strip-json-comments';
 
 import logo from './assets/images/logo-horizontal.svg';
 import { CodeEditor } from './components/CodeEditor';
@@ -19,19 +20,28 @@ import { ProblemsOutput } from './components/ProblemsOutput';
 import { SchemaEditor } from './components/SchemaEditor';
 import { examples } from './examples';
 import { debounce } from './modules/debounce';
+import { isJsonObject, parseJson } from './modules/json';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
 
 const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
 const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
 
-const isValidJson = (maybeJson: string) => {
+const parseConfig = (maybeConfig: string): Config | null => {
 	try {
-		JSON.parse(maybeJson);
-		return true;
+		const parsed = parseJson(stripJsonComments(maybeConfig));
+		if (isJsonObject(parsed)) {
+			return parsed;
+		} else {
+			return null;
+		}
 	} catch {
-		return false;
+		return null;
 	}
+};
+
+const isValidJson = (maybeJson: string) => {
+	return parseConfig(maybeJson) !== null;
 };
 
 let boot = false;
@@ -199,15 +209,13 @@ export function App() {
 	// update config when rules changed
 	const handleChangeRules = useCallback(
 		(rules: Rules) => {
-			if (isValidJson(configString)) {
-				const parsedConfig = JSON.parse(configString);
-				if (Object.keys(rules).length === 0) {
-					delete parsedConfig.rules;
-				} else {
-					parsedConfig.rules = rules;
-				}
-				setConfigString(JSON.stringify(parsedConfig, null, 2));
+			const parsedConfig = { ...parseConfig(configString) };
+			if (Object.keys(rules).length === 0) {
+				delete parsedConfig.rules;
+			} else {
+				parsedConfig.rules = rules;
 			}
+			setConfigString(JSON.stringify(parsedConfig, null, 2));
 		},
 		[configString],
 	);
@@ -215,75 +223,54 @@ export function App() {
 	const handleChangeFileType = useCallback(
 		(newFileType: string) => {
 			setFileType(newFileType);
-			if (isValidJson(configString)) {
-				const parsedConfig = JSON.parse(configString);
-				const parserAndSpecs =
-					{
-						'.jsx': {
-							parser: {
-								'\\.jsx$': '@markuplint/jsx-parser',
-							},
-							specs: {
-								'\\.jsx$': '@markuplint/react-spec',
-							},
-						},
-						'.vue': {
-							parser: {
-								'\\.vue$': '@markuplint/vue-parser',
-							},
-							specs: {
-								'\\.vue$': '@markuplint/vue-spec',
-							},
-						},
-						'.svelte': {
-							parser: {
-								'\\.svelte$': '@markuplint/svelte-parser',
-							},
-						},
-					}[newFileType] ?? {};
-				if ('parser' in parserAndSpecs) {
-					parsedConfig.parser = parserAndSpecs.parser;
-				} else {
-					delete parsedConfig.parser;
-				}
-				if ('specs' in parserAndSpecs) {
-					parsedConfig.specs = parserAndSpecs.specs;
-				} else {
-					delete parsedConfig.specs;
-				}
-				setConfigString(JSON.stringify(parsedConfig, null, 2));
+			const parsedConfig = { ...parseConfig(configString) };
+			const mapping: Readonly<Record<string, Pick<Config, 'parser' | 'specs'>>> = {
+				'.jsx': {
+					parser: { '\\.jsx$': '@markuplint/jsx-parser' },
+					specs: { '\\.jsx$': '@markuplint/react-spec' },
+				},
+				'.vue': {
+					parser: { '\\.vue$': '@markuplint/vue-parser' },
+					specs: { '\\.vue$': '@markuplint/vue-spec' },
+				},
+				'.svelte': {
+					parser: { '\\.svelte$': '@markuplint/svelte-parser' },
+				},
+			};
+			const parserAndSpecs = mapping[newFileType] ?? {};
+			if (parserAndSpecs.parser) {
+				parsedConfig.parser = parserAndSpecs.parser;
+			} else {
+				delete parsedConfig.parser;
 			}
+			if (parserAndSpecs.specs) {
+				parsedConfig.specs = parserAndSpecs.specs;
+			} else {
+				delete parsedConfig.specs;
+			}
+			setConfigString(JSON.stringify(parsedConfig, null, 2));
 		},
 		[configString],
 	);
 	const presets = useMemo((): readonly string[] => {
-		if (isValidJson(configString)) {
-			const parsedConfig = JSON.parse(configString);
-			const presets = parsedConfig.extends ?? [];
-			return presets;
-		} else {
-			return [];
-		}
+		const parsedConfig = parseConfig(configString) ?? {};
+		const { extends: extendsValue } = parsedConfig;
+		return Array.isArray(extendsValue) ? extendsValue : [];
 	}, [configString]);
 	const rules = useMemo((): Rules => {
-		if (isValidJson(configString)) {
-			const parsedConfig = JSON.parse(configString);
-			const rules = parsedConfig.rules ?? {};
-			return rules;
-		}
-		return {};
+		const parsedConfig = parseConfig(configString) ?? {};
+		const { rules } = parsedConfig;
+		return rules ?? {};
 	}, [configString]);
 	const handleChangePresets = useCallback(
 		(newPresets: readonly string[]) => {
-			if (isValidJson(configString)) {
-				const parsedConfig = JSON.parse(configString);
-				if (newPresets.length === 0) {
-					delete parsedConfig.extends;
-				} else {
-					parsedConfig.extends = newPresets;
-				}
-				setConfigString(JSON.stringify(parsedConfig, null, 2));
+			const parsedConfig = { ...parseConfig(configString) };
+			if (newPresets.length === 0) {
+				delete parsedConfig.extends;
+			} else {
+				parsedConfig.extends = newPresets;
 			}
+			setConfigString(JSON.stringify(parsedConfig, null, 2));
 		},
 		[configString],
 	);

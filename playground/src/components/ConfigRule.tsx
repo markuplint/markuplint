@@ -1,3 +1,4 @@
+import type { JsonValue } from '../modules/json';
 import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
@@ -5,13 +6,6 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useCallback, useEffect, useId, useState } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
-
-type JsonPrimitive = boolean | number | string | null;
-type JsonArray = readonly JsonPrimitive[] | readonly JsonObject[];
-type JsonObject = Readonly<{
-	[key: string]: JsonPrimitive | JsonObject | JsonArray;
-}>;
-type JsonValue = JsonPrimitive | JsonArray | JsonObject;
 
 const locale = navigator.language;
 const localeWithoutRegion = locale.split('-')[0];
