@@ -1,9 +1,17 @@
-import type { JSONSchema } from '../modules/json-schema';
 import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
 import { useCallback, useEffect, useState } from 'react';
+
+import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
+
+type JsonPrimitive = boolean | number | string | null;
+type JsonArray = readonly JsonPrimitive[] | readonly JsonObject[];
+type JsonObject = Readonly<{
+	[key: string]: JsonPrimitive | JsonObject | JsonArray;
+}>;
+type JsonValue = JsonPrimitive | JsonArray | JsonObject;
 
 const locale = navigator.language;
 const localeWithoutRegion = locale.split('-')[0];
@@ -16,8 +24,7 @@ type Props = Readonly<{
 }>;
 export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 	const [valueSelect, setValueSelect] = useState<string>('unset');
-	const [, setRuleConfig] = useState<AnyRule | null>(null);
-	const [customConfig, setCustomConfig] = useState<object>({});
+	const [customConfig, setCustomConfig] = useState<Readonly<Record<string, any>>>({});
 	const handleChangeCustom = useCallback(
 		(value: any | undefined) => {
 			const newCustomConfig = value ?? {};
@@ -106,7 +113,6 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 						})();
 
 						setValueSelect(value);
-						setRuleConfig(newRuleConfig);
 						onChange?.(newRuleConfig);
 					}}
 				>
@@ -129,20 +135,20 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 							one =>
 								one.enum?.map(keyword =>
 									typeof keyword === 'string' ? (
-										<option key={`rule_${name}_select_${keyword}`} value={keyword}>
+										<option key={keyword} value={keyword}>
 											{`"${keyword}"`}
 										</option>
 									) : null,
 								),
 						)}
 
-					{customs !== undefined && <option value="custom">custom...</option>}
+					{isJSONSchema(customs) && <option value="custom">custom...</option>}
 				</select>
 			</div>
-			{customs !== undefined && (
+			{isJSONSchema(customs) && (
 				<div className="mt-2" hidden={valueSelect !== 'custom'}>
 					<div className="grid gap-2 pl-4">
-						<Nested schema={customs} onChange={handleChangeCustom} />
+						<NestedObject schema={customs} value={customConfig} onChange={handleChangeCustom} />
 					</div>
 				</div>
 			)}
@@ -151,49 +157,32 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 };
 
 const Nested = ({
+	value,
 	schema,
 	depth = 0,
 	onChange,
 }: Readonly<{
+	value: any;
 	schema: JSONSchema7Definition;
 	depth?: number;
 	onChange?: (value: any) => void;
 }>): ReactNode => {
-	const [configValue, setConfigValue] = useState<any>(null);
-
-	const handleChange = useCallback(
-		(name: string) => (value: any) => {
-			if (value == null) {
-				const { [name]: _, ...updated } = configValue;
-				setConfigValue(updated);
-				onChange?.(updated);
-			} else {
-				const updated = { ...configValue, [name]: value };
-				setConfigValue(updated);
-				onChange?.(updated);
-			}
-		},
-		[configValue, onChange],
-	);
-
 	if (typeof schema === 'boolean') {
 		return null;
 	} else if (schema.oneOf) {
-		// recursive
+		// list
 		return (
 			<ul>
 				{schema.oneOf.map((s, i) => (
-					<li key={`schema_${depth}_${i}`} className="relative pt-6 first:pt-0">
+					<li key={i} className="relative pt-6 first:pt-0">
 						{i > 0 && (
 							<div className="absolute top-0 right-0 left-0 px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4 before:block before:bg-slate-300 before:h-[1px] after:block after:bg-slate-300 after:h-[1px]">
 								OR
 							</div>
 						)}
-						{
-							<div>
-								<Nested schema={s} depth={depth + 1} />
-							</div>
-						}
+						<div>
+							<Nested schema={s} depth={depth + 1} value={value} onChange={onChange} />
+						</div>
 					</li>
 				))}
 			</ul>
@@ -204,84 +193,14 @@ const Nested = ({
 	) {
 		switch (schema.type) {
 			case 'boolean': {
-				return (
-					<>
-						<select
-							className="select-arrow border border-slate-300 rounded-md "
-							onChange={e => {
-								let value: boolean | undefined;
-								if (e.currentTarget.value === 'true') {
-									value = true;
-								} else if (e.currentTarget.value === 'false') {
-									value = false;
-								} else {
-									value = undefined;
-								}
-								onChange?.(value);
-								setConfigValue(value);
-							}}
-						>
-							<option>(unset)</option>
-							{['true', 'false'].map((keyword, i) => (
-								<option key={`schema_${depth}_${i}_${keyword}`} value={keyword}>{`${keyword}${
-									keyword === schema.default ? ' (default)' : ''
-								}`}</option>
-							))}
-						</select>
-					</>
-				);
+				return <NestedBoolean schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'string': {
-				if (schema.enum) {
-					const defaultValue = schema.default;
-					return (
-						<select
-							className="select-arrow border border-slate-300 rounded-md"
-							onChange={e => {
-								const value = e.currentTarget.value;
-								const newConfigValue = value === '' ? undefined : value;
-								setConfigValue(newConfigValue);
-								onChange?.(newConfigValue);
-							}}
-						>
-							<option value={''}>(unset{defaultValue !== undefined && ` ("${defaultValue}")`})</option>
-							{schema.enum.map(
-								(keyword, i) =>
-									typeof keyword === 'string' && (
-										<option
-											key={`schema_${depth}_${i}_${keyword}`}
-											value={keyword}
-										>{`"${keyword}"`}</option>
-									),
-							)}
-						</select>
-					);
-				} else {
-					return (
-						<input
-							className="border border-slate-300 rounded-md px-1 py-0.5"
-							type="text"
-							onChange={e => {
-								const value = e.currentTarget.value;
-								const newConfigValue = value.length === 0 ? undefined : value;
-								setConfigValue(newConfigValue);
-								onChange?.(newConfigValue);
-							}}
-						/>
-					);
-				}
+				return <NestedString schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'number':
 			case 'integer': {
-				return (
-					<>
-						<input
-							className="border border-slate-300 rounded-md px-1 py-0.5"
-							type="number"
-							min={schema.minimum}
-						/>
-					</>
-				);
+				return <NestedNumber schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'array': {
 				if (Array.isArray(schema.items)) {
@@ -293,38 +212,13 @@ const Nested = ({
 					return (
 						<>
 							<p>&apos;array&apos;</p>
-							<Nested schema={schema.items} depth={depth + 1} />
+							<Nested schema={schema.items} depth={depth} value={value} onChange={onChange} />
 						</>
 					);
 				}
 			}
 			case 'object': {
-				if (!schema.properties) {
-					return null;
-				}
-				return (
-					<ul className="grid gap-2 pl-4">
-						{Object.entries(schema.properties).map(([key, property]) =>
-							// @ts-expect-error
-							property.deprecated === true ? null : (
-								<li key={`schema_${depth}_${key}`} className="flex flex-wrap gap-2">
-									<div className="min-w-[5rem]">
-										{depth === 0 ? (
-											<h4>{key}:</h4>
-										) : depth === 1 ? (
-											<h5>{key}:</h5>
-										) : (
-											<dfn>{key}:</dfn>
-										)}
-									</div>
-									<div className="min-w-[10rem]">
-										<Nested schema={property} depth={depth + 1} onChange={handleChange(key)} />
-									</div>
-								</li>
-							),
-						)}
-					</ul>
-				);
+				return <NestedObject schema={schema} depth={depth + 1} value={value} onChange={onChange} />;
 			}
 			case 'null': {
 				return null;
@@ -336,5 +230,225 @@ const Nested = ({
 		}
 	} else {
 		return <p>Sorry! This option is not supported on this playground</p>;
+	}
+};
+
+const NestedObject = ({
+	value,
+	schema,
+	depth = 0,
+	onChange,
+}: Readonly<{
+	value: Readonly<Record<string, JsonValue>> | undefined;
+	schema: JSONSchema;
+	depth?: number;
+	onChange?: (value: Readonly<Record<string, JsonValue>> | undefined) => void;
+}>): ReactNode => {
+	const [valueState, setValueState] = useState<Record<string, JsonValue>>(value ?? {});
+	useEffect(() => {
+		setValueState(value ?? {});
+	}, [value]);
+
+	const handleChange = useCallback(
+		(key: string) => (value: JsonValue) => {
+			const updated = (() => {
+				if (value == null) {
+					const { [key]: _, ...updated } = valueState;
+					return Object.keys(updated).length === 0 ? undefined : updated;
+				} else {
+					return { ...valueState, [key]: value };
+				}
+			})();
+			setValueState(updated ?? {});
+			onChange?.(updated);
+		},
+		[valueState, onChange],
+	);
+
+	if (!schema.properties) {
+		return null;
+	}
+	return (
+		<ul className="grid gap-2 pl-4">
+			{Object.entries(schema.properties).map(([key, property]) =>
+				// @ts-expect-error
+				property.deprecated === true ? null : (
+					<li key={key} className="flex flex-wrap gap-2">
+						<div className="min-w-[5rem]">
+							{depth === 0 ? (
+								<h4>{key}:</h4>
+							) : depth === 1 ? (
+								<h5>{key}:</h5>
+							) : depth === 2 ? (
+								<h6>{key}:</h6>
+							) : (
+								<dfn>{key}:</dfn>
+							)}
+						</div>
+						<div className="min-w-[10rem]">
+							<Nested
+								schema={property}
+								depth={depth}
+								onChange={handleChange(key)}
+								value={valueState?.[key]}
+							/>
+						</div>
+					</li>
+				),
+			)}
+		</ul>
+	);
+};
+
+const NestedBoolean = ({
+	value,
+	schema,
+	onChange,
+}: Readonly<{
+	value: boolean | undefined;
+	schema: JSONSchema;
+	onChange?: (value: boolean | undefined) => void;
+}>): ReactNode => {
+	const [valueState, setValueState] = useState<string>('unset');
+	useEffect(() => {
+		switch (value) {
+			case true: {
+				setValueState('true');
+				break;
+			}
+			case false: {
+				setValueState('false');
+				break;
+			}
+			case undefined: {
+				setValueState('unset');
+				break;
+			}
+		}
+	}, [value]);
+	const handleChange = useCallback(
+		(value: string) => {
+			setValueState(value);
+			const newValue = (() => {
+				switch (value) {
+					case 'true': {
+						return true;
+					}
+					case 'false': {
+						return false;
+					}
+					case 'unset': {
+						return;
+					}
+				}
+			})();
+			onChange?.(newValue);
+		},
+		[onChange],
+	);
+
+	return (
+		<select
+			className="select-arrow border border-slate-300 rounded-md "
+			value={valueState}
+			onChange={e => {
+				const value = e.currentTarget.value;
+				handleChange(value);
+			}}
+		>
+			<option value="unset">(unset)</option>
+			{['true', 'false'].map(keyword => (
+				<option key={keyword} value={keyword}>{`${keyword}${
+					keyword === schema.default ? ' (default)' : ''
+				}`}</option>
+			))}
+		</select>
+	);
+};
+
+const NestedNumber = ({
+	value,
+	schema,
+	onChange,
+}: Readonly<{
+	value: number | undefined;
+	schema: JSONSchema;
+	onChange?: (value: number | undefined) => void;
+}>): ReactNode => {
+	const [valueState, setValueState] = useState<string>('');
+	useEffect(() => {
+		setValueState(value === undefined ? '' : String(value));
+	}, [value]);
+	const handleChange = useCallback(
+		(value: string) => {
+			setValueState(value);
+			onChange?.(value === '' ? undefined : Number(value));
+		},
+		[onChange],
+	);
+
+	return (
+		<input
+			className="border border-slate-300 rounded-md px-1 py-0.5"
+			type="number"
+			min={schema.minimum}
+			value={valueState}
+			onChange={e => {
+				const value = e.currentTarget.value;
+				handleChange(value);
+			}}
+		/>
+	);
+};
+
+const NestedString = ({
+	value,
+	schema,
+	onChange,
+}: Readonly<{
+	value: string | undefined;
+	schema: JSONSchema;
+	onChange?: (value: string | undefined) => void;
+}>): ReactNode => {
+	const [valueState, setValueState] = useState<string>('');
+	useEffect(() => {
+		setValueState(value ?? '');
+	}, [value]);
+	const handleChange = useCallback(
+		(value: string) => {
+			setValueState(value);
+			onChange?.(value === '' ? undefined : value);
+		},
+		[onChange],
+	);
+
+	if (schema.enum) {
+		const defaultValue = schema.default;
+		return (
+			<select
+				className="select-arrow border border-slate-300 rounded-md"
+				value={valueState}
+				onChange={e => {
+					handleChange(e.currentTarget.value);
+				}}
+			>
+				<option value={''}>(unset{defaultValue !== undefined && ` ("${defaultValue}")`})</option>
+				{schema.enum.map(
+					keyword =>
+						typeof keyword === 'string' && <option key={keyword} value={keyword}>{`"${keyword}"`}</option>,
+				)}
+			</select>
+		);
+	} else {
+		return (
+			<input
+				className="border border-slate-300 rounded-md px-1 py-0.5"
+				type="text"
+				value={valueState}
+				onChange={e => {
+					handleChange(e.currentTarget.value);
+				}}
+			/>
+		);
 	}
 };
