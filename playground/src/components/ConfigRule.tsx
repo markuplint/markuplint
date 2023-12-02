@@ -347,6 +347,7 @@ const NestedBoolean = ({
 		[onChange],
 	);
 
+	const defaultValue = schema.default;
 	return (
 		<select
 			className="select-arrow border border-slate-300 rounded-md "
@@ -356,11 +357,11 @@ const NestedBoolean = ({
 				handleChange(value);
 			}}
 		>
-			<option value="unset">(unset)</option>
+			<option value="unset">(unset{defaultValue !== undefined && `: ${defaultValue}`})</option>
 			{['true', 'false'].map(keyword => (
-				<option key={keyword} value={keyword}>{`${keyword}${
-					keyword === schema.default ? ' (default)' : ''
-				}`}</option>
+				<option key={keyword} value={keyword}>
+					{keyword}
+				</option>
 			))}
 		</select>
 	);
@@ -432,7 +433,7 @@ const NestedString = ({
 					handleChange(e.currentTarget.value);
 				}}
 			>
-				<option value={''}>(unset{defaultValue !== undefined && ` ("${defaultValue}")`})</option>
+				<option value={''}>(unset{defaultValue !== undefined && `: "${defaultValue}"`})</option>
 				{schema.enum.map(
 					keyword =>
 						typeof keyword === 'string' && <option key={keyword} value={keyword}>{`"${keyword}"`}</option>,
