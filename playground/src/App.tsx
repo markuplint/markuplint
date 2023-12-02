@@ -471,7 +471,7 @@ export function App() {
 									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
 										<span className="animate-spin absolute inset-0 icon-custom-loading text-ml-blue"></span>
 									</span>
-									Installing dependencies...
+									Installing dependencies... (may take 10-30 sec.)
 								</>
 							),
 							'deps-error': (
