@@ -93,14 +93,18 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 					}),
 				);
 				containerServer.installationExit = installProcess.exit;
-				if ((await containerServer.installationExit) === 0) {
-					appendLine('Installation succeeded');
-					const json = await webContainer.fs.readFile('package.json', 'utf8');
-					const parsed = JSON.parse(json);
-					return parsed.devDependencies;
-				} else {
-					appendLine('Installation failed');
-					throw new Error('Installation failed');
+				switch (await containerServer.installationExit) {
+					case 0: {
+						appendLine('Installation succeeded');
+						const json = await webContainer.fs.readFile('package.json', 'utf8');
+						const parsed = JSON.parse(json);
+						return parsed.devDependencies;
+					}
+					case 1: {
+						appendLine('Installation failed');
+						throw new Error('Installation failed');
+					}
+					default: // process was killed. do nothing
 				}
 			})();
 			const result = await updatingDeps;
