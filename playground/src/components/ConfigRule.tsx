@@ -188,17 +188,12 @@ const Nested = ({
 			}
 			case 'array': {
 				if (Array.isArray(schema.items)) {
-					// this pattern is not supported
+					// this pattern is not used in markuplint
 					return null;
 				} else if (schema.items === undefined) {
 					return null;
 				} else {
-					return (
-						<>
-							<p>&apos;array&apos;</p>
-							<Nested schema={schema.items} depth={depth} value={value} onChange={onChange} />
-						</>
-					);
+					return <NestedArray schema={schema.items} depth={depth + 1} value={value} onChange={onChange} />;
 				}
 			}
 			case 'object': {
@@ -215,6 +210,79 @@ const Nested = ({
 	} else {
 		return <p>Sorry! This option is not supported on this playground</p>;
 	}
+};
+
+const NestedArray = ({
+	value,
+	schema,
+	depth,
+	onChange,
+}: Readonly<{
+	value: readonly any[];
+	depth: number;
+	schema: JSONSchema7Definition;
+	onChange?: (value: readonly any[]) => void;
+}>): ReactNode => {
+	const [values, setValues] = useState<readonly any[]>([null]);
+	useEffect(() => {
+		// not supported
+		// TODO: support this pattern
+	}, [value]);
+	const handleChange = useCallback(
+		(index: number) => (value: any) => {
+			const newValues = [...values];
+			newValues[index] = value;
+			setValues(newValues);
+			onChange?.(newValues);
+		},
+		[values, onChange],
+	);
+	const handleAdd = useCallback(() => {
+		const newValues = [...values, null];
+		setValues(newValues);
+		onChange?.(newValues);
+	}, [values, onChange]);
+	const handleRemove = useCallback(
+		(index: number) => () => {
+			const newValues = [...values];
+			newValues.splice(index, 1);
+			setValues(newValues);
+			onChange?.(newValues);
+		},
+		[values, onChange],
+	);
+
+	return (
+		<div className="grid gap-1">
+			<ul className="grid gap-1">
+				{values.map((v, i) => (
+					<li key={i} className="flex items-baseline gap-2">
+						<Nested schema={schema} depth={depth} value={v} onChange={handleChange(i)} />
+						<button
+							type="button"
+							onClick={handleRemove(i)}
+							className="flex justify-center items-center gap-1 bg-red-50 rounded p-1 shadow-sm
+				"
+						>
+							<span className=" icon-heroicons-solid-x-mark overflow-hidden">Remove</span>
+						</button>
+					</li>
+				))}
+			</ul>
+			<p>
+				<button
+					type="button"
+					onClick={handleAdd}
+					className="w-full flex justify-center items-center gap-1 text-sm
+				bg-slate-100 rounded-md px-2 py-0.5 shadow-sm
+				"
+				>
+					<span className=" icon-heroicons-solid-plus overflow-hidden"></span>
+					Add
+				</button>
+			</p>
+		</div>
+	);
 };
 
 const NestedOneOf = ({
