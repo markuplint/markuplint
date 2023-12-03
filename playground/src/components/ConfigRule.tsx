@@ -68,11 +68,11 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 		.find(one => one.default !== undefined)?.default;
 
 	return (
-		<div className="pt-3 pb-4 px-4 border-t">
+		<div className="border-t px-4 pb-4 pt-3">
 			<div className="flex flex-wrap gap-2">
-				<h4 className="grow min-w-[13em]">
+				<h4 className="min-w-[13em] grow">
 					<a
-						className="underline text-ml-blue"
+						className="text-ml-blue underline"
 						href={`https://markuplint.dev${localeWithoutRegion === 'ja' ? '/ja' : ''}/docs/rules/${name}`}
 						target="_blank"
 						rel="noreferrer"
@@ -82,7 +82,7 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 				</h4>
 				{/* FIXME: this select element has no accessible name */}
 				<select
-					className="select-arrow border border-slate-300 rounded-md w-[8em]"
+					className="select-arrow w-[8em] rounded-md border border-slate-300"
 					value={valueSelect}
 					onChange={e => {
 						const value = e.currentTarget.value;
@@ -251,7 +251,7 @@ const NestedArray = ({
 						<button
 							type="button"
 							onClick={handleRemove(i)}
-							className="flex justify-center items-center gap-1 bg-red-50 rounded p-1 shadow-sm
+							className="flex items-center justify-center gap-1 rounded bg-red-50 p-1 shadow-sm
 				"
 						>
 							<span className=" icon-heroicons-solid-x-mark overflow-hidden">Remove</span>
@@ -263,8 +263,8 @@ const NestedArray = ({
 				<button
 					type="button"
 					onClick={handleAdd}
-					className="w-full flex justify-center items-center gap-1 text-sm
-				bg-slate-100 rounded-md px-2 py-0.5 shadow-sm
+					className="flex w-full items-center justify-center gap-1 rounded-md
+				bg-slate-100 px-2 py-0.5 text-sm shadow-sm
 				"
 				>
 					<span className=" icon-heroicons-solid-plus overflow-hidden"></span>
@@ -305,7 +305,7 @@ const NestedOneOf = ({
 	return (
 		<ul className="grid gap-2">
 			{schemas.map((s, i) => (
-				<li key={i} className="grid grid-cols-[auto_1fr] gap-2 items-baseline">
+				<li key={i} className="grid grid-cols-[auto_1fr] items-baseline gap-2">
 					<input
 						type="radio"
 						// id={id}
@@ -441,7 +441,7 @@ const NestedBoolean = ({
 	const defaultValue = schema.default;
 	return (
 		<select
-			className="select-arrow border border-slate-300 rounded-md "
+			className="select-arrow rounded-md border border-slate-300 "
 			value={valueState}
 			onChange={e => {
 				const value = e.currentTarget.value;
@@ -481,7 +481,7 @@ const NestedNumber = ({
 
 	return (
 		<input
-			className="border border-slate-300 rounded-md px-1 py-0.5"
+			className="rounded-md border border-slate-300 px-1 py-0.5"
 			type="number"
 			min={schema.minimum}
 			value={valueState}
@@ -518,7 +518,7 @@ const NestedString = ({
 		const defaultValue = schema.default;
 		return (
 			<select
-				className="select-arrow border border-slate-300 rounded-md"
+				className="select-arrow rounded-md border border-slate-300"
 				value={valueState}
 				onChange={e => {
 					handleChange(e.currentTarget.value);
@@ -534,7 +534,7 @@ const NestedString = ({
 	} else {
 		return (
 			<input
-				className="border border-slate-300 rounded-md px-1 py-0.5"
+				className="rounded-md border border-slate-300 px-1 py-0.5"
 				type="text"
 				value={valueState}
 				onChange={e => {

@@ -10,12 +10,12 @@ type Props = Readonly<{
 
 export const DepsEditor = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
 	return (
-		<section className="p-4 grid gap-4 grid-cols-1">
+		<section className="grid grid-cols-1 gap-4 p-4">
 			<p>
 				<label className="flex flex-wrap items-center gap-2">
 					Version:
 					<select
-						className="select-arrow border border-slate-300 rounded-md"
+						className="select-arrow rounded-md border border-slate-300"
 						value={distTag}
 						onChange={e => {
 							const value = e.target.value;
@@ -33,14 +33,14 @@ export const DepsEditor = ({ depsPackages, installedPackages, status, distTag = 
 			<section>
 				<p>Install</p>
 				{depsPackages.size > 0 && (
-					<div className="bg-slate-50 shadow rounded p-2 leading-tight">
+					<div className="rounded bg-slate-50 p-2 leading-tight shadow">
 						<code>{`npm install -D ${[...depsPackages].map(name => `${name}@${distTag}`).join(' ')}`}</code>
 					</div>
 				)}
 			</section>
 
 			<section>
-				<h3 className="py-1 w-fit rounded-t">
+				<h3 className="w-fit rounded-t py-1">
 					<code>package.json</code>
 				</h3>
 				<div className="mt-2">
@@ -51,7 +51,7 @@ export const DepsEditor = ({ depsPackages, installedPackages, status, distTag = 
 							loading: <p>Installing packages...</p>,
 							error: <p>Installation error</p>,
 							success: (
-								<div className="py-2 px-2 overflow-x-auto bg-slate-50 shadow rounded">
+								<div className="overflow-x-auto rounded bg-slate-50 px-2 py-2 shadow">
 									<pre className="leading-tight">
 										<code>{JSON.stringify({ devDependencies: installedPackages }, null, 2)}</code>
 									</pre>

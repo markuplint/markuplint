@@ -12,7 +12,7 @@ export const ConfigEditor = ({ value, onChange }: Props) => {
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
 	return (
-		<div className="grid grid-cols-1 min-h-[20rem]">
+		<div className="grid min-h-[20rem] grid-cols-1">
 			<MonacoEditor
 				language={'json'}
 				theme="vs-dark"

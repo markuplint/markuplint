@@ -20,7 +20,7 @@ const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 			<button
 				type="button"
 				onClick={handleOpen}
-				className="rounded-md px-4 py-2 font-medium bg-slate-100 shadow hover:shadow-md transition-shadow"
+				className="rounded-md bg-slate-100 px-4 py-2 font-medium shadow transition-shadow hover:shadow-md"
 				disabled={disabled}
 			>
 				Examples...
@@ -33,16 +33,16 @@ const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 						handleClose();
 					}
 				}}
-				className="relative w-[calc(100%-4%*2)] max-w-md rounded-2xl bg-white p-6 text-left align-middle shadow-xl backdrop:bg-opacity-50 backdrop:bg-black"
+				className="relative w-[calc(100%-4%*2)] max-w-md rounded-2xl bg-white p-6 text-left align-middle shadow-xl backdrop:bg-black backdrop:bg-opacity-50"
 			>
 				{/* `div` is needed for light dismiss */}
 				<div>
 					<button
 						type="button"
 						onClick={handleClose}
-						className="absolute top-3 right-3 leading-none text-gray-500 rounded p-3 hover:bg-gray-100 before:absolute before:-inset-2"
+						className="absolute right-3 top-3 rounded p-3 leading-none text-gray-500 before:absolute before:-inset-2 hover:bg-gray-100"
 					>
-						<span className="icon-heroicons-solid-x-mark text-xl overflow-hidden">Close</span>
+						<span className="icon-heroicons-solid-x-mark overflow-hidden text-xl">Close</span>
 					</button>
 					<h2 id={dialogId} className="mb-4 text-xl font-medium">
 						Choose an example
@@ -54,9 +54,9 @@ const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 								const category = examples[categoryKey];
 								return (
 									<li key={categoryKey}>
-										<h3 className="font-medium mb-2 flex items-center gap-2">
+										<h3 className="mb-2 flex items-center gap-2 font-medium">
 											{category.metadata.title}
-											<span className="h-px grow bg-current opacity-20 block"></span>
+											<span className="block h-px grow bg-current opacity-20"></span>
 										</h3>
 										<ul className="grid">
 											{Object.keys(category.examples)
@@ -66,18 +66,18 @@ const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 													return (
 														<li key={exampleKey}>
 															<button
-																className="w-full flex justify-between items-center px-2 py-2 rounded text-start hover:bg-slate-100 focus-visible:bg-slate-100 group"
+																className="group flex w-full items-center justify-between rounded px-2 py-2 text-start hover:bg-slate-100 focus-visible:bg-slate-100"
 																disabled={disabled}
 																onClick={() => {
 																	onSelect?.(example);
 																	handleClose();
 																}}
 															>
-																<span className="font-medium flex items-center gap-2">
+																<span className="flex items-center gap-2 font-medium">
 																	<span className=" icon-heroicons-solid-code text-slate-500" />
 																	{example.metadata.title}
 																</span>
-																<span className="flex items-center text-xs opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 text-gray-500 transition-opacity">
+																<span className="flex items-center text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
 																	Apply
 																	<span className="icon-heroicons-solid-chevron-right" />
 																</span>

@@ -77,9 +77,9 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 
 	const specificRecommendedPreset = specificRecommendedPresets[fileType];
 	return (
-		<div className="py-2 px-4 grid gap-1 justify-start items-center">
+		<div className="grid items-center justify-start gap-1 px-4 py-2">
 			{specificRecommendedPreset && (
-				<label className="flex gap-1 items-baseline">
+				<label className="flex items-baseline gap-1">
 					<input
 						type="checkbox"
 						checked={implicitPresets.includes(specificRecommendedPreset)}
@@ -93,7 +93,7 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 				</label>
 			)}
 			<div className="grid gap-1 pl-4">
-				<label className="flex gap-1 items-baseline">
+				<label className="flex items-baseline gap-1">
 					<input
 						type="checkbox"
 						checked={implicitPresets.includes('markuplint:recommended')}

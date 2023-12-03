@@ -7,11 +7,11 @@ type Props = Readonly<{
 
 export const FilenameEditor = ({ value, onChange }: Props) => {
 	return (
-		<div className="py-2 px-4">
-			<label className="grid grid-flow-col gap-1 justify-start items-center">
+		<div className="px-4 py-2">
+			<label className="grid grid-flow-col items-center justify-start gap-1">
 				Code file type:
 				<select
-					className="select-arrow border border-slate-300 rounded-md"
+					className="select-arrow rounded-md border border-slate-300"
 					value={value}
 					onChange={e => {
 						onChange?.(e.currentTarget.value);

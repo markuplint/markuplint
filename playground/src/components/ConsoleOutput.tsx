@@ -51,5 +51,5 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 		[],
 	);
 
-	return <div className="p-4 bg-slate-900 text-white" style={{ colorScheme: 'dark' }} ref={wrapperRef}></div>;
+	return <div className="bg-slate-900 p-4 text-white" style={{ colorScheme: 'dark' }} ref={wrapperRef}></div>;
 });

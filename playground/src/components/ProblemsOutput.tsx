@@ -3,7 +3,7 @@ import type { Violations } from '../modules/violations';
 export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations | null }>) => {
 	return (
 		<section className="grid grid-rows-[auto_minmax(0,1fr)] text-sm">
-			<h3 className="flex items-center gap-2 px-3 py-1 bg-slate-50 font-bold text-base">
+			<h3 className="flex items-center gap-2 bg-slate-50 px-3 py-1 text-base font-bold">
 				Problems
 				{violations && (
 					<span className="rounded-full bg-slate-200 px-1.5 py-1 text-xs leading-none">
@@ -11,12 +11,12 @@ export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations
 					</span>
 				)}
 			</h3>
-			<div className="overflow-y-auto h-full ">
+			<div className="h-full overflow-y-auto ">
 				{violations === null ? (
 					<p className="p-3 pb-6">Loading...</p>
 				) : violations.length === 0 ? (
 					<p className="p-3 pb-6">
-						<span className="inline-block font-bold rounded px-1 min-w-[9ch] mr-2 text-center bg-sky-200 text-sky-900 ">
+						<span className="mr-2 inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900 ">
 							Info
 						</span>
 						<span>No problems found.</span>
@@ -34,7 +34,7 @@ export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations
 								}
 							})
 							.map((violation, i) => (
-								<li key={i} className="flex gap-2 items-baseline">
+								<li key={i} className="flex items-baseline gap-2">
 									{icon(violation.severity)}
 									<span>
 										{violation.message} ({violation.ruleId}) [{violation.line}:{violation.col}]
@@ -52,21 +52,21 @@ const icon = (severity: Violations[number]['severity']) => {
 	switch (severity) {
 		case 'info': {
 			return (
-				<span className="inline-block font-bold rounded px-1 min-w-[9ch] text-center bg-sky-200 text-sky-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900 ">
 					Info
 				</span>
 			);
 		}
 		case 'warning': {
 			return (
-				<span className="inline-block font-bold rounded px-1 min-w-[9ch] text-center bg-yellow-200 text-yellow-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-yellow-200 px-1 text-center font-bold text-yellow-900 ">
 					Warning
 				</span>
 			);
 		}
 		case 'error': {
 			return (
-				<span className="inline-block font-bold rounded px-1 min-w-[9ch] text-center bg-red-200 text-red-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-red-200 px-1 text-center font-bold text-red-900 ">
 					Error
 				</span>
 			);

@@ -27,10 +27,10 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 	}, [violations]);
 
 	return (
-		<div className="h-full grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
-			<hgroup className="flex gap-2 items-baseline py-1 px-4 bg-slate-100">
-				<h2 className="text-lg font-bold flex items-baseline gap-2">
-					<span className=" icon-heroicons-solid-code text-slate-500 text-xl translate-y-[0.15em]"></span>
+		<div className="grid h-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
+			<hgroup className="flex items-baseline gap-2 bg-slate-100 px-4 py-1">
+				<h2 className="flex items-baseline gap-2 text-lg font-bold">
+					<span className=" icon-heroicons-solid-code translate-y-[0.15em] text-xl text-slate-500"></span>
 					Code
 				</h2>
 				<p className="text-sm">

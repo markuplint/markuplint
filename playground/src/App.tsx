@@ -286,15 +286,15 @@ export function App() {
 	);
 	return (
 		<>
-			<header className="sticky top-0 z-10 flex justify-between items-center bg-white border-b border-b-slate-300 px-4 py-2">
-				<h1 className="text-lg md:text-xl leading-normal font-bold">
+			<header className="sticky top-0 z-10 flex items-center justify-between border-b border-b-slate-300 bg-white px-4 py-2">
+				<h1 className="text-lg font-bold leading-normal md:text-xl">
 					<img
 						src={logo}
 						alt="Markuplint"
 						width={968}
 						height={181}
 						decoding="async"
-						className="w-auto h-[1.2em] mt-[-0.2em] inline-block"
+						className="mt-[-0.2em] inline-block h-[1.2em] w-auto"
 					/>{' '}
 					Playground
 				</h1>
@@ -307,16 +307,16 @@ export function App() {
 					}}
 				/>
 			</header>
-			<main className="grid md:block grid-rows-[auto_minmax(0,1fr)] grid-cols-1">
-				<nav ref={tabsRef} className="md:hidden border-b bg-slate-100">
-					<ul className="flex flex-wrap gap-1 pt-1 px-4">
+			<main className="grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:block">
+				<nav ref={tabsRef} className="border-b bg-slate-100 md:hidden">
+					<ul className="flex flex-wrap gap-1 px-4 pt-1">
 						<li>
 							<button
 								type="button"
 								onClick={() => {
 									setSelectedTab('code');
 								}}
-								className="flex items-center gap-2 py-1 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue"
+								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
 							>
 								<span className=" icon-heroicons-solid-code text-xl text-slate-500"></span>
 								Code
@@ -327,7 +327,7 @@ export function App() {
 								onClick={() => {
 									setSelectedTab('config');
 								}}
-								className="flex items-center gap-2 py-1 px-3 border-b-2 font-bold border-transparent aria-selected:border-ml-blue"
+								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
 							>
 								<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
 								Config
@@ -345,7 +345,7 @@ export function App() {
 						return gutterElement;
 					}}
 					gutterStyle={() => ({})}
-					className="h-full flex"
+					className="flex h-full"
 					minSize={0}
 				>
 					<Split
@@ -380,22 +380,22 @@ export function App() {
 						}`}
 					>
 						<Tab.Group>
-							<div className="flex justify-between items-center gap-2 py-1 px-4 bg-slate-100">
-								<hgroup className="flex items-baseline flex-wrap">
-									<h2 className="flex items-baseline gap-2 border-b-2 font-bold border-transparent aria-selected:border-ml-blue">
-										<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500 translate-y-[0.15em]"></span>
+							<div className="flex items-center justify-between gap-2 bg-slate-100 px-4 py-1">
+								<hgroup className="flex flex-wrap items-baseline">
+									<h2 className="flex items-baseline gap-2 border-b-2 border-transparent font-bold aria-selected:border-ml-blue">
+										<span className=" icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
 										Config
 									</h2>
 									<p className="text-xs tracking-tight">
 										<code>.markuplintrc</code>
 									</p>
 								</hgroup>
-								<Tab.List className="flex border rounded-lg">
-									<Tab className="flex gap-1 overflow-hidden justify-center items-center py-1 px-2 text-sm first:rounded-s-lg last:rounded-e-lg text-black text-opacity-60 aria-selected:bg-white  aria-selected:text-opacity-100">
+								<Tab.List className="flex rounded-lg border">
+									<Tab className="flex items-center justify-center gap-1 overflow-hidden px-2 py-1 text-sm text-black text-opacity-60 first:rounded-s-lg last:rounded-e-lg aria-selected:bg-white  aria-selected:text-opacity-100">
 										<span className=" icon-majesticons-curly-braces shrink-0"></span>
 										JSON
 									</Tab>
-									<Tab className="flex gap-1 overflow-hidden justify-center items-center py-1 px-2 text-sm first:rounded-s-lg last:rounded-e-lg text-black text-opacity-60 aria-selected:bg-white aria-selected:text-opacity-100">
+									<Tab className="flex items-center justify-center gap-1 overflow-hidden px-2 py-1 text-sm text-black text-opacity-60 first:rounded-s-lg last:rounded-e-lg aria-selected:bg-white aria-selected:text-opacity-100">
 										<span className=" icon-heroicons-solid-adjustments-horizontal shrink-0"></span>
 										Visual
 									</Tab>
@@ -403,16 +403,16 @@ export function App() {
 							</div>
 
 							<Tab.Panels>
-								<Tab.Panel unmount={false} className="h-full grid">
+								<Tab.Panel unmount={false} className="grid h-full">
 									<ConfigEditor value={configString} onChange={setConfigString} />
 								</Tab.Panel>
-								<Tab.Panel unmount={false} className="overflow-y-auto h-full">
-									<div className="px-4 py-4 grid gap-2">
-										<details open className="border rounded-lg overflow-hidden group">
+								<Tab.Panel unmount={false} className="h-full overflow-y-auto">
+									<div className="grid gap-2 px-4 py-4">
+										<details open className="group overflow-hidden rounded-lg border">
 											<summary
 												className="
-													flex justify-between items-center gap-2 font-medium -outline-offset-2 
-													py-2 px-4 border-slate-300 bg-slate-100
+													flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
+													px-4 py-2 font-medium -outline-offset-2
 												"
 											>
 												Parser &amp; Specs
@@ -420,11 +420,11 @@ export function App() {
 											</summary>
 											<FilenameEditor value={fileType} onChange={handleChangeFileType} />
 										</details>
-										<details open className="border rounded-lg overflow-hidden group">
+										<details open className="group overflow-hidden rounded-lg border">
 											<summary
 												className="
-												flex justify-between items-center gap-2 font-medium -outline-offset-2 
-												py-2 px-4 border-slate-300 bg-slate-100
+												flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
+												px-4 py-2 font-medium -outline-offset-2
 											"
 											>
 												Presets
@@ -436,11 +436,11 @@ export function App() {
 												onChange={handleChangePresets}
 											/>
 										</details>
-										<details open className="border rounded-lg overflow-hidden group">
+										<details open className="group overflow-hidden rounded-lg border">
 											<summary
 												className="
-													flex justify-between items-center gap-2 font-medium -outline-offset-2 
-													py-2 px-4 border-slate-300 bg-slate-100
+													flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
+													px-4 py-2 font-medium -outline-offset-2
 												"
 											>
 												Rules
@@ -461,15 +461,15 @@ export function App() {
 					</section>
 				</Split>
 			</main>
-			<footer className="sticky bottom-0 px-4 py-1 flex justify-end items-center text-sm bg-white border-t">
-				<output className="flex justify-end items-center gap-1">
+			<footer className="sticky bottom-0 flex items-center justify-end border-t bg-white px-4 py-1 text-sm">
+				<output className="flex items-center justify-end gap-1">
 					{
 						{
 							'not-started': <></>,
 							'deps-installing': (
 								<>
-									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
-										<span className="animate-spin absolute inset-0 icon-custom-loading text-ml-blue"></span>
+									<span className="icon-custom-loading-wrapper relative text-lg text-slate-200">
+										<span className="icon-custom-loading absolute inset-0 animate-spin text-ml-blue"></span>
 									</span>
 									Installing dependencies... (may take 10-30 sec.)
 								</>
@@ -482,8 +482,8 @@ export function App() {
 							),
 							'config-updating': (
 								<>
-									<span className="icon-custom-loading-wrapper relative text-slate-200 text-lg">
-										<span className="animate-spin absolute inset-0 icon-custom-loading text-ml-blue"></span>
+									<span className="icon-custom-loading-wrapper relative text-lg text-slate-200">
+										<span className="icon-custom-loading absolute inset-0 animate-spin text-ml-blue"></span>
 									</span>
 									Updating config...
 								</>
@@ -506,8 +506,8 @@ export function App() {
 				<Popover>
 					<Popover.Button
 						className="
-						flex items-center gap-1 shadow-sm
-						px-2 py-1 ml-2 rounded-md bg-slate-100 text-slate-900
+						ml-2 flex items-center gap-1
+						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
 						hover:bg-slate-200 hover:text-slate-800
 					"
 					>
@@ -516,7 +516,7 @@ export function App() {
 					</Popover.Button>
 					<Popover.Panel
 						unmount={false}
-						className="absolute right-4 w-[calc(100%-3rem)] max-w-4xl bottom-[calc(100%+1rem)] z-10 border bg-white overflow-hidden rounded-lg shadow-lg"
+						className="absolute bottom-[calc(100%+1rem)] right-4 z-10 w-[calc(100%-3rem)] max-w-4xl overflow-hidden rounded-lg border bg-white shadow-lg"
 					>
 						<ConsoleOutput ref={consoleRef} />
 					</Popover.Panel>
@@ -524,8 +524,8 @@ export function App() {
 				<Popover>
 					<Popover.Button
 						className="
-						flex items-center gap-1 shadow-sm
-						px-2 py-1 ml-2 rounded-md bg-slate-100 text-slate-900
+						ml-2 flex items-center gap-1
+						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
 						hover:bg-slate-200 hover:text-slate-800
 					"
 					>
@@ -534,7 +534,7 @@ export function App() {
 					</Popover.Button>
 					<Popover.Panel
 						unmount={false}
-						className="absolute left-4 right-4 ml-auto w-fit bottom-[calc(100%+1rem)] z-10 border bg-white overflow-hidden rounded-lg shadow-lg"
+						className="absolute bottom-[calc(100%+1rem)] left-4 right-4 z-10 ml-auto w-fit overflow-hidden rounded-lg border bg-white shadow-lg"
 					>
 						<DepsEditor
 							status={depsStatus}
