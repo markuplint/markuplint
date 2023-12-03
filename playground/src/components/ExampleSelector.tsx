@@ -74,7 +74,7 @@ const ExampleSelectorRaw: FC<Props> = ({ onSelect, disabled = false }) => {
 																}}
 															>
 																<span className="flex items-center gap-2 font-medium">
-																	<span className=" icon-heroicons-solid-code text-slate-500" />
+																	<span className="icon-heroicons-solid-code text-slate-500" />
 																	{example.metadata.title}
 																</span>
 																<span className="flex items-center text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">

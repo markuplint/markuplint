@@ -64,7 +64,7 @@ const SchemaEditorRaw = ({ value, version, onChange }: Props) => {
 	return (
 		<div>
 			{ruleSchemas == null ? (
-				<p>Loading...</p>
+				<p className="p-4">Loading schema...</p>
 			) : (
 				Object.entries(ruleSchemas).map(
 					([key, ruleSchema]) =>

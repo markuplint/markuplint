@@ -77,53 +77,59 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 
 	const specificRecommendedPreset = specificRecommendedPresets[fileType];
 	return (
-		<div className="grid items-center justify-start gap-1 px-4 py-2">
-			{specificRecommendedPreset && (
-				<label className="flex items-baseline gap-1">
-					<input
-						type="checkbox"
-						checked={implicitPresets.includes(specificRecommendedPreset)}
-						onChange={handleChange}
-						value={specificRecommendedPreset}
-					/>
-					<span>
-						<span className="text-gray-400">markuplint:</span>
-						{specificRecommendedPreset.replace('markuplint:', '')}
-					</span>
-				</label>
-			)}
-			<div className="grid gap-1 pl-4">
-				<label className="flex items-baseline gap-1">
-					<input
-						type="checkbox"
-						checked={implicitPresets.includes('markuplint:recommended')}
-						onChange={handleChange}
-						value={'markuplint:recommended'}
-						disabled={implicitPresets.some(p => p.startsWith('markuplint:recommended-'))}
-					/>
-					<span>
-						<span className="text-gray-400">markuplint:</span>recommended
-					</span>
-				</label>
-				<div className="grid gap-1 pl-4">
-					{basePresets.map((presetName, i) => (
-						<label key={i} className="flex items-baseline gap-1">
-							<input
-								type="checkbox"
-								checked={implicitPresets.includes(presetName)}
-								onChange={handleChange}
-								value={presetName}
-								disabled={implicitPresets.includes('markuplint:recommended')}
-							/>
-							<span>
-								<span className="text-gray-400">markuplint:</span>
-								{presetName.replace('markuplint:', '')}
-							</span>
-						</label>
-					))}
+		<div className="grid gap-2 px-4 py-4">
+			<div className="grid items-center justify-start gap-2">
+				{specificRecommendedPreset && (
+					<label className="flex items-baseline gap-1">
+						<input
+							type="checkbox"
+							checked={implicitPresets.includes(specificRecommendedPreset)}
+							onChange={handleChange}
+							value={specificRecommendedPreset}
+							className="h-4 w-4 translate-y-1 accent-ml-blue"
+						/>
+						<code>
+							<span className="text-gray-500">markuplint:</span>
+							<span className="font-bold">{specificRecommendedPreset.replace('markuplint:', '')}</span>
+						</code>
+					</label>
+				)}
+				<div className="grid gap-2 pl-6">
+					<label className="flex items-baseline gap-1">
+						<input
+							type="checkbox"
+							checked={implicitPresets.includes('markuplint:recommended')}
+							onChange={handleChange}
+							value={'markuplint:recommended'}
+							className="h-4 w-4 translate-y-1 accent-ml-blue"
+							disabled={implicitPresets.some(p => p.startsWith('markuplint:recommended-'))}
+						/>
+						<code>
+							<span className="text-gray-500">markuplint:</span>
+							<span className="font-bold">recommended</span>
+						</code>
+					</label>
+					<div className="grid gap-1 pl-6">
+						{basePresets.map((presetName, i) => (
+							<label key={i} className="flex items-baseline gap-1">
+								<input
+									type="checkbox"
+									checked={implicitPresets.includes(presetName)}
+									onChange={handleChange}
+									value={presetName}
+									className="h-4 w-4 translate-y-1 accent-ml-blue"
+									disabled={implicitPresets.includes('markuplint:recommended')}
+								/>
+								<code>
+									<span className="text-gray-500">markuplint:</span>
+									<span className="font-bold">{presetName.replace('markuplint:', '')}</span>
+								</code>
+							</label>
+						))}
+					</div>
 				</div>
 			</div>
-			<p className="mt-4">
+			<p>
 				<a
 					href="https://markuplint.dev/docs/guides/presets"
 					target="_blank"
@@ -131,7 +137,7 @@ export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
 					className="text-ml-blue underline"
 				>
 					Learn more about presets
-					<span className=" icon-heroicons-solid-arrow-top-right-on-square ml-1"></span>
+					<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">(Open in new tab)</span>
 				</a>
 			</p>
 		</div>

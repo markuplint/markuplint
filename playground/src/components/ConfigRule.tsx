@@ -56,7 +56,7 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 
 	// Rule's schema has `oneOf` property
 	if (!schema.oneOf) {
-		return null;
+		return <NotSupported schema={schema} />;
 	}
 
 	const customs = schema.oneOf.find(
@@ -77,7 +77,10 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 						target="_blank"
 						rel="noreferrer"
 					>
-						{name}
+						<code>{name}</code>
+						<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">
+							(Open in new tab)
+						</span>
 					</a>
 				</h4>
 				{/* FIXME: this select element has no accessible name */}
@@ -140,10 +143,8 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 				</select>
 			</div>
 			{isJSONSchema(customs) && (
-				<div className="mt-2" hidden={valueSelect !== 'custom'}>
-					<div className="grid gap-2 pl-4">
-						<NestedObject schema={customs} value={customConfig} onChange={handleChangeCustom} />
-					</div>
+				<div className="mt-4" hidden={valueSelect !== 'custom'}>
+					<NestedObject schema={customs} value={customConfig} onChange={handleChangeCustom} />
 				</div>
 			)}
 		</div>
@@ -179,14 +180,7 @@ const Nested = ({
 				return <NestedNumber schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'array': {
-				if (Array.isArray(schema.items)) {
-					// this pattern is not used in markuplint
-					return null;
-				} else if (schema.items === undefined) {
-					return null;
-				} else {
-					return <NestedArray schema={schema.items} value={value} onChange={onChange} />;
-				}
+				return <NestedArray schema={schema} value={value} onChange={onChange} />;
 			}
 			case 'object': {
 				return <NestedObject schema={schema} value={value} onChange={onChange} />;
@@ -200,7 +194,7 @@ const Nested = ({
 			}
 		}
 	} else {
-		return <p>Sorry! This option is not supported on this playground</p>;
+		return <NotSupported schema={schema} />;
 	}
 };
 
@@ -210,7 +204,7 @@ const NestedArray = ({
 	onChange,
 }: Readonly<{
 	value: readonly any[];
-	schema: JSONSchema7Definition;
+	schema: JSONSchema;
 	onChange?: (value: readonly any[]) => void;
 }>): ReactNode => {
 	const [values, setValues] = useState<readonly any[]>([null]);
@@ -242,19 +236,24 @@ const NestedArray = ({
 		[values, onChange],
 	);
 
+	const schemaItems = schema.items;
+
+	if (Array.isArray(schemaItems) || schemaItems === undefined) {
+		return <NotSupported schema={schema} />;
+	}
 	return (
-		<div className="grid gap-1">
+		<div className="grid gap-2">
 			<ul className="grid gap-1">
 				{values.map((v, i) => (
 					<li key={i} className="flex items-baseline gap-2">
-						<Nested schema={schema} value={v} onChange={handleChange(i)} />
+						<Nested schema={schemaItems} value={v} onChange={handleChange(i)} />
 						<button
 							type="button"
 							onClick={handleRemove(i)}
-							className="flex items-center justify-center gap-1 rounded bg-red-50 p-1 shadow-sm
+							className="flex items-center justify-center gap-1 rounded-full bg-red-50 p-2 shadow-sm
 				"
 						>
-							<span className=" icon-heroicons-solid-x-mark overflow-hidden">Remove</span>
+							<span className="icon-heroicons-solid-minus  overflow-hidden ">Remove</span>
 						</button>
 					</li>
 				))}
@@ -267,7 +266,7 @@ const NestedArray = ({
 				bg-slate-100 px-2 py-0.5 text-sm shadow-sm
 				"
 				>
-					<span className=" icon-heroicons-solid-plus overflow-hidden"></span>
+					<span className="icon-heroicons-solid-plus overflow-hidden"></span>
 					Add
 				</button>
 			</p>
@@ -305,19 +304,23 @@ const NestedOneOf = ({
 	return (
 		<ul className="grid gap-2">
 			{schemas.map((s, i) => (
-				<li key={i} className="grid grid-cols-[auto_1fr] items-baseline gap-2">
-					<input
-						type="radio"
-						// id={id}
-						name={id}
-						value={i}
-						checked={selected === String(i)}
-						onChange={e => {
-							setSelected(e.currentTarget.value);
-							handleChange(i)(valueStates[i]);
-						}}
-					/>
-					<fieldset disabled={selected !== String(i)}>
+				<li key={i} className="flex items-start rounded-lg border">
+					<label className="relative flex flex-shrink-0 items-center gap-1 bg-slate-200 px-2 py-2 text-sm">
+						<input
+							type="radio"
+							name={id}
+							value={i}
+							checked={selected === String(i)}
+							onChange={e => {
+								setSelected(e.currentTarget.value);
+								handleChange(i)(valueStates[i]);
+							}}
+							className="h-4 w-4 accent-ml-blue"
+						/>
+						Type {i + 1}
+					</label>
+					<fieldset disabled={selected !== String(i)} className="relative p-4 disabled:opacity-50">
+						<legend className="sr-only">Type {i + 1} details</legend>
 						<Nested schema={s} value={valueStates[i]} onChange={handleChange(i)} />
 					</fieldset>
 				</li>
@@ -360,30 +363,29 @@ const NestedObject = ({
 	);
 
 	if (!schema.properties) {
-		return null;
+		return <NotSupported schema={schema} />;
 	}
 	return (
-		<ul className="grid gap-2 pl-4">
+		<ul className={`grid w-full ${depth === 0 ? 'gap-4' : depth === 1 ? 'gap-3' : 'gap-2'}`}>
 			{Object.entries(schema.properties).map(([key, property]) =>
 				// @ts-expect-error
 				property.deprecated === true ? null : (
-					<li key={key} className="flex flex-wrap gap-2">
-						<div className="min-w-[5rem]">
-							{depth === 0 ? (
-								<h4>{key}:</h4>
-							) : depth === 1 ? (
-								<h5>{key}:</h5>
-							) : depth === 2 ? (
-								<h6>{key}:</h6>
-							) : (
-								<dfn>{key}:</dfn>
-							)}
-						</div>
-						<div className="min-w-[10rem]">
+					<li key={key}>
+						<details
+							className="flex flex-wrap items-baseline gap-x-2 gap-y-1 
+							[&>summary>span]:icon-majesticons-chevron-right [&>summary>span]:open:rotate-90
+							[&>summary>span]:open:text-opacity-40
+							[&>ul:last-child]:w-full  [&>ul:last-child]:pl-6"
+							open={depth < 3}
+						>
+							<summary className="flex min-w-[7rem] items-center gap-2">
+								<span className="text-slate-500 transition-transform"></span>
+								<code>{key}:</code>
+							</summary>
 							<DepthContext.Provider value={depth + 1}>
 								<Nested schema={property} onChange={handleChange(key)} value={valueState?.[key]} />
 							</DepthContext.Provider>
-						</div>
+						</details>
 					</li>
 				),
 			)}
@@ -543,4 +545,18 @@ const NestedString = ({
 			/>
 		);
 	}
+};
+
+const NotSupported = ({ schema }: Readonly<{ schema: JSONSchema }>): ReactNode => {
+	return (
+		<div className="grid gap-1 text-xs">
+			<p>Sorry! This type is not supported in visual editor</p>
+			<details>
+				<summary>
+					Show JSON Schema <span className="icon-majesticons-chevron-down"></span>
+				</summary>
+				<pre>{JSON.stringify(schema, null, 2)}</pre>
+			</details>
+		</div>
+	);
 };

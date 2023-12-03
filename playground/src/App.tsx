@@ -318,7 +318,7 @@ export function App() {
 								}}
 								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
 							>
-								<span className=" icon-heroicons-solid-code text-xl text-slate-500"></span>
+								<span className="icon-heroicons-solid-code text-xl text-slate-500"></span>
 								Code
 							</button>
 						</li>
@@ -329,7 +329,7 @@ export function App() {
 								}}
 								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
 							>
-								<span className=" icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
+								<span className="icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
 								Config
 							</button>
 						</li>
@@ -383,7 +383,7 @@ export function App() {
 							<div className="flex items-center justify-between gap-2 bg-slate-100 px-4 py-1">
 								<hgroup className="flex flex-wrap items-baseline">
 									<h2 className="flex items-baseline gap-2 border-b-2 border-transparent font-bold aria-selected:border-ml-blue">
-										<span className=" icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
+										<span className="icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
 										Config
 									</h2>
 									<p className="text-xs tracking-tight">
@@ -391,14 +391,28 @@ export function App() {
 									</p>
 								</hgroup>
 								<Tab.List className="flex rounded-lg border">
-									<Tab className="flex items-center justify-center gap-1 overflow-hidden px-2 py-1 text-sm text-black text-opacity-60 first:rounded-s-lg last:rounded-e-lg aria-selected:bg-white  aria-selected:text-opacity-100">
-										<span className=" icon-majesticons-curly-braces shrink-0"></span>
-										JSON
-									</Tab>
-									<Tab className="flex items-center justify-center gap-1 overflow-hidden px-2 py-1 text-sm text-black text-opacity-60 first:rounded-s-lg last:rounded-e-lg aria-selected:bg-white aria-selected:text-opacity-100">
-										<span className=" icon-heroicons-solid-adjustments-horizontal shrink-0"></span>
-										Visual
-									</Tab>
+									{(['JSON', 'Visual'] as const).map((label, i) => (
+										<Tab
+											key={i}
+											className={`
+													flex items-center justify-center gap-1 overflow-hidden 
+													px-2 py-1 text-sm font-medium text-black text-opacity-60 
+													first:rounded-s-lg last:rounded-e-lg 
+													aria-selected:bg-slate-200 aria-selected:text-opacity-100
+												`}
+										>
+											<span
+												className={`${
+													label === 'JSON'
+														? 'icon-majesticons-curly-braces'
+														: label === 'Visual'
+														? 'icon-heroicons-solid-adjustments-horizontal'
+														: (label satisfies never)
+												} shrink-0`}
+											></span>
+											{label}
+										</Tab>
+									))}
 								</Tab.List>
 							</div>
 
@@ -415,7 +429,7 @@ export function App() {
 													px-4 py-2 font-medium -outline-offset-2
 												"
 											>
-												Parser &amp; Specs
+												<h3>Parser &amp; Specs</h3>
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
 											<FilenameEditor value={fileType} onChange={handleChangeFileType} />
@@ -427,7 +441,7 @@ export function App() {
 												px-4 py-2 font-medium -outline-offset-2
 											"
 											>
-												Presets
+												<h3>Presets</h3>
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
 											<PresetsEditor
@@ -443,7 +457,7 @@ export function App() {
 													px-4 py-2 font-medium -outline-offset-2
 												"
 											>
-												Rules
+												<h3>Rules</h3>
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
 											{version && (
@@ -490,13 +504,13 @@ export function App() {
 							),
 							'config-error': (
 								<>
-									<span className=" icon-heroicons-solid-x-circle  text-red-500"></span>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
 									Config file is invalid!
 								</>
 							),
 							'lint-checked': (
 								<>
-									<span className=" icon-heroicons-solid-check text-green-700"></span>
+									<span className="icon-heroicons-solid-check text-green-700"></span>
 									Checked!
 								</>
 							),
@@ -529,7 +543,7 @@ export function App() {
 						hover:bg-slate-200 hover:text-slate-800
 					"
 					>
-						<span className=" icon-heroicons-solid-tag"></span>
+						<span className="icon-heroicons-solid-tag"></span>
 						{`v${version}`}
 					</Popover.Button>
 					<Popover.Panel

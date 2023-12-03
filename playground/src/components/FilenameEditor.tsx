@@ -7,7 +7,7 @@ type Props = Readonly<{
 
 export const FilenameEditor = ({ value, onChange }: Props) => {
 	return (
-		<div className="px-4 py-2">
+		<div className="p-4">
 			<label className="grid grid-flow-col items-center justify-start gap-1">
 				Code file type:
 				<select
@@ -32,8 +32,7 @@ export const FilenameEditor = ({ value, onChange }: Props) => {
 					className="text-ml-blue underline"
 				>
 					Learn more about using to besides HTML
-					<span className=" icon-majesticons-open ml-1"></span>
-					<span className=" icon-heroicons-arrow-top-right-on-square ml-1"></span>
+					<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">(Open in new tab)</span>
 				</a>
 			</p>
 		</div>
