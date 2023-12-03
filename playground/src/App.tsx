@@ -316,7 +316,8 @@ export function App() {
 								onClick={() => {
 									setSelectedTab('code');
 								}}
-								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
+								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-pressed:border-ml-blue"
+								aria-pressed={selectedTab === 'code'}
 							>
 								<span className="icon-heroicons-solid-code text-xl text-slate-500"></span>
 								Code
@@ -327,7 +328,8 @@ export function App() {
 								onClick={() => {
 									setSelectedTab('config');
 								}}
-								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-selected:border-ml-blue"
+								className="flex items-center gap-2 border-b-2 border-transparent px-3 py-1 font-bold aria-pressed:border-ml-blue"
+								aria-pressed={selectedTab === 'config'}
 							>
 								<span className="icon-heroicons-solid-cog-6-tooth text-xl text-slate-500"></span>
 								Config
@@ -380,13 +382,13 @@ export function App() {
 						}`}
 					>
 						<Tab.Group>
-							<div className="flex items-center justify-between gap-2 bg-slate-100 px-4 py-1">
-								<hgroup className="flex flex-wrap items-baseline">
-									<h2 className="flex items-baseline gap-2 border-b-2 border-transparent font-bold aria-selected:border-ml-blue">
+							<div className="flex min-h-[2.5rem] items-center justify-between gap-2 bg-slate-100 px-4 py-1">
+								<hgroup className="flex flex-wrap items-baseline gap-x-2">
+									<h2 className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only">
 										<span className="icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
 										Config
 									</h2>
-									<p className="text-xs tracking-tight">
+									<p className="text-sm tracking-tight">
 										<code>.markuplintrc</code>
 									</p>
 								</hgroup>

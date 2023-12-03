@@ -3,7 +3,7 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { createContext, useContext, useCallback, useEffect, useId, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useState, useMemo } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
 
@@ -68,24 +68,29 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 		.find(one => one.default !== undefined)?.default;
 
 	return (
-		<div className="border-t px-4 pb-4 pt-3">
-			<div className="flex flex-wrap gap-2">
+		<div className="border-t pb-4 pt-3">
+			<div className="flex flex-wrap gap-y-2 px-4">
 				<h4 className="min-w-[13em] grow">
-					<a
-						className="text-ml-blue underline"
-						href={`https://markuplint.dev${localeWithoutRegion === 'ja' ? '/ja' : ''}/docs/rules/${name}`}
-						target="_blank"
-						rel="noreferrer"
-					>
-						<code>{name}</code>
-						<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">
-							(Open in new tab)
-						</span>
-					</a>
+					<code>
+						<a
+							className="text-ml-blue underline"
+							href={`https://markuplint.dev${
+								localeWithoutRegion === 'ja' ? '/ja' : ''
+							}/docs/rules/${name}`}
+							target="_blank"
+							rel="noreferrer"
+						>
+							{name}
+							<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">
+								(Open in new tab)
+							</span>
+						</a>
+						:
+					</code>
 				</h4>
 				{/* FIXME: this select element has no accessible name */}
 				<select
-					className="select-arrow w-[8em] rounded-md border border-slate-300"
+					className="select-arrow ml-6 w-[8em] rounded-md border border-slate-300"
 					value={valueSelect}
 					onChange={e => {
 						const value = e.currentTarget.value;
@@ -143,7 +148,7 @@ export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
 				</select>
 			</div>
 			{isJSONSchema(customs) && (
-				<div className="mt-4" hidden={valueSelect !== 'custom'}>
+				<div className="mt-4 overflow-x-auto px-4" hidden={valueSelect !== 'custom'}>
 					<NestedObject schema={customs} value={customConfig} onChange={handleChangeCustom} />
 				</div>
 			)}
@@ -207,6 +212,7 @@ const NestedArray = ({
 	schema: JSONSchema;
 	onChange?: (value: readonly any[]) => void;
 }>): ReactNode => {
+	const { depth, parentType } = useContext(NestContext);
 	const [values, setValues] = useState<readonly any[]>([null]);
 	useEffect(() => {
 		// not supported
@@ -242,37 +248,47 @@ const NestedArray = ({
 		return <NotSupported schema={schema} />;
 	}
 	return (
-		<div className="grid gap-2">
-			<ul className="grid gap-1">
-				{values.map((v, i) => (
-					<li key={i} className="flex items-baseline gap-2">
-						<Nested schema={schemaItems} value={v} onChange={handleChange(i)} />
-						<button
-							type="button"
-							onClick={handleRemove(i)}
-							className="flex items-center justify-center gap-1 rounded-full bg-red-50 p-2 shadow-sm
+		<div className={`${parentType === 'object' ? 'w-full' : ''}`}>
+			<div className="w-fit rounded-md border">
+				<NestContext.Provider value={{ depth, parentType: 'array' }}>
+					<ul>
+						{values.map((v, i) => (
+							<li key={i} className="flex items-baseline gap-2 border-b p-3">
+								<div className="flex flex-wrap gap-2">
+									<Nested schema={schemaItems} value={v} onChange={handleChange(i)} />
+								</div>
+								<button
+									type="button"
+									onClick={handleRemove(i)}
+									className="flex items-center justify-center gap-1 rounded-full bg-slate-100 p-2 shadow-sm transition-colors hover:bg-red-100"
+								>
+									<span className="icon-heroicons-solid-minus  overflow-hidden ">Remove</span>
+								</button>
+							</li>
+						))}
+					</ul>
+				</NestContext.Provider>
+				<p>
+					<button
+						type="button"
+						onClick={handleAdd}
+						className="flex w-full items-center justify-center gap-1 
+				bg-slate-100 px-2 py-1 text-sm shadow-sm
 				"
-						>
-							<span className="icon-heroicons-solid-minus  overflow-hidden ">Remove</span>
-						</button>
-					</li>
-				))}
-			</ul>
-			<p>
-				<button
-					type="button"
-					onClick={handleAdd}
-					className="flex w-full items-center justify-center gap-1 rounded-md
-				bg-slate-100 px-2 py-0.5 text-sm shadow-sm
-				"
-				>
-					<span className="icon-heroicons-solid-plus overflow-hidden"></span>
-					Add
-				</button>
-			</p>
+					>
+						<span className="icon-heroicons-solid-plus overflow-hidden"></span>
+						Add item
+					</button>
+				</p>
+			</div>
 		</div>
 	);
 };
+
+const flattenSchemas = (schemas: readonly JSONSchema7Definition[]): readonly JSONSchema7Definition[] =>
+	schemas.flatMap(schema =>
+		typeof schema === 'boolean' ? schema : schema.oneOf ? flattenSchemas(schema.oneOf) : schema,
+	);
 
 const NestedOneOf = ({
 	value,
@@ -283,10 +299,11 @@ const NestedOneOf = ({
 	schemas: readonly JSONSchema7Definition[];
 	onChange?: (value: any) => void;
 }>): ReactNode => {
-	const id = useId();
+	const flattenedSchemas = useMemo(() => flattenSchemas(schemas), [schemas]);
+	const [selected, setSelected] = useState<number>(0);
+	const [valueStates, setValueStates] = useState<any[]>(Array.from({ length: flattenedSchemas.length }).fill(null));
+	const selectedSchema = flattenedSchemas[selected];
 
-	const [selected, setSelected] = useState<string>('0');
-	const [valueStates, setValueStates] = useState<any[]>(Array.from({ length: schemas.length }).fill(null));
 	useEffect(() => {
 		// not supported
 		// TODO: support this pattern
@@ -301,35 +318,73 @@ const NestedOneOf = ({
 		[onChange, valueStates],
 	);
 
+	const getSummary = (schema: JSONSchema7Definition): string => {
+		if (typeof schema === 'boolean') {
+			return String(schema);
+		}
+		if (schema.oneOf) {
+			return 'oneOf...';
+		}
+		if (schema.type === undefined || Array.isArray(schema.type)) {
+			return '(not supported)';
+		}
+		switch (schema.type) {
+			case 'array': {
+				return 'array';
+			}
+			case 'object': {
+				return schema.properties ? `object (${Object.keys(schema.properties).join(', ')})` : 'object';
+			}
+			case 'string': {
+				return schema.enum ? 'string (enum)' : 'string';
+			}
+			case 'integer':
+			case 'number': {
+				return 'number';
+			}
+			case 'boolean': {
+				return 'boolean';
+			}
+			case 'null': {
+				return 'null';
+			}
+			default: {
+				schema.type satisfies never;
+				return '';
+			}
+		}
+	};
 	return (
-		<ul className="grid gap-2">
-			{schemas.map((s, i) => (
-				<li key={i} className="flex items-start rounded-lg border">
-					<label className="relative flex flex-shrink-0 items-center gap-1 bg-slate-200 px-2 py-2 text-sm">
-						<input
-							type="radio"
-							name={id}
-							value={i}
-							checked={selected === String(i)}
-							onChange={e => {
-								setSelected(e.currentTarget.value);
-								handleChange(i)(valueStates[i]);
-							}}
-							className="h-4 w-4 accent-ml-blue"
-						/>
-						Type {i + 1}
-					</label>
-					<fieldset disabled={selected !== String(i)} className="relative p-4 disabled:opacity-50">
-						<legend className="sr-only">Type {i + 1} details</legend>
-						<Nested schema={s} value={valueStates[i]} onChange={handleChange(i)} />
-					</fieldset>
-				</li>
-			))}
-		</ul>
+		<>
+			<label className="py-1 text-sm">
+				Type{' '}
+				<select
+					value={selected}
+					onChange={e => {
+						const value = e.currentTarget.value;
+						const valueNumber = Number(value);
+						setSelected(valueNumber);
+						handleChange(valueNumber)(valueStates[valueNumber]);
+					}}
+					className="select-arrow max-w-[10rem] rounded-xl border border-slate-300 bg-slate-300 text-black"
+				>
+					{flattenedSchemas.map((s, i) => (
+						<option key={i} value={i}>
+							{getSummary(s)}
+						</option>
+					))}
+				</select>
+			</label>
+			<Nested schema={selectedSchema} value={valueStates[selected]} onChange={handleChange(selected)} />
+			{/* NOTE: `schema.description` may be useful  */}
+		</>
 	);
 };
 
-const DepthContext = createContext(0);
+const NestContext = createContext<{ depth: number; parentType: 'object' | 'array' | 'oneOf' | undefined }>({
+	depth: 0,
+	parentType: undefined,
+});
 
 const NestedObject = ({
 	value,
@@ -340,7 +395,7 @@ const NestedObject = ({
 	schema: JSONSchema;
 	onChange?: (value: Readonly<Record<string, JsonValue>> | undefined) => void;
 }>): ReactNode => {
-	const depth = useContext(DepthContext);
+	const { depth, parentType } = useContext(NestContext);
 	const [valueState, setValueState] = useState<Record<string, JsonValue>>(value ?? {});
 	useEffect(() => {
 		setValueState(value ?? {});
@@ -366,30 +421,29 @@ const NestedObject = ({
 		return <NotSupported schema={schema} />;
 	}
 	return (
-		<ul className={`grid w-full ${depth === 0 ? 'gap-4' : depth === 1 ? 'gap-3' : 'gap-2'}`}>
-			{Object.entries(schema.properties).map(([key, property]) =>
-				// @ts-expect-error
-				property.deprecated === true ? null : (
-					<li key={key}>
-						<details
-							className="flex flex-wrap items-baseline gap-x-2 gap-y-1 
-							[&>summary>span]:icon-majesticons-chevron-right [&>summary>span]:open:rotate-90
-							[&>summary>span]:open:text-opacity-40
-							[&>ul:last-child]:w-full  [&>ul:last-child]:pl-6"
-							open={depth < 3}
-						>
-							<summary className="flex min-w-[7rem] items-center gap-2">
-								<span className="text-slate-500 transition-transform"></span>
-								<code>{key}:</code>
-							</summary>
-							<DepthContext.Provider value={depth + 1}>
+		<NestContext.Provider value={{ depth: depth + 1, parentType: 'object' }}>
+			<ul className={`grid gap-2 ${parentType === 'object' ? 'w-full' : ''}`}>
+				{Object.entries(schema.properties).map(([key, property]) =>
+					// @ts-expect-error
+					property.deprecated === true ? null : (
+						<li key={key}>
+							<details
+								className="flex flex-row flex-wrap items-baseline gap-y-1 
+							[&>summary>span]:icon-majesticons-chevron-right [&>:nth-child(n+2)]:ml-6 
+							[&>summary>span]:open:rotate-90 [&>summary>span]:open:text-opacity-40"
+								open
+							>
+								<summary className="inline-flex w-fit items-baseline gap-2 py-2">
+									<span className="translate-y-0.5 text-slate-500 transition-transform"></span>
+									<code>{key}:</code>
+								</summary>
 								<Nested schema={property} onChange={handleChange(key)} value={valueState?.[key]} />
-							</DepthContext.Provider>
-						</details>
-					</li>
-				),
-			)}
-		</ul>
+							</details>
+						</li>
+					),
+				)}
+			</ul>
+		</NestContext.Provider>
 	);
 };
 
@@ -516,35 +570,40 @@ const NestedString = ({
 		[onChange],
 	);
 
-	if (schema.enum) {
-		const defaultValue = schema.default;
-		return (
-			<select
-				className="select-arrow rounded-md border border-slate-300"
-				value={valueState}
-				onChange={e => {
-					handleChange(e.currentTarget.value);
-				}}
-			>
-				<option value={''}>(unset{defaultValue !== undefined && `: "${defaultValue}"`})</option>
-				{schema.enum.map(
-					keyword =>
-						typeof keyword === 'string' && <option key={keyword} value={keyword}>{`"${keyword}"`}</option>,
-				)}
-			</select>
-		);
-	} else {
-		return (
-			<input
-				className="rounded-md border border-slate-300 px-1 py-0.5"
-				type="text"
-				value={valueState}
-				onChange={e => {
-					handleChange(e.currentTarget.value);
-				}}
-			/>
-		);
-	}
+	return (
+		<>
+			{schema.enum ? (
+				<select
+					className="select-arrow rounded-md border border-slate-300"
+					value={valueState}
+					onChange={e => {
+						handleChange(e.currentTarget.value);
+					}}
+				>
+					<option value={''}>(unset{schema.default !== undefined && `: "${schema.default}"`})</option>
+					{schema.enum.map(
+						keyword =>
+							typeof keyword === 'string' && (
+								<option key={keyword} value={keyword}>{`"${keyword}"`}</option>
+							),
+					)}
+				</select>
+			) : (
+				<span className="shrink-0">
+					&quot;{' '}
+					<input
+						className="rounded-md border border-slate-300 px-2 py-0.5"
+						type="text"
+						value={valueState}
+						onChange={e => {
+							handleChange(e.currentTarget.value);
+						}}
+					/>{' '}
+					&quot;
+				</span>
+			)}
+		</>
+	);
 };
 
 const NotSupported = ({ schema }: Readonly<{ schema: JSONSchema }>): ReactNode => {

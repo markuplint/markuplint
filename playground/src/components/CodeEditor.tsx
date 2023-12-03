@@ -28,15 +28,17 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 
 	return (
 		<div className="grid h-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
-			<hgroup className="flex items-baseline gap-2 bg-slate-100 px-4 py-1">
-				<h2 className="flex items-baseline gap-2 text-lg font-bold">
-					<span className="icon-heroicons-solid-code translate-y-[0.15em] text-xl text-slate-500"></span>
-					Code
-				</h2>
-				<p className="text-sm">
-					<code>{filename}</code>
-				</p>
-			</hgroup>
+			<div className="flex min-h-[2.5rem] items-center bg-slate-100">
+				<hgroup className="flex items-baseline gap-2 px-4 py-1">
+					<h2 className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only">
+						<span className="icon-heroicons-solid-code translate-y-[0.15em] text-xl text-slate-500"></span>
+						Code
+					</h2>
+					<p className="text-sm">
+						<code>{filename}</code>
+					</p>
+				</hgroup>
+			</div>
 			<MonacoEditor
 				language={getLanguage(filename) ?? 'plaintext'}
 				theme="vs-dark"

@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-select,
-summary {
+select {
+	background-color: transparent;
 	cursor: pointer;
 }
 
 summary {
+	cursor: pointer;
 	list-style: none;
 }
 summary::-webkit-details-marker {
