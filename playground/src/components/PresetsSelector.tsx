@@ -32,7 +32,7 @@ type Props = Readonly<{
 	onChange?: (value: readonly string[]) => void;
 }>;
 
-export const PresetsEditor = ({ fileType, value, onChange }: Props) => {
+export const PresetsSelector = ({ fileType, value, onChange }: Props) => {
 	const presets = value;
 	const [implicitPresets, setImplicitPresets] = useState<readonly string[]>([]);
 	const handleChange = useCallback(

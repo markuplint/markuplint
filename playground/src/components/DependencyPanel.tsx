@@ -8,7 +8,7 @@ type Props = Readonly<{
 	onChange?: (value: DistTag) => void;
 }>;
 
-export const DepsEditor = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
+export const DependencyPanel = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
 	return (
 		<section className="grid grid-cols-1 gap-4 p-4">
 			<p>

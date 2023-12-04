@@ -6,7 +6,7 @@ import { satisfies } from 'semver';
 
 import { fetchDereferencedSchema, isJSONSchema } from '../modules/json-schema';
 
-import { ConfigRule } from './ConfigRule';
+import { RuleConfig } from './RuleConfig';
 
 type Props = Readonly<{
 	value: Rules;
@@ -14,7 +14,7 @@ type Props = Readonly<{
 	onChange?: (rules: Rules) => void;
 }>;
 
-const SchemaEditorRaw = ({ value, version, onChange }: Props) => {
+const RulesSelectorRaw = ({ value, version, onChange }: Props) => {
 	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
 	const [ruleSchemas, setRuleSchemas] = useState<Record<string, JSONSchema7Definition> | null>(null);
 	useEffect(() => {
@@ -69,7 +69,7 @@ const SchemaEditorRaw = ({ value, version, onChange }: Props) => {
 				Object.entries(ruleSchemas).map(
 					([key, ruleSchema]) =>
 						typeof ruleSchema !== 'boolean' && (
-							<ConfigRule
+							<RuleConfig
 								key={key}
 								name={key}
 								schema={ruleSchema}
@@ -83,4 +83,4 @@ const SchemaEditorRaw = ({ value, version, onChange }: Props) => {
 	);
 };
 
-export const SchemaEditor = memo(SchemaEditorRaw);
+export const RulesSelector = memo(RulesSelectorRaw);

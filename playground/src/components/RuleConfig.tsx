@@ -16,7 +16,7 @@ type Props = Readonly<{
 	schema: JSONSchema;
 	onChange?: (rule: AnyRule) => void;
 }>;
-export const ConfigRule = ({ value, name, schema, onChange }: Props) => {
+export const RuleConfig = ({ value, name, schema, onChange }: Props) => {
 	const [valueSelect, setValueSelect] = useState<string>('unset');
 	const [customConfig, setCustomConfig] = useState<Readonly<Record<string, any>>>({});
 	const handleChangeCustom = useCallback(

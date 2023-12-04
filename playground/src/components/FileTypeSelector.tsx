@@ -5,7 +5,7 @@ type Props = Readonly<{
 	onChange?: (value: string) => void;
 }>;
 
-export const FilenameEditor = ({ value, onChange }: Props) => {
+export const FileTypeSelector = ({ value, onChange }: Props) => {
 	return (
 		<div className="p-4">
 			<label className="grid grid-flow-col items-center justify-start gap-1">

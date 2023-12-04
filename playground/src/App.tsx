@@ -13,12 +13,12 @@ import logo from './assets/images/logo-horizontal.svg';
 import { CodeEditor } from './components/CodeEditor';
 import { ConfigEditor } from './components/ConfigEditor';
 import { ConsoleOutput } from './components/ConsoleOutput';
-import { DepsEditor } from './components/DepsEditor';
+import { DependencyPanel } from './components/DependencyPanel';
 import { ExampleSelector } from './components/ExampleSelector';
-import { FilenameEditor } from './components/FilenameEditor';
-import { PresetsEditor } from './components/PresetsEditor';
+import { FileTypeSelector } from './components/FileTypeSelector';
+import { PresetsSelector } from './components/PresetsSelector';
 import { ProblemsOutput } from './components/ProblemsOutput';
-import { SchemaEditor } from './components/SchemaEditor';
+import { RulesSelector } from './components/RulesSelector';
 import { examples } from './examples';
 import { debounce } from './modules/debounce';
 import { isJsonObject, parseJson } from './modules/json';
@@ -434,7 +434,7 @@ export function App() {
 												<h3>Parser &amp; Specs</h3>
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
-											<FilenameEditor value={fileType} onChange={handleChangeFileType} />
+											<FileTypeSelector value={fileType} onChange={handleChangeFileType} />
 										</details>
 										<details open className="group overflow-hidden rounded-lg border">
 											<summary
@@ -446,7 +446,7 @@ export function App() {
 												<h3>Presets</h3>
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
-											<PresetsEditor
+											<PresetsSelector
 												fileType={fileType}
 												value={presets}
 												onChange={handleChangePresets}
@@ -463,7 +463,7 @@ export function App() {
 												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
 											</summary>
 											{version && (
-												<SchemaEditor
+												<RulesSelector
 													value={rules}
 													version={version}
 													onChange={handleChangeRules}
@@ -552,7 +552,7 @@ export function App() {
 						unmount={false}
 						className="absolute bottom-[calc(100%+1rem)] left-4 right-4 z-10 ml-auto w-fit overflow-hidden rounded-lg border bg-white shadow-lg"
 					>
-						<DepsEditor
+						<DependencyPanel
 							status={depsStatus}
 							installedPackages={installedPackages}
 							distTag={distTag}
