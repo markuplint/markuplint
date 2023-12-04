@@ -2,48 +2,27 @@ import type { ConsoleOutputRef } from './components/ConsoleOutput';
 import type { DistTag } from './modules/dist-tag';
 import type { PlaygroundValues } from './modules/save-values';
 import type { Violations } from './modules/violations';
-import type { Rules, Config } from '@markuplint/ml-config';
 
 import { Popover, Tab } from '@headlessui/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
-import stripJsonComments from 'strip-json-comments';
 
 import logo from './assets/images/logo-horizontal.svg';
 import { CodeEditor } from './components/CodeEditor';
 import { ConfigEditor } from './components/ConfigEditor';
+import { ConfigForm } from './components/ConfigForm';
 import { ConsoleOutput } from './components/ConsoleOutput';
 import { DependencyPanel } from './components/DependencyPanel';
 import { ExampleSelector } from './components/ExampleSelector';
-import { FileTypeSelector } from './components/FileTypeSelector';
-import { PresetsSelector } from './components/PresetsSelector';
 import { ProblemsOutput } from './components/ProblemsOutput';
-import { RulesSelector } from './components/RulesSelector';
 import { examples } from './examples';
 import { debounce } from './modules/debounce';
-import { isJsonObject, parseJson } from './modules/json';
+import { parseJsonc } from './modules/json';
 import { loadValues, saveValues } from './modules/save-values';
 import { setupContainerServer } from './server';
 
 const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
 const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
-
-const parseConfig = (maybeConfig: string): Config | null => {
-	try {
-		const parsed = parseJson(stripJsonComments(maybeConfig));
-		if (isJsonObject(parsed)) {
-			return parsed;
-		} else {
-			return null;
-		}
-	} catch {
-		return null;
-	}
-};
-
-const isValidJson = (maybeJson: string) => {
-	return parseConfig(maybeJson) !== null;
-};
 
 let boot = false;
 let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
@@ -147,7 +126,9 @@ export function App() {
 			return;
 		}
 
-		if (isValidJson(configString)) {
+		if (parseJsonc(configString) === null) {
+			setStatus('config-error');
+		} else {
 			void (async () => {
 				setViolations(null);
 				setStatus('config-updating');
@@ -159,8 +140,6 @@ export function App() {
 				}
 				setLintTrigger(prev => prev + 1);
 			})();
-		} else {
-			setStatus('config-error');
 		}
 	}, [configString]);
 
@@ -216,74 +195,6 @@ export function App() {
 		});
 	}, [configString, code, debouncedSaveValues, initialized, fileType]);
 
-	// update config when rules changed
-	const handleChangeRules = useCallback(
-		(rules: Rules) => {
-			const parsedConfig = { ...parseConfig(configString) };
-			if (Object.keys(rules).length === 0) {
-				delete parsedConfig.rules;
-			} else {
-				parsedConfig.rules = rules;
-			}
-			setConfigString(JSON.stringify(parsedConfig, null, 2));
-		},
-		[configString],
-	);
-
-	const handleChangeFileType = useCallback(
-		(newFileType: string) => {
-			setFileType(newFileType);
-			const parsedConfig = { ...parseConfig(configString) };
-			const mapping: Readonly<Record<string, Pick<Config, 'parser' | 'specs'>>> = {
-				'.jsx': {
-					parser: { '\\.jsx$': '@markuplint/jsx-parser' },
-					specs: { '\\.jsx$': '@markuplint/react-spec' },
-				},
-				'.vue': {
-					parser: { '\\.vue$': '@markuplint/vue-parser' },
-					specs: { '\\.vue$': '@markuplint/vue-spec' },
-				},
-				'.svelte': {
-					parser: { '\\.svelte$': '@markuplint/svelte-parser' },
-				},
-			};
-			const parserAndSpecs = mapping[newFileType] ?? {};
-			if (parserAndSpecs.parser) {
-				parsedConfig.parser = parserAndSpecs.parser;
-			} else {
-				delete parsedConfig.parser;
-			}
-			if (parserAndSpecs.specs) {
-				parsedConfig.specs = parserAndSpecs.specs;
-			} else {
-				delete parsedConfig.specs;
-			}
-			setConfigString(JSON.stringify(parsedConfig, null, 2));
-		},
-		[configString],
-	);
-	const presets = useMemo((): readonly string[] => {
-		const parsedConfig = parseConfig(configString) ?? {};
-		const { extends: extendsValue } = parsedConfig;
-		return Array.isArray(extendsValue) ? extendsValue : [];
-	}, [configString]);
-	const rules = useMemo((): Rules => {
-		const parsedConfig = parseConfig(configString) ?? {};
-		const { rules } = parsedConfig;
-		return rules ?? {};
-	}, [configString]);
-	const handleChangePresets = useCallback(
-		(newPresets: readonly string[]) => {
-			const parsedConfig = { ...parseConfig(configString) };
-			if (newPresets.length === 0) {
-				delete parsedConfig.extends;
-			} else {
-				parsedConfig.extends = newPresets;
-			}
-			setConfigString(JSON.stringify(parsedConfig, null, 2));
-		},
-		[configString],
-	);
 	return (
 		<>
 			<header className="sticky top-0 z-10 flex items-center justify-between border-b border-b-slate-300 bg-white px-4 py-2">
@@ -423,54 +334,13 @@ export function App() {
 									<ConfigEditor value={configString} onChange={setConfigString} />
 								</Tab.Panel>
 								<Tab.Panel unmount={false} className="h-full overflow-y-auto">
-									<div className="grid gap-2 px-4 py-4">
-										<details open className="group overflow-hidden rounded-lg border">
-											<summary
-												className="
-													flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-													px-4 py-2 font-medium -outline-offset-2
-												"
-											>
-												<h3>Parser &amp; Specs</h3>
-												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-											</summary>
-											<FileTypeSelector value={fileType} onChange={handleChangeFileType} />
-										</details>
-										<details open className="group overflow-hidden rounded-lg border">
-											<summary
-												className="
-												flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-												px-4 py-2 font-medium -outline-offset-2
-											"
-											>
-												<h3>Presets</h3>
-												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-											</summary>
-											<PresetsSelector
-												fileType={fileType}
-												value={presets}
-												onChange={handleChangePresets}
-											/>
-										</details>
-										<details open className="group overflow-hidden rounded-lg border">
-											<summary
-												className="
-													flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-													px-4 py-2 font-medium -outline-offset-2
-												"
-											>
-												<h3>Rules</h3>
-												<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
-											</summary>
-											{version && (
-												<RulesSelector
-													value={rules}
-													version={version}
-													onChange={handleChangeRules}
-												/>
-											)}
-										</details>
-									</div>
+									<ConfigForm
+										fileType={fileType}
+										version={version}
+										config={configString}
+										onChangeFileType={setFileType}
+										onChangeConfig={setConfigString}
+									/>
 								</Tab.Panel>
 							</Tab.Panels>
 						</Tab.Group>

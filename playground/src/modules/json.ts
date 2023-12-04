@@ -1,3 +1,5 @@
+import stripJsonComments from 'strip-json-comments';
+
 type JsonPrimitive = boolean | number | string | null;
 type JsonArray = readonly JsonPrimitive[] | readonly JsonObject[];
 type JsonObject = Readonly<{
@@ -24,5 +26,18 @@ export const isJsonObject = (json: JsonValue): json is JsonObject => {
 		return true;
 	} else {
 		return false;
+	}
+};
+
+export const parseJsonc = (maybeJson: string): JsonObject | null => {
+	try {
+		const parsed = parseJson(stripJsonComments(maybeJson));
+		if (isJsonObject(parsed)) {
+			return parsed;
+		} else {
+			return null;
+		}
+	} catch {
+		return null;
 	}
 };
