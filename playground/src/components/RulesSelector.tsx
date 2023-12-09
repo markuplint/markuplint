@@ -11,12 +11,17 @@ import { RuleConfig } from './RuleConfig';
 type Props = Readonly<{
 	value: Rules;
 	version: string;
-	onChange?: (rules: Rules) => void;
+	onChange: (rules: Rules) => void;
 }>;
 
 const RulesSelectorRaw = ({ value, version, onChange }: Props) => {
-	const [rulesConfig, setRulesConfig] = useState<Rules | null>(null);
+	const [, setRulesState] = useState<Rules>({});
 	const [ruleSchemas, setRuleSchemas] = useState<Record<string, JSONSchema7Definition> | null>(null);
+
+	useEffect(() => {
+		setRulesState(value);
+	}, [value]);
+
 	useEffect(() => {
 		void (async () => {
 			setRuleSchemas(null);
@@ -47,18 +52,19 @@ const RulesSelectorRaw = ({ value, version, onChange }: Props) => {
 	}, [version]);
 
 	const handleChange = useCallback(
-		(ruleName: string) => (rule: AnyRule) => {
-			const newConfig =
-				rule == null
-					? (() => {
-							const { [ruleName]: _, ...updated } = rulesConfig ?? {};
-							return updated;
-					  })()
-					: { ...rulesConfig, [ruleName]: rule };
-			setRulesConfig(newConfig);
-			onChange?.(newConfig);
+		(ruleName: string, rule: AnyRule) => {
+			setRulesState(prev => {
+				const writableConfig = { ...prev };
+				if (rule == null) {
+					delete writableConfig[ruleName];
+				} else {
+					writableConfig[ruleName] = rule;
+				}
+				onChange(writableConfig);
+				return writableConfig;
+			});
 		},
-		[onChange, rulesConfig],
+		[onChange],
 	);
 
 	return (
@@ -71,10 +77,10 @@ const RulesSelectorRaw = ({ value, version, onChange }: Props) => {
 						typeof ruleSchema !== 'boolean' && (
 							<RuleConfig
 								key={key}
-								name={key}
+								ruleName={key}
 								schema={ruleSchema}
 								value={value[key]}
-								onChange={handleChange(key)}
+								onChange={handleChange}
 							/>
 						),
 				)

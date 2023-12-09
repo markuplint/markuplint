@@ -1,10 +1,12 @@
 import type { ConsoleOutputRef } from './components/ConsoleOutput';
+import type { ExampleData } from './examples';
 import type { DistTag } from './modules/dist-tag';
 import type { PlaygroundValues } from './modules/save-values';
 import type { Violations } from './modules/violations';
+import type { Config } from '@markuplint/ml-config';
 
 import { Popover, Tab } from '@headlessui/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -50,6 +52,10 @@ export function App() {
 	const [fileType, setFileType] = useState<string>(initialCodeFileType);
 	const filename = `index${fileType}`;
 	const [configString, setConfigString] = useState(initialConfig);
+	const parsedConfig: Config = useMemo(() => parseJsonc(configString) ?? {}, [configString]);
+	const handleChangeConfig = useCallback((config: Config) => {
+		setConfigString(JSON.stringify(config, null, 2));
+	}, []);
 	const [depsPackages, setDepsPackages] = useState<StringSet>(new Set(['markuplint']));
 	const [distTag, setDistTag] = useState<DistTag>('latest');
 	const [violations, setViolations] = useState<Violations | null>(null);
@@ -63,7 +69,11 @@ export function App() {
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
 	const [version, setVersion] = useState<string>();
 	const tabsRef = useRef<HTMLElement>(null);
-
+	const handleSelectExample = useCallback((example: ExampleData) => {
+		setConfigString(example.config);
+		setFileType(example.codeFileType);
+		setCode(example.code);
+	}, []);
 	useEffect(() => {
 		// get version
 		void (async () => {
@@ -209,14 +219,7 @@ export function App() {
 					/>{' '}
 					Playground
 				</h1>
-				<ExampleSelector
-					disabled={!initialized}
-					onSelect={example => {
-						setConfigString(example.config);
-						setFileType(example.codeFileType);
-						setCode(example.code);
-					}}
-				/>
+				<ExampleSelector disabled={!initialized} onSelect={handleSelectExample} />
 			</header>
 			<main className="grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:block">
 				<nav ref={tabsRef} className="border-b bg-slate-100 md:hidden">
@@ -337,9 +340,9 @@ export function App() {
 									<ConfigForm
 										fileType={fileType}
 										version={version}
-										config={configString}
+										config={parsedConfig}
 										onChangeFileType={setFileType}
-										onChangeConfig={setConfigString}
+										onChangeConfig={handleChangeConfig}
 									/>
 								</Tab.Panel>
 							</Tab.Panels>

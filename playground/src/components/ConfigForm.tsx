@@ -1,89 +1,101 @@
 import type { Rules, Config } from '@markuplint/ml-config';
 
-import { useCallback, useMemo } from 'react';
-
-import { parseJsonc } from '../modules/json';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { FileTypeSelector } from './FileTypeSelector';
 import { PresetsSelector } from './PresetsSelector';
 import { RulesSelector } from './RulesSelector';
 
+const mapping: Readonly<Record<string, Pick<Config, 'parser' | 'specs'>>> = {
+	'.jsx': {
+		parser: { '\\.jsx$': '@markuplint/jsx-parser' },
+		specs: { '\\.jsx$': '@markuplint/react-spec' },
+	},
+	'.vue': {
+		parser: { '\\.vue$': '@markuplint/vue-parser' },
+		specs: { '\\.vue$': '@markuplint/vue-spec' },
+	},
+	'.svelte': {
+		parser: { '\\.svelte$': '@markuplint/svelte-parser' },
+	},
+};
+
 type Props = Readonly<{
 	version?: string;
 	fileType: string;
-	config: string;
+	config: Config;
 	onChangeFileType: (fileType: string) => void;
-	onChangeConfig: (config: string) => void;
+	onChangeConfig: (config: Config) => void;
 }>;
 
-export const ConfigForm = ({ fileType, config: config, version, onChangeFileType, onChangeConfig }: Props) => {
-	const parsedConfig: Config = useMemo(() => parseJsonc(config) ?? {}, [config]);
+export const ConfigForm = ({ fileType, config, version, onChangeFileType, onChangeConfig }: Props) => {
+	const [, setConfigState] = useState<Config>(config);
+	useEffect(() => {
+		setConfigState(config);
+	}, [config]);
 
 	const handleChangeFileType = useCallback(
 		(newFileType: string) => {
 			onChangeFileType(newFileType);
-			const writableConfig = { ...parsedConfig };
-			const mapping: Readonly<Record<string, Pick<Config, 'parser' | 'specs'>>> = {
-				'.jsx': {
-					parser: { '\\.jsx$': '@markuplint/jsx-parser' },
-					specs: { '\\.jsx$': '@markuplint/react-spec' },
-				},
-				'.vue': {
-					parser: { '\\.vue$': '@markuplint/vue-parser' },
-					specs: { '\\.vue$': '@markuplint/vue-spec' },
-				},
-				'.svelte': {
-					parser: { '\\.svelte$': '@markuplint/svelte-parser' },
-				},
-			};
 			const parserAndSpecs = mapping[newFileType] ?? {};
-			if (parserAndSpecs.parser) {
-				writableConfig.parser = parserAndSpecs.parser;
-			} else {
-				delete writableConfig.parser;
-			}
-			if (parserAndSpecs.specs) {
-				writableConfig.specs = parserAndSpecs.specs;
-			} else {
-				delete writableConfig.specs;
-			}
-			onChangeConfig(JSON.stringify(writableConfig, null, 2));
+
+			setConfigState(prev => {
+				const writableConfig = { ...prev };
+				if (parserAndSpecs.parser) {
+					writableConfig.parser = parserAndSpecs.parser;
+				} else {
+					delete writableConfig.parser;
+				}
+				if (parserAndSpecs.specs) {
+					writableConfig.specs = parserAndSpecs.specs;
+				} else {
+					delete writableConfig.specs;
+				}
+				onChangeConfig(writableConfig);
+				return writableConfig;
+			});
 		},
-		[onChangeConfig, onChangeFileType, parsedConfig],
+		[onChangeConfig, onChangeFileType],
 	);
 
 	const rules = useMemo((): Rules => {
-		const { rules } = parsedConfig;
+		const { rules } = config;
 		return rules ?? {};
-	}, [parsedConfig]);
+	}, [config]);
 	const handleChangeRules = useCallback(
 		(newRules: Rules) => {
-			const writableConfig = { ...parsedConfig };
-			if (Object.keys(newRules).length === 0) {
-				delete writableConfig.rules;
-			} else {
-				writableConfig.rules = newRules;
-			}
-			onChangeConfig(JSON.stringify(writableConfig, null, 2));
+			setConfigState(prev => {
+				const writableConfig = { ...prev };
+				if (Object.keys(newRules).length === 0) {
+					delete writableConfig.rules;
+				} else {
+					writableConfig.rules = newRules;
+				}
+				onChangeConfig(writableConfig);
+				return writableConfig;
+			});
 		},
-		[onChangeConfig, parsedConfig],
+		[onChangeConfig],
 	);
 
 	const presets = useMemo((): readonly string[] => {
-		const { extends: extendsValue } = parsedConfig;
+		const { extends: extendsValue } = config;
 		return Array.isArray(extendsValue) ? extendsValue : [];
-	}, [parsedConfig]);
+	}, [config]);
 	const handleChangePresets = useCallback(
 		(newPresets: readonly string[]) => {
-			const writableConfig = { ...parsedConfig };
-			if (newPresets.length === 0) {
-				delete writableConfig.extends;
-			} else {
-				writableConfig.extends = newPresets;
-			}
-			onChangeConfig(JSON.stringify(writableConfig, null, 2));
+			setConfigState(prev => {
+				const writableConfig = { ...prev };
+				if (newPresets.length === 0) {
+					delete writableConfig.extends;
+				} else {
+					writableConfig.extends = newPresets;
+				}
+				onChangeConfig(writableConfig);
+				return writableConfig;
+			});
 		},
-		[onChangeConfig, parsedConfig],
+		[onChangeConfig],
 	);
 
 	return (

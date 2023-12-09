@@ -1,5 +1,7 @@
 import type { DistTag } from '../modules/dist-tag';
 
+import { memo } from 'react';
+
 type Props = Readonly<{
 	status: 'success' | 'loading' | 'error' | null;
 	depsPackages: Readonly<ReadonlySet<string>>;
@@ -8,7 +10,7 @@ type Props = Readonly<{
 	onChange?: (value: DistTag) => void;
 }>;
 
-export const DependencyPanel = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
+const DependencyPanelRaw = ({ depsPackages, installedPackages, status, distTag = 'latest', onChange }: Props) => {
 	return (
 		<section className="grid grid-cols-1 gap-4 p-4">
 			<p>
@@ -64,3 +66,4 @@ export const DependencyPanel = ({ depsPackages, installedPackages, status, distT
 		</section>
 	);
 };
+export const DependencyPanel = memo(DependencyPanelRaw);

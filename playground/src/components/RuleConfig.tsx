@@ -3,7 +3,7 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { createContext, useContext, useCallback, useEffect, useState, useMemo } from 'react';
+import { createContext, useContext, useCallback, useEffect, useState, useMemo, memo } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
 
@@ -12,20 +12,20 @@ const localeWithoutRegion = locale.split('-')[0];
 
 type Props = Readonly<{
 	value: AnyRule;
-	name: string;
+	ruleName: string;
 	schema: JSONSchema;
-	onChange?: (rule: AnyRule) => void;
+	onChange: (ruleName: string, rule: AnyRule) => void;
 }>;
-export const RuleConfig = ({ value, name, schema, onChange }: Props) => {
+const RuleConfigRaw = ({ value, ruleName, schema, onChange }: Props) => {
 	const [valueSelect, setValueSelect] = useState<string>('unset');
 	const [customConfig, setCustomConfig] = useState<Readonly<Record<string, any>>>({});
 	const handleChangeCustom = useCallback(
 		(value: any | undefined) => {
 			const newCustomConfig = value ?? {};
 			setCustomConfig(newCustomConfig);
-			onChange?.(newCustomConfig);
+			onChange(ruleName, newCustomConfig);
 		},
-		[onChange],
+		[onChange, ruleName],
 	);
 
 	useEffect(() => {
@@ -76,11 +76,11 @@ export const RuleConfig = ({ value, name, schema, onChange }: Props) => {
 							className="text-ml-blue underline"
 							href={`https://markuplint.dev${
 								localeWithoutRegion === 'ja' ? '/ja' : ''
-							}/docs/rules/${name}`}
+							}/docs/rules/${ruleName}`}
 							target="_blank"
 							rel="noreferrer"
 						>
-							{name}
+							{ruleName}
 							<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">
 								(Open in new tab)
 							</span>
@@ -115,7 +115,7 @@ export const RuleConfig = ({ value, name, schema, onChange }: Props) => {
 						})();
 
 						setValueSelect(value);
-						onChange?.(newRuleConfig);
+						onChange(ruleName, newRuleConfig);
 					}}
 				>
 					<option value="unset">(unset)</option>
@@ -147,14 +147,15 @@ export const RuleConfig = ({ value, name, schema, onChange }: Props) => {
 					{isJSONSchema(customs) && <option value="custom">custom...</option>}
 				</select>
 			</div>
-			{isJSONSchema(customs) && (
-				<div className="mt-4 overflow-x-auto px-4" hidden={valueSelect !== 'custom'}>
+			{isJSONSchema(customs) && valueSelect === 'custom' && (
+				<div className="mt-4 overflow-x-auto px-4">
 					<NestedObject schema={customs} value={customConfig} onChange={handleChangeCustom} />
 				</div>
 			)}
 		</div>
 	);
 };
+export const RuleConfig = memo(RuleConfigRaw);
 
 const Nested = ({
 	value,
