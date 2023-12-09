@@ -9,7 +9,6 @@ on:
         paths:
             - '.github/workflows/test.yml'
             - 'packages/**'
-            - 'playground/**'
             - 'test/**'
             - 'yarn.lock'
 
@@ -258,46 +257,6 @@ jobs:
                   max_attempts: 3
                   shell: bash
                   command: yarn vitest run --shard=${{ matrix.shard }}
-
-    playground:
-        needs: [os-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-                node: [18]
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Install for build on Node.js v${{ matrix.node }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Cache Restore devDependencies
-              id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
-              with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@v3
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Playground Building Test
-              run: yarn pg:build
 
     isolated-env:
         needs: [os-setup, build]
