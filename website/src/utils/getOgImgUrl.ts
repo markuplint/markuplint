@@ -11,8 +11,8 @@ const fonts: Record<string, [label: string, title: string]> = {
 
 const getTextWidth = (text: string): number => {
   let count = 0;
-  for (let i = 0; i < text.length; i++) {
-    text[i].match(/[ -~]/) ? (count += 1) : (count += 2);
+  for (const element of text) {
+    /[\u0020-\u007E]/.test(element) ? (count += 1) : (count += 2);
   }
   return count;
 };

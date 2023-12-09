@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-core",
-	"version": "4.0.0-alpha.5",
+	"version": "4.0.0-alpha.6",
 	"description": "The core module of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -28,18 +28,18 @@
 		"./lib/configs.js": "./lib/configs.browser.js"
 	},
 	"dependencies": {
-		"@markuplint/config-presets": "4.0.0-alpha.5",
-		"@markuplint/html-parser": "4.0.0-alpha.5",
-		"@markuplint/html-spec": "4.0.0-alpha.5",
-		"@markuplint/i18n": "4.0.0-alpha.5",
-		"@markuplint/ml-ast": "4.0.0-alpha.5",
-		"@markuplint/ml-config": "4.0.0-alpha.5",
-		"@markuplint/ml-spec": "4.0.0-alpha.5",
-		"@markuplint/parser-utils": "4.0.0-alpha.5",
-		"@markuplint/selector": "4.0.0-alpha.5",
-		"@types/debug": "^4.1.10",
+		"@markuplint/config-presets": "4.0.0-alpha.6",
+		"@markuplint/html-parser": "4.0.0-alpha.6",
+		"@markuplint/html-spec": "4.0.0-alpha.6",
+		"@markuplint/i18n": "4.0.0-alpha.6",
+		"@markuplint/ml-ast": "4.0.0-alpha.6",
+		"@markuplint/ml-config": "4.0.0-alpha.6",
+		"@markuplint/ml-spec": "4.0.0-alpha.6",
+		"@markuplint/parser-utils": "4.0.0-alpha.6",
+		"@markuplint/selector": "4.0.0-alpha.6",
+		"@types/debug": "^4.1.12",
 		"debug": "^4.3.4",
 		"is-plain-object": "^5.0.0",
-		"type-fest": "^4.5.0"
+		"type-fest": "^4.8.2"
 	}
 }

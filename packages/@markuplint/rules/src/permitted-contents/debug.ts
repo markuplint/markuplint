@@ -1,8 +1,10 @@
+import type { Log } from '../debug.js';
+
 import color from 'ansi-colors';
 
 import { log } from '../debug.js';
 
-export const cmLog = log.extend('content-model');
+export const cmLog: Log = log.extend('content-model');
 
 /* eslint-disable import/no-named-as-default-member */
 export const bgGreen = color.bgGreen;

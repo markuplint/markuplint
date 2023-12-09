@@ -10,11 +10,11 @@ type Props = {
 export default function Grid({ colWidth, vertical, children }: React.PropsWithChildren<Props>) {
   return vertical ? (
     <div className={styles.vertical}>{children}</div>
-  ) : colWidth ? (
+  ) : colWidth == null ? (
+    <div className={styles.flex}>{children}</div>
+  ) : (
     <div className={styles.grid} style={{ gridTemplateColumns: `repeat(auto-fit, minmax(${colWidth}, 1fr))` }}>
       {children}
     </div>
-  ) : (
-    <div className={styles.flex}>{children}</div>
   );
 }

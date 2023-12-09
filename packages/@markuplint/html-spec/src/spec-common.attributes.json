@@ -604,7 +604,8 @@
 						"opener",
 						"prev",
 						"search",
-						"tag"
+						"tag",
+						"terms-of-service"
 					]
 				},
 				"unique": true,
