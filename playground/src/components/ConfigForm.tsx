@@ -101,38 +101,29 @@ export const ConfigForm = ({ fileType, config, version, onChangeFileType, onChan
 	return (
 		<div className="grid gap-2 px-4 py-4">
 			<details open className="group overflow-hidden rounded-lg border">
-				<summary
-					className="
-                flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-                px-4 py-2 font-medium -outline-offset-2
-            "
-				>
-					<h3>Parser &amp; Specs</h3>
-					<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+				<summary className="border-slate-300 bg-slate-100 font-medium -outline-offset-2">
+					<h3 className="flex items-center justify-between gap-2 px-4 py-2">
+						Parser &amp; Specs
+						<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+					</h3>
 				</summary>
 				<FileTypeSelector value={fileType} onChange={handleChangeFileType} />
 			</details>
 			<details open className="group overflow-hidden rounded-lg border">
-				<summary
-					className="
-            flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-            px-4 py-2 font-medium -outline-offset-2
-        "
-				>
-					<h3>Presets</h3>
-					<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+				<summary className="border-slate-300 bg-slate-100 font-medium -outline-offset-2">
+					<h3 className="flex items-center justify-between gap-2 px-4 py-2">
+						Presets
+						<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+					</h3>
 				</summary>
 				<PresetsSelector fileType={fileType} value={presets} onChange={handleChangePresets} />
 			</details>
 			<details open className="group overflow-hidden rounded-lg border">
-				<summary
-					className="
-                flex items-center justify-between gap-2 border-slate-300 bg-slate-100 
-                px-4 py-2 font-medium -outline-offset-2
-            "
-				>
-					<h3>Rules</h3>
-					<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+				<summary className="border-slate-300 bg-slate-100 font-medium -outline-offset-2">
+					<h3 className="flex items-center justify-between gap-2 px-4 py-2">
+						Rules
+						<span className="icon-heroicons-solid-chevron-down text-xl group-open:icon-heroicons-solid-chevron-up" />
+					</h3>
 				</summary>
 				{version && <RulesSelector value={rules} version={version} onChange={handleChangeRules} />}
 			</details>
