@@ -21,3 +21,5 @@ yarn run pg:dev
 This playground is inspired by:
 
 - [Stylelint Demo](https://stylelint.io/demo/)
+- [ESLint Playground](https://eslint.org/play/)
+- [Playground | typescript-eslint](https://typescript-eslint.io/play)
