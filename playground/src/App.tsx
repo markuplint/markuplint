@@ -322,8 +322,8 @@ export function App() {
 													label === 'JSON'
 														? 'icon-majesticons-curly-braces'
 														: label === 'Visual'
-														? 'icon-heroicons-solid-adjustments-horizontal'
-														: (label satisfies never)
+															? 'icon-heroicons-solid-adjustments-horizontal'
+															: (label satisfies never)
 												} shrink-0`}
 											></span>
 											{label}
