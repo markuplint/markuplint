@@ -51,5 +51,8 @@ jobs:
                   path: '**/node_modules'
                   key: dev-depends-ubuntu-latest-node18-${{ hashFiles('yarn.lock') }}
 
+            - name: Install root dependencies
+              run: yarn install --frozen-lockfile
+
             - name: Playground Lint
               run: yarn pg:lint
