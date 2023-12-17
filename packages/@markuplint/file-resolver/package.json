@@ -35,7 +35,7 @@
 		"@markuplint/parser-utils": "4.0.0-alpha.6",
 		"@markuplint/selector": "4.0.0-alpha.6",
 		"@markuplint/shared": "4.0.0-alpha.6",
-		"cosmiconfig": "^8.3.6",
+		"cosmiconfig": "^9.0.0",
 		"debug": "^4.3.4",
 		"glob": "^10.3.6",
 		"ignore": "^5.3.0",
