@@ -3,7 +3,7 @@
 You can create a custom rule while referring to the [**API document**](/docs/api/), but it recommends you use the below command:
 
 ```shell
-npx markuplint --create-rule
+npx @markuplint/create-rule
 ```
 
 Please answer some questions shown.

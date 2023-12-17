@@ -1,20 +1,16 @@
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import module from 'node:module';
 import path from 'node:path';
-import util from 'node:util';
 
-import { head, write, error } from '../../util.js';
-import { confirm, confirmSequence, multiSelect } from '../prompt.js';
+import { installModule, multiSelect, confirm, confirmSequence, header } from '@markuplint/cli-utils';
 
 import { createConfig, langs } from './create-config.js';
 import { getDefaultRules } from './get-default-rules.js';
-import { installModule, selectModules } from './install-module.js';
+import { selectModules } from './select-modules.js';
 
 const require = module.createRequire(import.meta.url);
-
-const writeFile = util.promisify(fs.writeFile);
 
 const ruleCategories: Record<
 	Category,
@@ -40,8 +36,9 @@ const ruleCategories: Record<
 };
 
 export async function initialize() {
-	write(head('Initialization'));
-	write.break();
+	process.stdout.write(header('Initialization'));
+	process.stdout.write('\n');
+	process.stdout.write('\n');
 
 	const selectedLangs = await multiSelect<Langs>({
 		message: 'Which do you use template engines?',
@@ -81,23 +78,23 @@ export async function initialize() {
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
-	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
-	write(`✨Created: ${filePath}`);
+	await fs.writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
+	process.stdout.write(`✨Created: ${filePath}\n`);
 
 	if (autoInstall) {
-		write('Install automatically');
+		process.stdout.write('Install automatically\n');
 
 		const modules = selectModules(selectedLangs);
 
 		const result = await installModule(modules, true).catch(error_ => new Error(error_));
 		if (result instanceof Error) {
-			error.exit();
-			return;
+			// eslint-disable-next-line unicorn/no-process-exit
+			process.exit(1);
 		}
 		if (result.alreadyExists) {
-			write('Modules are installed already.');
+			process.stdout.write('Modules are installed already.\n');
 		} else {
-			write('✨ Success');
+			process.stdout.write('✨ Success\n');
 		}
 	}
 }

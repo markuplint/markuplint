@@ -8,7 +8,7 @@
 	},
 	"references": [
 		{
-			"path": "../@markuplint/create-rule-helper"
+			"path": "../@markuplint/cli-utils"
 		},
 		{
 			"path": "../@markuplint/file-resolver"

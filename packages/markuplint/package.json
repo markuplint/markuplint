@@ -25,7 +25,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/create-rule-helper": "4.0.0-alpha.6",
+		"@markuplint/cli-utils": "4.0.0-alpha.6",
 		"@markuplint/file-resolver": "4.0.0-alpha.6",
 		"@markuplint/html-parser": "4.0.0-alpha.6",
 		"@markuplint/html-spec": "4.0.0-alpha.6",
@@ -36,24 +36,16 @@
 		"@markuplint/ml-spec": "4.0.0-alpha.6",
 		"@markuplint/rules": "4.0.0-alpha.6",
 		"@markuplint/shared": "4.0.0-alpha.6",
-		"@types/cli-color": "^2.0.6",
 		"@types/debug": "^4.1.12",
-		"@types/uuid": "^9.0.7",
 		"chokidar": "^3.5.3",
-		"cli-color": "^2.0.3",
 		"debug": "^4.3.4",
-		"detect-installed": "^2.0.4",
-		"eastasianwidth": "^0.2.0",
-		"enquirer": "^2.4.1",
 		"get-stdin": "^9.0.0",
 		"gray-matter": "^4.0.3",
-		"has-yarn": "^3.0.0",
 		"meow": "^12.1.1",
 		"node-fetch": "^3.3.2",
 		"os-locale": "^6.0.2",
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "^7.1.0",
-		"type-fest": "^4.8.3",
-		"uuid": "^9.0.1"
+		"type-fest": "^4.8.3"
 	}
 }
