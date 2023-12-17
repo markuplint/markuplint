@@ -37126,8 +37126,7 @@
 					"type": "URL"
 				},
 				"autocapitalize": {
-					"description": "A nonstandard attribute used by iOS Safari that controls how textual form elements should be automatically capitalized. autocapitalize attributes on a form elements override it on <form>. Possible values: none: No automatic capitalization. sentences (default): Capitalize the first letter of each sentence. words: Capitalize the first letter of each word. characters: Capitalize all characters — that is, uppercase.",
-					"nonStandard": true
+					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner. See the autocapitalize global attribute page for more information."
 				},
 				"autocomplete": {
 					"type": {
@@ -38438,8 +38437,7 @@
 					"condition": "[type='image' i]"
 				},
 				"autocapitalize": {
-					"description": "(Safari only). A string which indicates how auto-capitalization should be applied while the user is editing this field. Permitted values are: none Do not automatically capitalize any text sentences Automatically capitalize the first character of each sentence. words Automatically capitalize the first character of each word. characters Automatically capitalize every character.",
-					"nonStandard": true
+					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner. See the autocapitalize global attribute page for more information."
 				},
 				"autocomplete": {
 					"condition": [
@@ -41352,6 +41350,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"autocapitalize": {
+					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner. See the autocapitalize global attribute page for more information."
+				},
 				"autocomplete": {
 					"description": "This attribute indicates whether the value of the control can be automatically completed by the browser. Possible values are: off: The user must explicitly enter a value into this field for every use, or the document provides its own auto-completion method; the browser does not automatically complete the entry. on: The browser can automatically complete the value based on values that the user has entered during previous uses. If the autocomplete attribute is not specified on a <textarea> element, then the browser uses the autocomplete attribute value of the <textarea> element's form owner. The form owner is either the <form> element that this <textarea> element is a descendant of or the form element whose id is specified by the form attribute of the input element. For more information, see the autocomplete attribute in <form>."
 				},
