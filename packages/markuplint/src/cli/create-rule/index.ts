@@ -67,7 +67,7 @@ export async function createRule() {
 							{ name: 'warning', value: 'warning' },
 						],
 					}),
-			  }
+				}
 			: undefined;
 
 	const lang =
@@ -79,7 +79,7 @@ export async function createRule() {
 						{ name: 'TypeScript', value: 'TYPESCRIPT' },
 						{ name: 'JavaScript', value: 'JAVASCRIPT' },
 					],
-			  });
+				});
 
 	const needTest =
 		purpose === 'CONTRIBUTE_TO_CORE' ? true : await confirm('Do you need the test?', { initial: true });

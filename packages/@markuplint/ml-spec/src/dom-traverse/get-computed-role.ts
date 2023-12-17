@@ -26,7 +26,7 @@ export function getComputedRole(
 		: {
 				...implicitRole,
 				errorType: explicitRole.errorType === 'NO_EXPLICIT' ? undefined : explicitRole.errorType,
-		  };
+			};
 
 	if (assumeSingleNode) {
 		return {

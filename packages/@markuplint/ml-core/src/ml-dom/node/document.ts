@@ -2859,7 +2859,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			(hasSlot
 				? {
 						unknown: true,
-				  }
+					}
 				: '');
 		aria.focusable = focusable;
 
