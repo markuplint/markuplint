@@ -1,7 +1,7 @@
 {
-	"name": "@markuplint/create-rule-helper",
+	"name": "@markuplint/create-rule",
 	"version": "4.0.0-alpha.6",
-	"description": "Create rule helper",
+	"description": "Rule generator for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
@@ -13,6 +13,9 @@
 		}
 	},
 	"types": "./lib/index.d.ts",
+	"bin": {
+		"create-rule": "./bin/create-rule.mjs"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -22,6 +25,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
+		"@markuplint/cli-utils": "4.0.0-alpha.6",
 		"@markuplint/ml-core": "4.0.0-alpha.6",
 		"glob": "^10.3.6",
 		"prettier": "^3.1.1",

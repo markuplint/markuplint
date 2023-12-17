@@ -7,6 +7,9 @@
 	},
 	"references": [
 		{
+			"path": "../cli-utils"
+		},
+		{
 			"path": "../ml-core"
 		}
 	],

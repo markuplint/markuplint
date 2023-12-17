@@ -195,7 +195,7 @@
 			}
 		},
 		{
-			"files": ["./packages/@markuplint/create-rule-helper/scaffold/**/*"],
+			"files": ["./packages/@markuplint/create-rule/scaffold/**/*"],
 			"rules": {
 				"unicorn/filename-case": 0
 			}

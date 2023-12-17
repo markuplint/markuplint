@@ -78,7 +78,7 @@ apidoc
 # Heapdump test
 *.heapsnapshot
 
-# create-rule-helper test files
+# create-rule test files
 packages/@markuplint/rules/src/__*
 
 # IDEs

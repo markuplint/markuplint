@@ -4,7 +4,6 @@ import { verbosely } from '../debug.js';
 
 import { cli } from './bootstrap.js';
 import { command } from './command.js';
-import { createRule } from './create-rule/index.js';
 import { initialize } from './init/index.js';
 import { search } from './search/index.js';
 
@@ -31,11 +30,8 @@ if (cli.flags.init) {
 }
 
 if (cli.flags.createRule) {
-	await createRule().catch(error => {
-		process.stderr.write(error + '\n');
-		process.exit(1);
-	});
-	process.exit(0);
+	process.stderr.write("Use to run 'npx @markuplint/create-rule' instead of 'markuplint --create-rule'.\n");
+	process.exit(1);
 }
 
 const files = cli.input;
