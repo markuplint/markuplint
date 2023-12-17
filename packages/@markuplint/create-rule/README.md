@@ -5,5 +5,5 @@
 ## Usage
 
 ```shell
-$ npx @markuplint/create-rule <rule-name>
+$ npx @markuplint/create-rule
 ```
