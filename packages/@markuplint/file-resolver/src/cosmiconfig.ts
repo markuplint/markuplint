@@ -23,6 +23,7 @@ const explorer = cosmiconfig('markuplint', {
 			}
 		}) as Loader,
 	},
+	searchStrategy: 'project',
 });
 
 type CosmiConfig = ReturnType<LoaderSync>;
