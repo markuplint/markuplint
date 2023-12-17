@@ -369,7 +369,7 @@ jobs:
               with:
                   script: |
                       const packages = process.env.PACKAGES.split(' ');
-                      console.log(packages.map(p => `file:../../../../markuplint/packages/${p}`).join(' '));
+                      return packages.map(p => `file:../../../../markuplint/packages/${p}`).join(' ');
                   result-encoding: string
 
             - name: Create the lock file (npm)
