@@ -53,7 +53,7 @@
 		"os-locale": "^6.0.2",
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "^7.1.0",
-		"type-fest": "^4.8.2",
+		"type-fest": "^4.8.3",
 		"uuid": "^9.0.1"
 	}
 }
