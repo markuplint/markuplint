@@ -1713,11 +1713,6 @@
   resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.4.tgz#47e3630ed3fbb07cb9ec8d6344e5f9aa068f6e58"
   integrity sha512-wRHCHg6bPsi+PHozd4MYFnoPYAk1QOB/iI4UZHuMsI/+Bf07YbY425IrRg4+PZ0Qiwz0j7yNHAY4DfrBt06NzA==
 
-"@types/cli-color@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@types/cli-color/-/cli-color-2.0.6.tgz#becc4b0c8509bbc938e7c3b2b7a0a8dd64691d08"
-  integrity sha512-uLK0/0dOYdkX8hNsezpYh1gc8eerbhf9bOKZ3e24sP67703mw9S14/yW6mSTatiaKO9v+mU/a1EVy4rOXXeZTA==
-
 "@types/cli-progress@^3.11.5":
   version "3.11.5"
   resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.11.5.tgz#9518c745e78557efda057e3f96a5990c717268c3"

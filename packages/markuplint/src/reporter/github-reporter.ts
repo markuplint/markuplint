@@ -1,7 +1,7 @@
 import type { MLResultInfo } from '../types.js';
 import type { Severity } from '@markuplint/ml-config';
 
-import { messageToString } from '../util.js';
+import { messageToString } from '@markuplint/cli-utils';
 
 export function githubReporter(results: MLResultInfo) {
 	const out: string[] = [];

@@ -14,6 +14,7 @@
 		"@markuplint/astro-parser": "file:../../../../markuplint/packages/@markuplint/astro-parser",
 		"@markuplint/config-presets": "file:../../../../markuplint/packages/@markuplint/config-presets",
 		"@markuplint/create-rule-helper": "file:../../../../markuplint/packages/@markuplint/create-rule-helper",
+		"@markuplint/cli-utils": "file:../../../../markuplint/packages/@markuplint/cli-utils",
 		"@markuplint/ejs-parser": "file:../../../../markuplint/packages/@markuplint/ejs-parser",
 		"@markuplint/erb-parser": "file:../../../../markuplint/packages/@markuplint/erb-parser",
 		"@markuplint/file-resolver": "file:../../../../markuplint/packages/@markuplint/file-resolver",
