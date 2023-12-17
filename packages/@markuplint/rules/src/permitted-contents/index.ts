@@ -65,7 +65,7 @@ export default createRule<TagRule[], Options>({
 										'{0} is not allowed in {1} through the transparent model in this context',
 										name(not, t),
 										name(el, t),
-								  )
+									)
 								: t('{0} is not allowed in {1} in this context', name(not, t), name(el, t)));
 
 						report({

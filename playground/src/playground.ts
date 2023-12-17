@@ -130,5 +130,5 @@ function convertRuleset(ruleset?: string) {
 				rules: {},
 				nodeRules: [],
 				childNodeRules: [],
-		  };
+			};
 }
