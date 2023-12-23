@@ -113,10 +113,10 @@
 		"@types/mocha": "^10.0.6",
 		"@types/node": "18.15",
 		"@types/semver": "7.5.6",
-		"@types/vscode": "1.84.2",
+		"@types/vscode": "1.85.0",
 		"@vscode/test-electron": "^2.3.8",
 		"@vscode/vsce": "2.22.0",
-		"typescript": "5.3.2"
+		"typescript": "5.3.3"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.0-alpha.6",

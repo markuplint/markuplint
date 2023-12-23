@@ -57,7 +57,7 @@ export function exchangeValueOnRule(
 				? undefined
 				: {
 						options: newOptions,
-				  }),
+					}),
 		};
 	}
 	if (result.reason != null) {

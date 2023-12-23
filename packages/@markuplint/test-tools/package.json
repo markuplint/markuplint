@@ -24,16 +24,16 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "^0.34.5",
+		"@vitest/coverage-v8": "^1.0.4",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
 		"execa": "^8.0.1",
 		"glob": "^10.3.6",
-		"jsdom": "^23.0.0",
+		"jsdom": "^23.0.1",
 		"strip-json-comments": "^5.0.1",
 		"test-markuplint": "npm:markuplint@next",
 		"textlint-rule-prh": "^5.3.0",
-		"type-fest": "^4.8.2",
-		"vitest": "^0.34.5"
+		"type-fest": "^4.8.3",
+		"vitest": "^1.0.4"
 	}
 }

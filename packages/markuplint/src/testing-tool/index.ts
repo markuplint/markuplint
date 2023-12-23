@@ -51,11 +51,11 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 				? config.rule === undefined && config.nodeRule === undefined && config.childNodeRule === undefined
 					? {
 							'<current-rule>': true,
-					  }
+						}
 					: undefined
 				: {
 						'<current-rule>': config.rule,
-				  },
+					},
 		nodeRules:
 			config.nodeRule === undefined
 				? undefined
@@ -66,8 +66,8 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 								? undefined
 								: {
 										'<current-rule>': nodeConfig.rule,
-								  },
-				  })),
+									},
+					})),
 		childNodeRules:
 			config.childNodeRule === undefined
 				? undefined
@@ -78,8 +78,8 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 								? undefined
 								: {
 										'<current-rule>': childNodeConfig.rule,
-								  },
-				  })),
+									},
+					})),
 	};
 
 	const res = await mlTest(

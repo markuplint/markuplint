@@ -86,7 +86,6 @@ Options
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 
 	--init                                 Initialize settings interactively.
-	--create-rule                          Add the scaffold of a custom rule.
 
 	--help,                  -h            Show help.
 	--version,               -v            Show version.

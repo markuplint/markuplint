@@ -3452,8 +3452,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 							value == null
 								? ''
 								: typeof value === 'string'
-								  ? value
-								  : this.getAttribute(value.fromAttr) ?? '';
+									? value
+									: this.getAttribute(value.fromAttr) ?? '';
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,

@@ -38,8 +38,8 @@ export const checkingDisallowedProp: AttrChecker<
 									ignore.type === 'must-not'
 										? '{0} must not {1}'
 										: ignore.type === 'should-not'
-										  ? '{0} should not {1}'
-										  : '{0} is not recommended to {1}',
+											? '{0} should not {1}'
+											: '{0} is not recommended to {1}',
 									// {0}
 									t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
 									// {1}
@@ -49,7 +49,7 @@ export const checkingDisallowedProp: AttrChecker<
 							) +
 							(ignore.alt
 								? t('. ') +
-								  t(
+									t(
 										'{0} if you {1} {2}',
 										t(
 											ignore.alt.method === 'remove-attr' ? 'Remove {0}' : 'Add {0}',
@@ -57,7 +57,7 @@ export const checkingDisallowedProp: AttrChecker<
 										),
 										'use',
 										t('the {0}', `ARIA ${propSpec?.type ?? 'property'}`),
-								  )
+									)
 								: ''),
 					};
 				}

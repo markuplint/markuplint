@@ -3,7 +3,7 @@
 [APIドキュメント](/docs/api/)を参照しながらカスタムルールを作成できますが、コマンドを利用することで楽に作成ができます。
 
 ```shell
-npx markuplint --create-rule
+npx @markuplint/create-rule
 ```
 
 出力された質問に答えてください。
