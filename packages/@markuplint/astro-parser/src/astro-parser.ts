@@ -3,7 +3,6 @@ import type { RootNode } from '@astrojs/compiler/types';
 import { ParserError } from '@markuplint/parser-utils';
 import { parseTemplate } from 'astro-eslint-parser';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 export type {
 	RootNode,
 	ElementNode,

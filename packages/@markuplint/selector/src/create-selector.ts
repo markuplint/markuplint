@@ -20,7 +20,7 @@ export function createSelector(selector: string, specs?: MLMLSpec) {
 					model: contentModelPseudoClass(specs),
 					aria: ariaPseudoClass(),
 					role: ariaRolePseudoClass(specs),
-			  }
+				}
 			: undefined,
 	);
 	caches.set(selector, instance);

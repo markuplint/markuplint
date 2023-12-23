@@ -1,17 +1,11 @@
-import type {
-	CreateRulePurpose,
-	CreateRuleLanguage,
-	CreateRuleCreatorCoreParams,
-} from '@markuplint/create-rule-helper';
+import type { CreateRuleCreatorCoreParams, CreateRuleLanguage, CreateRulePurpose } from './types.js';
 
 import { resolve } from 'node:path';
 
-import { isMarkuplintRepo, createRuleHelper } from '@markuplint/create-rule-helper';
-import c from 'cli-color';
+import { input, installModule, select, confirm, font, header } from '@markuplint/cli-utils';
 
-import { write, head } from '../../util.js';
-import { installModule } from '../init/install-module.js';
-import { input, select, confirm } from '../prompt.js';
+import { createRuleHelper } from './create-rule-helper.js';
+import { isMarkuplintRepo } from './is-markuplint-repo.js';
 
 const icons: Record<string, string> = {
 	README: '📝',
@@ -22,8 +16,9 @@ const icons: Record<string, string> = {
 };
 
 export async function createRule() {
-	write(head('Create a rule'));
-	write.break();
+	process.stdout.write(header('Create a rule'));
+	process.stdout.write('\n');
+	process.stdout.write('\n');
 
 	const firstChoices: { name: string; value: CreateRulePurpose }[] = [
 		{ name: 'Add the rule to this project', value: 'ADD_TO_PROJECT' },
@@ -67,7 +62,7 @@ export async function createRule() {
 							{ name: 'warning', value: 'warning' },
 						],
 					}),
-			  }
+				}
 			: undefined;
 
 	const lang =
@@ -79,7 +74,7 @@ export async function createRule() {
 						{ name: 'TypeScript', value: 'TYPESCRIPT' },
 						{ name: 'JavaScript', value: 'JAVASCRIPT' },
 					],
-			  });
+				});
 
 	const needTest =
 		purpose === 'CONTRIBUTE_TO_CORE' ? true : await confirm('Do you need the test?', { initial: true });
@@ -105,8 +100,9 @@ export async function createRule() {
 }
 
 function output(name: string, icon: string, title: string, path: string) {
-	const _marker = c.xterm(39)('✔') + ' ';
-	const _title = (icon: string, title: string) => `${icon} ` + c.bold(`${name}/${title}`);
-	const _file = (path: string) => ' ' + c.cyanBright(path);
-	write(_marker + _title(icon, title) + _file(path));
+	const _marker = font.xterm(39)('✔') + ' ';
+	const _title = (icon: string, title: string) => `${icon} ` + font.bold(`${name}/${title}`);
+	const _file = (path: string) => ' ' + font.cyanBright(path);
+	process.stdout.write(_marker + _title(icon, title) + _file(path));
+	process.stdout.write('\n');
 }

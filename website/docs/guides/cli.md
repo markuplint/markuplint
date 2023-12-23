@@ -52,7 +52,3 @@ $ npx markuplint --init
 
 Answer questions interactively.
 Then it installs modules needed.
-
-### `--create-rule`
-
-See [Creating custom rule](./custom-rule).
