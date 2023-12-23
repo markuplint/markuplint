@@ -1,3 +1,5 @@
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+
 import { isJsonObject, parseJson } from './json';
 
 export const fileTypes = ['.html', '.jsx', '.vue', '.svelte'] as const;
@@ -9,10 +11,10 @@ export type PlaygroundValues = Readonly<{
 }>;
 
 const encode = (values: PlaygroundValues): string => {
-	return window.btoa(encodeURIComponent(JSON.stringify(values)));
+	return compressToEncodedURIComponent(JSON.stringify(values));
 };
 const decode = (string: string): Partial<PlaygroundValues> => {
-	const decoded = decodeURIComponent(window.atob(string));
+	const decoded = decompressFromEncodedURIComponent(string);
 
 	try {
 		const parsed = parseJson(decoded);
