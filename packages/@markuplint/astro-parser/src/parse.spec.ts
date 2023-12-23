@@ -69,6 +69,58 @@ div {
 	]);
 });
 
+test('CRLF', () => {
+	const ast = parse(
+		`---
+const name = "World";
+---
+<style
+>
+div {
+    color: red;
+}
+</style>
+<ul  data-dynamic
+=
+{
+	value
+}>
+{list.map(item =>
+	<li
+	>{item}</li
+	>
+)}
+</ul>`.replaceAll('\n', '\r\n'),
+	);
+	const map = nodeListToDebugMaps(ast.nodeList, true);
+	expect(map).toEqual([
+		'[1:1]>[4:1](0,33)#text: ␣␣␣␣⏎␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣␣⏎',
+		'[4:1]>[5:2](33,42)style: <style␣⏎>',
+		'[9:1]>[9:9](71,79)style: </style>',
+		'[9:9]>[10:1](79,81)#text: ␣⏎',
+		'[10:1]>[14:3](81,116)ul: <ul␣␣data-dynamic␣⏎=␣⏎{␣⏎→value␣⏎}>',
+		'[10:6]>[14:2](86,115)data-dynamic: data-dynamic␣⏎=␣⏎{␣⏎→value␣⏎}',
+		'  [10:6]>[10:6](86,86)bN: ',
+		'  [10:6]>[10:18](86,98)name: data-dynamic',
+		'  [10:18]>[11:1](98,100)bE: ␣⏎',
+		'  [11:1]>[11:2](100,101)equal: =',
+		'  [11:2]>[12:1](101,103)aE: ␣⏎',
+		'  [12:1]>[12:2](103,104)sQ: {',
+		'  [12:2]>[14:1](104,114)value: ␣⏎→value␣⏎',
+		'  [14:1]>[14:2](114,115)eQ: }',
+		'  isDirective: false',
+		'  isDynamicValue: true',
+		'[14:3]>[15:1](116,118)#text: ␣⏎',
+		'[15:1]>[16:2](118,138)MustacheTag: {list.map(item␣=>␣⏎→',
+		'[16:2]>[17:3](138,145)li: <li␣⏎→>',
+		'[17:3]>[17:9](145,151)MustacheTag: {item}',
+		'[17:9]>[18:3](151,159)li: </li␣⏎→>',
+		'[18:3]>[19:3](159,163)MustacheTag: ␣⏎)}',
+		'[19:3]>[20:1](163,165)#text: ␣⏎',
+		'[20:1]>[20:6](165,170)ul: </ul>',
+	]);
+});
+
 test('HTML', () => {
 	const ast = parse(`<html>
   <head>

@@ -399,6 +399,25 @@ describe('parser', () => {
 		expect(doc.nodeList[2].nodeName).toBe('text');
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
+
+	test('CRLF', () => {
+		const r = parse(
+			`<div
+>{
+#if
+bool
+}true{/if}</div
+>`.replaceAll('\n', '\r\n'),
+		);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[2:2](0,7)div: <div␣⏎>',
+			'[2:2]>[5:2](7,22)IfBlock: {␣⏎#if␣⏎bool␣⏎}',
+			'[5:2]>[5:6](22,26)#text: true',
+			'[5:6]>[5:11](26,31)IfBlock: {/if}',
+			'[5:11]>[6:2](31,39)div: </div␣⏎>',
+		]);
+	});
 });
 
 describe('Issues', () => {

@@ -423,6 +423,51 @@ describe('parser', () => {
 			'[5:9]>[6:2](62,64)#text: ⏎→',
 		]);
 	});
+
+	test('CRLF', () => {
+		const doc = parse(
+			`<template
+><div
+v-if
+="
+bool
+">
+<template #header
+></template>
+</div></template>`.replaceAll('\n', '\r\n'),
+		);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[2:2]>[6:3](12,36)div: <div␣⏎v-if␣⏎="␣⏎bool␣⏎">',
+			'[3:1]>[6:2](18,35)v-if: v-if␣⏎="␣⏎bool␣⏎"',
+			'  [2:6]>[3:1](16,18)bN: ␣⏎',
+			'  [3:1]>[3:5](18,22)name: v-if',
+			'  [3:5]>[4:1](22,24)bE: ␣⏎',
+			'  [4:1]>[4:2](24,25)equal: =',
+			'  [4:2]>[4:2](25,25)aE: ',
+			'  [4:2]>[4:3](25,26)sQ: "',
+			'  [4:3]>[6:1](26,34)value: ␣⏎bool␣⏎',
+			'  [6:1]>[6:2](34,35)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[6:3]>[7:1](36,38)#text: ␣⏎',
+			'[7:1]>[8:2](38,58)template: <template␣#header␣⏎>',
+			'[7:11]>[7:18](48,55)v-slot:header: #header',
+			'  [7:10]>[7:11](47,48)bN: ␣',
+			'  [7:11]>[7:18](48,55)name: #header',
+			'  [7:18]>[7:18](55,55)bE: ',
+			'  [7:18]>[7:18](55,55)equal: ',
+			'  [7:18]>[7:18](55,55)aE: ',
+			'  [7:18]>[7:18](55,55)sQ: ',
+			'  [7:18]>[7:18](55,55)value: ',
+			'  [7:18]>[7:18](55,55)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'  potentialName: v-slot:header',
+			'[8:13]>[9:1](69,71)#text: ␣⏎',
+			'[9:1]>[9:7](71,77)div: </div>',
+			'[9:7]>[9:18](77,88)#text: </template>',
+		]);
+	});
 });
 
 describe('Issues', () => {

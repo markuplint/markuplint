@@ -94,6 +94,24 @@ describe('ignoreBlock', () => {
 		});
 	});
 
+	test('CRLF', () => {
+		const result = ignoreBlock('<div><%\r\nif () {\r\n}\r\n%></div>', tags);
+		expect(result).toStrictEqual({
+			source: '<div><%\r\nif () {\r\n}\r\n%></div>',
+			replaced: '<div><!\n\n\n></div>',
+			stack: [
+				{
+					type: 'ejs-tag',
+					index: 5,
+					startTag: '<%',
+					taggedCode: '\r\nif () {\r\n}\r\n',
+					endTag: '%>',
+				},
+			],
+			maskChar: '',
+		});
+	});
+
 	test('multiple tags', () => {
 		const result = ignoreBlock('<% 1 %>2<%= 3 %>4<%_ 5 _%>6<%- 7 -%>8<%% 9 %>', [
 			{
@@ -254,6 +272,14 @@ describe('restoreNode', () => {
 		const ast = parse(masked.replaced);
 		const restoredAst = restoreNode(ast.nodeList, masked);
 		expect(restoredAst[0].attributes[0].value.raw).toBe('A<% attr %>B');
+	});
+
+	test('CRLF', () => {
+		const code = '<div attr="\r\n<%\r\nattr\r\n%>\r\n"></div>';
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(restoredAst[0].attributes[0].value.raw).toBe('\r\n<%\r\nattr\r\n%>\r\n');
 	});
 
 	test('unexpected parsing', () => {
