@@ -92,5 +92,10 @@
 		"typedoc-plugin-mdn-links": "^3.1.8",
 		"typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
 		"typescript": "^5.3.3"
+	},
+	"resolutions": {
+		"lerna/**/string-width": "4",
+		"lerna/**/strip-ansi": "6",
+		"lerna/**/wrap-ansi": "7"
 	}
 }
