@@ -31,6 +31,7 @@
 		"pg:dev": "cd playground; yarn pg:dev",
 		"pg:build": "cd playground; yarn; yarn pg:build",
 		"pg:lint": "cd playground; yarn; yarn pg:lint",
+		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"release": "lerna publish --exact",
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
