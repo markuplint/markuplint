@@ -9,8 +9,8 @@
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix './packages/**/*.{ts,mjs,cjs,spec.js}' './playground/**/*.ts'; yarn spellcheck; prettier --write './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}';",
-		"lint:check": "eslint './packages/**/*.{ts,mjs,cjs,spec.js}' './playground/**/*.ts' && yarn spellcheck && prettier --check './{packages,playground}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}'",
+		"lint": "eslint --fix './packages/**/*.{ts,mjs,cjs,spec.js}'; yarn spellcheck; prettier --write './packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}';",
+		"lint:check": "eslint './packages/**/*.{ts,mjs,cjs,spec.js}' && yarn spellcheck && prettier --check './packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}'",
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
@@ -29,7 +29,8 @@
 		"site:build": "cd website; yarn; yarn site:build",
 		"site:up": "cd website; yarn; yarn site:up",
 		"pg:dev": "cd playground; yarn pg:dev",
-		"pg:build": "cd playground; yarn pg:build",
+		"pg:build": "cd playground; yarn; yarn pg:build",
+		"pg:lint": "cd playground; yarn; yarn pg:lint",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"release": "lerna publish --exact",
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
@@ -59,7 +60,6 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"playground",
 		"vscode"
 	],
 	"devDependencies": {

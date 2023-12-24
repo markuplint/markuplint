@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "attr-value-quotes": true,
+    "case-sensitive-attr-name": true,
+    "case-sensitive-tag-name": true,
+    "character-reference": true,
+    "end-tag": true,
+    "ineffective-attr": true,
+    "no-boolean-attr-value": true,
+    "no-default-value": true
+  }
+}

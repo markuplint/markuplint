@@ -1,0 +1,10 @@
+{
+	"excludeFiles": ["./src/examples/**/*"],
+	"extends": ["markuplint:recommended-react"],
+	"parser": {
+		"\\.tsx$": "@markuplint/jsx-parser"
+	},
+	"specs": {
+		"\\.tsx$": "@markuplint/react-spec"
+	}
+}
