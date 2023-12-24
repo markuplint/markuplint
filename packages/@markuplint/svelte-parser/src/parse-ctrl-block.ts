@@ -36,7 +36,7 @@ export function parseCtrlBlock(
 
 	const children = originNode.children ?? [];
 	// eslint-disable-next-line regexp/strict
-	const reEndTag = /{\/each}$/i;
+	const reEndTag = /{\s*\/each\s*}$/i;
 	const startTagEndOffset =
 		children.length > 0 ? children[0]?.start ?? 0 : raw.replace(reEndTag, '').length + startOffset;
 	const startTagLocation = sliceFragment(rawHtml, startOffset, startTagEndOffset);
@@ -197,7 +197,8 @@ function parseIfBlock(
 		return [tag, ...elseOrElseIfTags];
 	}
 
-	const endTagRawMatched = raw.match('{/if}');
+	// eslint-disable-next-line regexp/strict
+	const endTagRawMatched = raw.match(/{\s*\/if\s*}/);
 	if (!endTagRawMatched) {
 		throw new Error('Missing the end token `{/if}`');
 	}

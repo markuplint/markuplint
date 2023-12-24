@@ -257,7 +257,7 @@ export function nodeize(
 			}
 
 			// eslint-disable-next-line regexp/strict
-			const reEndTag = /{\/await}$/i;
+			const reEndTag = /{\s*\/await\s*}$/i;
 			let endTag: MLASTPreprocessorSpecificBlock | null = null;
 			if (reEndTag.test(raw)) {
 				const endTagRawMatched = raw.match(reEndTag);
