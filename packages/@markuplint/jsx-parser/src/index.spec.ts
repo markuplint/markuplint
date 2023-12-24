@@ -453,6 +453,40 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 	});
 
+	test('CRLF', () => {
+		const ast = parse(
+			`const
+Component = () => {
+	return (
+		<ul
+>
+{[1, 2, 3]
+.map(item => (
+<li
+key
+=
+{
+	item
+}>{
+	item
+}</li>
+			))}
+		</ul>
+	);
+};`.replaceAll('\n', '\r\n'),
+		);
+		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
+			'[4:3]>[5:2](41,47)ul: <ul␣⏎>',
+			'[5:2]>[6:1](47,49)#text: ␣⏎',
+			'[6:1]>[16:7](49,126)JSXExpressionContainer: {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
+			'[8:1]>[13:3](77,102)li: <li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>',
+			'[13:3]>[15:2](102,113)JSXExpressionContainer: {␣⏎→item␣⏎}',
+			'[15:2]>[15:7](113,118)li: </li>',
+			'[16:7]>[17:3](126,130)#text: ␣⏎→→',
+			'[17:3]>[17:8](130,135)ul: </ul>',
+		]);
+	});
+
 	test('Spread attributes', () => {
 		const ast = parse('<a {...props}/>');
 		// @ts-ignore

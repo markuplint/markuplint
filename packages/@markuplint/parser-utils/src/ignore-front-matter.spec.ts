@@ -19,4 +19,16 @@ prop: value
 <html></html>`),
 		).toStrictEqual('\n   \n           \n   \n<html></html>');
 	});
+
+	test('CRLF', () => {
+		expect(
+			ignoreFrontMatter(
+				`
+---
+prop: value
+---
+<html></html>`.replaceAll('\n', '\r\n'),
+			),
+		).toStrictEqual('\r\n   \r\n           \r\n   \r\n<html></html>');
+	});
 });

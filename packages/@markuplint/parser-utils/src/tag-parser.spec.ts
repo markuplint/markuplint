@@ -428,6 +428,95 @@ c"
 	});
 });
 
+test('CRLF', () => {
+	expect(tagParser('<div\r\na\r\n=\r\n"ab\r\nc"\r\n>', 1, 1, 0)).toMatchObject({
+		tagName: 'div',
+		attrs: [
+			{
+				raw: 'a\r\n=\r\n"ab\r\nc"',
+				startLine: 2,
+				endLine: 5,
+				startCol: 1,
+				endCol: 3,
+				startOffset: 6,
+				endOffset: 19,
+				spacesBeforeName: {
+					raw: '\r\n',
+					startLine: 1,
+					endLine: 2,
+					startCol: 5,
+					endCol: 1,
+					startOffset: 4,
+					endOffset: 6,
+				},
+				name: {
+					raw: 'a',
+					startLine: 2,
+					endLine: 2,
+					startCol: 1,
+					endCol: 2,
+					startOffset: 6,
+					endOffset: 7,
+				},
+				spacesBeforeEqual: {
+					raw: '\r\n',
+					startLine: 2,
+					endLine: 3,
+					startCol: 2,
+					endCol: 1,
+					startOffset: 7,
+					endOffset: 9,
+				},
+				equal: {
+					raw: '=',
+					startLine: 3,
+					endLine: 3,
+					startCol: 1,
+					endCol: 2,
+					startOffset: 9,
+					endOffset: 10,
+				},
+				spacesAfterEqual: {
+					raw: '\r\n',
+					startLine: 3,
+					endLine: 4,
+					startCol: 2,
+					endCol: 1,
+					startOffset: 10,
+					endOffset: 12,
+				},
+				startQuote: {
+					raw: '"',
+					startLine: 4,
+					endLine: 4,
+					startCol: 1,
+					endCol: 2,
+					startOffset: 12,
+					endOffset: 13,
+				},
+				value: {
+					raw: 'ab\r\nc',
+					startLine: 4,
+					endLine: 5,
+					startCol: 2,
+					endCol: 2,
+					startOffset: 13,
+					endOffset: 18,
+				},
+				endQuote: {
+					raw: '"',
+					startLine: 5,
+					endLine: 5,
+					startCol: 2,
+					endCol: 3,
+					startOffset: 18,
+					endOffset: 19,
+				},
+			},
+		],
+	});
+});
+
 test('void element', () => {
 	expect(tagParser('<img/>', 1, 1, 0)).toMatchObject({
 		tagName: 'img',

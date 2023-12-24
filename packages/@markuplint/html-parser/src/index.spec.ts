@@ -1211,6 +1211,43 @@ describe('parser', () => {
 			'[13:7]>[14:1](143,144)#text: ⏎',
 		]);
 	});
+
+	describe('CRLF', () => {
+		test('Standard', () => {
+			const doc = parse('<!doctype html>\r\n<html\r\n><head\r\n>\r\n</head\r\n><body\r\n>');
+			const map = nodeListToDebugMaps(doc.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[1:16](0,15)#doctype: <!doctype␣html>',
+				'[1:16]>[2:1](15,17)#text: ␣⏎',
+				'[2:1]>[3:2](17,25)html: <html␣⏎>',
+				'[3:2]>[4:2](25,33)head: <head␣⏎>',
+				'[4:2]>[5:1](33,35)#text: ␣⏎',
+				'[5:1]>[6:2](35,44)head: </head␣⏎>',
+				'[6:2]>[7:2](44,52)body: <body␣⏎>',
+			]);
+		});
+
+		test('Fragment', () => {
+			const doc = parse('<div\r\na\r\n=\r\n"ab\r\nc"\r\n>\r\ntext\r\n</div\r\n>');
+			const map = nodeListToDebugMaps(doc.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[6:2](0,22)div: <div␣⏎a␣⏎=␣⏎"ab␣⏎c"␣⏎>',
+				'[2:1]>[5:3](6,19)a: a␣⏎=␣⏎"ab␣⏎c"',
+				'  [1:5]>[2:1](4,6)bN: ␣⏎',
+				'  [2:1]>[2:2](6,7)name: a',
+				'  [2:2]>[3:1](7,9)bE: ␣⏎',
+				'  [3:1]>[3:2](9,10)equal: =',
+				'  [3:2]>[4:1](10,12)aE: ␣⏎',
+				'  [4:1]>[4:2](12,13)sQ: "',
+				'  [4:2]>[5:2](13,18)value: ab␣⏎c',
+				'  [5:2]>[5:3](18,19)eQ: "',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+				'[6:2]>[8:1](22,30)#text: ␣⏎text␣⏎',
+				'[8:1]>[9:2](30,38)div: </div␣⏎>',
+			]);
+		});
+	});
 });
 
 describe('Issues', () => {

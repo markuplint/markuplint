@@ -170,6 +170,27 @@ html
 		]);
 	});
 
+	test('CRLF', () => {
+		const doc = parse(
+			`html
+	head
+		title Title
+	body
+		h1 Title
+`.replaceAll('\n', '\r\n'),
+		);
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:5](0,4)html: html',
+			'[2:2]>[2:6](7,11)head: head',
+			'[3:3]>[3:8](15,20)title: title',
+			'[3:9]>[4:2](21,29)#text: Title␣⏎→',
+			'[4:2]>[4:6](29,33)body: body',
+			'[5:3]>[5:5](37,39)h1: h1',
+			'[5:6]>[6:1](40,47)#text: Title␣⏎',
+		]);
+	});
+
 	test('deep structure code', () => {
 		const doc = parse(`div(data-depth=0)
 		div(data-depth=1)
