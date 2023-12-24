@@ -575,4 +575,49 @@ describe('Issues', () => {
 			'[3:1]>[3:7](36,42)div: </div>',
 		]);
 	});
+
+	describe('#1321 whitespaces and line breaks in block token', () => {
+		test('if else', () => {
+			const r = parse('{\n\t#if cond\n}...{\n\t:else\n}...{\n\t/if\n}');
+			const map = nodeListToDebugMaps(r.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[3:2](0,13)IfBlock: {⏎→#if␣cond⏎}',
+				'[3:2]>[3:5](13,16)#text: ...',
+				'[3:5]>[5:2](16,26)ElseBlock: {⏎→:else⏎}',
+				'[5:2]>[5:5](26,29)#text: ...',
+				'[5:5]>[7:2](29,37)IfBlock: {⏎→/if⏎}',
+			]);
+		});
+		test('each', () => {
+			const r = parse('{\n\t#each expression as name\n}...{\n\t/each\n}');
+			const map = nodeListToDebugMaps(r.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[3:2](0,29)EachBlock: {⏎→#each␣expression␣as␣name⏎}',
+				'[3:2]>[3:5](29,32)#text: ...',
+				'[3:5]>[5:2](32,42)EachBlock: {⏎→/each⏎}',
+			]);
+		});
+		test('await', () => {
+			const r = parse('{\n\t#await expression\n}...{\n\t:then name\n}...{\n\t:catch name\n}...{\n\t/await\n}');
+			const map = nodeListToDebugMaps(r.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[3:2](0,22)PendingBlock: {⏎→#await␣expression⏎}',
+				'[3:2]>[3:5](22,25)#text: ...',
+				'[3:5]>[5:2](25,40)ThenBlock: {⏎→:then␣name⏎}',
+				'[5:2]>[5:5](40,43)#text: ...',
+				'[5:5]>[7:2](43,59)CatchBlock: {⏎→:catch␣name⏎}',
+				'[7:2]>[7:5](59,62)#text: ...',
+				'[7:5]>[9:2](62,73)AwaitBlock: {⏎→/await⏎}',
+			]);
+		});
+		test('key', () => {
+			const r = parse('{\n\t#key expression\n}...{\n\t/key\n}');
+			const map = nodeListToDebugMaps(r.nodeList, true);
+			expect(map).toStrictEqual([
+				'[1:1]>[3:2](0,20)KeyBlock: {⏎→#key␣expression⏎}',
+				'[3:2]>[3:5](20,23)#text: ...',
+				'[3:5]>[5:2](23,32)KeyBlock: {⏎→/key⏎}',
+			]);
+		});
+	});
 });
