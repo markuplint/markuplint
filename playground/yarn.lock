@@ -763,9 +763,9 @@
     "@iconify/types" "*"
 
 "@iconify-json/majesticons@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@iconify-json/majesticons/-/majesticons-1.1.8.tgz#29be7130ebac65a57911721045859fa3ca3167d2"
-  integrity sha512-nZ10sAfuO4ejjYq0UWfPQcgboofyqBM6DBOY3OOyM5GkZ0XDN4hFze6oCv6JdO4Mp3qc8+qnZLwxoXAk/Cde6g==
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@iconify-json/majesticons/-/majesticons-1.1.11.tgz#da957df5b3f91b16794229ac3914581fb4d35bfb"
+  integrity sha512-8iSktgGbIInt/4y3tvZ/Dyzvzeze/2cc//ZtHMx5zPuHSiENE/nORGZAlO7yGf29oC2oECwl5a7YYqCPChiYiA==
   dependencies:
     "@iconify/types" "*"
 
