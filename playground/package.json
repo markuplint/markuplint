@@ -7,7 +7,8 @@
 		"pg:dev": "vite",
 		"pg:build": "tsc && vite build",
 		"pg:lint": "eslint src --ext ts,tsx; markuplint 'src/**/*.tsx'; cspell '**' --no-progress; prettier --check 'src/**/*.{js,ts,tsx}'",
-		"pg:preview": "vite preview"
+		"pg:preview": "vite preview",
+		"pg:up": "yarn upgrade-interactive --latest"
 	},
 	"dependencies": {
 		"@headlessui/react": "^1.7.14",
