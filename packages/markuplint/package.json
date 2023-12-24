@@ -41,7 +41,7 @@
 		"debug": "^4.3.4",
 		"get-stdin": "^9.0.0",
 		"gray-matter": "^4.0.3",
-		"meow": "^12.1.1",
+		"meow": "^13.0.0",
 		"node-fetch": "^3.3.2",
 		"os-locale": "^6.0.2",
 		"strict-event-emitter": "^0.5.1",
