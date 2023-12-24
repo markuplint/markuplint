@@ -756,9 +756,9 @@
   integrity sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==
 
 "@iconify-json/heroicons-solid@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@iconify-json/heroicons-solid/-/heroicons-solid-1.1.8.tgz#14d7d04cf08a8e5985fca453f365d8491c8ca543"
-  integrity sha512-T+FeeU/O8icXflJmOyZfV1Len8grwH0P2xJt9Jn18RKpyT2E7WBM/SUNBTXH/c/5Oe0bZXJ6BOHvmEc2G6RYTg==
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@iconify-json/heroicons-solid/-/heroicons-solid-1.1.11.tgz#a123d1f196413fc2cdfdffbebbe32f1d8ffa4510"
+  integrity sha512-Nzhjs8voo4d+gcrfhlY/F0bRonEmLHT1+DeD2nYubvAF151pxXPqTS9bRB49Hqpdxl1l9LS2VTPtQPRypj/csQ==
   dependencies:
     "@iconify/types" "*"
 
