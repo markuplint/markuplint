@@ -1690,7 +1690,7 @@
     debug "^4.3.4"
     ts-api-utils "^1.0.1"
 
-"@typescript-eslint/types@5.62.0", "@typescript-eslint/types@^5.0.0", "ts-eslint-types-v5@npm:@typescript-eslint/types@5":
+"@typescript-eslint/types@5.62.0", "@typescript-eslint/types@^5.0.0":
   name ts-eslint-types-v5
   version "5.62.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.62.0.tgz#258607e60effa309f067608931c3df6fed41fd2f"
