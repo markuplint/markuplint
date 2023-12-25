@@ -949,11 +949,6 @@
     "@typescript-eslint/typescript-estree" "^6.8.0"
     ts-eslint-types-v5 "npm:@typescript-eslint/types@5"
 
-"@markuplint/ml-ast@4.0.0-alpha.5":
-  version "4.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.0.0-alpha.5.tgz#8229bcb89e9a7b9ec4875b60695c32b83143ca55"
-  integrity sha512-FH1YLOg3PzMt97vizRhnrCpBIy5erLYXrmsJjnSVxYTGxq2kn05kyqGMUpcnm4LowYOUOrsnn3wVnXgAmI2CSg==
-
 "@markuplint/ml-ast@4.0.0-dev.28+0131de5e":
   version "4.0.0-dev.28"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.0.0-dev.28.tgz#97c859eb2e0f8e0a91772eed99d18cf378316744"
@@ -1003,19 +998,7 @@
     is-plain-object "^5.0.0"
     type-fest "^4.5.0"
 
-"@markuplint/parser-utils@4.0.0-alpha.5":
-  version "4.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.0.0-alpha.5.tgz#93db66840be6c14fa1b402abba53d0b974843036"
-  integrity sha512-pKunhKN8gZxJEYugcYaanhqS0juaf7dG7jAy+6z/oTQwLgQLydl8W7BiWoRwAwCHL2gBukHn3N2zbaZiDqygeg==
-  dependencies:
-    "@markuplint/ml-ast" "4.0.0-alpha.5"
-    "@markuplint/types" "4.0.0-alpha.5"
-    "@types/uuid" "^9.0.6"
-    espree "^9.6.1"
-    type-fest "^4.5.0"
-    uuid "^9.0.1"
-
-"@markuplint/parser-utils@4.0.0-dev.28+0131de5e":
+"@markuplint/parser-utils@4.0.0-dev.28", "@markuplint/parser-utils@4.0.0-dev.28+0131de5e":
   version "4.0.0-dev.28"
   resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.0.0-dev.28.tgz#5fcb685d061b2a79b63871db0e7b3a56ed9cc897"
   integrity sha512-DUMyM8JmY1xvx3DJLSpLl4YRfxpUfUtiMWUZQqG2YfUXUr7T4gJYyrm0yccjA/97MysqL+W+rL3tcrG+zia8DQ==
@@ -1068,21 +1051,6 @@
   integrity sha512-tMmhLX2KlmkJ+kFYb0TdbBKrtLz44KbHUjJwxqo6vfttUWAGR2iPETl2EuuL5FpoAQr26GRNjBc2Hv+KAdeZAQ==
   dependencies:
     html-entities "^2.4.0"
-
-"@markuplint/types@4.0.0-alpha.5":
-  version "4.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-4.0.0-alpha.5.tgz#df74d0da6ce380ffa6a71076ceb21a20529983e1"
-  integrity sha512-5A/nQHXwvvMU8GB6blY9w6naWVyZttzx9iC6y+LaOFIZD/YoJbFEc8ql9KRKLRkr05OF9NhNa7JlC6olW+7zpQ==
-  dependencies:
-    "@types/css-tree" "^2.3.3"
-    "@types/debug" "^4.1.10"
-    "@types/whatwg-mimetype" "3.0.1"
-    bcp-47 "^2.1.0"
-    css-tree "^2.3.1"
-    debug "^4.3.4"
-    leven "^4.0.0"
-    type-fest "^4.5.0"
-    whatwg-mimetype "^3.0.0"
 
 "@markuplint/types@4.0.0-dev.28+0131de5e":
   version "4.0.0-dev.28"
