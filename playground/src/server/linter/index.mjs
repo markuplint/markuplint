@@ -1,3 +1,4 @@
+// @ts-check
 // This file is executed in WebContainer.
 
 // NOTE: Actually, it refers to the installed packages in WebContainer.
@@ -12,7 +13,7 @@ function main() {
 	process.stdin.setEncoding('utf8');
 	process.stdin.setRawMode(true);
 	process.stdin.resume();
-	process.stdin.on('data', data => {
+	process.stdin.on('data', (/** @type {string} */ data) => {
 		if (
 			data === 'ready?' ||
 			data.includes('ready?')
@@ -25,8 +26,14 @@ function main() {
 			const target = data;
 			try {
 				const file = await MLEngine.toMLFile(target);
+				if (file == null) {
+					return;
+				}
 				const engine = new MLEngine(file, { locale: options.locale });
 				const result = await engine.exec();
+				if (result == null) {
+					return;
+				}
 				process.stdout.write(createJsonPayload(result.violations));
 			} catch (error) {
 				process.stdout.write(createJsonPayload('error'));
@@ -43,6 +50,7 @@ function main() {
  */
 function getOptions() {
 	const args = process.argv.slice(2);
+	/** @type {{ locale?: string }} */
 	const options = {};
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
@@ -50,10 +58,10 @@ function getOptions() {
 			const key = arg.replace(/^--/, '');
 			const value = args[i + 1];
 			if (value && !value.startsWith('--')) {
-				options[key] = value;
+				if (key === 'locale') {
+					options[key] = value;
+				}
 				i++;
-			} else {
-				options[key] = true;
 			}
 		}
 	}
@@ -63,7 +71,7 @@ function getOptions() {
 /**
  * Convert the linter output to distinguish it from other logs.
  */
-export function createJsonPayload(payload) {
+export function createJsonPayload(/** @type {any} */ payload) {
 	const { DIRECTIVE_OPEN, DIRECTIVE_CLOSE } = constants;
 	return `${DIRECTIVE_OPEN}${JSON.stringify(payload)}${DIRECTIVE_CLOSE}`;
 }
