@@ -32,7 +32,7 @@
 		"css-tree": "^2.3.1",
 		"debug": "^4.3.4",
 		"leven": "^4.0.0",
-		"type-fest": "^4.8.3",
+		"type-fest": "^4.9.0",
 		"whatwg-mimetype": "^4.0.0"
 	}
 }
