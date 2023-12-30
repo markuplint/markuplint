@@ -125,10 +125,14 @@ export function App() {
 		// find @markuplint/* packages from config
 		const additionalPackages = configString.match(/@markuplint\/[^"]+/g) ?? [];
 		const candidate = new Set(['markuplint', ...additionalPackages]);
-		if (!areSetsEqual(depsPackages, candidate)) {
-			setDepsPackages(candidate);
-		}
-	}, [configString, depsPackages]);
+		setDepsPackages(prev => {
+			if (areSetsEqual(prev, candidate)) {
+				return prev;
+			} else {
+				return candidate;
+			}
+		});
+	}, [configString]);
 
 	// update config when config changed
 	useEffect(() => {
