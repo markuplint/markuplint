@@ -2,6 +2,8 @@ import type { FileSystemTree, WebContainerProcess } from '@webcontainer/api';
 
 import { WebContainer } from '@webcontainer/api';
 
+import { parseJson } from '../modules/json';
+
 import constants from './linter/constants.json';
 
 /**
@@ -10,9 +12,7 @@ import constants from './linter/constants.json';
 const extractJson = (str: string) => {
 	const { DIRECTIVE_OPEN, DIRECTIVE_CLOSE } = constants;
 	if (str.startsWith(DIRECTIVE_OPEN) && str.endsWith(DIRECTIVE_CLOSE)) {
-		return JSON.parse(str.slice(DIRECTIVE_OPEN.length, -DIRECTIVE_CLOSE.length));
-	} else {
-		return null;
+		return parseJson(str.slice(DIRECTIVE_OPEN.length, -DIRECTIVE_CLOSE.length));
 	}
 };
 
@@ -143,7 +143,10 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			if ((await containerServer.installationExit) !== 0) {
 				throw new Error('Installation failed');
 			}
-			const result = await linterServer.request(path, (output): output is any[] => Array.isArray(output));
+			const result = await linterServer.request(
+				path,
+				(output): output is any[] | null => Array.isArray(output) || output === null,
+			);
 			return result;
 		},
 		restart: async () => {

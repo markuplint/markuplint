@@ -31,10 +31,12 @@ function main() {
 				}
 				const engine = new MLEngine(file, { locale: options.locale });
 				const result = await engine.exec();
-				if (result == null) {
+				if (result === null) {
+					process.stdout.write(createJsonPayload(null));
 					return;
+				} else {
+					process.stdout.write(createJsonPayload(result.violations));
 				}
-				process.stdout.write(createJsonPayload(result.violations));
 			} catch (error) {
 				process.stdout.write(createJsonPayload('error'));
 				throw error;

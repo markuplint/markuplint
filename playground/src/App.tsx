@@ -62,7 +62,13 @@ export function App() {
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading' | null>(null);
 	const [status, setStatus] = useState<
-		'not-started' | 'deps-installing' | 'deps-error' | 'config-updating' | 'lint-checked' | 'config-error'
+		| 'not-started'
+		| 'deps-installing'
+		| 'deps-error'
+		| 'config-updating'
+		| 'config-error'
+		| 'lint-skipped'
+		| 'lint-checked'
 	>('not-started');
 	const [containerServer, setContainerServer] = useState<Awaited<ReturnType<typeof setupContainerServer>>>();
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
@@ -189,8 +195,12 @@ export function App() {
 		}
 		void (async () => {
 			const result = await containerServer.lint(filename, code);
-			setStatus('lint-checked');
-			setViolations(result);
+			if (result === null) {
+				setStatus('lint-skipped');
+			} else {
+				setStatus('lint-checked');
+				setViolations(result);
+			}
 		})();
 	}, [code, containerServer, depsStatus, filename, lintTrigger]);
 
@@ -383,6 +393,12 @@ export function App() {
 								<>
 									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
 									Config file is invalid!
+								</>
+							),
+							'lint-skipped': (
+								<>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									Linting was skipped! Please check your parser settings.
 								</>
 							),
 							'lint-checked': (
