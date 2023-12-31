@@ -53,7 +53,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 	};
 	await webContainer.mount(serverFiles);
 
-	const linterServer = new LinterServer();
+	const linterServer = new LinterServer({ appendLine, append, clear });
 	let installProcess: WebContainerProcess | undefined;
 	let updatingDeps = Promise.resolve<Record<string, string>>({});
 	let updatingConfig = Promise.resolve();
@@ -67,7 +67,6 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 				if (installProcess) {
 					installProcess.kill();
 				}
-				clear();
 				const args = ['install', '-D', ...packages];
 				appendLine(`npm ${args.join(' ')}`);
 
@@ -145,7 +144,8 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			}
 			const result = await linterServer.request(
 				path,
-				(output): output is any[] | null => Array.isArray(output) || output === null,
+				(output): output is any[] | null | 'error' =>
+					Array.isArray(output) || output === null || output === 'error',
 			);
 			return result;
 		},
@@ -158,9 +158,12 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 };
 
 class LinterServer {
+	private readonly consoleMethods: ConsoleMethods;
 	private serverInternal: Awaited<ReturnType<typeof this.start>> | undefined;
 
-	constructor() {}
+	constructor(consoleMethods: ConsoleMethods) {
+		this.consoleMethods = consoleMethods;
+	}
 
 	public async request<T>(input: string, test: (output: any) => output is T) {
 		if (!this.serverInternal) {
@@ -179,12 +182,15 @@ class LinterServer {
 	}
 
 	private async start() {
+		const { appendLine } = this.consoleMethods;
 		const locale = navigator.language;
 		const localeWithoutRegion = locale.split('-')[0];
 		const callbacks: ((output: any) => void)[] = [];
+		appendLine('[Playground] Linter server starting...');
 		const process = await webContainer.spawn('node', ['./linter/index.mjs', '--locale', localeWithoutRegion]);
 		const writer = process.input.getWriter();
 		const DEBUG_LOG = false;
+		const sentInputs: string[] = [];
 		void process.output.pipeTo(
 			new WritableStream({
 				write(data) {
@@ -192,10 +198,21 @@ class LinterServer {
 						// eslint-disable-next-line no-console
 						console.log('debug log:', data);
 					}
-					for (const callback of callbacks) callback(extractJson(data));
+					if (extractJson(data) === undefined) {
+						if (sentInputs.includes(data)) {
+							sentInputs.splice(sentInputs.indexOf(data), 1);
+						} else {
+							appendLine(data);
+						}
+					} else {
+						for (const callback of callbacks) callback(extractJson(data));
+					}
 				},
 			}),
 		);
+		void process.exit.then(() => {
+			this.serverInternal = undefined;
+		});
 
 		/**
 		 * Pass input to the linter process and wait for the output to match the test.
@@ -215,6 +232,7 @@ class LinterServer {
 				callbacks.push(callback);
 			});
 			void writer.write(input);
+			sentInputs.push(input);
 			return promise;
 		};
 

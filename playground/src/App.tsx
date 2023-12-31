@@ -69,6 +69,7 @@ export function App() {
 		| 'config-error'
 		| 'lint-skipped'
 		| 'lint-checked'
+		| 'lint-error'
 	>('not-started');
 	const [containerServer, setContainerServer] = useState<Awaited<ReturnType<typeof setupContainerServer>>>();
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
@@ -197,6 +198,8 @@ export function App() {
 			const result = await containerServer.lint(filename, code);
 			if (result === null) {
 				setStatus('lint-skipped');
+			} else if (result === 'error') {
+				setStatus('lint-error');
 			} else {
 				setStatus('lint-checked');
 				setViolations(result);
@@ -405,6 +408,12 @@ export function App() {
 								<>
 									<span className="icon-heroicons-solid-check text-green-700"></span>
 									Checked!
+								</>
+							),
+							'lint-error': (
+								<>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									An error occurred while linting!
 								</>
 							),
 						}[status]
