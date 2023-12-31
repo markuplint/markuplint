@@ -48,14 +48,7 @@
 			}
 		},
 		{
-			"files": ["./**/*.mjs"],
-			"parser": "@babel/eslint-parser",
-			"parserOptions": {
-				"requireConfigFile": false,
-				"babelOptions": {
-					"plugins": ["@babel/plugin-syntax-import-assertions"]
-				}
-			},
+			"files": ["./*.mjs"],
 			"rules": {
 				"import/no-named-as-default-member": 0
 			}
