@@ -26,15 +26,15 @@ type ConsoleMethods = Readonly<{
 
 export const setupContainerServer = async ({ appendLine, append, clear }: ConsoleMethods) => {
 	clear();
-	appendLine('Starting WebContainer...');
+	appendLine('[Playground] Starting WebContainer...');
 	try {
 		webContainer = await WebContainer.boot();
-		appendLine('WebContainer started');
+		appendLine('[Playground] WebContainer started');
 	} catch {
 		// For local development
 		// eslint-disable-next-line no-console
-		console.warn('WebContainer already booted');
-		appendLine('WebContainer already booted');
+		console.warn('[Playground] WebContainer already booted');
+		appendLine('[Playground] WebContainer already booted');
 		// appendLine('Reloading...');
 		// window.location.reload();
 	}
@@ -95,13 +95,13 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 				containerServer.installationExit = installProcess.exit;
 				switch (await containerServer.installationExit) {
 					case 0: {
-						appendLine('Installation succeeded');
+						appendLine('[Playground] Installation succeeded');
 						const json = await webContainer.fs.readFile('package.json', 'utf8');
 						const parsed = JSON.parse(json);
 						return parsed.devDependencies;
 					}
 					case 1: {
-						appendLine('Installation failed');
+						appendLine('[Playground] Installation failed');
 						throw new Error('Installation failed');
 					}
 					default: // process was killed. do nothing
@@ -109,7 +109,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			})();
 			const result = await updatingDeps;
 			if ((await containerServer.installationExit) === 0) {
-				appendLine('Restarting server...');
+				appendLine('[Playground] Dependencies updated. Restarting linter server...');
 				restartingServer = linterServer.restart();
 				await restartingServer;
 			} else {
@@ -128,7 +128,7 @@ export const setupContainerServer = async ({ appendLine, append, clear }: Consol
 			await updatingConfig;
 
 			if ((await containerServer.installationExit) === 0) {
-				appendLine('Restarting server...');
+				appendLine('[Playground] Configuration updated. Restarting linter server...');
 				restartingServer = linterServer.restart();
 				await restartingServer;
 			} else {
