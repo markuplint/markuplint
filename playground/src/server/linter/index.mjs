@@ -3,8 +3,13 @@
 
 // NOTE: Actually, it refers to the installed packages in WebContainer.
 import { MLEngine } from 'markuplint';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import constants from './constants.json' assert { type: 'json' };
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const content = fs.readFileSync(path.resolve(__dirname, './constants.json'), { encoding: 'utf-8' });
+const constants = JSON.parse(content);
 
 main();
 
