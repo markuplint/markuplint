@@ -7,6 +7,9 @@ import { contentModel } from './content-model.js';
 import { transparentMode } from './represent-transparent-nodes.js';
 
 export default createRule<TagRule[], Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableChildren: true,

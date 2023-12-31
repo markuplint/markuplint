@@ -1,6 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule({
+	meta: {
+		category: 'validation',
+	},
 	async verify({ document, report, t }) {
 		const message = t(
 			'{0} is {1:c}',

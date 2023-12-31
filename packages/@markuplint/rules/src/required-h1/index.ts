@@ -8,6 +8,9 @@ export interface Options {
 }
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		'expected-once': true,
 		'in-document-fragment': false,

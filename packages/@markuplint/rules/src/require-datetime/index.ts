@@ -10,6 +10,9 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultOptions: {
 		langs: undefined,
 	},

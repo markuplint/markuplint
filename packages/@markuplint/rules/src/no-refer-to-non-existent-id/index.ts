@@ -7,6 +7,9 @@ import { decodeEntities, decodeHref } from '@markuplint/shared';
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
 export default createRule({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION as ARIAVersion,
 		fragmentRefersNameAttr: false,

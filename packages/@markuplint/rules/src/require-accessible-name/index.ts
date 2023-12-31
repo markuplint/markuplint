@@ -10,6 +10,9 @@ type Option = {
 };
 
 export default createRule<boolean, Option>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION,
 	},

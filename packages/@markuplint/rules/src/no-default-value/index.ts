@@ -3,6 +3,9 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { toNormalizedValue } from '../helpers.js';
 
 export default createRule({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {

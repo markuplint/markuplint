@@ -12,6 +12,9 @@ type Options = {
 };
 
 export default createRule<Bullets, Options>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultValue: [
 		/**
 		 * @see https://en.wikipedia.org/wiki/Bullet_(typography)#In_Unicode

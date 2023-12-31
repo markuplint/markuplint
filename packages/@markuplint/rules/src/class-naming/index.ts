@@ -6,6 +6,9 @@ import { match } from '../helpers.js';
 export type Value = string | string[] | null;
 
 export default createRule<Value>({
+	meta: {
+		category: 'naming-convention',
+	},
 	defaultSeverity: 'warning',
 	defaultValue: null,
 	async verify({ document, report, t }) {

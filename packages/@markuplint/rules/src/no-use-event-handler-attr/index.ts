@@ -7,6 +7,9 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'maintainability',
+	},
 	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {
