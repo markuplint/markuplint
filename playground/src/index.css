@@ -40,6 +40,7 @@ body,
 .xterm-rows > * {
 	width: initial !important;
 	height: initial !important;
+	min-height: 1em;
 	overflow: visible !important;
 	text-wrap: initial !important;
 }
