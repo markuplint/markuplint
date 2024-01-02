@@ -11,7 +11,7 @@ export function contentModel(
 	rules: readonly TagRule[],
 	options: Options,
 ): ContentModelResult[] {
-	const model = createModel(el, rules);
+	const { model, specs } = createModel(el, rules);
 	if (model == null) {
 		return [
 			{
@@ -22,7 +22,7 @@ export function contentModel(
 			},
 		];
 	}
-	const result = start(model, el, el.ownerMLDocument.specs, options);
+	const result = start(model, el, specs, options);
 
 	return result;
 }
@@ -34,7 +34,10 @@ function createModel(
 ) {
 	const specs = cachedSpecs(el.ownerMLDocument.specs, rules);
 	const model = getContentModel(el, specs.specs);
-	return model;
+	return {
+		model,
+		specs,
+	};
 }
 
 const caches = new Map<string, Specs>();
