@@ -1400,4 +1400,36 @@ describe('Issues', () => {
 		const sourceCode = '<datalist><option></option></datalist>';
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
+
+	test('#1023', async () => {
+		const sourceCode = `<body>
+	<h1>Reproduction</h1>
+	<!-- There're typos. The intended element is x-item, not x-itm -->
+	<x-container><x-itm></x-itm></x-container>
+</body>`;
+		expect(
+			(
+				await mlRuleTest(rule, sourceCode, {
+					rule: [
+						{
+							tag: 'x-container',
+							contents: [
+								{
+									require: 'x-item',
+								},
+							],
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 4,
+				col: 2,
+				raw: '<x-container>',
+				message: 'Require an element. (Need "x-item")',
+			},
+		]);
+	});
 });
