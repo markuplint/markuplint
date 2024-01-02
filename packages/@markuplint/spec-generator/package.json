@@ -33,7 +33,7 @@
 		"@markuplint/ml-spec": "4.0.0-alpha.6",
 		"@markuplint/test-tools": "4.0.0-alpha.6",
 		"@types/cli-progress": "^3.11.5",
-		"@types/node-fetch": "^2.6.9",
-		"type-fest": "^4.8.3"
+		"@types/node-fetch": "^2.6.10",
+		"type-fest": "^4.9.0"
 	}
 }
