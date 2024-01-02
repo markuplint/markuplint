@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"prepare": "husky install",
-		"all": "run-s clean build gen schema lint test",
+		"all": "run-s up lint clean build test site:up pg:up",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
@@ -33,7 +33,6 @@
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
 		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; rm package-lock.json; cd ..; mv package.json.bak package.json;",
 		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; rm package-lock.json; cd ..; mv package.json.bak package.json;",
-		"vscode:up": "cd vscode; yarn vscode:up",
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
