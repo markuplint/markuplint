@@ -300,4 +300,98 @@ describe('Issues', () => {
 		expect(restoredAst[2].parentNode?.uuid).toBe(restoredAst[0].uuid);
 		expect(restoredAst[2].prevNode?.uuid).toBe(restoredAst[1].uuid);
 	});
+
+	test('#1147', () => {
+		const code = `
+			<body>
+				<label for="cheese">Do you like cheese?</label>
+				<input type="checkbox" id="cheese">
+				<% pp "anything" %>
+			</body>
+		`;
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const maps = nodeListToDebugMaps(ast.nodeList);
+		expect(maps).toStrictEqual([
+			'[1:1]>[2:4](0,4)#text: ⏎→→→',
+			'[2:4]>[2:10](4,10)body: <body>',
+			'[2:10]>[3:5](10,15)#text: ⏎→→→→',
+			'[3:5]>[3:25](15,35)label: <label␣for="cheese">',
+			'[3:25]>[3:44](35,54)#text: Do␣you␣like␣cheese?',
+			'[3:44]>[3:52](54,62)label: </label>',
+			'[3:52]>[4:5](62,67)#text: ⏎→→→→',
+			'[4:5]>[4:40](67,102)input: <input␣type="checkbox"␣id="cheese">',
+			'[4:40]>[5:5](102,107)#text: ⏎→→→→',
+			'[5:5]>[5:24](107,126)#comment: <!>',
+			'[5:24]>[6:4](126,130)#text: ⏎→→→',
+			'[6:4]>[6:11](130,137)body: </body>',
+			'[6:11]>[7:3](137,140)#text: ⏎→→',
+		]);
+		expect(ast.nodeList.map(n => n.nodeName)).toStrictEqual([
+			'#text',
+			'body',
+			'#text',
+			'label',
+			'#text',
+			'label',
+			'#text',
+			'input',
+			'#text',
+			'#comment',
+			'#text',
+			'body',
+			'#text',
+		]);
+		expect(ast.nodeList[1].childNodes.map(n => n.nodeName)).toStrictEqual([
+			'#text',
+			'label',
+			'#text',
+			'input',
+			'#text',
+			'#comment',
+			'#text',
+		]);
+
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		const maps2 = nodeListToDebugMaps(restoredAst);
+		expect(maps2).toStrictEqual([
+			'[1:1]>[2:4](0,4)#text: ⏎→→→',
+			'[2:4]>[2:10](4,10)body: <body>',
+			'[2:10]>[3:5](10,15)#text: ⏎→→→→',
+			'[3:5]>[3:25](15,35)label: <label␣for="cheese">',
+			'[3:25]>[3:44](35,54)#text: Do␣you␣like␣cheese?',
+			'[3:44]>[3:52](54,62)label: </label>',
+			'[3:52]>[4:5](62,67)#text: ⏎→→→→',
+			'[4:5]>[4:40](67,102)input: <input␣type="checkbox"␣id="cheese">',
+			'[4:40]>[5:5](102,107)#text: ⏎→→→→',
+			'[5:5]>[5:24](107,126)#ps:ejs-tag: <%␣pp␣"anything"␣%>',
+			'[5:24]>[6:4](126,130)#text: ⏎→→→',
+			'[6:4]>[6:11](130,137)body: </body>',
+			'[6:11]>[7:3](137,140)#text: ⏎→→',
+		]);
+		expect(restoredAst.map(n => n.nodeName)).toStrictEqual([
+			'#text',
+			'body',
+			'#text',
+			'label',
+			'#text',
+			'label',
+			'#text',
+			'input',
+			'#text',
+			'#ps:ejs-tag',
+			'#text',
+			'body',
+			'#text',
+		]);
+		expect(restoredAst[1].childNodes.map(n => n.nodeName)).toStrictEqual([
+			'#text',
+			'label',
+			'#text',
+			'input',
+			'#text',
+			'#ps:ejs-tag',
+			'#text',
+		]);
+	});
 });

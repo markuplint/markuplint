@@ -87,6 +87,51 @@ export function restoreNode(
 ) {
 	nodeList = [...nodeList];
 	const { source, stack, maskChar } = ignoreBlock;
+
+	for (const tag of stack) {
+		const node = nodeList.find(node => node.startOffset === tag.index);
+
+		if (!node) {
+			continue;
+		}
+
+		if (node.type !== 'comment') {
+			continue;
+		}
+
+		const psNode: MLASTPreprocessorSpecificBlock = {
+			uuid: uuid(),
+			type: 'psblock',
+			nodeName: `#ps:${tag.type}`,
+			raw: `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`,
+			parentNode: node.parentNode,
+			prevNode: null,
+			nextNode: null,
+			isFragment: node.isFragment,
+			isGhost: false,
+			startOffset: node.startOffset,
+			endOffset: node.endOffset,
+			startLine: node.startLine,
+			endLine: node.endLine,
+			startCol: node.startCol,
+			endCol: node.endCol,
+		};
+
+		if (node.prevNode?.nextNode) {
+			node.prevNode.nextNode = psNode;
+		}
+		if (node.nextNode?.prevNode) {
+			node.nextNode.prevNode = psNode;
+		}
+		if (node.parentNode?.childNodes) {
+			const index = node.parentNode.childNodes.indexOf(node);
+			node.parentNode.childNodes.splice(index, 1, psNode);
+		}
+
+		const index = nodeList.indexOf(node);
+		nodeList.splice(index, 1, psNode);
+	}
+
 	for (const node of nodeList) {
 		if (node.type === 'comment' || node.type === 'text' || node.type === 'psblock') {
 			if (!hasIgnoreBlock(node.raw, maskChar)) {
