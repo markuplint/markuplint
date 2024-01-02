@@ -3,6 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"all": "run-s clean build gen schema lint test",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
@@ -14,7 +15,6 @@
 		"ga": "actionlint .github/workflows/*.yml",
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
-		"all": "run-s lint clean build gen schema test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"cli": "./packages/markuplint/bin/markuplint.mjs",
 		"create-rule": "./packages/@markuplint/create-rule/bin/create-rule.mjs",
