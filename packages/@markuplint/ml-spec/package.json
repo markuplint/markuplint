@@ -23,11 +23,13 @@
 		"build": "tsc",
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
-		"schema:gen": "ts-node ./gen/gen.ts; prettier --write './schemas/*.json';",
-		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts; prettier --write ./src/types/permitted-structures.ts; eslint --fix --config ../../../.eslintrc ./src/types/permitted-structures.ts",
-		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/types/attributes.ts; prettier --write ./src/types/attributes.ts; eslint --fix --config ../../../.eslintrc ./src/types/attributes.ts",
-		"schema:aria": "json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts; prettier --write ./src/types/aria.ts; eslint --fix --config ../../../.eslintrc ./src/types/aria.ts",
-		"schema": "run-s schema:*"
+		"schema": "run-s schema:json schema:content-models schema:attributes schema:aria schema:prettier schema:eslint schema:prettier",
+		"schema:json": "node --loader ts-node/esm ./gen/gen.ts",
+		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts",
+		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/types/attributes.ts",
+		"schema:aria": "json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts",
+		"schema:eslint": "eslint --fix --config ../../../.eslintrc \"./src/types/*.ts\"",
+		"schema:prettier": "prettier --write \"./schemas/*.json\" \"./src/types/*.ts\" --log-level warn"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.0.0-alpha.6",
