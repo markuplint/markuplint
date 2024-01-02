@@ -21,8 +21,6 @@
 		"schema": "lerna run schema",
 		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
-		"cli": "./packages/markuplint/bin/markuplint.mjs",
-		"create-rule": "./packages/@markuplint/create-rule/bin/create-rule.mjs",
 		"vscode:dev": "cd vscode; yarn --ignore-engines; yarn --ignore-engines vscode:dev",
 		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn lint:spellcheck; prettier --write './vscode/**/*{ts,tsx,js,cjs,mjs,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
@@ -43,7 +41,9 @@
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
 		"prerelease": "yarn build; yarn test",
 		"prepare": "husky install",
-		"up": "yarn upgrade-interactive --latest"
+		"up": "yarn upgrade-interactive --latest",
+		"cli": "npx markuplint",
+		"create-rule": "npx @markuplint/create-rule"
 	},
 	"lint-staged": {
 		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
