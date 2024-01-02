@@ -147,7 +147,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Lint
-              run: yarn lint:check
+              run: yarn lint-check
 
     os-setup:
         runs-on: ${{ matrix.os }}
