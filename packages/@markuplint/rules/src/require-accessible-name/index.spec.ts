@@ -442,4 +442,26 @@ describe('Issues', () => {
 			).violations.length,
 		).toBe(1);
 	});
+
+	test('#1147', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+					<body>
+						<label for="cheese">Do you like cheese?</label>
+						<input type="checkbox" id="cheese">
+						<% pp "anything" %>
+					</body>
+				`,
+					{
+						parser: {
+							'.*': '@markuplint/erb-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });
