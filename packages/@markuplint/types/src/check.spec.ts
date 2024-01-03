@@ -44,8 +44,11 @@ test('BCP47', () => {
 test('Srcset', () => {
 	expect(check('a/bb/ccc/dddd', 'Srcset').matched).toBe(true);
 	expect(check('a/bb/ccc/dddd 200w', 'Srcset').matched).toBe(true);
-	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee 1.5x', 'Srcset').matched).toBe(true);
-	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee 1.5a', 'Srcset').matched).toBe(false);
+	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee  1.5x ', 'Srcset').matched).toBe(true);
+	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee  1.5a', 'Srcset').matched).toBe(false);
+	expect(check('a/bb/ccc/dddd 200w, b/cc/ddd/eeee  1.5x  unexpected-string', 'Srcset').matched).toBe(false);
+	// Issue #1171
+	expect(check('/path/to/file 1x, /path/to/file@2x 2x', 'Srcset').matched).toBe(true);
 });
 
 test('IconSize', () => {
@@ -88,4 +91,15 @@ test('ItemProp', () => {
 	expect(check('itemListElement', 'ItemProp').matched).toBe(true);
 	expect(check('item', 'ItemProp').matched).toBe(true);
 	expect(check('position', 'ItemProp').matched).toBe(true);
+});
+
+test('legacy-transform', () => {
+	expect(check('translate(300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300 300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px 300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300 , 300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px , 300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300,300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px,300px)', "<'transform'>").matched).toBeTruthy();
 });

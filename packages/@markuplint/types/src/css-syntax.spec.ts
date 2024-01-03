@@ -172,3 +172,25 @@ test('case-sensitive', () => {
 		],
 	});
 });
+
+test('legacy-transform', () => {
+	const custom: CustomCssSyntax = {
+		ref: 'n/a',
+		syntax: {
+			apply: '<translate()>',
+			def: {
+				'translate()':
+					'translate( <length-percentage> , <length-percentage>? ) | translate( <length-percentage> <length-percentage>? )',
+				'length-percentage': '<length> | <percentage> | <svg-length>',
+			},
+		},
+	};
+	expect(cssSyntaxMatch('translate(300)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300px)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300 300)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300px 300px)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300 , 300)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300px , 300px)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300,300)', custom).matched).toBeTruthy();
+	expect(cssSyntaxMatch('translate(300px,300px)', custom).matched).toBeTruthy();
+});

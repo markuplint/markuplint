@@ -194,3 +194,26 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 <!-- prettier-ignore-end -->
 
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
+
+### The `as` attribute
+
+If a component has the `as` attribute, it is evaluated as the element specified by this attribute.
+
+<!-- prettier-ignore-start -->
+```html
+<x-ul as="ul"><!-- Evaluate as <ul> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+</x-ul>
+```
+<!-- prettier-ignore-end -->
+
+This evaluation also applies to its attributes that are inherited from the component.
+
+<!-- prettier-ignore-start -->
+```html
+<!-- Evaluate as <img src="image.png" alt="image"> -->
+<x-img src="image.png" alt="image">
+```
+<!-- prettier-ignore-end -->

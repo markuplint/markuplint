@@ -1,4 +1,8 @@
-export function regexSelectorMatches(reg: string, raw: string, ignoreCase: boolean) {
+export function regexSelectorMatches(reg: string | undefined, raw: string, ignoreCase: boolean) {
+	if (!reg) {
+		return null;
+	}
+
 	const res: Record<string, string> = {};
 	const pattern = toRegexp(reg);
 	const regex = new RegExp(pattern instanceof RegExp ? pattern : `^${pattern.trim()}$`, ignoreCase ? 'i' : undefined);

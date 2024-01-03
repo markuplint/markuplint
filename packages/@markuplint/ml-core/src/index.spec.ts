@@ -634,6 +634,28 @@ describe('Accessibility', () => {
 	});
 });
 
+describe('the `as` attribute pretending', () => {
+	test('Native element', () => {
+		const dom = createTestDocument('<span as="div"></span>');
+		expect(dom.nodeList[0].nodeName).toBe('SPAN');
+	});
+
+	test('Custom element', () => {
+		const dom = createTestDocument('<x-div as="div"></x-div>');
+		expect(dom.nodeList[0].nodeName).toBe('DIV');
+	});
+
+	test('Authored element', async () => {
+		const dom = createTestDocument('<XDiv as="div"></XDiv>', { parser: await import('@markuplint/jsx-parser') });
+		expect(dom.nodeList[0].nodeName).toBe('DIV');
+	});
+
+	test('Authored element (No parser)', () => {
+		const dom = createTestDocument('<Custom as="div"></Custom>');
+		expect(dom.nodeList[0].nodeName).toBe('CUSTOM');
+	});
+});
+
 describe('Issues', () => {
 	test('#607', async () => {
 		const dom = createTestDocument('<% %><div></div>', {
@@ -700,6 +722,100 @@ describe('Issues', () => {
 			'[5:13]>[6:2](81,83)#text: ⏎→',
 			'[6:2]>[6:7](83,88)#ml-block: {/if}',
 			'[6:7]>[7:1](88,89)#text: ⏎',
+		]);
+	});
+
+	test('#1147', async () => {
+		const dom = createTestDocument(
+			`
+				<body>
+					<label for="cheese">Do you like cheese?</label>
+					<input type="checkbox" id="cheese">
+					<% pp "anything" %>
+				</body>
+			`,
+			{ parser: await import('@markuplint/erb-parser') },
+		);
+
+		const map = dom.debugMap();
+		expect(map).toStrictEqual([
+			'[1:1]>[2:5](0,5)#text: ⏎→→→→',
+			'[2:5]>[2:11](5,11)BODY: <body>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[2:11]>[3:6](11,17)#text: ⏎→→→→→',
+			'[3:6]>[3:26](17,37)LABEL: <label␣for="cheese">',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'  [3:13]>[3:25](24,36)for: for="cheese"',
+			'    [3:12]>[3:13](23,24)bN: ␣',
+			'    [3:13]>[3:16](24,27)name: for',
+			'    [3:16]>[3:16](27,27)bE: ',
+			'    [3:16]>[3:17](27,28)equal: =',
+			'    [3:17]>[3:17](28,28)aE: ',
+			'    [3:17]>[3:18](28,29)sQ: "',
+			'    [3:18]>[3:24](29,35)value: cheese',
+			'    [3:24]>[3:25](35,36)eQ: "',
+			'    isDirective: false',
+			'    isDynamicValue: false',
+			'[3:26]>[3:45](37,56)#text: Do␣you␣like␣cheese?',
+			'[3:53]>[4:6](64,70)#text: ⏎→→→→→',
+			'[4:6]>[4:41](70,105)INPUT: <input␣type="checkbox"␣id="cheese">',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'  [4:13]>[4:28](77,92)type: type="checkbox"',
+			'    [4:12]>[4:13](76,77)bN: ␣',
+			'    [4:13]>[4:17](77,81)name: type',
+			'    [4:17]>[4:17](81,81)bE: ',
+			'    [4:17]>[4:18](81,82)equal: =',
+			'    [4:18]>[4:18](82,82)aE: ',
+			'    [4:18]>[4:19](82,83)sQ: "',
+			'    [4:19]>[4:27](83,91)value: checkbox',
+			'    [4:27]>[4:28](91,92)eQ: "',
+			'    isDirective: false',
+			'    isDynamicValue: false',
+			'  [4:29]>[4:40](93,104)id: id="cheese"',
+			'    [4:28]>[4:29](92,93)bN: ␣',
+			'    [4:29]>[4:31](93,95)name: id',
+			'    [4:31]>[4:31](95,95)bE: ',
+			'    [4:31]>[4:32](95,96)equal: =',
+			'    [4:32]>[4:32](96,96)aE: ',
+			'    [4:32]>[4:33](96,97)sQ: "',
+			'    [4:33]>[4:39](97,103)value: cheese',
+			'    [4:39]>[4:40](103,104)eQ: "',
+			'    isDirective: false',
+			'    isDynamicValue: false',
+			'[4:41]>[5:6](105,111)#text: ⏎→→→→→',
+			'[5:6]>[5:25](111,130)#ml-block: <%␣pp␣"anything"␣%>',
+			'[5:25]>[6:5](130,135)#text: ⏎→→→→',
+			'[6:12]>[7:4](142,146)#text: ⏎→→→',
+		]);
+	});
+
+	test('#1286', async () => {
+		const dom = createTestDocument(
+			`{#each list as item, i (\`\${i}-\${i}\`)}
+	<div>{item}</div>
+{/each}`,
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+		const map = dom.debugMap();
+		expect(map).toEqual([
+			'[1:1]>[2:2](0,39)#text: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[2:2]>[2:7](39,44)DIV: <div>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[2:7]>[2:13](44,50)#ml-block: {item}',
+			'[2:19]>[3:1](56,57)#text: ⏎',
+			'[3:1]>[3:8](57,64)#ml-block: {/each}',
 		]);
 	});
 });

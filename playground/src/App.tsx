@@ -27,7 +27,6 @@ const defaultCategory = examples[Object.keys(examples).sort()[0]].examples;
 const defaultExample = defaultCategory[Object.keys(defaultCategory).sort()[0]];
 
 let boot = false;
-let containerServer: Awaited<ReturnType<typeof setupContainerServer>> | undefined;
 
 const fallbackValues = {
 	code: '',
@@ -63,9 +62,16 @@ export function App() {
 	const [installedPackages, setInstalledPackages] = useState<Readonly<Record<string, string>>>({});
 	const [depsStatus, setDepsStatus] = useState<'success' | 'error' | 'loading' | null>(null);
 	const [status, setStatus] = useState<
-		'not-started' | 'deps-installing' | 'deps-error' | 'config-updating' | 'lint-checked' | 'config-error'
+		| 'not-started'
+		| 'deps-installing'
+		| 'deps-error'
+		| 'config-updating'
+		| 'config-error'
+		| 'lint-skipped'
+		| 'lint-checked'
+		| 'lint-error'
 	>('not-started');
-	const [initialized, setInitialized] = useState(false);
+	const [containerServer, setContainerServer] = useState<Awaited<ReturnType<typeof setupContainerServer>>>();
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
 	const [version, setVersion] = useState<string>();
 	const tabsRef = useRef<HTMLElement>(null);
@@ -114,8 +120,7 @@ export function App() {
 		if (!boot) {
 			boot = true;
 			void (async () => {
-				containerServer = await setupContainerServer(consoleRef.current!);
-				setInitialized(true);
+				setContainerServer(await setupContainerServer(consoleRef.current!));
 			})();
 		}
 	}, []);
@@ -125,10 +130,14 @@ export function App() {
 		// find @markuplint/* packages from config
 		const additionalPackages = configString.match(/@markuplint\/[^"]+/g) ?? [];
 		const candidate = new Set(['markuplint', ...additionalPackages]);
-		if (!areSetsEqual(depsPackages, candidate)) {
-			setDepsPackages(candidate);
-		}
-	}, [configString, depsPackages]);
+		setDepsPackages(prev => {
+			if (areSetsEqual(prev, candidate)) {
+				return prev;
+			} else {
+				return candidate;
+			}
+		});
+	}, [configString]);
 
 	// update config when config changed
 	useEffect(() => {
@@ -151,11 +160,11 @@ export function App() {
 				setLintTrigger(prev => prev + 1);
 			})();
 		}
-	}, [configString]);
+	}, [configString, containerServer]);
 
 	// npm install when dependencies changed
 	useEffect(() => {
-		if (!containerServer || !initialized) {
+		if (!containerServer) {
 			return;
 		}
 
@@ -175,7 +184,7 @@ export function App() {
 				setStatus('deps-error');
 			}
 		})();
-	}, [depsPackages, distTag, initialized]);
+	}, [depsPackages, distTag, containerServer]);
 
 	// lint
 	useEffect(() => {
@@ -187,15 +196,21 @@ export function App() {
 		}
 		void (async () => {
 			const result = await containerServer.lint(filename, code);
-			setStatus('lint-checked');
-			setViolations(result);
+			if (result === null) {
+				setStatus('lint-skipped');
+			} else if (result === 'error') {
+				setStatus('lint-error');
+			} else {
+				setStatus('lint-checked');
+				setViolations(result);
+			}
 		})();
-	}, [code, depsStatus, filename, lintTrigger]);
+	}, [code, containerServer, depsStatus, filename, lintTrigger]);
 
 	// save values
 	const debouncedSaveValues = useMemo(() => debounce(saveValues, 200), []);
 	useEffect(() => {
-		if (!initialized) {
+		if (!containerServer) {
 			return;
 		}
 		debouncedSaveValues({
@@ -203,7 +218,7 @@ export function App() {
 			codeFileType: fileType,
 			code: code,
 		});
-	}, [configString, code, debouncedSaveValues, initialized, fileType]);
+	}, [configString, code, debouncedSaveValues, containerServer, fileType]);
 
 	return (
 		<>
@@ -219,7 +234,7 @@ export function App() {
 					/>{' '}
 					Playground
 				</h1>
-				<ExampleSelector disabled={!initialized} onSelect={handleSelectExample} />
+				<ExampleSelector disabled={!containerServer} onSelect={handleSelectExample} />
 			</header>
 			<main className="grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)] md:block">
 				<nav ref={tabsRef} className="border-b bg-slate-100 md:hidden">
@@ -383,10 +398,22 @@ export function App() {
 									Config file is invalid!
 								</>
 							),
+							'lint-skipped': (
+								<>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									Linting was skipped! Please check your parser settings.
+								</>
+							),
 							'lint-checked': (
 								<>
 									<span className="icon-heroicons-solid-check text-green-700"></span>
 									Checked!
+								</>
+							),
+							'lint-error': (
+								<>
+									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									An error occurred while linting!
 								</>
 							),
 						}[status]

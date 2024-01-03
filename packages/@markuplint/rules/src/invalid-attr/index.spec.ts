@@ -1538,6 +1538,19 @@ describe('Deprecated options', () => {
 			},
 		]);
 	});
+
+	test('The `as` attribute', async () => {
+		expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 4,
+				message: 'The "as" attribute is disallowed',
+				raw: 'as',
+			},
+		]);
+		expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
+	});
 });
 
 describe('Issues', () => {
@@ -1627,6 +1640,12 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 		).toStrictEqual([]);
 		expect(
 			(await mlRuleTest(rule, '<img src="foo.png" referrerpolicy="no-referrer"></img>')).violations,
+		).toStrictEqual([]);
+	});
+
+	test('#1357', async () => {
+		expect(
+			(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
 		).toStrictEqual([]);
 	});
 });

@@ -7,6 +7,7 @@ import { getSpec } from './get-spec.js';
 type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
 const cachesBySpecs = new Map<Specs, Map<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>>();
+
 export function getContentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,

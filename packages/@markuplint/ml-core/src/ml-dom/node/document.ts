@@ -3172,9 +3172,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		if (docLog.enabled) {
 			docLog('Pretending: %O', pretenders);
 		}
-		if (!pretenders) {
-			return;
-		}
 		for (const node of this.nodeList) {
 			if (node.is(node.ELEMENT_NODE)) {
 				node.pretending(pretenders);

@@ -28,3 +28,18 @@ test('Not single control', async () => {
 		},
 	]);
 });
+
+test('The `as` attribute', async () => {
+	expect((await mlRuleTest(rule, '<x-label as="label"><input><select></select></x-label>')).violations).toStrictEqual(
+		[
+			{
+				severity: 'warning',
+				line: 1,
+				col: 28,
+				raw: '<select>',
+				message: 'The "label" element associates only first control',
+			},
+		],
+	);
+	expect((await mlRuleTest(rule, '<x-label as="label"><input></x-label>')).violations).toStrictEqual([]);
+});

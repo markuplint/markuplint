@@ -204,6 +204,19 @@ test('fragment', async () => {
 	).toStrictEqual([]);
 });
 
+test('The `as` attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-label as="label" for="foo"></x-label>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			raw: 'foo',
+			message: 'Missing "foo" ID',
+		},
+	]);
+});
+
 describe('Issues', () => {
 	test('#748', async () => {
 		expect(

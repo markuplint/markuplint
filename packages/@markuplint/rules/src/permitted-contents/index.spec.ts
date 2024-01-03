@@ -1085,6 +1085,54 @@ describe('Pretenders Option', () => {
 			},
 		]);
 	});
+
+	test('The `as` attribute', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><MyComponent as="li"/></ul>', {
+					...jsxRuleOn,
+				})
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<ul><MyComponent as="div"/></ul>', {
+					...jsxRuleOn,
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+				raw: '<MyComponent as="div"/>',
+			},
+		]);
+		expect(
+			(
+				await mlRuleTest(rule, '<svg><MyComponent as="rect"/></svg>', {
+					...jsxRuleOn,
+				})
+			).violations.length,
+		).toBe(0);
+		expect(
+			(
+				await mlRuleTest(rule, '<span><MyComponent as="a"><div></div></MyComponent></span>', {
+					...jsxRuleOn,
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				raw: '<div>',
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			},
+		]);
+	});
 });
 
 describe('Vue', () => {
@@ -1399,5 +1447,37 @@ describe('Issues', () => {
 	test('#1146', async () => {
 		const sourceCode = '<datalist><option></option></datalist>';
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+	});
+
+	test('#1023', async () => {
+		const sourceCode = `<body>
+	<h1>Reproduction</h1>
+	<!-- There're typos. The intended element is x-item, not x-itm -->
+	<x-container><x-itm></x-itm></x-container>
+</body>`;
+		expect(
+			(
+				await mlRuleTest(rule, sourceCode, {
+					rule: [
+						{
+							tag: 'x-container',
+							contents: [
+								{
+									require: 'x-item',
+								},
+							],
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 4,
+				col: 2,
+				raw: '<x-container>',
+				message: 'Require an element. (Need "x-item")',
+			},
+		]);
 	});
 });

@@ -434,51 +434,86 @@ export const types: Defs = {
 
 	Srcset: {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#srcset-attributes',
-		syntax: {
-			apply: '<srcset>',
-			def: {
-				srcset: '<image-candidate-strings> [, <image-candidate-strings>]*',
-				'image-candidate-strings': '<valid-non-empty-url> [ <width-descriptor> | <pixel-density-descriptor> ]?',
-				'valid-non-empty-url'(token, getNextToken) {
-					if (!token) {
-						return 0;
-					}
-					let willAdoptTokenLength = 0;
-					do {
-						if (token.type === 13) {
+		is(value) {
+			const images = value.split(',');
+
+			for (const image of images) {
+				// image candidate string
+				const [url, , descriptor, ...tail] = new TokenCollection(image.trim(), {
+					disallowToSurroundBySpaces: true,
+					separator: 'space',
+				});
+
+				if (!url) {
+					return unmatched(value, 'unexpected-token', {
+						expects: [
+							{
+								type: 'format',
+								value: 'valid non-empty URL',
+							},
+						],
+					});
+				}
+
+				if (descriptor) {
+					const { num, unit } = splitUnit(descriptor.value);
+					switch (unit) {
+						case 'w': {
+							if (!isUint(num)) {
+								return unmatched(value, 'unexpected-token', {
+									expects: [
+										{
+											type: 'format',
+											value: 'width descriptor',
+										},
+									],
+								});
+							}
 							break;
 						}
-						willAdoptTokenLength++;
-					} while ((token = getNextToken(willAdoptTokenLength)));
-					return willAdoptTokenLength;
-				},
-				'width-descriptor'(token) {
-					if (!token) {
-						return 0;
+						case 'x': {
+							if (!isFloat(num)) {
+								return unmatched(value, 'unexpected-token', {
+									expects: [
+										{
+											type: 'format',
+											value: 'pixel density descriptor',
+										},
+									],
+								});
+							}
+							break;
+						}
+						default: {
+							return unmatched(value, 'unexpected-token', {
+								expects: [
+									{
+										type: 'format',
+										value: 'width descriptor',
+									},
+									{
+										type: 'format',
+										value: 'pixel density descriptor',
+									},
+								],
+							});
+						}
 					}
-					const { num, unit } = splitUnit(token.value);
-					if (unit !== 'w') {
-						return 0;
-					}
-					if (!isUint(num)) {
-						return 0;
-					}
-					return 1;
-				},
-				'pixel-density-descriptor'(token) {
-					if (!token) {
-						return 0;
-					}
-					const { num, unit } = splitUnit(token.value);
-					if (unit !== 'x') {
-						return 0;
-					}
-					if (!isFloat(num)) {
-						return 0;
-					}
-					return 1;
-				},
-			},
+				}
+
+				if (tail[0]) {
+					return unmatched(value, 'unexpected-token', {
+						expects: [
+							{
+								type: 'syntax',
+								value: 'image candidate string',
+							},
+						],
+					});
+				}
+			}
+
+			return matched();
 		},
 	},
 
@@ -876,6 +911,33 @@ export const types: Defs = {
 			},
 		},
 	},
+};
+
+export const overrides: Record<string, string> = {
+	// Alias
+	'legacy-length-percentage': '<length> | <percentage> | <svg-length>',
+	'legacy-angle': '<angle> | <zero> | <number>',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-translate
+	 */
+	'translate()':
+		'translate( <legacy-length-percentage> , <legacy-length-percentage>? ) | translate( <legacy-length-percentage> <legacy-length-percentage>? )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-scale
+	 */
+	'scale()': 'scale( [ <number> | <percentage> ]#{1,2} )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-rotate
+	 */
+	'rotate()': 'rotate( <legacy-angle> )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-skew
+	 */
+	'skew()': 'skew( <legacy-angle> , <legacy-angle>? ) | skew( <legacy-angle> <legacy-angle>? )',
 };
 
 export const tokenizers: Record<string, CssSyntaxTokenizer> = {

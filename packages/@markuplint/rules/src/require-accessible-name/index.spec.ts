@@ -372,6 +372,30 @@ test('Pretenders Option', async () => {
 	]);
 });
 
+test('The `as` attribute', async () => {
+	expect((await mlRuleTest(rule, '<x-button as="button"></x-button>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<x-button as="button">',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<x-button as="button">Name</x-button>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<x-image as="img"></x-image>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<x-image as="img">',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<x-image as="img" alt=""></x-image>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<x-image as="img" alt="Name"></x-image>')).violations).toStrictEqual([]);
+});
+
 describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/536
 	test('#536', async () => {
@@ -441,5 +465,27 @@ describe('Issues', () => {
 				})
 			).violations.length,
 		).toBe(1);
+	});
+
+	test('#1147', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+					<body>
+						<label for="cheese">Do you like cheese?</label>
+						<input type="checkbox" id="cheese">
+						<% pp "anything" %>
+					</body>
+				`,
+					{
+						parser: {
+							'.*': '@markuplint/erb-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
 	});
 });

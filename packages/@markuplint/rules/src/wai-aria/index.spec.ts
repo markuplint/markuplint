@@ -280,6 +280,19 @@ describe('Set the implicit role explicitly', () => {
 
 		expect(violations.length).toBe(0);
 	});
+
+	test('The `as` attribute', async () => {
+		const { violations } = await mlRuleTest(rule, '<x-link as="a" href="path/to" role="link"></x-link>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "link" role is the implicit role of the "a" element',
+				raw: 'link',
+			},
+		]);
+	});
 });
 
 describe('Set the default value of the property/state explicitly', () => {
@@ -509,7 +522,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<div role="list">',
 			},
 		]);
@@ -523,7 +536,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -533,7 +546,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -558,7 +571,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 8,
-				message: 'Require the "row" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "row" role. Or, require aria-busy="true"',
 				raw: '<tbody>',
 			},
 		]);
@@ -1016,7 +1029,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -1047,7 +1060,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -1092,7 +1105,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 5,
 				col: 7,
-				message: 'Require the "row" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "row" role. Or, require aria-busy="true"',
 				raw: '<tbody>',
 			},
 		]);

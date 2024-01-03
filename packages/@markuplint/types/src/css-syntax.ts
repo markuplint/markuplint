@@ -3,7 +3,7 @@ import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken,
 import { fork } from 'css-tree';
 
 import { log } from './debug.js';
-import { tokenizers } from './defs.js';
+import { tokenizers, overrides } from './defs.js';
 import { matched } from './match-result.js';
 
 const MIMIC_TAG_L = 'mimiccases---';
@@ -58,7 +58,10 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 	// @ts-ignore
 	const lexer = fork({
-		types: typesExtended,
+		types: {
+			...overrides,
+			...typesExtended,
+		},
 		properties: propsExtended,
 	}).lexer;
 
