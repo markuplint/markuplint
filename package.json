@@ -101,6 +101,6 @@
 	"resolutions": {
 		"lerna/**/string-width": "4",
 		"lerna/**/strip-ansi": "6",
-		"lerna/**/wrap-ansi": "7"
+		"lerna/**/wrap-ansi": "9"
 	}
 }
