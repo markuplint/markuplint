@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { JSDOM } from 'jsdom';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { matchSelector } from './match-selector.js';
 
@@ -341,5 +341,25 @@ test('combination :has(~)', () => {
 		selector: '[class="i5"]:has(~ li)',
 		specificity: [0, 1, 1],
 		data: {},
+	});
+});
+
+describe('Issues', () => {
+	test('#1263', () => {
+		const el = createTestElement('<div data-ex="0" data-noop="1"></div>');
+		expect(
+			matchSelector(el, {
+				attrName: 'data-ex',
+				attrValue: '/(?<Variable>[0-9])/',
+			}),
+		).toStrictEqual({
+			matched: true,
+			selector: '[data-ex="0"]',
+			specificity: [0, 1, 0],
+			data: {
+				$1: '0',
+				Variable: '0',
+			},
+		});
 	});
 });
