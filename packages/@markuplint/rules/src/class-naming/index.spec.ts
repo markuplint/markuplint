@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
@@ -468,4 +468,36 @@ section.Card
 			reason: 'Do not allow include the element in a no-own block.',
 		},
 	]);
+});
+
+describe('Issues', () => {
+	test('#1263', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+			<div class="Carousel">
+				<div class="Carousel__slides" aria-live="off" >
+					<div class="Carousel__slide">
+					<p class="Carousel__label">slide 1</p>
+					</div>
+				</div>
+			</div>
+		`,
+			{
+				rule: '/.+/',
+				childNodeRule: [
+					{
+						regexSelector: {
+							attrName: 'class',
+							attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
+						},
+						rule: {
+							value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
+						},
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });
