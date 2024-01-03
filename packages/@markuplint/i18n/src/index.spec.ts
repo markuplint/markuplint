@@ -276,4 +276,5 @@ test('ja', () => {
 		),
 	).toBe('ARIAプロパティ「foo」は暗黙の属性「bar」と矛盾しています');
 	expect(t('It is {0}', 'default value')).toBe('デフォルト値です');
+	expect(t('{0}. Or, {1}', 'A', 'B')).toBe('A。または、B');
 });

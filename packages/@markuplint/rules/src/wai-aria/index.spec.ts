@@ -509,7 +509,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<div role="list">',
 			},
 		]);
@@ -523,7 +523,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -533,7 +533,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -558,7 +558,7 @@ describe('Required Owned Elements', () => {
 				severity: 'error',
 				line: 1,
 				col: 8,
-				message: 'Require the "row" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "row" role. Or, require aria-busy="true"',
 				raw: '<tbody>',
 			},
 		]);
@@ -1016,7 +1016,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -1047,7 +1047,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'Require the "listitem" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
 				raw: '<ul>',
 			},
 		]);
@@ -1092,7 +1092,7 @@ describe('Issues', () => {
 				severity: 'error',
 				line: 5,
 				col: 7,
-				message: 'Require the "row" role. Or, require aria-busy="true"',
+				message: 'The child element requires the "row" role. Or, require aria-busy="true"',
 				raw: '<tbody>',
 			},
 		]);
