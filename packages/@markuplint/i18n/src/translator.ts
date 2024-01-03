@@ -33,7 +33,9 @@ export function translator(localeSet?: LocaleSet): Translator {
 		);
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
-		const sentence = localeSet?.sentences?.[key];
+		const sentences = Object.entries(localeSet?.sentences ?? {});
+		const sentence = sentences.find(([sentenceKey]) => sentenceKey.toLowerCase() === key)?.[1];
+
 		messageTmpl = sentence ?? key;
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
