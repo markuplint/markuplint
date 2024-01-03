@@ -634,6 +634,28 @@ describe('Accessibility', () => {
 	});
 });
 
+describe('the `as` attribute pretending', () => {
+	test('Native element', () => {
+		const dom = createTestDocument('<span as="div"></span>');
+		expect(dom.nodeList[0].nodeName).toBe('SPAN');
+	});
+
+	test('Custom element', () => {
+		const dom = createTestDocument('<x-div as="div"></x-div>');
+		expect(dom.nodeList[0].nodeName).toBe('DIV');
+	});
+
+	test('Authored element', async () => {
+		const dom = createTestDocument('<XDiv as="div"></XDiv>', { parser: await import('@markuplint/jsx-parser') });
+		expect(dom.nodeList[0].nodeName).toBe('DIV');
+	});
+
+	test('Authored element (No parser)', () => {
+		const dom = createTestDocument('<Custom as="div"></Custom>');
+		expect(dom.nodeList[0].nodeName).toBe('CUSTOM');
+	});
+});
+
 describe('Issues', () => {
 	test('#607', async () => {
 		const dom = createTestDocument('<% %><div></div>', {

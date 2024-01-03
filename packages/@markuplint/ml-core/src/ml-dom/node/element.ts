@@ -38,6 +38,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 {
 	#attributes: MLAttr<T, O>[];
 	readonly closeTag: MLToken | null;
+
+	/**
+	 * Element type
+	 *
+	 * - `html`: From native HTML Standard
+	 * - `web-component`: As the Web Component according to HTML Standard
+	 * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
+	 */
 	readonly elementType: ElementType;
 	readonly endSpace: MLToken | null;
 	#fixedNodeName: string;
@@ -3427,9 +3435,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Pretenders Initialization
 	 */
-	pretending(pretenders: readonly Pretender[]) {
+	pretending(pretenders?: readonly Pretender[]) {
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
-		if (!pretenderConfig) {
+		const asAttrValue = this.getAttribute('as');
+		const pretenderElement =
+			pretenderConfig?.as ??
+			(this.elementType === 'html' || !asAttrValue
+				? null
+				: {
+						element: asAttrValue,
+						inheritAttrs: true,
+					});
+
+		if (pretenderElement == null) {
 			return;
 		}
 
@@ -3437,17 +3455,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		let namespace = 'html';
 		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
-		if (typeof pretenderConfig.as === 'string') {
-			nodeName = pretenderConfig.as;
+		if (typeof pretenderElement === 'string') {
+			nodeName = pretenderElement;
 		} else {
-			nodeName = pretenderConfig.as.element;
-			namespace = pretenderConfig.as.namespace ?? namespace;
-			if (pretenderConfig.as.inheritAttrs) {
+			nodeName = pretenderElement.element;
+			namespace = pretenderElement.namespace ?? namespace;
+			if (pretenderElement.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}
-			if (pretenderConfig.as.attrs) {
+			if (pretenderElement.attrs) {
 				attributes.push(
-					...pretenderConfig.as.attrs.map(({ name, value }, i) => {
+					...pretenderElement.attrs.map(({ name, value }, i) => {
 						const _value =
 							value == null
 								? ''
@@ -3501,7 +3519,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 					}),
 				);
 			}
-			aria = pretenderConfig.as.aria;
+			aria = pretenderElement.aria;
 		}
 
 		const as = new MLElement<T, O>(
