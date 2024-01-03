@@ -15,10 +15,6 @@ export default createRule<boolean, Option>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (el.pretenderContext?.type === 'pretender') {
-				return;
-			}
-
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}
