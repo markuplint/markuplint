@@ -1538,6 +1538,19 @@ describe('Deprecated options', () => {
 			},
 		]);
 	});
+
+	test('The `as` attribute', async () => {
+		expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 4,
+				message: 'The "as" attribute is disallowed',
+				raw: 'as',
+			},
+		]);
+		expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
+	});
 });
 
 describe('Issues', () => {

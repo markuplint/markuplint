@@ -53,3 +53,25 @@ test('Candidates', async () => {
 		},
 	]);
 });
+
+test('The `as` attribute', async () => {
+	expect((await mlRuleTest(rule, '<x-time as="time">2000/01/01</x-time>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<x-time as="time">',
+			message: 'Need datetime="2000-01-01"',
+		},
+	]);
+
+	expect((await mlRuleTest(rule, '<x-time as="time">令和5年1月3日</x-time>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<x-time as="time">',
+			message: 'Need datetime="2023-01-03"',
+		},
+	]);
+});
