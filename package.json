@@ -99,7 +99,7 @@
 		"typescript": "^5.3.3"
 	},
 	"resolutions": {
-		"lerna/**/string-width": "4",
+		"lerna/**/string-width": "7",
 		"lerna/**/strip-ansi": "6",
 		"lerna/**/wrap-ansi": "7"
 	}
