@@ -1642,4 +1642,10 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 			(await mlRuleTest(rule, '<img src="foo.png" referrerpolicy="no-referrer"></img>')).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#1357', async () => {
+		expect(
+			(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
+		).toStrictEqual([]);
+	});
 });

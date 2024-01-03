@@ -92,3 +92,14 @@ test('ItemProp', () => {
 	expect(check('item', 'ItemProp').matched).toBe(true);
 	expect(check('position', 'ItemProp').matched).toBe(true);
 });
+
+test('legacy-transform', () => {
+	expect(check('translate(300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300 300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px 300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300 , 300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px , 300px)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300,300)', "<'transform'>").matched).toBeTruthy();
+	expect(check('translate(300px,300px)', "<'transform'>").matched).toBeTruthy();
+});
