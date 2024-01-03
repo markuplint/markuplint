@@ -193,3 +193,26 @@ const Component = ({ list }) => {
 <!-- prettier-ignore-end -->
 
 必要であれば、設定の[`pretenders`](/docs/configuration/properties#pretenders)プロパティの詳細を参照してください。
+
+### `as`属性について
+
+コンポーネントに`as`属性が指定されている場合、その属性の値として指定された要素として評価されます。
+
+<!-- prettier-ignore-start -->
+```html
+<x-ul as="ul"><!-- <ul> として評価される -->
+  <x-li as="li"></x-li><!-- <li> として評価される -->
+  <x-li as="li"></x-li><!-- <li> として評価される -->
+  <x-li as="li"></x-li><!-- <li> として評価される -->
+</x-ul>
+```
+<!-- prettier-ignore-end -->
+
+これは、コンポーネントから継承された属性に対しても同様に評価されます。
+
+<!-- prettier-ignore-start -->
+```html
+<!-- <img src="image.png" alt="image"> として評価される -->
+<x-img src="image.png" alt="image">
+```
+<!-- prettier-ignore-end -->
