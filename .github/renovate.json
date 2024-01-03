@@ -25,6 +25,10 @@
 		{
 			"matchPaths": ["packages/**/*"],
 			"ignoreDeps": ["default-markuplint", "test-markuplint"]
+		},
+		{
+			"matchPaths": ["package.json"],
+			"ignoreDeps": ["string-width", "strip-ansi", "wrap-ansi"]
 		}
 	]
 }
