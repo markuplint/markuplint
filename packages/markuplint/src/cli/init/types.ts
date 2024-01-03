@@ -1,4 +1,4 @@
-import { RuleConfigValue } from '@markuplint/ml-config';
+import type { RuleConfigValue } from '@markuplint/ml-config';
 
 export type Langs =
 	| 'jsx'
