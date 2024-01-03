@@ -775,4 +775,25 @@ describe('Issues', () => {
 			'[6:12]>[7:4](142,146)#text: ⏎→→→',
 		]);
 	});
+
+	test('#1286', async () => {
+		const dom = createTestDocument(
+			`{#each list as item, i (\`\${i}-\${i}\`)}
+	<div>{item}</div>
+{/each}`,
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+		const map = dom.debugMap();
+		expect(map).toEqual([
+			'[1:1]>[2:2](0,39)#text: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[2:2]>[2:7](39,44)DIV: <div>',
+			'  namespaceURI: true',
+			'  elementType: html',
+			'  isInFragmentDocument: true',
+			'  isForeignElement: false',
+			'[2:7]>[2:13](44,50)#ml-block: {item}',
+			'[2:19]>[3:1](56,57)#text: ⏎',
+			'[3:1]>[3:8](57,64)#ml-block: {/each}',
+		]);
+	});
 });
