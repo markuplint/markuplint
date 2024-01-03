@@ -100,7 +100,7 @@
 	},
 	"resolutions": {
 		"lerna/**/string-width": "4",
-		"lerna/**/strip-ansi": "6",
+		"lerna/**/strip-ansi": "7",
 		"lerna/**/wrap-ansi": "7"
 	}
 }
