@@ -12,7 +12,6 @@ export function getDefaultRules() {
 		const category = rule.meta?.category;
 		if (category) {
 			rules[ruleName] = {
-				// @ts-expect-error
 				defaultValue,
 				category,
 			};
