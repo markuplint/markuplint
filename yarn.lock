@@ -2012,7 +2012,7 @@ analyze-desumasu-dearu@^2.1.2:
   resolved "https://registry.yarnpkg.com/analyze-desumasu-dearu/-/analyze-desumasu-dearu-2.1.5.tgz#9caa2a5a06146c20679f7dc9f3af527db6f68f41"
   integrity sha512-4YPL7IRAuaZflE10+BVhKr6k5KQl/DiLeNCIF7ISqKr0ogM2hqm9ztRNCPqL/xYDI7hfuIHR8T+U7mIDRLQNXw==
 
-analyze-desumasu-dearu@^5.0.0:
+analyze-desumasu-dearu@^5.0.0, analyze-desumasu-dearu@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/analyze-desumasu-dearu/-/analyze-desumasu-dearu-5.0.1.tgz#2310d076f683483ab4d4460fd2a21ad54fb2ad9d"
   integrity sha512-r7ruCOqvqKxAzcvDzj7PdZOstOZP9wtw/wSIoV3FmNxF16CvytxhJnHYbSRhUwqzR542OO/J9CDRWS3SSp4hZA==
@@ -9852,6 +9852,14 @@ textlint-rule-no-mix-dearu-desumasu@^5.0.0:
     textlint-rule-helper "^2.0.0"
     unist-util-visit "^3.0.0"
 
+textlint-rule-no-mix-dearu-desumasu@^6.0.0:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/textlint-rule-no-mix-dearu-desumasu/-/textlint-rule-no-mix-dearu-desumasu-6.0.2.tgz#962eb5d83f394b422feb7fbb735889ebe8a4b391"
+  integrity sha512-h/Vs6qltBlkm7bmKT2rtJ6jZriNV3uTr5fxKuPMBUHVUMnAuQvz3lI7oFrGC10Pxny+Ofng5fbLiYntHq/ymaA==
+  dependencies:
+    analyze-desumasu-dearu "^5.0.1"
+    textlint-rule-helper "^2.3.1"
+
 textlint-rule-no-nfd@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/textlint-rule-no-nfd/-/textlint-rule-no-nfd-2.0.2.tgz#61bba87031773349c13dffbf77c1184eab1cbac9"
@@ -9878,10 +9886,10 @@ textlint-rule-preset-ja-spacing@^2.3.0:
     textlint-rule-ja-space-around-code "^2.2.0"
     textlint-rule-ja-space-between-half-and-full-width "^2.3.0"
 
-textlint-rule-preset-ja-technical-writing@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/textlint-rule-preset-ja-technical-writing/-/textlint-rule-preset-ja-technical-writing-9.0.0.tgz#d211d52b1f38b104ee97cbe8cb2be494dce8b290"
-  integrity sha512-1dbqEkIaYG57lDE5pdynF9F/8lPhtxp9/CzgvIAeHa3wpIwFsGf6OKUP2cEONeYlyeye1WpAwXVzMEDkp525sA==
+textlint-rule-preset-ja-technical-writing@^10.0.0:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/textlint-rule-preset-ja-technical-writing/-/textlint-rule-preset-ja-technical-writing-10.0.1.tgz#8e3f561c734121218c9f3d8050f297e499cbc6c0"
+  integrity sha512-GC7sUPsn65UOZcBQ+SLvt3RRmGcm3Fb8t/o8/hD/zyRr1NpYYNrtte0HckVnCPH3TD8zbMt4mov2nlnfA8f7gg==
   dependencies:
     "@textlint-rule/textlint-rule-no-invalid-control-character" "^2.0.0"
     "@textlint-rule/textlint-rule-no-unmatched-pair" "^2.0.2"
@@ -9902,7 +9910,7 @@ textlint-rule-preset-ja-technical-writing@^9.0.0:
     textlint-rule-no-dropping-the-ra "^3.0.0"
     textlint-rule-no-exclamation-question-mark "^1.1.0"
     textlint-rule-no-hankaku-kana "^2.0.1"
-    textlint-rule-no-mix-dearu-desumasu "^5.0.0"
+    textlint-rule-no-mix-dearu-desumasu "^6.0.0"
     textlint-rule-no-nfd "^2.0.2"
     textlint-rule-no-zero-width-spaces "^1.0.1"
     textlint-rule-preset-jtf-style "^2.3.13"
