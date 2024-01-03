@@ -280,6 +280,19 @@ describe('Set the implicit role explicitly', () => {
 
 		expect(violations.length).toBe(0);
 	});
+
+	test('The `as` attribute', async () => {
+		const { violations } = await mlRuleTest(rule, '<x-link as="a" href="path/to" role="link"></x-link>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "link" role is the implicit role of the "a" element',
+				raw: 'link',
+			},
+		]);
+	});
 });
 
 describe('Set the default value of the property/state explicitly', () => {

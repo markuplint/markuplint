@@ -112,3 +112,28 @@ test("Invalid: Invalid: first option element's parent is optgroup", async () => 
 		},
 	]);
 });
+
+test('The `as` attribute', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<x-select as="select" required>
+					<optgroup label="Group">
+						<option value="">Placeholder</option>
+					</optgroup>
+					<option value="option1">Option 1</option>
+					<option value="option2">Option 2</option>
+				</x-select>`,
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<x-select as="select" required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});

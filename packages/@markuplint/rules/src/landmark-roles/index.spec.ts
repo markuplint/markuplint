@@ -186,3 +186,30 @@ test('Duplicated area: no-label', async () => {
 		},
 	]);
 });
+
+test('The `as` attribute', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
+<html>
+<body>
+	<main>
+		<x-aside as="aside"></x-aside>
+	</main>
+</body>
+</html>
+`,
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 5,
+			col: 3,
+			message: 'The "complementary" role should be top level',
+			raw: '<x-aside as="aside">',
+		},
+	]);
+});

@@ -64,6 +64,21 @@ test('enable option "in-document-fragment"', async () => {
 	expect(violations.length).toBe(1);
 });
 
+test('The `as` attribute', async () => {
+	expect((await mlRuleTest(rule, '<html><body><x-h1 as="h1">text</x-h1></body></html>')).violations).toStrictEqual(
+		[],
+	);
+	expect((await mlRuleTest(rule, '<html><body><x-h2 as="h2">text</x-h2></body></html>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "h1" element',
+			raw: '<',
+		},
+	]);
+});
+
 test('Issue #57', async () => {
 	const { violations } = await mlRuleTest(rule, '');
 	expect(violations.length).toBe(0);

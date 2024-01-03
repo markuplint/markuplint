@@ -73,3 +73,23 @@ test('Updated the hidden attribute type to Enum form Boolean', async () => {
 	expect((await mlRuleTest(rule, '<div hidden="hidden"></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="until-found"></div>')).violations.length).toBe(0);
 });
+
+test('The `as` attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-canvas as="canvas" width="300" height="150"></x-canvas>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 30,
+			raw: '300',
+			message: 'It is the default value',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 43,
+			raw: '150',
+			message: 'It is the default value',
+		},
+	]);
+});

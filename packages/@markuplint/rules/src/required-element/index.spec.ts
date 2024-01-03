@@ -186,4 +186,24 @@ describe('Pretenders Option', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('The `as` attribute', async () => {
+		const { violations } = await mlRuleTest(rule, '<x-div as="div"><span>Text</span></x-div>', {
+			nodeRule: [
+				{
+					selector: 'div',
+					rule: ['a'],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require the "a" element',
+				raw: '<x-div as="div">',
+			},
+		]);
+	});
 });

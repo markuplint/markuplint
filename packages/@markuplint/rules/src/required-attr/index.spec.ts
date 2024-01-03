@@ -413,3 +413,31 @@ test('custom element', async () => {
 		},
 	]);
 });
+
+test('The `as` attribute', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>', {
+				nodeRule: [
+					{
+						selector: 'img',
+						rule: {
+							severity: 'error',
+							value: 'alt',
+						},
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "img" element expects the "alt" attribute',
+			raw: '<x-img as="img" src="/path/to/image.png">',
+		},
+	]);
+
+	expect((await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>')).violations).toStrictEqual([]);
+});
