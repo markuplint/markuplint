@@ -620,4 +620,19 @@ describe('Issues', () => {
 			]);
 		});
 	});
+
+	test('#1286', () => {
+		const ast = parse(`{#each list as item, i (\`\${i}-\${i}\`)}
+	<div>{item}</div>
+{/each}`);
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[2:2](0,39)EachBlock: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[2:2]>[2:7](39,44)div: <div>',
+			'[2:7]>[2:13](44,50)#ps:MustacheTag: {item}',
+			'[2:13]>[2:19](50,56)div: </div>',
+			'[2:19]>[3:1](56,57)#text: ⏎',
+			'[3:1]>[3:8](57,64)EachBlock: {/each}',
+		]);
+	});
 });

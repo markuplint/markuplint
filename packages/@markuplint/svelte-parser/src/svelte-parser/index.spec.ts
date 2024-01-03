@@ -140,4 +140,152 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#1286', () => {
+		const ast = svelteParse('{#each list as item, i (`${i}-${i}`)}{/each}');
+		expect(ast).toEqual([
+			{
+				children: [],
+				context: {
+					end: 19,
+					name: 'item',
+					start: 15,
+					type: 'Identifier',
+				},
+				end: 44,
+				expression: {
+					end: 11,
+					loc: {
+						end: {
+							column: 11,
+							line: 1,
+						},
+						start: {
+							column: 7,
+							line: 1,
+						},
+					},
+					name: 'list',
+					start: 7,
+					type: 'Identifier',
+				},
+				index: 'i',
+				key: {
+					end: 35,
+					expressions: [
+						{
+							end: 28,
+							loc: {
+								end: {
+									column: 28,
+									line: 1,
+								},
+								start: {
+									column: 27,
+									line: 1,
+								},
+							},
+							name: 'i',
+							start: 27,
+							type: 'Identifier',
+						},
+						{
+							end: 33,
+							loc: {
+								end: {
+									column: 33,
+									line: 1,
+								},
+								start: {
+									column: 32,
+									line: 1,
+								},
+							},
+							name: 'i',
+							start: 32,
+							type: 'Identifier',
+						},
+					],
+					loc: {
+						end: {
+							column: 35,
+							line: 1,
+						},
+						start: {
+							column: 24,
+							line: 1,
+						},
+					},
+					quasis: [
+						{
+							end: 25,
+							loc: {
+								end: {
+									column: 25,
+									line: 1,
+								},
+								start: {
+									column: 25,
+									line: 1,
+								},
+							},
+							start: 25,
+							tail: false,
+							type: 'TemplateElement',
+							value: {
+								cooked: '',
+								raw: '',
+							},
+						},
+						{
+							end: 30,
+							loc: {
+								end: {
+									column: 30,
+									line: 1,
+								},
+								start: {
+									column: 29,
+									line: 1,
+								},
+							},
+							start: 29,
+							tail: false,
+							type: 'TemplateElement',
+							value: {
+								cooked: '-',
+								raw: '-',
+							},
+						},
+						{
+							end: 34,
+							loc: {
+								end: {
+									column: 34,
+									line: 1,
+								},
+								start: {
+									column: 34,
+									line: 1,
+								},
+							},
+							start: 34,
+							tail: true,
+							type: 'TemplateElement',
+							value: {
+								cooked: '',
+								raw: '',
+							},
+						},
+					],
+					start: 24,
+					type: 'TemplateLiteral',
+				},
+				start: 0,
+				type: 'EachBlock',
+			},
+		]);
+	});
+
+	expect(() => svelteParse('{#each list as item, i `${i}-${i}`)}{/each}')).toThrowError();
 });
