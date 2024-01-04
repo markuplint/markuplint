@@ -23,3 +23,15 @@ Add `parser` option to your [configuration](https://markuplint.dev/configuration
   }
 }
 ```
+
+### Use with [SvelteKit](https://kit.svelte.dev/)
+
+```diff
+{
+  "parser": {
+--  ".svelte$": "@markuplint/svelte-parser"
+++  ".svelte$": "@markuplint/svelte-parser",
+++  ".html$": "@markuplint/svelte-parser/kit"
+  }
+}
+```
