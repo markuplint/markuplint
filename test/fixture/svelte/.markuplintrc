@@ -1,6 +1,7 @@
 {
 	"parser": {
-		".svelte$": "@markuplint/svelte-parser"
+		".svelte$": "@markuplint/svelte-parser",
+		".html$": "@markuplint/svelte-parser/kit"
 	},
 	"rules": {
 		"attr-duplication": true,
