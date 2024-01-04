@@ -6,6 +6,7 @@ const extRExp: Record<Langs, `\\.${string}$`> = {
 	jsx: '\\.[jt]sx?$',
 	vue: '\\.vue$',
 	svelte: '\\.svelte$',
+	sveltekit: '\\.html$',
 	astro: '\\.astro$',
 	pug: '\\.pug$',
 	php: '\\.php$',
@@ -21,6 +22,7 @@ export const langs: Record<Langs, string> = {
 	jsx: 'React (JSX)',
 	vue: 'Vue',
 	svelte: 'Svelte',
+	sveltekit: 'SvelteKit',
 	astro: 'Astro',
 	pug: 'Pug',
 	php: 'PHP',
@@ -41,7 +43,15 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 		if (!ext) {
 			continue;
 		}
-		parser[ext] = `@markuplint/${lang}-parser`;
+		switch (lang) {
+			case 'sveltekit': {
+				parser[ext] = '@markuplint/svelte-parser/kit';
+				break;
+			}
+			default: {
+				parser[ext] = `@markuplint/${lang}-parser`;
+			}
+		}
 
 		if (lang === 'vue') {
 			config = {

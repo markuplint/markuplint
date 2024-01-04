@@ -4,6 +4,7 @@ export type Langs =
 	| 'jsx'
 	| 'vue'
 	| 'svelte'
+	| 'sveltekit'
 	| 'astro'
 	| 'pug'
 	| 'php'
