@@ -10,6 +10,9 @@
 	"exports": {
 		".": {
 			"import": "./lib/index.js"
+		},
+		"./kit": {
+			"import": "./lib/sveltekit-parser.js"
 		}
 	},
 	"types": "lib/index.d.ts",
