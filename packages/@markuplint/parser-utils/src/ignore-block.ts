@@ -69,6 +69,7 @@ export function restoreNode(
 	nodeList: MLASTNode[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	ignoreBlock: IgnoreBlock,
+	throwErrorWhenTagHasUnresolved = true,
 ) {
 	nodeList = [...nodeList];
 	const { source, stack, maskChar } = ignoreBlock;
@@ -155,13 +156,15 @@ export function restoreNode(
 		}
 	}
 
-	for (const tag of stack) {
-		if (!tag.resolved) {
-			throw new ParserError('Parsing failed. Unsupported syntax detected', {
-				line: getLine(source, tag.index),
-				col: getCol(source, tag.index),
-				raw: tag.startTag + tag.taggedCode + (tag.endTag ?? ''),
-			});
+	if (throwErrorWhenTagHasUnresolved) {
+		for (const tag of stack) {
+			if (!tag.resolved) {
+				throw new ParserError('Parsing failed. Unsupported syntax detected', {
+					line: getLine(source, tag.index),
+					col: getCol(source, tag.index),
+					raw: tag.startTag + tag.taggedCode + (tag.endTag ?? ''),
+				});
+			}
 		}
 	}
 

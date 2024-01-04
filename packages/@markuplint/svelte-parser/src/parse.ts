@@ -52,7 +52,7 @@ export const parse: Parse = (rawCode, options) => {
 
 	const nodes = traverse(ast, null, blocks.replaced, options);
 
-	const nodeList: MLASTNode[] = restoreNode(flattenNodes(nodes, blocks.replaced), blocks);
+	const nodeList: MLASTNode[] = restoreNode(flattenNodes(nodes, blocks.replaced), blocks, false);
 
 	return {
 		nodeList,
