@@ -1,32 +1,13 @@
 import type { Code, IgnoreBlock, IgnoreTag } from './types.js';
-import type { MLASTNode, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
+import type { MLASTNode, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
 
 import { MASK_CHAR } from './const.js';
 import { uuid } from './create-token.js';
-import { sliceFragment } from './get-location.js';
-import { siblingsCorrection } from './siblings-correction.js';
 
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
 	const stack: Code[] = [];
 	for (const tag of tags) {
-		// Replace tags in attributes
-		const attr = maskText(
-			prepend(tag.start, '(?<=(?:"|\'))'),
-			append(tag.end, '(?=(?:"|\'))'),
-			replaced,
-			(startTag, taggedCode, endTag) => {
-				const mask =
-					maskChar.repeat(startTag.length) +
-					taggedCode.replaceAll(/[^\n]/g, maskChar) +
-					maskChar.repeat((endTag ?? '').length);
-				return mask;
-			},
-		);
-		replaced = attr.replaced;
-		stack.push(...attr.stack.map(res => ({ ...res, type: tag.type })));
-
-		// Replace tags in other nodes
 		const text = maskText(tag.start, tag.end, replaced, (startTag, taggedCode, endTag) => {
 			const mask =
 				maskChar.repeat(startTag.length) +
@@ -86,16 +67,12 @@ export function restoreNode(
 	ignoreBlock: IgnoreBlock,
 ) {
 	nodeList = [...nodeList];
-	const { source, stack, maskChar } = ignoreBlock;
+	const { stack, maskChar } = ignoreBlock;
 
 	for (const tag of stack) {
 		const node = nodeList.find(node => node.startOffset === tag.index);
 
 		if (!node) {
-			continue;
-		}
-
-		if (node.type !== 'comment') {
 			continue;
 		}
 
@@ -133,114 +110,6 @@ export function restoreNode(
 	}
 
 	for (const node of nodeList) {
-		if (node.type === 'comment' || node.type === 'text' || node.type === 'psblock') {
-			if (!hasIgnoreBlock(node.raw, maskChar)) {
-				continue;
-			}
-			const parentNode = node.parentNode;
-			const index = nodeList.indexOf(node);
-			const insertList: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
-			let text = node.raw;
-			let pointer = 0;
-			for (const tag of stack) {
-				if (node.startOffset <= tag.index && tag.index < node.endOffset) {
-					const start = tag.index - node.startOffset;
-					const body = tag.startTag + tag.taggedCode + (tag.endTag ?? '');
-					const above = node.raw.slice(pointer, start);
-					const below = text.slice(above.length + body.length);
-					if (above) {
-						const offset = node.startOffset + pointer;
-						const { raw, startOffset, endOffset, startLine, endLine, startCol, endCol } = sliceFragment(
-							source,
-							offset,
-							offset + above.length,
-						);
-						const textNode: MLASTText = {
-							...node,
-							uuid: uuid(),
-							type: 'text',
-							raw,
-							startOffset,
-							endOffset,
-							startLine,
-							endLine,
-							startCol,
-							endCol,
-						};
-						if (node.prevNode?.nextNode) {
-							node.prevNode.nextNode = textNode;
-						}
-						if (node.nextNode?.prevNode) {
-							node.nextNode.prevNode = textNode;
-						}
-						insertList.push(textNode);
-					}
-					if (body) {
-						const offset = node.startOffset + pointer + above.length;
-						const { raw, startOffset, endOffset, startLine, endLine, startCol, endCol } = sliceFragment(
-							source,
-							offset,
-							offset + body.length,
-						);
-						const bodyNode: MLASTPreprocessorSpecificBlock = {
-							uuid: uuid(),
-							type: 'psblock',
-							nodeName: `#ps:${tag.type}`,
-							raw,
-							parentNode: node.parentNode,
-							prevNode: null,
-							nextNode: null,
-							isFragment: node.isFragment,
-							isGhost: false,
-							startOffset,
-							endOffset,
-							startLine,
-							endLine,
-							startCol,
-							endCol,
-						};
-						if (node.prevNode?.nextNode) {
-							node.prevNode.nextNode = bodyNode;
-						}
-						if (node.nextNode?.prevNode) {
-							node.nextNode.prevNode = bodyNode;
-						}
-						insertList.push(bodyNode);
-					}
-					text = below;
-					pointer = start + body.length;
-				}
-			}
-			if (text) {
-				const offset = node.endOffset - text.length;
-				const { raw, startOffset, endOffset, startLine, endLine, startCol, endCol } = sliceFragment(
-					source,
-					offset,
-					offset + text.length,
-				);
-				const textNode: MLASTText = {
-					...node,
-					uuid: uuid(),
-					type: 'text',
-					raw,
-					startOffset,
-					endOffset,
-					startLine,
-					endLine,
-					startCol,
-					endCol,
-				};
-				insertList.push(textNode);
-			}
-
-			siblingsCorrection(insertList);
-
-			if (parentNode) {
-				parentNode.childNodes = insertList;
-			}
-
-			nodeList.splice(index, 1, ...insertList);
-		}
 		if (node.type === 'starttag') {
 			for (const attr of node.attributes) {
 				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw, maskChar)) {
@@ -257,7 +126,24 @@ export function restoreNode(
 						attr.value.raw = above + raw + below;
 						attr.isDynamicValue = true;
 					}
+
+					attr.raw =
+						attr.spacesBeforeName.raw +
+						attr.name.raw +
+						attr.spacesBeforeEqual.raw +
+						attr.equal.raw +
+						attr.spacesAfterEqual.raw +
+						attr.startQuote.raw +
+						attr.value.raw +
+						attr.endQuote.raw;
 				}
+
+				// Update node raw
+				const length = attr.raw.length;
+				const offset = attr.startOffset - node.startOffset - attr.spacesBeforeName.raw.length;
+				const above = node.raw.slice(0, offset);
+				const below = node.raw.slice(offset + length);
+				node.raw = above + attr.raw + below;
 			}
 		}
 	}
@@ -282,20 +168,6 @@ function removeGlobalOption(reg: Readonly<RegExp> | string) {
 		return new RegExp(escapeRegExpForStr(reg));
 	}
 	return new RegExp(reg.source, reg.ignoreCase ? 'i' : '');
-}
-
-function prepend(reg: Readonly<RegExp> | string, str: string) {
-	if (typeof reg === 'string') {
-		return new RegExp(str + escapeRegExpForStr(reg));
-	}
-	return new RegExp(str + reg.source, reg.ignoreCase ? 'i' : '');
-}
-
-function append(reg: Readonly<RegExp> | string, str: string) {
-	if (typeof reg === 'string') {
-		return new RegExp(escapeRegExpForStr(reg) + str);
-	}
-	return new RegExp(reg.source + str, reg.ignoreCase ? 'i' : '');
 }
 
 function hasIgnoreBlock(textContent: string, maskChar: string) {
