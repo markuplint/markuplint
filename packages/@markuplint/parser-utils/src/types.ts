@@ -4,6 +4,7 @@ export type Code = {
 	readonly startTag: string;
 	readonly taggedCode: string;
 	readonly endTag: string | null;
+	resolved: boolean;
 };
 
 export type IgnoreTag = {

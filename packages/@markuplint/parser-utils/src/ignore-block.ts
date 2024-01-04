@@ -3,6 +3,8 @@ import type { MLASTNode, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-a
 
 import { MASK_CHAR } from './const.js';
 import { uuid } from './create-token.js';
+import { getCol, getLine } from './get-location.js';
+import { ParserError } from './parser-error.js';
 
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
 	let replaced = source;
@@ -49,6 +51,7 @@ function maskText(
 			startTag,
 			taggedCode,
 			endTag: endTag ?? null,
+			resolved: false,
 		});
 		/**
 		 * It will not replace line breaks because detects line number.
@@ -64,10 +67,11 @@ function maskText(
 export function restoreNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodeList: MLASTNode[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	ignoreBlock: IgnoreBlock,
 ) {
 	nodeList = [...nodeList];
-	const { stack, maskChar } = ignoreBlock;
+	const { source, stack, maskChar } = ignoreBlock;
 
 	for (const tag of stack) {
 		const node = nodeList.find(node => node.startOffset === tag.index);
@@ -107,6 +111,8 @@ export function restoreNode(
 
 		const index = nodeList.indexOf(node);
 		nodeList.splice(index, 1, psNode);
+
+		tag.resolved = true;
 	}
 
 	for (const node of nodeList) {
@@ -125,6 +131,7 @@ export function restoreNode(
 						const below = attr.value.raw.slice(offset + length);
 						attr.value.raw = above + raw + below;
 						attr.isDynamicValue = true;
+						tag.resolved = true;
 					}
 
 					attr.raw =
@@ -145,6 +152,16 @@ export function restoreNode(
 				const below = node.raw.slice(offset + length);
 				node.raw = above + attr.raw + below;
 			}
+		}
+	}
+
+	for (const tag of stack) {
+		if (!tag.resolved) {
+			throw new ParserError('Parsing failed. Unsupported syntax detected', {
+				line: getLine(source, tag.index),
+				col: getCol(source, tag.index),
+				raw: tag.startTag + tag.taggedCode + (tag.endTag ?? ''),
+			});
 		}
 	}
 
