@@ -14,6 +14,7 @@ import { getNamespace } from '@markuplint/html-parser';
 import { detectElementType, sliceFragment, uuid, tagParser } from '@markuplint/parser-utils';
 
 import { attr } from './attr.js';
+import { directiveTokenizer } from './directive-tokenizer.js';
 import { parseCtrlBlock } from './parse-ctrl-block.js';
 import { traverse } from './traverse.js';
 
@@ -128,6 +129,11 @@ export function nodeize(
 				startTagLocation.startLine,
 				startTagLocation.startCol,
 				startTagLocation.startOffset,
+				undefined,
+				undefined,
+				undefined,
+				undefined,
+				directiveTokenizer,
 			);
 
 			const namespace = getNamespace(originNode.name, parentNamespace);

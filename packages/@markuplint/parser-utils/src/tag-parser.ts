@@ -1,6 +1,6 @@
 import type { MLASTAttr } from '@markuplint/ml-ast';
 
-import { attrTokenizer } from './attr-tokenizer.js';
+import { attrTokenizer as defaultAttrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
 import { tokenizer } from './create-token.js';
 
@@ -22,6 +22,7 @@ export function tagParser(
 	offsetLine = 0,
 	offsetColumn = 0,
 	spaces: ReadonlyArray<string> = defaultSpaces,
+	attrTokenizer = defaultAttrTokenizer,
 ) {
 	let offset = startOffset + offsetOffset;
 	let line = startLine + offsetLine;
