@@ -2,13 +2,7 @@ import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
 import { AttrState, attrTokenizer } from '@markuplint/parser-utils';
 
-export function directiveTokenizer(
-	raw: string,
-	rawValue: string,
-	line: number,
-	col: number,
-	startOffset: number,
-): MLASTHTMLAttr {
+export function directiveTokenizer(raw: string, line: number, col: number, startOffset: number): MLASTHTMLAttr {
 	const nameOnly = raw.trim().startsWith('{') && raw.trim().endsWith('}');
 
 	const directiveToken = attrTokenizer(

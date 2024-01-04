@@ -39,12 +39,7 @@ export function attr(
 		});
 	} else {
 		const { raw, startLine, startCol, startOffset } = sliceFragment(rawHTML, start, end);
-		const valueToken = isShorthand
-			? attr.name
-			: attr.expression && 'start' in attr.expression && 'end' in attr.expression
-				? sliceFragment(rawHTML, attr.expression.start, attr.expression.end).raw
-				: '';
-		token = directiveTokenizer(raw, valueToken, startLine, startCol, startOffset);
+		token = directiveTokenizer(raw, startLine, startCol, startOffset);
 	}
 
 	if (!specificBindDirective.has(token.name.raw) && /^bind:/i.test(token.name.raw)) {
