@@ -48344,6 +48344,7 @@
 				"contents": [
 					{
 						"zeroOrMore": [
+							"#text",
 							":model(SVGDescriptive)",
 							":model(SVGPaintServer)",
 							"svg|a",
