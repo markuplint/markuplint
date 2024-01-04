@@ -635,4 +635,24 @@ describe('Issues', () => {
 			'[3:1]>[3:8](57,64)EachBlock: {/each}',
 		]);
 	});
+
+	test('#1364', () => {
+		const ast = parse('<a href={`https://${host}`}></a>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:29](0,28)a: <a␣href={`https://${host}`}>',
+			'[1:4]>[1:28](3,27)href: href={`https://${host}`}',
+			'  [1:4]>[1:4](3,3)bN: ',
+			'  [1:4]>[1:8](3,7)name: href',
+			'  [1:8]>[1:8](7,7)bE: ',
+			'  [1:8]>[1:9](7,8)equal: =',
+			'  [1:9]>[1:9](8,8)aE: ',
+			'  [1:9]>[1:10](8,9)sQ: {',
+			'  [1:10]>[1:27](9,26)value: `https://${host}`',
+			'  [1:27]>[1:28](26,27)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:29]>[1:33](28,32)a: </a>',
+		]);
+	});
 });
