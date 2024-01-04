@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
@@ -160,4 +160,32 @@ test('Astro', async () => {
 			raw: '<span>',
 		},
 	]);
+});
+
+describe('Issues', () => {
+	test('#1349', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<tag1>
+	<tag2>
+		{% SYNTAX %}
+		<tag3>
+			{% SYNTAX %}
+			<a class="{{ smm_class }} btn-smm-li">Text</a>
+			{% SYNTAX %}
+		</tag3>
+		{% SYNTAX %}
+	</tag2>
+</tag1>`,
+					{
+						parser: {
+							'.*': '@markuplint/nunjucks-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });

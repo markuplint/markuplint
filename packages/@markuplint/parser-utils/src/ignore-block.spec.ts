@@ -422,4 +422,21 @@ describe('Issues', () => {
 			'#text',
 		]);
 	});
+
+	test('#1261', () => {
+		const code = `<svg width="11" height="19" viewBox="0 0 11 19" class="ms-1">
+			<use href="{% static 'images/icons-test/angle-right.svg' %}#icon"></use>
+		</svg>`;
+		const masked = ignoreBlock(code, tags);
+		const ast = parse(masked.replaced);
+		const restoredAst = restoreNode(ast.nodeList, masked);
+		expect(nodeListToDebugMaps(restoredAst)).toStrictEqual([
+			'[1:1]>[1:62](0,61)svg: <svg␣width="11"␣height="19"␣viewBox="0␣0␣11␣19"␣class="ms-1">',
+			'[1:62]>[2:4](61,65)#text: ⏎→→→',
+			'[2:4]>[2:70](65,131)use: <use␣href="{%␣static␣\'images/icons-test/angle-right.svg\'␣%}#icon">',
+			'[2:70]>[2:76](131,137)use: </use>',
+			'[2:76]>[3:3](137,140)#text: ⏎→→',
+			'[3:3]>[3:9](140,146)svg: </svg>',
+		]);
+	});
 });
