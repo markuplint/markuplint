@@ -1480,4 +1480,9 @@ describe('Issues', () => {
 			},
 		]);
 	});
+
+	test('#1359', async () => {
+		const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+	});
 });
