@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/spec-generator",
-	"version": "4.0.0-alpha.8",
+	"version": "4.0.0-alpha.9",
 	"description": "Generates @markuplint/html-spec",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -30,8 +30,8 @@
 		"strip-json-comments": "^5.0.1"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "4.0.0-alpha.8",
-		"@markuplint/test-tools": "4.0.0-alpha.8",
+		"@markuplint/ml-spec": "4.0.0-alpha.9",
+		"@markuplint/test-tools": "4.0.0-alpha.9",
 		"@types/cli-progress": "^3.11.5",
 		"type-fest": "^4.9.0"
 	}
