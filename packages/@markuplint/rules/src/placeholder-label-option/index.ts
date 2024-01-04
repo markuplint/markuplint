@@ -3,6 +3,9 @@ import type { Element } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule<boolean>({
+	meta: {
+		category: 'validation',
+	},
 	verify({ document, report, t }) {
 		for (const select of document.querySelectorAll('select')) {
 			if (hasPlaceholderLabelOption(select)) {

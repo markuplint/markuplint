@@ -28,6 +28,9 @@ const selectors: { readonly [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		ignoreRoles: [],

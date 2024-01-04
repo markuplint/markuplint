@@ -1,6 +1,9 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
 export default createRule({
+	meta: {
+		category: 'validation',
+	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (

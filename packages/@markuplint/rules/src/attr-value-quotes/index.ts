@@ -10,6 +10,9 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	defaultValue: 'double',
 	async verify({ document, report, t }) {

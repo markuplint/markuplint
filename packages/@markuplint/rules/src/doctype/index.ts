@@ -6,6 +6,9 @@ type Option = {
 };
 
 export default createRule<Value, Option>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: 'always',
 	defaultOptions: {
 		denyObsoleteType: true,

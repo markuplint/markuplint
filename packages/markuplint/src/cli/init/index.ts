@@ -1,7 +1,6 @@
 import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
 import fs from 'node:fs/promises';
-import module from 'node:module';
 import path from 'node:path';
 
 import { installModule, multiSelect, confirm, confirmSequence, header } from '@markuplint/cli-utils';
@@ -9,8 +8,6 @@ import { installModule, multiSelect, confirm, confirmSequence, header } from '@m
 import { createConfig, langs } from './create-config.js';
 import { getDefaultRules } from './get-default-rules.js';
 import { selectModules } from './select-modules.js';
-
-const require = module.createRequire(import.meta.url);
 
 const ruleCategories: Record<
 	Category,
@@ -71,8 +68,7 @@ export async function initialize() {
 
 	let defaultRules: DefaultRules = {};
 	if (ruleSettingMode !== 'recommended') {
-		const rulesVersion: string = require('../../../package.json').version;
-		defaultRules = await getDefaultRules(rulesVersion);
+		defaultRules = getDefaultRules();
 	}
 
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);

@@ -5,6 +5,9 @@ type Options = {
 };
 
 export default createRule<string[], Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableContents: true,

@@ -1,3 +1,5 @@
+import type { RuleConfigValue } from '@markuplint/ml-config';
+
 export type Langs =
 	| 'jsx'
 	| 'vue'
@@ -25,5 +27,5 @@ export type DefaultRules = Readonly<Record<string, Rule>>;
 
 export type Rule = {
 	readonly category: Category;
-	readonly defaultValue: boolean | string | number;
+	readonly defaultValue: RuleConfigValue;
 };

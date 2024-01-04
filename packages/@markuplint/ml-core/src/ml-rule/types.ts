@@ -4,6 +4,10 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = undefined> = {
+	readonly meta?: {
+		readonly category?: 'validation' | 'style' | 'naming-convention' | 'a11y' | 'maintainability';
+	};
+
 	readonly defaultSeverity?: Severity;
 	readonly defaultValue?: T;
 	readonly defaultOptions?: O;

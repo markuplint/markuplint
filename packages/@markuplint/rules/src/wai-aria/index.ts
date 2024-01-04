@@ -21,6 +21,9 @@ import { checkingRequiredProp } from './checkings/required-prop.js';
 import { checkingValue } from './checkings/value.js';
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		checkingValue: true,
 		checkingDeprecatedProps: true,

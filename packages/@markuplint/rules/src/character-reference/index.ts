@@ -6,6 +6,9 @@ const defaultChars = ['"', '&', '<', '>'];
 const ignoreParentElement = new Set(['script', 'style']);
 
 export default createRule({
+	meta: {
+		category: 'style',
+	},
 	async verify({ document, report, t }) {
 		const targetNodes: Report<RuleConfigValue>[] = [];
 

@@ -56,6 +56,9 @@ type ValueRule =
 	  };
 
 export default createRule<boolean, Option>({
+	meta: {
+		category: 'validation',
+	},
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {

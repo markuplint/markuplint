@@ -12,6 +12,9 @@ type Attr = {
 };
 
 export default createRule<RequiredAttributes>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
