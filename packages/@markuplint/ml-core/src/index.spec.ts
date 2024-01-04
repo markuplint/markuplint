@@ -807,7 +807,7 @@ describe('Issues', () => {
 		);
 		const map = dom.debugMap();
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#text: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[2:2](0,39)#ml-block: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
 			'[2:2]>[2:7](39,44)DIV: <div>',
 			'  namespaceURI: true',
 			'  elementType: html',

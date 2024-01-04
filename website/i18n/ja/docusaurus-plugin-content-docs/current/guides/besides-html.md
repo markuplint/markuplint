@@ -81,16 +81,6 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 ```
 <!-- prettier-ignore-end -->
 
-タグとスペースが混在しているコード。
-
-```html
-<div attr=" {{ value }} "></div>
-```
-
-```html
-<div attr="{{ value }} {{ value2 }}"></div>
-```
-
 **プルリクエスト募集中**: この問題は、開発者は認識しており、Issue [#240](https://github.com/markuplint/markuplint/issues/240)として作られています。
 
 :::

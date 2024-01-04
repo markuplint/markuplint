@@ -53,13 +53,3 @@ If it doesn't nest by quotations.
 <div attr=<?php echo value; ?>></div>
 ```
 <!-- prettier-ignore-end -->
-
-If it mixes the tags and spaces.
-
-```html
-<div attr=" <?php echo value; ?> "></div>
-```
-
-```html
-<div attr="<?php echo value; ?> <?php echo value2; ?>"></div>
-```

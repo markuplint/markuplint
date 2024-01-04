@@ -80,16 +80,6 @@ If it doesn't nest by quotations.
 ```
 <!-- prettier-ignore-end -->
 
-If it mixes the tags and spaces.
-
-```html
-<div attr=" {{ value }} "></div>
-```
-
-```html
-<div attr="{{ value }} {{ value2 }}"></div>
-```
-
 **PULL REQUEST WANTED**: This problem is recognized by developers and created as an issue [#240](https://github.com/markuplint/markuplint/issues/240).
 
 :::
