@@ -50,6 +50,12 @@ async function importParser(parserModName: string): Promise<MLParser | MLMarkupL
 	if (entity) {
 		return entity;
 	}
-	const parser: MLMarkupLanguageParser = await import(parserModName);
-	return parser;
+	const parserMod = await import(parserModName);
+
+	// TODO: To be dropped in v5
+	if (!('parser' in parserMod)) {
+		return parserMod as MLMarkupLanguageParser;
+	}
+
+	return parserMod.parser as MLParser;
 }
