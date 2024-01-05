@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { nodeListToDebugMaps, attributesToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
@@ -691,44 +693,30 @@ describe('parser', () => {
 		expect(doc.nodeList[0].parentNode).toEqual(null);
 		expect(doc.nodeList[0].prevNode).toEqual(null);
 		expect(doc.nodeList[0].nextNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[0].pearNode.uuid).toEqual(doc.nodeList[11].uuid);
 
 		// </html>
 		expect(doc.nodeList[11].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[11].pearNode.uuid).toEqual(doc.nodeList[0].uuid);
 
 		// <head>
-		// @ts-ignore
 		expect(doc.nodeList[1].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[1].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[1].nextNode.uuid).toEqual(doc.nodeList[6].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[1].pearNode.uuid).toEqual(doc.nodeList[5].uuid);
 
 		// </head>
-		// @ts-ignore
 		expect(doc.nodeList[5].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[5].pearNode.uuid).toEqual(doc.nodeList[1].uuid);
 
 		// <body>
-		// @ts-ignore
 		expect(doc.nodeList[6].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[6].prevNode.uuid).toEqual(doc.nodeList[1].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[6].nextNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[6].pearNode.uuid).toEqual(doc.nodeList[10].uuid);
 
 		// </body>
-		// @ts-ignore
 		expect(doc.nodeList[10].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[10].pearNode.uuid).toEqual(doc.nodeList[6].uuid);
 	});
 
@@ -754,306 +742,193 @@ describe('parser', () => {
 		// #text ⏎
 		expect(doc.nodeList[0].parentNode).toEqual(null);
 		expect(doc.nodeList[0].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[0].nextNode.uuid).toEqual(doc.nodeList[1].uuid);
 
 		// Doctype <!DOCTYPE␣html>
 		expect(doc.nodeList[1].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[1].prevNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[1].nextNode.uuid).toEqual(doc.nodeList[2].uuid);
 
 		// #text ⏎
 		expect(doc.nodeList[2].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[2].prevNode.uuid).toEqual(doc.nodeList[1].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[2].nextNode.uuid).toEqual(doc.nodeList[3].uuid);
 
 		// html <html␣lang="en">
 		expect(doc.nodeList[3].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[3].prevNode.uuid).toEqual(doc.nodeList[2].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[3].nextNode.uuid).toEqual(doc.nodeList[28].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[3].pearNode.uuid).toEqual(doc.nodeList[27].uuid);
 
 		{
-			// @ts-ignore
 			expect(doc.nodeList[3].childNodes[0].uuid).toEqual(doc.nodeList[4].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[3].childNodes[1].uuid).toEqual(doc.nodeList[5].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[3].childNodes[2].uuid).toEqual(doc.nodeList[18].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[3].childNodes[3].uuid).toEqual(doc.nodeList[19].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[3].childNodes[4].uuid).toEqual(doc.nodeList[26].uuid);
 		}
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[4].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[4].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[4].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
 
 		// head <head>
-		// @ts-ignore
 		expect(doc.nodeList[5].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[5].prevNode.uuid).toEqual(doc.nodeList[4].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[5].nextNode.uuid).toEqual(doc.nodeList[18].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[5].pearNode.uuid).toEqual(doc.nodeList[17].uuid);
 
 		{
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[0].uuid).toEqual(doc.nodeList[6].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[1].uuid).toEqual(doc.nodeList[7].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[2].uuid).toEqual(doc.nodeList[8].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[3].uuid).toEqual(doc.nodeList[9].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[4].uuid).toEqual(doc.nodeList[10].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[5].uuid).toEqual(doc.nodeList[11].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[6].uuid).toEqual(doc.nodeList[12].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[7].uuid).toEqual(doc.nodeList[13].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[5].childNodes[8].uuid).toEqual(doc.nodeList[16].uuid);
 		}
 
 		// #text ⏎→
-		// @ts-ignore
 		expect(doc.nodeList[6].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[6].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[6].nextNode.uuid).toEqual(doc.nodeList[7].uuid);
 
 		// meta <meta␣charset="UTF-8">
-		// @ts-ignore
 		expect(doc.nodeList[7].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[7].prevNode.uuid).toEqual(doc.nodeList[6].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[7].nextNode.uuid).toEqual(doc.nodeList[8].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[7].pearNode).toEqual(null);
 
 		// #text ⏎→
-		// @ts-ignore
 		expect(doc.nodeList[8].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[8].prevNode.uuid).toEqual(doc.nodeList[7].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[8].nextNode.uuid).toEqual(doc.nodeList[9].uuid);
 
 		// meta <meta␣name="viewport"␣content="width=device-width,␣initial-scale=1.0">
-		// @ts-ignore
 		expect(doc.nodeList[9].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[9].prevNode.uuid).toEqual(doc.nodeList[8].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[9].nextNode.uuid).toEqual(doc.nodeList[10].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[9].pearNode).toEqual(null);
 
 		// #text ⏎→
-		// @ts-ignore
 		expect(doc.nodeList[10].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[10].prevNode.uuid).toEqual(doc.nodeList[9].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[10].nextNode.uuid).toEqual(doc.nodeList[11].uuid);
 
 		// meta <meta␣http-equiv="X-UA-Compatible"␣content="ie=edge">
-		// @ts-ignore
 		expect(doc.nodeList[11].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[11].prevNode.uuid).toEqual(doc.nodeList[10].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[11].nextNode.uuid).toEqual(doc.nodeList[12].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[11].pearNode).toEqual(null);
 
 		// #text ⏎→
-		// @ts-ignore
 		expect(doc.nodeList[12].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[12].prevNode.uuid).toEqual(doc.nodeList[11].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[12].nextNode.uuid).toEqual(doc.nodeList[13].uuid);
 
 		// meta <title>
-		// @ts-ignore
 		expect(doc.nodeList[13].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[13].prevNode.uuid).toEqual(doc.nodeList[12].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[13].nextNode.uuid).toEqual(doc.nodeList[16].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[13].pearNode.uuid).toEqual(doc.nodeList[15].uuid);
 
 		{
-			// @ts-ignore
 			expect(doc.nodeList[13].childNodes[0].uuid).toEqual(doc.nodeList[14].uuid);
 		}
 
 		// #text Document
-		// @ts-ignore
 		expect(doc.nodeList[14].parentNode.uuid).toEqual(doc.nodeList[13].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[14].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[14].nextNode).toEqual(null);
 
 		// meta </title>
-		// @ts-ignore
 		expect(doc.nodeList[15].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[15].prevNode.uuid).toEqual(doc.nodeList[12].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[15].nextNode.uuid).toEqual(doc.nodeList[16].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[15].pearNode.uuid).toEqual(doc.nodeList[13].uuid);
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[16].parentNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[16].prevNode.uuid).toEqual(doc.nodeList[13].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[16].nextNode).toEqual(null);
 
 		// meta </head>
-		// @ts-ignore
 		expect(doc.nodeList[17].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[17].prevNode.uuid).toEqual(doc.nodeList[4].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[17].nextNode.uuid).toEqual(doc.nodeList[18].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[17].pearNode.uuid).toEqual(doc.nodeList[5].uuid);
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[18].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[18].prevNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[18].nextNode.uuid).toEqual(doc.nodeList[19].uuid);
 
 		// head <body>
-		// @ts-ignore
 		expect(doc.nodeList[19].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[19].prevNode.uuid).toEqual(doc.nodeList[18].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[19].nextNode.uuid).toEqual(doc.nodeList[26].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[19].pearNode.uuid).toEqual(doc.nodeList[25].uuid);
 
 		{
-			// @ts-ignore
 			expect(doc.nodeList[19].childNodes[0].uuid).toEqual(doc.nodeList[20].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[19].childNodes[1].uuid).toEqual(doc.nodeList[21].uuid);
-			// @ts-ignore
 			expect(doc.nodeList[19].childNodes[2].uuid).toEqual(doc.nodeList[24].uuid);
 		}
 
 		// #text ⏎→
-		// @ts-ignore
 		expect(doc.nodeList[20].parentNode.uuid).toEqual(doc.nodeList[19].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[20].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[20].nextNode.uuid).toEqual(doc.nodeList[21].uuid);
 
 		// head <h1>
-		// @ts-ignore
 		expect(doc.nodeList[21].parentNode.uuid).toEqual(doc.nodeList[19].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[21].prevNode.uuid).toEqual(doc.nodeList[20].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[21].nextNode.uuid).toEqual(doc.nodeList[24].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[21].pearNode.uuid).toEqual(doc.nodeList[23].uuid);
 
 		{
-			// @ts-ignore
 			expect(doc.nodeList[21].childNodes[0].uuid).toEqual(doc.nodeList[22].uuid);
 		}
 
 		// #text Title
-		// @ts-ignore
 		expect(doc.nodeList[22].parentNode.uuid).toEqual(doc.nodeList[21].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[22].prevNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[22].nextNode).toEqual(null);
 
 		// head </h1>
-		// @ts-ignore
 		expect(doc.nodeList[23].parentNode.uuid).toEqual(doc.nodeList[19].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[23].prevNode.uuid).toEqual(doc.nodeList[20].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[23].nextNode.uuid).toEqual(doc.nodeList[24].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[23].pearNode.uuid).toEqual(doc.nodeList[21].uuid);
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[24].parentNode.uuid).toEqual(doc.nodeList[19].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[24].prevNode.uuid).toEqual(doc.nodeList[21].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[24].nextNode).toEqual(null);
 
 		// </body>
-		// @ts-ignore
 		expect(doc.nodeList[25].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[25].prevNode.uuid).toEqual(doc.nodeList[18].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[25].nextNode.uuid).toEqual(doc.nodeList[26].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[25].pearNode.uuid).toEqual(doc.nodeList[19].uuid);
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[26].parentNode.uuid).toEqual(doc.nodeList[3].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[26].prevNode.uuid).toEqual(doc.nodeList[25].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[26].nextNode).toEqual(null);
 
 		// </html>
 		expect(doc.nodeList[27].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[27].prevNode.uuid).toEqual(doc.nodeList[2].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[27].nextNode.uuid).toEqual(doc.nodeList[28].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[27].pearNode.uuid).toEqual(doc.nodeList[3].uuid);
 
 		// #text ⏎
-		// @ts-ignore
 		expect(doc.nodeList[28].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[28].prevNode.uuid).toEqual(doc.nodeList[27].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[28].nextNode).toEqual(null);
 	});
 
@@ -1064,9 +939,7 @@ describe('parser', () => {
 		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 
-		// @ts-ignore
 		expect(doc.nodeList[3].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[4].nextNode.uuid).toEqual(doc.nodeList[5].uuid);
 	});
 
@@ -1092,17 +965,11 @@ describe('parser', () => {
 			'[5:10]>[6:4](54,58)#text: ⏎→→→',
 		]);
 
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].startOffset).toBe(30);
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endOffset).toBe(43);
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].startLine).toBe(4);
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endLine).toBe(4);
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].startCol).toBe(9);
-		// @ts-ignore
 		expect(doc.nodeList[2].attributes[0].endCol).toBe(22);
 	});
 
@@ -1145,7 +1012,6 @@ describe('parser', () => {
 
 	test('Static attribute', () => {
 		const ast = parse('<a href=""/>');
-		// @ts-ignore
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
@@ -1266,7 +1132,6 @@ describe('Issues', () => {
 			'[2:5]>[2:11](10,16)pre: </pre>',
 		]);
 
-		// @ts-ignore
 		expect(nodes[0].childNodes?.[0]?.raw).toBe('\ntext');
 
 		/**
@@ -1280,7 +1145,6 @@ describe('Issues', () => {
 			'[1:11]>[2:5](10,15)#text: ⏎text',
 			'[2:5]>[2:16](15,26)textarea: </textarea>',
 		]);
-		// @ts-ignore
 		expect(textarea[0].childNodes?.[0]?.raw).toBe('\ntext');
 	});
 });
