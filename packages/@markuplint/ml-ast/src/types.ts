@@ -134,7 +134,13 @@ export interface MLASTDocument {
 	unknownParseError?: string;
 }
 
+/**
+ * @deprecated Use `MLParser` instead. This will be dropped in v5.
+ */
 export interface MLMarkupLanguageParser {
+	/**
+	 * @deprecated
+	 */
 	parse(
 		sourceCode: string,
 		options?: ParserOptions & {
@@ -146,6 +152,7 @@ export interface MLMarkupLanguageParser {
 
 	/**
 	 * @default "omittable"
+	 * @deprecated
 	 */
 	endTag?: EndTagType;
 
@@ -158,6 +165,8 @@ export interface MLMarkupLanguageParser {
 	 * ```
 	 *
 	 * In the above, the `aria-hidden` is `true`.
+	 *
+	 * @deprecated
 	 */
 	booleanish?: boolean;
 }
@@ -184,6 +193,9 @@ export type ParserAuthoredElementNameDistinguishing =
 
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
 
+/**
+ * @deprecated
+ */
 export type Parse = MLMarkupLanguageParser['parse'];
 
 export type Walker = (
