@@ -21,20 +21,18 @@ const RULES_DIR = 'packages/@markuplint/rules/src';
 async function getRulePaths() {
   const rulesAbsDir = resolve(projectRoot, RULES_DIR);
   const rulesDirFileList = await readdir(pathToFileURL(rulesAbsDir));
-  const dirs = (
-    await Promise.all(
-      rulesDirFileList.map(async name => {
-        const path = resolve(rulesAbsDir, name);
-        const meta = await stat(path);
-        if (!meta.isDirectory()) {
-          return;
-        }
-        const content = await readdir(path);
-        return content.includes('schema.json') && path;
-      }),
-    )
-  ).filter(_ => _);
-  return dirs;
+  const dirs = await Promise.all(
+    rulesDirFileList.map(async name => {
+      const path = resolve(rulesAbsDir, name);
+      const meta = await stat(path);
+      if (!meta.isDirectory()) {
+        return;
+      }
+      const content = await readdir(path);
+      return content.includes('schema.json') && path;
+    }),
+  );
+  return dirs.filter(Boolean);
 }
 
 /**
@@ -51,7 +49,7 @@ async function getDocFile(filePath, value, options, severity, inherit) {
   const fileBase = basename(filePath);
   const rulesAbsDir = resolve(projectRoot, RULES_DIR);
   const ruleName = dirname(relative(rulesAbsDir, filePath));
-  const doc = await readFile(filePath, { encoding: 'utf-8' });
+  const doc = await readFile(filePath, { encoding: 'utf8' });
   const { data: frontMatter, content } = matter(doc);
   frontMatter.custom_edit_url = `${editUrlBase}/${RULES_DIR}/${ruleName}/${fileBase}`;
 
@@ -144,15 +142,15 @@ async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
         description: doc.description,
       });
 
-      if (!indexes.find(idx => idx.lang === doc.lang)) {
+      if (!indexes.some(idx => idx.lang === doc.lang)) {
         indexes.push(index);
       }
 
-      const dist = !doc.lang
-        ? // lang: en
-          resolve(ruleDocsDistDir, `${doc.id}.md`)
-        : // lang: except en
-          resolve(ruleDocsI18nDistDir.replace('<lang>', doc.lang), `${doc.id}.md`);
+      const dist = doc.lang
+        ? // lang: except en
+          resolve(ruleDocsI18nDistDir.replace('<lang>', doc.lang), `${doc.id}.md`)
+        : // lang: en
+          resolve(ruleDocsDistDir, `${doc.id}.md`);
 
       await output(dist, doc.contents);
     }
@@ -169,9 +167,9 @@ async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
  */
 async function crateRuleIndexDoc(index, ruleDocsDistDir) {
   const ruleListItem = rule =>
-    !rule.href
-      ? `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.description}`
-      : `[\`${rule.id}\`](${rule.href})|${rule.description}`;
+    rule.href
+      ? `[\`${rule.id}\`](${rule.href})|${rule.description}`
+      : `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.description}`;
 
   const table = list => {
     return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
