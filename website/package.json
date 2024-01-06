@@ -17,6 +17,7 @@
     "@docusaurus/plugin-client-redirects": "^3.0.1",
     "@docusaurus/preset-classic": "^3.0.1",
     "@docusaurus/remark-plugin-npm2yarn": "^3.0.1",
+    "@markuplint/rules": "^4.0.0-alpha.9",
     "@mdx-js/react": "3.0.0",
     "clsx": "^2.1.0",
     "dotenv": "^16.3.1",

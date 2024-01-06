@@ -2,6 +2,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, basename, extname, relative, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import rules from '@markuplint/rules';
 import matter from 'gray-matter';
 
 import { rewriteRuleContent } from './rule-content.mjs';
@@ -84,7 +85,8 @@ async function getDocFile(filePath, value, options, severity, inherit) {
 async function createRuleDoc(path) {
   const schema = await importJSON(resolve(path, 'schema.json'));
   const { value, options } = schema.definitions;
-  const category = schema._category ?? 'N/A';
+  const ruleName = basename(path);
+  const category = rules[ruleName].meta.category;
   const severity = schema.oneOf.find(val => val.properties)?.properties?.severity?.default ?? 'N/A';
   const docFile = resolve(path, 'README.md');
   const doc = await getDocFile(docFile, value, options, severity);
