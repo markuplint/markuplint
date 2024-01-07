@@ -1,12 +1,12 @@
 import type { MLFile } from './ml-file/index.js';
-import type { MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
+import type { MLMarkupLanguageParser, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type { ParserConfig } from '@markuplint/ml-config';
 
 import path from 'node:path';
 
 import { toRegexp } from './utils.js';
 
-const parsers = new Map<string, MLMarkupLanguageParser>();
+const parsers = new Map<string, MLParser | MLMarkupLanguageParser>();
 
 export async function resolveParser(
 	file: Readonly<MLFile>,
@@ -45,7 +45,7 @@ export async function resolveParser(
 	};
 }
 
-async function importParser(parserModName: string) {
+async function importParser(parserModName: string): Promise<MLParser | MLMarkupLanguageParser> {
 	const entity = parsers.get(parserModName);
 	if (entity) {
 		return entity;

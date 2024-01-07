@@ -1,4 +1,4 @@
-import type { MLMarkupLanguageParser } from '@markuplint/ml-ast';
+import type { MLParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -10,7 +10,7 @@ import { Document } from '../ml-dom/index.js';
 
 export type CreateTestOptions = {
 	readonly config?: Config;
-	readonly parser?: Readonly<MLMarkupLanguageParser>;
+	readonly parser?: Readonly<MLParser>;
 	readonly specs?: MLMLSpec;
 };
 

@@ -171,6 +171,36 @@ export interface MLMarkupLanguageParser {
 	booleanish?: boolean;
 }
 
+export interface MLParser {
+	parse(
+		sourceCode: string,
+		options?: ParserOptions & {
+			readonly offsetOffset?: number;
+			readonly offsetLine?: number;
+			readonly offsetColumn?: number;
+		},
+	): MLASTDocument;
+
+	/**
+	 * @default "omittable"
+	 */
+	endTag?: EndTagType;
+
+	/**
+	 * Detect value as a true if its attribute is booleanish value and omitted.
+	 *
+	 * Ex:
+	 * ```jsx
+	 * <Component aria-hidden />
+	 * ```
+	 *
+	 * In the above, the `aria-hidden` is `true`.
+	 */
+	booleanish?: boolean;
+
+	tagNameCaseSensitive?: boolean;
+}
+
 /**
  * The end tag omittable type.
  *
