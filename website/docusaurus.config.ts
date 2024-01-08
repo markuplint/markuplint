@@ -1,14 +1,12 @@
-// @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
+import type { Config } from '@docusaurus/types';
 
-const npm2yarn = require('@docusaurus/remark-plugin-npm2yarn');
+import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 
-const { isNextVersion, url, editUrlBase, algoliaIndexName } = require('./config');
-const darkCodeTheme = require('./prismDark');
-const lightCodeTheme = require('./prismLight');
+import { isNextVersion, url, editUrlBase, algoliaIndexName } from './config';
+import { prismDark } from './prismDark';
+import { prismLight } from './prismLight';
 
-/** @type {import('@docusaurus/types').Config} */
-const config = {
+const config: Config = {
   title: 'Markuplint',
   tagline: 'Peace of mind in your markup',
   url: url,
@@ -33,24 +31,24 @@ const config = {
     [
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         docs: {
           path: 'docs',
-          sidebarPath: require.resolve('./sidebars.js'),
+          sidebarPath: './sidebars.ts',
           editUrl: `${editUrlBase}/website`,
           editLocalizedFiles: true,
           remarkPlugins: [[npm2yarn, { sync: true }]],
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: './src/css/custom.css',
         },
-      }),
+      },
     ],
   ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
       metadata: [
         { name: 'theme-color', content: '#fff' },
         { property: 'og:type', content: 'website' },
@@ -146,32 +144,32 @@ const config = {
         : undefined,
       prism: {
         additionalLanguages: ['json', 'bash'],
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: prismLight,
+        darkTheme: prismDark,
       },
       algolia: {
         appId: 'SIO9QLVJBB', // cspell:disable-line
         apiKey: '9c005a1976113e7cb45e7dd417d8eb0f',
         indexName: algoliaIndexName,
       },
-    }),
+    },
 
   plugins: [
     [
       'content-docs',
       /** @type {import('@docusaurus/plugin-content-docs').Options} */
-      ({
+      {
         id: 'community',
         path: 'community',
         routeBasePath: 'community',
         editUrl: `${editUrlBase}/website`,
-        sidebarPath: require.resolve('./sidebarsCommunity.js'),
-      }),
+        sidebarPath: './sidebarsCommunity.ts',
+      },
     ],
     [
       '@docusaurus/plugin-client-redirects',
       /** @type {import('@docusaurus/plugin-client-redirects').Options} */
-      ({
+      {
         redirects: [
           {
             from: '/getting-started',
@@ -203,9 +201,9 @@ const config = {
           }
           return;
         },
-      }),
+      },
     ],
   ],
 };
 
-module.exports = config;
+export default config;
