@@ -99,7 +99,7 @@
 
 .theme-code-block.config pre {
   padding-top: var(--code-label-background-height);
-  background-color: var(--code-background-color);
+  background-color: var(--code-background-color) !important;
 }
 
 .theme-code-block.config pre::before {
