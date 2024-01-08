@@ -8,6 +8,7 @@ import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 import { isNextVersion, url, editUrlBase, algoliaIndexName } from './config';
 import { prismDark } from './prismDark';
 import { prismLight } from './prismLight';
+import { codeBlockClassName } from './src/remark/code-block';
 
 const config: Config = {
   title: 'Markuplint',
@@ -39,7 +40,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: `${editUrlBase}/website`,
           editLocalizedFiles: true,
-          remarkPlugins: [[npm2yarn, { sync: true }]],
+          remarkPlugins: [[npm2yarn, { sync: true }], codeBlockClassName],
         },
         theme: {
           customCss: './src/css/custom.css',
