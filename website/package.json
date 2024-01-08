@@ -13,10 +13,10 @@
   "author": "Yusuke Hirao",
   "license": "MIT",
   "dependencies": {
-    "@docusaurus/core": "^3.0.1",
-    "@docusaurus/plugin-client-redirects": "^3.0.1",
-    "@docusaurus/preset-classic": "^3.0.1",
-    "@docusaurus/remark-plugin-npm2yarn": "^3.0.1",
+    "@docusaurus/core": "^3.1.0",
+    "@docusaurus/plugin-client-redirects": "^3.1.0",
+    "@docusaurus/preset-classic": "^3.1.0",
+    "@docusaurus/remark-plugin-npm2yarn": "^3.1.0",
     "@markuplint/rules": "^4.0.0-alpha.9",
     "@mdx-js/react": "3.0.0",
     "clsx": "^2.1.0",
@@ -27,7 +27,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.0.1",
+    "@docusaurus/module-type-aliases": "^3.1.0",
     "@imgix/js-core": "^3.8.0",
     "@tsconfig/docusaurus": "^2.0.1",
     "eslint-plugin-react": "^7.33.2",
