@@ -6,7 +6,6 @@ on:
             - dev
         paths:
             - 'website/**'
-            - '!website/**/*.md'
 
 jobs:
     build:

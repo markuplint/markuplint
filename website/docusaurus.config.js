@@ -15,7 +15,8 @@ const config = {
   baseUrl: '/',
   trailingSlash: false,
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
+  onBrokenAnchors: 'throw',
   favicon: 'img/favicon.svg',
 
   i18n: {
