@@ -144,6 +144,7 @@ const config = {
           }
         : undefined,
       prism: {
+        additionalLanguages: ['json', 'bash'],
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
