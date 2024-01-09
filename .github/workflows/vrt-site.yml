@@ -1,0 +1,38 @@
+name: Website Visual Regression Testing
+
+on:
+    push:
+        branches:
+            - vrt-test
+        paths:
+            - 'website/**'
+    pull_request:
+        branches:
+            - vrt-test
+        paths:
+            - 'website/**'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: cd website && yarn install
+
+            - name: Capture screenshots
+              run: yarn site:screenshot
+
+            - uses: reg-viz/reg-actions@v2
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './__screenshots__'
