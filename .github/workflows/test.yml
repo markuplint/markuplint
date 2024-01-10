@@ -11,6 +11,8 @@ on:
             - 'packages/**'
             - 'test/**'
             - 'yarn.lock'
+            - '!**/*.md'
+            - 'packages/@markuplint/config-presets/src/README.md'
 
 env:
     NODE_BUILD_VERSION: 18
