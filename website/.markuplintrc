@@ -1,57 +1,16 @@
 {
-  "excludeFiles": ["./node_modules/**/*"],
+  "extends": ["markuplint:recommended-react"],
   "parser": {
-    ".tsx$": "@markuplint/jsx-parser"
+    "\\.(j|t)sx$": "@markuplint/jsx-parser"
   },
-  "specs": ["@markuplint/react-spec"],
-  "rules": {
-    "attr-duplication": true,
-    "attr-value-quotes": true,
-    "case-sensitive-attr-name": false,
-    "case-sensitive-tag-name": false,
-    "character-reference": true,
-    "class-naming": false,
-    "deprecated-attr": true,
-    "deprecated-element": true,
-    "doctype": true,
-    "end-tag": true,
-    "id-duplication": true,
-    "ineffective-attr": true,
-    "invalid-attr": true,
-    "landmark-roles": true,
-    "no-boolean-attr-value": true,
-    "permitted-contents": true,
-    "required-attr": true,
-    "required-h1": true,
-    "wai-aria": true
+  "specs": {
+    "\\.(j|t)sx$": "@markuplint/react-spec"
   },
   "nodeRules": [
     {
-      "selector": "meta[property]",
+      "selector": "img",
       "rules": {
-        "invalid-attr": {
-          "options": {
-            "allowAttrs": ["property", "content"]
-          }
-        },
-        "required-attr": false
-      }
-    },
-    {
-      "selector": "style",
-      "rules": {
-        "invalid-attr": {
-          "options": {
-            "allowAttrs": [
-              {
-                "name": "jsx",
-                "value": {
-                  "type": "Boolean"
-                }
-              }
-            ]
-          }
-        }
+        "required-attr": ["src", "alt"]
       }
     }
   ]

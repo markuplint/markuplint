@@ -7,7 +7,7 @@
     "site:start": "yarn site:prebuild; docusaurus start",
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node scripts/prebuild/index.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
-    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './**/*.{js,ts,tsx}' './*.{js,ts}'; stylelint './**/*.css'; textlint --fix './website/i18n/ja'; cd ../; yarn cli './website/**/*.tsx'",
+    "site:lint": "prettier --check './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' --ignore-path .gitignore; eslint . --ext js,ts,jsx,tsx; stylelint './**/*.css'; cspell '**' --no-progress; textlint './i18n/ja'; markuplint '**/*.tsx';",
     "site:screenshot": "playwright test tests/screenshot.spec.ts",
     "site:up": "yarn upgrade-interactive --latest"
   },
@@ -30,13 +30,20 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.1.0",
     "@imgix/js-core": "^3.8.0",
+    "@markuplint/jsx-parser": "^4.0.0-alpha.9",
+    "@markuplint/react-spec": "^4.0.0-alpha.9",
     "@playwright/test": "^1.40.1",
+    "cspell": "^8.3.2",
+    "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "markuplint": "^4.0.0-alpha.9",
+    "prettier": "^3.1.1",
     "stylelint": "^16.1.0",
     "stylelint-config-recess-order": "^4.4.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
+    "textlint": "^13.4.1",
     "typescript": "^5.3.3"
   },
   "engines": {
