@@ -29,10 +29,21 @@ jobs:
             - name: Install dependencies
               run: cd website && yarn install
 
+            - name: Cache playwright binaries
+              uses: actions/cache@v3
+              id: playwright-cache
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+              run: npx playwright install --with-deps chromium
+
             - name: Capture screenshots
-              run: yarn site:screenshot
+              run: cd website && yarn site:screenshot
 
             - uses: reg-viz/reg-actions@v2
               with:
                   github-token: '${{ secrets.GITHUB_TOKEN }}'
-                  image-directory-path: './__screenshots__'
+                  image-directory-path: './website/__screenshots__'
