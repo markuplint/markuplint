@@ -105,7 +105,16 @@ jobs:
                       website-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-
 
             - name: Lint
-              run: cd website && yarn site:lint
+              run: |
+                  cd website
+                  ERROR=0
+                  site:lint:prettier || ERROR=1
+                  site:lint:eslint || ERROR=1
+                  site:lint:stylelint || ERROR=1
+                  site:lint:cspell || ERROR=1
+                  site:lint:textlint || ERROR=1
+                  site:lint:markuplint || ERROR=1
+                  exit $ERROR
 
     visual-regression-test:
         needs: dev-setup
