@@ -11,6 +11,14 @@ on:
             - 'packages/**'
             - 'test/**'
             - 'yarn.lock'
+    push: # for cache saving
+        branches:
+            - dev
+            - v3
+            - next
+        paths:
+            - 'packages/**'
+            - 'yarn.lock'
 
 env:
     NODE_BUILD_VERSION: 18
@@ -109,6 +117,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
+        if: github.event_name == 'pull_request'
         needs: [dev-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
@@ -204,6 +213,7 @@ jobs:
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
     test:
+        if: github.event_name == 'pull_request'
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
@@ -267,6 +277,7 @@ jobs:
                   command: yarn vitest run --shard=${{ matrix.shard }}
 
     isolated-env:
+        if: github.event_name == 'pull_request'
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
         env:
