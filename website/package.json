@@ -7,7 +7,7 @@
     "site:start": "yarn site:prebuild; docusaurus start",
     "site:build": "yarn site:prebuild; docusaurus build",
     "site:prebuild": "node scripts/prebuild/index.mjs; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
-    "site:lint": "prettier --check './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' --ignore-path .gitignore; eslint . --ext js,ts,jsx,tsx; stylelint './**/*.css' --ignore-path .gitignore; cspell '**' --no-progress; textlint './i18n/ja'; markuplint '**/*.tsx';",
+    "site:lint": "prettier --check './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' --ignore-path .gitignore; eslint . --ext js,ts,jsx,tsx --ignore-path .gitignore; stylelint './**/*.css' --ignore-path .gitignore; cspell '**' --no-progress; textlint './i18n/ja'; markuplint '**/*.tsx';",
     "site:screenshot": "playwright test tests/screenshot.spec.ts",
     "site:up": "yarn upgrade-interactive --latest"
   },
