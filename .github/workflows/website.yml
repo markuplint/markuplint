@@ -6,11 +6,13 @@ on:
             - dev
         paths:
             - 'website/**'
+            - '.github/workflows/website.yml'
     push: # for artifact and cache saving
         branches:
             - dev
         paths:
             - 'website/**'
+            - '.github/workflows/website.yml'
 
 env:
     NODE_BUILD_VERSION: 18
