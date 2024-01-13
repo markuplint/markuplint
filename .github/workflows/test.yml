@@ -17,7 +17,6 @@ on:
             - v3
             - next
         paths:
-            - 'packages/**'
             - 'yarn.lock'
 
 env:
@@ -61,6 +60,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
     build:
+        if: github.event_name == 'pull_request'
         needs: dev-setup
         runs-on: ${{ matrix.os }}
         strategy:
