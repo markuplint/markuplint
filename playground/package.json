@@ -7,6 +7,7 @@
 		"pg:dev": "vite",
 		"pg:build": "tsc && vite build",
 		"pg:lint": "eslint src --ext ts,tsx; markuplint 'src/**/*.tsx'; cspell '**' --no-progress; prettier --check 'src/**/*.{js,ts,tsx}'",
+		"pg:test": "vitest",
 		"pg:preview": "vite preview",
 		"pg:up": "yarn upgrade-interactive --latest"
 	},
@@ -31,6 +32,7 @@
 		"@iconify-json/majesticons": "^1.1.11",
 		"@markuplint/jsx-parser": "^4.0.0-alpha.5",
 		"@markuplint/react-spec": "^4.0.0-alpha.5",
+		"@testing-library/react": "^14.1.2",
 		"@total-typescript/ts-reset": "^0.5.1",
 		"@types/json-schema": "^7.0.15",
 		"@types/react": "^18.2.45",
@@ -43,11 +45,15 @@
 		"eslint-plugin-react": "^7.32.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.4.5",
+		"eslint-plugin-testing-library": "^6.2.0",
+		"eslint-plugin-vitest": "^0.3.20",
+		"jsdom": "^23.2.0",
 		"postcss": "^8.4.32",
 		"prettier": "^3.1.1",
 		"prettier-plugin-tailwindcss": "^0.5.9",
 		"tailwindcss": "^3.4.0",
 		"typescript": "^5.3.3",
-		"vite": "^5.0.10"
+		"vite": "^5.0.10",
+		"vitest": "^1.2.0"
 	}
 }
