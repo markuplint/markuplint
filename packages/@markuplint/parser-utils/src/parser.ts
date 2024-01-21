@@ -135,8 +135,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			this.#authoredElementName = options?.authoredElementName;
 
+			let frontMatter: string | null = null;
 			if (options?.ignoreFrontMatter) {
-				this.#setRawCode(ignoreFrontMatter(this.rawCode));
+				const fm = ignoreFrontMatter(this.rawCode);
+				this.#setRawCode(fm.code);
+				frontMatter = fm.frontMatter;
 			}
 
 			const blocks = ignoreBlock(this.rawCode, this.#ignoreTags, this.#maskChar);
@@ -154,6 +157,30 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			nodeList = this.afterFlattenNodes(nodeList);
 			nodeList = restoreNode(this, nodeList, blocks, false);
 			nodeList = this.afterParse(nodeList, options);
+
+			if (frontMatter) {
+				const newNodeList = [...nodeList];
+				let firstText = '';
+				const firstTextNode = newNodeList.shift();
+				if (firstTextNode && firstTextNode.type === 'text') {
+					firstText = firstTextNode.raw;
+				} else if (firstTextNode) {
+					newNodeList.unshift(firstTextNode);
+				}
+				const raw = frontMatter + firstText.slice(frontMatter.length);
+				const token = this.sliceFragment(0, raw.length);
+				const fmNode = this.visitPsBlock({
+					...token,
+					depth: 0,
+					parentNode: null,
+					raw,
+					nodeName: 'front-matter',
+				})[0];
+				if (!fmNode) {
+					throw new ParserError('Unexpected front matter', firstTextNode ?? token);
+				}
+				nodeList = [fmNode, ...newNodeList];
+			}
 
 			// Reset state
 			this.state = structuredClone(this.#defaultState);
