@@ -863,6 +863,7 @@
     type-fest "^4.8.2"
 
 "@markuplint/ml-spec@4.0.0-alpha.6", "latest-markuplint-ml-spec@npm:@markuplint/ml-spec@next":
+  name latest-markuplint-ml-spec
   version "4.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.0.0-alpha.6.tgz#895e0462ed0870e0796b5d849938a438e57b8f7d"
   integrity sha512-Sns28+UXHa+d/aqqEIdH6eDBVrjQmmGSpN1PZJsWkZ1cgQMgtNn5QHpN27sSxP6uU9mBvcms/b9HP8nRr/5sZA==
