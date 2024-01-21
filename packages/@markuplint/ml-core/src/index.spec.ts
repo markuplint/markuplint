@@ -818,4 +818,35 @@ describe('Issues', () => {
 			'[3:1]>[3:8](57,64)#ml-block: {/each}',
 		]);
 	});
+
+	test('#1042', () => {
+		const contents = [
+			`---
+key: value
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>title</title>
+	</head>
+	<body>
+		<div id="app"></div>
+	</body>
+</html>`,
+			'<div attr attr2=\'value2\' attr3="value3">foo</div>',
+			'      <div   attr    attr2=\'value2\' attr3  =   "value3">\r\nfoo\n\n\n\n\n\n\n</div>',
+		];
+		const ignoreFrontMatter = {
+			config: {
+				parserOptions: {
+					ignoreFrontMatter: true,
+				},
+			},
+		};
+		expect(createTestDocument(contents[0]).toString()).toBe(contents[0]);
+		expect(createTestDocument(contents[0], ignoreFrontMatter).toString()).toBe(contents[0]);
+		expect(createTestDocument(contents[1]).toString()).toBe(contents[1]);
+		expect(createTestDocument(contents[2]).toString()).toBe(contents[2]);
+	});
 });

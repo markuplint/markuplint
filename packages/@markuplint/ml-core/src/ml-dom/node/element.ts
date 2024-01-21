@@ -2715,6 +2715,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.originRaw;
 		}
 
+		if (this.isOmitted) {
+			return this.originRaw;
+		}
+
 		let fixed = this.originRaw;
 		let gap = 0;
 		if (this.nodeName !== this.fixedNodeName) {
