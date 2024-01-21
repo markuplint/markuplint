@@ -114,7 +114,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 詳しくは、 [`parser`](/docs/configuration/properties#parser)と[`specs`](/docs/configuration/properties#specs)の説明をご覧ください。
 
-### なぜスペックプラグインが必要なのですか
+### なぜスペックプラグインが必要なのですか {#why-need-the-spec-plugins}
 
 例えば、ネイティブのHTML要素には`key`属性は存在しませんが、**React**や**Vue**を使うときにはその固有の属性をつかうことがとても多いです。そこで、`@markuplint/react-spec`や`@markuplint/vue-spec`を指定する必要があります。
 

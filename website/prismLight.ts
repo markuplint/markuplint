@@ -1,34 +1,34 @@
-const { themes } = require('prism-react-renderer');
+import { themes } from 'prism-react-renderer';
 
-module.exports = {
-  ...themes.vsDark,
+export const prismLight = {
+  ...themes.vsLight,
 
   // Plain text
   plain: {
     color: 'var(--ifm-color-content)',
-    backgroundColor: '#202025',
+    backgroundColor: '#f9f9fb',
   },
   styles: [
-    ...themes.vsDark.styles,
+    ...themes.vsLight.styles,
 
     // HTML
     {
       types: ['tag'],
-      style: { color: 'var(--code-color-blue-light)' },
+      style: { color: 'var(--code-color-blue-dark)' },
     },
     {
       types: ['attr-name'],
-      style: { color: 'var(--code-color-sky-light)' },
+      style: { color: 'var(--code-color-sky-dark)' },
     },
     {
       types: ['attr-value'],
-      style: { color: 'var(--code-color-orange-light)' },
+      style: { color: 'var(--code-color-orange-dark)' },
     },
 
     // CSS
     {
       types: ['atrule', 'rule', 'keyword'],
-      style: { color: 'var(--code-color-purple-light)' },
+      style: { color: 'var(--code-color-purple-dark)' },
     },
     {
       types: ['color', 'unit', 'number'],
@@ -38,7 +38,7 @@ module.exports = {
     // General
     {
       types: ['comment'],
-      style: { color: 'var(--code-color-lime-light)' },
+      style: { color: 'var(--code-color-lime-dark)' },
     },
     {
       types: ['punctuation', 'operator', 'combinator'],
@@ -46,27 +46,27 @@ module.exports = {
     },
     {
       types: ['script', 'constant', 'property', 'key'],
-      style: { color: 'var(--code-color-sky-light)' },
+      style: { color: 'var(--code-color-sky-dark)' },
     },
     {
       types: ['string'],
-      style: { color: 'var(--code-color-orange-light)' },
+      style: { color: 'var(--code-color-orange-dark)' },
     },
     {
       types: ['regex'],
-      style: { color: 'var(--code-color-red-light)' },
+      style: { color: 'var(--code-color-red-dark)' },
     },
     {
       types: ['builtin', 'boolean'],
-      style: { color: 'var(--code-color-blue-light)' },
+      style: { color: 'var(--code-color-blue-dark)' },
     },
     {
       types: ['class-name', 'maybe-class-name'],
-      style: { color: 'var(--code-color-green-light)' },
+      style: { color: 'var(--code-color-green-dark)' },
     },
     {
       types: ['function'],
-      style: { color: 'var(--code-color-yellow-light)' },
+      style: { color: 'var(--code-color-yellow-dark)' },
     },
   ],
 };
