@@ -24,6 +24,6 @@
 		"@astrojs/parser": "0.22.2",
 		"@markuplint/ml-ast": "4.0.0-alpha.9",
 		"@markuplint/parser-utils": "4.0.0-alpha.9",
-		"astro-eslint-parser": "^0.16.0"
+		"astro-eslint-parser": "^0.16.2"
 	}
 }
