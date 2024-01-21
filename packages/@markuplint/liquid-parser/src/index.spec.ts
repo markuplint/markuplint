@@ -1,6 +1,8 @@
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('Tags', () => {
 	test('liquid-block', () => {
