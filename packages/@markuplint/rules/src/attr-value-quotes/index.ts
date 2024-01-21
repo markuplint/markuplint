@@ -40,7 +40,6 @@ export default createRule<Type>({
 			const quote = quoteList[attr.rule.value];
 			if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
 				attr.startQuote.fix(quote);
-				// TODO: attr.endQuote = new MLToken(quote);
 				attr.endQuote?.fix(quote);
 			}
 		});
