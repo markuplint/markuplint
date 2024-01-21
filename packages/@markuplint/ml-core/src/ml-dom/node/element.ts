@@ -98,7 +98,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
-	readonly #tagOpenChar: string;
+	readonly tagCloseChar: string;
 
 	constructor(
 		astNode: MLASTElement,
@@ -118,7 +118,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		this.isOmitted = astNode.isGhost;
 
-		this.#tagOpenChar = astNode.tagOpenChar;
+		this.tagOpenChar = astNode.tagOpenChar;
 	}
 
 	/**
@@ -3262,7 +3262,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return {
 			offset: this.startOffset,
 			line: this.startLine,
-			col: this.startCol + this.#tagOpenChar.length,
+			col: this.startCol + this.tagOpenChar.length,
 		};
 	}
 
