@@ -40,7 +40,7 @@
     "@imgix/js-core": "^3.8.0",
     "@markuplint/jsx-parser": "^4.0.0-alpha.9",
     "@markuplint/react-spec": "^4.0.0-alpha.9",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.41.1",
     "@tsconfig/docusaurus": "^2.0.1",
     "cspell": "^8.3.2",
     "eslint": "^8.56.0",
