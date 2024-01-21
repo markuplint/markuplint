@@ -3,7 +3,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('parser', () => {
 	test('syntax error', () => {
@@ -53,13 +55,25 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(1);
 		expect(doc.nodeList[0].attributes.length).toBe(4);
 		expect(doc.nodeList[0].attributes[0].name.raw).toBe('data-attr');
-		expect(doc.nodeList[0].attributes[0].value.raw).toBe('variable + variable2');
+		expect(doc.nodeList[0].attributes[0].value.raw).toBe(' variable + variable2');
 		expect(doc.nodeList[0].attributes[1].name.raw).toBe('data-attr2');
-		expect(doc.nodeList[0].attributes[1].value.raw).toBe('variable3 + variable4');
+		expect(doc.nodeList[0].attributes[1].value.raw).toBe(' variable3 + variable4');
 		expect(doc.nodeList[0].attributes[2].name.raw).toBe('data-attr3');
 		expect(doc.nodeList[0].attributes[2].value.raw).toBe('');
 		expect(doc.nodeList[0].attributes[3].name.raw).toBe('data-attr4');
-		expect(doc.nodeList[0].attributes[3].value.raw).toBe('`${variable5}`');
+		expect(doc.nodeList[0].attributes[3].value.raw).toBe(' `${variable5}`');
+	});
+
+	test('Potential Value', () => {
+		const doc = parse(
+			'div(dq = "dq0" sq = \'sq1\' bq = `bq2` n = 3 b = true complex = `${variable}` + 2 - true + "" + `foo`)',
+		);
+		expect(doc.nodeList[0].attributes[0].potentialValue).toBe('dq0');
+		expect(doc.nodeList[0].attributes[1].potentialValue).toBe('sq1');
+		expect(doc.nodeList[0].attributes[2].potentialValue).toBe('bq2');
+		expect(doc.nodeList[0].attributes[3].potentialValue).toBe('3');
+		expect(doc.nodeList[0].attributes[4].potentialValue).toBe('true');
+		expect(doc.nodeList[0].attributes[5].potentialValue).toBeUndefined();
 	});
 
 	test('ID and Classes', () => {
@@ -128,7 +142,6 @@ html
 			'[7:9]>[8:2](183,193)#text: Document⏎→',
 			'[8:2]>[8:6](193,197)body: body',
 			'[9:3]>[9:9](200,206)script: script',
-			'[10:4]>[10:16](211,223)#text: const␣i␣=␣0;',
 			'[11:3]>[11:18](226,241)#comment: //␣html-comment',
 			'[12:3]>[12:6](244,247)div: div',
 			'[13:6]>[14:3](253,268)#text: text&amp;div⏎→→',
@@ -250,9 +263,9 @@ html
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:3](0,2)ul: ul',
-			'[2:2]>[2:15](4,17)Each: each␣i␣in␣obj',
+			'[2:2]>[2:15](4,17)#ps:Each: each␣i␣in␣obj',
 			'[3:3]>[3:5](20,22)li: li',
-			'[3:5]>[3:8](22,25)Code: =␣i',
+			'[3:5]>[3:8](22,25)#ps:Code: =␣i',
 		]);
 	});
 
@@ -268,11 +281,11 @@ else
 		// console.log(doc.nodeList);
 		// console.log(map);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:8](0,7)Conditional: if␣bool',
+			'[1:1]>[1:8](0,7)#ps:Conditional: if␣bool',
 			'[2:4]>[3:1](11,13)#text: 1⏎',
-			'[3:1]>[3:14](13,26)Conditional: else␣if␣bool2',
+			'[3:1]>[3:14](13,26)#ps:Conditional: else␣if␣bool2',
 			'[4:4]>[5:1](30,32)#text: 2⏎',
-			'[5:1]>[5:5](32,36)Conditional: else',
+			'[5:1]>[5:5](32,36)#ps:Conditional: else',
 			'[6:4]>[7:1](40,42)#text: 3⏎',
 		]);
 	});
@@ -294,7 +307,7 @@ else
 			'[2:2]>[2:5](9,12)div: div',
 			'[3:3]>[3:9](15,21)span: <span>',
 			'[3:9]>[4:4](21,25)#text: ⏎→→→',
-			'[4:4]>[4:25](25,44)img: <img␣src="path/to">',
+			'[4:4]>[4:23](25,44)img: <img␣src="path/to">',
 			'[4:23]>[5:3](44,47)#text: ⏎→→',
 			'[5:3]>[5:10](47,54)span: </span>',
 			'[5:10]>[6:4](54,58)#text: ⏎→→→',
@@ -338,7 +351,7 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
-			'[2:2]>[2:13](8,13)div: <div>',
+			'[2:2]>[2:7](8,13)div: <div>',
 			'[2:7]>[4:2](13,22)#text: ⏎→→text⏎→',
 			'[4:2]>[4:8](22,28)div: </div>',
 		]);
@@ -354,9 +367,9 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: .root',
 			'[1:7]>[2:2](6,8)#text: ⏎→',
-			'[2:2]>[2:13](8,13)div: <div>',
+			'[2:2]>[2:7](8,13)div: <div>',
 			'[2:7]>[3:3](13,16)#text: ⏎→→',
-			'[3:3]>[3:16](16,23)img: <img␣/>',
+			'[3:3]>[3:10](16,23)img: <img␣/>',
 			'[3:10]>[4:2](23,25)#text: ⏎→',
 			'[4:2]>[4:8](25,31)div: </div>',
 		]);
@@ -367,10 +380,7 @@ else
 	const $span = '<span>text</span>';`);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(doc.unknownParseError).toBeUndefined();
-		expect(map).toStrictEqual([
-			'[1:1]>[1:7](0,6)script: script',
-			"[2:2]>[2:36](9,43)#text: const␣$span␣=␣'<span>text</span>';",
-		]);
+		expect(map).toStrictEqual(['[1:1]>[1:7](0,6)script: script']);
 	});
 
 	test('block-in-tag script2', () => {
@@ -381,12 +391,8 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[2:2]>[2:10](6,14)script: <script>',
-			'[2:10]>[2:29](14,33)#text: ␣var␣a␣=␣"<aaaa>";␣',
 			'[2:29]>[2:38](33,42)script: </script>',
 		]);
-		const code = doc.nodeList[1].childNodes[0];
-		expect(code.raw).toBe(' var a = "<aaaa>"; ');
-		expect(code.parentNode.nodeName).toBe('script');
 	});
 
 	test('block-in-tag attr', () => {
@@ -398,9 +404,9 @@ else
 		expect(map).toStrictEqual([
 			'[1:1]>[1:4](0,3)div: div',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
-			'[2:2]>[2:27](6,27)input: <input␣invalid-attr/>',
+			'[2:2]>[2:23](6,27)input: <input␣invalid-attr/>',
 			'[2:23]>[3:2](27,29)#text: ⏎→',
-			'[3:2]>[3:27](29,50)input: <input␣invalid-attr/>',
+			'[3:2]>[3:23](29,50)input: <input␣invalid-attr/>',
 		]);
 		const input1 = doc.nodeList[2];
 		const input2 = doc.nodeList[4];
@@ -425,9 +431,9 @@ else
 		expect(map).toStrictEqual([
 			'[21:1]>[21:4](20,23)div: div',
 			'[21:5]>[22:2](24,26)#text: ⏎→',
-			'[22:2]>[22:27](26,47)input: <input␣invalid-attr/>',
+			'[22:2]>[22:23](26,47)input: <input␣invalid-attr/>',
 			'[22:23]>[23:2](47,49)#text: ⏎→',
-			'[23:2]>[23:41](49,84)input: <input␣invalid-attr␣invalid-attr2/>',
+			'[23:2]>[23:37](49,84)input: <input␣invalid-attr␣invalid-attr2/>',
 		]);
 		const input1 = doc.nodeList[2];
 		const input2 = doc.nodeList[4];
@@ -529,9 +535,9 @@ else
 			'  [1:5]>[1:9](4,8)name: attr',
 			'  [1:9]>[1:10](8,9)bE: ␣',
 			'  [1:10]>[1:11](9,10)equal: =',
-			'  [1:11]>[1:12](10,11)aE: ␣',
-			'  [1:12]>[1:12](11,11)sQ: ',
-			'  [1:12]>[1:24](11,23)value: cond␣?␣a␣:␣b',
+			'  [1:11]>[1:11](10,10)aE: ',
+			'  [1:11]>[1:11](10,10)sQ: ',
+			'  [1:11]>[1:24](10,23)value: ␣cond␣?␣a␣:␣b',
 			'  [1:24]>[1:24](23,23)eQ: ',
 			'  isDirective: false',
 			'  isDynamicValue: true',
@@ -571,7 +577,6 @@ else
 		// console.log(doc.nodeList);
 		// console.log(map);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:4](0,3)#text: ␣␣␣',
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
@@ -599,7 +604,6 @@ html
 		// console.log(doc.nodeList);
 		// console.log(map);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:4](0,3)#text: ␣␣␣',
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
@@ -642,7 +646,7 @@ describe('Issues', () => {
 		expect(html.uuid).toBe(p.parentNode.uuid);
 		expect(html.childNodes.length).toBe(1);
 		expect(p.uuid).toBe(html.childNodes[0].uuid);
-		expect(p.childNodes.length).toBe(1);
+		expect(p.childNodes.length).toBe(2);
 		expect(span.uuid).toBe(p.childNodes[0].uuid);
 		expect(span.childNodes.length).toBe(1);
 		expect(text.uuid).toBe(span.childNodes[0].uuid);
