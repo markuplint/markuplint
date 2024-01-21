@@ -10,7 +10,7 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
@@ -139,7 +139,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @param ruleset ruleset object
 	 */
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: MLSchema,
@@ -166,7 +165,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					if (astNode.type === 'endtag') {
 						return;
 					}
-					return createNode<MLASTNode, T, O>(astNode, this);
+					return createNode<MLASTNodeTreeItem, T, O>(astNode, this);
 				})
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
