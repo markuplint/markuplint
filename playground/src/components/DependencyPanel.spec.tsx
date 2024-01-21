@@ -1,7 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
 
 import { DependencyPanel } from './DependencyPanel';
+
+const user = userEvent.setup();
 
 describe('DependencyPanel', () => {
 	const depsPackages = new Set<string>(['markuplint', '@markuplint/svelte-parser']);
@@ -18,7 +21,7 @@ describe('DependencyPanel', () => {
 	);
 
 	test('default value', () => {
-		const versionSelect = screen.getByLabelText<HTMLSelectElement>(/Version/, { selector: 'select' });
+		const versionSelect = screen.getByRole<HTMLSelectElement>('combobox', { name: /Version/ });
 		expect(versionSelect.value).toBe('latest');
 	});
 
@@ -32,9 +35,9 @@ describe('DependencyPanel', () => {
 		expect(packageJsonContent).toBeTruthy();
 	});
 
-	test('calls onChange when selecting a version', () => {
+	test('calls onChange when selecting a version', async () => {
 		const versionSelect = screen.getByLabelText<HTMLSelectElement>(/Version/, { selector: 'select' });
-		fireEvent.change(versionSelect, { target: { value: 'next' } });
+		await user.selectOptions(versionSelect, 'next');
 		expect(onChange).toHaveBeenCalledWith('next');
 	});
 });

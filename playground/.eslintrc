@@ -61,7 +61,11 @@
 		},
 		{
 			"files": ["./**/*.spec.ts", "./**/*.spec.tsx"],
-			"extends": ["plugin:vitest/recommended", "plugin:testing-library/react"]
+			"extends": ["plugin:vitest/recommended", "plugin:testing-library/react"],
+			"rules": {
+				"testing-library/prefer-user-event": 2,
+				"testing-library/no-manual-cleanup": 0
+			}
 		},
 		{
 			"files": ["./vitest.config.ts"],
