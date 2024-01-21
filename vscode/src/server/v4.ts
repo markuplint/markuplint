@@ -231,10 +231,10 @@ export async function getNodeWithAccessibilityProps(
 	labels.name = aria.nameProhibited
 		? `**${t('Prohibited')}**`
 		: aria.name
-		? typeof aria.name === 'string'
-			? `\`"${aria.name}"\``
-			: `**${t('Unknown')}**`
-		: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
+			? typeof aria.name === 'string'
+				? `\`"${aria.name}"\``
+				: `**${t('Unknown')}**`
+			: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
 	labels.focusable = `\`${aria.focusable}\``;
 
 	for (const [propName, { value, required }] of Object.entries(aria.props ?? {})) {

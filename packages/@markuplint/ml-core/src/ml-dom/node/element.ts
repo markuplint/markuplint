@@ -47,10 +47,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
 	 */
 	readonly elementType: ElementType;
-	readonly endSpace: MLToken | null;
 	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
-	readonly hasSpreadAttr: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
 	#localName: string;
@@ -103,17 +101,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly #tagOpenChar: string;
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		astNode: MLASTElement,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.hasSpreadAttr = astNode.hasSpreadAttr;
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
-		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
-		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
+		this.closeTag = astNode.pairNode ? new MLToken(astNode.pairNode) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
 		this.elementType = astNode.elementType;
@@ -769,6 +764,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get fixedNodeName() {
 		return this.#fixedNodeName;
+	}
+
+	get hasSpreadAttr() {
+		return this.#attributes.some(attr => attr.localName === '#spread');
 	}
 
 	/**
@@ -2712,6 +2711,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.originRaw;
 		}
 
+		if (this.nodeName.startsWith('#')) {
+			return this.originRaw;
+		}
+
 		let fixed = this.originRaw;
 		let gap = 0;
 		if (this.nodeName !== this.fixedNodeName) {
@@ -3475,7 +3478,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
-							type: 'html-attr',
+							type: 'attr',
 							nodeName: name,
 							spacesBeforeName: {
 								...this._astToken,

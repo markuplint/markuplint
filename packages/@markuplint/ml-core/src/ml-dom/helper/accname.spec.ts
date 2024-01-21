@@ -1,4 +1,4 @@
-import { parse } from '@markuplint/html-parser';
+import { parser } from '@markuplint/html-parser';
 import { test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
@@ -9,7 +9,7 @@ import { getAccname } from './accname.js';
 import { createNode } from './create-node.js';
 
 function c(sourceCode: string) {
-	const ast = parse(sourceCode);
+	const ast = parser.parse(sourceCode);
 	const astNode = ast.nodeList[0]!;
 	const ruleset = convertRuleset({});
 	const document = new MLDocument(ast, ruleset, dummySchemas());

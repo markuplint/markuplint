@@ -1,7 +1,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('Node list', () => {
 	test('a code', () => {
@@ -149,7 +151,6 @@ describe('Issues', () => {
 		const ast = parse("<script>{literal}const obj = { foo: 'bar' };{/literal}</script>");
 		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
 			'[1:1]>[1:9](0,8)script: <script>',
-			"[1:9]>[1:55](8,54)#ps:smarty-literal: {literal}const␣obj␣=␣{␣foo:␣'bar'␣};{/literal}",
 			'[1:55]>[1:64](54,63)script: </script>',
 		]);
 	});

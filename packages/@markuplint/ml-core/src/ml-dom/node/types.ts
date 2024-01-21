@@ -5,19 +5,18 @@ import type { MLDocumentFragment } from './document-fragment.js';
 import type { MLDocumentType } from './document-type.js';
 import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
-import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { MLToken } from '../token/token.js';
 import type {
-	MLASTAbstractNode,
 	MLASTAttr,
 	MLASTComment,
 	MLASTDoctype,
 	MLASTElement,
+	MLASTInvalid,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTText,
-	MLToken as MLASTToken,
+	MLASTToken as MLASTToken,
 } from '@markuplint/ml-ast/';
 import type { PlainData, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
 
@@ -29,8 +28,8 @@ export type MappedNode<N, T extends RuleConfigValue, O extends PlainData = undef
 	: N extends MLASTText ? MLText<T, O>
 	: N extends MLASTDoctype ? MLDocumentType<T, O>
 	: N extends MLASTPreprocessorSpecificBlock ? MLBlock<T, O>
-	: N extends MLASTAbstractNode ? MLNode<T, O, MLASTAbstractNode>
 	: N extends MLASTAttr ? MLAttr<T, O>
+	: N extends MLASTInvalid ? MLText<T, O>
 	: N extends MLASTToken ? MLToken
 	: never;
 

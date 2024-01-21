@@ -11,9 +11,6 @@
 		},
 		{
 			"path": "../parser-utils"
-		},
-		{
-			"path": "../ml-ast"
 		}
 	],
 	"include": ["./src/**/*"],

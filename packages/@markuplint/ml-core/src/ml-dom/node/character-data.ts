@@ -1,5 +1,5 @@
 import type { MLElement } from './element.js';
-import type { MLASTAbstractNode } from '@markuplint/ml-ast';
+import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import {
@@ -17,7 +17,7 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLNode<T, O, A>
 	implements CharacterData

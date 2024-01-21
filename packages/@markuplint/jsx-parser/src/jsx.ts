@@ -10,6 +10,7 @@ export type JSXIdentifier = TSESTree.JSXIdentifier;
 export type JSXNamespacedName = TSESTree.JSXNamespacedName;
 export type JSXSpreadAttribute = TSESTree.JSXSpreadAttribute;
 export type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
+export type JSXExpressionContainer = TSESTree.JSXExpressionContainer;
 export type Node = TSESTree.Node;
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
@@ -53,36 +54,6 @@ export function getName(
 			return '';
 		}
 	}
-}
-
-export function getAttr(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	attributes: readonly (JSXAttribute | JSXSpreadAttribute)[],
-) {
-	let hasSpreadAttr = false;
-	const attrs: JSXAttribute[] = [];
-	for (const attr of attributes) {
-		if (attr.type === 'JSXAttribute') {
-			attrs.push(attr);
-		} else {
-			hasSpreadAttr = true;
-		}
-	}
-
-	return {
-		attrs,
-		hasSpreadAttr,
-	};
-}
-
-export function getAttrName(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	name: JSXIdentifier | JSXNamespacedName,
-): string {
-	if (typeof name.name === 'string') {
-		return name.name;
-	}
-	return name.name.name;
 }
 
 function recursiveSearchJSXElements(

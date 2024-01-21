@@ -295,6 +295,48 @@ test('Greater-than sign in attribute value', () => {
 	);
 });
 
+test('Missing end tag', () => {
+	const ast = astroParse('<div><span><span /></div>');
+	expect(ast).toStrictEqual(
+		expect.objectContaining({
+			type: 'root',
+			children: [
+				{
+					type: 'element',
+					name: 'div',
+					position: {
+						start: { line: 1, column: 2, offset: 0 },
+					},
+					attributes: [],
+					children: [
+						{
+							type: 'element',
+							name: 'span',
+							position: {
+								start: { line: 1, column: 6, offset: 5 },
+								end: { line: 1, column: 27, offset: 19 },
+							},
+							attributes: [],
+							children: [
+								{
+									type: 'element',
+									name: 'span',
+									position: {
+										start: { line: 1, column: 12, offset: 11 },
+										end: { line: 1, column: 19, offset: 19 },
+									},
+									attributes: [],
+									children: [],
+								},
+							],
+						},
+					],
+				},
+			],
+		}),
+	);
+});
+
 describe('Issues', () => {
 	test('#803', () => {
 		const code = `<html lang="en">

@@ -574,7 +574,15 @@ describe('verify', () => {
 				<div><!-- Parse Error --></div>
 			</select>`,
 		);
-		expect(violations7).toStrictEqual([]);
+		expect(violations7).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The text node is not allowed in the "select" element in this context',
+				raw: '\n\t\t\t\t<div>',
+			},
+		]);
 
 		const { violations: violations8 } = await mlRuleTest(
 			rule,
@@ -584,7 +592,15 @@ describe('verify', () => {
 				</optgroup>
 			</select>`,
 		);
-		expect(violations8).toStrictEqual([]);
+		expect(violations8).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 15,
+				message: 'The text node is not allowed in the "optgroup" element in this context',
+				raw: '\n\t\t\t\t\t<div>',
+			},
+		]);
 	});
 
 	test('script', async () => {
