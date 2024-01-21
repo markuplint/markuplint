@@ -37,7 +37,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -49,7 +49,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -74,14 +74,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: |
                       packages/**/lib
@@ -98,7 +98,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -130,14 +130,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: |
                       packages/**/lib
@@ -185,7 +185,7 @@ jobs:
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -200,7 +200,7 @@ jobs:
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -230,13 +230,13 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -291,13 +291,13 @@ jobs:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |
