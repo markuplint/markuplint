@@ -222,10 +222,10 @@ test('Siblings2', () => {
 	]);
 });
 
-test('Pear', () => {
-	expect(parse('<tag1></tag1>').nodeList[0].pearNode?.raw).toBe('</tag1>');
-	expect(parse('<tag1><tag2 /></tag1>').nodeList[1].pearNode?.raw).toBeUndefined();
-	expect(parse('<tag1><tag2></tag2></tag1>').nodeList[1].pearNode?.raw).toBe('</tag2>');
+test('pair', () => {
+	expect(parse('<tag1></tag1>').nodeList[0].pairNode?.raw).toBe('</tag1>');
+	expect(parse('<tag1><tag2 /></tag1>').nodeList[1].pairNode?.raw).toBeUndefined();
+	expect(parse('<tag1><tag2></tag2></tag1>').nodeList[1].pairNode?.raw).toBe('</tag2>');
 });
 
 test('Missing end tag', () => {

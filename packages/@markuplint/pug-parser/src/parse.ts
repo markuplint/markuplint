@@ -200,7 +200,7 @@ class Parser {
 					parentNode,
 					prevNode,
 					nextNode,
-					pearNode: null,
+					pairNode: null,
 					selfClosingSolidus: tokenizer('', originNode.line, originNode.column, originNode.offset),
 					endSpace: tokenizer('', originNode.line, originNode.column, originNode.offset),
 					isFragment: false,

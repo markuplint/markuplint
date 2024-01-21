@@ -316,14 +316,14 @@ const Component3 = memo(() => <div>Component3</div>);`);
 
 		expect(ast.nodeList[3].raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.raw).toBe('</>');
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.uuid).toBe(ast.nodeList[3].uuid);
 
 		// @ts-ignore
-		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pearNode.uuid);
+		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNode.uuid);
 		// @ts-ignore
-		expect(ast.nodeList[2].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[2].pairNode.uuid).toBe(ast.nodeList[3].uuid);
 	});
 
 	test('Attribute', () => {

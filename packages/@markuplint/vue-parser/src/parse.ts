@@ -238,7 +238,7 @@ function nodeize(
 					parentNode,
 					prevNode,
 					nextNode,
-					pearNode: null,
+					pairNode: null,
 					isFragment: false,
 					isGhost: false,
 					tagOpenChar: '</',
@@ -281,7 +281,7 @@ function nodeize(
 				parentNode,
 				prevNode,
 				nextNode,
-				pearNode: endTag,
+				pairNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
 				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
@@ -290,7 +290,7 @@ function nodeize(
 				tagCloseChar: '>',
 			};
 			if (endTag) {
-				endTag.pearNode = startTag;
+				endTag.pairNode = startTag;
 			}
 			startTag.childNodes = traverse(originNode, startTag, rawHtml, comments, options);
 			return startTag;

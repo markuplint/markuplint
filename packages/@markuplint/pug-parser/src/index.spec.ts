@@ -646,6 +646,6 @@ describe('Issues', () => {
 		expect(span.uuid).toBe(p.childNodes[0].uuid);
 		expect(span.childNodes.length).toBe(1);
 		expect(text.uuid).toBe(span.childNodes[0].uuid);
-		expect(spanClose.uuid).toBe(span.pearNode.uuid);
+		expect(spanClose.uuid).toBe(span.pairNode.uuid);
 	});
 });

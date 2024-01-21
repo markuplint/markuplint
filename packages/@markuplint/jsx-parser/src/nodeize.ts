@@ -97,7 +97,7 @@ export function nodeize(
 					parentNode,
 					prevNode,
 					nextNode,
-					pearNode: null,
+					pairNode: null,
 					isFragment: false,
 					isGhost: false,
 					tagOpenChar: '</',
@@ -136,7 +136,7 @@ export function nodeize(
 				parentNode,
 				prevNode,
 				nextNode,
-				pearNode: endTag,
+				pairNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
 				endSpace: tagTokens.afterAttrSpaces,
 				// hasSpreadAttr,
@@ -147,7 +147,7 @@ export function nodeize(
 				__parentId: originNode.__parentId ?? null,
 			};
 			if (endTag) {
-				endTag.pearNode = startTag;
+				endTag.pairNode = startTag;
 			}
 
 			startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
@@ -185,7 +185,7 @@ export function nodeize(
 				parentNode,
 				prevNode,
 				nextNode,
-				pearNode: null,
+				pairNode: null,
 				isFragment: false,
 				isGhost: false,
 				tagOpenChar: '</',
@@ -205,7 +205,7 @@ export function nodeize(
 				parentNode,
 				prevNode,
 				nextNode,
-				pearNode: endTag,
+				pairNode: endTag,
 				// hasSpreadAttr,
 				isFragment: false,
 				isGhost: false,
@@ -214,7 +214,7 @@ export function nodeize(
 				__parentId: originNode.__parentId ?? null,
 			};
 
-			endTag.pearNode = startTag;
+			endTag.pairNode = startTag;
 
 			startTag.childNodes = traverse(originNode.children, startTag, rawHtml, options);
 

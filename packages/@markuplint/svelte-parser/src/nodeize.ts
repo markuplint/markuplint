@@ -112,7 +112,7 @@ export function nodeize(
 					parentNode,
 					prevNode,
 					nextNode,
-					pearNode: null,
+					pairNode: null,
 					isFragment: false,
 					isGhost: false,
 					tagOpenChar: '</',
@@ -150,7 +150,7 @@ export function nodeize(
 				parentNode,
 				prevNode,
 				nextNode,
-				pearNode: endTag,
+				pairNode: endTag,
 				selfClosingSolidus: tagTokens.selfClosingSolidus,
 				endSpace: tagTokens.afterAttrSpaces,
 				isFragment: false,
@@ -159,7 +159,7 @@ export function nodeize(
 				tagCloseChar: '>',
 			};
 			if (endTag) {
-				endTag.pearNode = startTag;
+				endTag.pairNode = startTag;
 			}
 
 			if (originNode.children) {

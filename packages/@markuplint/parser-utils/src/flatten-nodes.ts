@@ -111,8 +111,8 @@ export function flattenNodes(
 						isGhost: false,
 					};
 					lastNode.nextNode = lastTextNode;
-					if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pearNode) {
-						lastNode.pearNode.nextNode = lastTextNode;
+					if ((lastNode.type === 'starttag' || lastNode.type === 'endtag') && lastNode.pairNode) {
+						lastNode.pairNode.nextNode = lastTextNode;
 					}
 					nodeOrders.push(lastTextNode);
 				}
@@ -172,8 +172,8 @@ export function flattenNodes(
 			) {
 				const nextNode = prevToken.nextNode;
 				prevToken.nextNode = node;
-				if (prevToken.type === 'endtag' && prevToken.pearNode) {
-					prevToken.pearNode.nextNode = node;
+				if (prevToken.type === 'endtag' && prevToken.pairNode) {
+					prevToken.pairNode.nextNode = node;
 				}
 				node.prevNode = prevToken;
 				node.nextNode = nextNode;
@@ -181,9 +181,9 @@ export function flattenNodes(
 			}
 
 			// EndTag
-			if (node.type === 'starttag' && node.pearNode) {
-				const endTag = node.pearNode;
-				endTag.pearNode = node;
+			if (node.type === 'starttag' && node.pairNode) {
+				const endTag = node.pairNode;
+				endTag.pairNode = node;
 				endTag.prevNode = node.prevNode;
 				endTag.nextNode = node.nextNode;
 			}

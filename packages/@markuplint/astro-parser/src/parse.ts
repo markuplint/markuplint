@@ -381,7 +381,7 @@ function parseElement(
 			parentNode,
 			prevNode,
 			nextNode,
-			pearNode: null,
+			pairNode: null,
 			isFragment: false,
 			isGhost: false,
 			tagOpenChar: '</',
@@ -420,7 +420,7 @@ function parseElement(
 		parentNode,
 		prevNode,
 		nextNode,
-		pearNode: endTag,
+		pairNode: endTag,
 		selfClosingSolidus: tagTokens.selfClosingSolidus,
 		endSpace: tagTokens.afterAttrSpaces,
 		isFragment: false,
@@ -429,7 +429,7 @@ function parseElement(
 		tagCloseChar: '>',
 	};
 	if (endTag) {
-		endTag.pearNode = startTag;
+		endTag.pairNode = startTag;
 	}
 	startTag.childNodes = ['style', 'script'].includes(tagName)
 		? undefined

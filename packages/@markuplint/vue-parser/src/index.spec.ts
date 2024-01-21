@@ -304,12 +304,12 @@ describe('parser', () => {
 		expect(doc.nodeList[0].prevNode).toEqual(null);
 		expect(doc.nodeList[0].nextNode).toEqual(null);
 		// @ts-ignore
-		expect(doc.nodeList[0].pearNode.uuid).toEqual(doc.nodeList[11].uuid);
+		expect(doc.nodeList[0].pairNode.uuid).toEqual(doc.nodeList[11].uuid);
 
 		// </x-wrap>
 		expect(doc.nodeList[11].parentNode).toEqual(null);
 		// @ts-ignore
-		expect(doc.nodeList[11].pearNode.uuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[11].pairNode.uuid).toEqual(doc.nodeList[0].uuid);
 
 		// <x-before>
 		// @ts-ignore
@@ -319,13 +319,13 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[1].nextNode.uuid).toEqual(doc.nodeList[6].uuid);
 		// @ts-ignore
-		expect(doc.nodeList[1].pearNode.uuid).toEqual(doc.nodeList[5].uuid);
+		expect(doc.nodeList[1].pairNode.uuid).toEqual(doc.nodeList[5].uuid);
 
 		// </x-before>
 		// @ts-ignore
 		expect(doc.nodeList[5].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
 		// @ts-ignore
-		expect(doc.nodeList[5].pearNode.uuid).toEqual(doc.nodeList[1].uuid);
+		expect(doc.nodeList[5].pairNode.uuid).toEqual(doc.nodeList[1].uuid);
 
 		// <x-after>
 		// @ts-ignore
@@ -335,13 +335,13 @@ describe('parser', () => {
 		// @ts-ignore
 		expect(doc.nodeList[6].nextNode).toEqual(null);
 		// @ts-ignore
-		expect(doc.nodeList[6].pearNode.uuid).toEqual(doc.nodeList[10].uuid);
+		expect(doc.nodeList[6].pairNode.uuid).toEqual(doc.nodeList[10].uuid);
 
 		// </x-after>
 		// @ts-ignore
 		expect(doc.nodeList[10].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
 		// @ts-ignore
-		expect(doc.nodeList[10].pearNode.uuid).toEqual(doc.nodeList[6].uuid);
+		expect(doc.nodeList[10].pairNode.uuid).toEqual(doc.nodeList[6].uuid);
 	});
 
 	test('attributes', () => {
