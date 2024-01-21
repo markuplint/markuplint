@@ -9,8 +9,6 @@ export function pugParse(pug: string) {
 	const lexOrigin = lexer(pug);
 	const lex: PugLexToken[] = JSON.parse(JSON.stringify(lexOrigin));
 	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
-	// console.log(lex);
-	// console.log(JSON.stringify(originAst, null, 2));
 	const ast = optimizeAST(originAst, lex, pug);
 	return ast;
 }
@@ -348,8 +346,12 @@ function optimizeAST(
 				continue;
 			}
 			default: {
-				// @ts-ignore
-				throw new Error(`Unsupported syntax: The "${node.type}" node\n${JSON.stringify(node, null, 2)}`);
+				throw new Error(
+					`Unsupported syntax: The "${
+						// @ts-ignore
+						node.type
+					}" node\n${JSON.stringify(node, null, 2)}`,
+				);
 			}
 		}
 	}

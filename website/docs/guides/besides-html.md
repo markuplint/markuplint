@@ -115,7 +115,7 @@ Set a regular expression that can identify the target file name to the `parser` 
 
 See explained configuring [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs) if you want details.
 
-### Why need the spec plugins?
+### Why need the spec plugins? {#why-need-the-spec-plugins}
 
 For example, the `key` attribute doesn't exist in native HTML elements. But you often need to specify it when you use **React** or **Vue**. So you should specify `@markuplint/react-spec` or `@markuplint/vue-spec`.
 

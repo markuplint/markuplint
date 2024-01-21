@@ -1,4 +1,4 @@
-import type { MLToken as MLASTToken } from '@markuplint/ml-ast';
+import type { MLASTToken } from '@markuplint/ml-ast';
 
 export class MLToken<A extends MLASTToken = MLASTToken> {
 	readonly #endCol: number;

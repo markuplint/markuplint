@@ -3,7 +3,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('Node list', () => {
 	test('a code', () => {
@@ -166,6 +168,10 @@ describe('Issues', () => {
 	test('#607', () => {
 		const ast = parse('<% %><div></div>');
 		expect(ast.nodeList.length).toBe(3);
-		expect(ast.nodeList[1].prevNode?.uuid).toBe(ast.nodeList[0].uuid);
+		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
+			'[1:1]>[1:6](0,5)#ps:ejs-scriptlet: <%␣%>',
+			'[1:6]>[1:11](5,10)div: <div>',
+			'[1:11]>[1:17](10,16)div: </div>',
+		]);
 	});
 });

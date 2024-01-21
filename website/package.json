@@ -27,14 +27,16 @@
     "@markuplint/rules": "^4.0.0-alpha.9",
     "@mdx-js/react": "3.0.0",
     "clsx": "^2.1.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.3.2",
     "gray-matter": "^4.0.3",
     "prism-react-renderer": "^2.3.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.1.0",
+    "@docusaurus/tsconfig": "^3.1.0",
     "@imgix/js-core": "^3.8.0",
     "@markuplint/jsx-parser": "^4.0.0-alpha.9",
     "@markuplint/react-spec": "^4.0.0-alpha.9",
@@ -47,7 +49,7 @@
     "markuplint": "^4.0.0-alpha.9",
     "npm-run-all2": "^6.1.1",
     "prettier": "^3.1.1",
-    "stylelint": "^16.1.0",
+    "stylelint": "^16.2.0",
     "stylelint-config-recess-order": "^4.4.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
