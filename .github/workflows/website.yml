@@ -143,13 +143,11 @@ jobs:
 
             - name: Cache playwright binaries
               uses: actions/cache@v3
-              id: playwright-cache
               with:
                   path: ~/.cache/ms-playwright
                   key: ${{ runner.os }}-playwright-${{ hashFiles('website/yarn.lock') }}
 
             - name: Install Playwright Browsers
-              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: npx playwright install --with-deps chromium
 
             - name: Capture screenshots
