@@ -4,13 +4,13 @@
 		"module": "ESNext",
 		"composite": true,
 		"outDir": "./esm",
-		"rootDir": "./src"
+		"rootDir": "./src",
 	},
 	"references": [
 		{
-			"path": "../ml-ast"
-		}
+			"path": "../ml-ast",
+		},
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "esm", "cjs", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "esm", "cjs", "./src/**/*.spec.ts"],
 }

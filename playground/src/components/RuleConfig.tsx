@@ -133,15 +133,14 @@ const RuleConfigRaw = ({ value, ruleName, schema, onChange }: Props) => {
 							(one): one is Exclude<typeof one, boolean> =>
 								typeof one !== 'boolean' && one.type !== 'boolean',
 						)
-						.map(
-							one =>
-								one.enum?.map(keyword =>
-									typeof keyword === 'string' ? (
-										<option key={keyword} value={keyword}>
-											{`"${keyword}"`}
-										</option>
-									) : null,
-								),
+						.map(one =>
+							one.enum?.map(keyword =>
+								typeof keyword === 'string' ? (
+									<option key={keyword} value={keyword}>
+										{`"${keyword}"`}
+									</option>
+								) : null,
+							),
 						)}
 
 					{isJSONSchema(customs) && <option value="custom">custom...</option>}
@@ -273,7 +272,7 @@ const NestedArray = ({
 					<button
 						type="button"
 						onClick={handleAdd}
-						className="flex w-full items-center justify-center gap-1 
+						className="flex w-full items-center justify-center gap-1
 				bg-slate-100 px-2 py-1 text-sm shadow-sm
 				"
 					>
@@ -429,8 +428,8 @@ const NestedObject = ({
 					property.deprecated === true ? null : (
 						<li key={key}>
 							<details
-								className="flex flex-row flex-wrap items-baseline gap-y-1 
-							[&>summary>span]:icon-majesticons-chevron-right [&>:nth-child(n+2)]:ml-6 
+								className="flex flex-row flex-wrap items-baseline gap-y-1
+							[&>summary>span]:icon-majesticons-chevron-right [&>:nth-child(n+2)]:ml-6
 							[&>summary>span]:open:rotate-90 [&>summary>span]:open:text-opacity-40"
 								open
 							>

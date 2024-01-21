@@ -3,31 +3,31 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src"
+		"rootDir": "./src",
 	},
 	"references": [
 		{
-			"path": "../ml-ast"
+			"path": "../ml-ast",
 		},
 		{
-			"path": "../ml-config"
+			"path": "../ml-config",
 		},
 		{
-			"path": "../ml-core"
+			"path": "../ml-core",
 		},
 		{
-			"path": "../ml-spec"
+			"path": "../ml-spec",
 		},
 		{
-			"path": "../parser-utils"
+			"path": "../parser-utils",
 		},
 		{
-			"path": "../selector"
+			"path": "../selector",
 		},
 		{
-			"path": "../shared"
-		}
+			"path": "../shared",
+		},
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "test", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "lib", "test", "./src/**/*.spec.ts"],
 }
