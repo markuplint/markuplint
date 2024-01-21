@@ -11,7 +11,6 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
-import { stringSplice } from '../../utils/string-splice.js';
 import { getAccname } from '../helper/accname.js';
 import {
 	after,
@@ -25,6 +24,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
+import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
@@ -37,7 +37,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
 	#attributes: MLAttr<T, O>[];
-	readonly closeTag: MLToken | null;
+	readonly closeTag: MLElementCloseTag<T, O> | null;
 
 	/**
 	 * Element type
@@ -99,6 +99,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
 	readonly tagCloseChar: string;
+	readonly tagOpenChar: string;
 
 	constructor(
 		astNode: MLASTElement,
@@ -108,7 +109,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		super(astNode, document);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
-		this.closeTag = astNode.pairNode ? new MLToken(astNode.pairNode) : null;
+		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
 		this.elementType = astNode.elementType;
@@ -119,6 +120,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		this.isOmitted = astNode.isGhost;
 
 		this.tagOpenChar = astNode.tagOpenChar;
+		this.tagCloseChar = astNode.tagCloseChar;
 	}
 
 	/**
@@ -2706,37 +2708,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return previousElementSibling(this);
 	}
 
-	get raw() {
-		if (this.pretenderContext?.type === 'pretender') {
-			return this.originRaw;
-		}
-
-		if (this.nodeName.startsWith('#')) {
-			return this.originRaw;
-		}
-
-		if (this.isOmitted) {
-			return this.originRaw;
-		}
-
-		let fixed = this.originRaw;
-		let gap = 0;
-		if (this.nodeName !== this.fixedNodeName) {
-			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.fixedNodeName);
-			gap = gap + this.fixedNodeName.length - this.nodeName.length;
-		}
-		for (const attr of this.attributes) {
-			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
-			const fixedAttr = attr.toString();
-			if (attr.originRaw !== fixedAttr) {
-				fixed = stringSplice(fixed, startOffset + gap, attr.originRaw.length, fixedAttr);
-				gap = gap + fixedAttr.length - attr.originRaw.length;
-			}
-		}
-
-		return fixed;
-	}
-
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
@@ -3779,7 +3750,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (node.is(node.ELEMENT_NODE)) {
 				return node.toNormalizeString();
 			}
-			return node.originRaw;
+			return node.raw;
 		});
 		const endTag = `</${this.nodeName}>`;
 		const normalizedString = `${startTag}${childNodes.join('')}${endTag}`;
@@ -3791,8 +3762,42 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
-	toString() {
-		return this.raw;
+	toString(fixed = false) {
+		if (!fixed) {
+			return this.raw;
+		}
+
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.raw;
+		}
+
+		if (this.nodeName.startsWith('#')) {
+			return this.raw;
+		}
+
+		if (this.isOmitted) {
+			return this.raw;
+		}
+
+		let raw = this.raw;
+		let offset = 0;
+		const nodes = [
+			{
+				toString: () => this.tagOpenChar + this.fixedNodeName,
+				startOffset: this.startOffset,
+				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
+			},
+			...this.attributes,
+		];
+		for (const node of nodes) {
+			const before = raw.slice(0, node.startOffset + offset - this.startOffset);
+			const rawCode = node.toString(true);
+			const after = raw.slice(node.endOffset + offset - this.startOffset);
+			raw = before + rawCode + after;
+			offset += rawCode.length - (node.endOffset - node.startOffset);
+		}
+
+		return raw;
 	}
 
 	/**

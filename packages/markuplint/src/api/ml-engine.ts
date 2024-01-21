@@ -104,7 +104,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		});
 
 		const sourceCode = await this.#file.getCode();
-		const fixedCode = core.document.toString();
+		const fixedCode = core.document.toString(true);
 
 		if (violations instanceof Error) {
 			this.emit('lint-error', this.#file.path, sourceCode, violations);

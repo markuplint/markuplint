@@ -3104,12 +3104,18 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 */
-	toString() {
-		const html: string[] = [];
-		for (const node of this.getTokenList()) {
-			html.push(node.toString());
+	toString(fixed = false) {
+		if (!fixed) {
+			return this.raw;
 		}
-		return html.join('');
+		let raw = this.raw;
+		let offset = 0;
+		for (const node of this.getTokenList()) {
+			const nodeRaw = node.toString(true);
+			raw = raw.slice(0, node.startOffset + offset) + nodeRaw + raw.slice(node.endOffset + offset);
+			offset += nodeRaw.length - (node.endOffset - node.startOffset);
+		}
+		return raw;
 	}
 
 	/**

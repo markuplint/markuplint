@@ -51,15 +51,15 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
-	get originRaw() {
-		return this.#raw;
+	get fixed() {
+		return this.#fixed;
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get raw() {
-		return this.#fixed;
+		return this.#raw;
 	}
 
 	/**
@@ -93,7 +93,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
-	toString() {
-		return this.raw;
+	toString(fixed = false) {
+		return fixed ? this.#fixed : this.#raw;
 	}
 }

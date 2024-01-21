@@ -82,10 +82,18 @@ describe('AST', () => {
 	});
 
 	test('fixNodeName', () => {
-		const el = createTestElement('<div></div>');
-		expect(el.raw).toBe('<div>');
+		const el = createTestElement('<div attr></div>');
 		el.fixNodeName('x-div');
-		expect(el.raw).toBe('<x-div>');
+		expect(el.toString()).toBe('<div attr>');
+		expect(el.toString(true)).toBe('<x-div attr>');
+		expect(el.closeTag?.toString(true)).toBe('</x-div>');
+	});
+
+	test('fix', () => {
+		const el = createTestElement('<div attr></div>');
+		el.attributes[0].fix('value');
+		expect(el.toString()).toBe('<div attr>');
+		expect(el.toString(true)).toBe('<div attr="value">');
 	});
 
 	test('namespace', () => {
@@ -653,6 +661,139 @@ describe('the `as` attribute pretending', () => {
 	test('Authored element (No parser)', () => {
 		const dom = createTestDocument('<Custom as="div"></Custom>');
 		expect(dom.nodeList[0].nodeName).toBe('CUSTOM');
+	});
+});
+
+describe('Fix', () => {
+	test('HTML', () => {
+		const doc = createTestDocument(
+			[
+				'<!doctype html>',
+				'<html lang="en">',
+				'	<head>',
+				'		<meta charset="utf-8">',
+				'		<title>title</title>',
+				'	</head>',
+				'	<body>',
+				'		<h1>text</h1>',
+				'		<div',
+				'			id="app"',
+				'			class="app"',
+				'		>',
+				'			<span>text</span>',
+				'		</div>',
+				'	</body>',
+				'</html>',
+			].join('\n'),
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'<!doctype html>',
+			'<html lang="en">',
+			'	<head>',
+			'		<meta charset="utf-8">',
+			'		<title>title</title>',
+			'	</head>',
+			'	<body>',
+			'		<h1>text</h1>',
+			'		<div',
+			'			id="foo"',
+			'			class="app"',
+			'		>',
+			'			<a>text</a>',
+			'		</div>',
+			'	</body>',
+			'</html>',
+		]);
+	});
+
+	test('Astro', async () => {
+		const doc = createTestDocument(
+			[
+				'---',
+				"import { Header } from './Header.astro'",
+				'---',
+				'<!doctype html>',
+				'<html lang="en">',
+				'	<Header>',
+				'		<meta charset="utf-8">',
+				'		<title>title</title>',
+				'	</Header>',
+				'	<body>',
+				'		<h1>text</h1>',
+				'		<div',
+				'			id="app"',
+				'			class="app"',
+				'		>',
+				'			<span>text</span>',
+				'		</div>',
+				'	</body>',
+				'</html>',
+			].join('\n'),
+			{
+				parser: await import('@markuplint/astro-parser'),
+			},
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'---',
+			"import { Header } from './Header.astro'",
+			'---',
+			'<!doctype html>',
+			'<html lang="en">',
+			'	<Header>',
+			'		<meta charset="utf-8">',
+			'		<title>title</title>',
+			'	</Header>',
+			'	<body>',
+			'		<h1>text</h1>',
+			'		<div',
+			'			id="foo"',
+			'			class="app"',
+			'		>',
+			'			<a>text</a>',
+			'		</div>',
+			'	</body>',
+			'</html>',
+		]);
+	});
+
+	test('Pug', async () => {
+		const doc = createTestDocument(
+			[
+				'html(lang="en")',
+				'	head',
+				'		meta(charset="utf-8")',
+				'		title title',
+				'	body',
+				'		h1 text',
+				'		div(',
+				'			id="app",',
+				'			class="app"',
+				'		)',
+				'			span text',
+			].join('\n'),
+			{
+				parser: await import('@markuplint/pug-parser'),
+			},
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'html(lang="en")',
+			'	head',
+			'		meta(charset="utf-8")',
+			'		title title',
+			'	body',
+			'		h1 text',
+			'		div(',
+			'			id=foo,',
+			'			class="app"',
+			'		)',
+			'			a text',
+		]);
 	});
 });
 
