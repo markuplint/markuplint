@@ -1,8 +1,8 @@
+import type { Parser } from './parser.js';
 import type { Code, IgnoreBlock, IgnoreTag } from './types.js';
-import type { MLASTNode, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
 
 import { MASK_CHAR } from './const.js';
-import { uuid } from './create-token.js';
 import { getCol, getLine } from './get-location.js';
 import { ParserError } from './parser-error.js';
 
@@ -66,60 +66,53 @@ function maskText(
 
 export function restoreNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodeList: MLASTNode[],
+	parser: Parser<any, any>,
+	nodeList: readonly MLASTNodeTreeItem[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	ignoreBlock: IgnoreBlock,
 	throwErrorWhenTagHasUnresolved = true,
 ) {
-	nodeList = [...nodeList];
+	const newNodeList = [...nodeList];
 	const { source, stack, maskChar } = ignoreBlock;
 
+	if (stack.length === 0) {
+		return newNodeList;
+	}
+
 	for (const tag of stack) {
-		const node = nodeList.find(node => node.startOffset === tag.index);
+		const node = newNodeList.find(node => node.startOffset === tag.index);
 
 		if (!node) {
 			continue;
 		}
 
+		const raw = `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`;
+		const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
+
 		const psNode: MLASTPreprocessorSpecificBlock = {
-			uuid: uuid(),
+			...token,
 			type: 'psblock',
+			depth: node.depth,
 			nodeName: `#ps:${tag.type}`,
-			raw: `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`,
 			parentNode: node.parentNode,
-			prevNode: null,
-			nextNode: null,
-			isFragment: node.isFragment,
-			isGhost: false,
-			startOffset: node.startOffset,
-			endOffset: node.endOffset,
-			startLine: node.startLine,
-			endLine: node.endLine,
-			startCol: node.startCol,
-			endCol: node.endCol,
+			childNodes: [],
+			isBogus: false,
 		};
 
-		if (node.prevNode?.nextNode) {
-			node.prevNode.nextNode = psNode;
-		}
-		if (node.nextNode?.prevNode) {
-			node.nextNode.prevNode = psNode;
-		}
-		if (node.parentNode?.childNodes) {
-			const index = node.parentNode.childNodes.indexOf(node);
-			node.parentNode.childNodes.splice(index, 1, psNode);
+		if (node.type !== 'doctype' && node.parentNode?.childNodes) {
+			parser.replaceChild(node.parentNode, node, psNode);
 		}
 
-		const index = nodeList.indexOf(node);
-		nodeList.splice(index, 1, psNode);
+		const index = newNodeList.indexOf(node);
+		newNodeList.splice(index, 1, psNode);
 
 		tag.resolved = true;
 	}
 
-	for (const node of nodeList) {
+	for (const node of newNodeList) {
 		if (node.type === 'starttag') {
 			for (const attr of node.attributes) {
-				if (attr.type === 'ps-attr' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw, maskChar)) {
+				if (attr.type === 'spread' || attr.value.raw === '' || !hasIgnoreBlock(attr.value.raw, maskChar)) {
 					continue;
 				}
 				for (const tag of stack) {
@@ -130,28 +123,29 @@ export function restoreNode(
 						const offset = tag.index - attr.value.startOffset;
 						const above = attr.value.raw.slice(0, offset);
 						const below = attr.value.raw.slice(offset + length);
-						attr.value.raw = above + raw + below;
-						attr.isDynamicValue = true;
+						parser.updateRaw(attr.value, above + raw + below);
+						parser.updateAttr(attr, { isDynamicValue: true });
 						tag.resolved = true;
 					}
 
-					attr.raw =
-						attr.spacesBeforeName.raw +
+					parser.updateRaw(
+						attr,
 						attr.name.raw +
-						attr.spacesBeforeEqual.raw +
-						attr.equal.raw +
-						attr.spacesAfterEqual.raw +
-						attr.startQuote.raw +
-						attr.value.raw +
-						attr.endQuote.raw;
+							attr.spacesBeforeEqual.raw +
+							attr.equal.raw +
+							attr.spacesAfterEqual.raw +
+							attr.startQuote.raw +
+							attr.value.raw +
+							attr.endQuote.raw,
+					);
 				}
 
 				// Update node raw
 				const length = attr.raw.length;
-				const offset = attr.startOffset - node.startOffset - attr.spacesBeforeName.raw.length;
+				const offset = attr.startOffset - node.startOffset;
 				const above = node.raw.slice(0, offset);
 				const below = node.raw.slice(offset + length);
-				node.raw = above + attr.raw + below;
+				parser.updateRaw(node, above + attr.raw + below);
 			}
 		}
 	}
@@ -168,7 +162,7 @@ export function restoreNode(
 		}
 	}
 
-	return nodeList;
+	return newNodeList;
 }
 
 function snap(str: string, reg: Readonly<RegExp>): [number, string] | [number, string, string, string] {

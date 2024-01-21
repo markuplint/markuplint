@@ -1,108 +1,203 @@
 import type { QuoteSet } from './types.js';
-import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
 
-import { AttrState, attrParser } from './attr-parser.js';
-import { tokenizer, uuid } from './create-token.js';
+import { defaultSpaces } from './const.js';
+import { AttrState } from './enums.js';
 
+const defaultQuoteSet: ReadonlyArray<QuoteSet> = [
+	{ start: '"', end: '"' },
+	{ start: "'", end: "'" },
+];
+
+const defaultQuoteInValueChars = [] as const;
+
+const spaces = defaultSpaces as ReadonlyArray<string>;
+
+const EQUAL = '=';
+
+/**
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ */
 export function attrTokenizer(
 	raw: string,
-	line: number,
-	col: number,
-	startOffset: number,
-	quoteSet?: ReadonlyArray<QuoteSet>,
+	quoteSet = defaultQuoteSet,
 	startState = AttrState.BeforeName,
-	quoteInValueChars?: ReadonlyArray<QuoteSet>,
-	spaces?: ReadonlyArray<string>,
-): MLASTHTMLAttr & {
-	__leftover?: string;
-} {
-	const parsed = attrParser(raw, quoteSet, startState, quoteInValueChars, spaces);
+	quoteInValueChars: ReadonlyArray<QuoteSet> = defaultQuoteInValueChars,
+	endOfUnquotedValueChars: ReadonlyArray<string> = [...defaultSpaces, '/', '>'],
+) {
+	let state: AttrState = startState;
+	let spacesBeforeAttrName = '';
+	let attrName = '';
+	let spacesBeforeEqual = '';
+	let equal = '';
+	let spacesAfterEqual = '';
+	let quoteTypeIndex = -1;
+	let quoteStart = '';
+	let attrValue = '';
+	let quoteEnd = '';
 
-	let offset = startOffset;
+	const isBeforeValueStarted = startState === AttrState.BeforeValue;
 
-	const spacesBeforeName = tokenizer(parsed.spacesBeforeAttrName, line, col, offset);
-	line = spacesBeforeName.endLine;
-	col = spacesBeforeName.endCol;
-	offset = spacesBeforeName.endOffset;
+	const quoteModeStack: QuoteSet[] = [];
 
-	const name = tokenizer(parsed.attrName, line, col, offset);
-	line = name.endLine;
-	col = name.endCol;
-	offset = name.endOffset;
+	const chars = [...raw];
 
-	const spacesBeforeEqual = tokenizer(parsed.spacesBeforeEqual, line, col, offset);
-	line = spacesBeforeEqual.endLine;
-	col = spacesBeforeEqual.endCol;
-	offset = spacesBeforeEqual.endOffset;
+	while (chars.length > 0) {
+		if (state === AttrState.AfterValue) {
+			break;
+		}
 
-	const equal = tokenizer(parsed.equal, line, col, offset);
-	line = equal.endLine;
-	col = equal.endCol;
-	offset = equal.endOffset;
+		const char = chars.shift()!;
 
-	const spacesAfterEqual = tokenizer(parsed.spacesAfterEqual, line, col, offset);
-	line = spacesAfterEqual.endLine;
-	col = spacesAfterEqual.endCol;
-	offset = spacesAfterEqual.endOffset;
+		switch (state) {
+			case AttrState.BeforeName: {
+				if (char === '>') {
+					chars.unshift(char);
+					state = AttrState.AfterValue;
+					break;
+				}
 
-	const startQuote = tokenizer(parsed.quoteStart, line, col, offset);
-	line = startQuote.endLine;
-	col = startQuote.endCol;
-	offset = startQuote.endOffset;
+				if (char === '/') {
+					chars.unshift(char);
+					state = AttrState.AfterValue;
+					break;
+				}
 
-	const value = tokenizer(parsed.attrValue, line, col, offset);
-	line = value.endLine;
-	col = value.endCol;
-	offset = value.endOffset;
+				if (spaces.includes(char)) {
+					spacesBeforeAttrName += char;
+					break;
+				}
+				attrName += char;
+				state = AttrState.Name;
+				break;
+			}
+			case AttrState.Name: {
+				if (char === '>') {
+					chars.unshift(char);
+					state = AttrState.AfterValue;
+					break;
+				}
+				if (char === '/') {
+					chars.unshift(char);
+					state = AttrState.AfterValue;
+					break;
+				}
+				if (spaces.includes(char)) {
+					spacesBeforeEqual += char;
+					state = AttrState.Equal;
+					break;
+				}
+				if (char === EQUAL) {
+					equal += char;
+					state = AttrState.BeforeValue;
+					break;
+				}
+				attrName += char;
+				break;
+			}
+			case AttrState.Equal: {
+				if (spaces.includes(char)) {
+					spacesBeforeEqual += char;
+					break;
+				}
+				if (char === EQUAL) {
+					equal += char;
+					state = AttrState.BeforeValue;
+					break;
+				}
 
-	const endQuote = tokenizer(parsed.quoteEnd, line, col, offset);
+				// End of attribute
+				chars.unshift(spacesBeforeEqual, char);
+				spacesBeforeEqual = '';
 
-	const attrToken = tokenizer(
-		parsed.attrName +
-			parsed.spacesBeforeEqual +
-			parsed.equal +
-			parsed.spacesAfterEqual +
-			parsed.quoteStart +
-			parsed.attrValue +
-			parsed.quoteEnd,
-		name.startLine,
-		name.startCol,
-		name.startOffset,
-	);
+				state = AttrState.AfterValue;
+				break;
+			}
+			case AttrState.BeforeValue: {
+				if (endOfUnquotedValueChars.includes(char) && spaces.includes(char)) {
+					if (isBeforeValueStarted) {
+						spacesBeforeAttrName += char;
+						break;
+					}
+					spacesAfterEqual += char;
+					break;
+				}
 
-	const result: MLASTHTMLAttr = {
-		type: 'html-attr',
-		uuid: uuid(),
-		raw: attrToken.raw,
-		startOffset: attrToken.startOffset,
-		endOffset: attrToken.endOffset,
-		startLine: attrToken.startLine,
-		endLine: attrToken.endLine,
-		startCol: attrToken.startCol,
-		endCol: attrToken.endCol,
-		spacesBeforeName,
-		name,
+				quoteTypeIndex = quoteSet.findIndex(quote => quote.start === char);
+				const quote = quoteSet[quoteTypeIndex];
+				if (quote) {
+					quoteStart = quote.start;
+					state = AttrState.Value;
+					break;
+				}
+
+				const raw = char + chars.join('');
+				const inQuote = quoteInValueChars.find(quote => raw.startsWith(quote.start));
+				if (inQuote) {
+					quoteModeStack.push(inQuote);
+					attrValue += inQuote.start;
+					chars.splice(0, inQuote.start.length - 1);
+					state = AttrState.Value;
+					break;
+				}
+
+				chars.unshift(char);
+				state = AttrState.Value;
+				break;
+			}
+			case AttrState.Value: {
+				if (!quoteSet[quoteTypeIndex] && endOfUnquotedValueChars.includes(char)) {
+					chars.unshift(char);
+					state = AttrState.AfterValue;
+					break;
+				}
+
+				if (quoteModeStack.length === 0 && char === quoteSet[quoteTypeIndex]?.end) {
+					quoteEnd = char;
+					state = AttrState.AfterValue;
+					break;
+				}
+
+				const raw = char + chars.join('');
+
+				const inQuoteEnd = quoteModeStack.at(-1);
+				if (inQuoteEnd && raw.startsWith(inQuoteEnd.end)) {
+					quoteModeStack.pop();
+					attrValue += inQuoteEnd.end;
+					chars.splice(0, inQuoteEnd.end.length - 1);
+					break;
+				}
+
+				const inQuoteStart = quoteInValueChars.find(quote => raw.startsWith(quote.start));
+				if (inQuoteStart) {
+					quoteModeStack.push(inQuoteStart);
+					attrValue += inQuoteStart.start;
+					chars.splice(0, inQuoteStart.start.length - 1);
+					break;
+				}
+
+				attrValue += char;
+				break;
+			}
+		}
+	}
+
+	if (state === AttrState.Value && quoteTypeIndex !== -1) {
+		throw new SyntaxError(`Unclosed attribute value: ${raw}`);
+	}
+
+	const leftover = chars.join('');
+
+	return {
+		spacesBeforeAttrName,
+		attrName,
 		spacesBeforeEqual,
 		equal,
 		spacesAfterEqual,
-		startQuote,
-		value,
-		endQuote,
-		isDuplicatable: false,
-		nodeName: name.raw,
-		parentNode: null,
-		prevNode: null,
-		nextNode: null,
-		isFragment: false,
-		isGhost: false,
+		quoteStart,
+		attrValue,
+		quoteEnd,
+		leftover,
 	};
-
-	if (parsed.leftover) {
-		return {
-			...result,
-			__leftover: parsed.leftover,
-		};
-	}
-
-	return result;
 }

@@ -10,6 +10,9 @@
 	"exports": {
 		".": {
 			"import": "./lib/index.js"
+		},
+		"./location": {
+			"import": "./lib/get-location.js"
 		}
 	},
 	"types": "lib/index.d.ts",
@@ -25,6 +28,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.0.0-alpha.9",
+		"@markuplint/ml-spec": "4.0.0-alpha.9",
 		"@markuplint/types": "4.0.0-alpha.9",
 		"@types/uuid": "^9.0.7",
 		"espree": "^9.6.1",

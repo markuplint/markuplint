@@ -1,7 +1,7 @@
 import type { MLAttr } from './attr.js';
 import type { RuleInfo } from '@markuplint/ml-config';
 
-import { getCol, getLine } from '@markuplint/parser-utils';
+import { getCol, getLine } from '@markuplint/parser-utils/location';
 
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
