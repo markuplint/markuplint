@@ -3,7 +3,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('Node list', () => {
 	test('a code', () => {
