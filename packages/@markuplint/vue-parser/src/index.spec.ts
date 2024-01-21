@@ -3,7 +3,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('parser', () => {
 	test('empty', () => {
@@ -106,12 +108,11 @@ describe('parser', () => {
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
 			'[3:3]>[3:11](15,23)script: <script>',
-			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
-			'[6:3]>[6:18](54,69)#comment: <!--comment-node-->',
+			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
-			'[7:3]>[7:23](72,92)#vue-expression-container: {{␣CodeExpression␣}}',
+			'[7:3]>[7:23](72,92)#ps:vue-expression-container: {{␣CodeExpression␣}}',
 			'[7:23]>[8:3](92,95)#text: ⏎→→',
 			'[8:3]>[8:8](95,100)div: <div>',
 			'[8:8]>[10:3](100,119)#text: ⏎→→→text&amp;div⏎→→',
@@ -155,12 +156,16 @@ describe('parser', () => {
 			'[24:11]>[25:3](304,307)#text: ⏎→→',
 			'[25:3]>[25:24](307,328)img: <img␣src="path/to"␣/>',
 			'[25:24]>[28:3](328,351)#text: ⏎→→→→invalid-indent⏎⏎→→',
-			'[28:3]>[29:31](351,400)#comment: <!--?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value"-->',
-			"[29:31]>[33:12](400,451)#text: text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
+			'[28:3]>[29:31](351,400)#comment(👿): <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
+			'[29:31]>[29:35](400,404)#text: text',
+			'[29:35]>[29:42](404,411)#invalid(👿): </html>',
+			"[29:42]>[33:12](411,451)#text: '⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](451,470)html: <html␣attr="value">',
 			'[33:31]>[33:35](470,474)#text: text',
 			'[33:35]>[33:42](474,481)html: </html>',
-			"[33:42]>[37:3](481,505)#text: '⏎→→%>⏎⏎→→⏎→→",
+			"[33:42]>[36:3](481,491)#text: '⏎→→%>⏎⏎→→",
+			'[36:3]>[36:14](491,502)#invalid(👿): </expected>',
+			'[36:14]>[37:3](502,505)#text: ⏎→→',
 			'[37:3]>[37:8](505,510)div: <div>',
 			'[37:8]>[39:2](510,523)#text: ⏎→text-node⏎→',
 		]);
@@ -211,10 +216,9 @@ describe('parser', () => {
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
 			'[3:3]>[3:11](15,23)script: <script>',
-			'[3:11]>[5:3](23,42)#text: ⏎→→→const␣i␣=␣0;⏎→→',
 			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
-			'[6:3]>[6:18](54,69)#comment: <!--comment-node-->',
+			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
 			'[7:3]>[7:24](72,93)#comment: <!--␣html-comment␣-->',
 			'[7:24]>[8:3](93,96)#text: ⏎→→',
@@ -260,12 +264,16 @@ describe('parser', () => {
 			'[24:11]>[25:3](305,308)#text: ⏎→→',
 			'[25:3]>[25:24](308,329)img: <img␣src="path/to"␣/>',
 			'[25:24]>[28:3](329,352)#text: ⏎→→→→invalid-indent⏎⏎→→',
-			'[28:3]>[29:31](352,401)#comment: <!--?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value"-->',
-			"[29:31]>[33:12](401,452)#text: text'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
+			'[28:3]>[29:31](352,401)#comment(👿): <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
+			'[29:31]>[29:35](401,405)#text: text',
+			'[29:35]>[29:42](405,412)#invalid(👿): </html>',
+			"[29:42]>[33:12](412,452)#text: '⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](452,471)html: <html␣attr="value">',
 			'[33:31]>[33:35](471,475)#text: text',
 			'[33:35]>[33:42](475,482)html: </html>',
-			"[33:42]>[37:3](482,506)#text: '⏎→→%>⏎⏎→→⏎→→",
+			"[33:42]>[36:3](482,492)#text: '⏎→→%>⏎⏎→→",
+			'[36:3]>[36:14](492,503)#invalid(👿): </expected>',
+			'[36:14]>[37:3](503,506)#text: ⏎→→',
 			'[37:3]>[37:8](506,511)div: <div>',
 			'[37:8]>[39:2](511,524)#text: ⏎→text-node⏎→',
 		]);
@@ -299,48 +307,27 @@ describe('parser', () => {
 		// console.log(map);
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
-		// <x-wrap>
 		expect(doc.nodeList[0].parentNode).toEqual(null);
-		expect(doc.nodeList[0].prevNode).toEqual(null);
-		expect(doc.nodeList[0].nextNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[0].pairNode.uuid).toEqual(doc.nodeList[11].uuid);
 
 		// </x-wrap>
 		expect(doc.nodeList[11].parentNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[11].pairNode.uuid).toEqual(doc.nodeList[0].uuid);
 
 		// <x-before>
-		// @ts-ignore
 		expect(doc.nodeList[1].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
-		expect(doc.nodeList[1].prevNode).toEqual(null);
-		// @ts-ignore
-		expect(doc.nodeList[1].nextNode.uuid).toEqual(doc.nodeList[6].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[1].pairNode.uuid).toEqual(doc.nodeList[5].uuid);
 
 		// </x-before>
-		// @ts-ignore
 		expect(doc.nodeList[5].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[5].pairNode.uuid).toEqual(doc.nodeList[1].uuid);
 
 		// <x-after>
-		// @ts-ignore
 		expect(doc.nodeList[6].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
-		expect(doc.nodeList[6].prevNode.uuid).toEqual(doc.nodeList[1].uuid);
-		// @ts-ignore
-		expect(doc.nodeList[6].nextNode).toEqual(null);
-		// @ts-ignore
 		expect(doc.nodeList[6].pairNode.uuid).toEqual(doc.nodeList[10].uuid);
 
 		// </x-after>
-		// @ts-ignore
 		expect(doc.nodeList[10].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		// @ts-ignore
 		expect(doc.nodeList[10].pairNode.uuid).toEqual(doc.nodeList[6].uuid);
 	});
 
@@ -348,21 +335,13 @@ describe('parser', () => {
 		const doc = parse(
 			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].raw).toBe('v-if="bool"');
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[0].isDirective).toBeTruthy();
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[1].raw).toBe('data-attr');
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].raw).toBe('v-bind:data-attr2="variable"');
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[3].isDirective).toBeFalsy();
-		// @ts-ignore
 		expect(doc.nodeList[0].attributes[4].isDirective).toBeFalsy();
 	});
 
@@ -418,6 +397,7 @@ describe('parser', () => {
 			'  isDirective: true',
 			'  isDynamicValue: false',
 			'  potentialName: v-slot:header',
+			'[4:22]>[4:33](42,53)template: </template>',
 			'[4:33]>[5:3](53,56)#text: ⏎→→',
 			'[5:3]>[5:9](56,62)div: </div>',
 			'[5:9]>[6:2](62,64)#text: ⏎→',
@@ -463,9 +443,9 @@ bool
 			'  isDirective: true',
 			'  isDynamicValue: false',
 			'  potentialName: v-slot:header',
+			'[8:2]>[8:13](58,69)template: </template>',
 			'[8:13]>[9:1](69,71)#text: ␣⏎',
 			'[9:1]>[9:7](71,77)div: </div>',
-			'[9:7]>[9:18](77,88)#text: </template>',
 		]);
 	});
 });
@@ -531,7 +511,7 @@ describe('Issues', () => {
 			'[4:56]>[5:4](108,112)#text: ⏎→→→',
 			'[5:4]>[5:54](112,162)li: <li␣v-for="item␣in␣props.examples"␣:key="item.id">',
 			'[5:54]>[6:5](162,167)#text: ⏎→→→→',
-			'[6:5]>[6:20](167,182)#vue-expression-container: {{␣item.name␣}}',
+			'[6:5]>[6:20](167,182)#ps:vue-expression-container: {{␣item.name␣}}',
 			'[6:20]>[7:4](182,186)#text: ⏎→→→',
 			'[7:4]>[7:9](186,191)li: </li>',
 			'[7:9]>[8:3](191,194)#text: ⏎→→',
@@ -540,6 +520,6 @@ describe('Issues', () => {
 		]);
 
 		const ul = doc.nodeList[1];
-		expect(ul.childNodes.length).toBe(5);
+		expect(ul.childNodes.length).toBe(6);
 	});
 });
