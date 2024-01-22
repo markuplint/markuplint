@@ -23,7 +23,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-ubuntu-latest-node18-${{ hashFiles('yarn.lock') }}
@@ -46,7 +46,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-ubuntu-latest-node18-${{ hashFiles('yarn.lock') }}
