@@ -182,8 +182,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				nodeList = [fmNode, ...newNodeList];
 			}
 
-			// Reset state
-			this.state = structuredClone(this.#defaultState);
+			this.#reset();
 
 			return {
 				raw: rawCode,
@@ -1428,6 +1427,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 
 		return nodeList;
+	}
+
+	#reset() {
+		// Reset state
+		this.state = structuredClone(this.#defaultState);
+		this.#defaultDepth = 0;
 	}
 
 	#setRawCode(rawCode: string, originalRawCode?: string) {
