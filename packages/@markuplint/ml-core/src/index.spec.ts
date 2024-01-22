@@ -82,10 +82,18 @@ describe('AST', () => {
 	});
 
 	test('fixNodeName', () => {
-		const el = createTestElement('<div></div>');
-		expect(el.raw).toBe('<div>');
+		const el = createTestElement('<div attr></div>');
 		el.fixNodeName('x-div');
-		expect(el.raw).toBe('<x-div>');
+		expect(el.toString()).toBe('<div attr>');
+		expect(el.toString(true)).toBe('<x-div attr>');
+		expect(el.closeTag?.toString(true)).toBe('</x-div>');
+	});
+
+	test('fix', () => {
+		const el = createTestElement('<div attr></div>');
+		el.attributes[0].fix('value');
+		expect(el.toString()).toBe('<div attr>');
+		expect(el.toString(true)).toBe('<div attr="value">');
 	});
 
 	test('namespace', () => {
@@ -656,6 +664,139 @@ describe('the `as` attribute pretending', () => {
 	});
 });
 
+describe('Fix', () => {
+	test('HTML', () => {
+		const doc = createTestDocument(
+			[
+				'<!doctype html>',
+				'<html lang="en">',
+				'	<head>',
+				'		<meta charset="utf-8">',
+				'		<title>title</title>',
+				'	</head>',
+				'	<body>',
+				'		<h1>text</h1>',
+				'		<div',
+				'			id="app"',
+				'			class="app"',
+				'		>',
+				'			<span>text</span>',
+				'		</div>',
+				'	</body>',
+				'</html>',
+			].join('\n'),
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'<!doctype html>',
+			'<html lang="en">',
+			'	<head>',
+			'		<meta charset="utf-8">',
+			'		<title>title</title>',
+			'	</head>',
+			'	<body>',
+			'		<h1>text</h1>',
+			'		<div',
+			'			id="foo"',
+			'			class="app"',
+			'		>',
+			'			<a>text</a>',
+			'		</div>',
+			'	</body>',
+			'</html>',
+		]);
+	});
+
+	test('Astro', async () => {
+		const doc = createTestDocument(
+			[
+				'---',
+				"import { Header } from './Header.astro'",
+				'---',
+				'<!doctype html>',
+				'<html lang="en">',
+				'	<Header>',
+				'		<meta charset="utf-8">',
+				'		<title>title</title>',
+				'	</Header>',
+				'	<body>',
+				'		<h1>text</h1>',
+				'		<div',
+				'			id="app"',
+				'			class="app"',
+				'		>',
+				'			<span>text</span>',
+				'		</div>',
+				'	</body>',
+				'</html>',
+			].join('\n'),
+			{
+				parser: await import('@markuplint/astro-parser'),
+			},
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'---',
+			"import { Header } from './Header.astro'",
+			'---',
+			'<!doctype html>',
+			'<html lang="en">',
+			'	<Header>',
+			'		<meta charset="utf-8">',
+			'		<title>title</title>',
+			'	</Header>',
+			'	<body>',
+			'		<h1>text</h1>',
+			'		<div',
+			'			id="foo"',
+			'			class="app"',
+			'		>',
+			'			<a>text</a>',
+			'		</div>',
+			'	</body>',
+			'</html>',
+		]);
+	});
+
+	test('Pug', async () => {
+		const doc = createTestDocument(
+			[
+				'html(lang="en")',
+				'	head',
+				'		meta(charset="utf-8")',
+				'		title title',
+				'	body',
+				'		h1 text',
+				'		div(',
+				'			id="app",',
+				'			class="app"',
+				'		)',
+				'			span text',
+			].join('\n'),
+			{
+				parser: await import('@markuplint/pug-parser'),
+			},
+		);
+		doc.querySelector('div')?.attributes[0].fix('foo');
+		doc.querySelector('span')?.fixNodeName('a');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'html(lang="en")',
+			'	head',
+			'		meta(charset="utf-8")',
+			'		title title',
+			'	body',
+			'		h1 text',
+			'		div(',
+			'			id=foo,',
+			'			class="app"',
+			'		)',
+			'			a text',
+		]);
+	});
+});
+
 describe('Issues', () => {
 	test('#607', async () => {
 		const dom = createTestDocument('<% %><div></div>', {
@@ -817,5 +958,36 @@ describe('Issues', () => {
 			'[2:19]>[3:1](56,57)#text: ⏎',
 			'[3:1]>[3:8](57,64)#ml-block: {/each}',
 		]);
+	});
+
+	test('#1042', () => {
+		const contents = [
+			`---
+key: value
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>title</title>
+	</head>
+	<body>
+		<div id="app"></div>
+	</body>
+</html>`,
+			'<div attr attr2=\'value2\' attr3="value3">foo</div>',
+			'      <div   attr    attr2=\'value2\' attr3  =   "value3">\r\nfoo\n\n\n\n\n\n\n</div>',
+		];
+		const ignoreFrontMatter = {
+			config: {
+				parserOptions: {
+					ignoreFrontMatter: true,
+				},
+			},
+		};
+		expect(createTestDocument(contents[0]).toString()).toBe(contents[0]);
+		expect(createTestDocument(contents[0], ignoreFrontMatter).toString()).toBe(contents[0]);
+		expect(createTestDocument(contents[1]).toString()).toBe(contents[1]);
+		expect(createTestDocument(contents[2]).toString()).toBe(contents[2]);
 	});
 });

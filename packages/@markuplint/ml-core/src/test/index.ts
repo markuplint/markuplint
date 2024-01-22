@@ -20,9 +20,9 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 ) {
 	const ast = options?.parser
 		? 'parser' in options.parser
-			? options.parser.parser.parse(sourceCode)
-			: options.parser.parse(sourceCode)
-		: parser.parse(sourceCode);
+			? options.parser.parser.parse(sourceCode, options.config?.parserOptions)
+			: options.parser.parse(sourceCode, options.config?.parserOptions)
+		: parser.parse(sourceCode, options?.config?.parserOptions);
 	const ruleset = convertRuleset(options?.config);
 	const document = new Document<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}]);
 	return document;

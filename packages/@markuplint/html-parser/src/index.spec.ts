@@ -996,19 +996,20 @@ describe('parser', () => {
 	});
 
 	test('With frontmatter', () => {
-		const doc = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: true });
-		expect(doc.nodeList[0]?.nodeName).toBe('html');
+		const doc = parse('---\np: v\n---\n<html></html>', { ignoreFrontMatter: true });
+		expect(doc.nodeList[0]?.nodeName).toBe('#ps:front-matter');
+		expect(doc.nodeList[1]?.nodeName).toBe('html');
 
-		const doc2 = parse('===\np: v\n===\n<html></html>', { ignoreFrontMatter: false });
+		const doc2 = parse('---\np: v\n---\n<html></html>', { ignoreFrontMatter: false });
 		const ghostNode = doc2.nodeList[0] as MLASTElement;
 		expect(ghostNode.nodeName).toBe('html');
 		expect(ghostNode.isGhost).toBe(true);
 
-		const doc3 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: true });
-		expect(doc3.nodeList[0]?.nodeName).toBe('#text');
+		const doc3 = parse('---\np: v\n---\n<div></div>', { ignoreFrontMatter: true });
+		expect(doc3.nodeList[0]?.nodeName).toBe('#ps:front-matter');
 		expect(doc3.nodeList[1]?.nodeName).toBe('div');
 
-		const doc4 = parse('===\np: v\n===\n<div></div>', { ignoreFrontMatter: false });
+		const doc4 = parse('---\np: v\n---\n<div></div>', { ignoreFrontMatter: false });
 		expect(doc4.nodeList[0]?.nodeName).toBe('#text');
 		expect(doc4.nodeList[1]?.nodeName).toBe('div');
 	});
@@ -1152,5 +1153,22 @@ describe('Issues', () => {
 		]);
 		const node2: MLASTElement = nodes2[0] as MLASTElement;
 		expect(node2.childNodes?.[0]?.raw).toBe('\ntext');
+	});
+
+	test('#1042', () => {
+		const doc = parse('---\nkey: value\n---\n\n\n<!doctype html>\n<html\n><head\n>\n</head\n><body\n>', {
+			ignoreFrontMatter: true,
+		});
+		const map = nodeListToDebugMaps(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[6:1](0,21)#ps:front-matter: ---⏎key:␣value⏎---⏎⏎⏎',
+			'[6:1]>[6:16](21,36)#doctype: <!doctype␣html>',
+			'[6:16]>[7:1](36,37)#text: ⏎',
+			'[7:1]>[8:2](37,44)html: <html⏎>',
+			'[8:2]>[9:2](44,51)head: <head⏎>',
+			'[9:2]>[10:1](51,52)#text: ⏎',
+			'[10:1]>[11:2](52,60)head: </head⏎>',
+			'[11:2]>[12:2](60,67)body: <body⏎>',
+		]);
 	});
 });

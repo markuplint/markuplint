@@ -604,6 +604,7 @@ html
 		// console.log(doc.nodeList);
 		// console.log(map);
 		expect(map).toStrictEqual([
+			'[1:1]>[4:1](0,20)#ps:front-matter: ---⏎prop:␣value⏎---⏎',
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',

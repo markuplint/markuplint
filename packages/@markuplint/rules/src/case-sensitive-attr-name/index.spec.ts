@@ -51,14 +51,14 @@ describe('verify', () => {
 	});
 });
 
-// describe('fix', () => {
-// 	test('upper case', async () => {
-// 		const { fixedCode } = await mlRuleTest(rule, '<DIV DATA-LOWERCASE></DIV>', undefined, true);
-// 		expect(fixedCode).toBe('<DIV data-lowercase></DIV>');
-// 	});
+describe('fix', () => {
+	test('upper case', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<DIV DATA-LOWERCASE></DIV>', undefined, true);
+		expect(fixedCode).toBe('<DIV data-lowercase></DIV>');
+	});
 
-// 	test('upper case', async () => {
-// 		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', { rule: 'upper' }, true);
-// 		expect(fixedCode).toBe('<DIV DATA-LOWERCASE></DIV>');
-// 	});
-// });
+	test('upper case', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', { rule: 'upper' }, true);
+		expect(fixedCode).toBe('<DIV DATA-LOWERCASE></DIV>');
+	});
+});
