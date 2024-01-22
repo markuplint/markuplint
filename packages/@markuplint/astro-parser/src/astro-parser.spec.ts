@@ -256,7 +256,7 @@ test('Attr and Template Directive', () => {
 				kind: 'template-literal',
 				name: 'f',
 				value: 'g',
-				raw: '',
+				raw: '`g`',
 				position: { start: { column: 18, line: 1, offset: 17 } },
 			},
 			{
