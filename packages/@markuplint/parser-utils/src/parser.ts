@@ -186,6 +186,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			this.state = structuredClone(this.#defaultState);
 
 			return {
+				raw: rawCode,
 				nodeList,
 				isFragment,
 			};

@@ -143,6 +143,7 @@ export interface MLASTSpreadAttr extends MLASTToken {
 }
 
 export interface MLASTDocument {
+	readonly raw: string;
 	readonly nodeList: readonly MLASTNodeTreeItem[];
 	readonly isFragment: boolean;
 	readonly unknownParseError?: string;
