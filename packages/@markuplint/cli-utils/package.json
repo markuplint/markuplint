@@ -28,5 +28,8 @@
 		"enquirer": "^2.4.1",
 		"has-yarn": "^3.0.0",
 		"strip-ansi": "^7.1.0"
+	},
+	"devDependencies": {
+		"@types/cli-color": "^2.0.6"
 	}
 }
