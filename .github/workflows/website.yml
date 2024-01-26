@@ -157,15 +157,15 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                      core.info(`repo: ${JSON.stringify(context.repo)}`);
-                      core.info(`payload: ${JSON.stringify(context.payload)}`);
+                      core.info(`context.workflow: ${JSON.stringify(context.workflow)}`);
+                      core.info(`base: ${JSON.stringify(context.payload.pull_request.base)}`);
 
                       // get all workflow runs in target branch
                       const runs = await github.rest.actions.listWorkflowRuns({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           workflow_id: context.workflow,
-                          branch: context.payload.pull_request.base.ref,
+                          // branch: context.payload.pull_request.base.ref,
                       });
                       core.info(`runs: ${JSON.stringify(runs)}`);
 
