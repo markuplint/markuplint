@@ -154,6 +154,7 @@ jobs:
               run: cd website && yarn site:screenshot
 
             - uses: actions/github-script@v7
+              id: get-target-hash
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
@@ -164,10 +165,10 @@ jobs:
                           workflow_id: 'website.yml',
                           branch: context.payload.pull_request.base.ref,
                       });
-                      core.info(`runs: ${JSON.stringify(runs)}`);
+                      return runs.data.workflow_runs[0].head_sha;
 
             - uses: reg-viz/reg-actions@v2
               with:
                   github-token: '${{ secrets.GITHUB_TOKEN }}'
                   image-directory-path: './website/__screenshots__'
-                  target-hash: '${{ github.event.pull_request.head.sha }}'
+                  target-hash: '${{ steps.get-target-hash.outputs.result }}'
