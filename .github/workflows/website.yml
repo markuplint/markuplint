@@ -153,7 +153,21 @@ jobs:
             - name: Capture screenshots
               run: cd website && yarn site:screenshot
 
+            - uses: actions/github-script@v6
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      // get all workflow runs in target branch
+                      const runs = await github.actions.listWorkflowRuns({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          workflow_id: context.workflow,
+                          branch: context.payload.pull_request.base.ref,
+                      });
+                      core.info(`runs: ${JSON.stringify(runs)}`);
+
             - uses: reg-viz/reg-actions@v2
               with:
                   github-token: '${{ secrets.GITHUB_TOKEN }}'
                   image-directory-path: './website/__screenshots__'
+                  target-hash: '${{ github.event.pull_request.head.sha }}'
