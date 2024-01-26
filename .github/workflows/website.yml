@@ -157,13 +157,11 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                      console.log(context.payload.workflow_run.id);
-
                       // get all workflow runs in target branch
                       const runs = await github.rest.actions.listWorkflowRuns({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          workflow_id: context.payload.workflow_run.id,
+                          workflow_id: 'website.yml',
                           branch: context.payload.pull_request.base.ref,
                       });
                       core.info(`runs: ${JSON.stringify(runs)}`);
