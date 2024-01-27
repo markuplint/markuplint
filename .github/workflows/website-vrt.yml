@@ -1,0 +1,59 @@
+name: Website Visual Regression Test
+
+on:
+    pull_request_target:
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+    push: # for artifact and cache saving
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+            - '.github/workflows/website.yml'
+
+env:
+    NODE_BUILD_VERSION: 18
+
+jobs:
+    visual-regression-test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest]
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Cache restore website dependencies
+              uses: actions/cache/restore@v3
+              with:
+                  path: 'website/node_modules'
+                  key: website-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
+                  restore-keys: |
+                      website-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-
+            - name: Install website dependencies
+              run: cd website && yarn install --frozen-lockfile --check-files
+
+            - name: Cache playwright binaries
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps chromium
+
+            - name: Capture screenshots
+              run: cd website && yarn site:screenshot
+
+            - uses: reg-viz/reg-actions@v2
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
