@@ -165,7 +165,11 @@ jobs:
                           workflow_id: 'website.yml',
                           branch: context.payload.pull_request.base.ref,
                       });
-                      return runs.data.workflow_runs[0].head_sha;
+                      if (runs.data.workflow_runs.length === 0) {
+                          return context.payload.pull_request.base.sha;
+                      } else {
+                          return runs.data.workflow_runs[0].head_sha;
+                      }
 
             - uses: reg-viz/reg-actions@v2
               with:
