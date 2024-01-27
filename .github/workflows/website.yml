@@ -155,10 +155,11 @@ jobs:
 
             - uses: actions/github-script@v7
               id: get-target-hash
+              if: github.event_name == 'pull_request'
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
+                  result-encoding: string
                   script: |
-                      // get all workflow runs in target branch
                       const runs = await github.rest.actions.listWorkflowRuns({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
@@ -172,7 +173,14 @@ jobs:
                       }
 
             - uses: reg-viz/reg-actions@v2
+              if: github.event_name == 'pull_request'
               with:
                   github-token: '${{ secrets.GITHUB_TOKEN }}'
                   image-directory-path: './website/__screenshots__'
                   target-hash: '${{ steps.get-target-hash.outputs.result }}'
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name != 'pull_request'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
