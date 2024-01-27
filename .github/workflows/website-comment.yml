@@ -1,4 +1,4 @@
-name: Website Visual Regression Test
+name: Website Test (Post Comment)
 
 on:
     pull_request_target:
