@@ -13,6 +13,7 @@ import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@marku
 import { ConfigLoadError } from './config-load-error.js';
 import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
+import { generalImport } from './general-import.js';
 import { getPreset } from './get-preset.js';
 import { isPluginModuleName } from './is-plugin-module-name.js';
 import { isPresetModuleName } from './is-preset-module-name.js';
@@ -287,9 +288,8 @@ export class ConfigProvider {
 
 async function load(filePath: string, cache: boolean, referrer: string): Promise<Config | ConfigLoadError> {
 	if (!fileExists(filePath) && (await moduleExists(filePath))) {
-		const mod = await import(filePath);
-		const config: Config | ConfigLoadError =
-			mod?.default ?? new ConfigLoadError('Module is not found', filePath, referrer);
+		const config =
+			(await generalImport<Config>(filePath)) ?? new ConfigLoadError('Module is not found', filePath, referrer);
 		return config;
 	}
 	const res = await loadConfig<Config>(filePath, !cache, referrer).catch((error: unknown) => {
