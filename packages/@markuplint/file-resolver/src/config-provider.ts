@@ -14,6 +14,8 @@ import { ConfigLoadError } from './config-load-error.js';
 import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { getPreset } from './get-preset.js';
+import { isPluginModuleName } from './is-plugin-module-name.js';
+import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
@@ -188,7 +190,7 @@ export class ConfigProvider {
 			return entity;
 		}
 
-		if (isPreset(filePath)) {
+		if (isPresetModuleName(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
 			const pathResolvedConfig = await this._pathResolve(config, filePath);
@@ -197,7 +199,7 @@ export class ConfigProvider {
 			return pathResolvedConfig;
 		}
 
-		if (isPlugin(filePath)) {
+		if (isPluginModuleName(filePath)) {
 			this.#held.add(filePath);
 			return;
 		}
@@ -341,7 +343,7 @@ async function pathResolve<
 }
 
 async function resolve(dir: string, pathOrModName: string) {
-	if ((await moduleExists(pathOrModName)) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
+	if ((await moduleExists(pathOrModName)) || isPresetModuleName(pathOrModName) || isPluginModuleName(pathOrModName)) {
 		return pathOrModName;
 	}
 	const bangAndPath = /^(!)(.*)/.exec(pathOrModName) ?? [];
@@ -349,14 +351,6 @@ async function resolve(dir: string, pathOrModName: string) {
 	const pathname = bangAndPath[2] ?? pathOrModName;
 	const absPath = path.resolve(dir, pathname);
 	return bang + absPath;
-}
-
-function isPreset(name: string) {
-	return /^markuplint:/i.test(name);
-}
-
-function isPlugin(name: string) {
-	return /^plugin:/i.test(name);
 }
 
 class CircularReferenceError extends ReferenceError {
