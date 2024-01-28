@@ -6,6 +6,7 @@ on:
             - dev
         paths:
             - 'website/**'
+        types: [opened, labeled]
     push: # for artifact and cache saving
         branches:
             - dev
@@ -18,6 +19,8 @@ env:
 
 jobs:
     visual-regression-test:
+        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+        if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'pull_request_target ok')
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
