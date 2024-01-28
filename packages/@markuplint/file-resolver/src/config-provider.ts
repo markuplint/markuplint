@@ -3,7 +3,6 @@ import type { ConfigSet } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
-import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { mergeConfig } from '@markuplint/ml-config';
@@ -15,12 +14,11 @@ import { ConfigLoadError } from './config-load-error.js';
 import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { getPreset } from './get-preset.js';
+import { moduleExists } from './module-exists.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
 const cpLog = log.extend('config-provider');
-
-const require = createRequire(import.meta.url);
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -351,44 +349,6 @@ async function resolve(dir: string, pathOrModName: string) {
 	const pathname = bangAndPath[2] ?? pathOrModName;
 	const absPath = path.resolve(dir, pathname);
 	return bang + absPath;
-}
-
-async function moduleExists(name: string) {
-	try {
-		await import(name);
-	} catch (error) {
-		if (error instanceof Error && /^parse failure/i.test(error.message)) {
-			return true;
-		}
-
-		try {
-			require.resolve(name);
-		} catch (error) {
-			if (
-				// @ts-ignore
-				'code' in error &&
-				// @ts-ignore
-				error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
-			) {
-				// Even if there are issues with the fields,
-				// assume that the module exists and return true.
-				return true;
-			}
-
-			if (
-				// @ts-ignore
-				'code' in error &&
-				// @ts-ignore
-				error.code === 'MODULE_NOT_FOUND'
-			) {
-				return false;
-			}
-
-			throw error;
-		}
-	}
-
-	return true;
 }
 
 function isPreset(name: string) {
