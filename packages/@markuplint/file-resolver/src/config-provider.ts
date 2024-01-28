@@ -17,6 +17,7 @@ import { getPreset } from './get-preset.js';
 import { isPluginModuleName } from './is-plugin-module-name.js';
 import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
+import { resolveNameOrAbsPath } from './resolve-name-or-abs-path.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
@@ -314,7 +315,7 @@ async function pathResolve<
 	}
 	if (typeof filePath === 'string') {
 		// @ts-ignore
-		return resolve(dir, filePath);
+		return resolveNameOrAbsPath(dir, filePath);
 	}
 	if (Array.isArray(filePath)) {
 		// @ts-ignore
@@ -324,13 +325,13 @@ async function pathResolve<
 	for (const [key, fp] of Object.entries(filePath)) {
 		let _key = key;
 		if (resolveKey) {
-			_key = await resolve(dir, key);
+			_key = await resolveNameOrAbsPath(dir, key);
 		}
 		if (typeof fp === 'string') {
 			if (!resolveProps) {
-				res[_key] = await resolve(dir, fp);
+				res[_key] = await resolveNameOrAbsPath(dir, fp);
 			} else if (resolveProps.includes(key)) {
-				res[_key] = await resolve(dir, fp);
+				res[_key] = await resolveNameOrAbsPath(dir, fp);
 			} else {
 				res[_key] = fp;
 			}
@@ -340,17 +341,6 @@ async function pathResolve<
 	}
 	// @ts-ignore
 	return res;
-}
-
-async function resolve(dir: string, pathOrModName: string) {
-	if ((await moduleExists(pathOrModName)) || isPresetModuleName(pathOrModName) || isPluginModuleName(pathOrModName)) {
-		return pathOrModName;
-	}
-	const bangAndPath = /^(!)(.*)/.exec(pathOrModName) ?? [];
-	const bang = bangAndPath[1] ?? '';
-	const pathname = bangAndPath[2] ?? pathOrModName;
-	const absPath = path.resolve(dir, pathname);
-	return bang + absPath;
 }
 
 class CircularReferenceError extends ReferenceError {
