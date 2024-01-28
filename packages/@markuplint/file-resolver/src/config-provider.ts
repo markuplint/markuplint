@@ -17,7 +17,7 @@ import { getPreset } from './get-preset.js';
 import { isPluginModuleName } from './is-plugin-module-name.js';
 import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
-import { resolveNameOrAbsPath } from './resolve-name-or-abs-path.js';
+import { relPathToNameOrAbsPath } from './path-to-abs-or-name.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
@@ -253,12 +253,12 @@ export class ConfigProvider {
 		const dir = path.dirname(filePath);
 		return {
 			...config,
-			extends: await pathResolve(dir, config.extends),
-			plugins: await pathResolve(dir, config.plugins, ['name']),
-			parser: await pathResolve(dir, config.parser),
-			specs: await pathResolve(dir, config.specs),
-			excludeFiles: await pathResolve(dir, config.excludeFiles),
-			overrides: await pathResolve(dir, config.overrides, undefined, true),
+			extends: await relPathToNameOrAbsPath(dir, config.extends),
+			plugins: await relPathToNameOrAbsPath(dir, config.plugins, ['name']),
+			parser: await relPathToNameOrAbsPath(dir, config.parser),
+			specs: await relPathToNameOrAbsPath(dir, config.specs),
+			excludeFiles: await relPathToNameOrAbsPath(dir, config.excludeFiles),
+			overrides: await relPathToNameOrAbsPath(dir, config.overrides, undefined, true),
 		};
 	}
 
@@ -304,43 +304,6 @@ async function load(filePath: string, cache: boolean, referrer: string): Promise
 	}
 
 	return res.config;
-}
-
-async function pathResolve<
-	T extends string | readonly (string | Record<string, unknown>)[] | Readonly<Record<string, unknown>> | undefined,
->(dir: string, filePath?: T, resolveProps?: readonly string[], resolveKey = false): Promise<T> {
-	if (filePath == null) {
-		// @ts-ignore
-		return undefined;
-	}
-	if (typeof filePath === 'string') {
-		// @ts-ignore
-		return resolveNameOrAbsPath(dir, filePath);
-	}
-	if (Array.isArray(filePath)) {
-		// @ts-ignore
-		return Promise.all(filePath.map(fp => pathResolve(dir, fp, resolveProps)));
-	}
-	const res: Record<string, unknown> = {};
-	for (const [key, fp] of Object.entries(filePath)) {
-		let _key = key;
-		if (resolveKey) {
-			_key = await resolveNameOrAbsPath(dir, key);
-		}
-		if (typeof fp === 'string') {
-			if (!resolveProps) {
-				res[_key] = await resolveNameOrAbsPath(dir, fp);
-			} else if (resolveProps.includes(key)) {
-				res[_key] = await resolveNameOrAbsPath(dir, fp);
-			} else {
-				res[_key] = fp;
-			}
-		} else {
-			res[_key] = fp;
-		}
-	}
-	// @ts-ignore
-	return res;
 }
 
 class CircularReferenceError extends ReferenceError {
