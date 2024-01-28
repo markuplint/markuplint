@@ -7,7 +7,6 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { mergeConfig } from '@markuplint/ml-config';
-import { getPreset } from '@markuplint/ml-core';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
@@ -15,6 +14,7 @@ import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@marku
 import { ConfigLoadError } from './config-load-error.js';
 import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
+import { getPreset } from './get-preset.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 

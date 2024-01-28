@@ -13,7 +13,6 @@ export {
 export { Ruleset } from './ruleset/index.js';
 export { enableDebug } from './debug.js';
 export { getIndent } from './ml-dom/helper/get-indent.js';
-export * from './configs.js';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';
 export * from './ml-dom/index.js';

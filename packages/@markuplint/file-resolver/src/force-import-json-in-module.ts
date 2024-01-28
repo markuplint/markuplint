@@ -1,25 +1,15 @@
-import type { Config } from '@markuplint/ml-config';
-
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { log } from './debug.js';
 
-export async function getPreset(name: string): Promise<Config> {
-	const json = await forceImportJsonInModule(`@markuplint/config-presets/preset.${name}.json`);
+const fLog = log.extend('force-import-json-in-module');
 
-	if (json instanceof Error) {
-		throw new ReferenceError(`Preset markuplint:${name} is not found`);
-	}
-
-	return json as Config;
-}
-
-async function forceImportJsonInModule(modPath: string) {
+export async function forceImportJsonInModule(modPath: string) {
 	const error = await import(modPath).catch(error => error);
 
 	if (error instanceof Error) {
-		log('Error in forceImportJsonInModule: %O', error);
+		fLog('Error in forceImportJsonInModule: %O', error);
 
 		if (!('code' in error)) {
 			throw error;
@@ -32,7 +22,7 @@ async function forceImportJsonInModule(modPath: string) {
 		const searchPath = /module\s"([^"]+)"\sneeds/i.exec(error.message);
 		const absPath = searchPath?.[1] ?? null;
 
-		log('Extract path: %s', absPath);
+		fLog('Extract path: %s', absPath);
 
 		if (!absPath) {
 			throw error;
@@ -43,7 +33,7 @@ async function forceImportJsonInModule(modPath: string) {
 			.replaceAll('/', path.sep)
 			// Windows
 			.replace(/^[/\\][a-z]:/i, '');
-		log('Find JSON file path: %s', normalizePath);
+		fLog('Find JSON file path: %s', normalizePath);
 
 		const fileContent = await readFile(normalizePath, { encoding: 'utf8' });
 
