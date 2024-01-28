@@ -1,6 +1,11 @@
 import type { PluginConfig } from '@markuplint/ml-config';
 import type { Plugin, PluginCreator } from '@markuplint/ml-core';
 
+import { log } from './debug.js';
+import { generalImport } from './general-import.js';
+
+const pLog = log.extend('resolve-plugins');
+
 const cache = new Map<string, Plugin>();
 
 export async function resolvePlugins(pluginPaths?: readonly (string | PluginConfig)[]) {
@@ -21,34 +26,37 @@ async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> 
 	const config = getPluginConfig(pluginPath);
 	const cached = cache.get(config.name);
 	if (cached) {
+		pLog('Return from cache: %s', config.name);
 		return cached;
 	}
-	const pluginCreator = await failSafeImport<PluginCreator<any>>(config.name);
-	if (!pluginCreator) {
-		return {
-			name: config.name,
+
+	const pluginCreator = await generalImport<PluginCreator<any>>(config.name);
+
+	let name = config.name;
+	let plugin: Plugin | null = null;
+
+	if (typeof pluginCreator?.create === 'function' || pluginCreator?.name) {
+		plugin = {
+			name: pluginCreator.name,
+			...pluginCreator.create(config.settings),
 		};
+		name = plugin.name ?? name;
+	} else if (pluginCreator) {
+		pLog('Invalid plugin: %s', config.name);
 	}
-	const plugin: Plugin = {
-		name: pluginCreator.name,
-		...pluginCreator.create(config.settings),
-	};
-	cache.set(plugin.name, plugin);
 
-	let name = plugin.name;
+	name = name
+		.toLowerCase()
+		.replace(/^(?:markuplint-rule-|@markuplint\/rule-)/i, '')
+		.replaceAll(/\s+|[./\\]/g, '-');
 
-	if (!name) {
-		name = config.name
-			.toLowerCase()
-			.replace(/^(?:markuplint-rule-|@markuplint\/rule-)/i, '')
-			.replaceAll(/\s+|[./\\]/g, '-');
-		// eslint-disable-next-line no-console
-		console.info(`The plugin name became "${name}"`);
-	}
-	return {
+	const result = {
 		...plugin,
 		name,
 	};
+
+	cache.set(name, result);
+	return result;
 }
 
 function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
@@ -56,12 +64,4 @@ function getPluginConfig(pluginPath: string | PluginConfig): PluginConfig {
 		return { name: pluginPath, settings: {} };
 	}
 	return pluginPath;
-}
-
-async function failSafeImport<T>(name: string) {
-	const res = await import(name).catch(error => error);
-	if ('code' in res && res === 'MODULE_NOT_FOUND') {
-		return null;
-	}
-	return res.default as T;
 }
