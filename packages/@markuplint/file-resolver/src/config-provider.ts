@@ -12,7 +12,8 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { ConfigLoadError, load as loadConfig, search } from './cosmiconfig.js';
+import { ConfigLoadError } from './config-load-error.js';
+import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
