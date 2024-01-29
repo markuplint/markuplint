@@ -1367,10 +1367,10 @@
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.14.0"
 
-"@webcontainer/api@^1.1.3":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@webcontainer/api/-/api-1.1.8.tgz#78e78a882237af3ca9c97cb6d0a356b043ad0836"
-  integrity sha512-m9WRj38oCoFPrqZOTeJcncPjnZ00FZUMq9YHEXxdhAoYhhQ69Rz4qK5p444cIPaMy2j8H7HcNLcAIwMGWnpMpw==
+"@webcontainer/api@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@webcontainer/api/-/api-1.1.9.tgz#b546bc71f06740975d15c8dbf9b8287f51f92a9b"
+  integrity sha512-Sp6PV0K9D/3f8fSbCubqhfmBFH8XbngZCBOCF+aExyGqnz2etmw+KYvbQ/JxYvYX5KPaSxM+asFQwoP2RHl5cg==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"

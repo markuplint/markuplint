@@ -30,9 +30,9 @@
 		"@markuplint/ml-ast": "4.0.0-alpha.9",
 		"@markuplint/ml-spec": "4.0.0-alpha.9",
 		"@markuplint/types": "4.0.0-alpha.9",
-		"@types/uuid": "^9.0.7",
-		"espree": "^9.6.1",
-		"type-fest": "^4.9.0",
+		"@types/uuid": "^9.0.8",
+		"espree": "^10.0.0",
+		"type-fest": "^4.10.1",
 		"uuid": "^9.0.1"
 	}
 }
