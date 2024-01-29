@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/parser-utils",
-	"version": "4.0.0-alpha.9",
+	"version": "4.0.0-alpha.10",
 	"description": "Utility module for markuplint parser plugin",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -27,9 +27,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "4.0.0-alpha.9",
-		"@markuplint/ml-spec": "4.0.0-alpha.9",
-		"@markuplint/types": "4.0.0-alpha.9",
+		"@markuplint/ml-ast": "4.0.0-alpha.10",
+		"@markuplint/ml-spec": "4.0.0-alpha.10",
+		"@markuplint/types": "4.0.0-alpha.10",
 		"@types/uuid": "^9.0.8",
 		"espree": "^10.0.0",
 		"type-fest": "^4.10.1",
