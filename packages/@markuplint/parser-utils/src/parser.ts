@@ -37,6 +37,7 @@ import { v4 as uuid } from 'uuid';
 
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
+import { domLog } from './debug.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
 import { getCol, getEndCol, getEndLine, getLine } from './get-location.js';
@@ -181,6 +182,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				}
 				nodeList = [fmNode, ...newNodeList];
 			}
+
+			domLog(nodeList);
 
 			this.#reset();
 

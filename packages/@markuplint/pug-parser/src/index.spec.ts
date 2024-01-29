@@ -41,7 +41,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(1);
 		expect(doc.nodeList[0].attributes.length).toBe(1);
 		expect(doc.nodeList[0].attributes[0].name.raw).toBe('data-attr');
-		expect(doc.nodeList[0].attributes[0].value.raw).toBe('"value"');
+		expect(doc.nodeList[0].attributes[0].value.raw).toBe('value');
 	});
 
 	test('with dynamic attribute', () => {

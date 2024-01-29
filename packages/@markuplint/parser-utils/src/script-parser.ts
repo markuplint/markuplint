@@ -13,17 +13,6 @@ export function scriptParser(script: string): ScriptTokenType[] {
 	}));
 }
 
-export function removeQuote(str: string) {
-	const quote = str[0];
-	if (quote !== '"' && quote !== "'" && quote !== '`') {
-		return str;
-	}
-	if (str.at(-1) !== quote) {
-		return str;
-	}
-	return str.slice(1, -1);
-}
-
 export type ScriptTokenType = {
 	type: 'Identifier' | 'Boolean' | 'Numeric' | 'String' | 'Template' | 'Punctuator';
 	value: string;
