@@ -3,7 +3,7 @@ import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
 import { getNamespace, parser as htmlParser } from '@markuplint/html-parser';
-import { ParserError, Parser, AttrState, removeQuote, scriptParser } from '@markuplint/parser-utils';
+import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
 
 import { pugParse } from './pug-parser/index.js';
 
