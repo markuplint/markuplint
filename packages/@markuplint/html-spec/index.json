@@ -35765,10 +35765,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"autocomplete": {
-					"description": "This attribute on a <button> is nonstandard and Firefox-specific. Unlike other browsers, Firefox persists the dynamic disabled state of a <button> across page loads. Setting autocomplete=\"off\" on the button disables this feature; see Firefox bug 654072.",
-					"nonStandard": true
-				},
 				"autofocus": {
 					"description": "This Boolean attribute specifies that the button should have input focus when the page loads. Only one element in a document can have this attribute."
 				},
