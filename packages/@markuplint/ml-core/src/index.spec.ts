@@ -789,7 +789,7 @@ describe('Fix', () => {
 			'	body',
 			'		h1 text',
 			'		div(',
-			'			id=foo,',
+			'			id="foo",',
 			'			class="app"',
 			'		)',
 			'			a text',

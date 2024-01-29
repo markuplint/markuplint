@@ -154,7 +154,7 @@ class PugParser extends Parser<ASTNode> {
 		return [startTag, ...siblings];
 	}
 
-	visitAttr(token: Token) {
+	visitAttr(token: Token): MLASTAttr {
 		if (token.raw[0] === '#' || token.raw[0] === '.') {
 			const attr = super.visitAttr(token, {
 				startState: AttrState.BeforeValue,
@@ -194,18 +194,59 @@ class PugParser extends Parser<ASTNode> {
 
 		if (valueCodeTokens.length === 1) {
 			const token = valueCodeTokens[0]!;
-			if (token.type === 'Numeric' || token.type === 'Boolean') {
-				this.updateAttr(attr, { potentialValue: token.value });
-			} else if (token.type === 'String' || token.type === 'Template') {
-				this.updateAttr(attr, { potentialValue: removeQuote(token.value) });
-			} else {
-				this.updateAttr(attr, { isDynamicValue: true });
+			switch (token.type) {
+				case 'Numeric': {
+					return {
+						...attr,
+						potentialValue: token.value,
+						valueType: 'number',
+					};
+				}
+				case 'Boolean': {
+					return {
+						...attr,
+						potentialValue: token.value,
+						valueType: 'boolean',
+					};
+				}
+				case 'String':
+				case 'Template': {
+					const value = super.visitAttr(attr.value, {
+						startState: AttrState.BeforeValue,
+						quoteSet: [
+							{ start: '"', end: '"' },
+							{ start: "'", end: "'" },
+							{ start: '`', end: '`' },
+						],
+						quoteInValueChars: [
+							{ start: '"', end: '"' },
+							{ start: "'", end: "'" },
+							{ start: '`', end: '`' },
+							{ start: '${', end: '}' },
+						],
+					});
+
+					if (value.type === 'spread') {
+						throw new ParserError('Unexpected attribute value', value);
+					}
+
+					return {
+						...attr,
+						startQuote: value.startQuote,
+						value: value.value,
+						endQuote: value.endQuote,
+						potentialValue: value.value.raw,
+						valueType: 'string',
+					};
+				}
 			}
-		} else {
-			this.updateAttr(attr, { isDynamicValue: true });
 		}
 
-		return attr;
+		return {
+			...attr,
+			isDynamicValue: true,
+			valueType: 'code',
+		};
 	}
 }
 
