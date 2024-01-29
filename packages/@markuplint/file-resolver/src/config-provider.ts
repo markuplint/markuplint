@@ -3,23 +3,26 @@ import type { ConfigSet } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
-import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { mergeConfig } from '@markuplint/ml-config';
-import { getPreset } from '@markuplint/ml-core';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
-import { ConfigLoadError, load as loadConfig, search } from './cosmiconfig.js';
+import { ConfigLoadError } from './config-load-error.js';
+import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';
+import { generalImport } from './general-import.js';
+import { getPreset } from './get-preset.js';
+import { isPluginModuleName } from './is-plugin-module-name.js';
+import { isPresetModuleName } from './is-preset-module-name.js';
+import { moduleExists } from './module-exists.js';
+import { relPathToNameOrAbsPath } from './path-to-abs-or-name.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
 const cpLog = log.extend('config-provider');
-
-const require = createRequire(import.meta.url);
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
@@ -189,7 +192,7 @@ export class ConfigProvider {
 			return entity;
 		}
 
-		if (isPreset(filePath)) {
+		if (isPresetModuleName(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
 			const pathResolvedConfig = await this._pathResolve(config, filePath);
@@ -198,7 +201,7 @@ export class ConfigProvider {
 			return pathResolvedConfig;
 		}
 
-		if (isPlugin(filePath)) {
+		if (isPluginModuleName(filePath)) {
 			this.#held.add(filePath);
 			return;
 		}
@@ -251,12 +254,12 @@ export class ConfigProvider {
 		const dir = path.dirname(filePath);
 		return {
 			...config,
-			extends: await pathResolve(dir, config.extends),
-			plugins: await pathResolve(dir, config.plugins, ['name']),
-			parser: await pathResolve(dir, config.parser),
-			specs: await pathResolve(dir, config.specs),
-			excludeFiles: await pathResolve(dir, config.excludeFiles),
-			overrides: await pathResolve(dir, config.overrides, undefined, true),
+			extends: await relPathToNameOrAbsPath(dir, config.extends),
+			plugins: await relPathToNameOrAbsPath(dir, config.plugins, ['name']),
+			parser: await relPathToNameOrAbsPath(dir, config.parser),
+			specs: await relPathToNameOrAbsPath(dir, config.specs),
+			excludeFiles: await relPathToNameOrAbsPath(dir, config.excludeFiles),
+			overrides: await relPathToNameOrAbsPath(dir, config.overrides, undefined, true),
 		};
 	}
 
@@ -285,9 +288,8 @@ export class ConfigProvider {
 
 async function load(filePath: string, cache: boolean, referrer: string): Promise<Config | ConfigLoadError> {
 	if (!fileExists(filePath) && (await moduleExists(filePath))) {
-		const mod = await import(filePath);
-		const config: Config | ConfigLoadError =
-			mod?.default ?? new ConfigLoadError('Module is not found', filePath, referrer);
+		const config =
+			(await generalImport<Config>(filePath)) ?? new ConfigLoadError('Module is not found', filePath, referrer);
 		return config;
 	}
 	const res = await loadConfig<Config>(filePath, !cache, referrer).catch((error: unknown) => {
@@ -302,100 +304,6 @@ async function load(filePath: string, cache: boolean, referrer: string): Promise
 	}
 
 	return res.config;
-}
-
-async function pathResolve<
-	T extends string | readonly (string | Record<string, unknown>)[] | Readonly<Record<string, unknown>> | undefined,
->(dir: string, filePath?: T, resolveProps?: readonly string[], resolveKey = false): Promise<T> {
-	if (filePath == null) {
-		// @ts-ignore
-		return undefined;
-	}
-	if (typeof filePath === 'string') {
-		// @ts-ignore
-		return resolve(dir, filePath);
-	}
-	if (Array.isArray(filePath)) {
-		// @ts-ignore
-		return Promise.all(filePath.map(fp => pathResolve(dir, fp, resolveProps)));
-	}
-	const res: Record<string, unknown> = {};
-	for (const [key, fp] of Object.entries(filePath)) {
-		let _key = key;
-		if (resolveKey) {
-			_key = await resolve(dir, key);
-		}
-		if (typeof fp === 'string') {
-			if (!resolveProps) {
-				res[_key] = await resolve(dir, fp);
-			} else if (resolveProps.includes(key)) {
-				res[_key] = await resolve(dir, fp);
-			} else {
-				res[_key] = fp;
-			}
-		} else {
-			res[_key] = fp;
-		}
-	}
-	// @ts-ignore
-	return res;
-}
-
-async function resolve(dir: string, pathOrModName: string) {
-	if ((await moduleExists(pathOrModName)) || isPreset(pathOrModName) || isPlugin(pathOrModName)) {
-		return pathOrModName;
-	}
-	const bangAndPath = /^(!)(.*)/.exec(pathOrModName) ?? [];
-	const bang = bangAndPath[1] ?? '';
-	const pathname = bangAndPath[2] ?? pathOrModName;
-	const absPath = path.resolve(dir, pathname);
-	return bang + absPath;
-}
-
-async function moduleExists(name: string) {
-	try {
-		await import(name);
-	} catch (error) {
-		if (error instanceof Error && /^parse failure/i.test(error.message)) {
-			return true;
-		}
-
-		try {
-			require.resolve(name);
-		} catch (error) {
-			if (
-				// @ts-ignore
-				'code' in error &&
-				// @ts-ignore
-				error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
-			) {
-				// Even if there are issues with the fields,
-				// assume that the module exists and return true.
-				return true;
-			}
-
-			if (
-				// @ts-ignore
-				'code' in error &&
-				// @ts-ignore
-				error.code === 'MODULE_NOT_FOUND'
-			) {
-				return false;
-			}
-
-			throw error;
-		}
-	}
-
-	return true;
-}
-
-function isPreset(name: string) {
-	return /^markuplint:/i.test(name);
-}
-
-function isPlugin(name: string) {
-	return /^plugin:/i.test(name);
 }
 
 class CircularReferenceError extends ReferenceError {

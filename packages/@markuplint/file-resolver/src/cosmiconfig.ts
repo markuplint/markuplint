@@ -6,6 +6,7 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
 import { jsonc } from 'jsonc';
 
+import { ConfigLoadError } from './config-load-error.js';
 import { log } from './debug.js';
 
 const searchLog = log.extend('search');
@@ -61,17 +62,6 @@ export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolea
 		filePath: result.filepath,
 		config: result.config as T,
 	};
-}
-
-export class ConfigLoadError extends Error {
-	filePath: string;
-	name = 'ConfigLoadError';
-	referrer: string;
-	constructor(message: string, filePath: string, referrer: string) {
-		super(message + ` in ${referrer}`);
-		this.filePath = filePath;
-		this.referrer = referrer;
-	}
 }
 
 function cacheConfigError(fileOrDirPath: string, referrer: string) {

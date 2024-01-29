@@ -3,6 +3,7 @@ import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import path from 'node:path';
 
+import { generalImport } from './general-import.js';
 import { toRegexp } from './utils.js';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
@@ -76,9 +77,12 @@ async function importSpecs<T>(specModName: string) {
 		}
 	}
 
-	const mod = await import(specModName);
-	const spec: T = mod.default;
-	// @ts-ignore
+	const spec = await generalImport<T>(specModName);
+
+	if (!spec) {
+		throw new Error(`Spec "${specModName}" is not found.`);
+	}
+
 	caches.set(specModName, spec);
 	return spec;
 }

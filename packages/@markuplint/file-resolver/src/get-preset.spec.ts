@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { getPreset } from './configs.js';
+import { getPreset } from './get-preset.js';
 
 describe('getPreset', () => {
 	test('Find recommended preset', async () => {

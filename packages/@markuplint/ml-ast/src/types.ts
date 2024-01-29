@@ -216,6 +216,10 @@ export interface MLParser {
 	tagNameCaseSensitive?: boolean;
 }
 
+export interface MLParserModule {
+	readonly parser: MLParser;
+}
+
 /**
  * The end tag omittable type.
  *
