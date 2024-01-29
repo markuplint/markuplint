@@ -36071,6 +36071,10 @@
 				"valign": {
 					"description": "Specifies the vertical alignment of each column group cell. The possible enumerated values are baseline, bottom, middle, and top. Note that the descendant <col> elements may override this value using their own valign attribute. Use the vertical-align CSS property on the <td> and <th> elements instead, as this attribute is deprecated. Note: Setting vertical-align on the <colgroup> element has no effect as <td> and <th> elements are not descendants of the <colgroup> element, and therefore they do not inherit from it. If the table does not use a colspan attribute, use the td:nth-of-type() CSS selector per column, e.g. td:nth-of-type(2) { vertical-align: middle; } to center the second column cells vertically. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
+				},
+				"width": {
+					"description": "Specifies a default width for each column in the current column group. In addition to the standard pixel and percentage values, this attribute can take the special form 0*, which means that the width of each column spanned should be the minimum width necessary to hold the column's contents. Relative widths such as 5* can also be used. Note that the descendant <col> elements may override this value using their own width attribute. Use the width CSS property instead, as this attribute is deprecated.",
+					"deprecated": true
 				}
 			}
 		},
