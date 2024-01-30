@@ -1,4 +1,3 @@
-// @ts-ignore
 import lexer from 'pug-lexer';
 // @ts-ignore
 import parser from 'pug-parser';
@@ -7,7 +6,7 @@ import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.j
 
 export function pugParse(pug: string) {
 	const lexOrigin = lexer(pug);
-	const lex: PugLexToken[] = JSON.parse(JSON.stringify(lexOrigin));
+	const lex: lexer.Token[] = JSON.parse(JSON.stringify(lexOrigin));
 	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
 	const ast = optimizeAST(originAst, lex, pug);
 	return ast;
@@ -53,7 +52,7 @@ function optimizeAST(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originalAST: PugAST<PugASTNode>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	pug: string,
 ): ASTBlock {
 	const nodes: ASTNode[] = [];
@@ -369,14 +368,14 @@ function optimizeASTOfConditionalNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: PugASTConditionalNode<PugAST<PugASTNode>>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	pug: string,
 	offsets: readonly number[],
 	depth: number,
 ) {
 	const altNodes: ASTNode[] = [];
 
-	let tokenOfCurrentNode: PugLexToken | null = null;
+	let tokenOfCurrentNode: lexer.Token | null = null;
 	for (const token of tokens) {
 		if (token.type === 'else-if' && token.loc.start.line === node.consequent.line - 1) {
 			tokenOfCurrentNode = token;
@@ -411,7 +410,7 @@ function optimizeASTOfConditionalNode(
 	if ('alternate' in node && node.alternate) {
 		switch (node.alternate.type) {
 			case 'Block': {
-				let tokenOfCurrentNode: PugLexToken | null = null;
+				let tokenOfCurrentNode: lexer.Token | null = null;
 				for (const token of tokens) {
 					if (token.type === 'else' && token.loc.start.line === node.alternate.line - 1) {
 						tokenOfCurrentNode = token;
@@ -459,11 +458,11 @@ function getLocationFromToken(
 	line: number,
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	tokenType?: string | readonly string[],
 ) {
 	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
-	let tokenOfCurrentNode: PugLexToken | null = null;
+	let tokenOfCurrentNode: lexer.Token | null = null;
 	for (const token of tokens) {
 		if (
 			(tokenTypes == null || tokenTypes.includes(token.type)) &&
@@ -493,7 +492,7 @@ function getAttrs(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originalAttrs: readonly PugASTAttr[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	offsets: readonly number[],
 	pug: string,
 ) {
@@ -503,7 +502,7 @@ function getAttrs(
 		const attrLineOffset = offsets[attr.line - 2] ?? 0;
 		const attrOffset = attrLineOffset + attr.column - 1;
 
-		let tokenOfCurrentAttr: PugLexToken | null = null;
+		let tokenOfCurrentAttr: lexer.Token | null = null;
 		for (const token of tokens) {
 			if (token.loc.start.line === attr.line && token.loc.start.column === attr.column) {
 				tokenOfCurrentAttr = token;
@@ -542,10 +541,10 @@ function getEndAttributeLocation(
 	line: number,
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	offsets: readonly number[],
 ) {
-	let beforeNewlineToken: PugLexToken | null = null;
+	let beforeNewlineToken: lexer.Token | null = null;
 	for (const token of tokens) {
 		// Searching token after the tag node.
 		if (
@@ -579,10 +578,10 @@ function getPipelessText(
 	node: PugASTTextNode,
 	pug: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 ) {
-	let startPipelessText: PugLexToken | null = null;
-	let endPipelessText: PugLexToken | null = null;
+	let startPipelessText: lexer.Token | null = null;
+	let endPipelessText: lexer.Token | null = null;
 	for (const token of tokens) {
 		if (token.type === 'start-pipeless-text') {
 			startPipelessText = token;
@@ -622,11 +621,11 @@ function getRawTextAndLocationEnd(
 	line: number,
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	tokens: readonly PugLexToken[],
+	tokens: readonly lexer.Token[],
 	offsets: readonly number[],
 	pug: string,
 ) {
-	let beforeNewlineToken: PugLexToken | null = null;
+	let beforeNewlineToken: lexer.Token | null = null;
 	for (const token of tokens) {
 		// Searching token after the text.
 		if (
@@ -857,169 +856,4 @@ type PugASTAttr = {
 	mustEscape: boolean;
 	line: number;
 	column: number;
-};
-
-type PugLexToken =
-	| PugLexTokenTag
-	| PugLexTokenStartAttr
-	| PugLexTokenAttr
-	| PugLexTokenEndAttr
-	| PugLexTokenSpAttr
-	| PugLexTokenIndent
-	| PugLexTokenText
-	| PugLexTokenOutdent
-	| PugLexTokenNewline
-	| PugLexTokenComment
-	| PugLexTokenCode
-	| PugLexTokenDefMixin
-	| PugLexTokenCallMixin
-	| PugLexTokenSlotOfMixin
-	| PugLexTokenTextHTML
-	| PugLexTokenDot
-	| PugLexTokenStartPipelessText
-	| PugLexTokenEndPipelessText
-	| PugLexTokenIf
-	| PugLexTokenElseIf
-	| PugLexTokenElse
-	| PugLexTokenEOS;
-
-type PugLexTokenTag = {
-	type: 'tag';
-	loc: PugLexTokenLocation;
-	val: string;
-};
-
-type PugLexTokenStartAttr = {
-	type: 'start-attributes';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenAttr = {
-	type: 'attribute';
-	loc: PugLexTokenLocation;
-	name: string;
-	val: string;
-	mustEscape: boolean;
-};
-
-type PugLexTokenEndAttr = {
-	type: 'end-attributes';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenSpAttr = {
-	type: 'id' | 'class';
-	loc: PugLexTokenLocation;
-	name: string;
-	val: string;
-	mustEscape: boolean;
-};
-
-type PugLexTokenIndent = {
-	type: 'indent';
-	loc: PugLexTokenLocation;
-	val: number;
-};
-
-type PugLexTokenText = {
-	type: 'text';
-	loc: PugLexTokenLocation;
-	val: string;
-};
-
-type PugLexTokenOutdent = {
-	type: 'outdent';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenNewline = {
-	type: 'newline';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenComment = {
-	type: 'comment';
-	loc: PugLexTokenLocation;
-	buffer: boolean;
-};
-
-type PugLexTokenCode = {
-	type: 'code';
-	loc: PugLexTokenLocation;
-	val: string;
-	mustEscape: boolean;
-	buffer: boolean;
-};
-
-type PugLexTokenDefMixin = {
-	type: 'mixin';
-	loc: PugLexTokenLocation;
-	val: string;
-	args: string;
-};
-
-type PugLexTokenCallMixin = {
-	type: 'call';
-	loc: PugLexTokenLocation;
-	val: string;
-	args: string;
-};
-
-type PugLexTokenSlotOfMixin = {
-	type: 'mixin-block';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenTextHTML = {
-	type: 'text-html';
-	loc: PugLexTokenLocation;
-	val: string;
-};
-
-type PugLexTokenDot = {
-	type: 'dot';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenStartPipelessText = {
-	type: 'start-pipeless-text';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenEndPipelessText = {
-	type: 'end-pipeless-text';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenIf = {
-	type: 'if';
-	val: string;
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenElseIf = {
-	type: 'else-if';
-	val: string;
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenElse = {
-	type: 'else';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenEOS = {
-	type: 'eos';
-	loc: PugLexTokenLocation;
-};
-
-type PugLexTokenLocation = {
-	start: {
-		line: number;
-		column: number;
-	};
-	end: {
-		line: number;
-		column: number;
-	};
 };
