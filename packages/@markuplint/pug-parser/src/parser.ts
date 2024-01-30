@@ -95,7 +95,13 @@ class PugParser extends Parser<ASTNode> {
 					{
 						overwriteProps: {
 							attributes: originNode.attrs.map(attr => {
-								const token = this.sliceFragment(attr.offset, attr.endOffset);
+								const { offset, endOffset } = this.getOffsetsFromCode(
+									attr.line,
+									attr.column,
+									attr.endLine,
+									attr.endColumn,
+								);
+								const token = this.sliceFragment(offset, endOffset);
 								return this.visitAttr(token);
 							}),
 						},
