@@ -198,6 +198,12 @@ class PugParser extends Parser<ASTNode> {
 			this.updateAttr(attr, { isDuplicatable: true });
 		}
 
+		if (attr.name.raw.startsWith("'") && attr.name.raw.endsWith("'")) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(1, -1),
+			});
+		}
+
 		const valueCodeTokens = scriptParser(attr.value.raw.trim());
 
 		if (valueCodeTokens.length === 1) {
