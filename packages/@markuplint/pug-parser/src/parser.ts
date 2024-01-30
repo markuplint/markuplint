@@ -167,10 +167,12 @@ class PugParser extends Parser<ASTNode> {
 				return attr;
 			}
 
+			const potentialName = token.raw[0] === '#' ? 'id' : 'class';
+
 			this.updateAttr(attr, {
-				potentialName: token.raw[0] === '#' ? 'id' : 'class',
+				potentialName,
 				potentialValue: attr.value.raw.slice(1),
-				isDuplicatable: attr.potentialName === 'class',
+				isDuplicatable: potentialName === 'class',
 			});
 
 			return attr;
