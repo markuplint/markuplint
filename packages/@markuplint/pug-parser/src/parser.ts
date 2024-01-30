@@ -83,6 +83,53 @@ class PugParser extends Parser<ASTNode> {
 			case 'Tag': {
 				const namespace = getNamespace(originNode.name, parentNamespace);
 
+				const attrs = originNode.attrs.map(attr => {
+					// eslint-disable-next-line prefer-const
+					let { offset, endOffset } = this.getOffsetsFromCode(
+						attr.line,
+						attr.column,
+						attr.endLine,
+						attr.endColumn,
+					);
+
+					if (
+						(attr.name === 'id' || attr.name === 'class') &&
+						attr.offset === attr.endOffset &&
+						typeof attr.val === 'string'
+					) {
+						/**
+						 * #value =>
+						 * {
+						 *   name: 'id',
+						 *   val: "'value'",
+						 * }
+						 * Remove single quotes and add (#|.) prefix
+						 */
+						endOffset = attr.offset + attr.val.length - 1;
+					}
+
+					const token = this.sliceFragment(offset, endOffset);
+					return this.visitAttr(token);
+				});
+
+				// &attributes(syntax)
+				const andAttr = originNode.attributeBlocks.map(block => {
+					const blockLength = '&attributes('.length;
+					const { offset, endOffset } = this.getOffsetsFromCode(
+						block.line,
+						block.column + blockLength,
+						block.line,
+						block.column + blockLength + block.val.length,
+					);
+					const token = this.sliceFragment(offset, endOffset);
+					const node = this.createToken(token.raw, token.startOffset, token.startLine, token.startCol);
+					return {
+						...node,
+						type: 'spread',
+						nodeName: '#spread',
+					} as const;
+				});
+
 				return this.visitElement(
 					{
 						...token,
@@ -94,34 +141,7 @@ class PugParser extends Parser<ASTNode> {
 					originNode.block.nodes,
 					{
 						overwriteProps: {
-							attributes: originNode.attrs.map(attr => {
-								// eslint-disable-next-line prefer-const
-								let { offset, endOffset } = this.getOffsetsFromCode(
-									attr.line,
-									attr.column,
-									attr.endLine,
-									attr.endColumn,
-								);
-
-								if (
-									(attr.name === 'id' || attr.name === 'class') &&
-									attr.offset === attr.endOffset &&
-									typeof attr.val === 'string'
-								) {
-									/**
-									 * #value =>
-									 * {
-									 *   name: 'id',
-									 *   val: "'value'",
-									 * }
-									 * Remove single quotes and add (#|.) prefix
-									 */
-									endOffset = attr.offset + attr.val.length - 1;
-								}
-
-								const token = this.sliceFragment(offset, endOffset);
-								return this.visitAttr(token);
-							}),
+							attributes: [...attrs, ...andAttr],
 						},
 					},
 				);
