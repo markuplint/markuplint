@@ -50,6 +50,7 @@ describe('parser', () => {
 			<script>alert(123)</script>
 		:any-filter(arg1 arg2 arg3=123)
 			filter contents
+		div&attributes({ foo: 'bar' })
 `);
 		// console.log(JSON.stringify(ast));
 		expect(ast).toStrictEqual({
@@ -916,6 +917,31 @@ describe('parser', () => {
 													raw: 'arg3=123',
 												},
 											],
+										},
+										{
+											attributeBlocks: [
+												{
+													column: 6,
+													line: 47,
+													type: 'AttributeBlock',
+													val: "{ foo: 'bar' }",
+												},
+											],
+											attrs: [],
+											block: {
+												line: 47,
+												nodes: [],
+												type: 'Block',
+											},
+											column: 3,
+											endColumn: 6,
+											endLine: 47,
+											endOffset: 726,
+											line: 47,
+											name: 'div',
+											offset: 723,
+											raw: 'div',
+											type: 'Tag',
 										},
 									],
 									line: 4,

@@ -95,6 +95,7 @@ function optimizeAST(
 					endColumn,
 					block,
 					attrs,
+					attributeBlocks: node.attributeBlocks,
 				};
 
 				nodes.push(tagNode);
@@ -670,8 +671,7 @@ export type ASTNode =
 	| ASTCaseNode
 	| ASTCaseWhenNode;
 
-export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'attributeBlocks' | 'selfClosing' | 'isInline'> &
-	AdditionalASTData;
+export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'selfClosing' | 'isInline'> & AdditionalASTData;
 
 export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AdditionalASTData;
 
@@ -735,7 +735,12 @@ type PugASTTagNode<A, B> = {
 	name: string;
 	selfClosing: boolean;
 	attrs: A[];
-	attributeBlocks: never[];
+	attributeBlocks: {
+		type: 'AttributeBlock';
+		val: string;
+		line: number;
+		column: number;
+	}[];
 	isInline: boolean;
 	line: number;
 	column: number;
