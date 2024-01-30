@@ -267,6 +267,29 @@ function optimizeAST(
 				const raw = pug.slice(offset, endOffset);
 				// console.log({ v: node.val, r: raw });
 
+				/**
+				 *
+				 * Empty piped line
+				 *
+				 * @see https://pugjs.org/language/plain-text.html#recommended-solutions
+				 */
+				if (raw === '|') {
+					const newNode: ASTEmptyPipeNode = {
+						type: 'EmptyPipe',
+						raw,
+						val: node.val,
+						offset,
+						endOffset,
+						line,
+						endLine,
+						column,
+						endColumn,
+					};
+
+					nodes.push(newNode);
+					continue;
+				}
+
 				const textNode: ASTTextNode = {
 					type: node.type,
 					raw,
@@ -659,6 +682,7 @@ export type ASTBlock = PugAST<ASTNode>;
 export type ASTNode =
 	| ASTTagNode
 	| ASTTextNode
+	| ASTEmptyPipeNode
 	| ASTCodeNode
 	| ASTComment
 	| ASTDoctype
@@ -674,6 +698,8 @@ export type ASTNode =
 export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'selfClosing' | 'isInline'> & AdditionalASTData;
 
 export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AdditionalASTData;
+
+export type ASTEmptyPipeNode = PugASTEmptyPipeNode & AdditionalASTData;
 
 export type ASTCodeNode = PugASTCodeNode & AdditionalASTData;
 
@@ -751,6 +777,13 @@ type PugASTTextNode = {
 	type: 'Text';
 	val: string;
 	isHtml?: true;
+	line: number;
+	column: number;
+};
+
+type PugASTEmptyPipeNode = {
+	type: 'EmptyPipe';
+	val: string;
 	line: number;
 	column: number;
 };
