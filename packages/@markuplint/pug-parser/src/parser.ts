@@ -95,12 +95,30 @@ class PugParser extends Parser<ASTNode> {
 					{
 						overwriteProps: {
 							attributes: originNode.attrs.map(attr => {
-								const { offset, endOffset } = this.getOffsetsFromCode(
+								// eslint-disable-next-line prefer-const
+								let { offset, endOffset } = this.getOffsetsFromCode(
 									attr.line,
 									attr.column,
 									attr.endLine,
 									attr.endColumn,
 								);
+
+								if (
+									(attr.name === 'id' || attr.name === 'class') &&
+									attr.offset === attr.endOffset &&
+									typeof attr.val === 'string'
+								) {
+									/**
+									 * #value =>
+									 * {
+									 *   name: 'id',
+									 *   val: "'value'",
+									 * }
+									 * Remove single quotes and add (#|.) prefix
+									 */
+									endOffset = attr.offset + attr.val.length - 1;
+								}
+
 								const token = this.sliceFragment(offset, endOffset);
 								return this.visitAttr(token);
 							}),
@@ -177,7 +195,7 @@ class PugParser extends Parser<ASTNode> {
 
 			this.updateAttr(attr, {
 				potentialName,
-				potentialValue: attr.value.raw.slice(1),
+				potentialValue: attr.raw.slice(1),
 				isDuplicatable: potentialName === 'class',
 			});
 
@@ -218,14 +236,12 @@ class PugParser extends Parser<ASTNode> {
 				case 'Numeric': {
 					return {
 						...attr,
-						potentialValue: token.value,
 						valueType: 'number',
 					};
 				}
 				case 'Boolean': {
 					return {
 						...attr,
-						potentialValue: token.value,
 						valueType: 'boolean',
 					};
 				}
@@ -255,8 +271,7 @@ class PugParser extends Parser<ASTNode> {
 						startQuote: value.startQuote,
 						value: value.value,
 						endQuote: value.endQuote,
-						potentialValue: value.value.raw,
-						valueType: attr.name.raw.endsWith('!') ? 'code' : 'string',
+						...(attr.name.raw.endsWith('!') ? { valueType: 'code' } : {}),
 					};
 				}
 			}
