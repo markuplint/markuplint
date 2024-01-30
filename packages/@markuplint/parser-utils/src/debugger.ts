@@ -38,6 +38,12 @@ export function attributesToDebugMaps(attributes: readonly MLASTAttr[]) {
 		if (n.potentialName != null) {
 			r.push(`  potentialName: ${visibleWhiteSpace(n.potentialName)}`);
 		}
+		if (n.potentialValue != null) {
+			r.push(`  potentialValue: ${visibleWhiteSpace(n.potentialValue)}`);
+		}
+		if (n.valueType != null) {
+			r.push(`  valueType: ${visibleWhiteSpace(n.valueType)}`);
+		}
 		if (n.candidate) {
 			r.push(`  candidate: ${visibleWhiteSpace(n.candidate)}`);
 		}
