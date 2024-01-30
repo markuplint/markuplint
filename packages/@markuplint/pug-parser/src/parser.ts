@@ -204,6 +204,12 @@ class PugParser extends Parser<ASTNode> {
 			});
 		}
 
+		if (attr.name.raw.endsWith('!')) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(0, -1),
+			});
+		}
+
 		const valueCodeTokens = scriptParser(attr.value.raw.trim());
 
 		if (valueCodeTokens.length === 1) {
@@ -250,7 +256,7 @@ class PugParser extends Parser<ASTNode> {
 						value: value.value,
 						endQuote: value.endQuote,
 						potentialValue: value.value.raw,
-						valueType: 'string',
+						valueType: attr.name.raw.endsWith('!') ? 'code' : 'string',
 					};
 				}
 			}
