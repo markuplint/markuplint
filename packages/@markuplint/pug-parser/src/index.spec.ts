@@ -1275,6 +1275,94 @@ div#foo(data-bar="foo")&attributes(attributes)
 	});
 });
 
+// https://pugjs.org/language/plain-text.html#whitespace-control
+describe('Whitespace Control', () => {
+	test('Pipe 1', () => {
+		const doc = parse(
+			`| You put the em
+em pha
+| sis on the wrong syl
+em la
+| ble.`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:3]>[1:17](2,16)#text: You␣put␣the␣em',
+			'[2:1]>[2:3](17,19)em: em',
+			'[2:4]>[2:7](20,23)#text: pha',
+			'[3:3]>[3:23](26,46)#text: sis␣on␣the␣wrong␣syl',
+			'[4:1]>[4:3](47,49)em: em',
+			'[4:4]>[4:6](50,52)#text: la',
+			'[5:3]>[5:7](55,59)#text: ble.',
+		]);
+	});
+
+	test('Pipe 2', () => {
+		const doc = parse(
+			`a ...sentence ending with a link
+| .`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:2](0,1)a: a',
+			'[1:3]>[1:33](2,32)#text: ...sentence␣ending␣with␣a␣link',
+			'[2:3]>[2:4](35,36)#text: .',
+		]);
+	});
+
+	// https://pugjs.org/language/plain-text.html#recommended-solutions
+	test('Recommended Solutions (Empty pipe)', () => {
+		const doc = parse(
+			`| Don't
+|
+button#self-destruct touch
+|
+| me!`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			"[1:3]>[1:8](2,7)#text: Don't",
+			'[2:1]>[2:2](8,9)#ps:EmptyPipe: |',
+			'[3:1]>[3:21](10,30)button: button#self-destruct',
+			'[3:22]>[3:27](31,36)#text: touch',
+			'[5:1]>[5:2](39,40)#ps:EmptyPipe: |',
+			'[5:3]>[5:6](41,44)#text: me!',
+		]);
+	});
+
+	test('Recommended Solutions (plain text block)', () => {
+		const doc = parse(
+			`p.
+  Using regular tags can help keep your lines short,
+  but interpolated tags may be easier to #[em visualize]
+  whether the tags and text are whitespace-separated.`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:2](0,1)p: p',
+			'[1:3]>[3:42](2,97)#text: ⏎␣␣Using␣regular␣tags␣can␣help␣keep␣your␣lines␣short,⏎␣␣but␣interpolated␣tags␣may␣be␣easier␣to␣',
+			'[3:44]>[3:46](99,101)em: em',
+			'[3:47]>[3:56](102,111)#text: visualize',
+			'[3:57]>[4:54](112,166)#text: ⏎␣␣whether␣the␣tags␣and␣text␣are␣whitespace-separated.',
+		]);
+	});
+
+	test('Not recommended', () => {
+		const doc = parse(
+			`| Hey, check out
+a(href="http://example.biz/kitteh.png") this picture
+|  of my cat!`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:3]>[1:17](2,16)#text: Hey,␣check␣out',
+			'[2:1]>[2:40](17,56)a: a(href="http://example.biz/kitteh.png")',
+			'[2:41]>[2:53](57,69)#text: this␣picture',
+			'[3:3]>[3:14](72,83)#text: ␣of␣my␣cat!',
+		]);
+	});
+});
+
 describe('Issues', () => {
 	test('#1221', () => {
 		const doc = parse('html: p <span>text</span>');
