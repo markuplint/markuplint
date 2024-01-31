@@ -308,6 +308,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (concatText) {
 			nodeList = this.#concatText(nodeList);
 		}
+		nodeList = this.#trimText(nodeList);
 		return nodeList;
 	}
 
@@ -1473,6 +1474,35 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		return newNodes;
+	}
+
+	/**
+	 * Trim overlapping sections of text nodes for proper node separation
+	 *
+	 * @param nodeList
+	 * @returns
+	 */
+	#trimText(nodeList: readonly MLASTNodeTreeItem[]) {
+		const newNodeList: MLASTNodeTreeItem[] = [];
+		let prevNode: MLASTNodeTreeItem | null = null;
+		for (const node of nodeList) {
+			if (
+				prevNode?.type === 'text' &&
+				// Empty node
+				node.startOffset !== node.endOffset
+			) {
+				const prevNodeEndOffset = prevNode.endOffset;
+				const nodeStartOffset = node.startOffset;
+				if (prevNodeEndOffset > nodeStartOffset) {
+					const prevNodeRaw = prevNode.raw;
+					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.startOffset);
+					this.updateRaw(prevNode, prevNodeTrimmedRaw);
+				}
+			}
+			newNodeList.push(node);
+			prevNode = node;
+		}
+		return newNodeList;
 	}
 
 	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
