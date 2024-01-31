@@ -243,7 +243,8 @@
 									],
 									"perser-methods-creation": [
 										{ "name": "createToken", "type": "method" },
-										{ "name": "sliceFragment", "type": "method" }
+										{ "name": "sliceFragment", "type": "method" },
+										{ "name": "getOffsetsFromCode", "type": "method" }
 									],
 									"perser-methods-manipurate": [
 										{ "name": "walk", "type": "method" },

@@ -821,6 +821,34 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
+		const lines = this.#rawCode.split('\n');
+		let offset = 0;
+		let endOffset = 0;
+
+		for (let i = 0; i < startLine - 1; i++) {
+			const line = lines[i];
+			if (line == null) {
+				continue;
+			}
+			offset += line.length + 1;
+		}
+
+		offset += startCol - 1;
+
+		for (let i = 0; i < endLine - 1; i++) {
+			const line = lines[i];
+			if (line == null) {
+				continue;
+			}
+			endOffset += line.length + 1;
+		}
+
+		endOffset += endCol - 1;
+
+		return { offset, endOffset };
+	}
+
 	walk<Node extends MLASTNodeTreeItem>(nodeList: readonly Node[], walker: Walker<Node>, depth = 0) {
 		for (const node of nodeList) {
 			walker(node, this.#walkMethodSequentailPrevNode, depth);
@@ -1503,33 +1531,5 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			prevNode = node;
 		}
 		return newNodeList;
-	}
-
-	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
-		const lines = this.#rawCode.split('\n');
-		let offset = 0;
-		let endOffset = 0;
-
-		for (let i = 0; i < startLine - 1; i++) {
-			const line = lines[i];
-			if (line == null) {
-				continue;
-			}
-			offset += line.length + 1;
-		}
-
-		offset += startCol - 1;
-
-		for (let i = 0; i < endLine - 1; i++) {
-			const line = lines[i];
-			if (line == null) {
-				continue;
-			}
-			endOffset += line.length + 1;
-		}
-
-		endOffset += endCol - 1;
-
-		return { offset, endOffset };
 	}
 }
