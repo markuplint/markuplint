@@ -1,11 +1,30 @@
 import type { ASTNode } from './pug-parser/index.js';
 import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
-import type { ChildToken, Token } from '@markuplint/parser-utils';
+import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { getNamespace, parser as htmlParser } from '@markuplint/html-parser';
+import { HtmlParser, getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
 
 import { pugParse } from './pug-parser/index.js';
+
+class HtmlInPugParser extends HtmlParser {
+	constructor() {
+		super({
+			ignoreTags: [
+				/**
+				 * Tag Interpolation
+				 *
+				 * @see https://pugjs.org/language/interpolation.html#tag-interpolation
+				 */
+				{
+					type: 'tag-interpolation',
+					start: '#[',
+					end: ']',
+				},
+			],
+		});
+	}
+}
 
 class PugParser extends Parser<ASTNode> {
 	constructor() {
@@ -14,9 +33,10 @@ class PugParser extends Parser<ASTNode> {
 		});
 	}
 
-	tokenize() {
+	tokenize(options?: ParseOptions) {
+		const offsetOffset = options?.offsetOffset ?? 0;
 		return {
-			ast: pugParse(this.rawCode).nodes,
+			ast: pugParse(this.rawCode, offsetOffset >= 1).nodes,
 			isFragment: true,
 		};
 	}
@@ -59,14 +79,32 @@ class PugParser extends Parser<ASTNode> {
 					return [];
 				}
 
-				const htmlDoc = htmlParser.parse(originNode.raw, {
+				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line,
 					offsetColumn: originNode.column,
 					depth,
 				});
 
-				return htmlDoc.nodeList;
+				const newNodeList: MLASTNodeTreeItem[] = [];
+				for (const node of htmlDoc.nodeList) {
+					if (node.nodeName === '#ps:tag-interpolation') {
+						// Remove `#[` and `]`
+						const raw = node.raw.slice(2, -1);
+						const innerNodes = new PugParser().parse(raw, {
+							offsetOffset: node.startOffset + 2,
+							offsetLine: node.startLine,
+							offsetColumn: node.startCol + 2,
+							depth: node.depth,
+						});
+						newNodeList.push(...innerNodes.nodeList);
+						continue;
+					}
+
+					newNodeList.push(node);
+				}
+
+				return newNodeList;
 			}
 			case 'Comment': {
 				return this.visitComment(
@@ -83,6 +121,53 @@ class PugParser extends Parser<ASTNode> {
 			case 'Tag': {
 				const namespace = getNamespace(originNode.name, parentNamespace);
 
+				const attrs = originNode.attrs.map(attr => {
+					// eslint-disable-next-line prefer-const
+					let { offset, endOffset } = this.getOffsetsFromCode(
+						attr.line,
+						attr.column,
+						attr.endLine,
+						attr.endColumn,
+					);
+
+					if (
+						(attr.name === 'id' || attr.name === 'class') &&
+						attr.offset === attr.endOffset &&
+						typeof attr.val === 'string'
+					) {
+						/**
+						 * #value =>
+						 * {
+						 *   name: 'id',
+						 *   val: "'value'",
+						 * }
+						 * Remove single quotes and add (#|.) prefix
+						 */
+						endOffset = attr.offset + attr.val.length - 1;
+					}
+
+					const token = this.sliceFragment(offset, endOffset);
+					return this.visitAttr(token);
+				});
+
+				// &attributes(syntax)
+				const andAttr = originNode.attributeBlocks.map(block => {
+					const blockLength = '&attributes('.length;
+					const { offset, endOffset } = this.getOffsetsFromCode(
+						block.line,
+						block.column + blockLength,
+						block.line,
+						block.column + blockLength + block.val.length,
+					);
+					const token = this.sliceFragment(offset, endOffset);
+					const node = this.createToken(token.raw, token.startOffset, token.startLine, token.startCol);
+					return {
+						...node,
+						type: 'spread',
+						nodeName: '#spread',
+					} as const;
+				});
+
 				return this.visitElement(
 					{
 						...token,
@@ -94,10 +179,7 @@ class PugParser extends Parser<ASTNode> {
 					originNode.block.nodes,
 					{
 						overwriteProps: {
-							attributes: originNode.attrs.map(attr => {
-								const token = this.sliceFragment(attr.offset, attr.endOffset);
-								return this.visitAttr(token);
-							}),
+							attributes: [...attrs, ...andAttr],
 						},
 					},
 				);
@@ -167,10 +249,12 @@ class PugParser extends Parser<ASTNode> {
 				return attr;
 			}
 
+			const potentialName = token.raw[0] === '#' ? 'id' : 'class';
+
 			this.updateAttr(attr, {
-				potentialName: token.raw[0] === '#' ? 'id' : 'class',
-				potentialValue: attr.value.raw.slice(1),
-				isDuplicatable: attr.potentialName === 'class',
+				potentialName,
+				potentialValue: attr.raw.slice(1),
+				isDuplicatable: potentialName === 'class',
 			});
 
 			return attr;
@@ -190,6 +274,18 @@ class PugParser extends Parser<ASTNode> {
 			this.updateAttr(attr, { isDuplicatable: true });
 		}
 
+		if (attr.name.raw.startsWith("'") && attr.name.raw.endsWith("'")) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(1, -1),
+			});
+		}
+
+		if (attr.name.raw.endsWith('!')) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(0, -1),
+			});
+		}
+
 		const valueCodeTokens = scriptParser(attr.value.raw.trim());
 
 		if (valueCodeTokens.length === 1) {
@@ -198,14 +294,12 @@ class PugParser extends Parser<ASTNode> {
 				case 'Numeric': {
 					return {
 						...attr,
-						potentialValue: token.value,
 						valueType: 'number',
 					};
 				}
 				case 'Boolean': {
 					return {
 						...attr,
-						potentialValue: token.value,
 						valueType: 'boolean',
 					};
 				}
@@ -235,8 +329,7 @@ class PugParser extends Parser<ASTNode> {
 						startQuote: value.startQuote,
 						value: value.value,
 						endQuote: value.endQuote,
-						potentialValue: value.value.raw,
-						valueType: 'string',
+						...(attr.name.raw.endsWith('!') ? { valueType: 'code' } : {}),
 					};
 				}
 			}

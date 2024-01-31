@@ -126,13 +126,24 @@ test('React', async () => {
 });
 
 test('Pug', async () => {
-	const { violations } = await mlRuleTest(rule, '.hoge(class="hoge2")&attributes({class: "hoge3"})', {
-		parser: {
-			'.*': '@markuplint/pug-parser',
-		},
-	});
-
-	expect(violations.length).toBe(0);
+	expect(
+		(
+			await mlRuleTest(rule, '.hoge.hoge2.hoge3', {
+				parser: {
+					'.*': '@markuplint/pug-parser',
+				},
+			})
+		).violations.length,
+	).toBe(0);
+	expect(
+		(
+			await mlRuleTest(rule, '.hoge(class="hoge2")&attributes({class: "hoge3"})', {
+				parser: {
+					'.*': '@markuplint/pug-parser',
+				},
+			})
+		).violations.length,
+	).toBe(0);
 });
 
 test('Svelte', async () => {

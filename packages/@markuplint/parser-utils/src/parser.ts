@@ -114,7 +114,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.state = structuredClone(this.#defaultState);
 	}
 
-	tokenize(): Tokenized<Node, State> {
+	tokenize(options?: ParseOptions): Tokenized<Node, State> {
 		return {
 			ast: [],
 			isFragment: false,
@@ -146,7 +146,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const blocks = ignoreBlock(this.rawCode, this.#ignoreTags, this.#maskChar);
 			this.#setRawCode(blocks.replaced);
 
-			const tokenized = this.tokenize();
+			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
 
@@ -308,6 +308,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (concatText) {
 			nodeList = this.#concatText(nodeList);
 		}
+		nodeList = this.#trimText(nodeList);
 		return nodeList;
 	}
 
@@ -818,6 +819,34 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			startLine: getLine(this.rawCode, start),
 			startCol: getCol(this.rawCode, start),
 		};
+	}
+
+	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
+		const lines = this.#rawCode.split('\n');
+		let offset = 0;
+		let endOffset = 0;
+
+		for (let i = 0; i < startLine - 1; i++) {
+			const line = lines[i];
+			if (line == null) {
+				continue;
+			}
+			offset += line.length + 1;
+		}
+
+		offset += startCol - 1;
+
+		for (let i = 0; i < endLine - 1; i++) {
+			const line = lines[i];
+			if (line == null) {
+				continue;
+			}
+			endOffset += line.length + 1;
+		}
+
+		endOffset += endCol - 1;
+
+		return { offset, endOffset };
 	}
 
 	walk<Node extends MLASTNodeTreeItem>(nodeList: readonly Node[], walker: Walker<Node>, depth = 0) {
@@ -1473,5 +1502,34 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		return newNodes;
+	}
+
+	/**
+	 * Trim overlapping sections of text nodes for proper node separation
+	 *
+	 * @param nodeList
+	 * @returns
+	 */
+	#trimText(nodeList: readonly MLASTNodeTreeItem[]) {
+		const newNodeList: MLASTNodeTreeItem[] = [];
+		let prevNode: MLASTNodeTreeItem | null = null;
+		for (const node of nodeList) {
+			if (
+				prevNode?.type === 'text' &&
+				// Empty node
+				node.startOffset !== node.endOffset
+			) {
+				const prevNodeEndOffset = prevNode.endOffset;
+				const nodeStartOffset = node.startOffset;
+				if (prevNodeEndOffset > nodeStartOffset) {
+					const prevNodeRaw = prevNode.raw;
+					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.startOffset);
+					this.updateRaw(prevNode, prevNodeTrimmedRaw);
+				}
+			}
+			newNodeList.push(node);
+			prevNode = node;
+		}
+		return newNodeList;
 	}
 }
