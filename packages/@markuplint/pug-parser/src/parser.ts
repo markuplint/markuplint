@@ -1,6 +1,6 @@
 import type { ASTNode } from './pug-parser/index.js';
 import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
-import type { ChildToken, Token } from '@markuplint/parser-utils';
+import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { getNamespace, parser as htmlParser } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
@@ -14,9 +14,10 @@ class PugParser extends Parser<ASTNode> {
 		});
 	}
 
-	tokenize() {
+	tokenize(options?: ParseOptions) {
+		const offsetOffset = options?.offsetOffset ?? 0;
 		return {
-			ast: pugParse(this.rawCode).nodes,
+			ast: pugParse(this.rawCode, offsetOffset >= 1).nodes,
 			isFragment: true,
 		};
 	}

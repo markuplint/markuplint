@@ -114,7 +114,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.state = structuredClone(this.#defaultState);
 	}
 
-	tokenize(): Tokenized<Node, State> {
+	tokenize(options?: ParseOptions): Tokenized<Node, State> {
 		return {
 			ast: [],
 			isFragment: false,
@@ -146,7 +146,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const blocks = ignoreBlock(this.rawCode, this.#ignoreTags, this.#maskChar);
 			this.#setRawCode(blocks.replaced);
 
-			const tokenized = this.tokenize();
+			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
 

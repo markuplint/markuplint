@@ -4,8 +4,23 @@ import parser from 'pug-parser';
 
 import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.js';
 
-export function pugParse(pug: string) {
-	const lexOrigin = lexer(pug);
+export function pugParse(pug: string, useOffset = false) {
+	let lexOrigin = lexer(pug);
+
+	/**
+	 * Exclude indent and outdent tokens when offset is received to avoid indentation errors
+	 */
+	if (useOffset) {
+		const newLexOrigin: lexer.Token[] = [];
+		for (const token of lexOrigin) {
+			if (token.type === 'indent' || token.type === 'outdent') {
+				continue;
+			}
+			newLexOrigin.push(token);
+		}
+		lexOrigin = newLexOrigin;
+	}
+
 	const lex: lexer.Token[] = JSON.parse(JSON.stringify(lexOrigin));
 	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
 	const ast = optimizeAST(originAst, lex, pug);
