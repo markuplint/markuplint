@@ -2,10 +2,29 @@ import type { ASTNode } from './pug-parser/index.js';
 import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { getNamespace, parser as htmlParser } from '@markuplint/html-parser';
+import { HtmlParser, getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
 
 import { pugParse } from './pug-parser/index.js';
+
+class HtmlInPugParser extends HtmlParser {
+	constructor() {
+		super({
+			ignoreTags: [
+				/**
+				 * Tag Interpolation
+				 *
+				 * @see https://pugjs.org/language/interpolation.html#tag-interpolation
+				 */
+				{
+					type: 'tag-interpolation',
+					start: '#[',
+					end: ']',
+				},
+			],
+		});
+	}
+}
 
 class PugParser extends Parser<ASTNode> {
 	constructor() {
@@ -60,14 +79,32 @@ class PugParser extends Parser<ASTNode> {
 					return [];
 				}
 
-				const htmlDoc = htmlParser.parse(originNode.raw, {
+				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line,
 					offsetColumn: originNode.column,
 					depth,
 				});
 
-				return htmlDoc.nodeList;
+				const newNodeList: MLASTNodeTreeItem[] = [];
+				for (const node of htmlDoc.nodeList) {
+					if (node.nodeName === '#ps:tag-interpolation') {
+						// Remove `#[` and `]`
+						const raw = node.raw.slice(2, -1);
+						const innerNodes = new PugParser().parse(raw, {
+							offsetOffset: node.startOffset + 2,
+							offsetLine: node.startLine,
+							offsetColumn: node.startCol + 2,
+							depth: node.depth,
+						});
+						newNodeList.push(...innerNodes.nodeList);
+						continue;
+					}
+
+					newNodeList.push(node);
+				}
+
+				return newNodeList;
 			}
 			case 'Comment': {
 				return this.visitComment(
