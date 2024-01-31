@@ -1275,6 +1275,135 @@ div#foo(data-bar="foo")&attributes(attributes)
 	});
 });
 
+// https://pugjs.org/language/interpolation.html
+describe('Interpolation', () => {
+	test('String Interpolation, Escaped', () => {
+		const doc = parse(
+			`h1= title
+p Written with love by #{author}
+p This will be safe: #{theGreat}
+
+p This is #{msg.toUpperCase()}
+
+p No escaping for #{'}'}!
+
+p Escaping works with \\#{interpolation}
+p Interpolation works with #{'#{interpolation}'} too!`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:3](0,2)h1: h1',
+			'[1:3]>[1:10](2,9)#ps:Code: =␣title',
+			'[2:1]>[2:2](10,11)p: p',
+			'[2:3]>[2:24](12,33)#text: Written␣with␣love␣by␣',
+			'[2:24]>[2:33](33,42)#ps:Code: #{author}',
+			'[3:1]>[3:2](43,44)p: p',
+			'[3:3]>[3:22](45,64)#text: This␣will␣be␣safe:␣',
+			'[3:22]>[3:33](64,75)#ps:Code: #{theGreat}',
+			'[5:1]>[5:2](77,78)p: p',
+			'[5:3]>[5:11](79,87)#text: This␣is␣',
+			'[5:11]>[5:31](87,107)#ps:Code: #{msg.toUpperCase()}',
+			'[7:1]>[7:2](109,110)p: p',
+			'[7:3]>[7:19](111,127)#text: No␣escaping␣for␣',
+			"[7:19]>[7:25](127,133)#ps:Code: #{'}'}",
+			'[7:25]>[7:26](133,134)#text: !',
+			'[9:1]>[9:2](136,137)p: p',
+			'[9:3]>[9:40](138,175)#text: Escaping␣works␣with␣\\#{interpolation}',
+			'[10:1]>[10:2](176,177)p: p',
+			'[10:3]>[10:28](178,203)#text: Interpolation␣works␣with␣',
+			"[10:28]>[10:49](203,224)#ps:Code: #{'#{interpolation}'}",
+			'[10:49]>[10:54](224,229)#text: ␣too!',
+		]);
+	});
+
+	// https://pugjs.org/language/interpolation.html#string-interpolation-unescaped
+	test('String Interpolation, Unescaped', () => {
+		const doc = parse(
+			`.quote
+  p Joel: !{riskyBusiness}`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:7](0,6)div: .quote',
+			'[2:3]>[2:4](9,10)p: p',
+			'[2:5]>[2:11](11,17)#text: Joel:␣',
+			'[2:11]>[2:27](17,33)#ps:Code: !{riskyBusiness}',
+		]);
+	});
+
+	// https://pugjs.org/language/interpolation.html#tag-interpolation
+	test('Tag Interpolation', () => {
+		const doc = parse(
+			`p.
+  This is a very long and boring paragraph that spans multiple lines.
+  Suddenly there is a #[strong strongly worded phrase] that cannot be
+  #[em ignored].
+p.
+  And here's an example of an interpolated tag with an attribute:
+  #[q(lang="es") ¡Hola Mundo!]`, // cspell:disable-line
+		);
+		const map = nodeListToDebugMaps(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:2](0,1)p: p',
+			'[2:3]>[3:23](5,95)#text: This␣is␣a␣very␣long␣and␣boring␣paragraph␣that␣spans␣multiple␣lines.⏎␣␣Suddenly␣there␣is␣a␣',
+			'[3:25]>[3:31](97,103)strong: strong',
+			'[3:32]>[3:54](104,126)#text: strongly␣worded␣phrase',
+			'[3:55]>[3:70](127,142)#text: ␣that␣cannot␣be',
+			'[4:5]>[4:7](147,149)em: em',
+			'[4:8]>[4:15](150,157)#text: ignored',
+			'[4:16]>[4:17](158,159)#text: .',
+			'[5:1]>[5:2](160,161)p: p',
+			"[5:3]>[7:3](162,231)#text: ⏎␣␣And␣here's␣an␣example␣of␣an␣interpolated␣tag␣with␣an␣attribute:⏎␣␣",
+			'[7:5]>[7:17](233,245)q: q(lang="es")',
+			'[7:7]>[7:16](235,244)lang: lang="es"',
+			'  [7:7]>[7:7](235,235)bN: ',
+			'  [7:7]>[7:11](235,239)name: lang',
+			'  [7:11]>[7:11](239,239)bE: ',
+			'  [7:11]>[7:12](239,240)equal: =',
+			'  [7:12]>[7:12](240,240)aE: ',
+			'  [7:12]>[7:13](240,241)sQ: "',
+			'  [7:13]>[7:15](241,243)value: es',
+			'  [7:15]>[7:16](243,244)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[7:18]>[7:30](246,258)#text: ¡Hola␣Mundo!', // cspell:disable-line
+		]);
+	});
+
+	// https://pugjs.org/language/interpolation.html#whitespace-control
+	test('Whitespace Control', () => {
+		const doc = parse(
+			`p
+  | If I don't write the paragraph with tag interpolation, tags like
+  strong strong
+  | and
+  em em
+  | might produce unexpected results.
+p.
+  If I do, whitespace is #[strong respected] and #[em everybody] is happy.`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:2](0,1)p: p',
+			"[2:5]>[2:69](6,70)#text: If␣I␣don't␣write␣the␣paragraph␣with␣tag␣interpolation,␣tags␣like",
+			'[3:3]>[3:9](73,79)strong: strong',
+			'[3:10]>[3:16](80,86)#text: strong',
+			'[4:5]>[4:8](91,94)#text: and',
+			'[5:3]>[5:5](97,99)em: em',
+			'[5:6]>[5:8](100,102)#text: em',
+			'[6:5]>[7:1](107,141)#text: might␣produce␣unexpected␣results.⏎',
+			'[7:1]>[7:2](141,142)p: p',
+			'[8:3]>[8:26](146,169)#text: If␣I␣do,␣whitespace␣is␣',
+			'[8:28]>[8:34](171,177)strong: strong',
+			'[8:35]>[8:44](178,187)#text: respected',
+			'[8:45]>[8:50](188,193)#text: ␣and␣',
+			'[8:52]>[8:54](195,197)em: em',
+			'[8:55]>[8:64](198,207)#text: everybody',
+			'[8:65]>[8:75](208,218)#text: ␣is␣happy.',
+		]);
+	});
+});
+
 // https://pugjs.org/language/plain-text.html#whitespace-control
 describe('Whitespace Control', () => {
 	test('Pipe 1', () => {
