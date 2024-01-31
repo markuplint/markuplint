@@ -36176,13 +36176,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {
-				"nowrap": {
-					"description": "If the value of this attribute is set to yes, the definition text will not wrap. The default value is no.",
-					"deprecated": true,
-					"nonStandard": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "del",
