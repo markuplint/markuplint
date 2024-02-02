@@ -30,3 +30,7 @@ community/contributing.md
 
 # Env
 .env
+
+# Playwright
+playwright-report
+__screenshots__

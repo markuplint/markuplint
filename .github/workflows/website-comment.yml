@@ -1,0 +1,91 @@
+name: Website Test (Post Comment)
+
+on:
+    pull_request_target:
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+        types: [opened, labeled]
+    push: # for artifact and cache saving
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+            - '.github/workflows/website.yml'
+
+env:
+    NODE_BUILD_VERSION: 18
+
+jobs:
+    visual-regression-test:
+        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+        if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'pull_request_target ok')
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest]
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Cache restore website dependencies
+              uses: actions/cache/restore@v3
+              with:
+                  path: 'website/node_modules'
+                  key: website-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
+                  restore-keys: |
+                      website-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-
+            - name: Install website dependencies
+              run: cd website && yarn install --frozen-lockfile --check-files
+
+            - name: Cache playwright binaries
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps chromium
+
+            - name: Capture screenshots
+              run: cd website && yarn site:screenshot
+
+            - uses: actions/github-script@v7
+              id: get-target-hash
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  result-encoding: string
+                  script: |
+                      const runs = await github.rest.actions.listWorkflowRuns({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          workflow_id: 'website-comment.yml',
+                          branch: context.payload.pull_request.base.ref,
+                      });
+                      if (runs.data.workflow_runs.length === 0) {
+                          return context.payload.pull_request.base.sha;
+                      } else {
+                          return runs.data.workflow_runs[0].head_sha;
+                      }
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
+                  target-hash: '${{ steps.get-target-hash.outputs.result }}'
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name != 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
