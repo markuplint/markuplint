@@ -149,12 +149,6 @@ parentPort.on('message', async args => {
 		}
 		case 'exec': {
 			const engine = engines.get(uid);
-			engine.on('lint', (filePath, sourceCode, violations, fixedCode, debug, message) => {
-				parentPort.postMessage({
-					method: 'event:lint',
-					data: [filePath, sourceCode, violations, fixedCode, debug, message],
-				});
-			});
 			const result = await engine.exec();
 			parentPort.postMessage({ method: 'exec:return', data: [result] });
 			break;
