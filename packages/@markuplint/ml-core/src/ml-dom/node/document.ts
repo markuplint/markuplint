@@ -131,6 +131,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly specs: MLMLSpec;
 
+	readonly tagNameCaseSensitive: boolean;
+
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 
 	/**
@@ -146,6 +148,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
+			readonly tagNameCaseSensitive?: boolean;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -157,6 +160,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.booleanish = options?.booleanish ?? false;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
+		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(

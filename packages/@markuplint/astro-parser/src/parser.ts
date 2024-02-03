@@ -16,6 +16,7 @@ class AstroParser extends Parser<Node, State> {
 			{
 				endTagType: 'xml',
 				selfCloseType: 'html+xml',
+				tagNameCaseSensitive: true,
 			},
 			{
 				scopeNS: 'http://www.w3.org/1999/xhtml',
