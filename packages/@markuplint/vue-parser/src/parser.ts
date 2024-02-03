@@ -164,6 +164,16 @@ class VueParser extends Parser<ASTNode, State> {
 			if (closeTemplateTag && node.type === 'text') {
 				continue;
 			}
+
+			// ignore script and style
+			if (node.nodeName === 'script' || node.nodeName === 'style') {
+				continue;
+			}
+			// and ignore endtag of script and style
+			if (node.raw === '</script>' || node.nodeName === '</style>') {
+				continue;
+			}
+
 			newNodeList.push(node);
 		}
 
