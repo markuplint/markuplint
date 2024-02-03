@@ -9,6 +9,9 @@ export default createRule<Value>({
 	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
+		if (document.tagNameCaseSensitive) {
+			return;
+		}
 		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
@@ -45,6 +48,9 @@ export default createRule<Value>({
 		});
 	},
 	async fix({ document }) {
+		if (document.tagNameCaseSensitive) {
+			return;
+		}
 		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.elementType !== 'html') {
 				return;

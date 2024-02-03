@@ -13,6 +13,7 @@ class SvelteParser extends Parser<SvelteNode> {
 	constructor() {
 		super({
 			endTagType: 'xml',
+			tagNameCaseSensitive: true,
 			ignoreTags: [
 				{
 					type: 'Script',

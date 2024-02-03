@@ -184,6 +184,7 @@ export class MLCore {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,
+				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
 		} catch (error) {

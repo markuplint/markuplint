@@ -16,6 +16,7 @@ class AstroParser extends Parser<Node, State> {
 			{
 				endTagType: 'xml',
 				selfCloseType: 'html+xml',
+				tagNameCaseSensitive: true,
 			},
 			{
 				scopeNS: 'http://www.w3.org/1999/xhtml',
@@ -47,6 +48,14 @@ class AstroParser extends Parser<Node, State> {
 		this.#updateScopeNS(originNode, parentNode);
 
 		switch (originNode.type) {
+			case 'frontmatter': {
+				return this.visitPsBlock({
+					...token,
+					depth,
+					parentNode,
+					nodeName: 'Frontmatter',
+				});
+			}
 			case 'doctype': {
 				return this.visitDoctype({
 					...token,

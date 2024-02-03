@@ -107,8 +107,6 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
-			'[3:3]>[3:11](15,23)script: <script>',
-			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -215,8 +213,6 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
-			'[3:3]>[3:11](15,23)script: <script>',
-			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -276,6 +272,21 @@ describe('parser', () => {
 			'[36:14]>[37:3](503,506)#text: ⏎→→',
 			'[37:3]>[37:8](506,511)div: <div>',
 			'[37:8]>[39:2](511,524)#text: ⏎→text-node⏎→',
+		]);
+	});
+
+	test('with script', () => {
+		const doc = parse(`<template>
+  <div></div>
+</template>
+
+<script></script>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:11]>[2:3](10,13)#text: ⏎␣␣',
+			'[2:3]>[2:8](13,18)div: <div>',
+			'[2:8]>[2:14](18,24)div: </div>',
+			'[2:14]>[3:1](24,25)#text: ⏎',
 		]);
 	});
 
