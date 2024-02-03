@@ -1,7 +1,7 @@
 import type { MLResultInfo } from 'markuplint';
 import type { editor } from 'monaco-editor';
 
-import { getEndCol, getEndLine } from '@markuplint/parser-utils';
+import { getEndCol, getEndLine } from '@markuplint/parser-utils/location';
 
 export type Violations = MLResultInfo['violations'];
 export type Violation = Violations[number];
