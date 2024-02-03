@@ -47,6 +47,14 @@ class AstroParser extends Parser<Node, State> {
 		this.#updateScopeNS(originNode, parentNode);
 
 		switch (originNode.type) {
+			case 'frontmatter': {
+				return this.visitPsBlock({
+					...token,
+					depth,
+					parentNode,
+					nodeName: 'Frontmatter',
+				});
+			}
 			case 'doctype': {
 				return this.visitDoctype({
 					...token,

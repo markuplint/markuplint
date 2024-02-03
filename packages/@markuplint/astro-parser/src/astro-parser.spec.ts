@@ -295,6 +295,37 @@ test('Greater-than sign in attribute value', () => {
 	);
 });
 
+test('frontmatter', () => {
+	const ast = astroParse(`---
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+---
+<div>
+    <h1>{greeting}, {name}!</h1>
+</div>`);
+	expect(ast.children[0]).toStrictEqual(
+		expect.objectContaining({
+			position: {
+				end: {
+					column: 4,
+					line: 4,
+					offset: 136,
+				},
+				start: {
+					column: 1,
+					line: 1,
+					offset: 0,
+				},
+			},
+			type: 'frontmatter',
+			value: `
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+`,
+		}),
+	);
+});
+
 test('Missing end tag', () => {
 	const ast = astroParse('<div><span><span /></div>');
 	expect(ast).toStrictEqual(

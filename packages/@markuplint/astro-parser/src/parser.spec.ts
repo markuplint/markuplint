@@ -24,6 +24,8 @@ div {
 `);
 	const map = nodeListToDebugMaps(ast.nodeList, true);
 	expect(map).toEqual([
+		'[1:1]>[3:4](0,29)#ps:Frontmatter: ---⏎const␣name␣=␣"World";⏎---',
+		'[3:4]>[4:1](29,30)#text: ⏎',
 		'[4:1]>[4:17](30,46)#comment: <!--␣Comment␣-->',
 		'[5:1]>[5:8](47,54)style: <style>',
 		'[9:1]>[9:9](79,87)style: </style>',
@@ -94,6 +96,7 @@ div {
 	);
 	const map = nodeListToDebugMaps(ast.nodeList, true);
 	expect(map).toEqual([
+		'[1:1]>[3:4](0,31)#ps:Frontmatter: ---␣⏎const␣name␣=␣"World";␣⏎---',
 		'[4:1]>[5:2](33,42)style: <style␣⏎>',
 		'[9:1]>[9:9](71,79)style: </style>',
 		'[9:9]>[10:1](79,81)#text: ␣⏎',
@@ -298,6 +301,31 @@ test('namespace', () => {
 	expect(doc2.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
 	expect(doc2.nodeList[2].nodeName).toBe('div');
 	expect(doc2.nodeList[2].namespace).toBe('http://www.w3.org/1999/xhtml');
+});
+
+test('frontmatter', () => {
+	const ast = parse(`---
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+---
+<div>
+    <h1>{greeting}, {name}!</h1>
+</div>`);
+	const map = nodeListToDebugMaps(ast.nodeList);
+	expect(map).toEqual([
+		'[1:1]>[4:4](0,136)#ps:Frontmatter: ---⏎//␣Example:␣<SomeComponent␣greeting="(Optional)␣Hello"␣name="Required␣Name"␣/>⏎const␣{␣greeting␣=␣\'Hello\',␣name␣}␣=␣Astro.props;⏎---',
+		'[4:4]>[5:1](136,137)#text: ⏎',
+		'[5:1]>[5:6](137,142)div: <div>',
+		'[5:6]>[6:5](142,147)#text: ⏎␣␣␣␣',
+		'[6:5]>[6:9](147,151)h1: <h1>',
+		'[6:9]>[6:19](151,161)#ps:MustacheTag: {greeting}',
+		'[6:19]>[6:21](161,163)#text: ,␣',
+		'[6:21]>[6:27](163,169)#ps:MustacheTag: {name}',
+		'[6:27]>[6:28](169,170)#text: !',
+		'[6:28]>[6:33](170,175)h1: </h1>',
+		'[6:33]>[7:1](175,176)#text: ⏎',
+		'[7:1]>[7:7](176,182)div: </div>',
+	]);
 });
 
 describe('Issue', () => {
