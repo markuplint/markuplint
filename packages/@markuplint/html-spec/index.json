@@ -36254,7 +36254,7 @@
 		{
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element is used to indicate the term being defined within the context of a definition phrase or sentence. The ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the definition of the term.",
+			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the full definition of the term.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
