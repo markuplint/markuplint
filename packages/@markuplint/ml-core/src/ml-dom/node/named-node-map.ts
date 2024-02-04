@@ -1,7 +1,7 @@
-import type { MLAttr } from './attr';
+import type { MLAttr } from './attr.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import UnexpectedCallError from './unexpected-call-error';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends Array<MLAttr<T, O>>

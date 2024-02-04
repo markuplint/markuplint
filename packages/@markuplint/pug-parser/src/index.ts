@@ -1,2 +1,1 @@
-export { parse } from './parse';
-export const endTag = 'never';
+export { parser } from './parser.js';

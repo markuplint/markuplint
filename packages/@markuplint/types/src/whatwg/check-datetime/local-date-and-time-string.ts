@@ -1,9 +1,9 @@
-import type { CustomSyntaxChecker } from '../../types';
+import type { CustomSyntaxChecker } from '../../types.js';
 
-import { log } from '../../debug';
-import { TokenCollection } from '../../token';
+import { log } from '../../debug.js';
+import { TokenCollection } from '../../token/index.js';
 
-import { datetimeTokenCheck } from './datetime-tokens';
+import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-local-date-and-time-string
@@ -16,29 +16,29 @@ export const checkLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// DD
-			/[^T\s]*/,
+			/[^\sT]*/,
 			// T
-			/[^0-9]?/,
+			/\D?/,
 			// hh
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// mm
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// ss
 			/[^.]*/,
 			// .
-			/[^0-9]?/,
+			/\D?/,
 			// sss
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Local Date and Time: "%s" => %O', tokens.value, tokens);
@@ -78,29 +78,29 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// DD
 			/[^T]*/,
 			// T
-			/[^0-9]?/,
+			/\D?/,
 			// hh
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// mm
 			/[^:]*/,
 			// :
-			/[^0-9]?/,
+			/\D?/,
 			// ss
 			/[^.]*/,
 			// .
-			/[^0-9]?/,
+			/\D?/,
 			// sss
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Normalized Local Date and Time: "%s" => %O', tokens.value, tokens);
@@ -133,7 +133,8 @@ export const checkNormalizedLocalDateAndTimeString: CustomSyntaxChecker = () =>
 		 * > (e.g. omitting the seconds component entirely
 		 * > if the given time is zero seconds past the minute)
 		 */
-		const [, , , , , , , , , , second, , fp] = tokens;
+		const second = tokens[10];
+		const fp = tokens[12];
 
 		if (!second || !fp) {
 			log('Failed: %O', res);

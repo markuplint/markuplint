@@ -5,6 +5,9 @@ type Options = {
 };
 
 export default createRule<string[], Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableContents: true,
@@ -34,7 +37,7 @@ export default createRule<string[], Options>({
 				return;
 			}
 			for (const query of el.rule.value) {
-				const exists = Array.from(el.children).find(child => child.matches(query));
+				const exists = [...el.children].find(child => child.matches(query));
 				if (!exists) {
 					const message = t('Require {0}', t('the "{0*}" {1}', query, 'element'));
 					report({

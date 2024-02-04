@@ -429,7 +429,7 @@ export function searchIDLAttribute(name: string) {
 					idlPropName.toLowerCase() === camelizedName.toLowerCase() ||
 					contentAttrName.toLowerCase() === name.toLowerCase() ||
 					hyphenize(idlPropName) === name.toLowerCase(),
-		  ) ?? [];
+			) ?? [];
 	return {
 		idlPropName,
 		contentAttrName,
@@ -437,9 +437,9 @@ export function searchIDLAttribute(name: string) {
 }
 
 function camelize(str: string) {
-	return str.replace(/[:-][a-z]/g, $0 => $0[1]?.toUpperCase() ?? '');
+	return str.replaceAll(/[:-][a-z]/g, $0 => $0[1]?.toUpperCase() ?? '');
 }
 
 function hyphenize(str: string) {
-	return str.replace(/[A-Z]/g, $0 => `-${$0.toLowerCase()}`);
+	return str.replaceAll(/[A-Z]/g, $0 => `-${$0.toLowerCase()}`);
 }

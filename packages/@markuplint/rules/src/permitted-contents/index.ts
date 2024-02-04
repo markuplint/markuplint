@@ -1,12 +1,15 @@
-import type { ChildNode, Options, TagRule } from './types';
+import type { ChildNode, Options, TagRule } from './types.js';
 import type { Translator } from '@markuplint/i18n';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { contentModel } from './content-model';
-import { transparentMode } from './represent-transparent-nodes';
+import { contentModel } from './content-model.js';
+import { transparentMode } from './represent-transparent-nodes.js';
 
 export default createRule<TagRule[], Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
@@ -65,7 +68,7 @@ export default createRule<TagRule[], Options>({
 										'{0} is not allowed in {1} through the transparent model in this context',
 										name(not, t),
 										name(el, t),
-								  )
+									)
 								: t('{0} is not allowed in {1} in this context', name(not, t), name(el, t)));
 
 						report({

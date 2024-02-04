@@ -53,13 +53,3 @@ If it doesn't nest by quotations.
 <div attr={{ value }}></div>
 ```
 <!-- prettier-ignore-end -->
-
-If it mixes the tags and spaces.
-
-```html
-<div attr=" {{ value }} "></div>
-```
-
-```html
-<div attr="{{ value }} {{ value2 }}"></div>
-```

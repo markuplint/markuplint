@@ -1,4 +1,4 @@
-import type { MLMLSpec } from '../types';
+import type { MLMLSpec } from '../types/index.js';
 
 /**
  * Exposable content models and elements

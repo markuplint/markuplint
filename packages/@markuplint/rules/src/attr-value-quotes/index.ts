@@ -10,6 +10,9 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	defaultValue: 'double',
 	async verify({ document, report, t }) {
@@ -37,7 +40,6 @@ export default createRule<Type>({
 			const quote = quoteList[attr.rule.value];
 			if (quote && attr.startQuote && attr.startQuote.raw !== quote) {
 				attr.startQuote.fix(quote);
-				// TODO: attr.endQuote = new MLToken(quote);
 				attr.endQuote?.fix(quote);
 			}
 		});

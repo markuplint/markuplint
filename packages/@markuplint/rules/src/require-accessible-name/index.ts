@@ -3,22 +3,21 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { createRule, getRoleSpec, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable } from '../helpers';
+import { accnameMayBeMutable } from '../helpers.js';
 
 type Option = {
 	ariaVersion: ARIAVersion;
 };
 
 export default createRule<boolean, Option>({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (el.pretenderContext?.type === 'pretender') {
-				return;
-			}
-
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}

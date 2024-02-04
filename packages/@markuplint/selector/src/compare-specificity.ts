@@ -1,4 +1,4 @@
-import type { Specificity } from './types';
+import type { Specificity } from './types.js';
 
 export function compareSpecificity(a: Specificity, b: Specificity) {
 	if (a[0] < b[0]) {

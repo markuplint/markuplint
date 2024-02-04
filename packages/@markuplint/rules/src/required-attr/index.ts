@@ -2,7 +2,7 @@ import type { Attribute } from '@markuplint/html-spec';
 
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { attrMatches, match } from '../helpers';
+import { attrMatches, match } from '../helpers.js';
 
 type RequiredAttributes = string | (string | Attr)[];
 
@@ -12,6 +12,9 @@ type Attr = {
 };
 
 export default createRule<RequiredAttributes>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

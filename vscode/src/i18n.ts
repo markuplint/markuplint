@@ -1,6 +1,7 @@
 import type { LocaleSet, Translator } from '@markuplint/i18n';
 
-import { translator } from '@markuplint/i18n';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { translator } = require('@markuplint/i18n'); // Import as CommonJS
 
 export function t(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -32,7 +33,7 @@ function getLocaleSet(langCode: string): LocaleSet {
 		if (loadLocaleSet) {
 			return loadLocaleSet;
 		}
-	} catch (_) {
+	} catch {
 		// Avoid
 	}
 	return require('../locales/en.json');

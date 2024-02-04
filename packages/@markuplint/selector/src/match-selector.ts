@@ -1,9 +1,9 @@
-import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types';
+import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types.js';
 import type { Writable } from 'type-fest';
 
-import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is';
-import { regexSelectorMatches } from './regex-selector-matches';
-import { Selector } from './selector';
+import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { regexSelectorMatches } from './regex-selector-matches.js';
+import { Selector } from './selector.js';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
 
@@ -216,54 +216,49 @@ function uncombinedRegexSelect(
 		specificity[2] = 1;
 	}
 
-	if (selector.attrName) {
-		const selectorAttrName = selector.attrName;
-		const matchedAttrNameList = Array.from(el.attributes).map(attr => {
-			const attrName = attr.name;
-			const matchedAttrName = regexSelectorMatches(selectorAttrName, attrName, isPureHTMLElement(el));
+	type MatchedAttr = Record<string, string>;
+	const isPure = isPureHTMLElement(el);
 
-			if (matchedAttrName) {
-				delete matchedAttrName.$0;
+	if (selector.attrName || selector.attrValue) {
+		const matchedAttrList: MatchedAttr[] = [...el.attributes]
+			.map<MatchedAttr | null>(attr => {
+				const matchedAttrName = regexSelectorMatches(selector.attrName, attr.name, isPure);
+				if (selector.attrName && !matchedAttrName) {
+					return null;
+				}
+
+				const matchedAttrValue = regexSelectorMatches(selector.attrValue, attr.value, isPure);
+
+				if (selector.attrValue && !matchedAttrValue) {
+					return null;
+				}
+
+				if (matchedAttrName) {
+					delete matchedAttrName.$0;
+				}
+
+				if (matchedAttrValue) {
+					delete matchedAttrValue.$0;
+				}
+
 				data = {
 					...data,
 					...matchedAttrName,
-				};
-				specifiedAttr.set(attrName, '');
-			}
-
-			return matchedAttrName;
-		});
-
-		if (!matchedAttrNameList.some(_ => !!_)) {
-			matched = false;
-		}
-	}
-
-	if (selector.attrValue) {
-		const selectorAttrValue = selector.attrValue;
-		const matchedAttrValueList = Array.from(el.attributes).map(attr => {
-			const attrName = attr.name;
-			const attrValue = attr.value;
-			const matchedAttrValue = regexSelectorMatches(selectorAttrValue, attrValue, isPureHTMLElement(el));
-
-			if (matchedAttrValue) {
-				delete matchedAttrValue.$0;
-				data = {
-					...data,
 					...matchedAttrValue,
 				};
-				specifiedAttr.set(attrName, attrValue);
-			}
 
-			return matchedAttrValue;
-		});
+				specifiedAttr.set(attr.name, matchedAttrValue ? attr.value : '');
 
-		if (!matchedAttrValueList.some(_ => !!_)) {
+				return matchedAttrValue ?? matchedAttrName ?? null;
+			})
+			.filter((a): a is MatchedAttr => !!a);
+
+		if (matchedAttrList.length === 0) {
 			matched = false;
 		}
 	}
 
-	const attrSelector = Array.from(specifiedAttr.entries())
+	const attrSelector = [...specifiedAttr.entries()]
 		.map(([name, value]) => {
 			return `[${name}${value ? `="${value}"` : ''}]`;
 		})

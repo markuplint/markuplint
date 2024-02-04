@@ -1,0 +1,46 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "__VALUE_DESCRIPTION__",
+			"description:ja": "__VALUE_DESCRIPTION_IN_JAPANESE__"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"__OPTIONS_PROP_NAME__": {
+					"type": "boolean",
+					"default": "true",
+					"description": "__OPTIONS_PROP_DESCRIPTION__",
+					"description:ja": "__OPTIONS_PROP_DESCRIPTION_IN_JAPANESE__"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "__severity__"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

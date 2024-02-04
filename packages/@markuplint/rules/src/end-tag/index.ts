@@ -2,6 +2,9 @@ import { createRule } from '@markuplint/ml-core';
 import { isVoidElement } from '@markuplint/ml-spec';
 
 export default createRule<boolean>({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		if (document.endTag === 'never') {

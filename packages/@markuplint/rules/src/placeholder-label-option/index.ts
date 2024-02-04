@@ -3,21 +3,24 @@ import type { Element } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule<boolean>({
+	meta: {
+		category: 'validation',
+	},
 	verify({ document, report, t }) {
-		document.querySelectorAll('select').forEach(select => {
+		for (const select of document.querySelectorAll('select')) {
 			if (hasPlaceholderLabelOption(select)) {
-				return;
+				continue;
 			}
 
 			if (!needPlaceholderLabelOption(select)) {
-				return;
+				continue;
 			}
 
 			report({
 				scope: select,
 				message: t('need {0}', t('the {0}', 'placeholder label option')),
 			});
-		});
+		}
 	},
 });
 

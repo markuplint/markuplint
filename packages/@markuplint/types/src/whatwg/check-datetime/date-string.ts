@@ -1,9 +1,9 @@
-import type { CustomSyntaxChecker } from '../../types';
+import type { CustomSyntaxChecker } from '../../types.js';
 
-import { log } from '../../debug';
-import { TokenCollection } from '../../token';
+import { log } from '../../debug.js';
+import { TokenCollection } from '../../token/index.js';
 
-import { datetimeTokenCheck } from './datetime-tokens';
+import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates
@@ -16,13 +16,13 @@ export const checkDateString: CustomSyntaxChecker = () =>
 			// YYYY
 			/[^-]*/,
 			// -
-			/[^0-9]?/,
+			/\D?/,
 			// MM
 			/[^-]*/,
 			// -
-			/[^0-9]/,
+			/\D/,
 			// DD
-			/.[0-9]*/,
+			/.\d*/,
 		]);
 
 		log('Date: "%s" => %O', tokens.value, tokens);

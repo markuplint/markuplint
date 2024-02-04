@@ -1,16 +1,16 @@
-import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types';
+import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
-import { ariaSpecs } from '../specs/aria-specs';
-import { isPresentational } from '../specs/is-presentational';
+import { ariaSpecs } from '../specs/aria-specs.js';
+import { isPresentational } from '../specs/is-presentational.js';
 
-import { getAccname } from './accname-computation';
-import { getAttrSpecs } from './get-attr-specs';
-import { getExplicitRole } from './get-explicit-role';
-import { getImplicitRole } from './get-implicit-role';
-import { getNonPresentationalAncestor } from './get-non-presentational-ancestor';
-import { isRequiredOwnedElement } from './has-required-owned-elements';
-import { matchesContextRole } from './matches-context-role';
-import { mayBeFocusable } from './may-be-focusable';
+import { getAccname } from './accname-computation.js';
+import { getAttrSpecs } from './get-attr-specs.js';
+import { getExplicitRole } from './get-explicit-role.js';
+import { getImplicitRole } from './get-implicit-role.js';
+import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
+import { isRequiredOwnedElement } from './has-required-owned-elements.js';
+import { matchesContextRole } from './matches-context-role.js';
+import { mayBeFocusable } from './may-be-focusable.js';
 
 export function getComputedRole(
 	specs: MLMLSpec,
@@ -26,7 +26,7 @@ export function getComputedRole(
 		: {
 				...implicitRole,
 				errorType: explicitRole.errorType === 'NO_EXPLICIT' ? undefined : explicitRole.errorType,
-		  };
+			};
 
 	if (assumeSingleNode) {
 		return {
@@ -131,9 +131,7 @@ export function getComputedRole(
 	) {
 		const accname =
 			getAccname(el).trim() ||
-			Array.from(el.children)
-				.find(child => ['title', 'desc'].includes(child.localName))
-				?.textContent?.trim();
+			[...el.children].find(child => ['title', 'desc'].includes(child.localName))?.textContent?.trim();
 
 		if (!accname) {
 			return {
@@ -201,20 +199,20 @@ export function getComputedRole(
 	 */
 	if (explicitRole.role) {
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
-		if (nonPresentationalAncestor.role && nonPresentationalAncestor.role?.requiredOwnedElements.length > 0) {
-			if (
-				nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
-					// const ancestor = nonPresentationalAncestor.el;
-					// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
-					// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
-					return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
-				})
-			) {
-				return {
-					...implicitRole,
-					errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
-				};
-			}
+		if (
+			nonPresentationalAncestor.role &&
+			nonPresentationalAncestor.role?.requiredOwnedElements.length > 0 &&
+			nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+				// const ancestor = nonPresentationalAncestor.el;
+				// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
+				// console.log({ nonPresentationalAncestor, ancestorImplicitRole });
+				return isRequiredOwnedElement(implicitRole.el, implicitRole.role, expected, specs, version);
+			})
+		) {
+			return {
+				...implicitRole,
+				errorType: 'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+			};
 		}
 	}
 
@@ -229,7 +227,7 @@ export function getComputedRole(
 	 * > and an explicit non-presentational role is applied.
 	 */
 	const { props } = ariaSpecs(specs, version);
-	for (const attr of Array.from(el.attributes)) {
+	for (const attr of el.attributes) {
 		if (props.find(p => p.name === attr.name)?.isGlobal) {
 			return {
 				...implicitRole,

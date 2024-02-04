@@ -1,12 +1,12 @@
-import type { ChildNode, Options, Result, Specs } from './types';
+import type { ChildNode, Options, Result, Specs } from './types.js';
 import type { PermittedContentPattern } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { deepCopy } from '../helpers';
+import { deepCopy } from '../helpers.js';
 
-import { complexBranch } from './complex-branch';
-import { cmLog } from './debug';
-import { Collection, mergeHints, modelLog } from './utils';
+import { complexBranch } from './complex-branch.js';
+import { cmLog } from './debug.js';
+import { Collection, mergeHints, modelLog } from './utils.js';
 
 /**
  * Check ordered array
@@ -66,9 +66,9 @@ export function order(
 				'Result (%s): %s%s',
 				result.type,
 				collection.toString(true),
-				barelyMatchedResult.hint.missing?.barelyMatchedElements != null
-					? `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`
-					: '',
+				barelyMatchedResult.hint.missing?.barelyMatchedElements == null
+					? ''
+					: `; But ${barelyMatchedResult.hint.missing.barelyMatchedElements} elements hit out of pattern`,
 			);
 
 			return {

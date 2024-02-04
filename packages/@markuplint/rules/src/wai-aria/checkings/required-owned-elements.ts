@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
@@ -45,7 +45,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		const children: OwnedElement[] = Array.from(el.childNodes).map<OwnedElement>(child => {
+		const children: OwnedElement[] = [...el.childNodes].map<OwnedElement>(child => {
 			if (child.is(child.ELEMENT_NODE)) {
 				if (child.matches('[aria-busy="true" i]')) {
 					return [child, 'BUSY'];
@@ -112,7 +112,8 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				message: t(
 					'{0}. Or, {1}',
 					t(
-						'require {0}',
+						'{0} requires {1}',
+						t('the {0}', 'child element'),
 						role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
 							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
 							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
@@ -142,7 +143,7 @@ function mayBeBeforeCreated(
 		return true;
 	}
 
-	return Array.from(el.children).every(child => {
+	return [...el.children].every(child => {
 		return ['script', 'template'].includes(child.localName);
 	});
 }

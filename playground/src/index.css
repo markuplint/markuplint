@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+select {
+	background-color: transparent;
+	cursor: pointer;
+}
+
+summary {
+	cursor: pointer;
+	list-style: none;
+}
+summary::-webkit-details-marker {
+	display: none;
+}
+
+:root,
+body,
+#root {
+	height: 100%;
+	min-height: 30rem;
+}
+#root {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, auto);
+}
+
+.monaco-editor,
+.monaco-editor .overflow-guard {
+	height: 100% !important;
+}
+
+.xterm-screen {
+	width: initial !important;
+	overflow: hidden;
+}
+
+.xterm-rows > * {
+	width: initial !important;
+	height: initial !important;
+	min-height: 1em;
+	overflow: visible !important;
+	text-wrap: initial !important;
+}
+
+@layer utilities {
+	.select-arrow {
+		appearance: none;
+		background-image: var(--icon-arrow-down);
+		background-position: right 0.25rem center;
+		background-repeat: no-repeat;
+		background-size: 1.5em 1.5em;
+		padding-right: 2rem;
+		padding-left: 0.5rem;
+		padding-block: 0.125rem;
+		--icon-arrow-down: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="%236b7280" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 8l4 4 4-4"/></svg>');
+	}
+}

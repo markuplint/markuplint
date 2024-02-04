@@ -1,0 +1,35 @@
+{
+	"name": "@markuplint/cli-utils",
+	"version": "4.0.0-rc.1",
+	"description": "Utilities for CLI of Markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --build --watch",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"cli-color": "^2.0.3",
+		"detect-installed": "^2.0.4",
+		"eastasianwidth": "^0.2.0",
+		"enquirer": "^2.4.1",
+		"has-yarn": "^3.0.0",
+		"strip-ansi": "^7.1.0"
+	},
+	"devDependencies": {
+		"@types/cli-color": "^2.0.6"
+	}
+}

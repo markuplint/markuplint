@@ -87,9 +87,9 @@ It applies the rule when specifying its plugin name and rule name solidus separa
 The plugin name and rule name are defined below:
 
 ```js title="./plugin.js"
-const { createPlugin, createRule } = require('@markuplint/ml-core');
+import { createPlugin, createRule } from '@markuplint/ml-core';
 
-module.exports = createPlugin({
+export default createPlugin({
   name: 'my-plugin',
   create(settings) {
     return {

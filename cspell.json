@@ -45,6 +45,7 @@
 		"ebnf",
 		"EFFFF",
 		"Embeded",
+		"espree",
 		"estree",
 		"execa",
 		"FDCF",
@@ -60,6 +61,7 @@
 		"Hiragino",
 		"Hirao",
 		"hoge",
+		"iconify",
 		"imgix",
 		"impp",
 		"Infima",
@@ -83,6 +85,7 @@
 		"markuplintrc",
 		"Masato",
 		"masuP9",
+		"mdast",
 		"miita",
 		"mikimhk",
 		"Miruka",
@@ -128,6 +131,7 @@
 		"Saeki",
 		"Saito",
 		"saphryn",
+		"shamokit",
 		"Shinpuku",
 		"shippokun",
 		"SMIL",
@@ -135,6 +139,7 @@
 		"syntaxical",
 		"textlintrc",
 		"Tominaga",
+		"TSES",
 		"Tsubasa",
 		"tyankatsu",
 		"tyankatsu0105",
@@ -158,8 +163,11 @@
 	],
 	"overrides": [
 		{
-			"filename": "packages/@markuplint/types/test/whatwg/check-autocomplete.spec.js",
-			"words": ["neme", "emall"]
+			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
+			"words": [
+				"neme",
+				"emall"
+			]
 		}
 	]
 }

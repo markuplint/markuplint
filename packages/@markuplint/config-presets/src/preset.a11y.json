@@ -167,31 +167,6 @@
 					}
 				}
 			}
-		},
-		{
-			/**
-			 * `<search>` requires `search` role
-			 *
-			 * It requires the role of an interim measure because some browsers or ATs are not supporting it yet.
-			 *
-			 * @see https://github.com/markuplint/markuplint/issues/762#issuecomment-1483113405
-			 * @see https://www.scottohara.me/blog/2023/03/24/search-element.html
-			 */
-			"selector": ":where(search)",
-			"rules": {
-				"required-attr": {
-					"value": [
-						{
-							"name": "role"
-						}
-					]
-				},
-				"wai-aria": {
-					"options": {
-						"disallowSetImplicitRole": false
-					}
-				}
-			}
 		}
 	]
 }

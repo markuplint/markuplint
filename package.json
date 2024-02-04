@@ -1,48 +1,55 @@
 {
 	"name": "markuplint-packages",
 	"private": true,
+	"type": "module",
 	"scripts": {
+		"prepare": "husky install",
+		"all": "run-s up lint clean build test site:up pg:up",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
-		"test": "jest --coverage",
-		"test:coverage": "jest --useStderr --coverage && cat ./coverage/lcov.info | coveralls",
-		"test:clear": "jest --clearCache",
-		"test:unit": "jest",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
-		"lint": "eslint --fix './packages/**/{*.ts,*.spec.js}'; yarn spellcheck; prettier --write './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}';",
-		"lint:check": "eslint './packages/**/{*.ts,*.spec.js}' && yarn spellcheck && prettier --check './packages/**/{*.{ts,tsx,json,rc,md},*.spec.js}'",
-		"ga": "actionlint .github/workflows/*.yml",
-		"schema": "lerna run schema",
-		"gen": "cd packages/\\@markuplint/html-spec/; yarn gen; cd ../",
-		"all": "run-s lint clean build gen schema test:clear test",
+		"lint": "run-p lint:*",
+		"lint:eslint": "eslint --fix \"./packages/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint:prettier": "prettier --write \"./packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
+		"lint:github-actions": "actionlint .github/workflows/*.yml",
+		"lint-check": "run-p lint-check:* lint:spellcheck",
+		"lint-check:eslint": "eslint \"./packages/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint-check:prettier": "prettier --check \"./packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"up": "run-s up:deps up:gen up:schema",
+		"up:deps": "yarn upgrade-interactive --latest",
+		"up:gen": "cd packages/\\@markuplint/html-spec/; yarn gen;",
+		"up:schema": "lerna run schema",
+		"release": "lerna publish --exact",
+		"release:next": "lerna publish --dist-tag next --exact --force-publish",
+		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
+		"prerelease": "run-s build test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
-		"cli": "./packages/markuplint/bin/markuplint",
-		"vscode:dev": "cd vscode; yarn --ignore-engines vscode:dev",
-		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn spellcheck; prettier --write './vscode/**/*{ts,tsx,json,rc,md}';",
+		"vscode:dev": "cd vscode; yarn --ignore-engines; yarn --ignore-engines vscode:dev",
+		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn lint:spellcheck; prettier --write './vscode/**/*{ts,tsx,js,cjs,mjs,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
-		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; cd ..; mv package.json.bak package.json;",
-		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; cd ..; mv package.json.bak package.json;",
+		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; rm package-lock.json; cd ..; mv package.json.bak package.json;",
+		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; rm package-lock.json; cd ..; mv package.json.bak package.json;",
 		"site:dev": "cd website; yarn; yarn site:start",
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
 		"site:up": "cd website; yarn; yarn site:up",
 		"pg:dev": "cd playground; yarn pg:dev",
-		"pg:build": "cd playground; yarn pg:build",
+		"pg:build": "cd playground; yarn; yarn pg:build",
+		"pg:lint": "cd playground; yarn; yarn pg:lint",
+		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
-		"release": "lerna publish --exact",
-		"release:next": "lerna publish --dist-tag next --exact --force-publish",
-		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
-		"prerelease": "yarn build; yarn test",
-		"prepare": "husky install",
-		"spellcheck": "cspell --no-progress --show-suggestions \"**\"",
-		"up": "yarn upgrade-interactive --latest"
+		"cli": "npx markuplint",
+		"create-rule": "npx @markuplint/create-rule"
 	},
 	"lint-staged": {
-		"./{packages,website,playground}/**/*.{ts,tsx,json}": [
+		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
 			"prettier --write"
 		],
-		"./{packages,website,playground}/**/*.{ts,tsx}": [
+		"./{packages,website,playground}/**/*.{ts,mjs,cjs,spec.js}": [
 			"eslint --fix"
 		],
 		"./test/**/*.{pug,html}": [
@@ -55,72 +62,45 @@
 			"cspell --no-must-find-files --no-progress --show-suggestions"
 		]
 	},
-	"jest": {
-		"verbose": true,
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"node"
-		],
-		"collectCoverageFrom": [
-			"packages/markuplint/lib/**/*.js",
-			"packages/@markuplint/*/lib/**/*.js",
-			"!**/*.spec.js"
-		],
-		"projects": [
-			{
-				"displayName": "node",
-				"testRegex": "(\\.|/)spec\\.js$",
-				"testPathIgnorePatterns": [
-					"scaffold",
-					"(\\.|/)browser\\.spec\\.js$"
-				],
-				"testEnvironment": "node"
-			},
-			{
-				"displayName": "browser",
-				"testRegex": "(\\.|/)browser\\.spec\\.js?$",
-				"resolver": "<rootDir>/test/browser-resolver.js",
-				"setupFiles": [
-					"<rootDir>/test/browser-setup.js"
-				]
-			}
-		]
-	},
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
-		"playground",
 		"vscode"
 	],
 	"devDependencies": {
-		"@types/jest": "^29.5.10",
-		"@typescript-eslint/eslint-plugin": "^6.12.0",
-		"@typescript-eslint/parser": "^6.12.0",
-		"cspell": "^7.3.8",
-		"eslint": "^8.54.0",
+		"@typescript-eslint/eslint-plugin": "^6.20.0",
+		"@typescript-eslint/parser": "^6.20.0",
+		"cspell": "^8.3.2",
+		"eslint": "^8.56.0",
 		"eslint-import-resolver-typescript": "^3.6.1",
 		"eslint-plugin-eslint-comments": "^3.2.0",
-		"eslint-plugin-import": "^2.29.0",
-		"eslint-plugin-jsdoc": "^46.9.0",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-jsdoc": "^48.0.4",
 		"eslint-plugin-node": "^11.1.0",
-		"eslint-plugin-sort-class-members": "^1.19.0",
+		"eslint-plugin-regexp": "^2.2.0",
+		"eslint-plugin-sort-class-members": "^1.17.1",
+		"eslint-plugin-unicorn": "^50.0.1",
 		"heapdump": "^0.3.15",
-		"husky": "^8.0.3",
-		"lerna": "^7.4.1",
-		"lint-staged": "^15.1.0",
+		"husky": "^9.0.10",
+		"lerna": "^8.0.2",
+		"lint-staged": "^15.2.1",
 		"npm-run-all": "^4.1.5",
-		"prettier": "^3.1.0",
+		"prettier": "^3.2.4",
 		"textlint": "13.4.1",
 		"textlint-filter-rule-comments": "^1.2.2",
 		"textlint-rule-preset-ja-spacing": "^2.3.0",
-		"textlint-rule-preset-ja-technical-writing": "^7.0.0",
-		"textlint-rule-preset-japanese": "^7.0.0",
-		"textlint-rule-preset-jtf-style": "^2.3.13",
-		"ts-node": "^10.9.1",
-		"typedoc": "^0.25.3",
-		"typedoc-plugin-mdn-links": "^3.1.4",
+		"textlint-rule-preset-ja-technical-writing": "^10.0.1",
+		"textlint-rule-preset-japanese": "^10.0.3",
+		"textlint-rule-preset-jtf-style": "^2.3.14",
+		"ts-node": "^10.9.2",
+		"typedoc": "^0.25.7",
+		"typedoc-plugin-mdn-links": "^3.1.14",
 		"typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
-		"typescript": "^5.3.2"
+		"typescript": "^5.3.3"
+	},
+	"resolutions": {
+		"lerna/**/string-width": "4",
+		"lerna/**/strip-ansi": "6",
+		"lerna/**/wrap-ansi": "7"
 	}
 }

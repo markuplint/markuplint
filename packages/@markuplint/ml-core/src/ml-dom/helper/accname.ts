@@ -1,9 +1,9 @@
-import type { MLElement } from '../node/element';
+import type { MLElement } from '../node/element.js';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { getAccname as get, getComputedRole } from '@markuplint/ml-spec';
 
-import { log } from '../../debug';
+import { log } from '../../debug.js';
 
 const accnameLog = log.extend('accname');
 
@@ -24,7 +24,7 @@ export function getAccname(
 		return '';
 	}
 	if (isFromContent(el, version)) {
-		return Array.from(el.childNodes)
+		return [...el.childNodes]
 			.map(child => {
 				if (child.is(child.ELEMENT_NODE)) {
 					return getAccname(child, version);
@@ -46,9 +46,9 @@ function safeGet(
 	try {
 		const name = get(el);
 		return name;
-	} catch (err) {
+	} catch (error) {
 		accnameLog('Raw: %s', el.raw);
-		accnameLog('Error: %O', err);
+		accnameLog('Error: %O', error);
 		return '';
 	}
 }

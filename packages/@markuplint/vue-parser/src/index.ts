@@ -1,2 +1,1 @@
-export { parse } from './parse';
-export const endTag = 'xml';
+export { parser } from './parser.js';

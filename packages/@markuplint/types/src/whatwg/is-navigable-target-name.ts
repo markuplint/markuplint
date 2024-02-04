@@ -1,4 +1,4 @@
-import type { FormattedPrimitiveTypeCreator } from '../types';
+import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
  * @see https://infra.spec.whatwg.org/#ascii-tab-or-newline

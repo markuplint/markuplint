@@ -1,6 +1,6 @@
-import type { ARIAVersion, MLMLSpec } from '../types';
+import type { ARIAVersion, MLMLSpec } from '../types/index.js';
 
-import { getComputedRole } from './get-computed-role';
+import { getComputedRole } from './get-computed-role.js';
 
 export function matchesContextRole(
 	conditions: readonly string[],
@@ -19,7 +19,7 @@ function matchesCondition(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	const conditions = condition.split(/\s+>\s+/g).reverse();
+	const conditions = condition.split(/\s+>\s+/).reverse();
 
 	while (conditions.length > 0) {
 		if (!parentEl) {

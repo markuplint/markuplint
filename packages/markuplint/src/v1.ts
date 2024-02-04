@@ -1,4 +1,4 @@
 /**
  * @deprecated
  */
-export { lint_v1 as exec } from './api/v1';
+export { lint_v1 as exec } from './api/v1.js';

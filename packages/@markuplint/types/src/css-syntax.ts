@@ -1,10 +1,10 @@
-import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types';
+import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken, Result, CssSyntax } from './types.js';
 
 import { fork } from 'css-tree';
 
-import { log } from './debug';
-import { tokenizers } from './defs';
-import { matched } from './match-result';
+import { log } from './debug.js';
+import { tokenizers, overrides } from './defs.js';
+import { matched } from './match-result.js';
 
 const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
@@ -38,19 +38,19 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 			...tokenizers,
 			...type.syntax.def,
 		};
-		Object.keys(types).forEach(key => {
+		for (const key of Object.keys(types)) {
 			const valueOrChecker = types[key];
 			if (typeof valueOrChecker === 'string') {
 				typesExtended[key] = valueOrChecker;
 			} else if (valueOrChecker) {
 				typesCheckers[key] = valueOrChecker;
 			}
-		});
+		}
 		propsExtended = { ...type.syntax.properties };
 		if (type.caseSensitive) {
 			caseSensitive = true;
-			Object.keys(typesExtended).forEach(key => eachMimicCases(key, typesExtended));
-			Object.keys(propsExtended).forEach(key => eachMimicCases(key, propsExtended));
+			for (const key of Object.keys(typesExtended)) eachMimicCases(key, typesExtended);
+			for (const key of Object.keys(propsExtended)) eachMimicCases(key, propsExtended);
 			value = mimicCases(value);
 		}
 		ref = type.ref;
@@ -58,18 +58,20 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 	// @ts-ignore
 	const lexer = fork({
-		types: typesExtended,
+		types: {
+			...overrides,
+			...typesExtended,
+		},
 		properties: propsExtended,
 	}).lexer;
 
-	Object.keys(typesCheckers).forEach(key => {
+	for (const key of Object.keys(typesCheckers)) {
 		const checker = typesCheckers[key];
 		// @ts-ignore
-		lexer.addType_(
-			key,
-			(token: CSSSyntaxToken, getNextToken: GetNextToken) => checker?.(token, getNextToken, cssSyntaxMatch),
+		lexer.addType_(key, (token: CSSSyntaxToken, getNextToken: GetNextToken) =>
+			checker?.(token, getNextToken, cssSyntaxMatch),
 		);
-	});
+	}
 
 	const { isProp, name } = detectName(defName);
 
@@ -142,7 +144,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 
 function detectName(def: `<${string}>`) {
 	const isProp = def.search("<'") === 0;
-	const name = def.replace(/^<'?|'?>$/g, '');
+	const name = def.replaceAll(/^<'?|'?>$/g, '');
 	return {
 		isProp,
 		name,
@@ -170,9 +172,9 @@ function eachMimicCases(
 }
 
 function mimicCases(value: string) {
-	return value.replace(/[A-Z]/g, $0 => `${MIMIC_TAG_L}${$0}${MIMIC_TAG_R}`);
+	return value.replaceAll(/[A-Z]/g, $0 => `${MIMIC_TAG_L}${$0}${MIMIC_TAG_R}`);
 }
 
 function deMimicCases(value: string) {
-	return value.replace(new RegExp(`${MIMIC_TAG_L}([A-Z])${MIMIC_TAG_R}`, 'g'), (_, $1) => $1);
+	return value.replaceAll(new RegExp(`${MIMIC_TAG_L}([A-Z])${MIMIC_TAG_R}`, 'g'), (_, $1) => $1);
 }

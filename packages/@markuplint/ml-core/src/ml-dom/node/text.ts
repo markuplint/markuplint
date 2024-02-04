@@ -1,16 +1,16 @@
-import type { TextNodeType } from './types';
+import type { TextNodeType } from './types.js';
 import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLCharacterData } from './character-data';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLCharacterData } from './character-data.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  * Raw text elements
  *
  * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
  */
-const rawTextElements = ['script', 'style'];
+const rawTextElements = new Set(['script', 'style']);
 
 export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLCharacterData<T, O, MLASTText>
@@ -64,7 +64,7 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
 	 */
 	isRawTextElementContent() {
-		return this.parentElement ? rawTextElements.includes(this.parentElement.nodeName.toLowerCase()) : false;
+		return this.parentElement ? rawTextElements.has(this.parentElement.nodeName.toLowerCase()) : false;
 	}
 
 	/**

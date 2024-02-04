@@ -1,0 +1,14 @@
+<picture>
+  <!-- ✅ Correct -->
+  <source srcset="logo@3x.png 3x" />
+  <source srcset="logo@2x.png 2x" />
+
+  <!-- ❌ Incorrect: Invalid format -->
+  <source srcset="logo-3x.png 3x" />
+
+  <!-- ❌ Incorrect: Different name -->
+  <source srcset="symbol@2x.png 2x" />
+
+  <!-- It is the basis -->
+  <img src="logo.png" alt="logo" />
+</picture>

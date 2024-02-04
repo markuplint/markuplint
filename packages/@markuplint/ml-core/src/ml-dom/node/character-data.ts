@@ -1,5 +1,5 @@
-import type { MLElement } from './element';
-import type { MLASTAbstractNode } from '@markuplint/ml-ast';
+import type { MLElement } from './element.js';
+import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import {
@@ -9,15 +9,15 @@ import {
 	previousElementSibling,
 	remove,
 	replaceWith,
-} from '../manipulations/child-node-methods';
+} from '../manipulations/child-node-methods.js';
 
-import { MLNode } from './node';
-import UnexpectedCallError from './unexpected-call-error';
+import { MLNode } from './node.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLCharacterData<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLNode<T, O, A>
 	implements CharacterData

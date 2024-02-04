@@ -1,12 +1,17 @@
 {
 	"name": "@markuplint/selector",
-	"version": "3.14.0",
+	"version": "4.0.0-rc.1",
 	"description": "Extended W3C Selectors matcher",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
 	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -20,15 +25,14 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "3.14.0",
+		"@markuplint/ml-spec": "4.0.0-rc.1",
 		"@types/debug": "^4.1.12",
 		"debug": "^4.3.4",
-		"postcss-selector-parser": "^6.0.13",
-		"tslib": "^2.6.2",
-		"type-fest": "^4.8.2"
+		"postcss-selector-parser": "^6.0.15",
+		"type-fest": "^4.10.2"
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.6",
-		"jsdom": "22.1.0"
+		"jsdom": "24.0.0"
 	}
 }

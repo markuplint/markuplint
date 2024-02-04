@@ -1,18 +1,14 @@
+import type { SendDiagnostics } from './document-events';
 import type { Config, Log } from '../types';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
-import type {
-	TextDocumentChangeEvent,
-	PublishDiagnosticsParams,
-	Position,
-	TextDocumentIdentifier,
-} from 'vscode-languageserver';
+import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
+// import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
 
-import { t } from '../i18n';
+// import { t } from '../i18n';
 import { getFilePath } from '../utils/get-file-path';
 
 import { convertDiagnostics } from './convert-diagnostics';
@@ -21,7 +17,7 @@ const engines = new Map<string, _MLEngine>();
 
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	opened: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	MLEngine: typeof _MLEngine,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -29,23 +25,20 @@ export async function onDidOpen(
 	locale: string,
 	log: Log,
 	diagnosticsLog: Log,
-	sendDiagnostics: (
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		params: PublishDiagnosticsParams,
-	) => void,
+	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
 ) {
-	const key = opened.document.uri;
+	const key = document.uri;
 	log(`Opened: ${key}`, 'debug');
 	const currentEngine = engines.get(key);
 	if (currentEngine) {
 		return;
 	}
 
-	const filePath = getFilePath(opened.document.uri, opened.document.languageId);
+	const filePath = getFilePath(document.uri, document.languageId);
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
-	const sourceCode = opened.document.getText();
+	const sourceCode = document.getText();
 	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
 
 	if (!file) {
@@ -65,6 +58,7 @@ export async function onDidOpen(
 	engines.set(key, engine);
 
 	engine.on('config', (_, _configSet) => {
+		// @ts-ignore
 		configSet = _configSet;
 	});
 
@@ -87,7 +81,7 @@ export async function onDidOpen(
 		diagnosticsLog('', 'clear');
 
 		debounceTimer = setTimeout(() => {
-			diagnosticsLog(`Lint: ${opened.document.uri}`);
+			diagnosticsLog(`Lint: ${document.uri}`);
 			if (debug) {
 				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
 			}
@@ -112,7 +106,7 @@ export async function onDidOpen(
 
 			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
 			sendDiagnostics({
-				uri: opened.document.uri,
+				uri: document.uri,
 				diagnostics,
 			});
 
@@ -129,10 +123,10 @@ export async function onDidOpen(
 
 	log('Run `engine.exec()` in `onDidOpen`', 'debug');
 
-	engine.exec().catch((e: unknown) => {
-		log(String(e), 'error');
-		notFoundParserError(e);
-		throw e;
+	engine.exec().catch((error: unknown) => {
+		log(String(error), 'error');
+		notFoundParserError(error);
+		throw error;
 	});
 }
 
@@ -140,13 +134,13 @@ let debounceTimer: NodeJS.Timer;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	change: TextDocumentChangeEvent<TextDocument>,
+	document: TextDocument,
 	log: Log,
 	notFoundParserError: (e: unknown) => void,
 ) {
 	clearTimeout(debounceTimer);
 
-	const key = change.document.uri;
+	const key = document.uri;
 	const engine = engines.get(key);
 
 	debounceTimer = setTimeout(async () => {
@@ -154,17 +148,17 @@ export function onDidChangeContent(
 			return;
 		}
 
-		const code = change.document.getText();
+		const code = document.getText();
 		try {
 			await engine.setCode(code);
 			log('Run `engine.exec()` in `onDidChangeContent`', 'debug');
-			engine.exec().catch((e: unknown) => notFoundParserError(e));
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				log(e.message, 'error');
+			engine.exec().catch((error: unknown) => notFoundParserError(error));
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				log(error.message, 'error');
 				return;
 			}
-			log(`UnknownError: ${e}`, 'error');
+			log(`UnknownError: ${error}`, 'error');
 		}
 	}, 300);
 }
@@ -195,44 +189,44 @@ export function getNodeWithAccessibilityProps(
 
 	const aria: Record<string, string> = {};
 
-	const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
+	// const exposed = isExposed(node, node.ownerMLDocument.specs, ariaVersion);
 
-	if (!exposed) {
-		return {
-			nodeName: node.localName,
-			exposed: false,
-			aria: {},
-		};
-	}
+	// if (!exposed) {
+	// 	return {
+	// 		nodeName: node.localName,
+	// 		exposed: false,
+	// 		aria: {},
+	// 	};
+	// }
 
-	const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-	const name = getAccname(node).trim();
-	const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
+	// const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
+	// const name = getAccname(node).trim();
+	// const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
-	const nameRequired = role.role?.accessibleNameRequired ?? false;
-	const nameProhibited = role.role?.accessibleNameProhibited ?? false;
+	// const nameRequired = role.role?.accessibleNameRequired ?? false;
+	// const nameProhibited = role.role?.accessibleNameProhibited ?? false;
 
-	const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
+	// const requiredLabel = `\u26A0\uFE0F**${t('Required')}**`;
 
-	aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
-	aria.name = nameProhibited
-		? `**${t('Prohibited')}**`
-		: name
-		? `\`"${name}"\``
-		: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
-	aria.focusable = `\`${focusable}\``;
+	// aria.role = role.role?.name ? `\`${role.role.name}\`` : t('No corresponding role');
+	// aria.name = nameProhibited
+	// 	? `**${t('Prohibited')}**`
+	// 	: name
+	// 	? `\`"${name}"\``
+	// 	: `${t('None')}${nameRequired ? ` ${requiredLabel}` : ''}`;
+	// aria.focusable = `\`${focusable}\``;
 
-	Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
-		if (!prop.required) {
-			if (prop.from === 'default') {
-				return;
-			}
-		}
-		aria[prop.name.replace('aria-', '')] =
-			prop.value === undefined
-				? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
-				: `\`${prop.value}\``;
-	});
+	// Object.values(getComputedAriaProps(node.ownerMLDocument.specs, node, ariaVersion)).forEach(prop => {
+	// 	if (!prop.required) {
+	// 		if (prop.from === 'default') {
+	// 			return;
+	// 		}
+	// 	}
+	// 	aria[prop.name.replace('aria-', '')] =
+	// 		prop.value === undefined
+	// 			? t('Undefined') + (prop.required ? ` ${requiredLabel}` : '')
+	// 			: `\`${prop.value}\``;
+	// });
 
 	return {
 		nodeName: node.localName,

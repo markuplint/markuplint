@@ -3,6 +3,9 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value>({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {

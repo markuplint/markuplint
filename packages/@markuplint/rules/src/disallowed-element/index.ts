@@ -1,17 +1,20 @@
 import { createRule } from '@markuplint/ml-core';
 
 export default createRule<string[]>({
+	meta: {
+		category: 'validation',
+	},
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		for (const query of document.rule.value) {
 			const elements = document.querySelectorAll(query);
-			elements.forEach(el => {
+			for (const el of elements) {
 				const message = t('{0} is disallowed', t('the "{0*}" {1}', query, 'element'));
 				report({
 					scope: el,
 					message,
 				});
-			});
+			}
 		}
 
 		await document.walkOn('Element', el => {
@@ -20,13 +23,13 @@ export default createRule<string[]>({
 			}
 			for (const query of el.rule.value) {
 				const elements = el.querySelectorAll(query);
-				elements.forEach(el => {
+				for (const el of elements) {
 					const message = t('{0} is disallowed', t('the "{0*}" {1}', query, 'element'));
 					report({
 						scope: el,
 						message,
 					});
-				});
+				}
 			}
 		});
 	},

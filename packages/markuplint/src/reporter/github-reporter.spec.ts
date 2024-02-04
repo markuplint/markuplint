@@ -1,6 +1,6 @@
-// @ts-nocheck
+import { describe, it, expect } from 'vitest';
 
-import { githubReporter } from './github-reporter';
+import { githubReporter } from './github-reporter.js';
 
 describe('githubReporter', () => {
 	it('outputs no violations', () => {

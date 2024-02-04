@@ -1,6 +1,9 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 export default createRule({
+	meta: {
+		category: 'validation',
+	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			const attrSpecs = getAttrSpecs(attr.ownerElement, document.specs);

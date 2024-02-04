@@ -7,10 +7,12 @@ on:
             - v3
             - next
         paths:
-            - '**'
+            - '.github/workflows/test.yml'
+            - 'packages/**'
             - '!**/*.md'
-            - '!vscode/**'
-            - '!website/**'
+            - 'packages/@markuplint/config-presets/src/README.md'
+            - 'test/**'
+            - 'yarn.lock'
 
 env:
     NODE_BUILD_VERSION: 18
@@ -23,19 +25,19 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -47,7 +49,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -60,29 +62,31 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: |
                       packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
@@ -94,43 +98,58 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   enableCrossOsArchive: true
                   path: |
                       packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
-        needs: dev-setup
+        needs: [dev-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@v4
+              with:
+                  path: |
+                      packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
             - name: Lint
-              run: yarn lint:check
+              run: yarn lint-check
 
     os-setup:
         runs-on: ${{ matrix.os }}
@@ -145,29 +164,28 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
                 node: [18]
                 include:
-                    - node: 14
-                      os: ubuntu-latest
-                    - node: 16
-                      os: ubuntu-latest
                     - node: 20
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -182,7 +200,7 @@ jobs:
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -195,37 +213,36 @@ jobs:
             matrix:
                 os: [ubuntu-latest, macos-latest, windows-latest]
                 node: [18]
+                shard: [1/4, 2/4, 3/4, 4/4]
                 include:
-                    - node: 14
-                      os: ubuntu-latest
-                    - node: 16
-                      os: ubuntu-latest
                     - node: 20
                       os: ubuntu-latest
-                shard: [1/4, 2/4, 3/4, 4/4]
+                      shard: 1/1
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |
                       packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
@@ -244,185 +261,107 @@ jobs:
               shell: bash
 
             - name: Test
-              uses: nick-fields/retry@v2
+              uses: nick-fields/retry@v3
               with:
                   timeout_minutes: 20
                   max_attempts: 3
                   shell: bash
-                  command: yarn jest --useStderr --coverage --shard=${{ matrix.shard }}
-
-    playground:
-        needs: [os-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-                node: [18]
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Install for build on Node.js v${{ matrix.node }}
-              uses: actions/setup-node@v3
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Cache devDependencies
-              uses: actions/cache@v3
-              with:
-                  path: '**/node_modules'
-                  key: os-ubuntu-latest-node${{ matrix.node }}-dev-${{ hashFiles('yarn.lock') }}
-
-            - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
-              with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@v3
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Playground Building Test
-              run: yarn pg:build
+                  command: yarn vitest run --shard=${{ matrix.shard }}
 
     isolated-env:
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
+        env:
+            PACKAGES: 'markuplint @markuplint/astro-parser @markuplint/config-presets @markuplint/cli-utils @markuplint/ejs-parser @markuplint/erb-parser @markuplint/file-resolver @markuplint/html-parser @markuplint/html-spec @markuplint/i18n @markuplint/jsx-parser @markuplint/liquid-parser @markuplint/ml-ast @markuplint/ml-config @markuplint/ml-core @markuplint/ml-spec @markuplint/mustache-parser @markuplint/nunjucks-parser @markuplint/parser-utils @markuplint/php-parser @markuplint/pug-parser @markuplint/react-spec @markuplint/rule-textlint @markuplint/rules @markuplint/selector @markuplint/shared @markuplint/smarty-parser @markuplint/svelte-parser @markuplint/types @markuplint/vue-parser @markuplint/vue-spec'
         strategy:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
-                pm: [npm, yarn]
-                env: [commonjs, esm, typescript]
+                pm: [npm, yarn, pnpm]
+                env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |
                       packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
-            - name: Link Packages
-              run: |
-                  cd ${{ github.workspace }}/packages/markuplint; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/astro-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/config-presets; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/create-rule-helper; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ejs-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/erb-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/file-resolver; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/html-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/html-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/i18n; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/jsx-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/liquid-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-ast; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-config; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-core; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/ml-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/mustache-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/nunjucks-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/parser-utils; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/php-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/pug-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/react-spec; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/rule-textlint; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/rules; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/selector; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/shared; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/smarty-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/svelte-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/types; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/vue-parser; ${{ matrix.pm }} link;
-                  cd ${{ github.workspace }}/packages/@markuplint/vue-spec; ${{ matrix.pm }} link;
-
             - name: Create sandbox directory
               run: |
-                  mkdir -p ${{ github.workspace }}/../sandbox/${{ matrix.pm }}
-                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox/${{ matrix.pm }}
-                  ls -la ${{ github.workspace }}/../sandbox/${{ matrix.pm }}/test
+                  mkdir -p ${{ github.workspace }}/../sandbox
+                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
+                  ls -la ${{ github.workspace }}/../sandbox/test
 
-            - name: Create the lock file
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
+            - name: Install pnpm
+              if: matrix.pm == 'pnpm'
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+                  run_install: false
+
+            - name: Package paths (npm)
+              uses: actions/github-script@v7
+              id: package-paths
+              with:
+                  script: |
+                      const packages = process.env.PACKAGES.split(' ');
+                      return packages.map(p => `file:../../../../markuplint/packages/${p}`).join(' ');
+                  result-encoding: string
+
+            - name: Create the lock file (npm)
+              if: matrix.pm == 'npm'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
+                  npm install -S ${{ steps.package-paths.outputs.result }}
+
+            - name: Create the lock file (yarn)
+              if: matrix.pm == 'yarn'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: |
+                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
+                  for package in "${packages[@]}"
+                  do
+                    (cd "../../../../markuplint/packages/$package" && yarn link)
+                    yarn link $package
+                  done
                   ${{ matrix.pm }} install
 
-            - name: Reference packages
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
-              run: >-
-                  ${{ matrix.pm }} link
-                  markuplint
-                  @markuplint/astro-parser
-                  @markuplint/config-presets
-                  @markuplint/create-rule-helper
-                  @markuplint/ejs-parser
-                  @markuplint/erb-parser
-                  @markuplint/file-resolver
-                  @markuplint/html-parser
-                  @markuplint/html-spec
-                  @markuplint/i18n
-                  @markuplint/jsx-parser
-                  @markuplint/liquid-parser
-                  @markuplint/ml-ast
-                  @markuplint/ml-config
-                  @markuplint/ml-core
-                  @markuplint/ml-spec
-                  @markuplint/mustache-parser
-                  @markuplint/nunjucks-parser
-                  @markuplint/parser-utils
-                  @markuplint/php-parser
-                  @markuplint/pug-parser
-                  @markuplint/react-spec
-                  @markuplint/rule-textlint
-                  @markuplint/rules
-                  @markuplint/selector
-                  @markuplint/shared
-                  @markuplint/smarty-parser
-                  @markuplint/svelte-parser
-                  @markuplint/types
-                  @markuplint/vue-parser
-                  @markuplint/vue-spec
-
-            - name: Echo package list
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
+            - name: Create the lock file (pnpm)
+              if: matrix.pm == 'pnpm'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
-                  pwd
-                  ls -la
-                  ${{ matrix.pm }} list --depth=0
-                  ls -la node_modules
+                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
+                  for package in "${packages[@]}"
+                  do
+                    (cd "../../../../markuplint/packages/$package" && pnpm link --global)
+                    pnpm link --global $package
+                  done
+                  ${{ matrix.pm }} install
 
             - name: Test
-              working-directory: ../sandbox/${{ matrix.pm }}/test/isolated-env/${{ matrix.env }}
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
                   ${{ matrix.pm }} test

@@ -4,22 +4,18 @@
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"paths": {
-			"@markuplint/*": ["../../../node_modules"],
-			"*": ["../../../node_modules"]
-		}
 	},
 	"references": [
 		{
-			"path": "../ml-ast"
+			"path": "../ml-ast",
 		},
 		{
-			"path": "../test-tools"
+			"path": "../test-tools",
 		},
 		{
-			"path": "../types"
-		}
+			"path": "../types",
+		},
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"],
 }

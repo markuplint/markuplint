@@ -1,4 +1,4 @@
-import type { Options } from '../types';
+import type { Options } from '../types.js';
 import type { Element, ElementChecker } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
@@ -40,7 +40,7 @@ export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 		if (!ancestor.role) {
 			return;
 		}
-		const hasAriaAttr = Array.from(el.attributes).some(attr => /^aria-|^role$/i.test(attr.name));
+		const hasAriaAttr = [...el.attributes].some(attr => /^aria-|^role$/i.test(attr.name));
 		if (!hasAriaAttr) {
 			return;
 		}

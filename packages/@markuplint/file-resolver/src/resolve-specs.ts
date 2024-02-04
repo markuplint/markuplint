@@ -1,9 +1,10 @@
 import type { SpecConfig } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
-import path from 'path';
+import path from 'node:path';
 
-import { toRegexp } from './utils';
+import { generalImport } from './general-import.js';
+import { toRegexp } from './utils.js';
 
 const caches = new Map<string, MLMLSpec | ExtendedSpec>();
 
@@ -47,6 +48,7 @@ export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 			extendedSpecs.push(spec);
 		} else {
 			for (const pattern of Object.keys(specConfig)) {
+				// eslint-disable-next-line unicorn/prefer-regexp-test
 				if (path.basename(filePath).match(toRegexp(pattern))) {
 					const specModName = specConfig[pattern];
 					if (!specModName) {
@@ -75,8 +77,12 @@ async function importSpecs<T>(specModName: string) {
 		}
 	}
 
-	const spec: T = (await import(specModName)).default;
-	// @ts-ignore
+	const spec = await generalImport<T>(specModName);
+
+	if (!spec) {
+		throw new Error(`Spec "${specModName}" is not found.`);
+	}
+
 	caches.set(specModName, spec);
 	return spec;
 }

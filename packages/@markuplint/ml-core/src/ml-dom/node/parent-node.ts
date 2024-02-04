@@ -1,13 +1,13 @@
-import type { MLElement } from './element';
-import type { MLASTAbstractNode } from '@markuplint/ml-ast';
+import type { MLElement } from './element.js';
+import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { syncWalk } from '../helper/walkers';
-import { getChildren } from '../manipulations/get-children';
+import { syncWalk } from '../helper/walkers.js';
+import { getChildren } from '../manipulations/get-children.js';
 
-import { MLNode } from './node';
-import { toNodeList } from './node-list';
-import UnexpectedCallError from './unexpected-call-error';
+import { toNodeList } from './node-list.js';
+import { MLNode } from './node.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  *
@@ -16,7 +16,7 @@ import UnexpectedCallError from './unexpected-call-error';
 export abstract class MLParentNode<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLNode<T, O, A>
 	implements ParentNode
@@ -148,7 +148,7 @@ export abstract class MLParentNode<
 		) => N | null | void,
 	): ReadonlyArray<N> {
 		const nodeList: N[] = [];
-		syncWalk(Array.from(this.childNodes), node => {
+		syncWalk([...this.childNodes], node => {
 			if (filter) {
 				const filtered = filter(node);
 				if (filtered) {

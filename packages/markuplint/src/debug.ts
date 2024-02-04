@@ -5,8 +5,9 @@ export const log = debug('markuplint-cli');
 
 export function verbosely() {
 	if (!log.enabled) {
-		debug.enable(`${log.namespace}*`);
-		log(`Debug enable: ${log.namespace}`);
+		const namespace = `${log.namespace}*,ml-*`;
+		debug.enable(namespace);
+		log(`[Debug] Enable: "${namespace}"`);
 	}
 	enableDebug();
 }

@@ -17,6 +17,18 @@
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
 			"automerge": true
+		},
+		{
+			"matchPaths": ["vscode/*"],
+			"ignoreDeps": ["@types/node"]
+		},
+		{
+			"matchPaths": ["packages/**/*"],
+			"ignoreDeps": ["default-markuplint", "test-markuplint"]
+		},
+		{
+			"matchPaths": ["package.json"],
+			"ignoreDeps": ["string-width", "strip-ansi", "wrap-ansi"]
 		}
 	]
 }

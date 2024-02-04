@@ -1,1 +1,1 @@
-export { getLocationFromChars } from './get-location-from-chars';
+export { getLocationFromChars } from './get-location-from-chars.js';

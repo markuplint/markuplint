@@ -1,0 +1,4 @@
+{
+	"DIRECTIVE_OPEN": "{{{ml-json-start}}}",
+	"DIRECTIVE_CLOSE": "{{{ml-json-end}}}"
+}

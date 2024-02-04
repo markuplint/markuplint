@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { main } from '@markuplint/spec-generator';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);

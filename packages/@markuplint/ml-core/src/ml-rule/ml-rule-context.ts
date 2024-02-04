@@ -1,5 +1,5 @@
-import type { CheckerReport } from './types';
-import type { MLDocument } from '../ml-dom/node/document';
+import type { CheckerReport } from './types.js';
+import type { MLDocument } from '../ml-dom/node/document.js';
 import type { LocaleSet, Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue } from '@markuplint/ml-config';
 
@@ -53,7 +53,7 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	}
 
 	private _push(report: Report<T, O>) {
-		if (!this.#reports.find(r => is(r, report))) {
+		if (!this.#reports.some(r => is(r, report))) {
 			this.#reports.push(report);
 		}
 	}

@@ -7,6 +7,9 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'validation',
+	},
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		extendsExposableElements: true,
@@ -40,7 +43,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const isEmpty = Array.from(el.childNodes).every(node => node.is(node.TEXT_NODE) && node.isWhitespace());
+			const isEmpty = [...el.childNodes].every(node => node.is(node.TEXT_NODE) && node.isWhitespace());
 
 			if (isEmpty) {
 				report({

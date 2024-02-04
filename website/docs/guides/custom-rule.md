@@ -3,7 +3,7 @@
 You can create a custom rule while referring to the [**API document**](/docs/api/), but it recommends you use the below command:
 
 ```shell
-npx markuplint --create-rule
+npx @markuplint/create-rule
 ```
 
 Please answer some questions shown.
@@ -24,7 +24,7 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 And then there are the below files created:
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📂 `[dir-name]`
@@ -33,10 +33,10 @@ And then there are the below files created:
       - 📄 `[rule-name].ts` # or `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
 
-</file-tree>
+</FileTree>
 
 :::info
-The **test** code is written in [**Jest**](https://jestjs.io/) format. Please rewrite it you need.
+The **test** code is written in [**Vitest**](https://vitest.dev/) format. Please rewrite it you need.
 :::
 
 Eventually, you should specify it to the configuration to apply it.
@@ -82,7 +82,7 @@ And choose the languages, either **TypeScript** or **JavaScript**. Then decide w
 
 Eventually, there are the below files created:
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📄 `README.md`
@@ -94,7 +94,7 @@ Eventually, there are the below files created:
       - 📄 `[rule-name].ts` # or `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # or `[rule-name].spec.js` [Optional]
 
-</file-tree>
+</FileTree>
 
 ## How to basic evaluate
 

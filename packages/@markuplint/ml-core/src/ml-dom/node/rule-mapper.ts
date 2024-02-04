@@ -1,11 +1,11 @@
-import type { MLDocument } from './document';
-import type { MLNode } from './node';
+import type { MLDocument } from './document.js';
+import type { MLNode } from './node.js';
 import type { AnyRule } from '@markuplint/ml-config';
 import type { Specificity } from '@markuplint/selector';
 
 import { compareSpecificity } from '@markuplint/selector';
 
-import { log as coreLog } from '../../debug';
+import { log as coreLog } from '../../debug.js';
 
 const ruleMapperLog = coreLog.extend('rule-mapper');
 const ruleMapperNodeLog = ruleMapperLog.extend('node');
@@ -33,21 +33,21 @@ export class RuleMapper {
 	apply() {
 		ruleMapperLog('ruleTree:');
 
-		this.#nodeList.forEach(node => {
+		for (const node of this.#nodeList) {
 			const rules = this.#ruleMap.get(node.uuid);
 			if (!rules) {
-				return;
+				continue;
 			}
 			ruleMapperNodeLog('<%s>', node.nodeName);
-			Object.keys(rules).forEach(ruleName => {
+			for (const ruleName of Object.keys(rules)) {
 				const rule = rules[ruleName];
 				if (!rule) {
-					return;
+					continue;
 				}
 				node.rules[ruleName] = rule.rule;
 				ruleMapperNodeRuleLog('[from: %s(%s)] %s: %o', rule.from, rule.specificity, ruleName, rule.rule);
-			});
-		});
+			}
+		}
 	}
 
 	set(

@@ -1,13 +1,18 @@
 {
 	"name": "@markuplint/astro-parser",
-	"version": "3.12.0",
+	"version": "4.0.0-rc.1",
 	"description": "astro parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -16,11 +21,11 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@astrojs/parser": "0.22.2",
-		"@markuplint/html-parser": "3.13.0",
-		"@markuplint/ml-ast": "3.2.0",
-		"@markuplint/parser-utils": "3.13.0",
-		"astro-eslint-parser": "^0.16.0",
-		"tslib": "^2.6.2"
+		"@markuplint/ml-ast": "4.0.0-rc.1",
+		"@markuplint/parser-utils": "4.0.0-rc.1",
+		"astro-eslint-parser": "^0.16.2"
+	},
+	"devDependencies": {
+		"@astrojs/compiler": "^2.5.2"
 	}
 }

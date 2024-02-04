@@ -1,13 +1,30 @@
 {
 	"name": "@markuplint/i18n",
-	"version": "3.12.0",
-	"description": "HTML parser for markuplint",
+	"version": "4.0.0-rc.1",
+	"description": "Internationalization for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"main": "./cjs/index.js",
+	"types": "./cjs/index.d.ts",
+	"exports": {
+		".": {
+			"import": {
+				"default": "./esm/index.mjs",
+				"types": "./esm/index.d.ts"
+			},
+			"require": "./cjs/index.js"
+		},
+		"./locales/en.json": {
+			"import": "./locales/en.json",
+			"require": "./locales/en.json"
+		},
+		"./locales/ja.json": {
+			"import": "./locales/ja.json",
+			"require": "./locales/ja.json"
+		}
+	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -15,7 +32,9 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "yarn build:esm; yarn build:cjs; node ./esm.mjs",
+		"build:esm": "tsc",
+		"build:cjs": "tsc --module commonjs --outDir cjs",
 		"clean": "tsc --build --clean"
 	}
 }

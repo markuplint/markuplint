@@ -1,7 +1,6 @@
-import type { TextlintKernelOptions } from '@textlint/kernel/lib/src/textlint-kernel-interface';
+import type { TextlintKernelOptions } from '@textlint/kernel';
 
 import { TextlintKernel } from '@textlint/kernel';
-// @ts-ignore / This has no types
 import TextlintPluginHTML from 'textlint-plugin-html';
 
 export type Option = Partial<TextlintKernelOptions> | true;

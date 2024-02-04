@@ -1,5 +1,5 @@
-import type { MLChildNode } from './child-node';
-import type { MLElement } from './element';
+import type { MLChildNode } from './child-node.js';
+import type { MLElement } from './element.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChildNode<T, O>>
@@ -70,10 +70,10 @@ export function nodeListToHTMLCollection<T extends RuleConfigValue, O extends Pl
 	nodeList: NodeListOf<MLChildNode<T, O>>,
 ): HTMLCollectionOf<MLElement<T, O>> {
 	const collection = new MLHTMLCollection<T, O>();
-	nodeList.forEach(node => {
+	for (const node of nodeList) {
 		if (node.is(node.ELEMENT_NODE)) {
 			collection.push(node);
 		}
-	});
+	}
 	return collection;
 }

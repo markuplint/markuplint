@@ -1,0 +1,55 @@
+<html>
+  <head></head>
+  <body>
+    <div>end-tag
+
+    <button disabled disabled>attr-duplication</button>
+
+    <font color="red">deprecated-element and deprecated-attr</font>
+
+    <p id="duplicated">duplicated-id</p>
+    <p id="duplicated">duplicated-id</p>
+
+    <button non-existent-attr tabindex="non-integer">invalid-attr</button>
+
+    <ul>
+      <p>permitted-contents</p>
+    </ul>
+
+    require-datetime <time>1/5/2023</time>
+
+    <img alt="required-attr" />
+
+    <select required>
+      <option value="placeholder">placeholder-label-option</option>
+      <option value="option1">Option 1</option>
+      <option value="option2">Option 2</option>
+    </select>
+
+    <label>label-has-control</label><input type="text" placeholder="require-accessible-name" />
+
+    <label for="text">no-refer-to-non-existent-id</label><input type="text" />
+
+    <a href="#to-non-existent-id">no-refer-to-non-existent-id</a>
+
+    <nav>landmark-roles</nav>
+    <nav>landmark-roles</nav>
+
+    <p>character-reference & " > < '</p>
+
+    ineffective-attr
+    <script src="/path/to/script.js" type="module" defer></script>
+
+    wai-aria
+    <main role="main"></main>
+    <a href="path/to" role="button">Pass</a>
+    <a href="path/to" role="document">Error</a>
+
+    <h2>Accessibility</h2>
+    <video src="/path/to/video.mp4"></video>
+
+    <h2>Performance</h2>
+    <img src="path/to" />
+    <script src="/path/to/js/main.js"></script>
+  </body>
+</html>

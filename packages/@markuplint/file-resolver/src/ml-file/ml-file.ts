@@ -1,8 +1,8 @@
-import type { Target } from '../types';
-import type { Stats } from 'fs';
+import type { Target } from '../types.js';
+import type { Stats } from 'node:fs';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 import ignore from 'ignore';
 import { minimatch } from 'minimatch';
@@ -77,6 +77,7 @@ export class MLFile {
 	ignored(globPath: string | readonly string[]) {
 		globPath = typeof globPath === 'string' ? [globPath] : globPath;
 		const normalizedPaths = globPath.map(p => pathNormalize(p, true));
+		// @ts-ignore
 		const ig = ignore().add(normalizedPaths);
 		const ignored = ig.ignores(pathNormalize(this.nPath, true));
 		return ignored;
@@ -110,7 +111,7 @@ export class MLFile {
 	}
 
 	private async _fetch() {
-		const code = await fs.readFile(this.path, { encoding: 'utf-8' });
+		const code = await fs.readFile(this.path, { encoding: 'utf8' });
 		this.#code = code;
 		return code;
 	}
@@ -127,16 +128,16 @@ export class MLFile {
 async function stat(filePath: string) {
 	try {
 		return await fs.stat(filePath);
-	} catch (err) {
+	} catch (error) {
 		if (
 			// @ts-ignore
-			'code' in err &&
+			'code' in error &&
 			// @ts-ignore
-			err.code === 'ENOENT'
+			error.code === 'ENOENT'
 		) {
 			return null;
 		}
-		throw err;
+		throw error;
 	}
 }
 

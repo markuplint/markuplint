@@ -1,11 +1,11 @@
-import type { Token } from '../../token';
-import type { CustomSyntaxChecker } from '../../types';
+import type { Token } from '../../token/index.js';
+import type { CustomSyntaxChecker } from '../../types.js';
 
-import { log } from '../../debug';
-import { matched, unmatched } from '../../match-result';
-import { TokenCollection } from '../../token';
+import { log } from '../../debug.js';
+import { matched, unmatched } from '../../match-result.js';
+import { TokenCollection } from '../../token/index.js';
 
-import { datetimeTokenCheck } from './datetime-tokens';
+import { datetimeTokenCheck } from './datetime-tokens.js';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#time-zones
@@ -22,13 +22,13 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 
 	const zoneTokens = TokenCollection.fromPatterns(zone, [
 		// Z + -
-		/[^0-9]?/,
+		/\D?/,
 		// hh
 		/[^:]{0,2}/,
 		// :
-		/[^0-9]?/,
+		/\D?/,
 		// mm
-		/.[0-9]*/,
+		/.\d*/,
 	]);
 
 	log('Time-zone Part: "%s" => %O', value, zoneTokens);
@@ -46,7 +46,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				});
 			}
 
-			if (sign.match('Z')) {
+			if (sign.matches('Z')) {
 				if (tail.value) {
 					return (
 						tail[0]?.unmatched({
@@ -58,7 +58,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				return matched();
 			}
 
-			if (!sign.match(['+', '-'])) {
+			if (!sign.matches(['+', '-'])) {
 				return sign.unmatched({
 					reason: 'unexpected-token',
 					expects: [
@@ -75,7 +75,7 @@ export function parseTimeZone(zone: string | Readonly<Token>) {
 				return;
 			}
 
-			if (!colon.match(':')) {
+			if (!colon.matches(':')) {
 				return colon.unmatched({
 					reason: 'unexpected-token',
 					expects: [{ type: 'const', value: ':' }],

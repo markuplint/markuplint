@@ -3,6 +3,11 @@
 	"globals": {
 		"NodeJS": true
 	},
+	"rules": {
+		"no-restricted-globals": 0,
+		"unicorn/prefer-module": 0,
+		"unicorn/prefer-top-level-await": 0
+	},
 	"overrides": [
 		{
 			"files": ["./src/server/v1.ts", "./src/server/v2.ts"],

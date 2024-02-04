@@ -1,0 +1,18 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "./lib",
+		"rootDir": "./src",
+	},
+	"references": [
+		{
+			"path": "../cli-utils",
+		},
+		{
+			"path": "../ml-core",
+		},
+	],
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"],
+}

@@ -1,10 +1,9 @@
-import type { Expect } from '..';
-import type { CustomSyntaxChecker } from '../types';
+import type { CustomSyntaxChecker, Expect } from '../types.js';
 
-import { log } from '../debug';
-import { getCandidate } from '../get-candidate';
-import { matched } from '../match-result';
-import { TokenCollection } from '../token';
+import { log } from '../debug.js';
+import { getCandidate } from '../get-candidate.js';
+import { matched } from '../match-result.js';
+import { TokenCollection } from '../token/index.js';
 
 const acLog = log.extend('autocomplete');
 
@@ -148,7 +147,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	// > an ordered set of space-separated tokens consisting of
 	// > just autofill detail tokens
 	// > (i.e. the "on" and "off" keywords are not allowed).
-	if (head.match(['on', 'off'], true)) {
+	if (head.matches(['on', 'off'], true)) {
 		if (tail[0]) {
 			acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, tail.value);
 			return tail[0].unmatched({
@@ -169,7 +168,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	// > Optionally, a token whose first eight characters are
 	// > an ASCII case-insensitive match for the string "section-",
 	// > meaning that the field belongs to the named group.
-	if (head.match(namedGroup, true)) {
+	if (head.matches(namedGroup, true)) {
 		hasNamedGroup = true;
 		const sectionToken = tail.search(namedGroup);
 		if (sectionToken) {
@@ -195,7 +194,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	// > one of the following strings:
 	// > - "shipping", meaning the field is part of the shipping address or contact information
 	// > - "billing", meaning the field is part of the billing address or contact information
-	if (head.match(partOfAddress, true)) {
+	if (head.matches(partOfAddress, true)) {
 		hasPartOfAddress = true;
 		const partToken = tail.search(partOfAddress);
 		if (partToken) {
@@ -222,7 +221,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 	}
 
-	if (head.match(contactingTokens, true)) {
+	if (head.matches(contactingTokens, true)) {
 		hasContactingToken = true;
 		const contactableFiledToken = tail[0];
 		if (!contactableFiledToken) {
@@ -230,7 +229,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 			return matched();
 		}
 
-		if (!contactableFiledToken.match(contactableFieldNames, true)) {
+		if (!contactableFiledToken.matches(contactableFieldNames, true)) {
 			const candidate = getCandidate(contactableFiledToken.value, contactableFieldNames);
 			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, contactableFiledToken.value);
 			return contactableFiledToken.unmatched({
@@ -245,7 +244,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 
 		if (tail[1]) {
-			if (tail[1].match(webauthnFieldNames)) {
+			if (tail[1].matches(webauthnFieldNames)) {
 				return matched();
 			}
 
@@ -277,9 +276,9 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		return matched();
 	}
 
-	if (head.match([...autofillFieldNames, ...contactableFieldNames], true)) {
+	if (head.matches([...autofillFieldNames, ...contactableFieldNames], true)) {
 		if (tail[0]) {
-			if (tail[0].match(webauthnFieldNames)) {
+			if (tail[0].matches(webauthnFieldNames)) {
 				return matched();
 			}
 
@@ -311,7 +310,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		return matched();
 	}
 
-	if (head.match(webauthnFieldNames)) {
+	if (head.matches(webauthnFieldNames)) {
 		return matched();
 	}
 
@@ -337,13 +336,10 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 	} else if (!hasPartOfAddress) {
 		expects.unshift(
-			...partOfAddress
-				.slice()
-				.reverse()
-				.map(token => ({
-					type: 'const' as const,
-					value: token,
-				})),
+			...[...partOfAddress].reverse().map(token => ({
+				type: 'const' as const,
+				value: token,
+			})),
 		);
 
 		candidate = getCandidate(

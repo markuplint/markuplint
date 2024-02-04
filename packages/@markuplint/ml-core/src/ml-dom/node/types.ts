@@ -1,23 +1,22 @@
-import type { MLAttr } from './attr';
-import type { MLBlock } from './block';
-import type { MLComment } from './comment';
-import type { MLDocument } from './document';
-import type { MLDocumentFragment } from './document-fragment';
-import type { MLDocumentType } from './document-type';
-import type { MLElement } from './element';
-import type { MLNode } from './node';
-import type { MLText } from './text';
-import type { MLToken } from '../token/token';
+import type { MLAttr } from './attr.js';
+import type { MLBlock } from './block.js';
+import type { MLComment } from './comment.js';
+import type { MLDocumentFragment } from './document-fragment.js';
+import type { MLDocumentType } from './document-type.js';
+import type { MLDocument } from './document.js';
+import type { MLElement } from './element.js';
+import type { MLText } from './text.js';
+import type { MLToken } from '../token/token.js';
 import type {
-	MLASTAbstractNode,
 	MLASTAttr,
 	MLASTComment,
 	MLASTDoctype,
 	MLASTElement,
+	MLASTInvalid,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTText,
-	MLToken as MLASTToken,
+	MLASTToken as MLASTToken,
 } from '@markuplint/ml-ast/';
 import type { PlainData, PretenderARIA, RuleConfigValue } from '@markuplint/ml-config';
 
@@ -29,8 +28,8 @@ export type MappedNode<N, T extends RuleConfigValue, O extends PlainData = undef
 	: N extends MLASTText ? MLText<T, O>
 	: N extends MLASTDoctype ? MLDocumentType<T, O>
 	: N extends MLASTPreprocessorSpecificBlock ? MLBlock<T, O>
-	: N extends MLASTAbstractNode ? MLNode<T, O, MLASTAbstractNode>
 	: N extends MLASTAttr ? MLAttr<T, O>
+	: N extends MLASTInvalid ? MLText<T, O>
 	: N extends MLASTToken ? MLToken
 	: never;
 
@@ -90,4 +89,27 @@ export type PretenderContextPretended<
 > = {
 	readonly type: 'origin';
 	readonly origin: N;
+};
+
+export type AccessibilityProperties = ClearlyAccessibilityProperties | UnknownAccessibilityProperties;
+
+export type ClearlyAccessibilityProperties = {
+	unknown: false;
+	exposedToTree: boolean;
+	role?: string;
+	roleDescription?: string;
+	name?: string | { unknown: true };
+	nameRequired?: boolean;
+	nameProhibited?: boolean;
+	focusable?: boolean;
+	props?: Record<string, AccessibilityProperty>;
+};
+
+export type UnknownAccessibilityProperties = {
+	unknown: true;
+};
+
+export type AccessibilityProperty = {
+	value: string | null;
+	required: boolean;
 };

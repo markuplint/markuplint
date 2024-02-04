@@ -1,14 +1,18 @@
 // @ts-nocheck
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { globalAttrs } from './global-attribute.data';
+import { globalAttrs } from './global-attribute.data.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const defs = {};
 const properties = {};
 const select = {};
-Object.keys(globalAttrs).forEach(key => {
+for (const key of Object.keys(globalAttrs)) {
 	const _key = key.replace('#', '');
 	const value = globalAttrs[key];
 	defs[_key] = {
@@ -65,7 +69,7 @@ Object.keys(globalAttrs).forEach(key => {
 			};
 		}
 	}
-});
+}
 
 fs.writeFileSync(
 	path.resolve(__dirname, '..', 'schemas', 'global-attributes.schema.json'),

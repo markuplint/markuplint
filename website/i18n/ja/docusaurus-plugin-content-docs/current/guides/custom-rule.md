@@ -3,7 +3,7 @@
 [APIドキュメント](/docs/api/)を参照しながらカスタムルールを作成できますが、コマンドを利用することで楽に作成ができます。
 
 ```shell
-npx markuplint --create-rule
+npx @markuplint/create-rule
 ```
 
 出力された質問に答えてください。
@@ -28,7 +28,7 @@ npx markuplint --create-rule
 
 すると、以下のファイルが作成されます。
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📂 `[dir-name]`
@@ -37,11 +37,11 @@ npx markuplint --create-rule
       - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
-</file-tree>
+</FileTree>
 
 :::info
 
-**テスト**は[**Jest**](https://jestjs.io/)形式で書かれます。適宜書き換えてください。
+**テスト**は[**Vitest**](https://vitest.dev/)形式で書かれます。適宜書き換えてください。
 
 :::
 
@@ -87,7 +87,7 @@ export default createPlugin({
 
 最終的に以下のファイルが作成されます。
 
-<file-tree>
+<FileTree>
 
 - 📂 `[cwd]`
   - 📄 `README.md`
@@ -99,7 +99,7 @@ export default createPlugin({
       - 📄 `[rule-name].ts` # もしくは `[rule-name].js`
       - 📄 `[rule-name].spec.ts` # もしくは `[rule-name].spec.js` （任意）
 
-</file-tree>
+</FileTree>
 
 ## 基本的な評価方法
 

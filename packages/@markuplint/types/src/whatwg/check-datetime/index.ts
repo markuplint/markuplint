@@ -1,17 +1,17 @@
-import type { CustomSyntaxChecker } from '../../types';
+import type { CustomSyntaxChecker } from '../../types.js';
 
-import { checkMultiTypes } from '../../check-multi-types';
+import { checkMultiTypes } from '../../check-multi-types.js';
 
-import { checkDateString } from './date-string';
-import { checkDurationComponentListString, checkDurationISO8601LikeString } from './duration-string';
-import { checkGlobalDateAndTimeString } from './global-date-and-time-string';
-import { checkLocalDateAndTimeString, checkNormalizedLocalDateAndTimeString } from './local-date-and-time-string';
-import { checkMonthString } from './month-string';
-import { checkTimeString } from './time-string';
-import { checkTimeZoneOffsetString } from './time-zone-offset-string';
-import { checkWeekString } from './week-string';
-import { checkYearString } from './year-string';
-import { checkYearlessDateString } from './yearless-date-string';
+import { checkDateString } from './date-string.js';
+import { checkDurationComponentListString, checkDurationISO8601LikeString } from './duration-string.js';
+import { checkGlobalDateAndTimeString } from './global-date-and-time-string.js';
+import { checkLocalDateAndTimeString, checkNormalizedLocalDateAndTimeString } from './local-date-and-time-string.js';
+import { checkMonthString } from './month-string.js';
+import { checkTimeString } from './time-string.js';
+import { checkTimeZoneOffsetString } from './time-zone-offset-string.js';
+import { checkWeekString } from './week-string.js';
+import { checkYearString } from './year-string.js';
+import { checkYearlessDateString } from './yearless-date-string.js';
 
 const checks = [
 	checkDateString(),

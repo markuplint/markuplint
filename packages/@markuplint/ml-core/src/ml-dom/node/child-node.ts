@@ -1,14 +1,14 @@
-import type { MLBlock } from './block';
-import type { MLCharacterData } from './character-data';
-import type { MLDocumentType } from './document-type';
-import type { MLElement } from './element';
-import type { MLNode } from './node';
-import type { MLText } from './text';
+import type { MLBlock } from './block.js';
+import type { MLCharacterData } from './character-data.js';
+import type { MLComment } from './comment.js';
+import type { MLElement } from './element.js';
+import type { MLNode } from './node.js';
+import type { MLText } from './text.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 export type MLChildNode<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| MLDocumentType<T, O>
 	| MLCharacterData<T, O>
+	| MLComment<T, O>
 	| MLText<T, O>
 	| MLElement<T, O>
 	| MLBlock<T, O>;

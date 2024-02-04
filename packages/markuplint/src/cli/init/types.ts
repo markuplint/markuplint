@@ -1,7 +1,10 @@
+import type { RuleConfigValue } from '@markuplint/ml-config';
+
 export type Langs =
 	| 'jsx'
 	| 'vue'
 	| 'svelte'
+	| 'sveltekit'
 	| 'astro'
 	| 'pug'
 	| 'php'
@@ -25,5 +28,5 @@ export type DefaultRules = Readonly<Record<string, Rule>>;
 
 export type Rule = {
 	readonly category: Category;
-	readonly defaultValue: boolean | string | number;
+	readonly defaultValue: RuleConfigValue;
 };

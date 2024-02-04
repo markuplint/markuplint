@@ -1,24 +1,30 @@
-import type { MLBlock } from './block';
-import type { MLChildNode } from './child-node';
-import type { MLDocument } from './document';
-import type { MLDocumentFragment } from './document-fragment';
-import type { MLElement } from './element';
-import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types';
-import type { RuleInfo } from '../..';
-import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLBlock } from './block.js';
+import type { MLChildNode } from './child-node.js';
+import type { MLDocumentFragment } from './document-fragment.js';
+import type { MLDocument } from './document.js';
+import type { MLElement } from './element.js';
+import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
+import type { RuleInfo } from '../../index.js';
+import type {
+	MLASTChildNode,
+	MLASTElementCloseTag,
+	MLASTInvalid,
+	MLASTNode,
+	MLASTParentNode,
+} from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { MLToken } from '../token/token';
+import { MLToken } from '../token/token.js';
 
-import { isChildNode } from './child-node';
-import { toNodeList } from './node-list';
-import { nodeStore } from './node-store';
-import UnexpectedCallError from './unexpected-call-error';
+import { isChildNode } from './child-node.js';
+import { toNodeList } from './node-list.js';
+import { nodeStore } from './node-store.js';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLNode<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLToken<A>
 	implements Node
@@ -57,13 +63,13 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contained_by
 	 */
-	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b10_000;
+	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b1_0000;
 
 	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contains
 	 */
-	readonly DOCUMENT_POSITION_CONTAINS = 0b1_000;
+	readonly DOCUMENT_POSITION_CONTAINS = 0b1000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -81,7 +87,7 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_implementation_specific
 	 */
-	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b100_000;
+	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b10_0000;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -214,11 +220,17 @@ export abstract class MLNode<
 			this.is(this.ELEMENT_NODE) ||
 			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
 		) {
-			// @ts-ignore
-			const astChildren: MLASTNode[] = this._astToken.childNodes ?? [];
+			const astChildren: Exclude<MLASTChildNode, MLASTElementCloseTag | MLASTInvalid>[] =
+				// @ts-ignore
+				this._astToken?.childNodes?.filter(node => {
+					if (node.type === 'endtag' || node.type === 'invalid') {
+						return null;
+					}
+					return node;
+				}) ?? [];
 			const childNodes = astChildren
 				.map(node => nodeStore.getNode<typeof node, T, O>(node))
-				.filter((node): node is MLChildNode<T, O> => isChildNode(node));
+				.filter(node => isChildNode(node));
 
 			// Cache
 			this.#childNodes = toNodeList(childNodes);
@@ -259,6 +271,7 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
 	 */
 	get lastChild(): MLChildNode<T, O> | null {
+		// eslint-disable-next-line unicorn/prefer-at
 		return this.childNodes[this.childNodes.length - 1] ?? null;
 	}
 
@@ -266,10 +279,9 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get nextNode(): MLNode<T, O> | null {
-		if (!this._astToken.nextNode) {
-			return null;
-		}
-		return nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode);
+		const siblings = [...(this.syntacticalParentNode?.childNodes ?? this.#ownerDocument.nodeList)];
+		const index = siblings.findIndex(node => node.uuid === this.uuid);
+		return siblings[index + 1] ?? null;
 	}
 
 	/**
@@ -420,10 +432,9 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevNode(): MLNode<T, O> | null {
-		if (!this._astToken.prevNode) {
-			return null;
-		}
-		return nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode);
+		const siblings = [...(this.syntacticalParentNode?.childNodes ?? this.#ownerDocument.nodeList)];
+		const index = siblings.findIndex(node => node.uuid === this.uuid);
+		return siblings[index - 1] ?? null;
 	}
 
 	/**
@@ -537,6 +548,9 @@ export abstract class MLNode<
 		| MLElement<T, O>
 		| MLBlock<T, O>
 		| null {
+		if (this._astToken.type === 'attr' || this._astToken.type === 'spread') {
+			return null;
+		}
 		if (!this._astToken.parentNode) {
 			return this.ownerMLDocument;
 		}

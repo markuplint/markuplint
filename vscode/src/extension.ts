@@ -7,25 +7,16 @@ import path from 'node:path';
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
 import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
-import { Logger } from './Logger';
-import { StatusBar } from './StatusBar';
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
 	ID,
-	LANGUAGE_LIST,
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
 } from './const';
-import {
-	configs,
-	errorToPopup,
-	infoToPopup,
-	logToDiagnosticsChannel,
-	logToPrimaryChannel,
-	status,
-	warningToPopup,
-} from './lsp';
+import { Logger } from './logger';
+import { errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from './lsp';
+import { StatusBar } from './status-bar';
 
 let client: LanguageClient;
 
@@ -33,6 +24,12 @@ export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
 ) {
+	const config = workspace.getConfiguration(ID);
+
+	if (!config.get('enable')) {
+		return;
+	}
+
 	const logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
 	const dignosticslogger = new Logger(
 		window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }),
@@ -56,15 +53,18 @@ export function activate(
 		},
 	};
 
+	const customLanguageList: string[] = config.get('targetLanguages') ?? [];
+	const languageList = [...new Set(customLanguageList)];
+
 	const langConfigs: LangConfigs = {};
-	LANGUAGE_LIST.forEach(languageId => {
+	for (const languageId of languageList) {
 		langConfigs[languageId] = JSON.parse(JSON.stringify(workspace.getConfiguration('', { languageId }).get(ID)));
-	});
+	}
 
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
-			...LANGUAGE_LIST.map(language => ({ language, scheme: 'file' })),
-			...LANGUAGE_LIST.map(language => ({ language, scheme: 'untitled' })),
+			...languageList.map(language => ({ language, scheme: 'file' })),
+			...languageList.map(language => ({ language, scheme: 'untitled' })),
 		],
 		synchronize: {
 			configurationSection: ID,
@@ -72,13 +72,14 @@ export function activate(
 		},
 		outputChannel: logger.outputChannel,
 		revealOutputChannelOn: RevealOutputChannelOn.Error,
+		initializationOptions: {
+			langConfigs,
+		},
 	};
 
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);
 
 	void client.start().then(() => {
-		void client.sendRequest(configs, langConfigs);
-
 		const statusBar = new StatusBar(
 			window.createStatusBarItem(StatusBarAlignment.Right, 0),
 			COMMAND_NAME_OPEN_LOG_COMMAND,

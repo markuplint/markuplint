@@ -4,8 +4,8 @@
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true,
-		"source.fixAll.stylelint": true
+		"source.fixAll.eslint": "explicit",
+		"source.fixAll.stylelint": "explicit"
 	},
 	"eslint.validate": ["javascript", "javascriptreact"],
 	"eslint.workingDirectories": [
@@ -34,7 +34,7 @@
 				"/**/markuplint-*.json",
 				"/packages/@markuplint/config-presets/src/*.json"
 			],
-			"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
+			"url": "/config.schema.json"
 		},
 		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/spec.*.json"],
@@ -49,6 +49,7 @@
 			"url": "/packages/@markuplint/i18n/$schema.json"
 		}
 	],
+	"vitest.include": ["**/*.spec.{ts,js}"],
 	"github.copilot.enable": {
 		"*": true
 	}

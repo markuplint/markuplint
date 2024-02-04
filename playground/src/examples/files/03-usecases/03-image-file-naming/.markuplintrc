@@ -1,0 +1,36 @@
+{
+  "rules": {
+    "invalid-attr": true
+  },
+  "nodeRules": [
+    {
+      "regexSelector": {
+        "nodeName": "img",
+        "attrName": "src",
+        "attrValue":
+          // Capture a file name and its extension from img elements while...
+          "/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/",
+        // Use together combinator to select preceding-sibling source elements
+        "combination": {
+          "combinator": ":has(~)",
+          "nodeName": "source"
+        }
+      },
+      "rules": {
+        "invalid-attr": {
+          "options": {
+            "allowAttrs": [
+              {
+                "name": "srcset",
+                "value": {
+                  // Expand a file name and its extension by Mustache format
+                  "enum": ["{{FileName}}@2x.{{Exp}} 2x", "{{FileName}}@3x.{{Exp}} 3x"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

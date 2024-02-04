@@ -1,12 +1,15 @@
 import { createRule } from '@markuplint/ml-core';
 
-import { match } from '../helpers';
+import { match } from '../helpers.js';
 
 type Options = {
 	ignore?: string | string[];
 };
 
 export default createRule<boolean, Options>({
+	meta: {
+		category: 'maintainability',
+	},
 	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {
@@ -18,8 +21,8 @@ export default createRule<boolean, Options>({
 			const ignoreList = Array.isArray(attr.rule.options.ignore)
 				? attr.rule.options.ignore
 				: attr.rule.options.ignore
-				  ? [attr.rule.options.ignore]
-				  : [];
+					? [attr.rule.options.ignore]
+					: [];
 
 			const name = attr.name;
 

@@ -14,7 +14,14 @@ type Props = {
 };
 
 export default function Profile({ avatar, name, desc, github, twitter, mini }: Props) {
-  return !mini ? (
+  return mini ? (
+    <a className={styles.profile} href={github} target="_blank" rel="noreferrer">
+      <figure>
+        <Avatar src={avatar} alt="" />
+        <figcaption>{name}</figcaption>
+      </figure>
+    </a>
+  ) : (
     <div className={styles.profile}>
       <>
         <figure>
@@ -36,12 +43,5 @@ export default function Profile({ avatar, name, desc, github, twitter, mini }: P
         </div>
       </>
     </div>
-  ) : (
-    <a className={styles.profile} href={github} target="_blank" rel="noreferrer">
-      <figure>
-        <Avatar src={avatar} alt="" />
-        <figcaption>{name}</figcaption>
-      </figure>
-    </a>
   );
 }

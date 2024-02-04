@@ -1,9 +1,9 @@
-import type { MLAttr } from './attr';
+import type { MLAttr } from './attr.js';
 import type { RuleInfo } from '@markuplint/ml-config';
 
-import { getCol, getLine } from '@markuplint/parser-utils';
+import { getCol, getLine } from '@markuplint/parser-utils/location';
 
-import UnexpectedCallError from './unexpected-call-error';
+import { UnexpectedCallError } from './unexpected-call-error.js';
 
 type Scope = {
 	raw: string;
@@ -57,7 +57,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	 */
 	allTokens() {
 		let offset = 0;
-		const tokens = Array.from(this);
+		const tokens = [...this];
 		const locs: Scope[] = [];
 		while (tokens.length > 0) {
 			const token = tokens.shift();
@@ -131,7 +131,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	}
 
 	private _pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {
-		token = token.trim().split(/\s+/g)[0] ?? '';
+		token = token.trim().split(/\s+/)[0] ?? '';
 		if (!token) {
 			return null;
 		}

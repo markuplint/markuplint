@@ -1,1 +1,1 @@
-export default class UnexpectedCallError extends Error {}
+export class UnexpectedCallError extends Error {}

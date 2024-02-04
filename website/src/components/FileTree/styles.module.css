@@ -3,7 +3,6 @@
   margin: 0 0 1em;
   overflow: auto;
   font-family: var(--ifm-font-family-monospace);
-  white-space: pre;
   background-color: var(--ifm-code-background);
   border-radius: var(--ifm-code-border-radius);
 }

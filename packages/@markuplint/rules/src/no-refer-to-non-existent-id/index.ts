@@ -7,6 +7,9 @@ import { decodeEntities, decodeHref } from '@markuplint/shared';
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
 export default createRule({
+	meta: {
+		category: 'a11y',
+	},
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION as ARIAVersion,
 		fragmentRefersNameAttr: false,
@@ -23,10 +26,10 @@ export default createRule({
 			return;
 		}
 
-		document.querySelectorAll('[id]').forEach(el => {
+		for (const el of document.querySelectorAll('[id]')) {
 			const attr = el.getAttributeNode('id');
 			if (!attr) {
-				return;
+				continue;
 			}
 			if (attr.isDynamicValue) {
 				hasDynamicId = true;
@@ -34,16 +37,16 @@ export default createRule({
 			if (attr.valueType !== 'code') {
 				idList.add(decodeEntities(attr.value));
 			}
-		});
+		}
 
 		if (hasDynamicId) {
 			return;
 		}
 
-		document.querySelectorAll('[name]').forEach(el => {
+		for (const el of document.querySelectorAll('[name]')) {
 			const attr = el.getAttributeNode('name');
 			if (!attr) {
-				return;
+				continue;
 			}
 			if (attr.isDynamicValue) {
 				hasDynamicName = true;
@@ -51,7 +54,7 @@ export default createRule({
 			if (attr.valueType !== 'code') {
 				nameList.add(decodeEntities(attr.value));
 			}
-		});
+		}
 
 		await document.walkOn('Attr', attr => {
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
@@ -94,7 +97,7 @@ export default createRule({
 					const refs = value
 						.split(spec.type.separator === 'space' ? /\s/ : ',')
 						.map(id => id.trim())
-						.filter(_ => _);
+						.filter(Boolean);
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {
@@ -126,7 +129,7 @@ export default createRule({
 					const refs = value
 						.split(/\s/)
 						.map(id => id.trim())
-						.filter(_ => _);
+						.filter(Boolean);
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {

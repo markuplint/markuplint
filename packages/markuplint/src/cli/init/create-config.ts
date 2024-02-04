@@ -1,4 +1,4 @@
-import type { DefaultRules, Langs, RuleSettingMode } from './types';
+import type { DefaultRules, Langs, RuleSettingMode } from './types.js';
 import type { Config } from '@markuplint/ml-config';
 import type { Writable } from 'type-fest';
 
@@ -6,6 +6,7 @@ const extRExp: Record<Langs, `\\.${string}$`> = {
 	jsx: '\\.[jt]sx?$',
 	vue: '\\.vue$',
 	svelte: '\\.svelte$',
+	sveltekit: '\\.html$',
 	astro: '\\.astro$',
 	pug: '\\.pug$',
 	php: '\\.php$',
@@ -21,6 +22,7 @@ export const langs: Record<Langs, string> = {
 	jsx: 'React (JSX)',
 	vue: 'Vue',
 	svelte: 'Svelte',
+	sveltekit: 'SvelteKit',
 	astro: 'Astro',
 	pug: 'Pug',
 	php: 'PHP',
@@ -35,14 +37,21 @@ export const langs: Record<Langs, string> = {
 export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, defaultRules: DefaultRules): Config {
 	let config: Writable<Config> = {};
 
-	const parser: Writable<Config['parser']> = { ...config.parser };
+	const parser: Writable<NonNullable<Config['parser']>> = { ...config.parser };
 	for (const lang of langs) {
 		const ext = extRExp[lang];
 		if (!ext) {
 			continue;
 		}
-		// @ts-ignore
-		parser[ext] = `@markuplint/${lang}-parser`;
+		switch (lang) {
+			case 'sveltekit': {
+				parser[ext] = '@markuplint/svelte-parser/kit';
+				break;
+			}
+			default: {
+				parser[ext] = `@markuplint/${lang}-parser`;
+			}
+		}
 
 		if (lang === 'vue') {
 			config = {
@@ -67,7 +76,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 		config.parser = parser;
 	}
 
-	const rules: Writable<Config['rules']> = { ...config.rules };
+	const rules: Writable<NonNullable<Config['rules']>> = { ...config.rules };
 	if (Array.isArray(mode)) {
 		const ruleNames = Object.keys(defaultRules);
 
@@ -77,7 +86,6 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 				continue;
 			}
 			if (mode.includes(rule.category)) {
-				// @ts-ignore
 				rules[ruleName] = rule.defaultValue;
 			}
 		}
@@ -90,7 +98,6 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 			if (!rule) {
 				continue;
 			}
-			// @ts-ignore
 			rules[ruleName] = rule.defaultValue;
 		}
 	}

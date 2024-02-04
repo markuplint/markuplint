@@ -1,6 +1,8 @@
-import { log } from '../debug';
+import type { Log } from '../debug.js';
 
-export const cmLog = log.extend('content-model');
+import { log } from '../debug.js';
+
+export const cmLog: Log = log.extend('content-model');
 
 const fn = () => {};
 fn.bold = () => {};

@@ -16,7 +16,8 @@
     },
     "import/resolver": {
       "typescript": []
-    }
+    },
+    "import/ignore": ["@docusaurus/*"]
   },
   "rules": {
     "react/display-name": 0,
@@ -26,7 +27,8 @@
       {
         "ignore": ["^@docusaurus/", "^@site/", "^@theme/", "^@theme-original/"]
       }
-    ]
+    ],
+    "unicorn/filename-case": 0
   },
   "globals": {
     "React": true,
@@ -34,15 +36,36 @@
   },
   "overrides": [
     {
+      "files": ["**/*.tsx", "src/**/*.js"],
+      "rules": {
+        "@typescript-eslint/prefer-readonly-parameter-types": 0,
+        "import/no-default-export": 0,
+        "unicorn/filename-case": [
+          0,
+          {
+            "pascalCase": true
+          }
+        ]
+      }
+    },
+    {
       "files": ["./*.js"],
       "rules": {
-        "@typescript-eslint/no-var-requires": 0
+        "no-restricted-globals": 0,
+        "@typescript-eslint/no-var-requires": 0,
+        "unicorn/prefer-module": 0
       }
     },
     {
       "files": ["./*.mjs"],
       "rules": {
         "import/no-named-as-default-member": 0
+      }
+    },
+    {
+      "files": ["./docusaurus.config.ts", "./*.ts"],
+      "rules": {
+        "import/no-default-export": 0
       }
     }
   ],

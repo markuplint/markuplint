@@ -3,9 +3,15 @@ import { createRule } from '@markuplint/ml-core';
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value>({
+	meta: {
+		category: 'style',
+	},
 	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {
+		if (document.tagNameCaseSensitive) {
+			return;
+		}
 		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.elementType !== 'html') {
 				return;
@@ -42,6 +48,9 @@ export default createRule<Value>({
 		});
 	},
 	async fix({ document }) {
+		if (document.tagNameCaseSensitive) {
+			return;
+		}
 		await document.walkOn('Element', el => {
 			if (el.isForeignElement || el.elementType !== 'html') {
 				return;

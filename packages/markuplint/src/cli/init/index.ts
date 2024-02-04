@@ -1,17 +1,13 @@
-import type { Category, DefaultRules, Langs, RuleSettingMode } from './types';
+import type { Category, DefaultRules, Langs, RuleSettingMode } from './types.js';
 
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-import { head, write, error } from '../../util';
-import { confirm, confirmSequence, multiSelect } from '../prompt';
+import { installModule, multiSelect, confirm, confirmSequence, header } from '@markuplint/cli-utils';
 
-import { createConfig, langs } from './create-config';
-import { getDefaultRules } from './get-default-rules';
-import { installModule, selectModules } from './install-module';
-
-const writeFile = util.promisify(fs.writeFile);
+import { createConfig, langs } from './create-config.js';
+import { getDefaultRules } from './get-default-rules.js';
+import { selectModules } from './select-modules.js';
 
 const ruleCategories: Record<
 	Category,
@@ -37,8 +33,9 @@ const ruleCategories: Record<
 };
 
 export async function initialize() {
-	write(head('Initialization'));
-	write.break();
+	process.stdout.write(header('Initialization'));
+	process.stdout.write('\n');
+	process.stdout.write('\n');
 
 	const selectedLangs = await multiSelect<Langs>({
 		message: 'Which do you use template engines?',
@@ -71,31 +68,29 @@ export async function initialize() {
 
 	let defaultRules: DefaultRules = {};
 	if (ruleSettingMode !== 'recommended') {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const rulesVersion: string = require('../../../package.json').version;
-		defaultRules = await getDefaultRules(rulesVersion);
+		defaultRules = getDefaultRules();
 	}
 
 	const config = createConfig(selectedLangs, ruleSettingMode, defaultRules);
 
 	const filePath = path.resolve(process.cwd(), '.markuplintrc');
-	await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf-8' });
-	write(`✨Created: ${filePath}`);
+	await fs.writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
+	process.stdout.write(`✨Created: ${filePath}\n`);
 
 	if (autoInstall) {
-		write('Install automatically');
+		process.stdout.write('Install automatically\n');
 
 		const modules = selectModules(selectedLangs);
 
-		const result = await installModule(modules, true).catch(e => new Error(e));
+		const result = await installModule(modules, true).catch(error_ => new Error(error_));
 		if (result instanceof Error) {
-			error.exit();
-			return;
+			// eslint-disable-next-line unicorn/no-process-exit
+			process.exit(1);
 		}
 		if (result.alreadyExists) {
-			write('Modules are installed already.');
+			process.stdout.write('Modules are installed already.\n');
 		} else {
-			write('✨ Success');
+			process.stdout.write('✨ Success\n');
 		}
 	}
 }

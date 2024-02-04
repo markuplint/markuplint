@@ -1,10 +1,10 @@
-import type { Config, AnyRule, AnyRuleV2, Rules } from './types';
+import type { Config, AnyRule, AnyRuleV2, Rules } from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
 import deepmerge from 'deepmerge';
 
-import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils';
+import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
 export function mergeConfig(a: Config, b: Config): Config {
 	const config: Config = {
@@ -62,10 +62,10 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 		return res;
 	}
 
-	const severity = oB.severity ?? (!isRuleConfigValue(oA) ? oA.severity : undefined);
+	const severity = oB.severity ?? (isRuleConfigValue(oA) ? undefined : oA.severity);
 	const value = oB.value ?? (isRuleConfigValue(oA) ? oA : oA.value);
-	const options = mergeObject(!isRuleConfigValue(oA) ? oA.options : undefined, oB.options);
-	const reason = oB.reason ?? (!isRuleConfigValue(oA) ? oA.reason : undefined);
+	const options = mergeObject(isRuleConfigValue(oA) ? undefined : oA.options, oB.options);
+	const reason = oB.reason ?? (isRuleConfigValue(oA) ? undefined : oA.reason);
 	const res = {
 		severity,
 		value,
@@ -135,7 +135,9 @@ function concatArray<T extends any>(
 		newArray.splice(existedIndex, 1, merged);
 	}
 
+	// eslint-disable-next-line unicorn/no-array-for-each
 	a?.forEach(concat);
+	// eslint-disable-next-line unicorn/no-array-for-each
 	b?.forEach(concat);
 
 	return newArray.length === 0 ? undefined : newArray;

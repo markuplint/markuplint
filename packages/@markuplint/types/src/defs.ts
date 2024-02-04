@@ -1,20 +1,20 @@
-import type { Defs, CssSyntaxTokenizer } from './types';
+import type { Defs, CssSyntaxTokenizer } from './types.js';
 
-import { checkMultiTypes } from './check-multi-types';
-import { getCandidate } from './get-candidate';
-import { matched, matches, unmatched } from './match-result';
-import { splitUnit, isFloat, isUint, isInt } from './primitive';
-import { isBCP47 } from './rfc/is-bcp-47';
-import { Token, TokenCollection } from './token';
-import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy';
-import { checkAutoComplete } from './whatwg/check-autocomplete';
-import { checkDateTime } from './whatwg/check-datetime';
-import { checkMIMEType } from './whatwg/check-mime-type';
-import { isAbsURL } from './whatwg/is-abs-url';
-import { isBrowserContextName } from './whatwg/is-browser-context-name';
-import { isCustomElementName } from './whatwg/is-custom-element-name';
-import { isItempropName } from './whatwg/is-itemprop-name';
-import { isNavigableTargetName } from './whatwg/is-navigable-target-name';
+import { checkMultiTypes } from './check-multi-types.js';
+import { getCandidate } from './get-candidate.js';
+import { matched, matches, unmatched } from './match-result.js';
+import { splitUnit, isFloat, isUint, isInt } from './primitive/index.js';
+import { isBCP47 } from './rfc/is-bcp-47.js';
+import { Token, TokenCollection } from './token/index.js';
+import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permissions-policy.js';
+import { checkAutoComplete } from './whatwg/check-autocomplete.js';
+import { checkDateTime } from './whatwg/check-datetime/index.js';
+import { checkMIMEType } from './whatwg/check-mime-type.js';
+import { isAbsURL } from './whatwg/is-abs-url.js';
+import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
+import { isCustomElementName } from './whatwg/is-custom-element-name.js';
+import { isItempropName } from './whatwg/is-itemprop-name.js';
+import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 
 export const types: Defs = {
 	Any: {
@@ -24,7 +24,7 @@ export const types: Defs = {
 
 	NoEmptyAny: {
 		ref: '',
-		is: value => (0 < value.length ? matched() : unmatched(value, 'empty-token')),
+		is: value => (value.length > 0 ? matched() : unmatched(value, 'empty-token')),
 	},
 
 	OneLineAny: {
@@ -98,13 +98,14 @@ export const types: Defs = {
 			},
 		],
 		is: value => {
-			// NameStartChar ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
-			const nameStartChar =
-				/[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]/u;
-			// NameChar ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
-			const nameCharTail = /-|[.0-9\u00B7]|[\u0300-\u036F\u203F-\u2040]/;
-			// Name ::= NameStartChar (NameChar)*
-			const name = RegExp(`(?:${nameStartChar.source})(?:${nameCharTail})*`, 'u');
+			/**
+			 * NameStartChar ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+			 * NameChar ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+			 * Name ::= NameStartChar (NameChar)*
+			 */
+			const name =
+				// eslint-disable-next-line no-misleading-character-class
+				/[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}][\d.\u00B7\u0300-\u036F\u203F\u2040-]*/u;
 			return name.test(value) ? matched() : unmatched(value, 'unexpected-token');
 		},
 	},
@@ -433,51 +434,86 @@ export const types: Defs = {
 
 	Srcset: {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#srcset-attributes',
-		syntax: {
-			apply: '<srcset>',
-			def: {
-				srcset: '<image-candidate-strings> [, <image-candidate-strings>]*',
-				'image-candidate-strings': '<valid-non-empty-url> [ <width-descriptor> | <pixel-density-descriptor> ]?',
-				'valid-non-empty-url'(token, getNextToken) {
-					if (!token) {
-						return 0;
-					}
-					let willAdoptTokenLength = 0;
-					do {
-						if (token.type === 13) {
+		is(value) {
+			const images = value.split(',');
+
+			for (const image of images) {
+				// image candidate string
+				const [url, , descriptor, ...tail] = new TokenCollection(image.trim(), {
+					disallowToSurroundBySpaces: true,
+					separator: 'space',
+				});
+
+				if (!url) {
+					return unmatched(value, 'unexpected-token', {
+						expects: [
+							{
+								type: 'format',
+								value: 'valid non-empty URL',
+							},
+						],
+					});
+				}
+
+				if (descriptor) {
+					const { num, unit } = splitUnit(descriptor.value);
+					switch (unit) {
+						case 'w': {
+							if (!isUint(num)) {
+								return unmatched(value, 'unexpected-token', {
+									expects: [
+										{
+											type: 'format',
+											value: 'width descriptor',
+										},
+									],
+								});
+							}
 							break;
 						}
-						willAdoptTokenLength++;
-					} while ((token = getNextToken(willAdoptTokenLength)));
-					return willAdoptTokenLength;
-				},
-				'width-descriptor'(token) {
-					if (!token) {
-						return 0;
+						case 'x': {
+							if (!isFloat(num)) {
+								return unmatched(value, 'unexpected-token', {
+									expects: [
+										{
+											type: 'format',
+											value: 'pixel density descriptor',
+										},
+									],
+								});
+							}
+							break;
+						}
+						default: {
+							return unmatched(value, 'unexpected-token', {
+								expects: [
+									{
+										type: 'format',
+										value: 'width descriptor',
+									},
+									{
+										type: 'format',
+										value: 'pixel density descriptor',
+									},
+								],
+							});
+						}
 					}
-					const { num, unit } = splitUnit(token.value);
-					if (unit !== 'w') {
-						return 0;
-					}
-					if (!isUint(num)) {
-						return 0;
-					}
-					return 1;
-				},
-				'pixel-density-descriptor'(token) {
-					if (!token) {
-						return 0;
-					}
-					const { num, unit } = splitUnit(token.value);
-					if (unit !== 'x') {
-						return 0;
-					}
-					if (!isFloat(num)) {
-						return 0;
-					}
-					return 1;
-				},
-			},
+				}
+
+				if (tail[0]) {
+					return unmatched(value, 'unexpected-token', {
+						expects: [
+							{
+								type: 'syntax',
+								value: 'image candidate string',
+							},
+						],
+					});
+				}
+			}
+
+			return matched();
 		},
 	},
 
@@ -875,6 +911,33 @@ export const types: Defs = {
 			},
 		},
 	},
+};
+
+export const overrides: Record<string, string> = {
+	// Alias
+	'legacy-length-percentage': '<length> | <percentage> | <svg-length>',
+	'legacy-angle': '<angle> | <zero> | <number>',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-translate
+	 */
+	'translate()':
+		'translate( <legacy-length-percentage> , <legacy-length-percentage>? ) | translate( <legacy-length-percentage> <legacy-length-percentage>? )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-scale
+	 */
+	'scale()': 'scale( [ <number> | <percentage> ]#{1,2} )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-rotate
+	 */
+	'rotate()': 'rotate( <legacy-angle> )',
+
+	/**
+	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-skew
+	 */
+	'skew()': 'skew( <legacy-angle> , <legacy-angle>? ) | skew( <legacy-angle> <legacy-angle>? )',
 };
 
 export const tokenizers: Record<string, CssSyntaxTokenizer> = {

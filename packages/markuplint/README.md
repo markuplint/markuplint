@@ -25,7 +25,7 @@
 $ npx markuplint target.html
 ```
 
-Supported for _Node.js_ `v14.6.0` or later.
+Supported for _Node.js_ `v18.18.0` or later.
 
 ## Usage
 
@@ -83,9 +83,9 @@ Options
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
 	--verbose                              Output with detailed information.
+	--include-node-modules                 Include files in node_modules directory. Default: false.
 
 	--init                                 Initialize settings interactively.
-	--create-rule                          Add the scaffold of a custom rule.
 
 	--help,                  -h            Show help.
 	--version,               -v            Show version.
@@ -125,6 +125,8 @@ Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 [<img width="36" src="https://avatars.githubusercontent.com/u/6581173" alt="miita" />](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
 [<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
+[<img width="36" src="https://avatars.githubusercontent.com/u/3056064" alt="tamshow" />](https://github.com/tamshow)
+[<img width="36" src="https://avatars.githubusercontent.com/u/91047157" alt="shamokit" />](https://github.com/shamokit)
 
 ## Thanks
 

@@ -1,9 +1,8 @@
-import type { RootNode } from '@astrojs/compiler';
+import type { RootNode } from '@astrojs/compiler/types';
 
 import { ParserError } from '@markuplint/parser-utils';
 import { parseTemplate } from 'astro-eslint-parser';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 export type {
 	RootNode,
 	ElementNode,
@@ -12,7 +11,7 @@ export type {
 	FragmentNode,
 	AttributeNode,
 	Node,
-} from '@astrojs/compiler';
+} from '@astrojs/compiler/types';
 
 export function astroParse(code: string): RootNode {
 	const { result } = parseTemplate(code);

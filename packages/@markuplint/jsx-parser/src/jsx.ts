@@ -1,18 +1,17 @@
-import type {
-	JSXAttribute,
-	JSXChild,
-	JSXElement,
-	JSXFragment,
-	JSXIdentifier,
-	JSXNamespacedName,
-	JSXSpreadAttribute,
-	JSXTagNameExpression,
-	Node,
-} from '@typescript-eslint/types/dist/generated/ast-spec';
+import type { TSESTree } from '@typescript-eslint/types';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type { JSXAttribute } from '@typescript-eslint/types/dist/generated/ast-spec';
+export type JSXAttribute = TSESTree.JSXAttribute;
+export type JSXChild = TSESTree.JSXChild;
+export type JSXElement = TSESTree.JSXElement;
+export type JSXFragment = TSESTree.JSXFragment;
+export type JSXIdentifier = TSESTree.JSXIdentifier;
+export type JSXNamespacedName = TSESTree.JSXNamespacedName;
+export type JSXSpreadAttribute = TSESTree.JSXSpreadAttribute;
+export type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
+export type JSXExpressionContainer = TSESTree.JSXExpressionContainer;
+export type Node = TSESTree.Node;
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 	__alreadyNodeized?: true;
@@ -21,7 +20,7 @@ export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
-export default function jsxParser(jsxCode: string): JSXNode[] {
+export function jsxParser(jsxCode: string): JSXNode[] {
 	const ast = parse(jsxCode, {
 		comment: true,
 		errorOnUnknownASTType: false,
@@ -55,36 +54,6 @@ export function getName(
 			return '';
 		}
 	}
-}
-
-export function getAttr(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	attributes: readonly (JSXAttribute | JSXSpreadAttribute)[],
-) {
-	let hasSpreadAttr = false;
-	const attrs: JSXAttribute[] = [];
-	for (const attr of attributes) {
-		if (attr.type === 'JSXAttribute') {
-			attrs.push(attr);
-		} else {
-			hasSpreadAttr = true;
-		}
-	}
-
-	return {
-		attrs,
-		hasSpreadAttr,
-	};
-}
-
-export function getAttrName(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	name: JSXIdentifier | JSXNamespacedName,
-): string {
-	if (typeof name.name === 'string') {
-		return name.name;
-	}
-	return name.name.name;
 }
 
 function recursiveSearchJSXElements(
@@ -181,8 +150,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXElement: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 
 				const hasSpreadAttr = node.openingElement.attributes.some(
 					attr => attr.type === AST_NODE_TYPES.JSXSpreadAttribute,
@@ -196,8 +164,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.JSXFragment: {
 				const id = idCounter();
 
-				jsxList.push(node);
-				jsxList.push(...recursiveSearchJSXElements(node.children, id));
+				jsxList.push(node, ...recursiveSearchJSXElements(node.children, id));
 				continue;
 			}
 			case AST_NODE_TYPES.VariableDeclarator: {
@@ -255,8 +222,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TemplateLiteral: {
-				jsxList.push(...recursiveSearchJSXElements(node.expressions, parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.quasis, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.expressions, parentId),
+					...recursiveSearchJSXElements(node.quasis, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TaggedTemplateExpression: {
@@ -294,6 +263,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.MethodDefinition: {
+				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
 				}
@@ -301,6 +271,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSAbstractMethodDefinition: {
+				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
 				}
@@ -317,8 +288,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchStatement: {
-				jsxList.push(...recursiveSearchJSXElements(node.cases, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.discriminant], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.cases, parentId),
+					...recursiveSearchJSXElements([node.discriminant], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.SwitchCase: {
@@ -352,6 +325,7 @@ function recursiveSearchJSXElements(
 			}
 			case AST_NODE_TYPES.RestElement: {
 				jsxList.push(...recursiveSearchJSXElements([node.argument], parentId));
+				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
 				}
@@ -370,9 +344,6 @@ function recursiveSearchJSXElements(
 			}
 			case AST_NODE_TYPES.TSEnumDeclaration: {
 				jsxList.push(...recursiveSearchJSXElements(node.members, parentId));
-				if (node.modifiers) {
-					jsxList.push(...recursiveSearchJSXElements(node.modifiers, parentId));
-				}
 				continue;
 			}
 			case AST_NODE_TYPES.TSEnumMember: {
@@ -394,8 +365,10 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSDeclareFunction: {
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
-				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements(node.params, parentId),
+					...recursiveSearchJSXElements([node.body ?? null], parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSImportEqualsDeclaration: {
@@ -403,18 +376,18 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSMethodSignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
-				jsxList.push(...recursiveSearchJSXElements(node.params, parentId));
+				jsxList.push(
+					...recursiveSearchJSXElements([node.key], parentId),
+					...recursiveSearchJSXElements(node.params, parentId),
+				);
 				continue;
 			}
 			case AST_NODE_TYPES.TSModuleDeclaration: {
 				jsxList.push(...recursiveSearchJSXElements([node.body ?? null], parentId));
-				if (node.modifiers) {
-					jsxList.push(...recursiveSearchJSXElements(node.modifiers, parentId));
-				}
 				continue;
 			}
 			case AST_NODE_TYPES.TSParameterProperty: {
+				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
 				}
@@ -422,7 +395,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSPropertySignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key, node.initializer ?? null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.key, null], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSTypeLiteral: {
@@ -435,6 +408,7 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.PropertyDefinition:
 			case AST_NODE_TYPES.TSAbstractPropertyDefinition: {
 				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
+				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
 				}

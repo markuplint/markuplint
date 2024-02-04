@@ -1,6 +1,9 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
 export default createRule({
+	meta: {
+		category: 'validation',
+	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (
@@ -17,7 +20,7 @@ export default createRule({
 				const message = t(
 					'{0} is {1:c}',
 					t('the "{0*}" {1}', el.localName, 'element'),
-					spec.deprecated ? 'deprecated' : spec.obsolete != null ? 'obsolete' : 'non-standard',
+					spec.deprecated ? 'deprecated' : spec.obsolete == null ? 'non-standard' : 'obsolete',
 				);
 				report({
 					scope: el,

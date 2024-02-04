@@ -1,6 +1,6 @@
-import type { ARIAVersion, Matches, MLMLSpec } from '../types';
+import type { ARIAVersion, Matches, MLMLSpec } from '../types/index.js';
 
-import { getARIA } from './get-aria';
+import { getARIA } from './get-aria.js';
 
 export function getImplicitRole(
 	specs: MLMLSpec,

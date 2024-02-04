@@ -22,20 +22,21 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 ### Supported syntaxes
 
-| Template or syntax                                                                         | Parser                        | Spec                     |
-| ------------------------------------------------------------------------------------------ | ----------------------------- | ------------------------ |
-| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                   | `@markuplint/jsx-parser`      | `@markuplint/react-spec` |
-| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`      | `@markuplint/vue-spec`   |
-| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`   | -                        |
-| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`    | -                        |
-| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`      | -                        |
-| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`      | -                        |
-| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`   | -                        |
-| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`      | -                        |
-| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`      | -                        |
-| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser` | -                        |
-| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser` | -                        |
-| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`   | -                        |
+| Template or syntax                                                                         | Parser                          | Spec                     |
+| ------------------------------------------------------------------------------------------ | ------------------------------- | ------------------------ |
+| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`        | `@markuplint/react-spec` |
+| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`        | `@markuplint/vue-spec`   |
+| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`     | -                        |
+| [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit` | -                        |
+| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`      | -                        |
+| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`        | -                        |
+| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`        | -                        |
+| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`     | -                        |
+| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`        | -                        |
+| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`        | -                        |
+| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser`   | -                        |
+| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser`   | -                        |
+| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`     | -                        |
 
 :::note
 There is `@markuplint/html-parser` package but the core package includes it.
@@ -80,16 +81,6 @@ If it doesn't nest by quotations.
 ```
 <!-- prettier-ignore-end -->
 
-If it mixes the tags and spaces.
-
-```html
-<div attr=" {{ value }} "></div>
-```
-
-```html
-<div attr="{{ value }} {{ value2 }}"></div>
-```
-
 **PULL REQUEST WANTED**: This problem is recognized by developers and created as an issue [#240](https://github.com/markuplint/markuplint/issues/240).
 
 :::
@@ -124,7 +115,7 @@ Set a regular expression that can identify the target file name to the `parser` 
 
 See explained configuring [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs) if you want details.
 
-### Why need the spec plugins?
+### Why need the spec plugins? {#why-need-the-spec-plugins}
 
 For example, the `key` attribute doesn't exist in native HTML elements. But you often need to specify it when you use **React** or **Vue**. So you should specify `@markuplint/react-spec` or `@markuplint/vue-spec`.
 
@@ -194,3 +185,26 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 <!-- prettier-ignore-end -->
 
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
+
+### The `as` attribute
+
+If a component has the `as` attribute, it is evaluated as the element specified by this attribute.
+
+<!-- prettier-ignore-start -->
+```html
+<x-ul as="ul"><!-- Evaluate as <ul> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+  <x-li as="li"></x-li><!-- Evaluate as <li> -->
+</x-ul>
+```
+<!-- prettier-ignore-end -->
+
+This evaluation also applies to its attributes that are inherited from the component.
+
+<!-- prettier-ignore-start -->
+```html
+<!-- Evaluate as <img src="image.png" alt="image"> -->
+<x-img src="image.png" alt="image">
+```
+<!-- prettier-ignore-end -->
