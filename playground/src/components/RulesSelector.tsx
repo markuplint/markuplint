@@ -34,7 +34,9 @@ const RulesSelectorRaw = ({ value, version, onChange }: Props) => {
 				const rulesDefinition = dereferencedSchema?.properties?.rules;
 				if (!isJSONSchema(rulesDefinition)) return;
 
-				if (satisfies(version, '>=3.13.0')) {
+				if (satisfies(version, '>=4.0.0')) {
+					setRuleSchemas(rulesDefinition.properties ?? null);
+				} else if (satisfies(version, '>=3.13.0')) {
 					const builtinRulesDefinition = rulesDefinition.oneOf?.[0];
 					if (!isJSONSchema(builtinRulesDefinition)) return;
 					setRuleSchemas(builtinRulesDefinition.properties ?? null);
