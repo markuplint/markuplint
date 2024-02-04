@@ -109,6 +109,7 @@
 		"vscode:release": "vsce publish --no-yarn"
 	},
 	"devDependencies": {
+		"@markuplint/file-resolver": "4.0.0",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "18.15",
 		"@types/semver": "7.5.6",
