@@ -22,8 +22,5 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "4.0.0-rc.0"
-	},
-	"peerDependencies": {
-		"@markuplint/ml-core": ">4"
 	}
 }
