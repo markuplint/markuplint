@@ -22,6 +22,14 @@
 <details>
 <summary>History</summary>
 
+#### 3.10.0
+
+- Depends: `markuplint@3.15.0`
+
+#### 3.9.0
+
+- Depends: `markuplint@3.14.0`
+
 #### 3.8.0
 
 - Depends: `markuplint@3.13.0`
