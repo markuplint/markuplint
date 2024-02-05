@@ -144,40 +144,11 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	afterFlattenNodes(nodeList: readonly MLASTNodeTreeItem[]) {
-		const optimizedNodeList = super.afterFlattenNodes(nodeList);
-		const newNodeList: MLASTNodeTreeItem[] = [];
-
-		let openTemplateTag = false;
-		let closeTemplateTag = false;
-		for (const node of optimizedNodeList) {
-			if (!openTemplateTag && node.type === 'text') {
-				continue;
-			}
-			if (node.type === 'starttag' && node.nodeName === 'template' && node.depth === 0) {
-				openTemplateTag = true;
-				continue;
-			}
-			if (/^<\/template>$/i.test(node.raw) && node.depth === 0) {
-				closeTemplateTag = true;
-				continue;
-			}
-			if (closeTemplateTag && node.type === 'text') {
-				continue;
-			}
-
-			// ignore script and style
-			if (node.nodeName === 'script' || node.nodeName === 'style') {
-				continue;
-			}
-			// and ignore endtag of script and style
-			if (node.raw === '</script>' || node.nodeName === '</style>') {
-				continue;
-			}
-
-			newNodeList.push(node);
-		}
-
-		return newNodeList;
+		return super.afterFlattenNodes(nodeList, {
+			exposeInvalidNode: false,
+			exposeWhiteSpace: false,
+			concatText: false,
+		});
 	}
 
 	visitAttr(token: Token) {
