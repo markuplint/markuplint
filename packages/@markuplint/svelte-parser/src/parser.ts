@@ -185,6 +185,7 @@ class SvelteParser extends Parser<SvelteNode> {
 				{ start: '"', end: '"' },
 				{ start: "'", end: "'" },
 				{ start: '`', end: '`' },
+				{ start: '{', end: '}' },
 				{ start: '${', end: '}' },
 			],
 			startState:
