@@ -665,4 +665,22 @@ describe('Issues', () => {
 			'[1:29]>[1:33](28,32)a: </a>',
 		]);
 	});
+
+	test('#1432', () => {
+		expect(nodeListToDebugMaps(parse('<div style={{ a: b }}></div>').nodeList, true)).toStrictEqual([
+			'[1:1]>[1:23](0,22)div: <div␣style={{␣a:␣b␣}}>',
+			'[1:6]>[1:22](5,21)style: style={{␣a:␣b␣}}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:11](5,10)name: style',
+			'  [1:11]>[1:11](10,10)bE: ',
+			'  [1:11]>[1:12](10,11)equal: =',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:13](11,12)sQ: {',
+			'  [1:13]>[1:21](12,20)value: {␣a:␣b␣}',
+			'  [1:21]>[1:22](20,21)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:23]>[1:29](22,28)div: </div>',
+		]);
+	});
 });
