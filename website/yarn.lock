@@ -1793,10 +1793,10 @@
     parse5 "7.1.2"
     type-fest "^4.10.2"
 
-"@markuplint/html-spec@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.0.0.tgz#3c043eafb044f66f36186730122a194772eac43c"
-  integrity sha512-opnLO1GEksQYEXuWgISWTUlzngXnIsAgydq1W56uioFp8T0gofEeI12k0NvH2/z0XrwoU1UQwhAcoPmjrj7vqQ==
+"@markuplint/html-spec@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.0.1.tgz#cec9ec3c11a814e55f2c6daf251c127aefcba2de"
+  integrity sha512-pnMqUEzTiAAavC9QEnyLQJBbw4R/YLdrQWNyfyXVzeOsuKT0e1M+XV0/8NBegHuIoBmes+8BBQ7acJW977elEg==
   dependencies:
     "@markuplint/ml-spec" "4.0.0"
 
@@ -1824,14 +1824,14 @@
     mustache "^4.2.0"
     type-fest "^4.10.2"
 
-"@markuplint/ml-core@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.0.0.tgz#84595e21b4d8f6defa5a3b355385da1554cf943c"
-  integrity sha512-23smJd3K3UnySfe86STnUciTBk7lnortfnZ3XzMDyC0belgoOpPl8oiVDlh7FlPF9SkJkTLmGXXwH2tH/94cOg==
+"@markuplint/ml-core@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.0.1.tgz#07aeb805904918904c40b9600180bb70511fec2d"
+  integrity sha512-kFoMJN6YxUv4cLf3A8sBjF8Vl1AAwhwEbZJ8KDgry5KinMEH71Oz8NEffaY2ftM1ZkPz2Qig4kbrMXmqz0mK3Q==
   dependencies:
     "@markuplint/config-presets" "4.0.0"
     "@markuplint/html-parser" "4.0.0"
-    "@markuplint/html-spec" "4.0.0"
+    "@markuplint/html-spec" "4.0.1"
     "@markuplint/i18n" "4.0.0"
     "@markuplint/ml-ast" "4.0.0"
     "@markuplint/ml-config" "4.0.0"
@@ -1868,13 +1868,13 @@
     type-fest "^4.10.2"
     uuid "^9.0.1"
 
-"@markuplint/rules@4":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.0.0.tgz#754ece149384ee997201c424c34cb7d5554c300e"
-  integrity sha512-6qqlmSjbqxSV4EcVP86yHyfh9IRv1UEEuH8vyo4v3U8+ZODzqQU+lEZTuWRZ1ofg067oIliVjWHvbtV/K/m/Vg==
+"@markuplint/rules@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.0.1.tgz#963bd065ca9c6476befaf7c05504264a9b0a6553"
+  integrity sha512-WnLthIp0fq3811sg/+75Z0Tw78jK1tn4//gKM5Jonw1Q+b62WjPVhsVuISdN28Ed6T66yKR7MIvEv+vHIkDdHQ==
   dependencies:
-    "@markuplint/html-spec" "4.0.0"
-    "@markuplint/ml-core" "4.0.0"
+    "@markuplint/html-spec" "4.0.1"
+    "@markuplint/ml-core" "4.0.1"
     "@markuplint/ml-spec" "4.0.0"
     "@markuplint/selector" "4.0.0"
     "@markuplint/shared" "4.0.0"
