@@ -536,3 +536,29 @@ key
 		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
 	});
 });
+
+describe('Issues', () => {
+	test('#1432', () => {
+		const doc = parse(`const Component = () => {
+  return (
+    <div style={{ color: 'red' }}></div>
+  );
+};`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			"[3:5]>[3:35](41,71)div: <div␣style={{␣color:␣'red'␣}}>",
+			"[3:10]>[3:34](46,70)style: style={{␣color:␣'red'␣}}",
+			'  [3:9]>[3:10](45,46)bN: ␣',
+			'  [3:10]>[3:15](46,51)name: style',
+			'  [3:15]>[3:15](51,51)bE: ',
+			'  [3:15]>[3:16](51,52)equal: =',
+			'  [3:16]>[3:16](52,52)aE: ',
+			'  [3:16]>[3:17](52,53)sQ: {',
+			"  [3:17]>[3:33](53,69)value: {␣color:␣'red'␣}",
+			'  [3:33]>[3:34](69,70)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  potentialName: style',
+			'[3:35]>[3:41](71,77)div: </div>',
+		]);
+	});
+});

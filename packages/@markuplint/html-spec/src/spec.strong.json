@@ -5,7 +5,7 @@
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": ":model(flow)"
+				"oneOrMore": ":model(phrasing)"
 			}
 		]
 	},

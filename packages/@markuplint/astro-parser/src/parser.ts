@@ -215,6 +215,7 @@ class AstroParser extends Parser<Node, State> {
 				{ start: '"', end: '"' },
 				{ start: "'", end: "'" },
 				{ start: '`', end: '`' },
+				{ start: '{', end: '}' },
 				{ start: '${', end: '}' },
 			],
 			startState:

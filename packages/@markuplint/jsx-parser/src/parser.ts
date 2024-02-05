@@ -191,6 +191,7 @@ class JSXParser extends Parser<JSXNode> {
 				{ start: '"', end: '"' },
 				{ start: "'", end: "'" },
 				{ start: '`', end: '`' },
+				{ start: '{', end: '}' },
 				{ start: '${', end: '}' },
 			],
 		});

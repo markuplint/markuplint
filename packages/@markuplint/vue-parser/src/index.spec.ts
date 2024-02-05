@@ -107,6 +107,8 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:11](15,23)script: <script>',
+			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -156,13 +158,11 @@ describe('parser', () => {
 			'[25:24]>[28:3](328,351)#text: ⏎→→→→invalid-indent⏎⏎→→',
 			'[28:3]>[29:31](351,400)#comment(👿): <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
 			'[29:31]>[29:35](400,404)#text: text',
-			'[29:35]>[29:42](404,411)#invalid(👿): </html>',
 			"[29:42]>[33:12](411,451)#text: '⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](451,470)html: <html␣attr="value">',
 			'[33:31]>[33:35](470,474)#text: text',
 			'[33:35]>[33:42](474,481)html: </html>',
 			"[33:42]>[36:3](481,491)#text: '⏎→→%>⏎⏎→→",
-			'[36:3]>[36:14](491,502)#invalid(👿): </expected>',
 			'[36:14]>[37:3](502,505)#text: ⏎→→',
 			'[37:3]>[37:8](505,510)div: <div>',
 			'[37:8]>[39:2](510,523)#text: ⏎→text-node⏎→',
@@ -213,6 +213,8 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
+			'[3:3]>[3:11](15,23)script: <script>',
+			'[5:3]>[5:12](42,51)script: </script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -262,13 +264,11 @@ describe('parser', () => {
 			'[25:24]>[28:3](329,352)#text: ⏎→→→→invalid-indent⏎⏎→→',
 			'[28:3]>[29:31](352,401)#comment(👿): <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
 			'[29:31]>[29:35](401,405)#text: text',
-			'[29:35]>[29:42](405,412)#invalid(👿): </html>',
 			"[29:42]>[33:12](412,452)#text: '⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'",
 			'[33:12]>[33:31](452,471)html: <html␣attr="value">',
 			'[33:31]>[33:35](471,475)#text: text',
 			'[33:35]>[33:42](475,482)html: </html>',
 			"[33:42]>[36:3](482,492)#text: '⏎→→%>⏎⏎→→",
-			'[36:3]>[36:14](492,503)#invalid(👿): </expected>',
 			'[36:14]>[37:3](503,506)#text: ⏎→→',
 			'[37:3]>[37:8](506,511)div: <div>',
 			'[37:8]>[39:2](511,524)#text: ⏎→text-node⏎→',
@@ -532,5 +532,74 @@ describe('Issues', () => {
 
 		const ul = doc.nodeList[1];
 		expect(ul.childNodes.length).toBe(6);
+	});
+
+	test('#1433', () => {
+		const doc = parse(`<script setup lang="ts">
+defineProps<{
+  msg: string
+}>()
+</script>
+
+<template>
+  <div class="greetings">
+    <h1 class="green">{{ msg }}</h1>
+    <h3>
+      You’ve successfully created a project with
+      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
+      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
+    </h3>
+  </div>
+</template>
+
+<style scoped>
+h1 {
+  font-weight: 500;
+  font-size: 2.6rem;
+  position: relative;
+  top: -10px;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+.greetings h1,
+.greetings h3 {
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .greetings h1,
+  .greetings h3 {
+    text-align: left;
+  }
+}
+</style>`);
+
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[7:11]>[8:3](79,82)#text: ⏎␣␣',
+			'[8:3]>[8:26](82,105)div: <div␣class="greetings">',
+			'[8:26]>[9:5](105,110)#text: ⏎␣␣␣␣',
+			'[9:5]>[9:23](110,128)h1: <h1␣class="green">',
+			'[9:23]>[9:32](128,137)#ps:vue-expression-container: {{␣msg␣}}',
+			'[9:32]>[9:37](137,142)h1: </h1>',
+			'[9:37]>[10:5](142,147)#text: ⏎␣␣␣␣',
+			'[10:5]>[10:9](147,151)h3: <h3>',
+			'[10:9]>[12:7](151,207)#text: ⏎␣␣␣␣␣␣You’ve␣successfully␣created␣a␣project␣with⏎␣␣␣␣␣␣',
+			'[12:7]>[12:68](207,268)a: <a␣href="https://vitejs.dev/"␣target="_blank"␣rel="noopener">',
+			'[12:68]>[12:72](268,272)#text: Vite',
+			'[12:72]>[12:76](272,276)a: </a>',
+			'[12:76]>[13:7](276,285)#text: ␣+⏎␣␣␣␣␣␣',
+			'[13:7]>[13:67](285,345)a: <a␣href="https://vuejs.org/"␣target="_blank"␣rel="noopener">',
+			'[13:67]>[13:72](345,350)#text: Vue␣3',
+			'[13:72]>[13:76](350,354)a: </a>',
+			'[13:76]>[14:5](354,360)#text: .⏎␣␣␣␣',
+			'[14:5]>[14:10](360,365)h3: </h3>',
+			'[14:10]>[15:3](365,368)#text: ⏎␣␣',
+			'[15:3]>[15:9](368,374)div: </div>',
+			'[15:9]>[16:1](374,375)#text: ⏎',
+		]);
 	});
 });
