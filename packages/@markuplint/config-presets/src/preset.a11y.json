@@ -17,7 +17,7 @@
 					 *
 					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
 					 */
-					"disallowed"
+					"accesskey"
 				],
 				"allowAttrs": [
 					{
