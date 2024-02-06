@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { mlTest, mlTestFile } from 'markuplint';
-import NoTodo from 'textlint-rule-no-todo';
 import { test, expect } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,7 +19,7 @@ test('Manual', async () => {
 					rules: [
 						{
 							ruleId: 'no-todo',
-							rule: NoTodo,
+							rule: (await import('textlint-rule-no-todo')).default,
 						},
 					],
 				},
