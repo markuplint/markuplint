@@ -19,7 +19,12 @@ test('Manual', async () => {
 					rules: [
 						{
 							ruleId: 'no-todo',
-							rule: (await import('textlint-rule-no-todo')).default,
+							rule: (await import('textlint-rule-no-todo'))
+								.then(mod => mod.default)
+								.cache(error => {
+									console.dir(error);
+									return null;
+								}),
 						},
 					],
 				},
