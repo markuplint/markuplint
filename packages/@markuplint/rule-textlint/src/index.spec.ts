@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { mlTest, mlTestFile } from 'markuplint';
-import Prh from 'textlint-rule-prh';
+import NoTodo from 'textlint-rule-no-todo';
 import { test, expect } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,11 +19,8 @@ test('Manual', async () => {
 				options: {
 					rules: [
 						{
-							ruleId: 'prh',
-							rule: Prh,
-							options: {
-								rulePaths: [path.resolve(__dirname, '..', 'prh.yml')],
-							},
+							ruleId: 'no-todo',
+							rule: NoTodo,
 						},
 					],
 				},
@@ -36,9 +33,9 @@ test('Manual', async () => {
 			severity: 'warning',
 			ruleId: 'textlint',
 			line: 11,
-			col: 19,
-			raw: 'jquery',
-			message: 'Invalid text: jquery => jQuery',
+			col: 6,
+			raw: 'T',
+			message: "Invalid text: Found TODO: 'TODO: It's test.'",
 		},
 	]);
 });

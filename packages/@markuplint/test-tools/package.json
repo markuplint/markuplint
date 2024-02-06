@@ -33,7 +33,6 @@
 		"jsdom": "^24.0.0",
 		"strip-json-comments": "^5.0.1",
 		"test-markuplint": "npm:markuplint@next",
-		"textlint-rule-prh": "^6.0.0",
 		"type-fest": "^4.10.2",
 		"vitest": "^1.2.2"
 	}
