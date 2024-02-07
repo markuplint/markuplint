@@ -561,4 +561,18 @@ describe('Issues', () => {
 			'[3:35]>[3:41](71,77)div: </div>',
 		]);
 	});
+
+	test('#1440', () => {
+		const doc = parse(`type Key = "name" | "address";
+
+const x = {
+  name: "Alice",
+  address: "UK",
+} as const satisfies Record<Key, string>;
+
+const C = () => {
+  return <div />;
+};`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
+	});
 });
