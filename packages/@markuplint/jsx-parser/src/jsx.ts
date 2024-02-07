@@ -246,7 +246,9 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.TSExportAssignment:
 			case AST_NODE_TYPES.TSExternalModuleReference:
 			case AST_NODE_TYPES.TSNonNullExpression:
-			case AST_NODE_TYPES.TSTypeAssertion: {
+			case AST_NODE_TYPES.TSTypeAssertion:
+			case AST_NODE_TYPES.TSInstantiationExpression:
+			case AST_NODE_TYPES.TSSatisfiesExpression: {
 				jsxList.push(...recursiveSearchJSXElements([node.expression], parentId));
 				continue;
 			}
@@ -262,15 +264,12 @@ function recursiveSearchJSXElements(
 				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
 				continue;
 			}
-			case AST_NODE_TYPES.MethodDefinition: {
-				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-				if (node.decorators) {
-					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
-				}
-				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
-				continue;
-			}
-			case AST_NODE_TYPES.TSAbstractMethodDefinition: {
+			case AST_NODE_TYPES.MethodDefinition:
+			case AST_NODE_TYPES.TSAbstractMethodDefinition:
+			case AST_NODE_TYPES.PropertyDefinition:
+			case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+			case AST_NODE_TYPES.AccessorProperty:
+			case AST_NODE_TYPES.TSAbstractAccessorProperty: {
 				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
@@ -395,7 +394,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSPropertySignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key, null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSTypeLiteral: {
@@ -405,14 +404,8 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.PrivateIdentifier: {
 				continue;
 			}
-			case AST_NODE_TYPES.PropertyDefinition:
-			case AST_NODE_TYPES.TSAbstractPropertyDefinition: {
-				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
-				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-				if (node.decorators) {
-					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
-				}
-				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
+			case AST_NODE_TYPES.ImportAttribute: {
+				jsxList.push(...recursiveSearchJSXElements([node.value, node.key], parentId));
 				continue;
 			}
 		}
