@@ -3116,6 +3116,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		let offset = 0;
 		for (const node of this.getTokenList()) {
 			const nodeRaw = node.toString(true);
+			if (nodeRaw === node.raw) {
+				continue;
+			}
 			raw = raw.slice(0, node.startOffset + offset) + nodeRaw + raw.slice(node.endOffset + offset);
 			offset += nodeRaw.length - (node.endOffset - node.startOffset);
 		}
