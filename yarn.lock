@@ -854,6 +854,7 @@
     type-fest "^4.10.2"
 
 "@markuplint/ml-spec@4.0.0-rc.1", "latest-markuplint-ml-spec@npm:@markuplint/ml-spec@next":
+  name latest-markuplint-ml-spec
   version "4.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.0.0-rc.1.tgz#4507126be07edf218b3aafb6fdcb97d7dbf73559"
   integrity sha512-5YJjF+9xq1R9i46w8hHgHO7MbZYi/YXi95OVgUnkL/EJ5hl5B7sIzx7HwfqYvZce63TeTZz//GQwyxO8Njekhg==
@@ -8185,9 +8186,9 @@ prettier@^2.6.2:
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
 prettier@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.4.tgz#4723cadeac2ce7c9227de758e5ff9b14e075f283"
-  integrity sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
+  integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==
 
 pretty-format@^29.7.0:
   version "29.7.0"
