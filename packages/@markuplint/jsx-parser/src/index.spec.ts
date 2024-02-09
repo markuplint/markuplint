@@ -535,6 +535,49 @@ key
 		expect(parse('<svg><Component/></svg>').nodeList[1].elementType).toBe('authored');
 		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
 	});
+
+	test('Comment', () => {
+		const ast = parse(`// comment 1
+/* comment 2 */`);
+		const map = nodeListToDebugMaps(ast.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:13](0,12)#comment: //␣comment␣1',
+			'[2:1]>[2:16](13,28)#comment: /*␣comment␣2␣*/',
+		]);
+	});
+
+	test('Comment in element', () => {
+		const ast = parse(`// comment 1
+/* comment 2 */
+
+<div
+// comment 3
+/**
+ * comment 4
+ */
+attr={value}
+/>`);
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:13](0,12)#comment: //␣comment␣1',
+			'[2:1]>[2:16](13,28)#comment: /*␣comment␣2␣*/',
+			'[4:1]>[10:3](30,84)div: <div⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎attr={value}⏎/>',
+			'[9:1]>[9:13](69,81)attr: attr={value}',
+			'  [4:5]>[9:1](34,69)bN: ⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎',
+			'  [9:1]>[9:5](69,73)name: attr',
+			'  [9:5]>[9:5](73,73)bE: ',
+			'  [9:5]>[9:6](73,74)equal: =',
+			'  [9:6]>[9:6](74,74)aE: ',
+			'  [9:6]>[9:7](74,75)sQ: {',
+			'  [9:7]>[9:12](75,80)value: value',
+			'  [9:12]>[9:13](80,81)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[5:1]>[5:13](35,47)#comment: //␣comment␣3',
+			'[6:1]>[8:4](48,68)#comment: /**⏎␣*␣comment␣4⏎␣*/',
+		]);
+	});
 });
 
 describe('Issues', () => {

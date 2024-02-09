@@ -795,6 +795,48 @@ describe('Fix', () => {
 			'			a text',
 		]);
 	});
+
+	test('JSX', async () => {
+		const doc = createTestDocument(
+			[
+				'export const Component = ({ list, id }) => {',
+				'  return (',
+				'    <>',
+				'      <p id={id}></p>',
+				'      <ul',
+				'        // Inline Comment in start tag',
+				'        id="hard-coded" /* Block Comment in start tag */>',
+				'        {list.map(item => (',
+				'          <li key={item.key}>{item.text}</li>',
+				'        ))}',
+				'      </ul>',
+				'    </>',
+				'  );',
+				'};',
+			].join('\n'),
+			{
+				parser: await import('@markuplint/jsx-parser'),
+			},
+		);
+		doc.querySelector('ul')?.attributes[0].fix('foo');
+		doc.querySelector('li')?.fixNodeName('Li');
+		expect(doc.toString(true).split('\n')).toStrictEqual([
+			'export const Component = ({ list, id }) => {',
+			'  return (',
+			'    <>',
+			'      <p id={id}></p>',
+			'      <ul',
+			'        // Inline Comment in start tag',
+			'        id="foo" /* Block Comment in start tag */>',
+			'        {list.map(item => (',
+			'          <Li key={item.key}>{item.text}</Li>',
+			'        ))}',
+			'      </ul>',
+			'    </>',
+			'  );',
+			'};',
+		]);
+	});
 });
 
 describe('Issues', () => {

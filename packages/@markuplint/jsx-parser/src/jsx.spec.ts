@@ -8,6 +8,93 @@ describe('jsxParser', () => {
 		// @ts-ignore
 		expect(ast[0].__hasSpreadAttribute).toBeTruthy();
 	});
+
+	test('Comment in start tag', () => {
+		const ast = jsxParser('<div /* comment */ />// comment');
+		expect(ast).toStrictEqual([
+			{
+				type: 'JSXElement',
+				range: [0, 21],
+				loc: {
+					end: {
+						column: 21,
+						line: 1,
+					},
+					start: {
+						column: 0,
+						line: 1,
+					},
+				},
+				openingElement: {
+					type: 'JSXOpeningElement',
+					range: [0, 21],
+					loc: {
+						end: {
+							column: 21,
+							line: 1,
+						},
+						start: {
+							column: 0,
+							line: 1,
+						},
+					},
+					name: {
+						loc: {
+							end: {
+								column: 4,
+								line: 1,
+							},
+							start: {
+								column: 1,
+								line: 1,
+							},
+						},
+						name: 'div',
+						range: [1, 4],
+						type: 'JSXIdentifier',
+					},
+					attributes: [],
+					selfClosing: true,
+					typeArguments: undefined,
+				},
+				closingElement: null,
+				children: [],
+				__parentId: null,
+			},
+			{
+				type: 'Block',
+				loc: {
+					end: {
+						column: 18,
+						line: 1,
+					},
+					start: {
+						column: 5,
+						line: 1,
+					},
+				},
+				range: [5, 18],
+				value: ' comment ',
+				__parentId: null,
+			},
+			{
+				type: 'Line',
+				loc: {
+					end: {
+						column: 31,
+						line: 1,
+					},
+					start: {
+						column: 21,
+						line: 1,
+					},
+				},
+				range: [21, 31],
+				value: ' comment',
+				__parentId: null,
+			},
+		]);
+	});
 });
 
 describe('getName', () => {

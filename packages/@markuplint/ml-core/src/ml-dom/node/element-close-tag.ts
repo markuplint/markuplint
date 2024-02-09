@@ -44,6 +44,10 @@ export class MLElementCloseTag<T extends RuleConfigValue, O extends PlainData = 
 			return this.raw;
 		}
 
+		if (this.nodeName.startsWith('#')) {
+			return this.raw;
+		}
+
 		if (this.pair.isOmitted) {
 			return this.raw;
 		}
