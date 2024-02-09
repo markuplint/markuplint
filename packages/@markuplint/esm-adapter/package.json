@@ -23,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.12",
+		"default-markuplint": "npm:markuplint@next",
 		"test-markuplint": "npm:markuplint@next"
 	}
 }

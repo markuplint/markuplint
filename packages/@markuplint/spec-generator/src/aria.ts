@@ -208,7 +208,12 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 	const globalStatesAndProperties = new Set(
 		$('#global_states li a')
 			.toArray()
-			.map(el => $(el).attr('href')?.replace('#', ''))
+			.map(el => {
+				const href = $(el).prop('href');
+				const hashIndex = href.indexOf('#');
+				const hash = hashIndex === -1 ? undefined : href.slice(hashIndex);
+				return hash?.slice(1);
+			})
 			.filter((s): s is string => !!s),
 	);
 	const arias = [...ariaNameList].sort().map((name): ARIAProperty => {

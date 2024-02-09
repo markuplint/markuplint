@@ -27,6 +27,7 @@
 		"@vitest/coverage-v8": "^1.2.2",
 		"browser-resolve": "^2.0.0",
 		"coveralls": "^3.1.1",
+		"default-markuplint": "npm:markuplint@next",
 		"execa": "^8.0.1",
 		"glob": "^10.3.6",
 		"jsdom": "^24.0.0",

@@ -1,4 +1,4 @@
-import type { JSXNode } from './jsx.js';
+import type { JSXComment, JSXNode } from './jsx.js';
 import type { ElementType, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
@@ -6,20 +6,32 @@ import { getNamespace } from '@markuplint/html-parser';
 import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { jsxParser, getName } from './jsx.js';
-class JSXParser extends Parser<JSXNode> {
+
+type State = {
+	comments: readonly JSXComment[];
+};
+
+class JSXParser extends Parser<JSXNode, State> {
 	#parentIdMap = new WeakMap<MLASTNodeTreeItem, number | null>();
 
 	constructor() {
-		super({
-			endTagType: 'xml',
-			booleanish: true,
-			tagNameCaseSensitive: true,
-		});
+		super(
+			{
+				endTagType: 'xml',
+				booleanish: true,
+				tagNameCaseSensitive: true,
+			},
+			{
+				comments: [],
+			},
+		);
 	}
 
 	tokenize() {
+		const ast = jsxParser(this.rawCode);
+		this.state.comments = ast.filter((node): node is JSXComment => node.type === 'Block' || node.type === 'Line');
 		return {
-			ast: jsxParser(this.rawCode),
+			ast,
 			isFragment: true,
 		};
 	}
@@ -90,6 +102,15 @@ class JSXParser extends Parser<JSXNode> {
 		originNode.__alreadyNodeized = true;
 
 		switch (originNode.type) {
+			case 'Block':
+			case 'Line': {
+				const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
+				return this.visitComment({
+					...token,
+					depth,
+					parentNode,
+				});
+			}
 			case 'JSXText': {
 				const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
 				const nodes = this.visitText({
@@ -111,8 +132,36 @@ class JSXParser extends Parser<JSXNode> {
 				const nodeName =
 					originNode.type === 'JSXElement' ? getName(originNode.openingElement.name) : '#jsx-fragment';
 
-				const token = this.sliceFragment(openTag.range[0], openTag.range[1]);
+				let token = this.sliceFragment(openTag.range[0], openTag.range[1]);
 				const namespace = getNamespace(nodeName, parentNamespace);
+
+				for (const comment of this.state.comments) {
+					if (comment.range[0] < openTag.range[0]) {
+						continue;
+					}
+					if (openTag.range[1] < openTag.range[1]) {
+						continue;
+					}
+
+					const raw = token.raw;
+					const commentToken = this.sliceFragment(comment.range[0], comment.range[1]);
+
+					const startOffset = comment.range[0] - openTag.range[0];
+					const endOffset = startOffset + commentToken.raw.length;
+
+					const maskedCode =
+						// aboves
+						raw.slice(0, startOffset) +
+						// masked comment
+						commentToken.raw.replaceAll(/[^\n]/g, ' ') +
+						// bellows
+						raw.slice(endOffset);
+
+					token = {
+						...token,
+						raw: maskedCode,
+					};
+				}
 
 				const nodes = this.visitElement(
 					{
@@ -177,6 +226,18 @@ class JSXParser extends Parser<JSXNode> {
 		return super.afterFlattenNodes(nodeList, {
 			exposeWhiteSpace: false,
 			exposeInvalidNode: false,
+		});
+	}
+
+	visitComment(token: ChildToken) {
+		return super.visitComment(token).map(node => {
+			if (node.type === 'comment') {
+				return {
+					...node,
+					isBogus: false,
+				};
+			}
+			return node;
 		});
 	}
 

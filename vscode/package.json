@@ -123,8 +123,8 @@
 		"debug": "^4.3.4",
 		"glob": "^10.3.10",
 		"markuplint": "4.0.2",
-		"mocha": "^10.2.0",
-		"semver": "7.5.4",
+		"mocha": "^10.3.0",
+		"semver": "7.6.0",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.11"

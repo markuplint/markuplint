@@ -3,16 +3,16 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src",
+		"rootDir": "./src"
 	},
 	"references": [
 		{
-			"path": "../cli-utils",
+			"path": "../cli-utils"
 		},
 		{
-			"path": "../ml-core",
-		},
+			"path": "../ml-core"
+		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"],
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

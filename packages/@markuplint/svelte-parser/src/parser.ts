@@ -288,7 +288,8 @@ class SvelteParser extends Parser<SvelteNode> {
 		}
 
 		let lastChild: SvelteNode | null = null;
-		for (const [node, type] of nodeList.entries()) {
+		for (const [node, _type] of nodeList.entries()) {
+			let type = _type;
 			let start = node.start;
 			let end = node.end;
 
@@ -308,8 +309,16 @@ class SvelteParser extends Parser<SvelteNode> {
 
 			const tag = this.sliceFragment(start, end);
 
+			if (type === 'else' && node.type === 'ElseBlock' && node.children?.[0]?.type === 'IfBlock') {
+				type = 'elseif';
+			}
+
 			if (node.children && Array.isArray(node.children)) {
 				lastChild = node.children.at(-1) ?? null;
+			}
+
+			if (tag.raw === '') {
+				continue;
 			}
 
 			const expression = this.visitPsBlock(

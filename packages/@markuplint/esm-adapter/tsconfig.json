@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src",
+		"rootDir": "./src"
 	},
 	"include": ["./*.d.ts"],
-	"exclude": ["node_modules", "cjs", "esm", "test"],
+	"exclude": ["node_modules", "cjs", "esm", "test"]
 }
