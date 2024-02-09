@@ -6,8 +6,9 @@ type JSXChild = TSESTree.JSXChild;
 type JSXElement = TSESTree.JSXElement;
 type JSXFragment = TSESTree.JSXFragment;
 type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
-type JSXComment = TSESTree.Comment;
 type Node = TSESTree.Node;
+
+export type JSXComment = TSESTree.Comment;
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute | JSXComment) & {
 	__alreadyNodeized?: true;
