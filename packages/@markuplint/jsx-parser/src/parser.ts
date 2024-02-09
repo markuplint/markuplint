@@ -90,6 +90,15 @@ class JSXParser extends Parser<JSXNode> {
 		originNode.__alreadyNodeized = true;
 
 		switch (originNode.type) {
+			case 'Block':
+			case 'Line': {
+				const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
+				return this.visitComment({
+					...token,
+					depth,
+					parentNode,
+				});
+			}
 			case 'JSXText': {
 				const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
 				const nodes = this.visitText({
@@ -177,6 +186,18 @@ class JSXParser extends Parser<JSXNode> {
 		return super.afterFlattenNodes(nodeList, {
 			exposeWhiteSpace: false,
 			exposeInvalidNode: false,
+		});
+	}
+
+	visitComment(token: ChildToken) {
+		return super.visitComment(token).map(node => {
+			if (node.type === 'comment') {
+				return {
+					...node,
+					isBogus: false,
+				};
+			}
+			return node;
 		});
 	}
 

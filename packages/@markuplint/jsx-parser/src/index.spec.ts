@@ -535,6 +535,17 @@ key
 		expect(parse('<svg><Component/></svg>').nodeList[1].elementType).toBe('authored');
 		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
 	});
+
+	test('Comment', () => {
+		const ast = parse(`// comment 1
+/* comment 2 */`);
+		const map = nodeListToDebugMaps(ast.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:13](0,12)#comment: //␣comment␣1',
+			'[2:1]>[2:16](13,28)#comment: /*␣comment␣2␣*/',
+		]);
+	});
 });
 
 describe('Issues', () => {
