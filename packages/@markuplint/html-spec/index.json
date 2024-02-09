@@ -11634,7 +11634,7 @@
 					},
 					{
 						"name": "tabpanel",
-						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, either by using the aria-controls attribute on the tab to reference the tab panel, or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the WAI-ARIA Authoring Practices for details on implementing a tab set design pattern.",
+						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the WAI-ARIA Authoring Practices for details on implementing a tab set design pattern.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],

@@ -4,40 +4,40 @@
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"resolveJsonModule": true,
+		"resolveJsonModule": true
 	},
 	"references": [
 		{
-			"path": "../@markuplint/cli-utils",
+			"path": "../@markuplint/cli-utils"
 		},
 		{
-			"path": "../@markuplint/file-resolver",
+			"path": "../@markuplint/file-resolver"
 		},
 		{
-			"path": "../@markuplint/ml-ast",
+			"path": "../@markuplint/ml-ast"
 		},
 		{
-			"path": "../@markuplint/ml-config",
+			"path": "../@markuplint/ml-config"
 		},
 		{
-			"path": "../@markuplint/ml-core",
+			"path": "../@markuplint/ml-core"
 		},
 		{
-			"path": "../@markuplint/ml-spec",
+			"path": "../@markuplint/ml-spec"
 		},
 		{
-			"path": "../@markuplint/rules",
+			"path": "../@markuplint/rules"
 		},
 		{
-			"path": "../@markuplint/i18n",
+			"path": "../@markuplint/i18n"
 		},
 		{
-			"path": "../@markuplint/html-spec",
+			"path": "../@markuplint/html-spec"
 		},
 		{
-			"path": "../@markuplint/shared",
-		},
+			"path": "../@markuplint/shared"
+		}
 	],
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"],
+	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }
