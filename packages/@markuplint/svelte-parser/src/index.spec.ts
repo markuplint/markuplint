@@ -683,4 +683,35 @@ describe('Issues', () => {
 			'[1:23]>[1:29](22,28)div: </div>',
 		]);
 	});
+
+	test('#1442', () => {
+		const ast = parse(`<script>
+	const type = 'c';
+</script>
+
+{#if type === 'a'}
+	a
+{:else if type === 'b'}
+	b
+{:else if type === 'c'}
+	c
+{:else if type === 'd'}
+	d
+{/if}`);
+
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			"[1:1]>[3:10](0,37)#ps:Script: <script>⏎→const␣type␣=␣'c';⏎</script>",
+			'[3:10]>[5:1](37,39)#text: ⏎⏎',
+			"[5:1]>[5:19](39,57)#ps:if: {#if␣type␣===␣'a'}",
+			'[5:19]>[7:1](57,61)#text: ⏎→a⏎',
+			"[7:1]>[7:24](61,84)#ps:elseif: {:else␣if␣type␣===␣'b'}",
+			'[7:24]>[9:1](84,88)#text: ⏎→b⏎',
+			"[9:1]>[9:24](88,111)#ps:elseif: {:else␣if␣type␣===␣'c'}",
+			'[9:24]>[11:1](111,115)#text: ⏎→c⏎',
+			"[11:1]>[11:24](115,138)#ps:elseif: {:else␣if␣type␣===␣'d'}",
+			'[11:24]>[13:1](138,142)#text: ⏎→d⏎',
+			'[13:1]>[13:6](142,147)#ps:/if: {/if}',
+		]);
+	});
 });
