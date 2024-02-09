@@ -2,16 +2,11 @@ import type { TSESTree } from '@typescript-eslint/types';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type JSXAttribute = TSESTree.JSXAttribute;
-export type JSXChild = TSESTree.JSXChild;
-export type JSXElement = TSESTree.JSXElement;
-export type JSXFragment = TSESTree.JSXFragment;
-export type JSXIdentifier = TSESTree.JSXIdentifier;
-export type JSXNamespacedName = TSESTree.JSXNamespacedName;
-export type JSXSpreadAttribute = TSESTree.JSXSpreadAttribute;
-export type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
-export type JSXExpressionContainer = TSESTree.JSXExpressionContainer;
-export type Node = TSESTree.Node;
+type JSXChild = TSESTree.JSXChild;
+type JSXElement = TSESTree.JSXElement;
+type JSXFragment = TSESTree.JSXFragment;
+type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
+type Node = TSESTree.Node;
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
 	__alreadyNodeized?: true;
