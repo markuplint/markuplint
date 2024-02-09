@@ -1778,10 +1778,10 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@markuplint/config-presets@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-4.0.0.tgz#3dffaa26e44299062a1be8c3afde4f85c234ee1c"
-  integrity sha512-iFSdRYAqAWhfsfbw9X8JuoKAQpZN10UR2M6yzkW6LI3q0FZcoUGoxBf6xYmGeHNtiP9dyzJ3pa5Vj4dzsmWykQ==
+"@markuplint/config-presets@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-4.0.1.tgz#e279025cdffaf22159bd1999721e1e43357d7cc7"
+  integrity sha512-jpOFqPSpNJxKrk5WluT+awavpXiHbJezzRGZB/NYYBOHJ871xWJPLXlTRtJqnrfHjPjOtKwfGlCa/A4FwCT4/A==
 
 "@markuplint/html-parser@4.0.0":
   version "4.0.0"
@@ -1793,10 +1793,10 @@
     parse5 "7.1.2"
     type-fest "^4.10.2"
 
-"@markuplint/html-spec@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.0.0.tgz#3c043eafb044f66f36186730122a194772eac43c"
-  integrity sha512-opnLO1GEksQYEXuWgISWTUlzngXnIsAgydq1W56uioFp8T0gofEeI12k0NvH2/z0XrwoU1UQwhAcoPmjrj7vqQ==
+"@markuplint/html-spec@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.0.1.tgz#cec9ec3c11a814e55f2c6daf251c127aefcba2de"
+  integrity sha512-pnMqUEzTiAAavC9QEnyLQJBbw4R/YLdrQWNyfyXVzeOsuKT0e1M+XV0/8NBegHuIoBmes+8BBQ7acJW977elEg==
   dependencies:
     "@markuplint/ml-spec" "4.0.0"
 
@@ -1824,14 +1824,14 @@
     mustache "^4.2.0"
     type-fest "^4.10.2"
 
-"@markuplint/ml-core@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.0.0.tgz#84595e21b4d8f6defa5a3b355385da1554cf943c"
-  integrity sha512-23smJd3K3UnySfe86STnUciTBk7lnortfnZ3XzMDyC0belgoOpPl8oiVDlh7FlPF9SkJkTLmGXXwH2tH/94cOg==
+"@markuplint/ml-core@4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.0.2.tgz#11eca850926e8d5896866a5bc132f7720739312d"
+  integrity sha512-NNQQ7mdOeH0KyZ6nlf/lDtMgVp9jXda1KHCQYU28XbrrThtGRBk7Lr07jxXl3X6aQicWWH1SDDe4HoJ/El/Vdg==
   dependencies:
-    "@markuplint/config-presets" "4.0.0"
+    "@markuplint/config-presets" "4.0.1"
     "@markuplint/html-parser" "4.0.0"
-    "@markuplint/html-spec" "4.0.0"
+    "@markuplint/html-spec" "4.0.1"
     "@markuplint/i18n" "4.0.0"
     "@markuplint/ml-ast" "4.0.0"
     "@markuplint/ml-config" "4.0.0"
@@ -1868,13 +1868,13 @@
     type-fest "^4.10.2"
     uuid "^9.0.1"
 
-"@markuplint/rules@4":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.0.0.tgz#754ece149384ee997201c424c34cb7d5554c300e"
-  integrity sha512-6qqlmSjbqxSV4EcVP86yHyfh9IRv1UEEuH8vyo4v3U8+ZODzqQU+lEZTuWRZ1ofg067oIliVjWHvbtV/K/m/Vg==
+"@markuplint/rules@4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.0.2.tgz#429ed5bf9b94de30ee574c7c55ae7be1be71e09f"
+  integrity sha512-KFIVZOrEC0IPi6vYzQbVturUukraRXTipkEudRXjr9jhJEIBgyj5Z9d/70UzYU8+MvDzP/zQSlPaEy9scHuh4Q==
   dependencies:
-    "@markuplint/html-spec" "4.0.0"
-    "@markuplint/ml-core" "4.0.0"
+    "@markuplint/html-spec" "4.0.1"
+    "@markuplint/ml-core" "4.0.2"
     "@markuplint/ml-spec" "4.0.0"
     "@markuplint/selector" "4.0.0"
     "@markuplint/shared" "4.0.0"
@@ -8791,10 +8791,10 @@ stylehacks@^5.1.1:
     browserslist "^4.21.4"
     postcss-selector-parser "^6.0.4"
 
-stylelint-config-recess-order@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-4.4.0.tgz#1c57dbad7c62647fb4699157100b97e80cc97b00"
-  integrity sha512-Q99kvZyIM/aoPEV4dRDkzD3fZLzH0LXi+pawCf1r700uUeF/PHQ5PZXjwFUuGrWhOzd1N+cuVm+OUGsY2fRN5A==
+stylelint-config-recess-order@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-4.6.0.tgz#b4c851c490b4e626b14712686b1eab1e4b17e253"
+  integrity sha512-V76fhv3YtcNXh/hyAuAdSzi5FmcrG54Mp2AThJ3D/PTMTSYzUPd7GIhP6z9mTqnRhmkk6YTfcu/JWB8h+Yrcaw==
   dependencies:
     stylelint-order "6.x"
 
