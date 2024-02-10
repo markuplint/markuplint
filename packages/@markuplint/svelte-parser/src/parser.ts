@@ -241,8 +241,16 @@ class SvelteParser extends Parser<SvelteNode> {
 		};
 	}
 
+	/**
+	 * > A lowercase tag, like `<div>`, denotes a regular HTML element.
+	 * A capitalised tag, such as `<Widget>` or `<Namespace.Widget>`, indicates a component.
+	 *
+	 * @see https://svelte.io/docs/basic-markup#tags
+	 * @param nodeName
+	 * @returns
+	 */
 	detectElementType(nodeName: string) {
-		return super.detectElementType(nodeName, /[.A-Z]/);
+		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 
 	visitExpression(

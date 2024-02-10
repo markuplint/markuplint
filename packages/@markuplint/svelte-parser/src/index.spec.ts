@@ -714,4 +714,10 @@ describe('Issues', () => {
 			'[13:1]>[13:6](142,147)#ps:/if: {/if}',
 		]);
 	});
+
+	test('#1451', () => {
+		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
+		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
+	});
 });
