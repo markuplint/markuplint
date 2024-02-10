@@ -602,4 +602,10 @@ h3 {
 			'[15:9]>[16:1](374,375)#text: ⏎',
 		]);
 	});
+
+	test('#1451', () => {
+		expect(parse('<template><div></div></template>').nodeList[0].elementType).toBe('html');
+		expect(parse('<template><x-div></x-div></template>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<template><Div></Div></template>').nodeList[0].elementType).toBe('authored');
+	});
 });
