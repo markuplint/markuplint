@@ -143,6 +143,7 @@ test('none', () => {
 		},
 		specs: {
 			'\\.[jt]sx?$': '@markuplint/react-spec',
+			'\\.svelte$': '@markuplint/svelte-spec',
 			'\\.vue$': '@markuplint/vue-spec',
 		},
 		rules: {
@@ -443,6 +444,9 @@ test('recommended', () => {
 		parser: {
 			'\\.astro$': '@markuplint/astro-parser',
 			'\\.svelte$': '@markuplint/svelte-parser',
+		},
+		specs: {
+			'\\.svelte$': '@markuplint/svelte-spec',
 		},
 	});
 });

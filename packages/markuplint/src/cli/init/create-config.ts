@@ -71,6 +71,15 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 				},
 			};
 		}
+		if (lang === 'svelte') {
+			config = {
+				...config,
+				specs: {
+					...config.specs,
+					'\\.svelte$': '@markuplint/svelte-spec',
+				},
+			};
+		}
 	}
 	if (Object.keys(parser).length > 0) {
 		config.parser = parser;
