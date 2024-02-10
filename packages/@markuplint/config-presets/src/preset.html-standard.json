@@ -10,12 +10,6 @@
 		"attr-duplication": true,
 
 		/**
-		 * Use **character reference**
-		 *
-		 */
-		"character-reference": true,
-
-		/**
 		 * No use deprecated attr
 		 *
 		 * You should not use deprecated attributes from the viewpoint of compatibility.

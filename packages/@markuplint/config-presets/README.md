@@ -42,7 +42,6 @@ No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Disallow `autofocus` attr to except in the dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
-Use **character reference**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use deprecated attr|You should not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use deprecated element|You should not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
@@ -60,6 +59,7 @@ Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid
 Require loading `<iframe>` lazily|Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Allow `property` attr with `<meta>`|Be able to use **Open-Graph** etc.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|
 No hard coding **ID**|The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that.|❌|✅|✅|❌|✅|❌|❌|❌|❌|❌|❌|
+Use [**character reference**](https://markuplint.dev/docs/rules/character-reference)| |❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|
 No omit **end-tag**|Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.|❌|❌|❌|✅|❌|❌|❌|❌|❌|❌|❌|
 
 ## Install
