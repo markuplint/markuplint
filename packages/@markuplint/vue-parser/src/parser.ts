@@ -256,15 +256,30 @@ class VueParser extends Parser<ASTNode, State> {
 		return attr;
 	}
 
+	/**
+	 * > In SFCs, it's recommended to use `PascalCase` tag names
+	 * > for child components to differentiate from native HTML elements.
+	 * > Although native HTML tag names are case-insensitive,
+	 * > Vue SFC is a compiled format so we are able to use case-sensitive tag names in it.
+	 * > We are also able to use `/>` to close a tag.
+	 *
+	 * @see https://vuejs.org/guide/essentials/component-basics#using-a-component
+	 * @see https://vuejs.org/api/built-in-components.html
+	 * @see https://vuejs.org/api/built-in-special-elements.html#built-in-special-elements
+	 * @param nodeName
+	 * @returns
+	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, [
-			'component',
-			'slot',
+			// Built-in components
 			'Transition',
 			'TransitionGroup',
 			'KeepAlive',
 			'Teleport',
 			'Suspense',
+			// Special elements
+			'component',
+			'slot',
 			// Backward compatibility
 			/^[A-Z]/,
 		]);

@@ -618,4 +618,10 @@ const C = () => {
 };`);
 		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
 	});
+
+	test('#1451', () => {
+		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
+		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
+	});
 });
