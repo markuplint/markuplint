@@ -33,6 +33,12 @@
 		"doctype": true,
 
 		/**
+		 * Must not skip heading levels
+		 *
+		 */
+		"heading-levels": true,
+
+		/**
 		 * Must not duplicate **ID**
 		 *
 		 */
