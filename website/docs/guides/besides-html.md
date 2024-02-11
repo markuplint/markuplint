@@ -22,21 +22,22 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 ### Supported syntaxes
 
-| Template or syntax                                                                         | Parser                          | Spec                      |
-| ------------------------------------------------------------------------------------------ | ------------------------------- | ------------------------- |
-| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`        | `@markuplint/react-spec`  |
-| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`        | `@markuplint/vue-spec`    |
-| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`     | `@markuplint/svelte-spec` |
-| [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit` | -                         |
-| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`      | -                         |
-| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`        | -                         |
-| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`        | -                         |
-| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`     | -                         |
-| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`        | -                         |
-| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`        | -                         |
-| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser`   | -                         |
-| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser`   | -                         |
-| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`     | -                         |
+| Template or syntax                                                                         | Parser                          | Spec                             |
+| ------------------------------------------------------------------------------------------ | ------------------------------- | -------------------------------- |
+| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`        | `@markuplint/react-spec`         |
+| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`        | `@markuplint/vue-spec`           |
+| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`     | `@markuplint/svelte-spec`        |
+| [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit` | -                                |
+| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`      | -                                |
+| [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`     | `@markuplint/alpine-parser/spec` |
+| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`        | -                                |
+| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`        | -                                |
+| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`     | -                                |
+| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`        | -                                |
+| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`        | -                                |
+| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser`   | -                                |
+| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser`   | -                                |
+| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`     | -                                |
 
 :::note
 There is `@markuplint/html-parser` package but the core package includes it.
