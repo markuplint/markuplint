@@ -35625,6 +35625,9 @@
 				"onpagehide": {
 					"type": "FunctionBody"
 				},
+				"onpagereveal": {
+					"type": "FunctionBody"
+				},
 				"onpageshow": {
 					"type": "FunctionBody"
 				},
