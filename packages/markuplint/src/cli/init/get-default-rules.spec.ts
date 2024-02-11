@@ -49,6 +49,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'heading-levels': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'id-duplication': {
 			category: 'validation',
 			defaultValue: true,

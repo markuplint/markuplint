@@ -17,7 +17,7 @@ Currently, this rule doesn't evaluate whether omit possible the end tag.
 
 ```html
 <div>
-	<span>There is not an end tag.
+  <span>There is not an end tag.
 </div>
 ```
 
