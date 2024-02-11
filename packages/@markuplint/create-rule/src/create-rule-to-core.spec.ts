@@ -55,5 +55,5 @@ test('create', async () => {
 	});
 	const testDir = await getTestDir(sandboxDirName);
 	const fileList = await readdir(testDir, { encoding: 'utf8' });
-	expect(fileList.sort()).toEqual(['README.ja.md', 'README.md', 'index.ts', 'schema.json']);
+	expect(fileList.sort()).toEqual(['README.ja.md', 'README.md', 'index.spec.ts', 'index.ts', 'schema.json']);
 });
