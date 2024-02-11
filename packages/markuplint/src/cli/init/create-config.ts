@@ -8,6 +8,7 @@ const extRExp: Record<Langs, `\\.${string}$`> = {
 	svelte: '\\.svelte$',
 	sveltekit: '\\.html$',
 	astro: '\\.astro$',
+	alpine: '\\.html$',
 	pug: '\\.pug$',
 	php: '\\.php$',
 	smarty: '\\.tpl$',
@@ -24,6 +25,7 @@ export const langs: Record<Langs, string> = {
 	svelte: 'Svelte',
 	sveltekit: 'SvelteKit',
 	astro: 'Astro',
+	alpine: 'Alpine.js',
 	pug: 'Pug',
 	php: 'PHP',
 	smarty: 'Smarty',
@@ -77,6 +79,15 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 				specs: {
 					...config.specs,
 					'\\.svelte$': '@markuplint/svelte-spec',
+				},
+			};
+		}
+		if (lang === 'alpine') {
+			config = {
+				...config,
+				specs: {
+					...config.specs,
+					'\\.html': '@markuplint/alpine-parser/spec',
 				},
 			};
 		}
