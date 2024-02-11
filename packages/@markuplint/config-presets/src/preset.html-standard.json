@@ -123,6 +123,32 @@
 				},
 				"require-accessible-name": false
 			}
+		},
+		{
+			/**
+			 * No nested same `<details>` name group
+			 */
+			"regexSelector": {
+				"nodeName": "details",
+				"attrName": "name",
+				"attrValue": "^(?<value>.+)$",
+				"combination": {
+					"combinator": " ",
+					"nodeName": "details"
+				}
+			},
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"disallowAttrs": {
+							"name": {
+								"pattern": "{{ value }}"
+							}
+						}
+					},
+					"reason": "A document must not contain a details element that is a descendant of another details element in the same details name group."
+				}
+			}
 		}
 	]
 }
