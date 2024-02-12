@@ -126,6 +126,21 @@
 		},
 		{
 			/**
+			 * Require `title` attr in `<input pattern>`
+			 *
+			 * When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element
+			 */
+			"selector": ":where(input[pattern])",
+			"rules": {
+				"required-attr": {
+					"value": [{ "name": "title" }]
+				}
+			}
+		},
+		{
+			/**
 			 * No nested same `<details>` name group
 			 */
 			"regexSelector": {
