@@ -643,17 +643,21 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns true if other is an inclusive descendant of node; otherwise false.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
 	contains(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		other: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "contains" method');
+		other: MLNode<T, O> | null,
+	) {
+		for (const childNode of this.childNodes) {
+			if (other?.uuid === childNode.uuid || childNode.contains(other)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
