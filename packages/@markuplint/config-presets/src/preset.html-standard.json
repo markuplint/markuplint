@@ -10,12 +10,6 @@
 		"attr-duplication": true,
 
 		/**
-		 * Use **character reference**
-		 *
-		 */
-		"character-reference": true,
-
-		/**
 		 * No use deprecated attr
 		 *
 		 * You should not use deprecated attributes from the viewpoint of compatibility.
@@ -39,6 +33,12 @@
 		"doctype": true,
 
 		/**
+		 * Must not skip heading levels
+		 *
+		 */
+		"heading-levels": true,
+
+		/**
 		 * Must not duplicate **ID**
 		 *
 		 */
@@ -49,6 +49,16 @@
 		 *
 		 */
 		"ineffective-attr": true,
+
+		/**
+		 * No duplicate names in `<dl>`
+		 *
+		 * Within a single dl element, there should not be more than one dt element for each name.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name
+		 *
+		 */
+		"no-duplicate-dt": true,
 
 		/**
 		 * No refer to no existent **ID**
@@ -122,6 +132,47 @@
 					"reason": "When a table element is the only content in a figure element other than the figcaption, the caption element should be omitted in favor of the figcaption. (https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)"
 				},
 				"require-accessible-name": false
+			}
+		},
+		{
+			/**
+			 * Require `title` attr in `<input pattern>`
+			 *
+			 * When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element
+			 */
+			"selector": ":where(input[pattern])",
+			"rules": {
+				"required-attr": {
+					"value": [{ "name": "title" }]
+				}
+			}
+		},
+		{
+			/**
+			 * No nested same `<details>` name group
+			 */
+			"regexSelector": {
+				"nodeName": "details",
+				"attrName": "name",
+				"attrValue": "^(?<value>.+)$",
+				"combination": {
+					"combinator": " ",
+					"nodeName": "details"
+				}
+			},
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"disallowAttrs": {
+							"name": {
+								"pattern": "{{ value }}"
+							}
+						}
+					},
+					"reason": "A document must not contain a details element that is a descendant of another details element in the same details name group."
+				}
 			}
 		}
 	]

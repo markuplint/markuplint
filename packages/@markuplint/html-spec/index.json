@@ -35625,6 +35625,9 @@
 				"onpagehide": {
 					"type": "FunctionBody"
 				},
+				"onpagereveal": {
+					"type": "FunctionBody"
+				},
 				"onpageshow": {
 					"type": "FunctionBody"
 				},
@@ -37079,8 +37082,7 @@
 			"attributes": {
 				"profile": {
 					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				}
 			}
 		},
@@ -37247,8 +37249,7 @@
 			"attributes": {
 				"manifest": {
 					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
@@ -37325,8 +37326,7 @@
 				},
 				"credentialless": {
 					"description": "Set to true to make the <iframe> credentialless, meaning that its content will be loaded in a new, ephemeral context. It doesn't have access to the network, cookies, and storage data associated with its origin. It uses a new context local to the top-level document lifetime. In return, the Cross-Origin-Embedder-Policy (COEP) embedding rules can be lifted, so documents with COEP set can embed third-party documents that do not. See IFrame credentialless for more details.",
-					"experimental": true,
-					"nonStandard": true
+					"experimental": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
@@ -38728,6 +38728,7 @@
 									"preload",
 									"prerender",
 									"prev",
+									"privacy-policy",
 									"search",
 									"stylesheet",
 									"terms-of-service"
@@ -39393,7 +39394,8 @@
 					"requiredEither": ["data"]
 				},
 				"usemap": {
-					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
+					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
+					"deprecated": true
 				},
 				"width": {
 					"description": "The width of the display resource, in CSS pixels. — (Absolute values only. NO percentages)"

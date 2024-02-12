@@ -285,14 +285,24 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The next sibling of an object is its first following sibling or null if it has no following sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-nextsibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-next-sibling
 	 */
-	get nextSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "nextSibling" property');
+	get nextSibling(): MLChildNode<T, O> | null {
+		let nextNode = this.nextNode;
+		while (nextNode) {
+			if (
+				isChildNode(nextNode) &&
+				((this.parentNode === null && nextNode.parentNode === null) ||
+					this.parentNode?.uuid === nextNode.parentNode?.uuid)
+			) {
+				return nextNode;
+			}
+			nextNode = nextNode.nextNode;
+		}
+		return null;
 	}
 
 	/**
@@ -470,14 +480,24 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The previous sibling of an object is its first preceding sibling or null if it has no preceding sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-previous-sibling
 	 */
-	get previousSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "previousSibling" property');
+	get previousSibling(): MLChildNode<T, O> | null {
+		let prevNode = this.prevNode;
+		while (prevNode) {
+			if (
+				isChildNode(prevNode) &&
+				((this.parentNode === null && prevNode.parentNode === null) ||
+					this.parentNode?.uuid === prevNode.parentNode?.uuid)
+			) {
+				return prevNode;
+			}
+			prevNode = prevNode.prevNode;
+		}
+		return null;
 	}
 
 	/**
@@ -623,17 +643,21 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns true if other is an inclusive descendant of node; otherwise false.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
 	contains(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		other: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "contains" method');
+		other: MLNode<T, O> | null,
+	) {
+		for (const childNode of this.childNodes) {
+			if (other?.uuid === childNode.uuid || childNode.contains(other)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -648,6 +672,38 @@ export abstract class MLNode<
 		event: Event,
 	): boolean {
 		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
+	}
+
+	/**
+	 * Finds subsequent nodes that match the given selector.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 * @param selector - Optional selector to filter the nodes.
+	 * @returns An array of matched child nodes.
+	 */
+	findSubsequentNodes(selector?: string): MLChildNode<T, O>[] {
+		const matched: MLChildNode<T, O>[] = [];
+		for (const node of this.ownerMLDocument.nodeList) {
+			if (node.endOffset <= this.endOffset) {
+				continue;
+			}
+
+			if (this.contains(node)) {
+				continue;
+			}
+
+			if (selector) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selector)) {
+					matched.push(node);
+				}
+				continue;
+			}
+
+			if (isChildNode(node)) {
+				matched.push(node);
+			}
+		}
+		return matched;
 	}
 
 	/**

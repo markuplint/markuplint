@@ -1,5 +1,5 @@
 import type { JSXComment, JSXNode } from './jsx.js';
-import type { ElementType, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
 import { getNamespace } from '@markuplint/html-parser';
@@ -289,14 +289,17 @@ class JSXParser extends Parser<JSXNode, State> {
 		});
 	}
 
-	detectElementType(nodeName: string): ElementType {
-		return super.detectElementType(
-			nodeName,
-			/**
-			 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
-			 */
-			/^[A-Z]|\./,
-		);
+	/**
+	 * > We recommend naming components with a capital letter.
+	 * > If you do have a component that starts with a lowercase letter,
+	 * > assign it to a capitalized variable before using it in JSX.
+	 *
+	 * @see https://reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized
+	 * @param nodeName
+	 * @returns
+	 */
+	detectElementType(nodeName: string) {
+		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 }
 

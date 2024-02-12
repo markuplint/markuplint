@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "No duplicate names in `<dl>`",
+			"description:ja": "`<dl>`内の名前の重複禁止"
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

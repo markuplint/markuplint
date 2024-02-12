@@ -11,13 +11,17 @@ import DeprecatedElement from './deprecated-element/index.js';
 import DisallowedElement from './disallowed-element/index.js';
 import Doctype from './doctype/index.js';
 import EndTag from './end-tag/index.js';
+import HeadingLevels from './heading-levels/index.js';
 import IdDuplication from './id-duplication/index.js';
 import IneffectiveAttr from './ineffective-attr/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
+import NeighborPopovers from './neighbor-popovers/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
+import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
+import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
@@ -44,13 +48,17 @@ const rules = {
 	'disallowed-element': DisallowedElement,
 	doctype: Doctype,
 	'end-tag': EndTag,
+	'heading-levels': HeadingLevels,
 	'id-duplication': IdDuplication,
 	'ineffective-attr': IneffectiveAttr,
 	'invalid-attr': InvalidAttr,
 	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
+	'neighbor-popovers': NeighborPopovers,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
+	'no-duplicate-dt': NoDuplicateDt,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,

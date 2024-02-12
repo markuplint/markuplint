@@ -263,6 +263,18 @@ class AstroParser extends Parser<Node, State> {
 		};
 	}
 
+	/**
+	 * > Variable names must be capitalized. For example, use `Element`, not `element`.
+	 * > Otherwise, Astro will try to render your variable name as a literal HTML tag.
+	 *
+	 * @see https://docs.astro.build/en/basics/astro-syntax/#dynamic-html
+	 * @param nodeName
+	 * @param defaultPattern
+	 */
+	detectElementType(nodeName: string) {
+		return super.detectElementType(nodeName, /^[A-Z]/);
+	}
+
 	#updateScopeNS(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Node,

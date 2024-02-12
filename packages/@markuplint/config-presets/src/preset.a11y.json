@@ -49,6 +49,17 @@
 		"landmark-roles": true,
 
 		/**
+		 * **Popover** trigger and target must be adjacent
+		 *
+		 */
+		"neighbor-popovers": true,
+
+		/**
+		 * No consecutive `<br>`
+		 */
+		"no-consecutive-br": true,
+
+		/**
 		 * No refer to no existent **ID**
 		 */
 		"no-refer-to-non-existent-id": true,

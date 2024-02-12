@@ -3401,11 +3401,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
-	matches(selector: string): boolean {
+	matches(
+		selector: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: MLParentNode<T, O>,
+	): boolean {
 		return (
 			createSelector(selector, this.ownerMLDocument.specs).match(
 				// Prioritize the pretender
 				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+				scope,
 			) !== false
 		);
 	}

@@ -81,33 +81,6 @@ describe('basic test', () => {
 		const warns = violations.filter(v => v.severity === 'warning');
 
 		expect(errors.map(_ => _.message)).toStrictEqual([
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
-			'Illegal characters must escape in character reference',
 			'The "color" attribute is deprecated',
 			'The "align" attribute is deprecated',
 			'The "font" element is obsolete',
@@ -152,7 +125,7 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(75);
+		expect(violations.length).toEqual(76);
 	});
 
 	it('is ignoring 008.html', async () => {

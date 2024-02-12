@@ -638,4 +638,10 @@ describe('Issue', () => {
 			'[1:23]>[1:29](22,28)div: </div>',
 		]);
 	});
+
+	test('#1451', () => {
+		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
+		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
+	});
 });
