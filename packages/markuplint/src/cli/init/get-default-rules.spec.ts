@@ -77,6 +77,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'no-consecutive-br': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'no-default-value': {
 			category: 'style',
 			defaultValue: false,

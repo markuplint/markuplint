@@ -49,6 +49,11 @@
 		"landmark-roles": true,
 
 		/**
+		 * No consecutive `<br>`
+		 */
+		"no-consecutive-br": true,
+
+		/**
 		 * No refer to no existent **ID**
 		 */
 		"no-refer-to-non-existent-id": true,

@@ -285,14 +285,24 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The next sibling of an object is its first following sibling or null if it has no following sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-nextsibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-next-sibling
 	 */
-	get nextSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "nextSibling" property');
+	get nextSibling(): MLChildNode<T, O> | null {
+		let nextNode = this.nextNode;
+		while (nextNode) {
+			if (
+				isChildNode(nextNode) &&
+				((this.parentNode === null && nextNode.parentNode === null) ||
+					this.parentNode?.uuid === nextNode.parentNode?.uuid)
+			) {
+				return nextNode;
+			}
+			nextNode = nextNode.nextNode;
+		}
+		return null;
 	}
 
 	/**
@@ -470,14 +480,24 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The previous sibling of an object is its first preceding sibling or null if it has no preceding sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-previous-sibling
 	 */
-	get previousSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "previousSibling" property');
+	get previousSibling(): MLChildNode<T, O> | null {
+		let prevNode = this.prevNode;
+		while (prevNode) {
+			if (
+				isChildNode(prevNode) &&
+				((this.parentNode === null && prevNode.parentNode === null) ||
+					this.parentNode?.uuid === prevNode.parentNode?.uuid)
+			) {
+				return prevNode;
+			}
+			prevNode = prevNode.prevNode;
+		}
+		return null;
 	}
 
 	/**
