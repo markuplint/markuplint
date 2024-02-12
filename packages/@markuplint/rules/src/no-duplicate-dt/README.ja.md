@@ -1,5 +1,5 @@
 ---
-description: `<dl>`内の名前の重複禁止
+description: '`<dl>`内の名前の重複禁止'
 ---
 
 # `no-duplicate-dt`
@@ -11,13 +11,31 @@ description: `<dl>`内の名前の重複禁止
 ❌ 間違ったコード例
 
 ```html
-<todo>Write incorrect codes</todo>
+<dl>
+  <dt>名前1</dt>
+  <dd>内容1</dd>
+  <dt>名前1</dt>
+  <dd>内容2</dd>
+  <div>
+    <dt>名前1</dt>
+    <dd>内容3</dd>
+  </div>
+</dl>
 ```
 
 ✅ 正しいコード例
 
 ```html
-<todo>Write correct codes</todo>
+<dl>
+  <dt>名前1</dt>
+  <dd>内容1</dd>
+  <dt>名前2</dt>
+  <dd>内容2</dd>
+  <div>
+    <dt>名前3</dt>
+    <dd>内容3</dd>
+  </div>
+</dl>
 ```
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
