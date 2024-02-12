@@ -39397,7 +39397,8 @@
 					"requiredEither": ["data"]
 				},
 				"usemap": {
-					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
+					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
+					"deprecated": true
 				},
 				"width": {
 					"description": "The width of the display resource, in CSS pixels. — (Absolute values only. NO percentages)"
