@@ -675,6 +675,38 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * Finds subsequent nodes that match the given selector.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 * @param selector - Optional selector to filter the nodes.
+	 * @returns An array of matched child nodes.
+	 */
+	findSubsequentNodes(selector?: string): MLChildNode<T, O>[] {
+		const matched: MLChildNode<T, O>[] = [];
+		for (const node of this.ownerMLDocument.nodeList) {
+			if (node.endOffset <= this.endOffset) {
+				continue;
+			}
+
+			if (this.contains(node)) {
+				continue;
+			}
+
+			if (selector) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selector)) {
+					matched.push(node);
+				}
+				continue;
+			}
+
+			if (isChildNode(node)) {
+				matched.push(node);
+			}
+		}
+		return matched;
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported
