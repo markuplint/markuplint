@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "4.0.1",
+	"version": "4.1.0",
 	"description": "Extended W3C Selectors matcher",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
