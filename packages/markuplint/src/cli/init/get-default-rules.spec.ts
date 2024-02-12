@@ -81,6 +81,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'no-duplicate-dt': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'no-empty-palpable-content': {
 			category: 'validation',
 			defaultValue: false,

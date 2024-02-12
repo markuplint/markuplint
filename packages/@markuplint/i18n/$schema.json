@@ -105,6 +105,7 @@
 				"mime type": { "type": "string" },
 				"minute": { "type": "string" },
 				"month": { "type": "string" },
+				"name": { "type": "string" },
 				"newline": { "type": "string" },
 				"node": { "type": "string" },
 				"non-negative integer": { "type": "string" },
