@@ -854,6 +854,7 @@
     type-fest "^4.10.2"
 
 "@markuplint/ml-spec@4.0.0-rc.1", "latest-markuplint-ml-spec@npm:@markuplint/ml-spec@next":
+  name latest-markuplint-ml-spec
   version "4.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.0.0-rc.1.tgz#4507126be07edf218b3aafb6fdcb97d7dbf73559"
   integrity sha512-5YJjF+9xq1R9i46w8hHgHO7MbZYi/YXi95OVgUnkL/EJ5hl5B7sIzx7HwfqYvZce63TeTZz//GQwyxO8Njekhg==
@@ -4324,6 +4325,11 @@ eslint-visitor-keys@^3.0.0, eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz#0cd72fe8550e3c2eae156a96a4dddcd1c8ac5800"
   integrity sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==
 
+eslint-visitor-keys@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-4.0.0.tgz#e3adc021aa038a2a8e0b2f8b0ce8f66b9483b1fb"
+  integrity sha512-OtIRv/2GyiF6o/d8K7MYKKbXrOUBIK6SfkIRM4Z0dY3w+LiQ0vy3F57m0Z71bjbyeiWFiHJ8brqnmE6H6/jEuw==
+
 eslint@^8.56.0:
   version "8.56.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.56.0.tgz#4957ce8da409dc0809f99ab07a1b94832ab74b15"
@@ -4369,13 +4375,13 @@ eslint@^8.56.0:
     text-table "^0.2.0"
 
 espree@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/espree/-/espree-10.0.0.tgz#ce1411bb31a514797dbd29ee360e4f3404643096"
-  integrity sha512-gdlKrfXQWv/3vubKqeQIiBUoWeknNQVEDpKD7OD3bC53g5EKISTuhcIoA1H1e+zqIuosdKrKuTDMmj8eFfhOnA==
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/espree/-/espree-10.0.1.tgz#600e60404157412751ba4a6f3a2ee1a42433139f"
+  integrity sha512-MWkrWZbJsL2UwnjxTX3gG8FneachS/Mwg7tdGXce011sJd5b0JG54vat5KHnfSBODZ3Wvzd2WnjxyzsRoVv+ww==
   dependencies:
     acorn "^8.11.3"
     acorn-jsx "^5.3.2"
-    eslint-visitor-keys "^3.4.1"
+    eslint-visitor-keys "^4.0.0"
 
 espree@^9.0.0, espree@^9.3.1, espree@^9.6.0, espree@^9.6.1:
   version "9.6.1"
