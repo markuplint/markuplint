@@ -1,5 +1,9 @@
 # Change Log
 
+## 4.1.0
+
+- Depends: `markuplint@4.1.0`
+
 ## 4.0.3
 
 - Depends: `markuplint@4.0.3`
