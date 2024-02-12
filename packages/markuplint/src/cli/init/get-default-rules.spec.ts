@@ -73,6 +73,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'neighbor-popovers': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 		'no-boolean-attr-value': {
 			category: 'style',
 			defaultValue: false,

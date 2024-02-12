@@ -643,17 +643,21 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns true if other is an inclusive descendant of node; otherwise false.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
 	contains(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		other: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "contains" method');
+		other: MLNode<T, O> | null,
+	) {
+		for (const childNode of this.childNodes) {
+			if (other?.uuid === childNode.uuid || childNode.contains(other)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -668,6 +672,38 @@ export abstract class MLNode<
 		event: Event,
 	): boolean {
 		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
+	}
+
+	/**
+	 * Finds subsequent nodes that match the given selector.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 * @param selector - Optional selector to filter the nodes.
+	 * @returns An array of matched child nodes.
+	 */
+	findSubsequentNodes(selector?: string): MLChildNode<T, O>[] {
+		const matched: MLChildNode<T, O>[] = [];
+		for (const node of this.ownerMLDocument.nodeList) {
+			if (node.endOffset <= this.endOffset) {
+				continue;
+			}
+
+			if (this.contains(node)) {
+				continue;
+			}
+
+			if (selector) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selector)) {
+					matched.push(node);
+				}
+				continue;
+			}
+
+			if (isChildNode(node)) {
+				matched.push(node);
+			}
+		}
+		return matched;
 	}
 
 	/**
