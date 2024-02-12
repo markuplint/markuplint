@@ -1,0 +1,32 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "Warns against the use of consecutive `<br>` tags",
+			"description:ja": "連続する`<br>`の使用に対して警告します"
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "warning"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

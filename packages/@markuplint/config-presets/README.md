@@ -29,6 +29,7 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
@@ -55,6 +56,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+[Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No nested same `<details>` name group| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [Require `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Require `defer` attr|Should load and parse scripts lazily to avoid render-blocking.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|

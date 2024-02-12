@@ -18,6 +18,7 @@ import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
+import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
@@ -53,6 +54,7 @@ const rules = {
 	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
