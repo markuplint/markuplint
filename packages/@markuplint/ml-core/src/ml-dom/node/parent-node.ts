@@ -117,7 +117,7 @@ export abstract class MLParentNode<
 
 		const elements = toNodeList(
 			this._descendantsToArray<MLElement<T, O>>(node => {
-				if (node.is(node.ELEMENT_NODE) && node.matches(selectors)) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selectors, this)) {
 					return node;
 				}
 			}),
