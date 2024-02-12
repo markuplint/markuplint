@@ -51,6 +51,16 @@
 		"ineffective-attr": true,
 
 		/**
+		 * No duplicate names in `<dl>`
+		 *
+		 * Within a single dl element, there should not be more than one dt element for each name.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name
+		 *
+		 */
+		"no-duplicate-dt": true,
+
+		/**
 		 * No refer to no existent **ID**
 		 */
 		"no-refer-to-non-existent-id": true,

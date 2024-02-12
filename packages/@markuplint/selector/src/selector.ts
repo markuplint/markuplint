@@ -35,7 +35,7 @@ export class Selector {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: ParentNode | null,
 	): Specificity | false {
-		scope = isElement(el) ? el : null;
+		scope = scope ?? (isElement(el) ? el : null);
 		const results = this.search(el, scope);
 		for (const result of results) {
 			if (result.matched) {
@@ -51,7 +51,7 @@ export class Selector {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: ParentNode | null,
 	) {
-		scope = isElement(el) ? el : null;
+		scope = scope ?? (isElement(el) ? el : null);
 		return this.#ruleset.match(el, scope);
 	}
 }

@@ -20,6 +20,7 @@ import LandmarkRoles from './landmark-roles/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
+import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
@@ -55,6 +56,7 @@ const rules = {
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
+	'no-duplicate-dt': NoDuplicateDt,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
