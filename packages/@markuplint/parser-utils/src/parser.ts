@@ -40,7 +40,7 @@ import { defaultSpaces } from './const.js';
 import { domLog } from './debug.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
-import { getCol, getEndCol, getEndLine, getLine } from './get-location.js';
+import { getEndCol, getEndLine, getPosition } from './get-location.js';
 import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
@@ -813,11 +813,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	sliceFragment(start: number, end?: number): Token {
 		const raw = this.rawCode.slice(start, end);
+		const { line, column } = getPosition(this.rawCode, start);
 		return {
 			raw,
 			startOffset: start,
-			startLine: getLine(this.rawCode, start),
-			startCol: getCol(this.rawCode, start),
+			startLine: line,
+			startCol: column,
 		};
 	}
 

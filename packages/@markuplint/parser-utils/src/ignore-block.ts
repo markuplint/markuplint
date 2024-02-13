@@ -3,7 +3,7 @@ import type { Code, IgnoreBlock, IgnoreTag } from './types.js';
 import type { MLASTNodeTreeItem, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
 
 import { MASK_CHAR } from './const.js';
-import { getCol, getLine } from './get-location.js';
+import { getPosition } from './get-location.js';
 import { ParserError } from './parser-error.js';
 
 export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar = MASK_CHAR): IgnoreBlock {
@@ -153,9 +153,10 @@ export function restoreNode(
 	if (throwErrorWhenTagHasUnresolved) {
 		for (const tag of stack) {
 			if (!tag.resolved) {
+				const { line, column } = getPosition(source, tag.index);
 				throw new ParserError('Parsing failed. Unsupported syntax detected', {
-					line: getLine(source, tag.index),
-					col: getCol(source, tag.index),
+					line,
+					col: column,
 					raw: tag.startTag + tag.taggedCode + (tag.endTag ?? ''),
 				});
 			}
