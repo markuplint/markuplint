@@ -521,6 +521,22 @@ class SelectorTarget {
 		}
 		specificity[0] += this.id.length;
 
+		if (matched && this.tag && this.tag.type === 'tag') {
+			specificity[2] += 1;
+
+			let a = this.tag.value;
+			let b = el.localName;
+
+			if (isPureHTMLElement(el)) {
+				a = a.toLowerCase();
+				b = b.toLowerCase();
+			}
+
+			if (a !== b) {
+				matched = false;
+			}
+		}
+
 		if (matched && !this.class.every(className => el.classList.contains(className.value))) {
 			matched = false;
 		}
@@ -545,22 +561,6 @@ class SelectorTarget {
 					not.push(...(pseudoRes.not ?? []));
 					matched = false;
 				}
-			}
-		}
-
-		if (matched && this.tag && this.tag.type === 'tag') {
-			specificity[2] += 1;
-
-			let a = this.tag.value;
-			let b = el.localName;
-
-			if (isPureHTMLElement(el)) {
-				a = a.toLowerCase();
-				b = b.toLowerCase();
-			}
-
-			if (a !== b) {
-				matched = false;
 			}
 		}
 
