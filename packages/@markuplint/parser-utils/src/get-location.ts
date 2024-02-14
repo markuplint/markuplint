@@ -1,9 +1,15 @@
 const LINE_BREAK = '\n';
 
+/**
+ * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
+ */
 export function getLine(rawCodeFragment: string, startOffset: number) {
 	return rawCodeFragment.slice(0, startOffset).split(LINE_BREAK).length;
 }
 
+/**
+ * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
+ */
 export function getCol(rawCodeFragment: string, startOffset: number) {
 	const lines = rawCodeFragment.slice(0, startOffset).split(LINE_BREAK);
 	return (lines.at(-1) ?? '').length + 1;
