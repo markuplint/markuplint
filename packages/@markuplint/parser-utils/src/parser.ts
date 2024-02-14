@@ -1490,8 +1490,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			stack.add(id);
 
 			if (node.type === 'endtag') {
-				const openTag = newNodes.findLast(n => n.type === 'starttag' && n.nodeName === node.nodeName);
-				if (openTag && openTag.type === 'starttag' && !openTag.pairNode) {
+				const openTag = newNodes.findLast(
+					(n): n is MLASTElement => n.type === 'starttag' && n.nodeName === node.nodeName,
+				);
+				if (openTag && !openTag.pairNode) {
 					this.#pairing(openTag, node, false);
 					newNodes.push(node);
 					continue;
