@@ -94,15 +94,21 @@ class Ruleset {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope: ParentNode | null,
 	): SelectorResult[] {
-		coreLog(
-			'<%s> (%s)',
-			isElement(el) ? el.localName : el.nodeName,
-			scope ? (isElement(scope) ? scope.localName : scope.nodeName) : null,
-		);
+		if (coreLog.enabled) {
+			coreLog(
+				'<%s> (%s)',
+				isElement(el) ? el.localName : el.nodeName,
+				scope ? (isElement(scope) ? scope.localName : scope.nodeName) : null,
+			);
+		}
 		return this.#selectorGroup.map(selector => {
-			selLog('"%s"', selector.selector);
+			if (selLog.enabled) {
+				selLog('"%s"', selector.selector);
+			}
 			const res = selector.match(el, scope);
-			resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
+			if (resLog.enabled) {
+				resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
+			}
 			return res;
 		});
 	}
