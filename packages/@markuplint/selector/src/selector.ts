@@ -468,6 +468,7 @@ class SelectorTarget {
 		}
 	}
 
+	// cspell:disable
 	/**
 	 * Matching is executed in this order: ID > tag name > classes > attributes > psuedo-elements.
 	 * If any of the selectors are unmatched, the rest of the selectors is skipped for better performance.
@@ -476,6 +477,7 @@ class SelectorTarget {
 	 * @param scope
 	 * @private
 	 */
+	// cspell:enable
 	private _matchWithoutCombineChecking(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		el: Node,
