@@ -46,7 +46,9 @@
 
 ## Sponsors
 
-Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
+### Corporate Sponsors
+
+[<img width="140" src="https://avatars.githubusercontent.com/u/1551649" alt="Velc" />](https://www.velc.co.jp/)
 
 ### Personal Supporters
 
@@ -55,8 +57,9 @@ Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 [<img width="36" src="https://avatars.githubusercontent.com/u/6581173" alt="miita" />](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
 [<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
-[<img width="36" src="https://avatars.githubusercontent.com/u/3056064" alt="tamshow" />](https://github.com/tamshow)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91047157" alt="shamokit" />](https://github.com/shamokit)
+
+Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 
 ## Thanks
 
