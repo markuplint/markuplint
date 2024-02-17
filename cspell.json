@@ -138,6 +138,7 @@
 		"squot",
 		"syntaxical",
 		"textlintrc",
+		"theboardjp",
 		"Tominaga",
 		"TSES",
 		"Tsubasa",
@@ -149,6 +150,7 @@
 		"unsetuped",
 		"urange",
 		"Usecase",
+		"velc",
 		"verifyee",
 		"vsix",
 		"WCAG",
@@ -164,10 +166,7 @@
 	"overrides": [
 		{
 			"filename": "packages/@markuplint/types/src/whatwg/check-autocomplete.spec.ts",
-			"words": [
-				"neme",
-				"emall"
-			]
+			"words": ["neme", "emall"]
 		}
 	]
 }
