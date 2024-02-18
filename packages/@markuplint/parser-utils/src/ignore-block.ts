@@ -89,6 +89,8 @@ export function restoreNode(
 			continue;
 		}
 
+		const replacementChildNodes: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
+
 		if (node.startOffset === tag.index && node.endOffset === tagIndexEnd) {
 			const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
 
@@ -102,20 +104,11 @@ export function restoreNode(
 				isBogus: false,
 			};
 
-			if (node.type !== 'doctype' && node.parentNode?.childNodes) {
-				parser.replaceChild(node.parentNode, node, psNode);
-			}
-
-			const index = newNodeList.indexOf(node);
-			newNodeList.splice(index, 1, psNode);
-
-			tag.resolved = true;
-		} else {
+			replacementChildNodes.push(psNode);
+		} else if (node.type === 'text') {
 			const offset = tag.index - node.startOffset;
 			const above = node.raw.slice(0, offset);
 			const below = node.raw.slice(offset + raw.length);
-
-			const splittedNodeList: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
 
 			if (above) {
 				const { line, column } = getPosition(node.raw, 0);
@@ -134,7 +127,7 @@ export function restoreNode(
 					depth: node.depth,
 				};
 
-				splittedNodeList.push(aboveNode);
+				replacementChildNodes.push(aboveNode);
 			}
 
 			const { line, column } = getPosition(raw, offset);
@@ -154,7 +147,7 @@ export function restoreNode(
 				childNodes: [],
 				isBogus: false,
 			};
-			splittedNodeList.push(psNode);
+			replacementChildNodes.push(psNode);
 
 			if (below) {
 				const { line, column } = getPosition(node.raw, offset + raw.length);
@@ -173,15 +166,17 @@ export function restoreNode(
 					depth: node.depth,
 				};
 
-				splittedNodeList.push(aboveNode);
+				replacementChildNodes.push(aboveNode);
 			}
+		}
 
+		if (replacementChildNodes.length > 0) {
 			if (node.type !== 'doctype' && node.parentNode?.childNodes) {
-				parser.replaceChild(node.parentNode, node, ...splittedNodeList);
+				parser.replaceChild(node.parentNode, node, ...replacementChildNodes);
 			}
 
 			const index = newNodeList.indexOf(node);
-			newNodeList.splice(index, 1, ...splittedNodeList);
+			newNodeList.splice(index, 1, ...replacementChildNodes);
 
 			tag.resolved = true;
 		}
