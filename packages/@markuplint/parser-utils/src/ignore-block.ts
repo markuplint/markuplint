@@ -1,6 +1,6 @@
 import type { Parser } from './parser.js';
 import type { Code, IgnoreBlock, IgnoreTag } from './types.js';
-import type { MLASTNodeTreeItem, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTPreprocessorSpecificBlock, MLASTText } from '@markuplint/ml-ast';
 
 import { MASK_CHAR } from './const.js';
 import { getPosition } from './get-location.js';
@@ -80,33 +80,111 @@ export function restoreNode(
 	}
 
 	for (const tag of stack) {
-		const node = newNodeList.find(node => node.startOffset === tag.index);
+		const raw = `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`;
+		const tagIndexEnd = tag.index + raw.length;
+
+		const node = newNodeList.find(node => node.startOffset <= tag.index && node.endOffset >= tagIndexEnd);
 
 		if (!node) {
 			continue;
 		}
 
-		const raw = `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`;
-		const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
+		if (node.startOffset === tag.index && node.endOffset === tagIndexEnd) {
+			const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
 
-		const psNode: MLASTPreprocessorSpecificBlock = {
-			...token,
-			type: 'psblock',
-			depth: node.depth,
-			nodeName: `#ps:${tag.type}`,
-			parentNode: node.parentNode,
-			childNodes: [],
-			isBogus: false,
-		};
+			const psNode: MLASTPreprocessorSpecificBlock = {
+				...token,
+				type: 'psblock',
+				depth: node.depth,
+				nodeName: `#ps:${tag.type}`,
+				parentNode: node.parentNode,
+				childNodes: [],
+				isBogus: false,
+			};
 
-		if (node.type !== 'doctype' && node.parentNode?.childNodes) {
-			parser.replaceChild(node.parentNode, node, psNode);
+			if (node.type !== 'doctype' && node.parentNode?.childNodes) {
+				parser.replaceChild(node.parentNode, node, psNode);
+			}
+
+			const index = newNodeList.indexOf(node);
+			newNodeList.splice(index, 1, psNode);
+
+			tag.resolved = true;
+		} else {
+			const offset = tag.index - node.startOffset;
+			const above = node.raw.slice(0, offset);
+			const below = node.raw.slice(offset + raw.length);
+
+			const splittedNodeList: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
+
+			if (above) {
+				const { line, column } = getPosition(node.raw, 0);
+				const token = parser.createToken(
+					above,
+					node.startOffset,
+					node.startLine + line - 1,
+					node.startCol + column - 1,
+				);
+
+				const aboveNode: MLASTText = {
+					...token,
+					nodeName: '#text',
+					type: 'text',
+					parentNode: node.parentNode,
+					depth: node.depth,
+				};
+
+				splittedNodeList.push(aboveNode);
+			}
+
+			const { line, column } = getPosition(raw, offset);
+			const token = parser.createToken(
+				raw,
+				node.startOffset + offset,
+				node.startLine + line - 1,
+				node.startCol + column - 1,
+			);
+
+			const psNode: MLASTPreprocessorSpecificBlock = {
+				...token,
+				type: 'psblock',
+				depth: node.depth,
+				nodeName: `#ps:${tag.type}`,
+				parentNode: node.parentNode,
+				childNodes: [],
+				isBogus: false,
+			};
+			splittedNodeList.push(psNode);
+
+			if (below) {
+				const { line, column } = getPosition(node.raw, offset + raw.length);
+				const token = parser.createToken(
+					below,
+					node.startOffset + offset + raw.length,
+					node.startLine + line - 1,
+					node.startCol + column - 1,
+				);
+
+				const aboveNode: MLASTText = {
+					...token,
+					nodeName: '#text',
+					type: 'text',
+					parentNode: node.parentNode,
+					depth: node.depth,
+				};
+
+				splittedNodeList.push(aboveNode);
+			}
+
+			if (node.type !== 'doctype' && node.parentNode?.childNodes) {
+				parser.replaceChild(node.parentNode, node, ...splittedNodeList);
+			}
+
+			const index = newNodeList.indexOf(node);
+			newNodeList.splice(index, 1, ...splittedNodeList);
+
+			tag.resolved = true;
 		}
-
-		const index = newNodeList.indexOf(node);
-		newNodeList.splice(index, 1, psNode);
-
-		tag.resolved = true;
 	}
 
 	for (const node of newNodeList) {
