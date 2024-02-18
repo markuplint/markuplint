@@ -164,7 +164,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		});
 	});
 
-	// the "none" role is synonym
+	// Synonym
 	if (version === '1.1' || version === '1.2') {
 		const presentationRole = roles.find(role => role.name === 'presentation');
 		if (presentationRole) {
@@ -183,6 +183,16 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				...noneRole,
 				name: 'presentation',
 				description: roles[noneRoleIndex]?.description,
+			};
+		}
+
+		const imageRole = roles.find(role => role.name === 'image');
+		if (imageRole) {
+			const imgRoleIndex = roles.findIndex(role => role.name === 'img');
+			roles[imgRoleIndex] = {
+				...imageRole,
+				name: 'img',
+				description: roles[imgRoleIndex]?.description,
 			};
 		}
 	}
