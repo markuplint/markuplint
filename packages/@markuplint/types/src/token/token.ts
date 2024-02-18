@@ -21,13 +21,26 @@ export class Token {
 	 */
 	static readonly whitespace: ReadonlyArray<string> = ['\u0009', '\u000A', '\u000C', '\u000D', '\u0020'];
 
+	/**
+	 * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
+	 */
 	static getCol(value: string, offset: number) {
 		const lines = value.slice(0, offset).split(/\n/);
 		return (lines.at(-1) ?? '').length + 1;
 	}
 
+	/**
+	 * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
+	 */
 	static getLine(value: string, offset: number) {
 		return value.slice(0, offset).split(/\n/).length;
+	}
+
+	static getPosition(value: string, offset: number) {
+		const lines = value.slice(0, offset).split(/\n/);
+		const line = lines.length;
+		const column = (lines.at(-1) ?? '').length + 1;
+		return { line, column };
 	}
 
 	static getType(value: string, separators?: readonly string[]) {
@@ -46,10 +59,11 @@ export class Token {
 
 	static shiftLocation(token: Readonly<Token>, offset: number) {
 		const shifted = token.offset + offset;
+		const { line, column } = Token.getPosition(token.originalValue, shifted);
 		return {
 			offset: shifted,
-			line: Token.getLine(token.originalValue, shifted),
-			column: Token.getCol(token.originalValue, shifted),
+			line,
+			column,
 		};
 	}
 
@@ -132,6 +146,7 @@ export class Token {
 			readonly reason?: UnmatchedResultReason;
 		},
 	): UnmatchedResult {
+		const { line, column } = Token.getPosition(this.originalValue, this.offset);
 		return {
 			...options,
 			matched: false,
@@ -139,8 +154,8 @@ export class Token {
 			raw: this.value,
 			offset: this.offset,
 			length: this.value.length,
-			line: Token.getLine(this.originalValue, this.offset),
-			column: Token.getCol(this.originalValue, this.offset),
+			line,
+			column,
 			reason: options?.reason ?? 'syntax-error',
 		};
 	}

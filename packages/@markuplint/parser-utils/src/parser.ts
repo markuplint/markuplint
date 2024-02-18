@@ -40,7 +40,7 @@ import { defaultSpaces } from './const.js';
 import { domLog } from './debug.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
-import { getCol, getEndCol, getEndLine, getLine } from './get-location.js';
+import { getEndCol, getEndLine, getPosition } from './get-location.js';
 import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
@@ -813,11 +813,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	sliceFragment(start: number, end?: number): Token {
 		const raw = this.rawCode.slice(start, end);
+		const { line, column } = getPosition(this.rawCode, start);
 		return {
 			raw,
 			startOffset: start,
-			startLine: getLine(this.rawCode, start),
-			startCol: getCol(this.rawCode, start),
+			startLine: line,
+			startCol: column,
 		};
 	}
 
@@ -887,7 +888,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
-	replaceChild(parentNode: MLASTParentNode, oldChildNode: MLASTChildNode, newChildNode: MLASTChildNode) {
+	replaceChild(
+		parentNode: MLASTParentNode,
+		oldChildNode: MLASTChildNode,
+		...replacementChildNodes: readonly MLASTChildNode[]
+	) {
 		const index = parentNode.childNodes.findIndex(childNode => childNode.uuid === oldChildNode.uuid);
 		if (index === -1) {
 			return;
@@ -895,11 +900,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (Array.prototype.toSpliced == null) {
 			const newChildNodes = [...parentNode.childNodes];
 			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, newChildNode);
+			newChildNodes.splice(index, 1, ...replacementChildNodes);
 			Object.assign(parentNode, { childNodes: newChildNodes });
 			return;
 		}
-		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, newChildNode);
+		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
 		Object.assign(parentNode, { childNodes: newChildNodes });
 	}
 
@@ -1490,8 +1495,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			stack.add(id);
 
 			if (node.type === 'endtag') {
-				const openTag = newNodes.findLast(n => n.type === 'starttag' && n.nodeName === node.nodeName);
-				if (openTag && openTag.type === 'starttag' && !openTag.pairNode) {
+				const openTag = newNodes.findLast(
+					(n): n is MLASTElement => n.type === 'starttag' && n.nodeName === node.nodeName,
+				);
+				if (openTag && !openTag.pairNode) {
 					this.#pairing(openTag, node, false);
 					newNodes.push(node);
 					continue;
