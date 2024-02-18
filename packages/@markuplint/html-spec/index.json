@@ -41035,6 +41035,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"shadowrootclonable": {
+					"type": "Boolean"
+				},
 				"shadowrootdelegatesfocus": {
 					"type": "Boolean"
 				},
