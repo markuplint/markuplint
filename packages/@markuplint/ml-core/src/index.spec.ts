@@ -902,8 +902,7 @@ describe('Issues', () => {
 			'  isInFragmentDocument: true',
 			'  isForeignElement: false',
 			'[5:7]>[5:8](75,76)#text: B',
-			'[5:13]>[6:2](81,83)#text: ⏎→',
-			'[6:2]>[6:7](83,88)#ml-block: {/if}',
+			'[5:13]>[6:7](81,88)#ml-block: ⏎→{/if}',
 			'[6:7]>[7:1](88,89)#text: ⏎',
 		]);
 	});
