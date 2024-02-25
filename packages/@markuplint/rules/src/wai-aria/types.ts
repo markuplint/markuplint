@@ -3,6 +3,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 export type Options = {
 	checkingValue: boolean;
 	checkingDeprecatedProps: boolean;
+	checkingDeprecatedRole: boolean;
 	permittedAriaRoles: boolean;
 	checkingRequiredOwnedElements: boolean;
 	checkingPresentationalChildren: boolean;
