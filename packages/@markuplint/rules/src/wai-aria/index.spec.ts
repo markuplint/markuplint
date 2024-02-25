@@ -1234,4 +1234,19 @@ describe('Issues', () => {
 		`;
 		expect((await mlRuleTest(rule, sourceCode, config)).violations).toStrictEqual([]);
 	});
+
+	test('#1498', async () => {
+		const sourceCode = `<ol role="directory">
+	<li aria-dropeffect="none">text</li>
+</ol>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'The "directory" role is deprecated',
+				raw: 'role="directory"',
+			},
+		]);
+	});
 });
