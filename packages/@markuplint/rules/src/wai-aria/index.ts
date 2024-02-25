@@ -8,6 +8,7 @@ import { Collection } from '../helpers.js';
 import { checkingAbstractRole } from './checkings/abstract-role.js';
 import { checkingDefaultValue } from './checkings/default-value.js';
 import { checkingDeprecatedProps } from './checkings/deprecated-props.js';
+import { checkingDeprecatedRole } from './checkings/deprecated-role.js';
 import { checkingDisallowedProp } from './checkings/disallowed-prop.js';
 import { checkingImplicitProps } from './checkings/implicit-props.js';
 import { checkingImplicitRole } from './checkings/implicit-role.js';
@@ -26,6 +27,7 @@ export default createRule<boolean, Options>({
 	},
 	defaultOptions: {
 		checkingValue: true,
+		checkingDeprecatedRole: true,
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
 		checkingRequiredOwnedElements: true,
@@ -70,6 +72,10 @@ export default createRule<boolean, Options>({
 					return;
 				}
 				report(checkingRequiredProp({ el, role: computed.role, propSpecs }));
+
+				if (el.rule.options.checkingDeprecatedRole) {
+					report(checkingDeprecatedRole({ attr: roleAttr, role: computed.role }));
+				}
 
 				if (el.rule.options.disallowSetImplicitRole) {
 					report(checkingImplicitRole({ attr: roleAttr }));

@@ -4074,6 +4074,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -16165,6 +16166,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
