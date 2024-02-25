@@ -1526,4 +1526,15 @@ describe('Issues', () => {
 			0,
 		);
 	});
+
+	test('#1502', async () => {
+		const sourceCode = `<svg>
+	<defs>
+		<filter>
+			<feTurbulence />
+		</filter>
+	</defs>
+</svg>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+	});
 });

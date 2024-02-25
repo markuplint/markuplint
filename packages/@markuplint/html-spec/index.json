@@ -44995,7 +44995,7 @@
 					{
 						"zeroOrMore": [
 							":model(SVGDescriptive)",
-							"#SVGFilterPrimitive",
+							":model(SVGFilterPrimitive)",
 							"svg|animate",
 							"svg|script",
 							"svg|set"
