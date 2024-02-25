@@ -17,6 +17,7 @@ export function getRoleSpec(
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
+		deprecated: !!role.deprecated,
 		requiredContextRole: role.requiredContextRole ?? [],
 		requiredOwnedElements: role.requiredOwnedElements ?? [],
 		accessibleNameRequired: !!role.accessibleNameRequired,

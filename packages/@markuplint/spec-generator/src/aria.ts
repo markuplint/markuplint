@@ -93,6 +93,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
+		const deprecated =
+			description.toLowerCase().search(
+				// eslint-disable-next-line regexp/strict
+				/\[deprecated in aria 1\.\d]/i,
+			) === -1
+				? undefined
+				: true;
 		const $features = $el.find('.role-features tr');
 		const generalization = $features
 			.find('.role-parent a')
@@ -151,6 +158,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			name,
 			description,
 			isAbstract,
+			deprecated,
 			generalization,
 			requiredContextRole,
 			requiredOwnedElements,
