@@ -948,6 +948,17 @@
     is-plain-object "^5.0.0"
     type-fest "^4.10.2"
 
+"@markuplint/ml-spec@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.1.0.tgz#7b126b33f8ed32b52dc5a59ef3d080880d75c66c"
+  integrity sha512-ZKfIozGAlnEv+gMT824yNJEGEG+D6kKcPRSzxspe16k8yvwkSILq+GTeT5adPnLdq7XFkiG4JW2hBAS8QOfiRg==
+  dependencies:
+    "@markuplint/ml-ast" "4.0.1"
+    "@markuplint/types" "4.0.2"
+    dom-accessibility-api "^0.6.3"
+    is-plain-object "^5.0.0"
+    type-fest "^4.10.2"
+
 "@markuplint/parser-utils@4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.1.1.tgz#8315ee3a474827c132a5c216139c49f3cc178a89"
@@ -963,11 +974,11 @@
     uuid "^9.0.1"
 
 "@markuplint/react-spec@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@markuplint/react-spec/-/react-spec-4.0.2.tgz#8204904e95afe0e0e0a3c7a1941bc00d1211a578"
-  integrity sha512-ylg+6hK/2GQHw4V6NRVC+Oy7Vkk4mkTyiMMOXmcR1JL1pTyUr/sAU25hLURIxyT0nFN128ZdRmSLbqY2BGqAJw==
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/react-spec/-/react-spec-4.1.0.tgz#76a71cd82c7ce546594fc5743ee2fec68ee3e16b"
+  integrity sha512-zCEbDa07LysXrWYhkTjVtKGhjJ87RMJhxRD3Y352qT9o2DwMPUD3iM6U/vTBqKbiK4f/GA7GZpQRaud3d/KrGQ==
   dependencies:
-    "@markuplint/ml-spec" "4.0.2"
+    "@markuplint/ml-spec" "4.1.0"
 
 "@markuplint/rules@4.1.1":
   version "4.1.1"
@@ -4237,9 +4248,9 @@ type-fest@^1.0.1:
   integrity sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==
 
 type-fest@^4.10.2:
-  version "4.10.2"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.10.2.tgz#3abdb144d93c5750432aac0d73d3e85fcab45738"
-  integrity sha512-anpAG63wSpdEbLwOqH8L84urkL6PiVIov3EMmgIhhThevh9aiMQov+6Btx0wldNcvm4wV+e2/Rt1QdDwKHFbHw==
+  version "4.10.3"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.10.3.tgz#ff01cb0a1209f59583d61e1312de9715e7ea4874"
+  integrity sha512-JLXyjizi072smKGGcZiAJDCNweT8J+AuRxmPZ1aG7TERg4ijx9REl8CNhbr36RV4qXqL1gO1FF9HL8OkVmmrsA==
 
 type@^1.0.1:
   version "1.2.0"
