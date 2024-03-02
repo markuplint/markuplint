@@ -948,6 +948,17 @@
     is-plain-object "^5.0.0"
     type-fest "^4.10.2"
 
+"@markuplint/ml-spec@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.1.0.tgz#7b126b33f8ed32b52dc5a59ef3d080880d75c66c"
+  integrity sha512-ZKfIozGAlnEv+gMT824yNJEGEG+D6kKcPRSzxspe16k8yvwkSILq+GTeT5adPnLdq7XFkiG4JW2hBAS8QOfiRg==
+  dependencies:
+    "@markuplint/ml-ast" "4.0.1"
+    "@markuplint/types" "4.0.2"
+    dom-accessibility-api "^0.6.3"
+    is-plain-object "^5.0.0"
+    type-fest "^4.10.2"
+
 "@markuplint/parser-utils@4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.1.1.tgz#8315ee3a474827c132a5c216139c49f3cc178a89"
@@ -955,6 +966,20 @@
   dependencies:
     "@markuplint/ml-ast" "4.0.1"
     "@markuplint/ml-spec" "4.0.2"
+    "@markuplint/types" "4.0.2"
+    "@types/uuid" "^9.0.8"
+    debug "^4.3.4"
+    espree "^10.0.1"
+    type-fest "^4.10.2"
+    uuid "^9.0.1"
+
+"@markuplint/parser-utils@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.2.0.tgz#bee818c7fb800cd79720cb68aceb97e2669dee9d"
+  integrity sha512-Dc8P9uq6CTScvgmeouvwF6drTNOiHvudvDOEmkz0JS+MiA0rR5uOhST2zlNCTKxScwOYc+LSpYwFz5zoHQ+03Q==
+  dependencies:
+    "@markuplint/ml-ast" "4.0.1"
+    "@markuplint/ml-spec" "4.1.0"
     "@markuplint/types" "4.0.2"
     "@types/uuid" "^9.0.8"
     debug "^4.3.4"
