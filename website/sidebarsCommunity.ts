@@ -10,6 +10,7 @@ const sidebars: SidebarsConfig = {
         id: 'index',
       },
       items: [
+        'code-of-conduct',
         'contributing',
         'branding',
         {

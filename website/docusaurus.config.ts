@@ -130,6 +130,15 @@ const config: Config = {
             >
           `,
         },
+        {
+          html: /* html */ `
+            <a
+              href="https://app.netlify.com/sites/markuplint/deploys"
+              target="_blank"
+              rel="noopener noreferrer"
+            ><img src="https://api.netlify.com/api/v1/badges/035f6ffa-ca8d-4071-abe9-ae3a67094302/deploy-status" alt="Netlify Status"></a>
+          `,
+        },
       ],
       copyright: `© ${new Date().getFullYear()} Markuplint.`,
     },
