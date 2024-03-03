@@ -30,3 +30,6 @@ community/contributing.md
 
 # Env
 .env
+
+# Dynamically created files
+contributors.json
