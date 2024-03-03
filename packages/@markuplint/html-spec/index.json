@@ -4074,6 +4074,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -5351,20 +5352,122 @@
 					},
 					{
 						"name": "image",
-						"description": "A container for a collection of elements that form an image. See synonym img.\n\nThe image was added to ARIA in version 1.3 as a synonym of the ARIA 1.0 img role. The image role improves syntactic consistency with the names of other roles, which are complete words or concatenations of complete words.",
-						"generalization": [],
+						"description": "A container for a collection of elements that form an image. See synonym img.\n\nAn img can contain captions and descriptive text, as well as multiple image files that when viewed together give the impression of a single image. An img represents a single graphic within a document, whether or not it is formed by a collection of drawing objects. In order for an element with a role of img to be perceivable, authors MUST provide the element with an accessible name. This can be done using the aria-label or aria-labelledby attribute.\n\nThe image role was added to ARIA in version 1.3 as a synonym of the ARIA 1.0 img role. The image role improves syntactic consistency with the names of other roles, which are complete words or concatenations of complete words.",
+						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
-						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": false,
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
 						"accessibleNameProhibited": false,
-						"ownedProperties": [],
+						"childrenPresentational": true,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
 						"prohibitedProperties": []
 					},
 					{
 						"name": "img",
-						"description": "A container for a collection of elements that form an image. See synonym image.\n\nAn img can contain captions and descriptive text, as well as multiple image files that when viewed together give the impression of a single image. An img represents a single graphic within a document, whether or not it is formed by a collection of drawing objects. In order for an element with a role of img to be perceivable, authors MUST provide the element with an accessible name. This can be done using the aria-label or aria-labelledby attribute.",
+						"description": "A container for a collection of elements that form an image. See synonym image.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -16063,6 +16166,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -37324,6 +37428,10 @@
 					"deprecated": true,
 					"nonStandard": true
 				},
+				"browsingtopics": {
+					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source. See Using the Topics API for more details.",
+					"experimental": true
+				},
 				"credentialless": {
 					"description": "Set to true to make the <iframe> credentialless, meaning that its content will be loaded in a new, ephemeral context. It doesn't have access to the network, cookies, and storage data associated with its origin. It uses a new context local to the top-level document lifetime. In return, the Cross-Origin-Embedder-Policy (COEP) embedding rules can be lifted, so documents with COEP set can embed third-party documents that do not. See IFrame credentialless for more details.",
 					"experimental": true
@@ -40933,6 +41041,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"shadowrootclonable": {
+					"type": "Boolean"
+				},
 				"shadowrootdelegatesfocus": {
 					"type": "Boolean"
 				},
@@ -41488,13 +41599,11 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent, and it doesn't work in all browsers. Warning: Do not use this attribute, as it has been deprecated: use CSS instead. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"type": {
 					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				}
 			}
 		},
@@ -44888,7 +44997,7 @@
 					{
 						"zeroOrMore": [
 							":model(SVGDescriptive)",
-							"#SVGFilterPrimitive",
+							":model(SVGFilterPrimitive)",
 							"svg|animate",
 							"svg|script",
 							"svg|set"

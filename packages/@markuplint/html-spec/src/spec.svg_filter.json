@@ -4,7 +4,13 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": [":model(SVGDescriptive)", "#SVGFilterPrimitive", "svg|animate", "svg|script", "svg|set"]
+				"zeroOrMore": [
+					":model(SVGDescriptive)",
+					":model(SVGFilterPrimitive)",
+					"svg|animate",
+					"svg|script",
+					"svg|set"
+				]
 			}
 		]
 	},

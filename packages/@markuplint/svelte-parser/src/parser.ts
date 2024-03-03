@@ -253,6 +253,49 @@ class SvelteParser extends Parser<SvelteNode> {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 
+	#traverseIfBlock(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originBlockNode: SvelteNode,
+		start?: number,
+		nodeName: 'if' | 'elseif' | 'else' = 'if',
+	) {
+		const result: (Token & { children: SvelteNode[]; nodeName: 'if' | 'elseif' | 'else' | '/if' })[] = [];
+
+		start = start ?? originBlockNode.start;
+		const end = originBlockNode.children?.[0]?.start ?? originBlockNode.end;
+		const tag = this.sliceFragment(start, end);
+		const children = originBlockNode.children ?? [];
+
+		result.push({ ...tag, children, nodeName });
+
+		if (originBlockNode.else) {
+			if (originBlockNode.else.children[0].type === 'IfBlock') {
+				const elseif = this.#traverseIfBlock(originBlockNode.else.children[0], children.at(-1)?.end, 'elseif');
+				result.push(...elseif);
+			} else {
+				const start = children.at(-1)?.end ?? originBlockNode.end;
+				const end = originBlockNode.else.children[0].start;
+				const tag = this.sliceFragment(start, end);
+				result.push({
+					...tag,
+					children: originBlockNode.else.children,
+					nodeName: 'else',
+				});
+			}
+		}
+
+		{
+			const start = result.at(-1)?.children.at(-1)?.end ?? originBlockNode.end;
+			const end = originBlockNode.end;
+			const tag = this.sliceFragment(start, end);
+			if (tag.raw) {
+				result.push({ ...tag, children: [], nodeName: '/if' });
+			}
+		}
+
+		return result;
+	}
+
 	visitExpression(
 		token: ChildToken,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -260,6 +303,23 @@ class SvelteParser extends Parser<SvelteNode> {
 	) {
 		const props = ['', 'else', 'pending', 'then', 'catch'];
 		const expressions: MLASTPreprocessorSpecificBlock[] = [];
+
+		if (originBlockNode.type === 'IfBlock') {
+			const ifElseBlocks = this.#traverseIfBlock(originBlockNode);
+			for (const ifElseBlock of ifElseBlocks) {
+				const expression = this.visitPsBlock(
+					{
+						...ifElseBlock,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: ifElseBlock.nodeName,
+					},
+					ifElseBlock.children,
+				)[0];
+				expressions.push(expression);
+			}
+			return expressions;
+		}
 
 		const blockType = originBlockNode.type.toLowerCase().replace('block', '');
 

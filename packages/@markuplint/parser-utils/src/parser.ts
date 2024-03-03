@@ -888,7 +888,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
-	replaceChild(parentNode: MLASTParentNode, oldChildNode: MLASTChildNode, newChildNode: MLASTChildNode) {
+	replaceChild(
+		parentNode: MLASTParentNode,
+		oldChildNode: MLASTChildNode,
+		...replacementChildNodes: readonly MLASTChildNode[]
+	) {
 		const index = parentNode.childNodes.findIndex(childNode => childNode.uuid === oldChildNode.uuid);
 		if (index === -1) {
 			return;
@@ -896,11 +900,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (Array.prototype.toSpliced == null) {
 			const newChildNodes = [...parentNode.childNodes];
 			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, newChildNode);
+			newChildNodes.splice(index, 1, ...replacementChildNodes);
 			Object.assign(parentNode, { childNodes: newChildNodes });
 			return;
 		}
-		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, newChildNode);
+		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
 		Object.assign(parentNode, { childNodes: newChildNodes });
 	}
 
@@ -1482,6 +1486,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				? // TODO: Use sort instead of toSorted until we end support for Node 18
 					[...nodes].sort(sortNodes)
 				: nodes.toSorted(sortNodes);
+		const nameToLastOpenTag: Record<string, MLASTElement> = {};
 
 		for (const node of oldNodes) {
 			const id = `${node.startOffset}::${node.nodeName}`;
@@ -1491,16 +1496,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			stack.add(id);
 
 			if (node.type === 'endtag') {
-				const openTag = newNodes.findLast(
-					(n): n is MLASTElement => n.type === 'starttag' && n.nodeName === node.nodeName,
-				);
+				const openTag = nameToLastOpenTag[node.nodeName];
 				if (openTag && !openTag.pairNode) {
 					this.#pairing(openTag, node, false);
 					newNodes.push(node);
 					continue;
 				}
+			} else if (node.type === 'starttag') {
+				nameToLastOpenTag[node.nodeName] = node;
 			}
-
 			newNodes.push(node);
 		}
 
