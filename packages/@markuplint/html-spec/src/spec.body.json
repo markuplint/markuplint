@@ -59,6 +59,10 @@
 		"onpagereveal": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpageswap
+		"onpageswap": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onpagereveal
 		"onpageshow": {
 			"type": "FunctionBody"
