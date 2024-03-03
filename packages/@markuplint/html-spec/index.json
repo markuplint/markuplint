@@ -35735,6 +35735,9 @@
 				"onpageshow": {
 					"type": "FunctionBody"
 				},
+				"onpageswap": {
+					"type": "FunctionBody"
+				},
 				"onpopstate": {
 					"type": "FunctionBody"
 				},
