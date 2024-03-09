@@ -2,6 +2,7 @@
 
 import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
+import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
@@ -242,6 +243,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get ariaCurrent(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaCurrent" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaDescription(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaDescription" property');
 	}
 
 	/**
@@ -1106,6 +1118,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get onbeforetoggle():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onbeforetoggle" property');
 	}
 
 	/**
@@ -2887,7 +2917,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	after(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
+		...nodes: (string | MLNode<any, any>)[]
 	): void {
 		after(this, ...nodes);
 	}
@@ -3832,7 +3862,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-togglepopover
 	 */
-	togglePopover(force?: boolean): void {
+	togglePopover(force?: boolean): boolean {
 		throw new UnexpectedCallError('Not supported "togglePopover" method');
 	}
 
