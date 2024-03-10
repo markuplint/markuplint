@@ -853,7 +853,7 @@
     is-plain-object "^5.0.0"
     type-fest "^4.10.2"
 
-"@markuplint/ml-spec@4.0.0-rc.1", "latest-markuplint-ml-spec@npm:@markuplint/ml-spec@next":
+"@markuplint/ml-spec@4.0.0-rc.1":
   version "4.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.0.0-rc.1.tgz#4507126be07edf218b3aafb6fdcb97d7dbf73559"
   integrity sha512-5YJjF+9xq1R9i46w8hHgHO7MbZYi/YXi95OVgUnkL/EJ5hl5B7sIzx7HwfqYvZce63TeTZz//GQwyxO8Njekhg==
@@ -3689,7 +3689,7 @@ deepmerge@^4.3.1:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.3.1.tgz#44b5f2147cd3b00d4b56137685966f26fd25dd4a"
   integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
 
-"default-markuplint@npm:markuplint@next", "test-markuplint@npm:markuplint@next":
+"default-markuplint@npm:markuplint@next":
   version "4.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.0.0-rc.1.tgz#14c11606f51eeb4b4e6a1d578d58400b9cfe69b0"
   integrity sha512-XZGa4pR1YKmP+gylgBOFaOED0PhuU4znfZ0ZgOGy+ejV9pxIPrBm2gWr/lvRRX7e8+hGKVblFlTTPVD1WHF0Dw==
@@ -5377,9 +5377,9 @@ html-encoding-sniffer@^4.0.0:
     whatwg-encoding "^3.1.1"
 
 html-entities@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.4.0.tgz#edd0cee70402584c8c76cc2c0556db09d1f45061"
-  integrity sha512-igBTJcNNNhvZFRtm8uA6xMY6xYleeDwn3PeBCkDz7tHttv4F2hsDI2aPgNERWzvRcNYHNT3ymRaQzllmXj4YsQ==
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.5.2.tgz#201a3cf95d3a15be7099521620d19dfb4f65359f"
+  integrity sha512-K//PSRMQk4FZ78Kyau+mZurHn3FH0Vwr+H36eE0rPbeYkRRi9YxceYPhuN60UwWorxyKHhqoAJl2OFKa4BVtaA==
 
 html-escaper@^2.0.0:
   version "2.0.2"
@@ -6358,6 +6358,17 @@ kuromojin@^3.0.0:
   dependencies:
     kuromoji "0.1.2"
     lru_map "^0.4.1"
+
+"latest-markuplint-ml-spec@npm:@markuplint/ml-spec@next":
+  version "4.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.0.0-rc.1.tgz#4507126be07edf218b3aafb6fdcb97d7dbf73559"
+  integrity sha512-5YJjF+9xq1R9i46w8hHgHO7MbZYi/YXi95OVgUnkL/EJ5hl5B7sIzx7HwfqYvZce63TeTZz//GQwyxO8Njekhg==
+  dependencies:
+    "@markuplint/ml-ast" "4.0.0-rc.1"
+    "@markuplint/types" "4.0.0-rc.1"
+    dom-accessibility-api "^0.6.3"
+    is-plain-object "^5.0.0"
+    type-fest "^4.10.2"
 
 lcid@^3.1.1:
   version "3.1.1"
@@ -9382,7 +9393,16 @@ string-argv@0.3.2:
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.2.tgz#2b6d0ef24b656274d957d54e0a4bbf6153dc02b6"
   integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@4, "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@4, "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -9459,7 +9479,14 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@6, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@6, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -9683,6 +9710,32 @@ test-exclude@^6.0.0:
     "@istanbuljs/schema" "^0.1.2"
     glob "^7.1.4"
     minimatch "^3.0.4"
+
+"test-markuplint@npm:markuplint@next":
+  version "4.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.0.0-rc.1.tgz#14c11606f51eeb4b4e6a1d578d58400b9cfe69b0"
+  integrity sha512-XZGa4pR1YKmP+gylgBOFaOED0PhuU4znfZ0ZgOGy+ejV9pxIPrBm2gWr/lvRRX7e8+hGKVblFlTTPVD1WHF0Dw==
+  dependencies:
+    "@markuplint/cli-utils" "4.0.0-rc.1"
+    "@markuplint/file-resolver" "4.0.0-rc.1"
+    "@markuplint/html-parser" "4.0.0-rc.1"
+    "@markuplint/html-spec" "4.0.0-rc.1"
+    "@markuplint/i18n" "4.0.0-rc.1"
+    "@markuplint/ml-ast" "4.0.0-rc.1"
+    "@markuplint/ml-config" "4.0.0-rc.1"
+    "@markuplint/ml-core" "4.0.0-rc.1"
+    "@markuplint/ml-spec" "4.0.0-rc.1"
+    "@markuplint/rules" "4.0.0-rc.1"
+    "@markuplint/shared" "4.0.0-rc.1"
+    "@types/debug" "^4.1.12"
+    chokidar "^3.5.3"
+    debug "^4.3.4"
+    get-stdin "^9.0.0"
+    meow "^13.1.0"
+    os-locale "^6.0.2"
+    strict-event-emitter "^0.5.1"
+    strip-ansi "^7.1.0"
+    type-fest "^4.10.2"
 
 text-extensions@^1.0.0:
   version "1.9.0"
@@ -11009,7 +11062,16 @@ workerpool@6.2.1:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.2.1.tgz#46fc150c17d826b86a008e5a4508656777e9c343"
   integrity sha512-ILEIE97kDZvF9Wb9f6h5aXK4swSlKGUcOEGiIYb2OOu/IrDU9iwj0fD//SsA6E5ibwJxpEvhullJY4Sl4GcpAw==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@7, wrap-ansi@^6.0.1, wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@7, wrap-ansi@^6.0.1, wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
