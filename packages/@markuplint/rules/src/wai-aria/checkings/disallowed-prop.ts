@@ -7,9 +7,13 @@ import { getARIA } from '@markuplint/ml-spec';
 export const checkingDisallowedProp: AttrChecker<
 	boolean,
 	Options,
-	{ role: ARIARole | null; propSpecs: readonly ARIAProperty[] }
+	{
+		role: ARIARole | null;
+		propSpecs: readonly ARIAProperty[];
+		disallowSetImplicitProps: boolean;
+	}
 > =
-	({ attr, role, propSpecs }) =>
+	({ attr, role, propSpecs, disallowSetImplicitProps }) =>
 	t => {
 		if (!role) {
 			return;
@@ -26,9 +30,13 @@ export const checkingDisallowedProp: AttrChecker<
 			attr.rule.options.version,
 			attr.ownerElement.matches.bind(attr.ownerElement),
 		);
-		if (elAriaSpec?.properties !== false && elAriaSpec?.properties?.without) {
+
+		if (disallowSetImplicitProps && elAriaSpec?.properties !== false && elAriaSpec?.properties?.without) {
 			for (const ignore of elAriaSpec.properties.without) {
 				if (ignore.name === attr.name) {
+					const hasNativeAttr =
+						ignore.alt?.method === 'set-attr' && attr.ownerElement.hasAttribute(ignore.alt.target);
+
 					return {
 						scope: attr,
 						message:
@@ -47,18 +55,25 @@ export const checkingDisallowedProp: AttrChecker<
 								),
 								t('the "{0*}" {1}', attr.ownerElement.localName, 'element'),
 							) +
-							(ignore.alt
+							(hasNativeAttr
 								? t('. ') +
 									t(
-										'{0} if you {1} {2}',
-										t(
-											ignore.alt.method === 'remove-attr' ? 'Remove {0}' : 'Add {0}',
-											t('the "{0*}" {1}', ignore.alt.target, 'attribute'),
-										),
-										'use',
-										t('the {0}', `ARIA ${propSpec?.type ?? 'property'}`),
+										'As its {0} is already provided by {1}',
+										t('state'),
+										t('the "{0*}" {1}', ignore.alt.target, 'attribute'),
 									)
-								: ''),
+								: ignore.alt
+									? t('. ') +
+										t(
+											'{0} if you {1} {2}',
+											t(
+												ignore.alt.method === 'remove-attr' ? 'Remove {0}' : 'Add {0}',
+												t('the "{0*}" {1}', ignore.alt.target, 'attribute'),
+											),
+											'use',
+											t('the {0}', `ARIA ${propSpec?.type ?? 'property'}`),
+										)
+									: ''),
 					};
 				}
 			}

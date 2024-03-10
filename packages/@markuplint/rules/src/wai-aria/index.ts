@@ -87,7 +87,14 @@ export default createRule<boolean, Options>({
 			}
 
 			for (const attr of propAttrs) {
-				report(checkingDisallowedProp({ attr, role: computed.role, propSpecs }));
+				report(
+					checkingDisallowedProp({
+						attr,
+						role: computed.role,
+						propSpecs,
+						disallowSetImplicitProps: el.rule.options.disallowSetImplicitProps,
+					}),
+				);
 
 				if (el.rule.options.checkingDeprecatedProps) {
 					report(checkingDeprecatedProps({ attr, role: computed.role, propSpecs }));
