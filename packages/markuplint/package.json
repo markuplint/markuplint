@@ -36,14 +36,14 @@
 		"@markuplint/ml-spec": "4.1.0",
 		"@markuplint/rules": "4.3.0",
 		"@markuplint/shared": "4.0.1",
-		"@types/debug": "^4.1.12",
-		"chokidar": "^3.6.0",
-		"debug": "^4.3.4",
-		"get-stdin": "^9.0.0",
-		"meow": "^13.2.0",
-		"os-locale": "^6.0.2",
-		"strict-event-emitter": "^0.5.1",
-		"strip-ansi": "^7.1.0",
-		"type-fest": "^4.10.2"
+		"@types/debug": "4.1.12",
+		"chokidar": "3.6.0",
+		"debug": "4.3.4",
+		"get-stdin": "9.0.0",
+		"meow": "13.2.0",
+		"os-locale": "6.0.2",
+		"strict-event-emitter": "0.5.1",
+		"strip-ansi": "7.1.0",
+		"type-fest": "4.12.0"
 	}
 }

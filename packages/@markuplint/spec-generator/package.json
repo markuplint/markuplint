@@ -21,18 +21,18 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@types/cheerio": "^0.22.35",
-		"ajv": "^8.12.0",
-		"cheerio": "^1.0.0-rc.12",
-		"cli-progress": "^3.12.0",
-		"fast-xml-parser": "^4.3.5",
-		"glob": "^10.3.6",
-		"strip-json-comments": "^5.0.1"
+		"@types/cheerio": "0.22.35",
+		"ajv": "8.12.0",
+		"cheerio": "1.0.0-rc.12",
+		"cli-progress": "3.12.0",
+		"fast-xml-parser": "4.3.5",
+		"glob": "10.3.10",
+		"strip-json-comments": "5.0.1"
 	},
 	"devDependencies": {
 		"@markuplint/ml-spec": "4.1.0",
 		"@markuplint/test-tools": "4.1.0",
-		"@types/cli-progress": "^3.11.5",
-		"type-fest": "^4.10.2"
+		"@types/cli-progress": "3.11.5",
+		"type-fest": "4.12.0"
 	}
 }

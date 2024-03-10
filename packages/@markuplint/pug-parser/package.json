@@ -24,7 +24,7 @@
 		"@markuplint/html-parser": "4.2.0",
 		"@markuplint/ml-ast": "4.0.1",
 		"@markuplint/parser-utils": "4.2.0",
-		"pug-lexer": "^5.0.1",
-		"pug-parser": "^6.0.0"
+		"pug-lexer": "5.0.1",
+		"pug-parser": "6.0.0"
 	}
 }
