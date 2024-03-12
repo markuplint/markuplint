@@ -2,8 +2,9 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, basename, extname, relative, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import rules from '@markuplint/rules';
 import matter from 'gray-matter';
+
+import rules from '../../../packages/@markuplint/rules/lib/index.js';
 
 import { rewriteRuleContent } from './rule-content.mjs';
 import { dropFiles, getEditUrlBase, glob, importJSON, output, projectRoot } from './utils.mjs';
