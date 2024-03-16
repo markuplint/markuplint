@@ -4,8 +4,6 @@ import { pathToFileURL } from 'node:url';
 
 import matter from 'gray-matter';
 
-import rules from '../../../packages/@markuplint/rules/lib/index.js';
-
 import { rewriteRuleContent } from './rule-content.mjs';
 import { dropFiles, getEditUrlBase, glob, importJSON, output, projectRoot } from './utils.mjs';
 
@@ -85,9 +83,9 @@ async function getDocFile(filePath, value, options, severity, inherit) {
  */
 async function createRuleDoc(path) {
   const schema = await importJSON(resolve(path, 'schema.json'));
+  const meta = await importJSON(resolve(path, 'meta.json'));
   const { value, options } = schema.definitions;
-  const ruleName = basename(path);
-  const category = rules[ruleName].meta.category;
+  const category = meta.category;
   const severity = schema.oneOf.find(val => val.properties)?.properties?.severity?.default ?? 'N/A';
   const docFile = resolve(path, 'README.md');
   const doc = await getDocFile(docFile, value, options, severity);
