@@ -2,13 +2,13 @@ import type { Report, RuleConfigValue } from '@markuplint/ml-config';
 
 import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
+import meta from './meta.json' assert { type: 'json' };
+
 const defaultChars = ['"', '&', '<', '>'];
 const ignoreParentElement = new Set(['script', 'style']);
 
 export default createRule({
-	meta: {
-		category: 'style',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	async verify({ document, report, t }) {
 		const targetNodes: Report<RuleConfigValue>[] = [];
 

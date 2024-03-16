@@ -2,10 +2,10 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.json' assert { type: 'json' };
+
 export default createRule<boolean>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	verify({ document, report, t }) {
 		for (const select of document.querySelectorAll('select')) {
 			if (hasPlaceholderLabelOption(select)) {

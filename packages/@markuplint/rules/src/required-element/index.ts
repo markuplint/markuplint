@@ -1,13 +1,13 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.json' assert { type: 'json' };
+
 type Options = {
 	ignoreHasMutableContents: boolean;
 };
 
 export default createRule<string[], Options>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableContents: true,

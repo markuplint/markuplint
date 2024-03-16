@@ -4,12 +4,12 @@ import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { decodeEntities, decodeHref } from '@markuplint/shared';
 
+import meta from './meta.json' assert { type: 'json' };
+
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
 export default createRule({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION as ARIAVersion,
 		fragmentRefersNameAttr: false,

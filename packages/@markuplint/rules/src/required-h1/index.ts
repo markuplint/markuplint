@@ -2,15 +2,15 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.json' assert { type: 'json' };
+
 export interface Options {
 	'expected-once': boolean;
 	'in-document-fragment': boolean;
 }
 
 export default createRule<boolean, Options>({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	defaultOptions: {
 		'expected-once': true,
 		'in-document-fragment': false,

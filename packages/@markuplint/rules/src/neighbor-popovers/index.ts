@@ -1,13 +1,13 @@
 import { createRule } from '@markuplint/ml-core';
 import { mayBeFocusable } from '@markuplint/ml-spec';
 
+import meta from './meta.json' assert { type: 'json' };
+
 // TODO: It will be received from config
 const ARIA_VERSION = '1.2';
 
 export default createRule({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	verify({ document, report, t }) {
 		const triggers = document.querySelectorAll('[popovertarget]');
 		Triggers: for (const trigger of triggers) {

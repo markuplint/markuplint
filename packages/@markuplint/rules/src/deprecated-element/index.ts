@@ -1,9 +1,9 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
+import meta from './meta.json' assert { type: 'json' };
+
 export default createRule({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (

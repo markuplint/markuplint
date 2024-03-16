@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"composite": true,
 		"outDir": "./lib",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"resolveJsonModule": true
 	},
 	"references": [
 		{
@@ -25,6 +26,6 @@
 			"path": "../types"
 		}
 	],
-	"include": ["./src/**/*"],
+	"include": ["./src/**/*", "./src/**/meta.json"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

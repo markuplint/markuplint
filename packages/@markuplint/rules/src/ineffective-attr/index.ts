@@ -1,10 +1,10 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
+import meta from './meta.json' assert { type: 'json' };
+
 export default createRule({
-	meta: {
-		category: 'style',
-	},
+	meta: meta as Parameters<typeof createRule>[0]['meta'],
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
