@@ -132,7 +132,7 @@ describe('Issues', () => {
 		expect(originContent).toBe(fixedContent);
 	});
 
-	test('#1534', async () => {
+	test('#1534-2', async () => {
 		const originFilePath = path.resolve(__dirname, '../../test/fix/origin.html');
 		const fixedFilePath = path.resolve(__dirname, '../../test/fix/fixed.html');
 		const originContent = await readFile(originFilePath, { encoding: 'utf8' });
