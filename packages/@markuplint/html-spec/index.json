@@ -371,6 +371,17 @@
 						}
 					}
 				},
+				"writingsuggestions": {
+					"type": {
+						"enum": ["", "true", "false"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "default",
+						"missingValueDefault": "default",
+						"sameStates": {
+							"true": [""]
+						}
+					}
+				},
 				"class": {
 					"type": "Any"
 				},
