@@ -6,6 +6,7 @@ on:
             - dev
             - v3
             - next
+            - main
         paths:
             - '.github/workflows/test.yml'
             - 'packages/**'
