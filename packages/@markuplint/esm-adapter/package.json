@@ -16,13 +16,13 @@
 	},
 	"scripts": {},
 	"dependencies": {
-		"debug": "^4.3.4",
+		"debug": "4.3.4",
 		"default-markuplint": "npm:markuplint@next",
 		"latest-markuplint-ml-spec": "npm:@markuplint/ml-spec@next",
-		"strict-event-emitter": "^0.5.1"
+		"strict-event-emitter": "0.5.1"
 	},
 	"devDependencies": {
-		"@types/debug": "^4.1.12",
+		"@types/debug": "4.1.12",
 		"default-markuplint": "npm:markuplint@next",
 		"test-markuplint": "npm:markuplint@next"
 	}
