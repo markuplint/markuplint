@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { Octokit } from '@octokit/rest';
 
 export async function getContributors() {
-  let contributors = [];
+  let contributors: object[] = [];
 
   try {
     const octokit = new Octokit({
