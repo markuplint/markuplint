@@ -29,7 +29,7 @@
 		"coveralls": "3.1.1",
 		"default-markuplint": "npm:markuplint@next",
 		"execa": "8.0.1",
-		"glob": "10.3.10",
+		"glob": "10.3.6",
 		"jsdom": "24.0.0",
 		"strip-json-comments": "5.0.1",
 		"test-markuplint": "npm:markuplint@next",

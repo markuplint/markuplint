@@ -5070,6 +5070,17 @@ glob@10.3.10, glob@^10.2.2, glob@^10.3.10, glob@^10.3.7:
     minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
     path-scurry "^1.10.1"
 
+glob@10.3.6:
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-10.3.6.tgz#c30553fe51dc19da30423c92cfcf15e433336058"
+  integrity sha512-mEfImdc/fiYHEcF6pHFfD2b/KrdFB1qH9mRe5vI5HROF8G51SWxQJ2V56Ezl6ZL9y86gsxQ1Lgo2S746KGUPSQ==
+  dependencies:
+    foreground-child "^3.1.0"
+    jackspeak "^2.0.3"
+    minimatch "^9.0.1"
+    minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
+    path-scurry "^1.10.1"
+
 glob@8.1.0, glob@^8.0.1:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/glob/-/glob-8.1.0.tgz#d388f656593ef708ee3e34640fdfb99a9fd1c33e"
@@ -6077,7 +6088,7 @@ istanbul-reports@^3.1.6:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
 
-jackspeak@^2.3.5:
+jackspeak@^2.0.3, jackspeak@^2.3.5:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-2.3.6.tgz#647ecc472238aee4b06ac0e461acc21a8c505ca8"
   integrity sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==
