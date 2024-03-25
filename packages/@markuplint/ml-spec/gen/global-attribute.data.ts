@@ -32,6 +32,7 @@ export const globalAttrs: Record<
 			'tabindex',
 			'title',
 			'translate',
+			'writingsuggestions',
 			'class',
 			'id',
 			'slot',

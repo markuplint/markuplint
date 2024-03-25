@@ -116,12 +116,12 @@
 		"@types/vscode": "1.87.0",
 		"@vscode/test-electron": "2.3.9",
 		"@vscode/vsce": "2.24.0",
-		"typescript": "5.4.2"
+		"typescript": "5.4.3"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.0.2-alpha.0",
 		"debug": "4.3.4",
-		"glob": "10.3.10",
+		"glob": "10.3.9",
 		"markuplint": "4.3.1-alpha.0",
 		"mocha": "10.3.0",
 		"semver": "7.6.0",

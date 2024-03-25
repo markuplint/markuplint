@@ -15,7 +15,7 @@ on:
             - 'yarn.lock'
 
 env:
-    NODE_BUILD_VERSION: 18
+    NODE_BUILD_VERSION: 20
 
 jobs:
     dev-setup:

@@ -32,13 +32,13 @@
     "@docusaurus/module-type-aliases": "3.1.1",
     "@docusaurus/tsconfig": "3.1.1",
     "@imgix/js-core": "3.8.0",
-    "eslint-plugin-react": "7.34.0",
+    "eslint-plugin-react": "7.34.1",
     "eslint-plugin-react-hooks": "4.6.0",
-    "stylelint": "16.2.1",
+    "stylelint": "16.3.0",
     "stylelint-config-recess-order": "5.0.0",
     "stylelint-config-standard": "36.0.0",
     "stylelint-order": "6.0.4",
-    "typescript": "5.4.2"
+    "typescript": "5.4.3"
   },
   "engines": {
     "node": ">=18"
