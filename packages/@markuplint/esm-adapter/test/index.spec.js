@@ -1,13 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { version as versionForTest } from 'test-markuplint';
+import { version as versionForTest } from 'markuplint';
 import { describe, it, expect } from 'vitest';
 
 const { MLEngine } = require('../cjs/index.cjs');
 
 describe('test', () => {
 	it('MLEngine.exec()', async () => {
+		await MLEngine.setModule('markuplint');
 		const engine = await MLEngine.fromCode('<span><div></div></span>', {
 			name: 'test.html',
 			dirname: __dirname,
@@ -32,6 +33,7 @@ describe('test', () => {
 		const name = path.basename(filePath);
 		const dirname = path.dirname(filePath);
 
+		await MLEngine.setModule('markuplint');
 		const engine = await MLEngine.fromCode(file, {
 			name,
 			dirname,
@@ -73,7 +75,7 @@ describe('test', () => {
 	});
 
 	it('setModule', async () => {
-		await MLEngine.setModule('test-markuplint');
+		await MLEngine.setModule('markuplint');
 		const { version } = await MLEngine.getCurrentModuleInfo();
 		expect(version).toBe(versionForTest);
 	});
