@@ -32,7 +32,7 @@ export async function forceImportJsonInModule(modPath: string) {
 			.replace(/^file:\/\//, '')
 			.replaceAll('/', path.sep)
 			// Windows
-			.replace(/^[/\\][a-z]:/i, '');
+			.replace(/^[/\\](?=[a-z]:)/i, ''); // only remove a leading slash
 		fLog('Find JSON file path: %s', normalizePath);
 
 		const fileContent = await readFile(normalizePath, { encoding: 'utf8' });
