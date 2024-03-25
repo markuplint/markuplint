@@ -1,3 +1,4 @@
+import type { ImplicitRole } from '../types/aria.js';
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../types/index.js';
 
 import { getImplicitRole as _getImplicitRole } from '../specs/get-implicit-role.js';
@@ -41,6 +42,6 @@ export function getImplicitRoleName(
 	el: Element,
 	version: ARIAVersion,
 	specs: MLMLSpec,
-) {
+): ImplicitRole {
 	return _getImplicitRole(specs, el.localName, el.namespaceURI, version, el.matches.bind(el));
 }
