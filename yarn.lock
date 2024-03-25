@@ -5070,17 +5070,6 @@ glob@10.3.10, glob@^10.2.2, glob@^10.3.10, glob@^10.3.7:
     minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
     path-scurry "^1.10.1"
 
-glob@10.3.9:
-  version "10.3.9"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-10.3.9.tgz#181ae87640ecce9b2fc5b96e4e2d70b7c3629ab8"
-  integrity sha512-2tU/LKevAQvDVuVJ9pg9Yv9xcbSh+TqHuTaXTNbQwf+0kDl9Fm6bMovi4Nm5c8TVvfxo2LLcqCGtmO9KoJaGWg==
-  dependencies:
-    foreground-child "^3.1.0"
-    jackspeak "^2.3.5"
-    minimatch "^9.0.1"
-    minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
-    path-scurry "^1.10.1"
-
 glob@8.1.0, glob@^8.0.1:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/glob/-/glob-8.1.0.tgz#d388f656593ef708ee3e34640fdfb99a9fd1c33e"
