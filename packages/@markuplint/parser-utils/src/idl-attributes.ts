@@ -148,6 +148,7 @@ const idlContentMap = {
 	width: 'width',
 	wmode: 'wmode',
 	wrap: 'wrap',
+	writingSuggestions: 'writingsuggestions', // https://html.spec.whatwg.org/multipage/dom.html#elements-in-the-dom:dom-writingsuggestions
 
 	// SVG and RDFa
 	accentHeight: 'accent-height',

@@ -1,6 +1,7 @@
 import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
-import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
+
+import { getARIA, type ARIAProperty, type ARIARole } from '@markuplint/ml-spec';
 
 export const checkingRequiredProp: ElementChecker<
 	boolean,
@@ -23,6 +24,24 @@ export const checkingRequiredProp: ElementChecker<
 			});
 			if (!has) {
 				const propSpec = propSpecs.find(p => p.name === requiredProp);
+
+				const elAriaSpec = getARIA(
+					el.ownerMLDocument.specs,
+					el.localName,
+					el.namespaceURI,
+					el.rule.options.version,
+					el.matches.bind(el),
+				);
+
+				const alt =
+					elAriaSpec?.properties === false
+						? null
+						: elAriaSpec?.properties?.without?.find(p => p.name === requiredProp)?.alt ?? null;
+
+				if (alt?.method === 'set-attr' && el.hasAttribute(alt.target)) {
+					return;
+				}
+
 				return {
 					scope: el,
 					message: t(

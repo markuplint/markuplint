@@ -3,11 +3,7 @@
 // https://w3c.github.io/html-aria/#el-br
 {
 	"contentModel": {
-		"contents": [
-			{
-				"oneOrMore": ":model(flow)"
-			}
-		]
+		"contents": false
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

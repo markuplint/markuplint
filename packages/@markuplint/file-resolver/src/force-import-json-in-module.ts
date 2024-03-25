@@ -15,7 +15,7 @@ export async function forceImportJsonInModule(modPath: string) {
 			throw error;
 		}
 
-		if (error.code !== 'ERR_IMPORT_ASSERTION_TYPE_MISSING') {
+		if (error.code !== 'ERR_IMPORT_ASSERTION_TYPE_MISSING' && error.code !== 'ERR_IMPORT_ATTRIBUTE_MISSING') {
 			throw error;
 		}
 

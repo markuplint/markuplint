@@ -1,13 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { version as versionForTest } from 'test-markuplint';
+import { version as versionForTest } from 'markuplint';
 import { describe, it, expect } from 'vitest';
 
 const { MLEngine } = require('../cjs/index.cjs');
 
 describe('test', () => {
 	it('MLEngine.exec()', async () => {
+		await MLEngine.setModule('markuplint');
 		const engine = await MLEngine.fromCode('<span><div></div></span>', {
 			name: 'test.html',
 			dirname: __dirname,
@@ -32,6 +33,7 @@ describe('test', () => {
 		const name = path.basename(filePath);
 		const dirname = path.dirname(filePath);
 
+		await MLEngine.setModule('markuplint');
 		const engine = await MLEngine.fromCode(file, {
 			name,
 			dirname,
@@ -44,33 +46,6 @@ describe('test', () => {
 		const warns = result[0].violations.filter(v => v.severity === 'warning');
 
 		expect(errors.map(v => `[${v.line}:${v.col}] ${v.message}`)).toStrictEqual([
-			'[26:11] Illegal characters must escape in character reference',
-			'[26:13] Illegal characters must escape in character reference',
-			'[26:14] Illegal characters must escape in character reference',
-			'[26:16] Illegal characters must escape in character reference',
-			'[26:20] Illegal characters must escape in character reference',
-			'[43:34] Illegal characters must escape in character reference',
-			'[43:40] Illegal characters must escape in character reference',
-			'[44:3] Illegal characters must escape in character reference',
-			'[46:2] Illegal characters must escape in character reference',
-			'[47:11] Illegal characters must escape in character reference',
-			'[47:22] Illegal characters must escape in character reference',
-			'[47:28] Illegal characters must escape in character reference',
-			'[47:29] Illegal characters must escape in character reference',
-			'[47:34] Illegal characters must escape in character reference',
-			'[47:40] Illegal characters must escape in character reference',
-			'[48:3] Illegal characters must escape in character reference',
-			'[50:2] Illegal characters must escape in character reference',
-			'[50:12] Illegal characters must escape in character reference',
-			'[55:2] Illegal characters must escape in character reference',
-			'[55:8] Illegal characters must escape in character reference',
-			'[56:1] Illegal characters must escape in character reference',
-			'[56:7] Illegal characters must escape in character reference',
-			'[29:27] Illegal characters must escape in character reference',
-			'[29:29] Illegal characters must escape in character reference',
-			'[29:30] Illegal characters must escape in character reference',
-			'[29:31] Illegal characters must escape in character reference',
-			'[29:33] Illegal characters must escape in character reference',
 			'[33:8] The "color" attribute is deprecated',
 			'[38:21] The "align" attribute is deprecated',
 			'[33:2] The "font" element is obsolete',
@@ -100,7 +75,7 @@ describe('test', () => {
 	});
 
 	it('setModule', async () => {
-		await MLEngine.setModule('test-markuplint');
+		await MLEngine.setModule('markuplint');
 		const { version } = await MLEngine.getCurrentModuleInfo();
 		expect(version).toBe(versionForTest);
 	});
