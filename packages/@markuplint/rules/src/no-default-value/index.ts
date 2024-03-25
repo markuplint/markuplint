@@ -2,10 +2,10 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { toNormalizedValue } from '../helpers.js';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 export default createRule({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {

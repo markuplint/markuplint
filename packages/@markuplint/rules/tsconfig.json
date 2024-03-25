@@ -26,6 +26,6 @@
 			"path": "../types"
 		}
 	],
-	"include": ["./src/**/*", "./src/**/meta.json"],
+	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

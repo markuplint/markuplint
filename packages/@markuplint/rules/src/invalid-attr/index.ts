@@ -6,7 +6,7 @@ import { attrCheck } from '../attr-check.js';
 import { log as ruleLog } from '../debug.js';
 import { isValidAttr, match } from '../helpers.js';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 const log = ruleLog.extend('invalid-attr');
 
@@ -58,7 +58,7 @@ type ValueRule =
 	  };
 
 export default createRule<boolean, Option>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {

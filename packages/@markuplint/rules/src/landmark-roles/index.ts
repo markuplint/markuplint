@@ -2,7 +2,7 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 type Options = {
 	ignoreRoles: Roles[];
@@ -30,7 +30,7 @@ const selectors: { readonly [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		ignoreRoles: [],

@@ -71,10 +71,13 @@ export async function dropFiles(dirPath: string, placeholder?: string): Promise<
 }
 
 /**
- * Import JSON
+ * Import other file
  */
-export async function importJSON(filePath: string): Promise<any> {
-  const { default: data } = await import(pathToFileURL(filePath).toString(), { assert: { type: 'json' } });
+export async function importFileData(filePath: string): Promise<any> {
+  const { default: data } = await import(
+    pathToFileURL(filePath).toString(),
+    filePath.endsWith('json') ? { assert: { type: 'json' } } : undefined
+  );
   return data;
 }
 

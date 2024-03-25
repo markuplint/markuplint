@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 import { isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 type Options = {
 	extendsExposableElements?: boolean;
@@ -9,7 +9,7 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		extendsExposableElements: true,

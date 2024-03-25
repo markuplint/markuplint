@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import matter from 'gray-matter';
 
 import { rewriteRuleContent } from './rule-content.mjs';
-import { dropFiles, getEditUrlBase, glob, importJSON, output, projectRoot } from './utils.mjs';
+import { dropFiles, getEditUrlBase, glob, importFileData, output, projectRoot } from './utils.mjs';
 
 type RuleIndexContents = Readonly<
   Record<'validation' | 'a11y' | 'naming-convention' | 'maintainability' | 'style', readonly string[]>
@@ -81,8 +81,8 @@ async function getDocFile(
 }
 
 async function createRuleDoc(path: string) {
-  const schema = await importJSON(resolve(path, 'schema.json'));
-  const meta = await importJSON(resolve(path, 'meta.json'));
+  const schema = await importFileData(resolve(path, 'schema.json'));
+  const meta = await importFileData(resolve(path, 'meta.js'));
   const { value, options } = schema.definitions;
   const category = meta.category;
   const severity = schema.oneOf.find((val: any) => val.properties)?.properties?.severity?.default ?? 'N/A';

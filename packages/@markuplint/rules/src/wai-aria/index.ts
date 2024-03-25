@@ -20,10 +20,10 @@ import { checkingPresentationalChildren } from './checkings/presentational-child
 import { checkingRequiredOwnedElements } from './checkings/required-owned-elements.js';
 import { checkingRequiredProp } from './checkings/required-prop.js';
 import { checkingValue } from './checkings/value.js';
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 export default createRule<boolean, Options>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultOptions: {
 		checkingValue: true,
 		checkingDeprecatedRole: true,

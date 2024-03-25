@@ -1,6 +1,6 @@
 import { createRule } from '@markuplint/ml-core';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 type Value = 'always';
 type Option = {
@@ -8,7 +8,7 @@ type Option = {
 };
 
 export default createRule<Value, Option>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultValue: 'always',
 	defaultOptions: {
 		denyObsoleteType: true,

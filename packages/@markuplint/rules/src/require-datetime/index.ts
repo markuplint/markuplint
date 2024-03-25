@@ -3,7 +3,7 @@ import type { Lang } from './types.js';
 import { createRule } from '@markuplint/ml-core';
 import { check } from '@markuplint/types';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 import { getCandidateDatetimeString } from './utils.js';
 
 type Options = {
@@ -11,7 +11,7 @@ type Options = {
 };
 
 export default createRule<boolean, Options>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultOptions: {
 		langs: undefined,
 	},

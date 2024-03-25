@@ -1,7 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 import { decodeEntities } from '@markuplint/shared';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 type Bullets = readonly string[];
 
@@ -14,7 +14,7 @@ type Options = {
 };
 
 export default createRule<Bullets, Options>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultValue: [
 		/**
 		 * @see https://en.wikipedia.org/wiki/Bullet_(typography)#In_Unicode

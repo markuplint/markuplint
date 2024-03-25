@@ -4,7 +4,7 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrMatches, match } from '../helpers.js';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 type RequiredAttributes = string | (string | Attr)[];
 
@@ -14,7 +14,7 @@ type Attr = {
 };
 
 export default createRule<RequiredAttributes>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

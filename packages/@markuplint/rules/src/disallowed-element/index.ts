@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
-import meta from './meta.json' assert { type: 'json' };
+import meta from './meta.js';
 
 export default createRule<string[]>({
-	meta: meta as Parameters<typeof createRule>[0]['meta'],
+	meta: meta,
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		for (const query of document.rule.value) {
