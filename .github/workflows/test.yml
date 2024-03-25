@@ -15,7 +15,7 @@ on:
             - 'yarn.lock'
 
 env:
-    NODE_BUILD_VERSION: 18
+    NODE_BUILD_VERSION: 20
 
 jobs:
     dev-setup:
@@ -172,6 +172,8 @@ jobs:
                 include:
                     - node: 20
                       os: ubuntu-latest
+                    - node: 21
+                      os: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
               with:
@@ -216,6 +218,9 @@ jobs:
                 shard: [1/4, 2/4, 3/4, 4/4]
                 include:
                     - node: 20
+                      os: ubuntu-latest
+                      shard: 1/1
+                    - node: 21
                       os: ubuntu-latest
                       shard: 1/1
         steps:

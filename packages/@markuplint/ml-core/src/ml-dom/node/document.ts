@@ -12,7 +12,7 @@ import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
 import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
-import type { MLMLSpec } from '@markuplint/ml-spec';
+import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import {
@@ -2837,7 +2837,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	getAccessibilityProp(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O>,
-		ariaVersion = ARIA_RECOMMENDED_VERSION,
+		ariaVersion: ARIAVersion = ARIA_RECOMMENDED_VERSION,
 	): AccessibilityProperties | null {
 		if (!node.is(node.ELEMENT_NODE)) {
 			return null;
