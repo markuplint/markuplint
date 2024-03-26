@@ -68,9 +68,9 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "7.3.1",
-		"@typescript-eslint/parser": "7.3.1",
-		"cspell": "8.6.0",
+		"@typescript-eslint/eslint-plugin": "7.4.0",
+		"@typescript-eslint/parser": "7.4.0",
+		"cspell": "8.6.1",
 		"eslint": "8.57.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-eslint-comments": "3.2.0",
@@ -99,6 +99,7 @@
 		"typescript": "5.4.3"
 	},
 	"resolutions": {
+		"cacache/**/glob": "10.3.9",
 		"lerna/**/string-width": "4",
 		"lerna/**/strip-ansi": "6",
 		"lerna/**/wrap-ansi": "7"
