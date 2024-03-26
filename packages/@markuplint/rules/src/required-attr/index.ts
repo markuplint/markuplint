@@ -4,6 +4,8 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrMatches, match } from '../helpers.js';
 
+import meta from './meta.js';
+
 type RequiredAttributes = string | (string | Attr)[];
 
 type Attr = {
@@ -12,9 +14,7 @@ type Attr = {
 };
 
 export default createRule<RequiredAttributes>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

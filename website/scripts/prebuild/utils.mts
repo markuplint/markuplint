@@ -12,29 +12,24 @@ export const projectRoot = resolve(__dirname, '..', '..', '..');
 
 /**
  * Get `editUrlBase`
- *
- * @returns {Promise<string>}
  */
-export async function getEditUrlBase() {
-  return (await import(pathToFileURL(resolve(projectRoot, 'website', 'config.js')))).default.editUrlBase;
+export async function getEditUrlBase(): Promise<string> {
+  // eslint-disable-next-line unicorn/no-await-expression-member
+  return (await import(pathToFileURL(resolve(projectRoot, 'website', 'config.js')).toString())).default.editUrlBase;
 }
 
 /**
  * Remove files that are included by the directory
- *
- * @param {string} dirPath
- * @param {string} placeholder
  */
-export async function dropFiles(dirPath, placeholder) {
-  const ignoreFileName = ['.gitkeep'];
-
-  /**
-   * @type {string[]}
-   */
-  const dirList = [];
+export async function dropFiles(dirPath: string, placeholder?: string): Promise<void> {
+  const ignoreFileName = new Set(['.gitkeep']);
+  const dirList: string[] = [];
 
   if (placeholder) {
     const [above, below] = dirPath.split(`${sep}${placeholder}${sep}`);
+    if (!above || !below) {
+      throw new Error(`Invalid path: ${dirPath}`);
+    }
     const contents = await readdir(above);
 
     const dirs = contents
@@ -52,11 +47,13 @@ export async function dropFiles(dirPath, placeholder) {
         return files.map(file => resolve(dir, file));
       }),
     )
-  ).flat();
+  )
+    // eslint-disable-next-line unicorn/no-await-expression-member
+    .flat();
 
   await Promise.all(
     contents.map(async content => {
-      if (ignoreFileName.includes(basename(content))) {
+      if (ignoreFileName.has(basename(content))) {
         return;
       }
 
@@ -74,23 +71,20 @@ export async function dropFiles(dirPath, placeholder) {
 }
 
 /**
- * Import JSON
- *
- * @param {string} filePath
- * @returns {Promise<Object>}
+ * Import other file
  */
-export async function importJSON(filePath) {
-  const { default: data } = await import(pathToFileURL(filePath), { assert: { type: 'json' } });
+export async function importFileData(filePath: string): Promise<any> {
+  const { default: data } = await import(
+    pathToFileURL(filePath).toString(),
+    filePath.endsWith('json') ? { assert: { type: 'json' } } : undefined
+  );
   return data;
 }
 
 /**
  * Async Glob
- *
- * @param {string} dir
- * @returns {Promise<string[]>}
  */
-export function glob(dir) {
+export function glob(dir: string): Promise<string[]> {
   return new Promise((res, rej) => {
     syncGlob(dir, (err, matches) => {
       if (err) {
@@ -103,11 +97,8 @@ export function glob(dir) {
 
 /**
  * Write file and output log
- *
- * @param {string} filePath
- * @param {string} content
  */
-export async function output(filePath, content) {
-  await writeFile(filePath, content, { encoding: 'utf-8' });
+export async function output(filePath: string, content: string): Promise<void> {
+  await writeFile(filePath, content, { encoding: 'utf8' });
   console.log(`✨ ${filePath}`);
 }

@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule<string[]>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultValue: [],
 	async verify({ document, report, t }) {
 		for (const query of document.rule.value) {

@@ -5,14 +5,14 @@ import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
 import { accnameMayBeMutable } from '../helpers.js';
 
+import meta from './meta.js';
+
 type Option = {
 	ariaVersion: ARIAVersion;
 };
 
 export default createRule<boolean, Option>({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta,
 	defaultOptions: {
 		ariaVersion: ARIA_RECOMMENDED_VERSION,
 	},

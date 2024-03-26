@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule({
-	meta: {
-		category: 'maintainability',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		if (!document.isFragment) {

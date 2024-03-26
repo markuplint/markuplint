@@ -2,24 +2,30 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve, basename, extname, relative, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import rules from '@markuplint/rules';
 import matter from 'gray-matter';
 
 import { rewriteRuleContent } from './rule-content.mjs';
-import { dropFiles, getEditUrlBase, glob, importJSON, output, projectRoot } from './utils.mjs';
+import { dropFiles, getEditUrlBase, glob, importFileData, output, projectRoot } from './utils.mjs';
 
-/** @typedef {Record<"validation"|"a11y"|"naming-convention"|"maintainability"|"style", string[]>} RuleIndexContents */
-/** @typedef {{ lang: string, contents: RuleIndexContents }} RuleIndex */
-/** @typedef {{ lang: string,id: string, description: string, category: string, severity: string, contents: string }} DocData */
+type RuleIndexContents = Readonly<
+  Record<'validation' | 'a11y' | 'naming-convention' | 'maintainability' | 'style', readonly string[]>
+>;
+type RuleIndex = Readonly<{ lang: string; contents: RuleIndexContents }>;
+type DocData = {
+  lang: string;
+  id: string;
+  description: string;
+  category: string;
+  severity: string;
+  contents: string;
+};
 
 const RULES_DIR = 'packages/@markuplint/rules/src';
 
 /**
  * Get directories of rules
- *
- * @returns {Promise<string[]>}
  */
-async function getRulePaths() {
+async function getRulePaths(): Promise<string[]> {
   const rulesAbsDir = resolve(projectRoot, RULES_DIR);
   const rulesDirFileList = await readdir(pathToFileURL(rulesAbsDir));
   const dirs = await Promise.all(
@@ -33,19 +39,16 @@ async function getRulePaths() {
       return content.includes('schema.json') && path;
     }),
   );
-  return dirs.filter(Boolean);
+  return dirs.filter(Boolean) as string[];
 }
 
-/**
- *
- * @param {string} filePath
- * @param {Value} value
- * @param {Options} options
- * @param {"error" | "warning"} severity
- * @param {Partial<DocData>} [inherit]
- * @returns {Promise<Partial<DocData>>}
- */
-async function getDocFile(filePath, value, options, severity, inherit) {
+async function getDocFile(
+  filePath: string,
+  value: any,
+  options: any,
+  severity: 'error' | 'warning',
+  inherit?: Partial<Readonly<DocData>>,
+): Promise<Partial<DocData>> {
   const editUrlBase = await getEditUrlBase();
   const fileBase = basename(filePath);
   const rulesAbsDir = resolve(projectRoot, RULES_DIR);
@@ -77,17 +80,12 @@ async function getDocFile(filePath, value, options, severity, inherit) {
   };
 }
 
-/**
- *
- * @param {string} path
- * @returns
- */
-async function createRuleDoc(path) {
-  const schema = await importJSON(resolve(path, 'schema.json'));
+async function createRuleDoc(path: string) {
+  const schema = await importFileData(resolve(path, 'schema.json'));
+  const meta = await importFileData(resolve(path, 'meta.js'));
   const { value, options } = schema.definitions;
-  const ruleName = basename(path);
-  const category = rules[ruleName].meta.category;
-  const severity = schema.oneOf.find(val => val.properties)?.properties?.severity?.default ?? 'N/A';
+  const category = meta.category;
+  const severity = schema.oneOf.find((val: any) => val.properties)?.properties?.severity?.default ?? 'N/A';
   const docFile = resolve(path, 'README.md');
   const doc = await getDocFile(docFile, value, options, severity);
   doc.category = category;
@@ -100,10 +98,8 @@ async function createRuleDoc(path) {
 
 /**
  * Create empty index
- *
- * @returns {RuleIndexContents}
  */
-function createIndexContents() {
+function createIndexContents(): RuleIndexContents {
   return {
     validation: [],
     a11y: [],
@@ -115,30 +111,24 @@ function createIndexContents() {
 
 /**
  * Create rule page
- *
- * @param {string} paths
- * @param {string} ruleDocsDistDir
- * @param {string} ruleDocsI18nDistDir
- * @return {Promise<RuleIndex[]>}
  */
-async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
-  /**
-   * @type RuleIndex[]
-   */
-  const indexes = [];
+async function createEachRule(
+  paths: readonly string[],
+  ruleDocsDistDir: string,
+  ruleDocsI18nDistDir: string,
+): Promise<RuleIndex[]> {
+  const indexes: RuleIndex[] = [];
 
   for (const path of paths) {
     const docs = await createRuleDoc(path);
 
     for (const doc of docs) {
-      /**
-       * @type RuleIndex
-       */
-      const index = indexes.find(idx => idx.lang === doc.lang) ?? {
-        lang: doc.lang,
+      const index: RuleIndex = indexes.find(idx => idx.lang === doc.lang) ?? {
+        lang: doc.lang!,
         contents: createIndexContents(),
       };
 
+      // @ts-expect-error
       index.contents[doc.category].push({
         id: doc.id,
         description: doc.description,
@@ -154,7 +144,7 @@ async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
         : // lang: en
           resolve(ruleDocsDistDir, `${doc.id}.md`);
 
-      await output(dist, doc.contents);
+      await output(dist, doc.contents!);
     }
   }
 
@@ -163,25 +153,22 @@ async function createEachRule(paths, ruleDocsDistDir, ruleDocsI18nDistDir) {
 
 /**
  * Create rule index page
- *
- * @param {RuleIndex} index
- * @param {string} ruleDocsDistDir
  */
-async function crateRuleIndexDoc(index, ruleDocsDistDir) {
-  const ruleListItem = rule =>
+async function crateRuleIndexDoc(index: RuleIndexContents, ruleDocsDistDir: string) {
+  const ruleListItem = (rule: any) =>
     rule.href
       ? `[\`${rule.id}\`](${rule.href})|${rule.description}`
       : `[\`${rule.id}\`](/docs/rules/${rule.id})|${rule.description}`;
 
-  const table = list => {
+  const table = (list: readonly any[]) => {
     return ['Rule ID|Description', '---|---', ...list.map(ruleListItem)];
   };
 
-  const removedTable = (list, drop) => {
+  const removedTable = (list: readonly any[], drop: string) => {
     return [
       'Rule ID|Description|Drop',
       '---|---|---',
-      ...list.map(ruleListItem).map(line => `${line}|Since \`${drop}\``),
+      ...list.map(ruleListItem).map((line: string) => `${line}|Since \`${drop}\``),
     ];
   };
 
@@ -235,8 +222,6 @@ async function crateRuleIndexDoc(index, ruleDocsDistDir) {
 
 /**
  * Create rule pages
- *
- * @param {string} projectRoot
  */
 export async function createRuleDocs() {
   const websiteDir = resolve(projectRoot, 'website');

@@ -1,9 +1,9 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule({
-	meta: {
-		category: 'style',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {

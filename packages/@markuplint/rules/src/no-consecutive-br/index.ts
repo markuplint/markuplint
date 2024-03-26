@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
 		const brList = [...document.querySelectorAll('br')];

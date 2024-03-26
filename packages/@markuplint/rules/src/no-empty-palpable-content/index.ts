@@ -1,15 +1,15 @@
 import { createRule } from '@markuplint/ml-core';
 import { isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
 
+import meta from './meta.js';
+
 type Options = {
 	extendsExposableElements?: boolean;
 	ignoreIfAriaBusy?: boolean;
 };
 
 export default createRule<boolean, Options>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		extendsExposableElements: true,

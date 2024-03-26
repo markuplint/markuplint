@@ -4,12 +4,11 @@ import type { Translator } from '@markuplint/i18n';
 import { createRule } from '@markuplint/ml-core';
 
 import { contentModel } from './content-model.js';
+import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
 
 export default createRule<TagRule[], Options>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableChildren: true,

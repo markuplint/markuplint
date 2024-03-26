@@ -2,14 +2,14 @@ import { createRule } from '@markuplint/ml-core';
 
 import { match } from '../helpers.js';
 
+import meta from './meta.js';
+
 type Options = {
 	ignore?: string | string[];
 };
 
 export default createRule<boolean, Options>({
-	meta: {
-		category: 'maintainability',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultOptions: {},
 	async verify({ document, report, t }) {

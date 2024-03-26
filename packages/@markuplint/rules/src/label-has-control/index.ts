@@ -1,11 +1,11 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 const controlSelector = ["input:not([type='hidden' i])", 'select', 'textarea'].join(',');
 
 export default createRule({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

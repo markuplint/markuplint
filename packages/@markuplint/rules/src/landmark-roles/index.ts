@@ -2,6 +2,8 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 type Options = {
 	ignoreRoles: Roles[];
 	labelEachArea: boolean;
@@ -28,9 +30,7 @@ const selectors: { readonly [role in Roles]: string[] } = {
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
 export default createRule<boolean, Options>({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultOptions: {
 		ignoreRoles: [],

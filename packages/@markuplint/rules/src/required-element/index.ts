@@ -1,13 +1,13 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 type Options = {
 	ignoreHasMutableContents: boolean;
 };
 
 export default createRule<string[], Options>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableContents: true,
