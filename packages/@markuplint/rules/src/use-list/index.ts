@@ -113,7 +113,7 @@ export default createRule<Bullets, Options>({
 			if (isMayListItem(text, bullets, spaceNeededBullets)) {
 				report({
 					scope: textNode,
-					message: t('Use {0}', t('the {0}', t('{0*} element', 'li'))),
+					message: t('Use {0}', t('the "{0*}" {1}', 'li', 'element')),
 				});
 			}
 		});
