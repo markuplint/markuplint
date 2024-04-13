@@ -48,9 +48,16 @@
 		},
 		"conditions": {
 			":not([href])": {
-				"implicitRole": false,
+				"implicitRole": "generic",
 				"permittedRoles": true,
 				"namingProhibited": true
+			}
+		},
+		"1.1": {
+			"conditions": {
+				":not([href])": {
+					"implicitRole": false
+				}
 			}
 		}
 	}
