@@ -13,12 +13,12 @@
   "author": "Yusuke Hirao",
   "license": "MIT",
   "dependencies": {
-    "@docusaurus/core": "3.2.0",
-    "@docusaurus/plugin-client-redirects": "3.2.0",
-    "@docusaurus/preset-classic": "3.2.0",
-    "@docusaurus/remark-plugin-npm2yarn": "3.2.0",
+    "@docusaurus/core": "3.2.1",
+    "@docusaurus/plugin-client-redirects": "3.2.1",
+    "@docusaurus/preset-classic": "3.2.1",
+    "@docusaurus/remark-plugin-npm2yarn": "3.2.1",
     "@mdx-js/react": "3.0.0",
-    "@octokit/rest": "20.0.2",
+    "@octokit/rest": "20.1.0",
     "clsx": "2.1.0",
     "dotenv": "16.4.5",
     "gray-matter": "4.0.3",
@@ -28,8 +28,8 @@
     "unist-util-visit": "5.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.2.0",
-    "@docusaurus/tsconfig": "3.2.0",
+    "@docusaurus/module-type-aliases": "3.2.1",
+    "@docusaurus/tsconfig": "3.2.1",
     "@imgix/js-core": "3.8.0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/glob": "^8.1.0",
@@ -39,8 +39,8 @@
     "stylelint-config-recess-order": "5.0.0",
     "stylelint-config-standard": "36.0.0",
     "stylelint-order": "6.0.4",
-    "tsx": "^4.7.1",
-    "typescript": "5.4.3"
+    "tsx": "^4.7.2",
+    "typescript": "5.4.5"
   },
   "engines": {
     "node": ">=18"

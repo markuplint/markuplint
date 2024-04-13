@@ -30,7 +30,7 @@
 		"glob": "10.3.12",
 		"prettier": "3.2.5",
 		"ts-node": "10.9.2",
-		"typescript": "5.4.3"
+		"typescript": "5.4.5"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",

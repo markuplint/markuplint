@@ -68,14 +68,14 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "7.4.0",
-		"@typescript-eslint/parser": "7.4.0",
-		"cspell": "8.6.1",
+		"@typescript-eslint/eslint-plugin": "7.6.0",
+		"@typescript-eslint/parser": "7.6.0",
+		"cspell": "8.7.0",
 		"eslint": "8.57.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-eslint-comments": "3.2.0",
 		"eslint-plugin-import": "2.29.1",
-		"eslint-plugin-jsdoc": "48.2.2",
+		"eslint-plugin-jsdoc": "48.2.3",
 		"eslint-plugin-node": "11.1.0",
 		"eslint-plugin-regexp": "2.4.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
@@ -93,10 +93,10 @@
 		"textlint-rule-preset-japanese": "10.0.3",
 		"textlint-rule-preset-jtf-style": "2.3.14",
 		"ts-node": "10.9.2",
-		"typedoc": "0.25.12",
-		"typedoc-plugin-mdn-links": "3.1.18",
+		"typedoc": "0.25.13",
+		"typedoc-plugin-mdn-links": "3.1.20",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
-		"typescript": "5.4.3"
+		"typescript": "5.4.5"
 	},
 	"resolutions": {
 		"lerna/**/string-width": "4",

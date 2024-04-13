@@ -33,6 +33,6 @@
 		"@markuplint/ml-spec": "4.3.0",
 		"@markuplint/test-tools": "4.3.0",
 		"@types/cli-progress": "3.11.5",
-		"type-fest": "4.14.0"
+		"type-fest": "4.15.0"
 	}
 }
