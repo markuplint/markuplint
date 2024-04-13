@@ -33,7 +33,7 @@
 		"@types/uuid": "9.0.8",
 		"debug": "4.3.4",
 		"espree": "10.0.1",
-		"type-fest": "4.14.0",
+		"type-fest": "4.15.0",
 		"uuid": "9.0.1"
 	}
 }
