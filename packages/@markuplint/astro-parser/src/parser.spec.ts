@@ -644,4 +644,15 @@ describe('Issue', () => {
 		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
 		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
 	});
+
+	test('#1562', () => {
+		// https://docs.astro.build/en/basics/astro-syntax/#fragments
+		const ast = parse('<>text</>');
+		const map = nodeListToDebugMaps(ast.nodeList);
+		expect(map).toEqual([
+			'[1:1]>[1:3](0,2)#jsx-fragment: <>',
+			'[1:3]>[1:7](2,6)#text: text',
+			'[1:7]>[1:10](6,9)#jsx-fragment: </>',
+		]);
+	});
 });

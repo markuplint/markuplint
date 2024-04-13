@@ -164,7 +164,10 @@ class AstroParser extends Parser<Node, State> {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		childNodes: readonly Node[],
 	): readonly MLASTNodeTreeItem[] {
-		const parsedNodes = this.parseCodeFragment(token);
+		const parsedNodes = this.parseCodeFragment(token, {
+			// https://docs.astro.build/en/basics/astro-syntax/#fragments
+			namelessFragment: true,
+		});
 
 		const startTagNode = parsedNodes.at(0);
 
@@ -173,6 +176,8 @@ class AstroParser extends Parser<Node, State> {
 		}
 
 		return super.visitElement(startTagNode, childNodes, {
+			// https://docs.astro.build/en/basics/astro-syntax/#fragments
+			namelessFragment: true,
 			overwriteProps: {
 				namespace: this.state.scopeNS,
 			},
