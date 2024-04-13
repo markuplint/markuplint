@@ -37,7 +37,7 @@ function tree(html: string, version: ARIAVersion) {
 
 describe('1.2', () => {
 	test('the a element', () => {
-		expect(c('<a></a>', '1.2').role?.name).toBe(undefined);
+		expect(c('<a></a>', '1.2').role?.name).toBe('generic');
 		expect(c('<a href></a>', '1.2').role?.name).toBe('link');
 		expect(c('<a role="button"></a>', '1.2').role?.name).toBe('button');
 		expect(c('<a role="button" href></a>', '1.2').role?.name).toBe('button');
@@ -83,7 +83,7 @@ describe('1.2', () => {
 	test('Presentational Roles Conflict Resolution (1) Interactive Elements', () => {
 		expect(c('<a href="path/to"></a>', '1.2').role?.name).toBe('link');
 		expect(c('<a role="none" href="path/to"></a>', '1.2').role?.name).toBe('link'); // No permitted role
-		expect(c('<a></a>', '1.2').role?.name).toBe(undefined);
+		expect(c('<a></a>', '1.2').role?.name).toBe('generic');
 		expect(c('<a role="none"></a>', '1.2').role?.name).toBe('none');
 		expect(c('<a role="none" href="path/to" disabled></a>', '1.2').role?.name).toBe('link'); // No permitted role
 		expect(c('<button></button>', '1.2').role?.name).toBe('button');
@@ -168,7 +168,7 @@ describe('1.2', () => {
 
 describe('1.3', () => {
 	test('the a element', () => {
-		expect(c('<a></a>', '1.3').role?.name).toBe(undefined);
+		expect(c('<a></a>', '1.3').role?.name).toBe('generic');
 		expect(c('<a href></a>', '1.3').role?.name).toBe('link');
 		expect(c('<a role="button"></a>', '1.3').role?.name).toBe('button');
 		expect(c('<a role="button" href></a>', '1.3').role?.name).toBe('button');
@@ -214,7 +214,7 @@ describe('1.3', () => {
 	test('Presentational Roles Conflict Resolution (1) Interactive Elements', () => {
 		expect(c('<a href="path/to"></a>', '1.3').role?.name).toBe('link');
 		expect(c('<a role="none" href="path/to"></a>', '1.3').role?.name).toBe('link'); // No permitted role
-		expect(c('<a></a>', '1.3').role?.name).toBe(undefined);
+		expect(c('<a></a>', '1.3').role?.name).toBe('generic');
 		expect(c('<a role="none"></a>', '1.3').role?.name).toBe('none');
 		expect(c('<a role="none" href="path/to" disabled></a>', '1.3').role?.name).toBe('link'); // No permitted role
 		expect(c('<button></button>', '1.3').role?.name).toBe('button');

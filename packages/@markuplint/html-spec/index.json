@@ -35020,9 +35020,16 @@
 				},
 				"conditions": {
 					":not([href])": {
-						"implicitRole": false,
+						"implicitRole": "generic",
 						"permittedRoles": true,
 						"namingProhibited": true
+					}
+				},
+				"1.1": {
+					"conditions": {
+						":not([href])": {
+							"implicitRole": false
+						}
 					}
 				}
 			},
@@ -40163,9 +40170,12 @@
 				]
 			},
 			"aria": {
-				"implicitRole": false,
+				"implicitRole": "deletion",
 				"permittedRoles": true,
-				"namingProhibited": true
+				"namingProhibited": true,
+				"1.1": {
+					"implicitRole": false
+				}
 			},
 			"omission": false,
 			"globalAttrs": {
