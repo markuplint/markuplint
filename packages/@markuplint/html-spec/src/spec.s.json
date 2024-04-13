@@ -16,8 +16,11 @@
 	},
 	"attributes": {},
 	"aria": {
-		"implicitRole": false,
+		"implicitRole": "deletion",
 		"permittedRoles": true,
-		"namingProhibited": true
+		"namingProhibited": true,
+		"1.1": {
+			"implicitRole": false
+		}
 	}
 }
