@@ -1,14 +1,13 @@
-import type { QuoteSet } from './types.js';
+import type { QuoteSet, ValueType } from './types.js';
 
 import { defaultSpaces } from './const.js';
 import { AttrState } from './enums.js';
+import { safeScriptParser } from './script-parser.js';
 
 const defaultQuoteSet: ReadonlyArray<QuoteSet> = [
-	{ start: '"', end: '"' },
-	{ start: "'", end: "'" },
+	{ start: '"', end: '"', type: 'string' },
+	{ start: "'", end: "'", type: 'string' },
 ];
-
-const defaultQuoteInValueChars = [] as const;
 
 const spaces = defaultSpaces as ReadonlyArray<string>;
 
@@ -23,7 +22,7 @@ export function attrTokenizer(
 	raw: string,
 	quoteSet = defaultQuoteSet,
 	startState = AttrState.BeforeName,
-	quoteInValueChars: ReadonlyArray<QuoteSet> = defaultQuoteInValueChars,
+	noQuoteValueType: ValueType = 'string',
 	endOfUnquotedValueChars: ReadonlyArray<string> = [...defaultSpaces, '/', '>'],
 ) {
 	let state: AttrState = startState;
@@ -35,11 +34,10 @@ export function attrTokenizer(
 	let quoteTypeIndex = -1;
 	let quoteStart = '';
 	let attrValue = '';
+	let valueType: ValueType = noQuoteValueType;
 	let quoteEnd = '';
 
 	const isBeforeValueStarted = startState === AttrState.BeforeValue;
-
-	const quoteModeStack: QuoteSet[] = [];
 
 	const chars = [...raw];
 
@@ -128,16 +126,7 @@ export function attrTokenizer(
 				const quote = quoteSet[quoteTypeIndex];
 				if (quote) {
 					quoteStart = quote.start;
-					state = AttrState.Value;
-					break;
-				}
-
-				const raw = char + chars.join('');
-				const inQuote = quoteInValueChars.find(quote => raw.startsWith(quote.start));
-				if (inQuote) {
-					quoteModeStack.push(inQuote);
-					attrValue += inQuote.start;
-					chars.splice(0, inQuote.start.length - 1);
+					valueType = quote.type;
 					state = AttrState.Value;
 					break;
 				}
@@ -153,27 +142,17 @@ export function attrTokenizer(
 					break;
 				}
 
-				if (quoteModeStack.length === 0 && char === quoteSet[quoteTypeIndex]?.end) {
+				if (char === quoteSet[quoteTypeIndex]?.end) {
 					quoteEnd = char;
 					state = AttrState.AfterValue;
 					break;
 				}
 
-				const raw = char + chars.join('');
-
-				const inQuoteEnd = quoteModeStack.at(-1);
-				if (inQuoteEnd && raw.startsWith(inQuoteEnd.end)) {
-					quoteModeStack.pop();
-					attrValue += inQuoteEnd.end;
-					chars.splice(0, inQuoteEnd.end.length - 1);
-					break;
-				}
-
-				const inQuoteStart = quoteInValueChars.find(quote => raw.startsWith(quote.start));
-				if (inQuoteStart) {
-					quoteModeStack.push(inQuoteStart);
-					attrValue += inQuoteStart.start;
-					chars.splice(0, inQuoteStart.start.length - 1);
+				if (valueType === 'script') {
+					const raw = char + chars.join('');
+					const { validScript } = safeScriptParser(raw);
+					attrValue += validScript;
+					chars.splice(0, validScript.length - 1);
 					break;
 				}
 
