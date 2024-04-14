@@ -63,4 +63,7 @@ export type IgnoreBlock = {
 export type QuoteSet = {
 	readonly start: string;
 	readonly end: string;
+	readonly type: ValueType;
 };
+
+export type ValueType = 'string' | 'script';
