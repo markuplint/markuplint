@@ -244,16 +244,9 @@ class JSXParser extends Parser<JSXNode, State> {
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
 			quoteSet: [
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '{', end: '}' },
-			],
-			quoteInValueChars: [
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '`', end: '`' },
-				{ start: '{', end: '}' },
-				{ start: '${', end: '}' },
+				{ start: '"', end: '"', type: 'string' },
+				{ start: "'", end: "'", type: 'string' },
+				{ start: '{', end: '}', type: 'script' },
 			],
 		});
 
