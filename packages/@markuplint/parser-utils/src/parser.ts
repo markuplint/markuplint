@@ -7,6 +7,7 @@ import type {
 	ParseOptions,
 	ParserOptions,
 	Tokenized,
+	ValueType,
 } from './types.js';
 import type {
 	EndTagType,
@@ -506,7 +507,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		token: Token,
 		options?: {
 			readonly quoteSet?: readonly QuoteSet[];
-			readonly quoteInValueChars?: readonly QuoteSet[];
+			readonly noQuoteValueType?: ValueType;
 			readonly endOfUnquotedValueChars?: readonly string[];
 			readonly startState?: AttrState;
 		},
@@ -515,7 +516,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const quoteSet = options?.quoteSet;
 		const startState = options?.startState ?? AttrState.BeforeName;
-		const quoteInValueChars = options?.quoteInValueChars;
+		const noQuoteValueType = options?.noQuoteValueType;
 		const endOfUnquotedValueChars = options?.endOfUnquotedValueChars;
 
 		let startOffset = token.startOffset;
@@ -524,7 +525,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		let tokens: ReturnType<typeof attrTokenizer>;
 		try {
-			tokens = attrTokenizer(raw, quoteSet, startState, quoteInValueChars, endOfUnquotedValueChars);
+			tokens = attrTokenizer(raw, quoteSet, startState, noQuoteValueType, endOfUnquotedValueChars);
 		} catch (error) {
 			if (error instanceof SyntaxError) {
 				throw new ParserError(error.message, token);
