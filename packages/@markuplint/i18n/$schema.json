@@ -118,6 +118,7 @@
 				"one or more elements": { "type": "string" },
 				"one": { "type": "string" },
 				"origin": { "type": "string" },
+				"orphaned end tag": { "type": "string" },
 				"password": { "type": "string" },
 				"perceptible nodes": { "type": "string" },
 				"placeholder label option": { "type": "string" },
