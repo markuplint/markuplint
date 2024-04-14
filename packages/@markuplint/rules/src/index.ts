@@ -24,6 +24,7 @@ import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
+import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr/index.js';
 import PermittedContents from './permitted-contents/index.js';
@@ -61,6 +62,7 @@ const rules = {
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
+	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,

@@ -101,6 +101,10 @@ test('default-rules', () => {
 			category: 'maintainability',
 			defaultValue: false,
 		},
+		'no-orphaned-end-tag': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'no-refer-to-non-existent-id': {
 			category: 'a11y',
 			defaultValue: true,

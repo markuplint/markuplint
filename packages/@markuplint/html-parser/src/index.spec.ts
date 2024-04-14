@@ -335,6 +335,52 @@ describe('parser', () => {
 		]);
 	});
 
+	test('<div></p></br></span></div>', () => {
+		const doc = parse('<div></p></br></span></div>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			// @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+			// An end tag whose tag name is "p"
+			// If the stack of open elements does not have a p element in button scope, then this is a parse error;
+			// insert an HTML element for a "p" start tag token with no attributes.
+			'[1:6]>[1:6](5,5)p(👻): ',
+			// An end tag whose tag name is "br"
+			// Parse error. Drop the attributes from the token,
+			// and act as described in the next entry;
+			// i.e. act as if this was a "br" start tag token with no attributes,
+			// rather than the end tag token that it actually is.
+			'[1:6]>[1:6](5,5)br(👻): ',
+			'[1:6]>[1:10](5,9)#invalid(👿): </p>',
+			'[1:10]>[1:15](9,14)#invalid(👿): </br>',
+			'[1:15]>[1:22](14,21)#invalid(👿): </span>',
+			'[1:22]>[1:28](21,27)div: </div>',
+		]);
+	});
+
+	test('<div></p></br><p></span></p></div>', () => {
+		const doc = parse('<div></p></br><p></span></p></div>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:6](0,5)div: <div>',
+			// @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+			// An end tag whose tag name is "p"
+			// If the stack of open elements does not have a p element in button scope, then this is a parse error;
+			// insert an HTML element for a "p" start tag token with no attributes.
+			'[1:6]>[1:6](5,5)p(👻): ',
+			// An end tag whose tag name is "br"
+			// Parse error. Drop the attributes from the token,
+			// and act as described in the next entry;
+			// i.e. act as if this was a "br" start tag token with no attributes,
+			// rather than the end tag token that it actually is.
+			'[1:6]>[1:6](5,5)br(👻): ',
+			'[1:6]>[1:10](5,9)#invalid(👿): </p>',
+			'[1:10]>[1:15](9,14)#invalid(👿): </br>',
+			'[1:15]>[1:18](14,17)p: <p>',
+			'[1:18]>[1:25](17,24)#invalid(👿): </span>',
+			'[1:25]>[1:29](24,28)p: </p>',
+			'[1:29]>[1:35](28,34)div: </div>',
+		]);
+	});
+
 	test('Full HTML', () => {
 		const doc = parse(`<!DOCTYPE html>
 <html lang="en">

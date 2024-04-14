@@ -1107,7 +1107,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			if (node.type === 'endtag') {
 				const endTagUUID = node.uuid;
 				const openTag = newNodeList.findLast<MLASTElement>((n): n is MLASTElement =>
-					n.type === 'starttag' ? n.pairNode?.uuid === endTagUUID : false,
+					n.type === 'starttag' && !n.isGhost ? n.pairNode?.uuid === endTagUUID : false,
 				);
 				if (!openTag) {
 					node = this.#convertIntoInvalidNode(node);

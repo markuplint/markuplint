@@ -78,6 +78,9 @@
 				"no-hard-code-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hard-code-id/schema.json"
 				},
+				"no-orphaned-end-tag": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-orphaned-end-tag/schema.json"
+				},
 				"no-refer-to-non-existent-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-refer-to-non-existent-id/schema.json"
 				},
