@@ -91,7 +91,7 @@ export async function onDidOpen(
 	engine.exec().catch((error: unknown) => notFoundParserError(error));
 }
 
-let debounceTimer: NodeJS.Timer;
+let debounceTimer: ReturnType<typeof setTimeout>;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

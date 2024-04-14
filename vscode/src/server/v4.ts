@@ -142,7 +142,7 @@ export async function onDidOpen(
 	});
 }
 
-let debounceTimer: NodeJS.Timer;
+let debounceTimer: ReturnType<typeof setTimeout>;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -230,7 +230,8 @@ export async function getNodeWithAccessibilityProps(
 	labels.role = aria.role ? `\`${aria.role}\`` : t('No corresponding role');
 	labels.name = aria.nameProhibited
 		? `**${t('Prohibited')}**`
-		: aria.name
+		: // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+			aria.name
 			? typeof aria.name === 'string'
 				? `\`"${aria.name}"\``
 				: `**${t('Unknown')}**`

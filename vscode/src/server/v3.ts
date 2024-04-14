@@ -130,7 +130,7 @@ export async function onDidOpen(
 	});
 }
 
-let debounceTimer: NodeJS.Timer;
+let debounceTimer: ReturnType<typeof setTimeout>;
 
 export function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
