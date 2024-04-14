@@ -655,4 +655,12 @@ describe('Issue', () => {
 			'[1:7]>[1:10](6,9)#jsx-fragment: </>',
 		]);
 	});
+
+	test('#1561', () => {
+		const ast = parse(`
+<p title="Today is '24/04/01">text</p>
+<p title="Today is &#39;24/04/01">text</p>
+`);
+		expect(ast).toBeTruthy();
+	});
 });
