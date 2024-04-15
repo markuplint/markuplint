@@ -50,6 +50,11 @@ export type SpecConfig = {
 	readonly [extensionPattern: string]: string /* module name or path */;
 };
 
+export type PretenderFileData = {
+	readonly version: string;
+	readonly data: readonly Pretender[];
+};
+
 export type Pretender = {
 	/**
 	 * Target node selectors
@@ -64,6 +69,23 @@ export type Pretender = {
 	 * If it is an Object, It creates the element by that.
 	 */
 	readonly as: string | OriginalNode;
+
+	/**
+	 * If it is a string, it is resolved as an element name.
+	 * An element regards as having the same attributes
+	 * as the pretended custom element because these are inherited.
+	 * If it is an Object, It can specify in detail the element's attributes.
+	 *
+	 * @experimental
+	 */
+	readonly filePath?: string;
+
+	/**
+	 * Dynamic scaning
+	 *
+	 * @experimental
+	 */
+	readonly scan?: readonly PretenderScanConfig[];
 };
 
 export type OriginalNode = {
@@ -71,6 +93,61 @@ export type OriginalNode = {
 	 * Element name
 	 */
 	readonly element: string;
+
+	/**
+	 * It should specify slots if the component can define a slot element or children.
+	 *
+	 * For example, the following:
+	 *
+	 * ```jsx
+	 * const Component = ({children}) => (
+	 *   <div>
+	 *     <h2>lorem ipsum</h2>
+	 *     <p>{children}</p>
+	 *   </div>
+	 * );
+	 * ```
+	 *
+	 * In the above case, the `p` element has the `children`,
+	 * so it specifies the element to this field.
+	 *
+	 * Or:
+	 *
+	 * ```html
+	 * <template>
+	 *   <h2>lorem ipsum</h2>
+	 *   <p><span slot="my-text">{children}</span></p>
+	 * </template>
+	 * ```
+	 *
+	 * It notes that what needs to be specified
+	 * in this field is not the element with the slot attribute
+	 * but the element that wraps it.
+	 *
+	 * This field accepts an array
+	 * because a component and a custom element can have multiple slots.
+	 *
+	 * If `null`,
+	 * it means the component **doesn't accept children or doesn't have slots**.
+	 *
+	 * ```jsx
+	 * const Component = (props) => (
+	 *   <img {...props} />
+	 * );
+	 * ```
+	 *
+	 * If true, it means the component accepts children or has slots,
+	 * and **the wrapper element and the outermost element are the same**.
+	 *
+	 * ```jsx
+	 * const Component = ({children}) => (
+	 *   <button>{children}</button>
+	 * );
+	 * ```
+	 *
+	 * @experimental
+	 */
+	readonly slots?: null | true | readonly Slot[];
 
 	/**
 	 * Namespace
@@ -83,7 +160,7 @@ export type OriginalNode = {
 	/**
 	 * Attributes
 	 */
-	attrs?: PretenderAttr[];
+	readonly attrs?: readonly PretenderAttr[];
 
 	/**
 	 * To have attributes the defined element has.
@@ -95,6 +172,11 @@ export type OriginalNode = {
 	 */
 	readonly aria?: PretenderARIA;
 };
+
+/**
+ * @experimental
+ */
+export type Slot = Omit<OriginalNode, 'slot'>;
 
 export type PretenderAttr = {
 	/**
@@ -128,6 +210,26 @@ export type PretenderARIA = {
 				readonly fromAttr: string;
 		  };
 };
+
+/**
+ * @experimental
+ */
+export type PretenderScanConfig = {
+	/**
+	 * Supporting for Glob format
+	 */
+	readonly files: string;
+	readonly type: string;
+	readonly options: PretenderScanOptions;
+};
+
+/**
+ * @experimental
+ */
+export interface PretenderScanOptions {
+	readonly cwd?: string;
+	readonly ignoreComponentNames?: readonly string[];
+}
 
 export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = RuleConfig<T, O> | Readonly<T> | boolean;
 

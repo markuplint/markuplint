@@ -8,6 +8,9 @@
 	"references": [
 		{
 			"path": "../ml-config"
+		},
+		{
+			"path": "../parser-utils"
 		}
 	],
 	"include": ["./src/**/*"],
