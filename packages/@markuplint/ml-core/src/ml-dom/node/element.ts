@@ -3451,7 +3451,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretending(pretenders?: readonly Pretender[]) {
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');
-		const pretenderElement =
+		const pretenderElement: Pretender['as'] | null =
 			pretenderConfig?.as ??
 			(this.elementType === 'html' || !asAttrValue
 				? null
