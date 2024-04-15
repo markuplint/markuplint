@@ -7,10 +7,11 @@ import { jsxScanner } from './index.js';
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
 const _ = (filePath: string) => filePath.split('/').join(path.sep);
+const testDir = path.resolve(__dirname, '..', '..', 'test', 'fixtures');
 
 describe('jsxScanner', () => {
 	test('001.tsx', async () => {
-		expect(await jsxScanner([path.resolve(__dirname, '../../test/fixtures/001.tsx')])).toStrictEqual([
+		expect(await jsxScanner([path.resolve(testDir, '001.tsx')])).toStrictEqual([
 			{
 				selector: 'NodeA',
 				as: {
@@ -80,14 +81,14 @@ describe('jsxScanner', () => {
 
 	test('002', async () => {
 		expect(
-			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/002.tsx')], {
+			await jsxScanner([path.resolve(testDir, '002.tsx')], {
 				ignoreComponentNames: ['FooBar'],
 			}),
 		).toStrictEqual([]);
 	});
 
 	test('003', async () => {
-		expect(await jsxScanner([path.resolve(__dirname, '../../test/fixtures/003.tsx')])).toStrictEqual([
+		expect(await jsxScanner([path.resolve(testDir, '003.tsx')])).toStrictEqual([
 			{
 				selector: 'Button',
 				as: {
@@ -110,7 +111,7 @@ describe('jsxScanner', () => {
 		]);
 
 		expect(
-			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/003.tsx')], {
+			await jsxScanner([path.resolve(testDir, '003.tsx')], {
 				taggedStylingComponent: [/^ORIGINAL_IDENTIFIER\.(?<tagName>[a-z][\da-z]*)$/],
 			}),
 		).toStrictEqual([
@@ -128,7 +129,7 @@ describe('jsxScanner', () => {
 
 	test('004', async () => {
 		expect(
-			await jsxScanner([path.resolve(__dirname, '../../test/fixtures/004.tsx')], {
+			await jsxScanner([path.resolve(testDir, '004.tsx')], {
 				extendingWrapper: [
 					'secondary',
 					{
