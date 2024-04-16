@@ -33,7 +33,7 @@
 		"@markuplint/react-spec": "4.3.0",
 		"@total-typescript/ts-reset": "0.5.1",
 		"@types/json-schema": "7.0.15",
-		"@types/react": "18.2.77",
+		"@types/react": "18.2.79",
 		"@types/react-dom": "18.2.25",
 		"@types/semver": "7.5.8",
 		"@vitejs/plugin-react": "4.2.1",
