@@ -13,6 +13,10 @@
 
 ## Release Notes
 
+### 4.6.1
+
+- Depends: `markuplint@4.6.1`
+
 ### 4.6.0
 
 - Depends: `markuplint@4.6.0`
