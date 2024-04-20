@@ -624,4 +624,56 @@ const C = () => {
 		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
 		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
 	});
+
+	test('#1579', () => {
+		const doc = parse(`export function App() {
+  const [value, setValue] = useState<Value>("value1");
+
+  return (
+    <div>
+      <select
+        onChange={(e) => {
+          setValue(e.target.value as Value);
+        }}
+      >
+        <option>value1</option>
+        <option>value2</option>
+      </select>
+      <p>{value}</p>
+    </div>
+  );
+}`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[5:5]>[5:10](95,100)div: <div>',
+			'[5:10]>[6:7](100,107)#text: ⏎␣␣␣␣␣␣',
+			'[6:7]>[10:8](107,205)select: <select⏎␣␣␣␣␣␣␣␣onChange={(e)␣=>␣{⏎␣␣␣␣␣␣␣␣␣␣setValue(e.target.value␣as␣Value);⏎␣␣␣␣␣␣␣␣}}⏎␣␣␣␣␣␣>',
+			'[7:9]>[9:11](123,197)onChange: onChange={(e)␣=>␣{⏎␣␣␣␣␣␣␣␣␣␣setValue(e.target.value␣as␣Value);⏎␣␣␣␣␣␣␣␣}}',
+			'  [6:14]>[7:9](114,123)bN: ⏎␣␣␣␣␣␣␣␣',
+			'  [7:9]>[7:17](123,131)name: onChange',
+			'  [7:17]>[7:17](131,131)bE: ',
+			'  [7:17]>[7:18](131,132)equal: =',
+			'  [7:18]>[7:18](132,132)aE: ',
+			'  [7:18]>[7:19](132,133)sQ: {',
+			'  [7:19]>[9:10](133,196)value: (e)␣=>␣{⏎␣␣␣␣␣␣␣␣␣␣setValue(e.target.value␣as␣Value);⏎␣␣␣␣␣␣␣␣}',
+			'  [9:10]>[9:11](196,197)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[10:8]>[11:9](205,214)#text: ⏎␣␣␣␣␣␣␣␣',
+			'[11:9]>[11:17](214,222)option: <option>',
+			'[11:17]>[11:23](222,228)#text: value1',
+			'[11:23]>[11:32](228,237)option: </option>',
+			'[11:32]>[12:9](237,246)#text: ⏎␣␣␣␣␣␣␣␣',
+			'[12:9]>[12:17](246,254)option: <option>',
+			'[12:17]>[12:23](254,260)#text: value2',
+			'[12:23]>[12:32](260,269)option: </option>',
+			'[12:32]>[13:7](269,276)#text: ⏎␣␣␣␣␣␣',
+			'[13:7]>[13:16](276,285)select: </select>',
+			'[13:16]>[14:7](285,292)#text: ⏎␣␣␣␣␣␣',
+			'[14:7]>[14:10](292,295)p: <p>',
+			'[14:10]>[14:17](295,302)#ps:JSXExpressionContainer: {value}',
+			'[14:17]>[14:21](302,306)p: </p>',
+			'[14:21]>[15:5](306,311)#text: ⏎␣␣␣␣',
+			'[15:5]>[15:11](311,317)div: </div>',
+		]);
+	});
 });

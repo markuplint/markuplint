@@ -5,7 +5,7 @@ import type { ChildToken, Token } from '@markuplint/parser-utils';
 import { getNamespace } from '@markuplint/html-parser';
 import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
 
-import { jsxParser, getName } from './jsx.js';
+import { jsxParser, attrParser, getName } from './jsx.js';
 
 type State = {
 	comments: readonly JSXComment[];
@@ -246,7 +246,7 @@ class JSXParser extends Parser<JSXNode, State> {
 			quoteSet: [
 				{ start: '"', end: '"', type: 'string' },
 				{ start: "'", end: "'", type: 'string' },
-				{ start: '{', end: '}', type: 'script' },
+				{ start: '{', end: '}', type: 'script', parser: attrParser },
 			],
 		});
 
