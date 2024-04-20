@@ -64,6 +64,9 @@ export type QuoteSet = {
 	readonly start: string;
 	readonly end: string;
 	readonly type: ValueType;
+	readonly parser?: CustomParser;
 };
+
+export type CustomParser = (code: string) => void;
 
 export type ValueType = 'string' | 'script';

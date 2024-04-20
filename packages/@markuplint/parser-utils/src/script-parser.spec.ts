@@ -1,3 +1,4 @@
+import { parse as tsParse } from '@typescript-eslint/typescript-estree';
 import { test, expect, describe } from 'vitest';
 
 import { safeScriptParser, scriptParser } from './script-parser.js';
@@ -174,6 +175,51 @@ describe('safeScriptParser', () => {
 		expect(safeScriptParser("{color: 'red', background: 'green'}")).toStrictEqual({
 			validScript: "{color: 'red', background: 'green'}",
 			leftover: '',
+		});
+	});
+});
+
+describe('Issues', () => {
+	test('#1579', () => {
+		expect(safeScriptParser('(e) => { setValue(e.target.value as Value); } }>')).toStrictEqual({
+			validScript: '(e) => { setValue(e.target.value ',
+			leftover: 'as Value); } }>',
+		});
+
+		expect(
+			safeScriptParser('(e) => { setValue(e.target.value as Value); } }>', script => {
+				try {
+					tsParse(script, {
+						comment: true,
+						errorOnUnknownASTType: false,
+						jsx: true,
+						loc: true,
+						range: true,
+						tokens: false,
+						useJSXTextNode: true,
+					});
+				} catch (error) {
+					if (
+						error instanceof Error &&
+						'location' in error &&
+						error.location instanceof Object &&
+						'start' in error.location &&
+						error.location.start instanceof Object &&
+						'offset' in error.location.start &&
+						typeof error.location.start.offset === 'number'
+					) {
+						const newError = new SyntaxError(error.message);
+						// @ts-ignore
+						newError.index = error.location.start.offset;
+						throw newError;
+					} else {
+						throw error;
+					}
+				}
+			}),
+		).toStrictEqual({
+			validScript: '(e) => { setValue(e.target.value as Value); } ',
+			leftover: '}>',
 		});
 	});
 });
