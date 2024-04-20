@@ -1,3 +1,5 @@
+import type { CustomParser } from './types.js';
+
 // @ts-ignore
 import { tokenize, parse } from 'espree';
 
@@ -13,13 +15,13 @@ export function scriptParser(script: string): ScriptTokenType[] {
 	}));
 }
 
-export function safeScriptParser(script: string) {
-	let { validScript, leftover } = safeParse(script);
+export function safeScriptParser(script: string, parse: CustomParser = defaultParse) {
+	let { validScript, leftover } = safeParse(script, parse);
 
 	// Support for object literal
 	if (leftover.trim()) {
 		const assignment = '$=';
-		({ validScript } = safeParse(`${assignment}${script}`));
+		({ validScript } = safeParse(`${assignment}${script}`, parse));
 		validScript = validScript.length > assignment.length ? validScript.slice(assignment.length) : '';
 	}
 
@@ -27,7 +29,7 @@ export function safeScriptParser(script: string) {
 	if (validScript.trim() === '') {
 		const coverStart = '$={';
 		const coverEnd = '}';
-		({ validScript } = safeParse(`${coverStart}${script}${coverEnd}`));
+		({ validScript } = safeParse(`${coverStart}${script}${coverEnd}`, parse));
 		const coverEndLastIndex = validScript.lastIndexOf(coverEnd);
 		validScript =
 			validScript.length > coverStart.length + coverEnd.length
@@ -43,16 +45,11 @@ export function safeScriptParser(script: string) {
 	};
 }
 
-function safeParse(script: string) {
+function safeParse(script: string, parse: CustomParser) {
 	let validScript: string;
 	let leftover: string;
 	try {
-		parse(script, {
-			ecmaVersion: 'latest',
-			ecmaFeatures: {
-				jsx: true,
-			},
-		});
+		parse(script);
 		validScript = script;
 		leftover = '';
 	} catch (error) {
@@ -73,6 +70,15 @@ function safeParse(script: string) {
 		validScript,
 		leftover,
 	};
+}
+
+function defaultParse(script: string) {
+	parse(script, {
+		ecmaVersion: 'latest',
+		ecmaFeatures: {
+			jsx: true,
+		},
+	});
 }
 
 export type ScriptTokenType = {

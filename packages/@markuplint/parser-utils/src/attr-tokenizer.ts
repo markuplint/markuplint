@@ -1,4 +1,4 @@
-import type { QuoteSet, ValueType } from './types.js';
+import type { CustomParser, QuoteSet, ValueType } from './types.js';
 
 import { defaultSpaces } from './const.js';
 import { AttrState } from './enums.js';
@@ -35,6 +35,7 @@ export function attrTokenizer(
 	let quoteStart = '';
 	let attrValue = '';
 	let valueType: ValueType = noQuoteValueType;
+	let parser: CustomParser | undefined;
 	let quoteEnd = '';
 
 	const isBeforeValueStarted = startState === AttrState.BeforeValue;
@@ -127,6 +128,7 @@ export function attrTokenizer(
 				if (quote) {
 					quoteStart = quote.start;
 					valueType = quote.type;
+					parser = quote.parser;
 					state = AttrState.Value;
 					break;
 				}
@@ -150,7 +152,7 @@ export function attrTokenizer(
 
 				if (valueType === 'script') {
 					const raw = char + chars.join('');
-					const { validScript } = safeScriptParser(raw);
+					const { validScript } = safeScriptParser(raw, parser);
 					attrValue += validScript;
 					chars.splice(0, validScript.length - 1);
 					break;
