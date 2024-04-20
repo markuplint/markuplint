@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "4.5.0",
+	"version": "4.5.1",
 	"description": "HTML parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -26,7 +26,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.2.0",
-		"@markuplint/parser-utils": "4.5.0",
+		"@markuplint/parser-utils": "4.5.1",
 		"parse5": "7.1.2",
 		"type-fest": "4.15.0"
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-parser",
-	"version": "4.5.0",
+	"version": "4.5.1",
 	"description": "Vue parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,9 +21,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.5.0",
+		"@markuplint/html-parser": "4.5.1",
 		"@markuplint/ml-ast": "4.2.0",
-		"@markuplint/parser-utils": "4.5.0",
+		"@markuplint/parser-utils": "4.5.1",
 		"vue-eslint-parser": "9.4.2"
 	}
 }
