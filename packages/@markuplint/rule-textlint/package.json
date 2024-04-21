@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"markuplint": "4.6.1",
-		"textlint-rule-prh": "5"
+		"textlint-rule-prh": "5.3.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "4.6.1",
