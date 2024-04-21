@@ -22,6 +22,7 @@ export function mergeConfig(a: Config, b: Config): Config {
 		),
 		nodeRules: concatArray(a.nodeRules, b.nodeRules),
 		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
+		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeObject(a.overrides, b.overrides),
 		// delete all
 		extends: undefined,
