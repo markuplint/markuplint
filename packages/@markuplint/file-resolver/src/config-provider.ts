@@ -140,8 +140,16 @@ export class ConfigProvider {
 				const isMatched = targetFile.matches(glob);
 				const config = overrides[glob];
 				if (isMatched && config) {
-					// Note: Original config disappears
-					configSet.config = config;
+					switch (configSet.config.overrideMode) {
+						case 'merge': {
+							configSet.config = mergeConfig(configSet.config, config);
+							break;
+						}
+						default: /* or "reset" */ {
+							configSet.config = config;
+							break;
+						}
+					}
 				}
 			}
 		}
