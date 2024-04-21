@@ -14,6 +14,7 @@ The configuration has the following properties:
   "nodeRules": [],
   "childNodeRules": [],
   "pretenders": [],
+  "overrideMode": "reset",
   "overrides": {}
 }
 ```
@@ -30,6 +31,7 @@ The configuration has the following properties:
 | [**`nodeRules`**](#noderules)           | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#noderules/interface)      |
 | [**`childNodeRules`**](#childnoderules) | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#childnoderules/interface) |
 | [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/besides-html#pretenders)                                                                           | [Interface](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overridemode/interface)   |
 | [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overrides/interface)      |
 
 ## Resolving specified paths
@@ -828,6 +830,35 @@ type OriginalNode = {
 };
 ```
 
+### `overrideMode`
+
+The option controls the behavior of the [`overrides`](#overrides) section.
+By setting this option, you can specify how settings should be handled when applying different linting rules to specific parts of your project.
+
+#### `reset`
+
+In reset mode, the settings in the `overrides` section are treated as entirely new configurations, disregarding any existing settings. This mode is useful when you want to apply a completely new set of linting rules to specific files or directories. **Only the settings specified in the `overrides` section are used, with no application of other settings.**
+
+#### `merge`
+
+Selecting this mode will merge the settings specified in the `overrides` section with the existing global settings. Specifically, rules listed in the `overrides` are either added or override existing ones, while all other settings are retained. This mode is suitable when you want to make partial changes or additions to the existing configuration.
+
+:::note Default Value and Recommendation
+
+The default value for `overrideMode` is set to `reset` for reasons of backward compatibility. This setting ensures that by default, the overrides section completely replaces any existing configurations, providing a clean slate specific to the overridden files or directories.
+
+If you anticipate the more common behavior of blending new rules with existing ones, you should explicitly set `overrideMode` to `merge`. This allows your overridden settings to integrate seamlessly with your global configuration, applying only the specified changes while maintaining the rest of your existing rules.
+
+:::
+
+#### Interface {#overridemode/interface}
+
+```ts
+interface Config {
+  overrideMode?: 'reset' | 'merge';
+}
+```
+
 ### `overrides`
 
 You can override configurations to specific files if you specify the `overrides` option.
@@ -865,7 +896,7 @@ It can override the following properties:
 ```ts
 interface Config {
   overrides?: {
-    [path: string]: Omit<Config, 'extends' | 'overrides'>;
+    [path: string]: Omit<Config, 'extends' | 'overrideMode' | 'overrides'>;
   };
 }
 ```

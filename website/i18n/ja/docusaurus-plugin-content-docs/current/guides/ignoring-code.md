@@ -31,13 +31,14 @@
 
 ### ルールを上書きして無効化 {#overriding-to-disable-rules}
 
-設定の[`overrides`](/docs/configuration/properties#overrides)プロパティを使います。
+設定の[`overrides`](/docs/configuration/properties#overrides)プロパティと[`overrideMode`](/docs/configuration/properties#overridemode)を使います。
 
 ```json class=config
 {
   "rules": {
     "[[target-rule-id]]": true
   },
+  "overrideMode": "merge",
   "overrides": {
     "./path/to/**/*": {
       "rules": {

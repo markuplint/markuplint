@@ -31,13 +31,14 @@ Replace the `[[target-rule-id]]` portion with [the rule ID](/docs/rules) you wou
 
 ### Overriding to disable rules
 
-Use [`overrides`](/docs/configuration/properties#overrides) property on the configuration.
+Use [`overrides`](/docs/configuration/properties#overrides) property with [`overrideMode`](/docs/configuration/properties#overridemode) on the configuration.
 
 ```json class=config
 {
   "rules": {
     "[[target-rule-id]]": true
   },
+  "overrideMode": "merge",
   "overrides": {
     "./path/to/**/*": {
       "rules": {
