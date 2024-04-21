@@ -1,7 +1,12 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"configMigration": true,
-	"extends": ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigests", ":pinDevDependencies"],
+	"extends": [
+		"config:recommended",
+		"docker:pinDigests",
+		"helpers:pinGitHubActionDigests",
+		":pinDevDependencies"
+	],
 	"lockFileMaintenance": {
 		"enabled": true,
 		"automerge": true
@@ -28,15 +33,15 @@
 			"automerge": true
 		},
 		{
-			"matchPaths": ["vscode/*"],
+			"matchFileNames": ["vscode/*"],
 			"ignoreDeps": ["@types/node"]
 		},
 		{
-			"matchPaths": ["packages/**/*"],
+			"matchFileNames": ["packages/**/*"],
 			"ignoreDeps": ["default-markuplint", "test-markuplint"]
 		},
 		{
-			"matchPaths": ["package.json"],
+			"matchFileNames": ["package.json"],
 			"ignoreDeps": ["string-width", "strip-ansi", "wrap-ansi"]
 		}
 	]
