@@ -16,6 +16,7 @@ export type Config = {
 	readonly rules?: Rules;
 	readonly nodeRules?: readonly NodeRule[];
 	readonly childNodeRules?: readonly ChildNodeRule[];
+	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
 };
 
@@ -35,7 +36,7 @@ export type NonNullablePlainData =
 			readonly [key: string]: NonNullablePlainData;
 	  };
 
-export type OverrideConfig = Omit<Config, '$schema' | 'extends' | 'overrides'>;
+export type OverrideConfig = Omit<Config, '$schema' | 'extends' | 'overrideMode' | 'overrides'>;
 
 export type PluginConfig = {
 	readonly name: string;
