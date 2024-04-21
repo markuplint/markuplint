@@ -247,3 +247,30 @@ test('Link', async () => {
 
 	expect([...files.errs].map(e => path.relative(testDir, (e as ConfigLoadError).referrer))).toStrictEqual(['e.json']);
 });
+
+test('Overrides with OverrideMode', async () => {
+	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
+	const mergeKey = path.resolve(testDir, '011', '.markuplintrc.merge.json');
+	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));
+	const vueFile = getFile(path.resolve(testDir, '011', 'target.vue'));
+	const pattern1 = await new ConfigProvider().resolve(htmlFile, [resetKey]);
+	const pattern2 = await new ConfigProvider().resolve(htmlFile, [mergeKey]);
+	const pattern3 = await new ConfigProvider().resolve(vueFile, [resetKey]);
+	const pattern4 = await new ConfigProvider().resolve(vueFile, [mergeKey]);
+	expect(pattern1.config.rules).toStrictEqual({
+		foo: true,
+		bar: true,
+	});
+	expect(pattern2.config.rules).toStrictEqual({
+		foo: true,
+		bar: true,
+	});
+	expect(pattern3.config.rules).toStrictEqual({
+		foo: false,
+	});
+	expect(pattern4.config.rules).toStrictEqual({
+		foo: false,
+		bar: true,
+	});
+});
