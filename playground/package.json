@@ -16,7 +16,7 @@
 		"@monaco-editor/react": "4.6.0",
 		"@webcontainer/api": "1.1.9",
 		"lz-string": "1.5.0",
-		"markuplint": "4.6.0",
+		"markuplint": "4.6.1",
 		"monaco-editor": "0.47.0",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
