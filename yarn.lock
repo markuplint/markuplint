@@ -10283,7 +10283,7 @@ textlint-rule-preset-jtf-style@2.3.14, textlint-rule-preset-jtf-style@^2.3.13:
     textlint-rule-helper "^2.2.1"
     textlint-rule-prh "^5.2.1"
 
-textlint-rule-prh@5, textlint-rule-prh@5.3.0, textlint-rule-prh@^5.2.0, textlint-rule-prh@^5.2.1, textlint-rule-prh@^5.3.0:
+textlint-rule-prh@5.3.0, textlint-rule-prh@^5.2.0, textlint-rule-prh@^5.2.1, textlint-rule-prh@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/textlint-rule-prh/-/textlint-rule-prh-5.3.0.tgz#c3a002e3e1b59751eb6b93dff81810caeb764a9f"
   integrity sha512-gdod+lL1SWUDyXs1ICEwvQawaSshT3mvPGufBIjF2R5WFPdKQDMsiuzsjkLm+aF+9d97dA6pFsiyC8gSW7mSgg==
