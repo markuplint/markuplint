@@ -24,7 +24,7 @@
 	"dependencies": {
 		"cli-color": "2.0.4",
 		"detect-installed": "2.0.4",
-		"eastasianwidth": "0.2.0",
+		"eastasianwidth": "0.3.0",
 		"enquirer": "2.4.1",
 		"has-yarn": "3.0.0",
 		"strip-ansi": "7.1.0"
