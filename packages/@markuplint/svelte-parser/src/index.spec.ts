@@ -87,9 +87,9 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
-			'[1:6]>[1:16](5,15)#ps:if: {#if␣bool}',
+			'[1:6]>[1:16](5,15)#ps:if (if): {#if␣bool}',
 			'[1:16]>[1:20](15,19)#text: true',
-			'[1:20]>[1:27](19,26)#ps:else: {:else}',
+			'[1:20]>[1:27](19,26)#ps:else (if:else): {:else}',
 			'[1:27]>[1:32](26,31)#text: false',
 			'[1:32]>[1:37](31,36)#ps:/if: {/if}',
 			'[1:37]>[1:43](36,42)div: </div>',
@@ -110,15 +110,15 @@ describe('parser', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
 			'[1:6]>[2:2](5,7)#text: ⏎→',
-			'[2:2]>[3:3](7,42)#ps:if: {#if␣porridge.temperature␣>␣100}⏎→→',
+			'[2:2]>[3:3](7,42)#ps:if (if): {#if␣porridge.temperature␣>␣100}⏎→→',
 			'[3:3]>[3:6](42,45)p: <p>',
 			'[3:6]>[3:14](45,53)#text: too␣hot!',
 			'[3:14]>[3:18](53,57)p: </p>',
-			'[3:18]>[5:3](57,98)#ps:elseif: ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
+			'[3:18]>[5:3](57,98)#ps:elseif (if:elseif): ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
 			'[5:3]>[5:6](98,101)p: <p>',
 			'[5:6]>[5:15](101,110)#text: too␣cold!',
 			'[5:15]>[5:19](110,114)p: </p>',
-			'[5:19]>[7:3](114,126)#ps:else: ⏎→{:else}⏎→→',
+			'[5:19]>[7:3](114,126)#ps:else (if:else): ⏎→{:else}⏎→→',
 			'[7:3]>[7:6](126,129)p: <p>',
 			'[7:6]>[7:17](129,140)#text: just␣right!',
 			'[7:17]>[7:21](140,144)p: </p>',
@@ -132,7 +132,7 @@ describe('parser', () => {
 		const r = parse('{#each expression as name}...{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:27](0,26)#ps:each: {#each␣expression␣as␣name}',
+			'[1:1]>[1:27](0,26)#ps:each (each): {#each␣expression␣as␣name}',
 			'[1:27]>[1:30](26,29)#text: ...',
 			'[1:30]>[1:37](29,36)#ps:/each: {/each}',
 		]);
@@ -141,16 +141,16 @@ describe('parser', () => {
 	test('each statement (empty)', () => {
 		const r = parse('{#each expression as name}{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
-		expect(map).toStrictEqual(['[1:1]>[1:34](0,33)#ps:each: {#each␣expression␣as␣name}{/each}']);
+		expect(map).toStrictEqual(['[1:1]>[1:34](0,33)#ps:each (each): {#each␣expression␣as␣name}{/each}']);
 	});
 
 	test('each else statement', () => {
 		const r = parse('{#each expression as name}...{:else}...{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:27](0,26)#ps:each: {#each␣expression␣as␣name}',
+			'[1:1]>[1:27](0,26)#ps:each (each): {#each␣expression␣as␣name}',
 			'[1:27]>[1:30](26,29)#text: ...',
-			'[1:30]>[1:37](29,36)#ps:else: {:else}',
+			'[1:30]>[1:37](29,36)#ps:each:empty (each:empty): {:else}',
 			'[1:37]>[1:40](36,39)#text: ...',
 			'[1:40]>[1:47](39,46)#ps:/each: {/each}',
 		]);
@@ -161,9 +161,9 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
-			'[1:5]>[1:19](4,18)#ps:each: {#each␣a␣as␣b}',
+			'[1:5]>[1:19](4,18)#ps:each (each): {#each␣a␣as␣b}',
 			'[1:19]>[1:23](18,22)li: <li>',
-			'[1:23]>[1:44](22,43)#ps:each: {#each␣c␣as␣d}{/each}',
+			'[1:23]>[1:44](22,43)#ps:each (each): {#each␣c␣as␣d}{/each}',
 			'[1:44]>[1:49](43,48)li: </li>',
 			'[1:49]>[1:56](48,55)#ps:/each: {/each}',
 			'[1:56]>[1:61](55,60)ul: </ul>',
@@ -174,11 +174,11 @@ describe('parser', () => {
 		const r = parse('{#await expression}...{:then name}...{:catch name}...{/await}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:20](0,19)#ps:await: {#await␣expression}',
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
 			'[1:20]>[1:23](19,22)#text: ...',
-			'[1:23]>[1:35](22,34)#ps:then: {:then␣name}',
+			'[1:23]>[1:35](22,34)#ps:await:then (await:then): {:then␣name}',
 			'[1:35]>[1:38](34,37)#text: ...',
-			'[1:38]>[1:51](37,50)#ps:catch: {:catch␣name}',
+			'[1:38]>[1:51](37,50)#ps:await:catch (await:catch): {:catch␣name}',
 			'[1:51]>[1:54](50,53)#text: ...',
 			'[1:54]>[1:62](53,61)#ps:/await: {/await}',
 		]);
@@ -421,7 +421,7 @@ bool
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,7)div: <div␣⏎>',
-			'[2:2]>[5:2](7,22)#ps:if: {␣⏎#if␣⏎bool␣⏎}',
+			'[2:2]>[5:2](7,22)#ps:if (if): {␣⏎#if␣⏎bool␣⏎}',
 			'[5:2]>[5:6](22,26)#text: true',
 			'[5:6]>[5:11](26,31)#ps:/if: {/if}',
 			'[5:11]>[6:2](31,39)div: </div␣⏎>',
@@ -517,11 +517,11 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
-			'[2:2]>[3:3](6,30)#ps:if: {#if␣cond␣===␣valueA}⏎→→',
+			'[2:2]>[3:3](6,30)#ps:if (if): {#if␣cond␣===␣valueA}⏎→→',
 			'[3:3]>[3:7](30,34)li: <li>',
 			'[3:7]>[3:8](34,35)#text: A',
 			'[3:8]>[3:13](35,40)li: </li>',
-			'[3:13]>[5:3](40,71)#ps:elseif: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[3:13]>[5:3](40,71)#ps:elseif (if:elseif): ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
 			'[5:3]>[5:7](71,75)li: <li>',
 			'[5:7]>[5:8](75,76)#text: B',
 			'[5:8]>[5:13](76,81)li: </li>',
@@ -589,9 +589,9 @@ describe('Issues', () => {
 			const r = parse('{\n\t#if cond\n}...{\n\t:else\n}...{\n\t/if\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,13)#ps:if: {⏎→#if␣cond⏎}',
+				'[1:1]>[3:2](0,13)#ps:if (if): {⏎→#if␣cond⏎}',
 				'[3:2]>[3:5](13,16)#text: ...',
-				'[3:5]>[5:2](16,26)#ps:else: {⏎→:else⏎}',
+				'[3:5]>[5:2](16,26)#ps:else (if:else): {⏎→:else⏎}',
 				'[5:2]>[5:5](26,29)#text: ...',
 				'[5:5]>[7:2](29,37)#ps:/if: {⏎→/if⏎}',
 			]);
@@ -600,7 +600,7 @@ describe('Issues', () => {
 			const r = parse('{\n\t#each expression as name\n}...{\n\t/each\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,29)#ps:each: {⏎→#each␣expression␣as␣name⏎}',
+				'[1:1]>[3:2](0,29)#ps:each (each): {⏎→#each␣expression␣as␣name⏎}',
 				'[3:2]>[3:5](29,32)#text: ...',
 				'[3:5]>[5:2](32,42)#ps:/each: {⏎→/each⏎}',
 			]);
@@ -609,11 +609,11 @@ describe('Issues', () => {
 			const r = parse('{\n\t#await expression\n}...{\n\t:then name\n}...{\n\t:catch name\n}...{\n\t/await\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,22)#ps:await: {⏎→#await␣expression⏎}',
+				'[1:1]>[3:2](0,22)#ps:await (await): {⏎→#await␣expression⏎}',
 				'[3:2]>[3:5](22,25)#text: ...',
-				'[3:5]>[5:2](25,40)#ps:then: {⏎→:then␣name⏎}',
+				'[3:5]>[5:2](25,40)#ps:await:then (await:then): {⏎→:then␣name⏎}',
 				'[5:2]>[5:5](40,43)#text: ...',
-				'[5:5]>[7:2](43,59)#ps:catch: {⏎→:catch␣name⏎}',
+				'[5:5]>[7:2](43,59)#ps:await:catch (await:catch): {⏎→:catch␣name⏎}',
 				'[7:2]>[7:5](59,62)#text: ...',
 				'[7:5]>[9:2](62,73)#ps:/await: {⏎→/await⏎}',
 			]);
@@ -635,7 +635,7 @@ describe('Issues', () => {
 {/each}`);
 		const map = nodeListToDebugMaps(ast.nodeList, true);
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#ps:each: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[2:2](0,39)#ps:each (each): {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
 			'[2:2]>[2:7](39,44)div: <div>',
 			'[2:7]>[2:13](44,50)#ps:MustacheTag: {item}',
 			'[2:13]>[2:19](50,56)div: </div>',
@@ -711,37 +711,37 @@ describe('Issues', () => {
 		expect(map).toEqual([
 			"[1:1]>[3:10](0,37)#ps:Script: <script>⏎→const␣type␣=␣'c';⏎</script>",
 			'[3:10]>[5:1](37,39)#text: ⏎⏎',
-			"[5:1]>[6:2](39,59)#ps:if: {#if␣type␣===␣'a'}⏎→",
+			"[5:1]>[6:2](39,59)#ps:if (if): {#if␣type␣===␣'a'}⏎→",
 			'[6:2]>[6:5](59,62)a: <a>',
 			'[6:5]>[6:6](62,63)#text: a',
 			'[6:6]>[6:10](63,67)a: </a>',
-			"[6:10]>[8:2](67,93)#ps:elseif: ⏎{:else␣if␣type␣===␣'b'}⏎→",
+			"[6:10]>[8:2](67,93)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'b'}⏎→",
 			'[8:2]>[8:5](93,96)b: <b>',
 			'[8:5]>[8:6](96,97)#text: b',
 			'[8:6]>[8:10](97,101)b: </b>',
-			"[8:10]>[10:2](101,127)#ps:elseif: ⏎{:else␣if␣type␣===␣'c'}⏎→",
+			"[8:10]>[10:2](101,127)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'c'}⏎→",
 			'[10:2]>[10:5](127,130)c: <c>',
 			'[10:5]>[11:3](130,133)#text: ⏎→→',
-			"[11:3]>[12:4](133,155)#ps:if: {#if␣type␣===␣'a'}⏎→→→",
+			"[11:3]>[12:4](133,155)#ps:if (if): {#if␣type␣===␣'a'}⏎→→→",
 			'[12:4]>[12:7](155,158)a: <a>',
 			'[12:7]>[12:8](158,159)#text: a',
 			'[12:8]>[12:12](159,163)a: </a>',
-			"[12:12]>[14:4](163,193)#ps:elseif: ⏎→→{:else␣if␣type␣===␣'b'}⏎→→→",
+			"[12:12]>[14:4](163,193)#ps:elseif (if:elseif): ⏎→→{:else␣if␣type␣===␣'b'}⏎→→→",
 			'[14:4]>[14:7](193,196)b: <b>',
 			'[14:7]>[14:8](196,197)#text: b',
 			'[14:8]>[14:12](197,201)b: </b>',
-			'[14:12]>[16:4](201,215)#ps:else: ⏎→→{:else}⏎→→→',
+			'[14:12]>[16:4](201,215)#ps:else (if:else): ⏎→→{:else}⏎→→→',
 			'[16:4]>[16:7](215,218)e: <e>',
 			'[16:7]>[16:8](218,219)#text: e',
 			'[16:8]>[16:12](219,223)e: </e>',
 			'[16:12]>[17:8](223,231)#ps:/if: ⏎→→{/if}',
 			'[17:8]>[18:2](231,233)#text: ⏎→',
 			'[18:2]>[18:6](233,237)c: </c>',
-			"[18:6]>[20:2](237,263)#ps:elseif: ⏎{:else␣if␣type␣===␣'d'}⏎→",
+			"[18:6]>[20:2](237,263)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'d'}⏎→",
 			'[20:2]>[20:5](263,266)d: <d>',
 			'[20:5]>[20:6](266,267)#text: d',
 			'[20:6]>[20:10](267,271)d: </d>',
-			'[20:10]>[22:2](271,281)#ps:else: ⏎{:else}⏎→',
+			'[20:10]>[22:2](271,281)#ps:else (if:else): ⏎{:else}⏎→',
 			'[22:2]>[22:5](281,284)e: <e>',
 			'[22:5]>[22:6](284,285)#text: e',
 			'[22:6]>[22:10](285,289)e: </e>',
