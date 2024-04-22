@@ -1143,6 +1143,7 @@ export interface GlobalAttributes {
 				| 'onreset'
 				| 'onresize'
 				| 'onscroll'
+				| 'onscrollend'
 				| 'onsecuritypolicyviolation'
 				| 'onseeked'
 				| 'onseeking'

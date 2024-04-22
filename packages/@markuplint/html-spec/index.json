@@ -598,6 +598,9 @@
 				"onscroll": {
 					"type": "FunctionBody"
 				},
+				"onscrollend": {
+					"type": "FunctionBody"
+				},
 				"onsecuritypolicyviolation": {
 					"type": "FunctionBody"
 				},
