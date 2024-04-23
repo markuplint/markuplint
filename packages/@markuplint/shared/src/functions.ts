@@ -91,3 +91,34 @@ export function decodeHref(href: string) {
 		throw error;
 	}
 }
+
+/**
+ * Converts an array of branches into an array of patterns.
+ *
+ * @example
+ * ```ts
+ * branchesToPatterns([1, [2, 3]]) // [[1, 2], [1, 3]]
+ * branchesToPatterns([1, [2, 3], 4]) // [[1, 2, 4], [1, 3, 4]]
+ * branchesToPatterns([1, [2, undefined], 3]) // [[1, 2, 3], [1, 3]]
+ * branchesToPatterns([1, [2, 3], [4, 5], 6]) // [[1, 2, 4, 6], [1, 3, 4, 6], [1, 2, 5, 6], [1, 3, 5, 6]]
+ * ```
+ *
+ * @template T The type of elements in the branches array.
+ * @param branches The array of branches to convert.
+ * @returns The array of patterns generated from the branches.
+ */
+export function branchesToPatterns<T>(branches: ReadonlyArray<Nullable<T> | ReadonlyArray<Nullable<T>>>): T[][] {
+	// eslint-disable-next-line unicorn/no-array-reduce
+	return branches.reduce<T[][]>(
+		(accumulator, current) => {
+			if (Array.isArray(current)) {
+				return current.flatMap(item =>
+					accumulator.map(pattern => [...pattern, item].filter(nonNullableFilter)),
+				);
+			} else {
+				return accumulator.map(pattern => [...pattern, current].filter(nonNullableFilter));
+			}
+		},
+		[[]],
+	);
+}
