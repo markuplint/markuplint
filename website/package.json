@@ -23,8 +23,8 @@
     "dotenv": "16.4.5",
     "gray-matter": "4.0.3",
     "prism-react-renderer": "2.3.1",
-    "react": "18.3.0",
-    "react-dom": "18.3.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "unist-util-visit": "5.0.0"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "@tsconfig/strictest": "2.0.5",
     "@types/glob": "8.1.0",
     "eslint-plugin-react": "7.34.1",
-    "eslint-plugin-react-hooks": "4.6.1",
+    "eslint-plugin-react-hooks": "4.6.2",
     "stylelint": "16.4.0",
     "stylelint-config-recess-order": "5.0.1",
     "stylelint-config-standard": "36.0.0",
