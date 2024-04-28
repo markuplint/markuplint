@@ -265,4 +265,36 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#1611', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<p><label>1 <input id="1" /></label> + <label>2 <input id="2" /></label></p>
+<p><output for="1 2"></output></p>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<p><label>1 <input id="1" /></label> + <label>2 <input id="2" /></label></p>
+<p><output for="1 2 3"></output></p>`,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 3,
+				col: 17,
+				message: 'Missing "3" ID',
+				raw: '1 2 3',
+			},
+		]);
+	});
 });
