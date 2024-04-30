@@ -24,7 +24,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "1.5.2",
+		"@vitest/coverage-v8": "1.5.3",
 		"browser-resolve": "2.0.0",
 		"coveralls": "3.1.1",
 		"default-markuplint": "npm:markuplint@latest",
@@ -34,6 +34,6 @@
 		"strip-json-comments": "5.0.1",
 		"textlint-rule-prh": "5.3.0",
 		"type-fest": "4.18.0",
-		"vitest": "1.5.2"
+		"vitest": "1.5.3"
 	}
 }
