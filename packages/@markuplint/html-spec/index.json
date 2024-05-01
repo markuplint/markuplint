@@ -36114,11 +36114,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of each column cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still override the specified char of its <colgroup> parent element.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each column cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still override the specified char of its <colgroup> parent element.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the column cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the column cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"span": {
@@ -36179,11 +36179,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of each column group cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still be used as the default value for the align of the <col> elements which are members of this column group.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each column group cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still be used as the default value for the align of the <col> elements which are members of this column group.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the column group cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the column group cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"span": {
@@ -41017,11 +41017,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of the data cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of the data cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the data cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the data cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"colspan": {
@@ -41222,11 +41222,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of each foot cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each foot cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the foot cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the foot cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
@@ -41298,11 +41298,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of the header cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of the header cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the header cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the header cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"colspan": {
@@ -41367,11 +41367,11 @@
 					"deprecated": true
 				},
 				"char": {
-					"description": "Specifies the alignment of the content to a character of each head cell. If align is not set to char, this attribute is ignored.",
+					"description": "Does nothing. It was originally intended to specify the alignment of the content to a character of each head cell. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "Specifies the number of characters to offset the head cell content from the alignment character specified by the char attribute.",
+					"description": "Does nothing. It was originally intended to specify the number of characters to offset the head cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
