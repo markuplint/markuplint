@@ -210,6 +210,7 @@ class JSXParser extends Parser<JSXNode, State> {
 						nodeName: originNode.type,
 					},
 					[],
+					null, // TODO: Infer conditionalType
 					originNode,
 				);
 

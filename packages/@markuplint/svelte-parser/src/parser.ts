@@ -1,5 +1,9 @@
 import type { SvelteNode } from './svelte-parser/index.js';
-import type { MLASTParentNode, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
+import type {
+	MLASTParentNode,
+	MLASTPreprocessorSpecificBlock,
+	MLASTPreprocessorSpecificBlockConditionalType,
+} from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { getNamespace } from '@markuplint/html-parser';
@@ -147,8 +151,9 @@ class SvelteParser extends Parser<SvelteNode> {
 			readonly nodeName: string;
 		},
 		childNodes: readonly SvelteNode[] = [],
+		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
 	): readonly [MLASTPreprocessorSpecificBlock] {
-		const nodes = super.visitPsBlock(token, childNodes);
+		const nodes = super.visitPsBlock(token, childNodes, conditionalType);
 		const block = nodes.at(0);
 
 		if (!block || block.type !== 'psblock') {
@@ -308,6 +313,14 @@ class SvelteParser extends Parser<SvelteNode> {
 						nodeName: ifElseBlock.nodeName,
 					},
 					ifElseBlock.children,
+					(
+						{
+							if: 'if',
+							elseif: 'if:elseif',
+							else: 'if:else',
+							'/if': null,
+						} as const
+					)[ifElseBlock.nodeName],
 				)[0];
 				expressions.push(expression);
 			}
@@ -316,7 +329,7 @@ class SvelteParser extends Parser<SvelteNode> {
 
 		const blockType = originBlockNode.type.toLowerCase().replace('block', '');
 
-		const nodeList = new Map<SvelteNode, string>();
+		const nodeList = new Map<SvelteNode, MLASTPreprocessorSpecificBlockConditionalType>();
 
 		for (const prop of props) {
 			let node: SvelteNode | null = (originBlockNode[prop] ?? originBlockNode) as SvelteNode;
@@ -332,7 +345,7 @@ class SvelteParser extends Parser<SvelteNode> {
 					if (!['IfBlock', 'ElseBlock'].includes(node.type)) {
 						break;
 					}
-					const type = node.elseif ? 'elseif' : 'else';
+					const type: MLASTPreprocessorSpecificBlockConditionalType = node.elseif ? 'if:elseif' : 'if:else';
 					nodeList.set(node, type);
 
 					node = node.else ?? node.children?.[0] ?? null;
@@ -340,17 +353,23 @@ class SvelteParser extends Parser<SvelteNode> {
 				continue;
 			}
 
-			let type = prop || blockType;
-			if (prop === 'pending') {
-				type = 'await';
-			}
+			const typeMap: Record<string, MLASTPreprocessorSpecificBlockConditionalType> = {
+				if: 'if',
+				else: 'if:else',
+				each: 'each',
+				pending: 'await',
+				then: 'await:then', // eslint-disable-line unicorn/no-thenable
+				catch: 'await:catch',
+			};
+
+			const type: MLASTPreprocessorSpecificBlockConditionalType = typeMap[prop || blockType] ?? null;
 
 			nodeList.set(node, type);
 		}
 
 		let lastChild: SvelteNode | null = null;
 		for (const [node, _type] of nodeList.entries()) {
-			let type = _type;
+			let type: MLASTPreprocessorSpecificBlockConditionalType = _type;
 			let start = node.start;
 			let end = node.end;
 
@@ -360,18 +379,22 @@ class SvelteParser extends Parser<SvelteNode> {
 
 			end = node.children?.[0]?.start ?? end;
 
-			if (type === 'else' && originBlockNode.type === 'EachBlock') {
+			if (type === 'if:else' && originBlockNode.type === 'EachBlock') {
+				type = 'each:empty';
 				start = lastChild?.end ?? start;
 			}
 
-			if (['else', 'elseif'].includes(type) && originBlockNode.type === 'IfBlock') {
+			if (
+				(['if:else', 'if:elseif'] as MLASTPreprocessorSpecificBlockConditionalType[]).includes(type) &&
+				originBlockNode.type === 'IfBlock'
+			) {
 				start = lastChild?.end ?? start;
 			}
 
 			const tag = this.sliceFragment(start, end);
 
-			if (type === 'else' && node.type === 'ElseBlock' && node.children?.[0]?.type === 'IfBlock') {
-				type = 'elseif';
+			if (type === 'if:else' && node.type === 'ElseBlock' && node.children?.[0]?.type === 'IfBlock') {
+				type = 'if:elseif';
 			}
 
 			if (node.children && Array.isArray(node.children)) {
@@ -387,9 +410,10 @@ class SvelteParser extends Parser<SvelteNode> {
 					...tag,
 					depth: token.depth,
 					parentNode: token.parentNode,
-					nodeName: type,
+					nodeName: type ?? blockType,
 				},
 				node.children,
+				type,
 			)[0];
 			expressions.push(expression);
 		}

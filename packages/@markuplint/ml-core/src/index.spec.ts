@@ -664,6 +664,225 @@ describe('the `as` attribute pretending', () => {
 	});
 });
 
+describe('Conditional Child Nodes', () => {
+	function debugConditionalChildNodesTree(node) {
+		return node?.conditionalChildNodes().map(c =>
+			c.map(n => {
+				// `MLParentNode`
+				const c = n.conditionalChildNodes?.().flatMap(c => [...c].map(n => n.raw));
+				// Other
+				if (c[0]) {
+					return [n.raw, c];
+				}
+				return n.raw;
+			}),
+		);
+	}
+
+	test('if', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	{#if cond === valueA}
+		<li class="1"></li>
+	{/if}
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// if
+				'<li class="1">',
+			],
+			[
+				// default (else)
+			],
+		]);
+	});
+
+	test('if, if:elseif', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	<li class="1"></li>
+	{#if cond === valueA}
+		<li class="2"></li>
+	{:else if cond === valueB}
+		<li class="3"></li>
+	{/if}
+	<li class="4"></li>
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// if
+				'<li class="1">',
+				'<li class="2">',
+				'<li class="4">',
+			],
+			[
+				// else if
+				'<li class="1">',
+				'<li class="3">',
+				'<li class="4">',
+			],
+			[
+				// default (else)
+				'<li class="1">',
+				'<li class="4">',
+			],
+		]);
+	});
+
+	test('Nested: if', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	<li class="1"></li>
+	{#if cond1 === valueA}
+		<li class="2">
+			{#if cond2 === valueB}
+				<span class="3"></span>
+			{/if}
+		</li>
+	{/if}
+	<li class="4"></li>
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// if -> if
+				'<li class="1">',
+				['<li class="2">', ['<span class="3">']],
+				'<li class="4">',
+			],
+			[
+				// default (else)
+				'<li class="1">',
+				'<li class="4">',
+			],
+		]);
+	});
+
+	test('Nested: if (2)', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	<li class="1"></li>
+	{#if cond1 === valueA}
+		{#if cond2 === valueB}
+			<li class="2"></li>
+		{/if}
+	{/if}
+	<li class="3"></li>
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// if -> if
+				'<li class="1">',
+				'<li class="2">',
+				'<li class="3">',
+			],
+			[
+				// default (else)
+				'<li class="1">',
+				'<li class="3">',
+			],
+		]);
+	});
+
+	test('Nested: if (3)', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	<li class="1"></li>
+	{#if cond1 === valueA}
+		{#if cond2 === valueB}
+			<li class="2"></li>
+		{:else if cond3 === valueB}
+			<li class="3"></li>
+		{/if}
+	{/if}
+	<li class="4"></li>
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// if -> if
+				'<li class="1">',
+				'<li class="2">',
+				'<li class="4">',
+			],
+			[
+				// if -> default (else)
+				'<li class="1">',
+				'<li class="3">',
+				'<li class="4">',
+			],
+			[
+				// default (else)
+				'<li class="1">',
+				'<li class="4">',
+			],
+		]);
+	});
+
+	test('await', async () => {
+		const dom = createTestDocument(
+			`
+<ul>
+	<li class="1"></li>
+	{#await promise}
+		<li class="2">Wait</li>
+	{:then data}
+		<li class="3">{data}</li>
+	{:catch error}
+		<li class="4">{error.message}</li>
+	{/await}
+	<li class="5"></li>
+</ul>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(debugConditionalChildNodesTree(dom.nodeList[0])).toEqual([
+			[
+				// await
+				'<li class="1">',
+				['<li class="2">', ['Wait']],
+				'<li class="5">',
+			],
+			[
+				// then
+				'<li class="1">',
+				'<li class="3">',
+				'<li class="5">',
+			],
+			[
+				// error
+				'<li class="1">',
+				'<li class="4">',
+				'<li class="5">',
+			],
+		]);
+	});
+});
+
 describe('Fix', () => {
 	test('HTML', () => {
 		const doc = createTestDocument(

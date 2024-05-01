@@ -89,12 +89,25 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
+	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
 	readonly depth: number;
 	readonly nodeName: string;
 	readonly childNodes: readonly MLASTChildNode[];
-	readonly branchedChildNodes?: readonly MLASTNode[];
 	readonly isBogus: boolean;
 }
+
+export type MLASTPreprocessorSpecificBlockConditionalType =
+	| 'if'
+	| 'if:elseif'
+	| 'if:else'
+	| 'switch:case'
+	| 'switch:default'
+	| 'each'
+	| 'each:empty'
+	| 'await'
+	| 'await:then'
+	| 'await:catch'
+	| null;
 
 export interface MLASTComment extends MLASTAbstractNode {
 	readonly type: 'comment';
