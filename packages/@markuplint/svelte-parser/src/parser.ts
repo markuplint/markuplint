@@ -318,7 +318,7 @@ class SvelteParser extends Parser<SvelteNode> {
 							if: 'if',
 							elseif: 'if:elseif',
 							else: 'if:else',
-							'/if': null,
+							'/if': 'end',
 						} as const
 					)[ifElseBlock.nodeName],
 				)[0];
@@ -426,12 +426,16 @@ class SvelteParser extends Parser<SvelteNode> {
 			const lastToken = this.sliceFragment(lastText.startOffset + index, originBlockNode.end);
 
 			if (lastToken.raw) {
-				const expression = this.visitPsBlock({
-					...lastToken,
-					depth: token.depth,
-					parentNode: token.parentNode,
-					nodeName: '/' + blockType,
-				})[0];
+				const expression = this.visitPsBlock(
+					{
+						...lastToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: '/' + blockType,
+					},
+					[],
+					'end',
+				)[0];
 
 				expressions.push(expression);
 			}

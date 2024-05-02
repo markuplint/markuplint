@@ -107,6 +107,7 @@ export type MLASTPreprocessorSpecificBlockConditionalType =
 	| 'await'
 	| 'await:then'
 	| 'await:catch'
+	| 'end'
 	| null;
 
 export interface MLASTComment extends MLASTAbstractNode {
