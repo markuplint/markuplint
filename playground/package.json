@@ -29,7 +29,7 @@
 		"@egoist/tailwindcss-icons": "1.7.4",
 		"@iconify-json/heroicons-solid": "1.1.11",
 		"@iconify-json/majesticons": "1.1.11",
-		"@markuplint/jsx-parser": "4.6.1",
+		"@markuplint/jsx-parser": "4.7.0",
 		"@markuplint/react-spec": "4.4.1",
 		"@total-typescript/ts-reset": "0.5.1",
 		"@types/json-schema": "7.0.15",
