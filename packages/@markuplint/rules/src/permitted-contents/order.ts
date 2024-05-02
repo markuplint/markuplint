@@ -12,7 +12,7 @@ import { Collection, mergeHints, modelLog } from './utils.js';
  * Check ordered array
  *
  * @param contents
- * @param nodes
+ * @param childNodes
  * @param specs
  * @param options
  * @param depth
@@ -21,7 +21,7 @@ import { Collection, mergeHints, modelLog } from './utils.js';
 export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodes: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
@@ -30,7 +30,7 @@ export function order(
 	const btLog = cmLog.extend(`backtrack#${depth}`);
 
 	const patterns = deepCopy(contents);
-	const collection = new Collection(nodes);
+	const collection = new Collection(childNodes);
 
 	orderLog('Model:\n  RegEx: %s\n  Schema: %o', modelLog(patterns, ''), patterns);
 	orderLog('Starts: %s', collection);

@@ -101,6 +101,7 @@ export function decodeHref(href: string) {
  * branchesToPatterns([1, [2, 3], 4]) // [[1, 2, 4], [1, 3, 4]]
  * branchesToPatterns([1, [2, undefined], 3]) // [[1, 2, 3], [1, 3]]
  * branchesToPatterns([1, [2, 3], [4, 5], 6]) // [[1, 2, 4, 6], [1, 3, 4, 6], [1, 2, 5, 6], [1, 3, 5, 6]]
+ * branchesToPatterns([1, [], 2]) // [[1, 2]]
  * ```
  *
  * @template T The type of elements in the branches array.
@@ -112,12 +113,14 @@ export function branchesToPatterns<T>(branches: ReadonlyArray<Nullable<T> | Read
 	return branches.reduce<T[][]>(
 		(accumulator, current) => {
 			if (Array.isArray(current)) {
+				if (current.length === 0) {
+					return accumulator;
+				}
 				return current.flatMap(item =>
 					accumulator.map(pattern => [...pattern, item].filter(nonNullableFilter)),
 				);
-			} else {
-				return accumulator.map(pattern => [...pattern, current].filter(nonNullableFilter));
 			}
+			return accumulator.map(pattern => [...pattern, current].filter(nonNullableFilter));
 		},
 		[[]],
 	);

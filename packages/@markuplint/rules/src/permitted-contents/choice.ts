@@ -11,13 +11,13 @@ const indexes = new WeakMap<Result<MatchedReason>, number>();
 export function choice(
 	pattern: ReadonlyDeep<PermittedContentChoice>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	elements: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
 ): Result {
 	const choiceLog = cmLog.extend(`choice#${depth}`);
-	const collection = new Collection(elements);
+	const collection = new Collection(childNodes);
 	const unmatchedResults: Result[] = [];
 
 	let i = 0;

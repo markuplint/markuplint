@@ -655,6 +655,8 @@ export abstract class MLNode<
 	 * **preprocessor blocks** such as `if`, `each`, or `switch`.
 	 * Each NodeList represents a branch of conditional child nodes.
 	 *
+	 * Note: NodeList doesn't include whitespace nodes.
+	 *
 	 * @returns An array of NodeLists representing the conditional child nodes.
 	 *
 	 * @experemental
@@ -718,6 +720,10 @@ export abstract class MLNode<
 				mode = null;
 				openConditional = false;
 				subBranches = [];
+			}
+
+			if (child.is(child.TEXT_NODE) && child.isWhitespace()) {
+				continue;
 			}
 
 			branches.push(child);

@@ -3317,6 +3317,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	hasMutableChildren(attr = false) {
 		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+				if (child.conditionalType) {
+					continue;
+				}
 				return true;
 			}
 			if (child.is(child.ELEMENT_NODE)) {

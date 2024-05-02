@@ -4,7 +4,6 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { order } from './order.js';
 import { representTransparentNodes } from './represent-transparent-nodes.js';
-import { getChildNodesWithoutWhitespaces } from './utils.js';
 
 /**
  * Check start
@@ -22,57 +21,65 @@ export function start(
 	specs: Specs,
 	options: Options,
 ): ContentModelResult[] {
-	if (contents === false) {
-		if (el.childNodes.length > 0) {
+	const childNodesPatterns = options.evaluateConditionalChildNodes
+		? el.conditionalChildNodes().map(childNodes => [...childNodes])
+		: [[...el.childNodes].filter(child => !(child.is(child.TEXT_NODE) && child.isWhitespace()))];
+
+	return childNodesPatterns.flatMap<ContentModelResult>(childNodes => {
+		if (contents === false) {
+			if (childNodes.length > 0) {
+				return [
+					{
+						type: 'NOTHING',
+						scope: el,
+						query: ':not(*)',
+						hint: {},
+					},
+				];
+			}
 			return [
 				{
-					type: 'NOTHING',
+					type: 'MATCHED',
 					scope: el,
-					query: ':not(*)',
+					query: '*',
 					hint: {},
 				},
 			];
 		}
-		return [
-			{
-				type: 'MATCHED',
-				scope: el,
-				query: '*',
-				hint: {},
-			},
-		];
-	}
-	if (contents === true) {
-		// Allows all elements
-		return [
-			{
-				type: 'MATCHED',
-				scope: el,
-				query: '*',
-				hint: {},
-			},
-		];
-	}
+		if (contents === true) {
+			// Allows all elements
+			return [
+				{
+					type: 'MATCHED',
+					scope: el,
+					query: '*',
+					hint: {},
+				},
+			];
+		}
 
-	const { nodes, errors } = representTransparentNodes(getChildNodesWithoutWhitespaces(el), specs, options);
+		const patterns = representTransparentNodes(childNodes, specs, options);
 
-	const result = order(contents, nodes, specs, options, 0);
+		return patterns.flatMap(({ nodes, errors }) => {
+			const result = order(contents, nodes, specs, options, 0);
 
-	return [
-		{
-			type: result.type,
-			scope:
-				result.type === 'MISSING_NODE_REQUIRED' || result.type === 'MISSING_NODE_ONE_OR_MORE'
-					? el
-					: result.unmatched[0] ?? el,
-			query: result.query,
-			hint: result.hint,
-		},
-		...errors.map(error => ({
-			type: error.type,
-			scope: error.unmatched[0] ?? el,
-			query: error.query,
-			hint: error.hint,
-		})),
-	];
+			return [
+				{
+					type: result.type,
+					scope:
+						result.type === 'MISSING_NODE_REQUIRED' || result.type === 'MISSING_NODE_ONE_OR_MORE'
+							? el
+							: result.unmatched[0] ?? el,
+					query: result.query,
+					hint: result.hint,
+				},
+				...errors.map(error => ({
+					type: error.type,
+					scope: error.unmatched[0] ?? el,
+					query: error.query,
+					hint: error.hint,
+				})),
+			];
+		});
+	});
 }
