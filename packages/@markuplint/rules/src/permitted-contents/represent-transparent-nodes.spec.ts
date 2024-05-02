@@ -6,17 +6,20 @@ import { representTransparentNodes, transparentMode } from './represent-transpar
 
 function c(html: string) {
 	const el = createTestElement(`<div>${html}</div>`);
-	const { nodes } = representTransparentNodes([...el.children], specs, { ignoreHasMutableChildren: true });
-	return nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : ''));
+	const patterns = representTransparentNodes([...el.children], specs, {
+		ignoreHasMutableChildren: true,
+		evaluateConditionalChildNodes: true,
+	});
+	return patterns.map(({ nodes }) => nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : '')));
 }
 
 test('<div>', () => {
-	expect(c('<div></div>')).toStrictEqual(['div']);
+	expect(c('<div></div>')).toStrictEqual([['div']]);
 });
 
 test('<audio>', () => {
-	expect(c('<audio></audio>')).toStrictEqual([]);
-	expect(c('<audio><span></span></audio>')).toStrictEqual(['span*']);
-	expect(c('<audio><source></source><span></span></audio>')).toStrictEqual(['span*']);
-	expect(c('<audio><source></source><track></track><span></span></audio>')).toStrictEqual(['span*']);
+	expect(c('<audio></audio>')).toStrictEqual([[]]);
+	expect(c('<audio><span></span></audio>')).toStrictEqual([['span*']]);
+	expect(c('<audio><source></source><span></span></audio>')).toStrictEqual([['span*']]);
+	expect(c('<audio><source></source><track></track><span></span></audio>')).toStrictEqual([['span*']]);
 });
