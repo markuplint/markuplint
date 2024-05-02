@@ -81,9 +81,9 @@
 				},
 				"evaluateConditionalChildNodes": {
 					"type": "boolean",
-					"default": "true",
-					"description": "Evaluate conditional child nodes.",
-					"description:ja": "条件付きの子ノードを評価します。"
+					"default": "false",
+					"description": "[Experemental] Evaluate conditional child nodes.",
+					"description:ja": "[実験中の機能] 条件付きの子ノードを評価します。"
 				}
 			}
 		}
