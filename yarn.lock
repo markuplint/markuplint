@@ -24,7 +24,12 @@
     "@types/json-schema" "^7.0.15"
     js-yaml "^4.1.0"
 
-"@astrojs/compiler@2.7.1", "@astrojs/compiler@^2.0.0":
+"@astrojs/compiler@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.8.0.tgz#acbe2abbf640c238cbfe6c9d886a4d0c6921f172"
+  integrity sha512-yrpD1WRGqsJwANaDIdtHo+YVjvIOFAjC83lu5qENIgrafwZcJgSXDuwVMXOgok4tFzpeKLsFQ6c3FoUdloLWBQ==
+
+"@astrojs/compiler@^2.0.0":
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.7.1.tgz#a7ab59a1c87b9e6e9c6adb34bb2ca3aaa8b9d14c"
   integrity sha512-/POejAYuj8WEw7ZI0J8JBvevjfp9jQ9Wmu/Bg52RiNwGXkMV7JnYpsenVfHvvf1G7R5sXHGKlTcxlQWhoUTiGQ==
@@ -887,6 +892,18 @@
     yargs "17.7.2"
     yargs-parser "21.1.1"
 
+"@markuplint/cli-utils@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/cli-utils/-/cli-utils-4.3.0.tgz#b5686df0fdad849767d9e2718a1d03cf8582db96"
+  integrity sha512-AHoU2Rhq1A1liHAd3AbKj5fUvwa++VHXKVbbdDqZ4qItlxJuMquEy2WtFitcBARaPrg92e/5BpLX9W42zK0wKw==
+  dependencies:
+    cli-color "2.0.4"
+    detect-installed "2.0.4"
+    eastasianwidth "0.2.0"
+    enquirer "2.4.1"
+    has-yarn "3.0.0"
+    strip-ansi "7.1.0"
+
 "@markuplint/file-resolver@4.6.0":
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@markuplint/file-resolver/-/file-resolver-4.6.0.tgz#d931c28d020680a5ca24973c43f6c1a1eaca883e"
@@ -923,6 +940,11 @@
   integrity sha512-3hpQX6AA29kftiVIER9TtuaSdXf6skH/8HrNh2BaV9H6vtXUUXO1XfgbE68quJG1H+noXrgeX40dIFFHrX9m0w==
   dependencies:
     "@markuplint/ml-spec" "4.4.0"
+
+"@markuplint/ml-ast@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.2.0.tgz#19f16ec39837f01d7874908b45e34b4c415d9b81"
+  integrity sha512-b5ZrVKKg1OdaWJXCKVobbemdQncbHTpk6VKNWah05Gji9RKC7RekyhNVYmTRO0LZqNXlM9fzhCWnoFuEWzzeLg==
 
 "@markuplint/ml-config@4.5.0":
   version "4.5.0"
@@ -1010,6 +1032,28 @@
     debug "4.3.4"
     postcss-selector-parser "6.0.16"
     type-fest "4.15.0"
+
+"@markuplint/shared@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/shared/-/shared-4.2.0.tgz#762546f94721ff6f9a061d52a30e5c90a373ed3b"
+  integrity sha512-PU0I7llkO8WRA0iMwQrZaM8Vgx6fwTbnggQoJrnzKu0Fge7sd8P8MYrPUDphTPhH8tosYIRs2ZN2UZWMtIc+Ug==
+  dependencies:
+    html-entities "2.5.2"
+
+"@markuplint/types@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-4.3.0.tgz#533762159cbc50924509f8394c3fe0018305b93f"
+  integrity sha512-YtQ0IbIfYPLCiUEpwxGqs2HVK0SdvonZ19HLRhct5tjU2yOUpmGMBp6WNHejb+KiSmokxM8tfu55MfQhlTdPzg==
+  dependencies:
+    "@types/css-tree" "2.3.7"
+    "@types/debug" "4.1.12"
+    "@types/whatwg-mimetype" "3.0.2"
+    bcp-47 "2.1.0"
+    css-tree "2.3.1"
+    debug "4.3.4"
+    leven "4.0.0"
+    type-fest "4.15.0"
+    whatwg-mimetype "4.0.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -4026,6 +4070,11 @@ duplexer@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
   integrity sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==
+
+eastasianwidth@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
+  integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
 eastasianwidth@0.3.0:
   version "0.3.0"
