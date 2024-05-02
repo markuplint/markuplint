@@ -16,14 +16,6 @@ export default createRule<TagRule[], Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (
-				!el.rule.options.evaluateConditionalChildNodes &&
-				el.rule.options.ignoreHasMutableChildren &&
-				el.hasMutableChildren()
-			) {
-				return;
-			}
-
 			const results = contentModel(el, el.rule.value, el.rule.options);
 			for (const { type, scope, query, hint } of results) {
 				let message = '';
@@ -41,6 +33,13 @@ export default createRule<TagRule[], Options>({
 						break;
 					}
 					case 'MISSING_NODE_ONE_OR_MORE': {
+						if (
+							scope.rule.options.ignoreHasMutableChildren &&
+							(!scope.is(scope.ELEMENT_NODE) || scope.hasMutableChildren())
+						) {
+							break;
+						}
+
 						message =
 							message ||
 							t('Require {0}', t('one or more elements')) + t('. ') + '(' + t('Need "{0*}"', query) + ')';
@@ -52,6 +51,13 @@ export default createRule<TagRule[], Options>({
 						break;
 					}
 					case 'MISSING_NODE_REQUIRED': {
+						if (
+							scope.rule.options.ignoreHasMutableChildren &&
+							(!scope.is(scope.ELEMENT_NODE) || scope.hasMutableChildren())
+						) {
+							break;
+						}
+
 						message =
 							message ||
 							t('Require {0}', t('an {0}', 'element')) + t('. ') + '(' + t('Need "{0*}"', query) + ')';
