@@ -9,7 +9,7 @@ export const transparentMode = new Map<ChildNode, true>();
 
 export function representTransparentNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodes: ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 ): {
@@ -19,34 +19,34 @@ export function representTransparentNodes(
 	const result: ChildNode[] = [];
 	const errors: Result[] = [];
 
-	const parent = nodes[0]?.parentElement;
+	const parent = childNodes[0]?.parentElement;
 
 	if (parent) {
 		const { errors: parentErrors } = representTransparentNodes([parent], specs, options);
 		errors.push(...parentErrors);
 	}
 
-	for (const node of nodes) {
-		if (!node.is(node.ELEMENT_NODE)) {
-			result.push(node);
+	for (const childNode of childNodes) {
+		if (!childNode.is(childNode.ELEMENT_NODE)) {
+			result.push(childNode);
 			continue;
 		}
 
-		const models = getContentModel(node, specs.specs);
+		const models = getContentModel(childNode, specs.specs);
 
 		if (models == null || typeof models === 'boolean') {
-			result.push(node);
+			result.push(childNode);
 			continue;
 		}
 
 		const noTransparentModels = models.filter(m => !isTransparent(m));
 
 		if (noTransparentModels.length === models.length) {
-			result.push(node);
+			result.push(childNode);
 			continue;
 		}
 
-		const collection = new Collection(getChildNodesWithoutWhitespaces(node));
+		const collection = new Collection(getChildNodesWithoutWhitespaces(childNode));
 
 		let unmatched: ChildNode[];
 
@@ -79,12 +79,12 @@ export function representTransparentNodes(
 					errors.push({
 						type: 'TRANSPARENT_MODEL_DISALLOWS',
 						matched: [],
-						unmatched: [node],
+						unmatched: [childNode],
 						zeroMatch: false,
 						query: transparent.transparent,
 						hint: {
 							not: transparentCondMatched.not,
-							transparent: node,
+							transparent: childNode,
 						},
 					});
 					continue;
