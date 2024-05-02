@@ -1230,6 +1230,100 @@ describe('EJS', () => {
 	});
 });
 
+describe('Conditional Child Nodes', () => {
+	const config = {
+		rule: {
+			options: {
+				evaluateConditionalChildNodes: true,
+			},
+		},
+		parser: {
+			'.*': '@markuplint/svelte-parser',
+		},
+	};
+
+	test('if: details > summary', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<details>
+{#if condition}
+	<summary>summary</summary>
+{/if}
+body
+</details>
+`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 1,
+				message: 'Require an element. (Need "summary")',
+				raw: '<details>',
+			},
+		]);
+	});
+
+	test('if: a > button', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<a href>
+{#if condition}
+	<button>Button</button>
+{/if}
+</a>
+`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 4,
+				col: 2,
+				message:
+					'The "a" element is a transparent model but also disallows the "button" element in this context',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('each: ul > li', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<ul>
+{#each items as item}
+	<span>{item}</span>
+{/each}
+	<li>default item</li>
+</ul>
+`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 4,
+				col: 2,
+				message: 'The "span" element is not allowed in the "ul" element in this context',
+				raw: '<span>',
+			},
+		]);
+	});
+});
+
 describe('Issues', () => {
 	test('#396', async () => {
 		expect(
