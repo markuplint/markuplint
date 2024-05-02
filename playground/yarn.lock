@@ -922,6 +922,11 @@
   resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.2.0.tgz#19f16ec39837f01d7874908b45e34b4c415d9b81"
   integrity sha512-b5ZrVKKg1OdaWJXCKVobbemdQncbHTpk6VKNWah05Gji9RKC7RekyhNVYmTRO0LZqNXlM9fzhCWnoFuEWzzeLg==
 
+"@markuplint/ml-ast@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.3.0.tgz#54b16795ed81935bf7a6d8d43c2fbbc293c4f8ef"
+  integrity sha512-TxgCZRrloJIOwmtVfk+abzxvSWid5m7EjfhlKFNUEaWeUd6D5P5bgW1G13yJwGMTxbSiWtokoPW+jfyOMmtb/Q==
+
 "@markuplint/ml-config@4.5.1":
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-4.5.1.tgz#645490d38077319e723151f49ccb1527822f65f6"
@@ -966,6 +971,17 @@
     is-plain-object "5.0.0"
     type-fest "4.15.0"
 
+"@markuplint/ml-spec@4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.5.0.tgz#32015ba6b33d8f7bb6f85e0851e6f865c9f01aeb"
+  integrity sha512-6vNZ6PcLCEB4Vj3sEMnA5AJuetQkYBg0XkQDwj/XLASAMaPC7HQ4kaRG3piQBfzr8TwZu8olWrCfJfx3xQyhZw==
+  dependencies:
+    "@markuplint/ml-ast" "4.3.0"
+    "@markuplint/types" "4.4.0"
+    dom-accessibility-api "0.6.3"
+    is-plain-object "5.0.0"
+    type-fest "4.18.1"
+
 "@markuplint/parser-utils@4.5.1":
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.5.1.tgz#c71b47ef949c2b393405905d31df49d05dcc4189"
@@ -978,6 +994,20 @@
     debug "4.3.4"
     espree "10.0.1"
     type-fest "4.15.0"
+    uuid "9.0.1"
+
+"@markuplint/parser-utils@4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.6.0.tgz#ce5ecc4dc1cbdae1b5950cf36cd1790eef44ca1f"
+  integrity sha512-8cfohyhxTKMc4mnhTkIRMQ8feNpCHSLumQNSX7tLAANoRvPSIa5cR4Pw7bzBf/ArPc/PrhVSaex0c5ZrDkw8zA==
+  dependencies:
+    "@markuplint/ml-ast" "4.3.0"
+    "@markuplint/ml-spec" "4.5.0"
+    "@markuplint/types" "4.4.0"
+    "@types/uuid" "9.0.8"
+    debug "4.3.4"
+    espree "10.0.1"
+    type-fest "4.18.1"
     uuid "9.0.1"
 
 "@markuplint/react-spec@4.4.1":
@@ -1036,6 +1066,21 @@
     debug "4.3.4"
     leven "4.0.0"
     type-fest "4.15.0"
+    whatwg-mimetype "4.0.0"
+
+"@markuplint/types@4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-4.4.0.tgz#e047feb807a9b1c608e6177cb92db2c03e4e7cfd"
+  integrity sha512-9ypXHTpxJ+V4zeM/J1WkUbUaMqyqpUzGN2+ogObQT6YULUyj0alHKahAHTpgjFYNuY41A+xXFK7D+9QJ0+UU1g==
+  dependencies:
+    "@types/css-tree" "2.3.7"
+    "@types/debug" "4.1.12"
+    "@types/whatwg-mimetype" "3.0.2"
+    bcp-47 "2.1.0"
+    css-tree "2.3.1"
+    debug "4.3.4"
+    leven "4.0.0"
+    type-fest "4.18.1"
     whatwg-mimetype "4.0.0"
 
 "@monaco-editor/loader@^1.4.0":
@@ -4594,6 +4639,11 @@ type-fest@4.15.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.15.0.tgz#21da206b89c15774cc718c4f2d693e13a1a14a43"
   integrity sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==
+
+type-fest@4.18.1:
+  version "4.18.1"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.18.1.tgz#47e8d4e493cf7ed6c643bad698d5810d72cbdf79"
+  integrity sha512-qXhgeNsX15bM63h5aapNFcQid9jRF/l3ojDoDFmekDQEUufZ9U4ErVt6SjDxnHp48Ltrw616R8yNc3giJ3KvVQ==
 
 type-fest@^0.20.2:
   version "0.20.2"
