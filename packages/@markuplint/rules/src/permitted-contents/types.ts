@@ -62,4 +62,9 @@ export type TagRule = {
 
 export type Options = {
 	readonly ignoreHasMutableChildren: boolean;
+
+	/**
+	 * @experimental
+	 */
+	readonly evaluateConditionalChildNodes: boolean;
 };

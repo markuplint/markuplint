@@ -78,6 +78,12 @@
 					"default": "true",
 					"description": "Ignore if it has mutable child elements in a dynamic syntax.",
 					"description:ja": "動的な構文などで、ミュータブルな子要素を持つ場合は無視します。"
+				},
+				"evaluateConditionalChildNodes": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Evaluate conditional child nodes.",
+					"description:ja": "条件付きの子ノードを評価します。"
 				}
 			}
 		}

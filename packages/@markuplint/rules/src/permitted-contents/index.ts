@@ -12,10 +12,15 @@ export default createRule<TagRule[], Options>({
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableChildren: true,
+		evaluateConditionalChildNodes: false,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (el.rule.options.ignoreHasMutableChildren && el.hasMutableChildren()) {
+			if (
+				!el.rule.options.evaluateConditionalChildNodes &&
+				el.rule.options.ignoreHasMutableChildren &&
+				el.hasMutableChildren()
+			) {
 				return;
 			}
 
