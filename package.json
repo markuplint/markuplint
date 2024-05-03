@@ -22,7 +22,7 @@
 		"up:deps": "yarn upgrade-interactive --latest",
 		"up:gen": "cd packages/\\@markuplint/html-spec/; yarn gen;",
 		"up:schema": "lerna run schema",
-		"release": "lerna publish --exact",
+		"release": "lerna publish --exact --conventional-commits",
 		"release:next": "lerna publish --dist-tag next --exact --force-publish",
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
 		"prerelease": "run-s build test",
