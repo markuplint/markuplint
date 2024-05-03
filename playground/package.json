@@ -38,7 +38,7 @@
 		"@types/semver": "7.5.8",
 		"@vitejs/plugin-react": "4.2.1",
 		"autoprefixer": "10.4.19",
-		"cspell": "8.7.0",
+		"cspell": "8.8.0",
 		"eslint": "8.57.0",
 		"eslint-plugin-react": "7.34.1",
 		"eslint-plugin-react-hooks": "4.6.2",
