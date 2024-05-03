@@ -5,7 +5,8 @@
 		"config:recommended",
 		"docker:pinDigests",
 		"helpers:pinGitHubActionDigests",
-		":pinDevDependencies"
+		":pinDevDependencies",
+		":semanticCommitTypeAll(chore)"
 	],
 	"lockFileMaintenance": {
 		"enabled": true,
