@@ -107,5 +107,10 @@
 		"lerna/**/string-width": "4",
 		"lerna/**/strip-ansi": "6",
 		"lerna/**/wrap-ansi": "7"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
 	}
 }
