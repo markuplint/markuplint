@@ -1,0 +1,94 @@
+# Current Version
+v4.x:
+    - changed-files:
+          - any-glob-to-any-file: '*'
+
+Command Line Interface:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/markuplint/bin/*
+                - packages/markuplint/src/cli/*
+                - packages/@markuplint/cli-utils/src/**/*
+                - packages/@markuplint/create-rule/src/**/*
+
+Config Presets:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/markuplint/bin/*
+                - packages/markuplint/src/cli/*
+                - packages/@markuplint/cli-utils/src/**/*
+                - packages/@markuplint/create-rule/src/**/*
+
+Configuration File:
+    - changed-files:
+          - any-glob-to-any-file:
+                - config.schema.json
+                - packages/@markuplint/config-presets/src/**/*
+                - packages/@markuplint/ml-config/src/**/*
+
+Core API:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/file-resolver/src/**/*
+                - packages/@markuplint/ml-ast/src/**/*
+                - packages/@markuplint/ml-core/src/**/*
+                - packages/@markuplint/ml-spec/src/**/*
+                - packages/@markuplint/selector/src/**/*
+                - packages/@markuplint/shared/src/**/*
+                - packages/@markuplint/types/src/**/*
+                - packages/markuplint/src/**/*
+
+Documentation:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/rules/src/*/*.md
+                - website/community/**/*.{md,mdx}
+                - website/docs/**/*.{md,mdx}
+                - website/i18n/**/*.{md,mdx}
+
+GitHub Actions:
+    - changed-files:
+          - any-glob-to-any-file:
+                - .github/workflows/*
+
+Parser:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/*-parser/src/**/*
+
+'Plugin API: Extends Config':
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/ml-config/src/**/*
+
+'Plugin API: Parser':
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/parser-utils/src/**/*
+
+'Plugin API: Pretender Hooks':
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/pretenders/src/**/*
+
+'Plugin API: Rule':
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/ml-core/src/ml-rule/**/*
+
+Rule:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/rules/src/**/*
+
+Specs:
+    - changed-files:
+          - any-glob-to-any-file:
+                - packages/@markuplint/*-spec/src/**/*
+                - packages/@markuplint/spec-generator/src/**/*
+
+VS Code Extension:
+    - changed-files:
+          - any-glob-to-any-file:
+                - vscode/locales/**/*
+                - vscode/src/**/*
