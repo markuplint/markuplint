@@ -14,14 +14,14 @@ Se aceptan comentarios en cualquier idioma. Por favor, escribe en tu lengua mate
 どの言語も歓迎します。あなたの母国語で書いてください。
 -->
 
-- Markuplint version: `X.X.X`
+- Markuplint version: `4.x.x`
 - Parser lang: HTML or JSX and more...
-- Node.js version: `X.X.X`
+- Node.js version: `20.x.x`
 - OS: macOS or Windows
 
 ## Describe the bug
 
-## Code Example
+## Code Example or Playground URL
 
 <!-- prettier-ignore-start -->
 ```html
@@ -30,6 +30,8 @@ Se aceptan comentarios en cualquier idioma. Por favor, escribe en tu lengua mate
 </div>
 ```
 <!-- prettier-ignore-end -->
+
+https://playground.markuplint.dev/#N4Igxg9gdgZglgcxALhMAOlABF9ICmAHgC75QAmAznslgNp4C2AhgE4DWArgA4A2cUYslb5IjRmXL5yeALqYAvphAAacBCkAxOL3wAVAJ7d8KEADoAFsUa9V6qaYA85OADcAfJjPfMjgPQuHiAKQA
 
 ## Steps To Reproduce
 
