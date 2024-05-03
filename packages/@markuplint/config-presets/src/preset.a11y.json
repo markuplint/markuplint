@@ -76,6 +76,12 @@
 		"required-h1": true,
 
 		/**
+		 * Align row and column
+		 *
+		 */
+		"table-row-column-alignment": true,
+
+		/**
 		 * Use `<ul>`
 		 *
 		 */

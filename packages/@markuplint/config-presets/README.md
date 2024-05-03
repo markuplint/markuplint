@@ -34,6 +34,7 @@ No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+Align row and column| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Use `<ul>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Conform to **WAI-ARIA**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<html lang>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
