@@ -4,6 +4,7 @@
 	"allowCompoundWords": true,
 	"ignorePaths": [
 		"cspell.json",
+		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
 		"packages/@markuplint/html-spec/src/*.json",
 		"packages/@markuplint/html-spec/index.json"
