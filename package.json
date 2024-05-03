@@ -43,7 +43,9 @@
 		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"cli": "npx markuplint",
-		"create-rule": "npx @markuplint/create-rule"
+		"create-rule": "npx @markuplint/create-rule",
+		"commit": "cz",
+		"co": "cz"
 	},
 	"lint-staged": {
 		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
