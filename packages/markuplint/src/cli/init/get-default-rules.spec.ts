@@ -141,6 +141,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'table-row-column-alignment': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'use-list': {
 			category: 'a11y',
 			defaultValue: false,

@@ -108,6 +108,9 @@
 				"required-h1": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
 				},
+				"table-row-column-alignment": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/table-row-column-alignment/schema.json"
+				},
 				"use-list": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/use-list/schema.json"
 				},

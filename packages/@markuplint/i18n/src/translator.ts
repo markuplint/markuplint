@@ -4,6 +4,7 @@ const defaultListFormat: ListFormat = {
 	quoteStart: '"',
 	quoteEnd: '"',
 	separator: ', ',
+	lastSeparator: ' and ',
 };
 
 export function translator(localeSet?: LocaleSet): Translator {
@@ -11,10 +12,20 @@ export function translator(localeSet?: LocaleSet): Translator {
 		let message = messageTmpl;
 
 		if (typeof messageTmpl !== 'string') {
+			if (messageTmpl.length === 0) {
+				return '';
+			}
 			const format = localeSet?.listFormat ?? defaultListFormat;
-			return `${format.quoteStart}${messageTmpl
-				.map(keyword => translateKeyword(keyword, '', localeSet))
-				.join(`${format.quoteEnd}${format.separator}${format.quoteStart}`)}${format.quoteEnd}`;
+			const useLastSeparator = keywords[0] == null || keywords[0] == false ? false : true;
+			const lastSeparator = useLastSeparator ? format.lastSeparator ?? format.separator : format.separator;
+			const list = messageTmpl.map(
+				keyword => format.quoteStart + translateKeyword(keyword, '', localeSet) + format.quoteEnd,
+			);
+			if (list.length === 1) {
+				return list[0]!;
+			}
+			const last = list.pop();
+			return list.join(format.separator) + lastSeparator + last;
 		}
 
 		const input = messageTmpl;
