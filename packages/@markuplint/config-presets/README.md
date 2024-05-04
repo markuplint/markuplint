@@ -30,6 +30,7 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 **Popover** trigger and target must be adjacent| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+[No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|

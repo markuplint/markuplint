@@ -77,6 +77,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-ambiguous-navigable-target-names': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'no-boolean-attr-value': {
 			category: 'style',
 			defaultValue: false,

@@ -55,6 +55,13 @@
 		"neighbor-popovers": true,
 
 		/**
+		 * No ambiguous **Navigable Target Names**
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names
+		 */
+		"no-ambiguous-navigable-target-names": true,
+
+		/**
 		 * No consecutive `<br>`
 		 */
 		"no-consecutive-br": true,
