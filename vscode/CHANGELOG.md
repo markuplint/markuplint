@@ -7,8 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package vscode-markuplint
 
-# Change Log
-
 ## 4.7.0
 
 - Depends: `markuplint@4.7.0`
