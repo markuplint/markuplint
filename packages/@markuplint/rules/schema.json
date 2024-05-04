@@ -60,6 +60,9 @@
 				"neighbor-popovers": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/neighbor-popovers/schema.json"
 				},
+				"no-ambiguous-navigable-target-names": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ambiguous-navigable-target-names/schema.json"
+				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
 				},
