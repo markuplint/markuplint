@@ -574,7 +574,15 @@ describe('verify', () => {
 				<div><!-- Parse Error --></div>
 			</select>`,
 		);
-		expect(violations7).toStrictEqual([]);
+		expect(violations7).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The text node is not allowed in the "select" element in this context',
+				raw: '\n\t\t\t\t<div>',
+			},
+		]);
 
 		const { violations: violations8 } = await mlRuleTest(
 			rule,
@@ -584,7 +592,15 @@ describe('verify', () => {
 				</optgroup>
 			</select>`,
 		);
-		expect(violations8).toStrictEqual([]);
+		expect(violations8).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 15,
+				message: 'The text node is not allowed in the "optgroup" element in this context',
+				raw: '\n\t\t\t\t\t<div>',
+			},
+		]);
 	});
 
 	test('script', async () => {
@@ -1483,6 +1499,42 @@ describe('Issues', () => {
 
 	test('#1359', async () => {
 		const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+	});
+
+	test('#1451', async () => {
+		const astro = { parser: { '.*': '@markuplint/astro-parser' } };
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const pug = { parser: { '.*': '@markuplint/pug-parser' } };
+		const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+		const vue = { parser: { '.*': '@markuplint/vue-parser' } };
+
+		expect((await mlRuleTest(rule, '<span><div></div></span>')).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><Div></Div></span>')).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><div></div></span>', astro)).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><Div></Div></span>', astro)).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<span><div></div></span>', jsx)).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><Div></Div></span>', jsx)).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, 'span: div', pug)).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, 'span: Div', pug)).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><div></div></span>', svelte)).violations.length).toBe(1);
+		expect((await mlRuleTest(rule, '<span><Div></Div></span>', svelte)).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<template><span><div></div></span></template>', vue)).violations.length).toBe(
+			1,
+		);
+		expect((await mlRuleTest(rule, '<template><span><Div></Div></span></template>', vue)).violations.length).toBe(
+			0,
+		);
+	});
+
+	test('#1502', async () => {
+		const sourceCode = `<svg>
+	<defs>
+		<filter>
+			<feTurbulence />
+		</filter>
+	</defs>
+</svg>`;
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
 });

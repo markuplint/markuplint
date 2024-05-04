@@ -27,6 +27,10 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 
 # Copied
 community/contributing.md
+community/code-of-conduct.md
 
 # Env
 .env
+
+# Dynamically created files
+contributors.json

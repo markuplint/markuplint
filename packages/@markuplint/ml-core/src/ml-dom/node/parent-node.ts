@@ -1,5 +1,5 @@
 import type { MLElement } from './element.js';
-import type { MLASTAbstractNode } from '@markuplint/ml-ast';
+import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { syncWalk } from '../helper/walkers.js';
@@ -16,7 +16,7 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
 export abstract class MLParentNode<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLNode<T, O, A>
 	implements ParentNode
@@ -117,7 +117,7 @@ export abstract class MLParentNode<
 
 		const elements = toNodeList(
 			this._descendantsToArray<MLElement<T, O>>(node => {
-				if (node.is(node.ELEMENT_NODE) && node.matches(selectors)) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selectors, this)) {
 					return node;
 				}
 			}),

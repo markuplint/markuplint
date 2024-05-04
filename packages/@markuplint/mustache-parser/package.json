@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/mustache-parser",
-	"version": "4.0.0-alpha.9",
+	"version": "4.3.0",
 	"description": "The mustache template parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,8 +21,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.0.0-alpha.9",
-		"@markuplint/ml-ast": "4.0.0-alpha.9",
-		"@markuplint/parser-utils": "4.0.0-alpha.9"
+		"@markuplint/html-parser": "4.3.0"
+	},
+	"devDependencies": {
+		"@markuplint/parser-utils": "4.3.0"
 	}
 }

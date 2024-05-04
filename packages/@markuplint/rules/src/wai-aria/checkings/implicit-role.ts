@@ -6,15 +6,15 @@ import { getImplicitRoleName } from '@markuplint/ml-spec';
 export const checkingImplicitRole: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
+		const tokens = attr.tokenList?.allTokens();
+		if (!tokens) {
+			return;
+		}
 		const implicitRole = getImplicitRoleName(
 			attr.ownerElement,
 			attr.rule.options.version,
 			attr.ownerMLDocument.specs,
 		);
-		const tokens = attr.tokenList?.allTokens();
-		if (!tokens) {
-			return;
-		}
 		for (const token of tokens) {
 			if (implicitRole === token.raw) {
 				return {

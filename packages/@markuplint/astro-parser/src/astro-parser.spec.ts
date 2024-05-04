@@ -256,7 +256,7 @@ test('Attr and Template Directive', () => {
 				kind: 'template-literal',
 				name: 'f',
 				value: 'g',
-				raw: '',
+				raw: '`g`',
 				position: { start: { column: 18, line: 1, offset: 17 } },
 			},
 			{
@@ -292,6 +292,79 @@ test('Greater-than sign in attribute value', () => {
 				raw: '"a>b"',
 			},
 		]),
+	);
+});
+
+test('frontmatter', () => {
+	const ast = astroParse(`---
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+---
+<div>
+    <h1>{greeting}, {name}!</h1>
+</div>`);
+	expect(ast.children[0]).toStrictEqual(
+		expect.objectContaining({
+			position: {
+				end: {
+					column: 4,
+					line: 4,
+					offset: 136,
+				},
+				start: {
+					column: 1,
+					line: 1,
+					offset: 0,
+				},
+			},
+			type: 'frontmatter',
+			value: `
+// Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
+const { greeting = 'Hello', name } = Astro.props;
+`,
+		}),
+	);
+});
+
+test('Missing end tag', () => {
+	const ast = astroParse('<div><span><span /></div>');
+	expect(ast).toStrictEqual(
+		expect.objectContaining({
+			type: 'root',
+			children: [
+				{
+					type: 'element',
+					name: 'div',
+					position: {
+						start: { line: 1, column: 2, offset: 0 },
+					},
+					attributes: [],
+					children: [
+						{
+							type: 'element',
+							name: 'span',
+							position: {
+								start: { line: 1, column: 6, offset: 5 },
+								end: { line: 1, column: 27, offset: 19 },
+							},
+							attributes: [],
+							children: [
+								{
+									type: 'element',
+									name: 'span',
+									position: {
+										start: { line: 1, column: 12, offset: 11 },
+										end: { line: 1, column: 19, offset: 19 },
+									},
+									attributes: [],
+									children: [],
+								},
+							],
+						},
+					],
+				},
+			],
+		}),
 	);
 });
 

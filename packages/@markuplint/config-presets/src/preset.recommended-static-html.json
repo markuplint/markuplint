@@ -9,6 +9,12 @@
 	],
 	"rules": {
 		/**
+		 * Use [**character reference**](https://markuplint.dev/docs/rules/character-reference)
+		 *
+		 */
+		"character-reference": true,
+
+		/**
 		 * No omit **end-tag**
 		 *
 		 * Recommend to write an end-tag always because it is too difficult

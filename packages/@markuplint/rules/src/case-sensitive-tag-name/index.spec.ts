@@ -86,11 +86,26 @@ describe('verify', () => {
 			},
 		]);
 	});
+
+	test('custom elements end tag', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<MyComponent>
+  <h1 X>Hello world!</h1>
+</MyComponent>`,
+			{
+				parser: {
+					'.*': '@markuplint/astro-parser',
+				},
+			},
+		);
+		expect(violations.length).toBe(0);
+	});
 });
 
-// describe('fix', () => {
-// 	test('upper case', async () => {
-// 		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', undefined, true);
-// 		expect(fixedCode).toBe('<div data-lowercase></div>');
-// 	});
-// });
+describe('fix', () => {
+	test('upper case', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<DIV data-lowercase></DIV>', undefined, true);
+		expect(fixedCode).toBe('<div data-lowercase></div>');
+	});
+});

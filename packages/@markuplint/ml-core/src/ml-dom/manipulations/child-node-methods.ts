@@ -62,16 +62,12 @@ export function previousElementSibling<T extends RuleConfigValue, O extends Plai
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: MLNode<T, O>,
 ): MLElement<T, O> | null {
-	let prevNode = node.prevNode;
+	let prevNode = node.previousSibling;
 	while (prevNode) {
-		if (
-			((node.parentNode === null && prevNode.parentNode === null) ||
-				node.parentNode?.uuid === prevNode.parentNode?.uuid) &&
-			prevNode.is(prevNode.ELEMENT_NODE)
-		) {
+		if (prevNode.is(prevNode.ELEMENT_NODE)) {
 			return prevNode;
 		}
-		prevNode = prevNode.prevNode;
+		prevNode = prevNode.previousSibling;
 	}
 	return null;
 }
@@ -84,16 +80,12 @@ export function nextElementSibling<T extends RuleConfigValue, O extends PlainDat
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: MLNode<T, O>,
 ): MLElement<T, O> | null {
-	let nextNode = node.nextNode;
+	let nextNode = node.nextSibling;
 	while (nextNode) {
-		if (
-			((node.parentNode === null && nextNode.parentNode === null) ||
-				node.parentNode?.uuid === nextNode.parentNode?.uuid) &&
-			nextNode.is(nextNode.ELEMENT_NODE)
-		) {
+		if (nextNode.is(nextNode.ELEMENT_NODE)) {
 			return nextNode;
 		}
-		nextNode = nextNode.nextNode;
+		nextNode = nextNode.nextSibling;
 	}
 	return null;
 }

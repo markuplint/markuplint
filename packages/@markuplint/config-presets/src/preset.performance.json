@@ -35,22 +35,6 @@
 		},
 		{
 			/**
-			 * Require async decoding image
-			 *
-			 * Require `decoding=async` with `<img>` to avoid render-blocking.
-			 */
-			"selector": ":where(img[src][width][height])",
-			"rules": {
-				"required-attr": [
-					{
-						"name": "decoding",
-						"value": "async"
-					}
-				]
-			}
-		},
-		{
-			/**
 			 * Require loading `<iframe>` lazily
 			 *
 			 * Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.

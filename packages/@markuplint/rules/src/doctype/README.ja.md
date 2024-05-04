@@ -13,13 +13,13 @@ DOCTYPEが含まれていないと警告します。また、古い廃止され�
 <!-- prettier-ignore-start -->
 ```html
 <html>
-	<head>
-		<title>Any Page</title>
-	</head>
-	<body>
-		<h1>Any Page</h1>
-		<p>Anonymous</p>
-	</body>
+  <head>
+    <title>Any Page</title>
+  </head>
+  <body>
+    <h1>Any Page</h1>
+    <p>Anonymous</p>
+  </body>
 </html>
 ```
 <!-- prettier-ignore-end -->
@@ -30,13 +30,13 @@ DOCTYPEが含まれていないと警告します。また、古い廃止され�
 ```html
 <!doctype html>
 <html>
-	<head>
-		<title>Any Page</title>
-	</head>
-	<body>
-		<h1>Any Page</h1>
-		<p>Anonymous</p>
-	</body>
+  <head>
+    <title>Any Page</title>
+  </head>
+  <body>
+    <h1>Any Page</h1>
+    <p>Anonymous</p>
+  </body>
 </html>
 ```
 <!-- prettier-ignore-end -->

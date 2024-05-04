@@ -17,6 +17,7 @@ const mapping: Readonly<Record<string, Pick<Config, 'parser' | 'specs'>>> = {
 	},
 	'.svelte': {
 		parser: { '\\.svelte$': '@markuplint/svelte-parser' },
+		specs: { '\\.svelte$': '@markuplint/svelte-spec' },
 	},
 };
 

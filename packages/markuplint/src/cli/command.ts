@@ -71,21 +71,20 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		if (fix) {
 			log('Overwrite file: %s', result.filePath);
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
-			process.stdout.write(`markuplint: Fix "${result.filePath}"\n`);
-		} else {
-			if (format === 'json') {
-				jsonOutput.push(
-					...result.violations.map(v => ({
-						...v,
-						filePath: result.filePath,
-					})),
-				);
-				continue;
-			}
-
-			log('Output reports');
-			output(result, options);
 		}
+
+		if (format === 'json') {
+			jsonOutput.push(
+				...result.violations.map(v => ({
+					...v,
+					filePath: result.filePath,
+				})),
+			);
+			continue;
+		}
+
+		log('Output reports');
+		output(result, options);
 	}
 
 	if (format === 'json') {

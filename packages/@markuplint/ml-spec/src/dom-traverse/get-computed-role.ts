@@ -19,12 +19,12 @@ export function getComputedRole(
 	version: ARIAVersion,
 	assumeSingleNode = false,
 ): ComputedRole {
-	const implicitRole = getImplicitRole(specs, el, version);
+	let lazyImplicitRole: ComputedRole | undefined;
 	const explicitRole = getExplicitRole(specs, el, version);
 	const computedRole = explicitRole.role
 		? explicitRole
 		: {
-				...implicitRole,
+				...(lazyImplicitRole = getImplicitRole(specs, el, version)),
 				errorType: explicitRole.errorType === 'NO_EXPLICIT' ? undefined : explicitRole.errorType,
 			};
 
@@ -144,6 +144,8 @@ export function getComputedRole(
 	if (computedRole.role && !isPresentational(computedRole.role.name)) {
 		return computedRole;
 	}
+
+	const implicitRole = lazyImplicitRole ?? getImplicitRole(specs, el, version);
 
 	/**
 	 * > If an element is focusable,

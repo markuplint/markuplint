@@ -49,6 +49,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'heading-levels': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'id-duplication': {
 			category: 'validation',
 			defaultValue: true,
@@ -69,13 +73,25 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'neighbor-popovers': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 		'no-boolean-attr-value': {
 			category: 'style',
+			defaultValue: false,
+		},
+		'no-consecutive-br': {
+			category: 'a11y',
 			defaultValue: false,
 		},
 		'no-default-value': {
 			category: 'style',
 			defaultValue: false,
+		},
+		'no-duplicate-dt': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-empty-palpable-content': {
 			category: 'validation',

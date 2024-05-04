@@ -14,3 +14,27 @@ test('esm', async () => {
 
 	assert.equal(result.violations.length, 6);
 });
+
+test('CommonJS Config', async () => {
+	const file = await MLEngine.toMLFile('../../fixture/002.html');
+
+	const engine = new MLEngine(file, {
+		locale: 'en',
+		config: await import('./config.cjs'),
+	});
+	const result = await engine.exec();
+
+	assert.equal(result.violations.length, 6);
+});
+
+test('ESM Config', async () => {
+	const file = await MLEngine.toMLFile('../../fixture/002.html');
+
+	const engine = new MLEngine(file, {
+		locale: 'en',
+		config: await import('./config.mjs'),
+	});
+	const result = await engine.exec();
+
+	assert.equal(result.violations.length, 6);
+});

@@ -151,6 +151,15 @@ describe('selector matching', () => {
 		expect(createSelector('header > a').match(a)).toBe(false);
 	});
 
+	test('Child combinator with :scope', () => {
+		const el = createTestElement('<div><span><a></a></span></div>');
+		const a = el.children[0].children[0];
+		expect(a.nodeName).toBe('A');
+		expect(createSelector('a').match(a)).toBeTruthy();
+		expect(createSelector(':scope a').match(a, el)).toBeTruthy();
+		expect(createSelector(':scope > span > a').match(a, el)).toBeTruthy();
+	});
+
 	test('Next-sibling combinator', () => {
 		const el = createTestElement(`<ul>
 			<li class="i1"><a class="a1">1</a></li>

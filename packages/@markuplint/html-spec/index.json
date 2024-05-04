@@ -371,6 +371,17 @@
 						}
 					}
 				},
+				"writingsuggestions": {
+					"type": {
+						"enum": ["", "true", "false"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "default",
+						"missingValueDefault": "default",
+						"sameStates": {
+							"true": [""]
+						}
+					}
+				},
 				"class": {
 					"type": "Any"
 				},
@@ -2089,363 +2100,6 @@
 						"prohibitedProperties": []
 					},
 					{
-						"name": "associationlist",
-						"description": "A section containing associationlistitemkey and associationlistitemvalue elements.\n\nAssociation lists contain children whose role is associationlistitemkey and associationlistitemvalue to represent a list of key items each having one or more values.\n\nAuthor requirements for elements whose role is associationlist:",
-						"generalization": ["section"],
-						"requiredContextRole": [],
-						"requiredOwnedElements": ["associationlistitemkey", "associationlistitemvalue"],
-						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": true,
-						"accessibleNameFromContent": false,
-						"accessibleNameProhibited": false,
-						"ownedProperties": [
-							{
-								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
-								"name": "aria-brailleroledescription",
-								"inherited": true
-							},
-							{
-								"name": "aria-busy",
-								"inherited": true
-							},
-							{
-								"name": "aria-controls",
-								"inherited": true
-							},
-							{
-								"name": "aria-current",
-								"inherited": true
-							},
-							{
-								"name": "aria-describedby",
-								"inherited": true
-							},
-							{
-								"name": "aria-description",
-								"inherited": true
-							},
-							{
-								"name": "aria-details",
-								"inherited": true
-							},
-							{
-								"name": "aria-disabled",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-dropeffect",
-								"inherited": true
-							},
-							{
-								"name": "aria-errormessage",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-flowto",
-								"inherited": true
-							},
-							{
-								"name": "aria-grabbed",
-								"inherited": true
-							},
-							{
-								"name": "aria-haspopup",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-hidden",
-								"inherited": true
-							},
-							{
-								"name": "aria-invalid",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-keyshortcuts",
-								"inherited": true
-							},
-							{
-								"name": "aria-label",
-								"inherited": true
-							},
-							{
-								"name": "aria-labelledby",
-								"inherited": true
-							},
-							{
-								"name": "aria-live",
-								"inherited": true
-							},
-							{
-								"name": "aria-owns",
-								"inherited": true
-							},
-							{
-								"name": "aria-relevant",
-								"inherited": true
-							},
-							{
-								"name": "aria-roledescription",
-								"inherited": true
-							}
-						],
-						"prohibitedProperties": []
-					},
-					{
-						"name": "associationlistitemkey",
-						"description": "A single key item in an association list.\n\nAuthor requirements for elements whose role is associationlistitemkey:",
-						"generalization": ["section"],
-						"requiredContextRole": ["associationlist"],
-						"requiredOwnedElements": [],
-						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": true,
-						"accessibleNameFromContent": false,
-						"accessibleNameProhibited": false,
-						"ownedProperties": [
-							{
-								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
-								"name": "aria-brailleroledescription",
-								"inherited": true
-							},
-							{
-								"name": "aria-busy",
-								"inherited": true
-							},
-							{
-								"name": "aria-controls",
-								"inherited": true
-							},
-							{
-								"name": "aria-current",
-								"inherited": true
-							},
-							{
-								"name": "aria-describedby",
-								"inherited": true
-							},
-							{
-								"name": "aria-description",
-								"inherited": true
-							},
-							{
-								"name": "aria-details",
-								"inherited": true
-							},
-							{
-								"name": "aria-disabled",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-dropeffect",
-								"inherited": true
-							},
-							{
-								"name": "aria-errormessage",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-flowto",
-								"inherited": true
-							},
-							{
-								"name": "aria-grabbed",
-								"inherited": true
-							},
-							{
-								"name": "aria-haspopup",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-hidden",
-								"inherited": true
-							},
-							{
-								"name": "aria-invalid",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-keyshortcuts",
-								"inherited": true
-							},
-							{
-								"name": "aria-label",
-								"inherited": true
-							},
-							{
-								"name": "aria-labelledby",
-								"inherited": true
-							},
-							{
-								"name": "aria-level"
-							},
-							{
-								"name": "aria-live",
-								"inherited": true
-							},
-							{
-								"name": "aria-owns",
-								"inherited": true
-							},
-							{
-								"name": "aria-posinset"
-							},
-							{
-								"name": "aria-relevant",
-								"inherited": true
-							},
-							{
-								"name": "aria-roledescription",
-								"inherited": true
-							},
-							{
-								"name": "aria-setsize"
-							}
-						],
-						"prohibitedProperties": []
-					},
-					{
-						"name": "associationlistitemvalue",
-						"description": "A single value item in an association list.\n\nAuthor requirements for elements whose role is associationlistitemvalue:",
-						"generalization": ["section"],
-						"requiredContextRole": ["associationlist"],
-						"requiredOwnedElements": [],
-						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": true,
-						"accessibleNameFromContent": false,
-						"accessibleNameProhibited": false,
-						"ownedProperties": [
-							{
-								"name": "aria-atomic",
-								"inherited": true
-							},
-							{
-								"name": "aria-braillelabel",
-								"inherited": true
-							},
-							{
-								"name": "aria-brailleroledescription",
-								"inherited": true
-							},
-							{
-								"name": "aria-busy",
-								"inherited": true
-							},
-							{
-								"name": "aria-controls",
-								"inherited": true
-							},
-							{
-								"name": "aria-current",
-								"inherited": true
-							},
-							{
-								"name": "aria-describedby",
-								"inherited": true
-							},
-							{
-								"name": "aria-description",
-								"inherited": true
-							},
-							{
-								"name": "aria-details",
-								"inherited": true
-							},
-							{
-								"name": "aria-disabled",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-dropeffect",
-								"inherited": true
-							},
-							{
-								"name": "aria-errormessage",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-flowto",
-								"inherited": true
-							},
-							{
-								"name": "aria-grabbed",
-								"inherited": true
-							},
-							{
-								"name": "aria-haspopup",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-hidden",
-								"inherited": true
-							},
-							{
-								"name": "aria-invalid",
-								"deprecated": true,
-								"inherited": true
-							},
-							{
-								"name": "aria-keyshortcuts",
-								"inherited": true
-							},
-							{
-								"name": "aria-label",
-								"inherited": true
-							},
-							{
-								"name": "aria-labelledby",
-								"inherited": true
-							},
-							{
-								"name": "aria-live",
-								"inherited": true
-							},
-							{
-								"name": "aria-owns",
-								"inherited": true
-							},
-							{
-								"name": "aria-posinset"
-							},
-							{
-								"name": "aria-relevant",
-								"inherited": true
-							},
-							{
-								"name": "aria-roledescription",
-								"inherited": true
-							},
-							{
-								"name": "aria-setsize"
-							}
-						],
-						"prohibitedProperties": []
-					},
-					{
 						"name": "banner",
 						"description": "A landmark that contains mostly site-oriented content, rather than page-specific content.\n\nSite-oriented content typically includes things such as the logo or identity of the site sponsor, and a site-specific search tool. A banner usually appears at the top of the page and typically spans the full width.\n\nAssistive technologies SHOULD enable users to quickly navigate to elements with role banner. user agents SHOULD treat elements with role banner as navigational landmarks. user agents MAY enable users to quickly navigate to elements with role banner.\n\nThe author SHOULD mark no more than one element on a page with the banner role.\n\nBecause document and application elements can be nested in the DOM, they can have multiple banner elements as DOM descendants, assuming each of those is associated with different document nodes, either by a DOM nesting (e.g., document within document) or by use of the aria-owns attribute.",
 						"generalization": ["landmark"],
@@ -3404,7 +3058,7 @@
 					},
 					{
 						"name": "combobox",
-						"description": "An input that controls another element, such as a listbox or grid, that can dynamically pop up to help the user set the value of the input.\n\nThe Guidance for combobox has changed significantly in ARIA 1.2 due to problems with implementation of the previous patterns. Authors and developers of User Agents, Assistive Technologies, and Conformance Checkers are advised to review this section carefully to understand the changes. Explanation of the changes is available in the ARIA repository wiki.\n\nA combobox functionally combines a named input field with the ability to assist value selection via a supplementary popup element. A combobox input MAY be either a single-line text field that supports editing and typing or an element that only displays the current value of the combobox. If the combobox supports text input and provides autocompletion behavior as described in aria-autocomplete, authors MUST set aria-autocomplete on the combobox element to the value that corresponds to the provided behavior.\n\nTypically, the initial state of a combobox is collapsed. In the collapsed state, only the combobox element and a separate, optional popup control button are visible. A combobox is said to be expanded when both the combobox element showing its current value and its associated popup element are visible. Authors MUST set aria-expanded to true on an element with role combobox when it is expanded and false when it is collapsed.\n\nAuthors MUST ensure the popup element associated with a combobox has a role of listbox, tree, grid, or dialog. When the popup is displayed, authors MUST set aria-controls on a combobox element to a value that refers to the combobox popup element.\n\nElements with the role combobox have an implicit aria-haspopup value of listbox. If the combobox popup element has a role other than listbox, authors MUST specify a value for aria-haspopup that corresponds to the role of its popup.\n\nIf the user interface includes an additional icon that allows the visibility of the popup to be controlled via pointer and touch events, authors SHOULD ensure that element has role button, that it is focusable but not included in the page Tab sequence, and that it is not a descendant of the element with role combobox. In addition, to be keyboard accessible, authors SHOULD provide keyboard mechanisms for moving focus between the combobox element and elements contained in the popup. For example, one common convention is that Down Arrow moves focus from the input to the first focusable descendant of the popup element. If the popup element supports aria-activedescendant, in lieu of moving focus, such keyboard mechanisms can control the value of aria-activedescendant on the combobox element. When a descendant of the popup element is active, authors MAY set aria-activedescendant on the combobox to a value that refers to the active element within the popup while focus remains on the combobox element.\n\nUser agents MUST expose the value of elements with role combobox to assistive technologies. The value of a combobox is represented by one of the following:\n\nPlease review the following carefully. As a result of these changes a combobox following the ARIA 1.1 combobox specification will no longer conform with the ARIA specification.\n\nThe structural requirements for combobox defined by this version of the specification are different from the requirements defined by ARIA 1.0 and ARIA 1.1:\n\nThe features and behaviors of combobox implementations vary widely. Consequently, there are many important authoring considerations. See the WAI-ARIA Authoring Practices for additional details on implementing combobox design patterns.",
+						"description": "An input that controls another element, such as a listbox or grid, that can dynamically pop up to help the user set the value of the input.\n\nThe Guidance for combobox has changed significantly in ARIA 1.2 due to problems with implementation of the previous patterns. Authors and developers of User Agents, Assistive Technologies, and Conformance Checkers are advised to review this section carefully to understand the changes. Explanation of the changes is available in the ARIA repository wiki.\n\nA combobox functionally combines a named input field with the ability to assist value selection via a supplementary popup element. A combobox input MAY be either a single-line text field that supports editing and typing or an element that only displays the current value of the combobox. If the combobox supports text input and provides autocompletion behavior as described in aria-autocomplete, authors MUST set aria-autocomplete on the combobox element to the value that corresponds to the provided behavior.\n\nTypically, the initial state of a combobox is collapsed. In the collapsed state, only the combobox element and a separate, optional popup control button are visible. A combobox is said to be expanded when both the combobox element showing its current value and its associated popup element are visible. Authors MUST set aria-expanded to true on an element with role combobox when it is expanded and false when it is collapsed.\n\nElements with the role combobox have an implicit aria-haspopup value of listbox. If the combobox popup element has a role other than listbox, authors MUST specify an aria-haspopup value of tree, grid, or dialog that corresponds to the role of its popup.\n\nIf the user interface includes an additional icon that allows the visibility of the popup to be controlled via pointer and touch events, authors SHOULD ensure that element has role button, that it is focusable but not included in the page Tab sequence, and that it is not a descendant of the element with role combobox. In addition, to be keyboard accessible, authors SHOULD provide keyboard mechanisms for moving focus between the combobox element and elements contained in the popup. For example, one common convention is that Down Arrow moves focus from the input to the first focusable descendant of the popup element. If the popup element supports aria-activedescendant, in lieu of moving focus, such keyboard mechanisms can control the value of aria-activedescendant on the combobox element. When a descendant of the popup element is active, authors MAY set aria-activedescendant on the combobox to a value that refers to the active element within the popup while focus remains on the combobox element.\n\nUser agents MUST expose the value of elements with role combobox to assistive technologies. The value of a combobox is represented by one of the following:\n\nPlease review the following carefully. As a result of these changes a combobox following the ARIA 1.1 combobox specification will no longer conform with the ARIA specification.\n\nThe structural requirements for combobox defined by this version of the specification are different from the requirements defined by ARIA 1.0 and ARIA 1.1:\n\nThe features and behaviors of combobox implementations vary widely. Consequently, there are many important authoring considerations. See the WAI-ARIA Authoring Practices for additional details on implementing combobox design patterns.",
 						"generalization": ["input"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -4431,6 +4085,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -5708,20 +5363,122 @@
 					},
 					{
 						"name": "image",
-						"description": "A container for a collection of elements that form an image. See synonym img.\n\nThe image was added to ARIA in version 1.3 as a synonym of the ARIA 1.0 img role. The image role improves syntactic consistency with the names of other roles, which are complete words or concatenations of complete words.",
-						"generalization": [],
+						"description": "A container for a collection of elements that form an image. See synonym img.\n\nAn img can contain captions and descriptive text, as well as multiple image files that when viewed together give the impression of a single image. An img represents a single graphic within a document, whether or not it is formed by a collection of drawing objects. In order for an element with a role of img to be perceivable, authors MUST provide the element with an accessible name. This can be done using the aria-label or aria-labelledby attribute.\n\nThe image role was added to ARIA in version 1.3 as a synonym of the ARIA 1.0 img role. The image role improves syntactic consistency with the names of other roles, which are complete words or concatenations of complete words.",
+						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
-						"accessibleNameRequired": false,
-						"accessibleNameFromAuthor": false,
+						"accessibleNameRequired": true,
+						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
 						"accessibleNameProhibited": false,
-						"ownedProperties": [],
+						"childrenPresentational": true,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
 						"prohibitedProperties": []
 					},
 					{
 						"name": "img",
-						"description": "A container for a collection of elements that form an image. See synonym image.\n\nAn img can contain captions and descriptive text, as well as multiple image files that when viewed together give the impression of a single image. An img represents a single graphic within a document, whether or not it is formed by a collection of drawing objects. In order for an element with a role of img to be perceivable, authors MUST provide the element with an accessible name. This can be done using the aria-label or aria-labelledby attribute.",
+						"description": "A container for a collection of elements that form an image. See synonym image.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -11991,7 +11748,7 @@
 					},
 					{
 						"name": "tabpanel",
-						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, either by using the aria-controls attribute on the tab to reference the tab panel, or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the WAI-ARIA Authoring Practices for details on implementing a tab set design pattern.",
+						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the WAI-ARIA Authoring Practices for details on implementing a tab set design pattern.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -12207,7 +11964,7 @@
 					},
 					{
 						"name": "textbox",
-						"description": "A type of input that allows free-form text as its value.\n\nIf the aria-multiline attribute is true, the widget accepts line breaks within the input, as in an HTML textarea. Otherwise, this is a simple text box. The intended use is for languages that do not have a text input element, or cases in which an element with different semantics is repurposed as a text field.\n\nIn most user agent implementations, the default behavior of the ENTER or RETURN key is different between the single-line and multi-line text fields in HTML. When user has focus in a single-line <input type=\"text\"> element, the keystroke usually submits the form. When user has focus in a multi-line <textarea> element, the keystroke inserts a line break. The WAI-ARIA textbox role differentiates these types of boxes with the aria-multiline attribute, so authors are advised to be aware of this distinction when designing the field.",
+						"description": "A type of input that allows free-form text as its value.\n\nIf the aria-multiline attribute is true, the widget accepts line breaks within the input, as in an HTML textarea. Otherwise, this is a simple text box. The intended use is for languages that do not have a text input element, or cases in which an element with different semantics is repurposed as a text field.\n\nAuthors MUST limit the children of a textbox to non-interactive, entirely presentational elements such as icons used to visually convey information that is already exposed in an accessible manner. Examples include:\n\nIn most user agent implementations, the default behavior of the ENTER or RETURN key is different between the single-line and multi-line text fields in HTML. When user has focus in a single-line <input type=\"text\"> element, the keystroke usually submits the form. When user has focus in a multi-line <textarea> element, the keystroke inserts a line break. The WAI-ARIA textbox role differentiates these types of boxes with the aria-multiline attribute, so authors are advised to be aware of this distinction when designing the field.",
 						"generalization": ["input"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -16420,6 +16177,7 @@
 					{
 						"name": "directory",
 						"description": "[Deprecated in ARIA 1.2] A list of references to members of a group, such as a static table of contents.\n\nAs exposed by accessibility APIs, the directory role is essentially equivalent to the list role. So, using directory does not provide any additional benefits to assistive technology users. Authors are advised to treat directory as deprecated and to use list, or a host language's equivalent semantics instead.\n\nA directory is a static table of contents, whether linked or unlinked. This includes tables of contents built with lists, including nested lists. Dynamic tables of contents, however, might use a tree role instead.",
+						"deprecated": true,
 						"generalization": ["list"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -35324,7 +35082,7 @@
 					"deprecated": true
 				},
 				"target": {
-					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: the current browsing context. (Default) _blank: usually a new tab, but users can configure browsers to open a new window instead. _parent: the parent browsing context of the current one. If no parent, behaves as _self. _top: the topmost browsing context (the \"highest\" context that's an ancestor of the current one). If no ancestors, behaves as _self. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener."
+					"description": "Where to display the linked URL, as the name for a browsing context (a tab, window, or <iframe>). The following keywords have special meanings for where to load the URL: _self: The current browsing context. (Default) _blank: Usually a new tab, but users can configure browsers to open a new window instead. _parent: The parent browsing context of the current one. If no parent, behaves as _self. _top: The topmost browsing context. To be specific, this means the \"highest\" context that's an ancestor of the current one. If no ancestors, behaves as _self. _unfencedTop: Allows embedded fenced frames to navigate the top-level frame (i.e. traversing beyond the root of the fenced frame, unlike other reserved destinations). Note that the navigation will still succeed if this is used outside of a fenced frame context, but it will not act like a reserved keyword. Note: Setting target=\"_blank\" on <a> elements implicitly provides the same rel behavior as setting rel=\"noopener\" which does not set window.opener."
 				},
 				"type": {
 					"description": "Hints at the linked URL's format with a MIME type. No built-in functionality."
@@ -35609,9 +35367,7 @@
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
 				},
 				"controlslist": {
-					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback.",
-					"experimental": true,
-					"nonStandard": true
+					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback."
 				},
 				"crossorigin": {
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
@@ -35790,9 +35546,7 @@
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
 				},
 				"controlslist": {
-					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback.",
-					"experimental": true,
-					"nonStandard": true
+					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback."
 				},
 				"crossorigin": {
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
@@ -35986,7 +35740,13 @@
 				"onpagehide": {
 					"type": "FunctionBody"
 				},
+				"onpagereveal": {
+					"type": "FunctionBody"
+				},
 				"onpageshow": {
+					"type": "FunctionBody"
+				},
+				"onpageswap": {
 					"type": "FunctionBody"
 				},
 				"onpopstate": {
@@ -36037,11 +35797,7 @@
 			"description": "The <br> HTML element produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
-				"contents": [
-					{
-						"oneOrMore": ":model(flow)"
-					}
-				]
+				"contents": false
 			},
 			"aria": {
 				"implicitRole": false,
@@ -36126,15 +35882,11 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"autocomplete": {
-					"description": "This attribute on a <button> is nonstandard and Firefox-specific. Unlike other browsers, Firefox persists the dynamic disabled state of a <button> across page loads. Setting autocomplete=\"off\" on the button disables this feature; see Firefox bug 654072.",
-					"nonStandard": true
-				},
 				"autofocus": {
 					"description": "This Boolean attribute specifies that the button should have input focus when the page loads. Only one element in a document can have this attribute."
 				},
 				"disabled": {
-					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused. Firefox, unlike other browsers, persists the dynamic disabled state of a <button> across page loads. To control this feature, use the autocomplete attribute."
+					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused."
 				},
 				"form": {
 					"description": "The <form> element to associate the button with (its form owner). The value of this attribute must be the id of a <form> in the same document. (If this attribute is not set, the <button> is associated with its ancestor <form> element, if any.) This attribute lets you associate <button> elements to <form>s anywhere in the document, not just inside a <form>. It can also override an ancestor <form> element."
@@ -36220,7 +35972,7 @@
 		{
 			"name": "caption",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
-			"description": "The <caption> HTML element specifies the caption (or title) of a table.",
+			"description": "The <caption> HTML element specifies the caption (or title) of a table, providing the table an accessible description.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -36248,7 +36000,7 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute indicates how the caption must be aligned with respect to the table. It may have one of the following values: left The caption is displayed to the left of the table. top The caption is displayed above the table. right The caption is displayed to the right of the table. bottom The caption is displayed below the table. Warning: Do not use this attribute, as it has been deprecated. The <caption> element should be styled using the CSS properties caption-side and text-align.",
+					"description": "Specifies on which side of the table the caption should be displayed. The possible enumerated values are left, top, right, or bottom. Use the caption-side and text-align CSS properties instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -36326,7 +36078,7 @@
 		{
 			"name": "col",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
-			"description": "The <col> HTML element defines a column within a table and is used for defining common semantics on all common cells. It is generally found within a <colgroup> element.",
+			"description": "The <col> HTML element defines one or more columns in a column group represented by its parent <colgroup> element. The <col> element is only valid as a child of a <colgroup> element that has no span attribute defined.",
 			"categories": [],
 			"contentModel": {
 				"contents": false
@@ -36344,19 +36096,19 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each column cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell If this attribute is not set, its value is inherited from the align of the <colgroup> element this <col> element belongs too. If there are none, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, do not try to set the text-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector. Set a to zero and b to the position of the column in the table, e.g. td:nth-child(2) { text-align: right; } to right-align the second column. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "Specifies the horizontal alignment of each column cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and on offset defined by the charoff attribute. Note that this attribute overrides the specified align of its <colgroup> parent element. Use the text-align CSS property on the <td> and <th> elements instead, as this attribute is deprecated. Note: Setting text-align on the <col> element has no effect as <col> has no descendants, and therefore no elements inherit from it. If the table does not use a colspan attribute, use the td:nth-of-type(an+b) CSS selector. Set a to zero and b to the position of the column in the table, e.g. td:nth-of-type(2) { text-align: right; } to right-align the second column cells. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "Defines the background color of each column cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute sets the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Specifies the alignment of the content to a character of each column cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still override the specified char of its <colgroup> parent element.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment characters specified by the char attribute.",
+					"description": "Specifies the number of characters to offset the column cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"span": {
@@ -36369,11 +36121,11 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <col> element. Because <td> elements are not descendant of the <col> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector where 'a' is the total number of the columns in the table and 'b' is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "Specifies the vertical alignment of each column cell. The possible enumerated values are baseline, bottom, middle, and top. Note that this attribute overrides the specified valign of its <colgroup> parent element. Use the vertical-align CSS property on the <td> and <th> elements instead, as this attribute is deprecated. Note: Setting vertical-align on the <col> element has no effect as <col> has no descendants, and therefore no elements inherit from it. If the table does not use a colspan attribute, use the td:nth-of-type(an+b) CSS selector. Set a to zero and b to the position of the column in the table, e.g. td:nth-of-type(2) { vertical-align: middle; } to center the second column cells vertically. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute specifies a default width for each column in the current column group. In addition to the standard pixel and percentage values, this attribute might take the special form 0*, which means that the width of each column in the group should be the minimum width necessary to hold the column's contents. Relative widths such as 5* also can be used.",
+					"description": "Specifies a default width for each column. In addition to the standard pixel and percentage values, this attribute can take the special form 0*, which means that the width of each column spanned should be the minimum width necessary to hold the column's contents. Relative widths such as 5* can also be used. Note that this attribute overrides the specified width of its <colgroup> parent element. Use the width CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -36409,19 +36161,19 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each column cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. The descendant <col> elements may override this value using their own align attribute. Note: Do not try to set the text-align property on a selector giving a <colgroup> element. Because <td> elements are not descendant of the <colgroup> element, they won't inherit it. If the table doesn't use a colspan attribute, use one td:nth-child(an+b) CSS selector per column, where 'a' is the total number of the columns in the table and 'b' is the ordinal position of this column in the table. Only after this selector the text-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "Specifies the horizontal alignment of each column group cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and the offset defined by the charoff attribute. Note that the descendant <col> elements may override this value using their own align attribute. Use the text-align CSS property on the <td> and <th> elements instead, as this attribute is deprecated. Note: Setting text-align on the <colgroup> element has no effect as <td> and <th> elements are not descendants of the <colgroup> element, and therefore they do not inherit from it. If the table does not use a colspan attribute, use the td:nth-of-type(an+b) CSS selector per column, where a is the total number of the columns in the table and b is the ordinal position of the column in the table, e.g. td:nth-of-type(7n+2) { text-align: right; } to right-align the second column cells. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "Defines the background color of each column group cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute specifies the alignment of the content in a column group to a character. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still be used as the default value for the align of the <col> which are members of this column group.",
+					"description": "Specifies the alignment of the content to a character of each column group cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored, though it will still be used as the default value for the align of the <col> elements which are members of this column group.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment character specified by the char attribute.",
+					"description": "Specifies the number of characters to offset the column group cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"span": {
@@ -36434,7 +36186,11 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each cell of the column. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not try to set the vertical-align property on a selector giving a <colgroup> element. Because <td> elements are not descendant of the <colgroup> element, they won't inherit it. If the table doesn't use a colspan attribute, use the td:nth-child(an+b) CSS selector per column, where 'a' is the total number of the columns in the table and 'b' is the ordinal position of the column in the table. Only after this selector the vertical-align property can be used. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"description": "Specifies the vertical alignment of each column group cell. The possible enumerated values are baseline, bottom, middle, and top. Note that the descendant <col> elements may override this value using their own valign attribute. Use the vertical-align CSS property on the <td> and <th> elements instead, as this attribute is deprecated. Note: Setting vertical-align on the <colgroup> element has no effect as <td> and <th> elements are not descendants of the <colgroup> element, and therefore they do not inherit from it. If the table does not use a colspan attribute, use the td:nth-of-type() CSS selector per column, e.g. td:nth-of-type(2) { vertical-align: middle; } to center the second column cells vertically. If the table does use a colspan attribute, the effect can be achieved by combining adequate CSS attribute selectors like [colspan=n], though this is not trivial.",
+					"deprecated": true
+				},
+				"width": {
+					"description": "Specifies a default width for each column in the current column group. In addition to the standard pixel and percentage values, this attribute can take the special form 0*, which means that the width of each column spanned should be the minimum width necessary to hold the column's contents. Relative widths such as 5* can also be used. Note that the descendant <col> elements may override this value using their own width attribute. Use the width CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -36537,13 +36293,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {
-				"nowrap": {
-					"description": "If the value of this attribute is set to yes, the definition text will not wrap. The default value is no.",
-					"deprecated": true,
-					"nonStandard": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "del",
@@ -36621,7 +36371,7 @@
 		{
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element is used to indicate the term being defined within the context of a definition phrase or sentence. The ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the definition of the term.",
+			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the full definition of the term.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -36943,7 +36693,7 @@
 		{
 			"name": "figcaption",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
-			"description": "The <figcaption> HTML element represents a caption or legend describing the rest of the contents of its parent <figure> element.",
+			"description": "The <figcaption> HTML element represents a caption or legend describing the rest of the contents of its parent <figure> element, providing the <figure> an accessible description.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -37446,8 +37196,7 @@
 			"attributes": {
 				"profile": {
 					"description": "The URIs of one or more metadata profiles, separated by white space.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				}
 			}
 		},
@@ -37614,8 +37363,7 @@
 			"attributes": {
 				"manifest": {
 					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
@@ -37690,10 +37438,14 @@
 					"deprecated": true,
 					"nonStandard": true
 				},
-				"credentialless": {
-					"description": "Set to true to make the <iframe> credentialless, meaning that its content will be loaded in a new, ephemeral context. It doesn't have access to the network, cookies, and storage data associated with its origin. It uses a new context local to the top-level document lifetime. In return, the Cross-Origin-Embedder-Policy (COEP) embedding rules can be lifted, so documents with COEP set can embed third-party documents that do not. See IFrame credentialless for more details.",
+				"browsingtopics": {
+					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source. See Using the Topics API for more details.",
 					"experimental": true,
 					"nonStandard": true
+				},
+				"credentialless": {
+					"description": "Set to true to make the <iframe> credentialless, meaning that its content will be loaded in a new, ephemeral context. It doesn't have access to the network, cookies, and storage data associated with its origin. It uses a new context local to the top-level document lifetime. In return, the Cross-Origin-Embedder-Policy (COEP) embedding rules can be lifted, so documents with COEP set can embed third-party documents that do not. See IFrame credentialless for more details.",
+					"experimental": true
 				},
 				"csp": {
 					"description": "A Content Security Policy enforced for the embedded resource. See HTMLIFrameElement.csp for details.",
@@ -37888,7 +37640,7 @@
 					"condition": "a[href] img"
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
+					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when. Note: Images with loading set to lazy will never be loaded if they do not intersect a visible part of an element, even if loading them would change that as unloaded images have a width and height of 0. Putting width and height on lazyloaded images fixes this issue and is a best practice, recommended by the specification. Doing so also helps prevent layout shifts."
 				},
 				"longdesc": {
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG's HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
@@ -39063,7 +38815,7 @@
 					"requiredEither": ["rel"]
 				},
 				"media": {
-					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on. Note: In HTML 4, this can only be a simple white-space-separated list of media description literals, i.e., media types and groups, where defined and allowed as values for this attribute, such as print, screen, aural, braille. HTML5 extended this to any kind of media queries, which are a superset of the allowed values of HTML 4. Browsers not supporting CSS Media Queries won't necessarily recognize the adequate link; do not forget to set fallback links, the restricted set of media queries defined in HTML 4."
+					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on."
 				},
 				"methods": {
 					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
@@ -39083,6 +38835,7 @@
 									"canonical",
 									"author",
 									"dns-prefetch",
+									"expect",
 									"help",
 									"icon",
 									"manifest",
@@ -39095,6 +38848,7 @@
 									"preload",
 									"prerender",
 									"prev",
+									"privacy-policy",
 									"search",
 									"stylesheet",
 									"terms-of-service"
@@ -39760,7 +39514,8 @@
 					"requiredEither": ["data"]
 				},
 				"usemap": {
-					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element."
+					"description": "A hash-name reference to a <map> element; that is a '#' followed by the value of a name of a map element.",
+					"deprecated": true
 				},
 				"width": {
 					"description": "The width of the display resource, in CSS pixels. — (Absolute values only. NO percentages)"
@@ -40882,7 +40637,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": ":model(flow)"
+						"oneOrMore": ":model(phrasing)"
 					}
 				]
 			},
@@ -40906,7 +40661,7 @@
 			"name": "style",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
 			"description": "The <style> HTML element contains style information for a document, or part of a document. It contains CSS, which is applied to the contents of the document containing the <style> element.",
-			"categories": ["#metadata", "#flow"],
+			"categories": ["#metadata"],
 			"contentModel": {
 				"contents": [
 					{
@@ -41048,7 +40803,7 @@
 		{
 			"name": "table",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
-			"description": "The <table> HTML element represents tabular data — that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
+			"description": "The <table> HTML element represents tabular data—that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": [
@@ -41110,39 +40865,39 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute indicates how the table must be aligned inside the containing document. It may have the following values: left: the table is displayed on the left side of the document; center: the table is displayed in the center of the document; right: the table is displayed on the right side of the document. Set margin-left and margin-right to achieve an effect that is similar to the align attribute: left: margin-right: auto; margin-left: 0; center: margin-right: auto; margin-left: auto; right: margin-right: 0; margin-left: auto;",
+					"description": "Specifies the horizontal alignment of the table within its parent element. The possible enumerated values are left, center, and right. Use the margin-inline-start and margin-inline-end CSS properties instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "Defines the background color of the table. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"border": {
-					"description": "This integer attribute defines, in pixels, the size of the frame surrounding the table. If set to 0, the frame attribute is set to void. To achieve a similar effect, use the CSS border shorthand property.",
+					"description": "Defines, as a non-negative integer value (in pixels), the size of the frame surrounding the table. If set to 0, the frame attribute is set to void. Use the border CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"cellpadding": {
-					"description": "This attribute defines the space between the content of a cell and its border, displayed or not. If the cellpadding's length is defined in pixels, this pixel-sized space will be applied to all four sides of the cell's content. If the length is defined using a percentage value, the content will be centered and the total vertical space (top and bottom) will represent this value. The same is true for the total horizontal space (left and right). To achieve a similar effect, apply the border-collapse property to the <table> element, with its value set to collapse, and the padding property to the <td> elements.",
+					"description": "Defines the space between the content of a cell and its border. This attribute is obsolete: instead of using it, apply the padding CSS property to the <th> and <td> elements.",
 					"deprecated": true
 				},
 				"cellspacing": {
-					"description": "This attribute defines the size of the space between two cells in a percentage value or pixels. The attribute is applied both horizontally and vertically, to the space between the top of the table and the cells of the first row, the left of the table and the first column, the right of the table and the last column and the bottom of the table and the last row. To achieve a similar effect, apply the border-spacing property to the <table> element. border-spacing does not have any effect if border-collapse is set to collapse.",
+					"description": "Defines the size of the space between two cells. This attribute is obsolete: instead of using it, set the border-spacing CSS property on the <table> element. Note that this has no effect if the <table> element's border-collapse CSS property is set to collapse.",
 					"deprecated": true
 				},
 				"frame": {
-					"description": "This enumerated attribute defines which side of the frame surrounding the table must be displayed. To achieve a similar effect, use the border-style and border-width properties.",
+					"description": "Defines which side of the frame surrounding the table must be displayed. The possible enumerated values are void, above, below, hsides, vsides, lhs, rhs, box and border. Use the border-style and border-width CSS properties instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"rules": {
-					"description": "This enumerated attribute defines where rules, i.e. lines, should appear in a table. It can have the following values: none, which indicates that no rules will be displayed; it is the default value; groups, which will cause the rules to be displayed between row groups (defined by the <thead>, <tbody> and <tfoot> elements) and between column groups (defined by the <col> and <colgroup> elements) only; rows, which will cause the rules to be displayed between rows; cols, which will cause the rules to be displayed between columns; all, which will cause the rules to be displayed between rows and columns. To achieve a similar effect, apply the border property to the appropriate <thead>, <tbody>, <tfoot>, <col>, or <colgroup> elements.",
+					"description": "Defines where rules (borders) are displayed in the table. The possible enumerated values are none (default value), groups (<thead>, <tbody>, and <tfoot> elements), rows (horizontal lines), cols (vertical lines), and all (border around every cell). Use the border CSS property on the appropriate table-related elements, as well as on the <table> itself, instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"summary": {
-					"description": "This attribute defines an alternative text that summarizes the content of the table. Use the <caption> element instead.",
+					"description": "Defines an alternative text that summarizes the content of the table. Use the <caption> element instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute defines the width of the table. Use the CSS width property instead.",
+					"description": "Specifies the width of the table. Use the width CSS property instead, as this attribute is deprecated. Note: While no HTML specification includes height as a <table> attribute, some browsers support a non-standard interpretation of height. The unitless value sets a minimum absolute height in pixels. If set as a percent value, the minimum table height will be relative to the parent container's height. Use the min-height CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41150,7 +40905,7 @@
 		{
 			"name": "tbody",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
-			"description": "The <tbody> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the body of the table (<table>).",
+			"description": "The <tbody> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the body of a table's (main) data.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -41171,23 +40926,23 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. As this attribute is deprecated, use the CSS text-align property instead. Note: The equivalent text-align property for the align=\"char\" is not implemented in any browsers yet. See the text-align's browser compatibility section for the <string> value.",
+					"description": "Specifies the horizontal alignment of each body cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and on offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. As this attribute is deprecated, use the CSS background-color property instead.",
+					"description": "Defines the background color of each body cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Specifies the alignment of the content to a character of each body cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment characters specified by the char attribute.",
+					"description": "Specifies the number of characters to offset the body cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each row of cells of the table header. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. As this attribute is deprecated, use the CSS vertical-align property instead.",
+					"description": "Specifies the vertical alignment of each body cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41195,7 +40950,7 @@
 		{
 			"name": "td",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
-			"description": "The <td> HTML element defines a cell of a table that contains data. It participates in the table model.",
+			"description": "The <td> HTML element defines a cell of a table that contains data and may be used as a child of the <tr> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -41228,52 +40983,52 @@
 			},
 			"attributes": {
 				"abbr": {
-					"description": "This attribute contains a short abbreviated description of the cell's content. Some user-agents, such as speech readers, may present this description before the content itself. Note: Do not use this attribute as it is obsolete in the latest standard. Alternatively, you can put the abbreviated description inside the cell and place the long content in the title attribute.",
+					"description": "Contains a short abbreviated description of the data cell's content. Some user-agents, such as speech readers, may present this description before the content itself. Put the abbreviated content inside the cell and place the (longer) description in the title attribute, as this attribute is deprecated. Or, preferably, include the content within the data cell, and use CSS to visually clip overflowing text.",
 					"deprecated": true
 				},
 				"align": {
-					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes. The default value when this attribute is not specified is left. Note: To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char.",
+					"description": "Specifies the horizontal alignment of the data cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and the offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"axis": {
-					"description": "This attribute contains a list of space-separated strings. Each string is the id of a group of cells that this header applies to.",
+					"description": "Contains a list of space-separated strings, each corresponding to the id attribute of a group of cells that the data cell applies to.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell in a column. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "Defines the background color of the data cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "The content in the cell element is aligned to a character. Typical values include a period (.) to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Specifies the alignment of the content to a character of the data cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to shift column data to the right of the character specified by the char attribute. Its value specifies the length of this shift.",
+					"description": "Specifies the number of characters to offset the data cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "This attribute contains a non-negative integer value that indicates for how many columns the cell extends. Its default value is 1. Values higher than 1000 will be considered as incorrect and will be set to the default value (1)."
+					"description": "Contains a non-negative integer value that indicates how many columns the data cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, setting to the default value (1)."
 				},
 				"headers": {
-					"description": "This attribute contains a list of space-separated strings, each corresponding to the id attribute of the <th> elements that apply to this element."
+					"description": "Contains a list of space-separated strings, each corresponding to the id attribute of the <th> elements that provide headings for this table cell."
 				},
 				"height": {
-					"description": "This attribute is used to define a recommended cell height. Use the CSS height property instead.",
+					"description": "Defines a recommended data cell height. Use the height CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"rowspan": {
-					"description": "This attribute contains a non-negative integer value that indicates for how many rows the cell extends. Its default value is 1; if its value is set to 0, it extends until the end of the table section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the cell belongs to. Values higher than 65534 are clipped down to 65534."
+					"description": "Contains a non-negative integer value that indicates for how many rows the data cell spans or extends. The default value is 1; if its value is set to 0, it extends until the end of the table grouping section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the cell belongs to. Values higher than 65534 are clipped to 65534."
 				},
 				"scope": {
-					"description": "This enumerated attribute defines the cells that the header (defined in the <th>) element relates to. Only use this attribute with the <th> element to define the row or column for which it is a header.",
+					"description": "Defines the cells that the header (defined in the <th>) element relates to. The possible enumerated values are row, col, rowgroup, and colgroup. Only use this attribute with the <th> element to define the row or column for which it is a header, as this attribute is deprecated for the <td> element.",
 					"deprecated": true
 				},
 				"valign": {
-					"description": "This attribute specifies how a text is vertically aligned inside a cell. Possible values for this attribute are: baseline: Positions the text near the bottom of the cell and aligns it with the baseline of the characters instead of the bottom. If characters don't descend below the baseline, the baseline value achieves the same effect as bottom. bottom: Positions the text near the bottom of the cell. middle: Centers the text in the cell. and top: Positions the text near the top of the cell. To achieve a similar effect, use the CSS vertical-align property.",
+					"description": "Specifies the vertical alignment of the data cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute is used to define a recommended cell width. Use the CSS width property instead.",
+					"description": "Defines a recommended data cell width. Use the width CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41281,7 +41036,7 @@
 		{
 			"name": "template",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
-			"description": "The <template> HTML element is a mechanism for holding HTML that is not to be rendered immediately when a page is loaded but may be instantiated subsequently during runtime using JavaScript.",
+			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript or generated immediately into shadow DOM.",
 			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
 			"contentModel": {
 				"contents": true
@@ -41298,6 +41053,9 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"shadowrootclonable": {
+					"type": "Boolean"
+				},
 				"shadowrootdelegatesfocus": {
 					"type": "Boolean"
 				},
@@ -41417,7 +41175,7 @@
 		{
 			"name": "tfoot",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
-			"description": "The <tfoot> HTML element defines a set of rows summarizing the columns of the table.",
+			"description": "The <tfoot> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the foot of a table with information about the table's columns. This is usually a summary of the columns, e.g., a sum of the given numbers in a column.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -41438,23 +41196,23 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Note: To achieve the same effect as the left, center, right or justify values, use the CSS text-align property on it. To achieve the same effect as the char value, in CSS, you can use the value of the char as the value of the text-align property.",
+					"description": "Specifies the horizontal alignment of each foot cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and on offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used. To achieve a similar effect, use the CSS background-color property.",
+					"description": "Defines the background color of each foot cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute specifies the alignment of the content in a column to a character. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
+					"description": "Specifies the alignment of the content to a character of each foot cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment characters specified by the char attribute.",
+					"description": "Specifies the number of characters to offset the foot cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each row of cells of the table footer. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; and top, which will put the text as close to the top of the cell as it is possible. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard: instead set the CSS vertical-align property on it.",
+					"description": "Specifies the vertical alignment of each foot cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41462,7 +41220,7 @@
 		{
 			"name": "th",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
-			"description": "The <th> HTML element defines a cell as the header of a group of table cells. The exact nature of this group is defined by the scope and headers attributes.",
+			"description": "The <th> HTML element defines a cell as the header of a group of table cells and may be used as a child of the <tr> element. The exact nature of this group is defined by the scope and headers attributes.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -41510,37 +41268,37 @@
 					"type": "Any"
 				},
 				"align": {
-					"description": "This enumerated attribute specifies how the cell content's horizontal alignment will be handled. Possible values are: left: The content is aligned to the left of the cell. center: The content is centered in the cell. right: The content is aligned to the right of the cell. justify (with text only): The content is stretched out inside the cell so that it covers its entire width. char (with text only): The content is aligned to a character inside the <th> element with minimal offset. This character is defined by the char and charoff attributes. The default value when this attribute is not specified is left. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect as the left, center, right or justify values, apply the CSS text-align property to the element. To achieve the same effect as the char value, give the text-align property the same value you would use for the char.",
+					"description": "Specifies the horizontal alignment of the header cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and the offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"axis": {
-					"description": "This attribute contains a list of space-separated strings. Each string is the id of a group of cells that this header applies to. Note: Do not use this attribute as it is obsolete in the latest standard: use the scope attribute instead.",
+					"description": "Contains a list of space-separated strings, each corresponding to the id attribute of a group of cells that the header cell applies to. Use the scope attribute instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each cell in a column. It consists of a 6-digit hexadecimal code as defined in sRGB and is prefixed by '#'.",
+					"description": "Defines the background color of the header cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "The content in the cell element is aligned to a character. Typical values include a period (.) to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete in the latest standard. To achieve the same effect, you can specify the character as the first value of the text-align property.",
+					"description": "Specifies the alignment of the content to a character of the header cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to shift column data to the right of the character specified by the char attribute. Its value specifies the length of this shift. Note: Do not use this attribute as it is obsolete in the latest standard.",
+					"description": "Specifies the number of characters to offset the header cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"colspan": {
-					"description": "This attribute contains a non-negative integer value that indicates for how many columns the cell extends. Its default value is 1. Values higher than 1000 will be considered as incorrect and will be set to the default value (1)."
+					"description": "A non-negative integer value indicating how many columns the header cell spans or extends. The default value is 1. User agents dismiss values higher than 1000 as incorrect, defaulting such values to 1."
 				},
 				"headers": {
-					"description": "This attribute contains a list of space-separated strings, each corresponding to the id attribute of the <th> elements that apply to this element."
+					"description": "A list of space-separated strings corresponding to the id attributes of the <th> elements that provide the headers for this header cell."
 				},
 				"height": {
-					"description": "This attribute is used to define a recommended cell height. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS height property instead.",
+					"description": "Defines a recommended header cell height. Use the height CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"rowspan": {
-					"description": "This attribute contains a non-negative integer value that indicates for how many rows the cell extends. Its default value is 1; if its value is set to 0, it extends until the end of the table section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the cell belongs to. Values higher than 65534 are clipped down to 65534."
+					"description": "A non-negative integer value indicating how many rows the header cell spans or extends. The default value is 1; if its value is set to 0, the header cell will extends to the end of the table grouping section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the <th> belongs to. Values higher than 65534 are clipped at 65534."
 				},
 				"scope": {
 					"type": {
@@ -41550,11 +41308,11 @@
 					}
 				},
 				"valign": {
-					"description": "This attribute specifies how a text is vertically aligned inside a cell. Possible values for this attribute are: baseline: Positions the text near the bottom of the cell and aligns it with the baseline of the characters instead of the bottom. If characters don't descend below the baseline, the baseline value achieves the same effect as bottom. bottom: Positions the text near the bottom of the cell. middle: Centers the text in the cell. and top: Positions the text near the top of the cell. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS vertical-align property instead.",
+					"description": "Specifies the vertical alignment of the header cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"width": {
-					"description": "This attribute is used to define a recommended cell width. Additional space can be added with the cellspacing and cellpadding properties and the width of the <col> element can also create extra width. But, if a column's width is too narrow to show a particular cell properly, it will be widened when displayed. Note: Do not use this attribute as it is obsolete in the latest standard: use the CSS width property instead.",
+					"description": "Defines a recommended header cell width. Use the width CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41562,7 +41320,7 @@
 		{
 			"name": "thead",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
-			"description": "The <thead> HTML element defines a set of rows defining the head of the columns of the table.",
+			"description": "The <thead> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the head of a table with information about the table's columns. This is usually in the form of column headers (<th> elements).",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -41583,23 +41341,23 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "This enumerated attribute specifies how horizontal alignment of each cell content will be handled. Possible values are: left, aligning the content to the left of the cell center, centering the content in the cell right, aligning the content to the right of the cell justify, inserting spaces into the textual content so that the content is justified in the cell char, aligning the textual content on a special character with a minimal offset, defined by the char and charoff attributes. If this attribute is not set, the left value is assumed. Warning: Do not use this attribute as it is obsolete (not supported) in the latest standard. To align values, use the CSS text-align property instead.",
+					"description": "Specifies the horizontal alignment of each head cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and the offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "This attribute defines the background color of each column cell. It accepts a 6-digit hexadecimal color or a named color. Alpha transparency is not supported. Note: Do not use this attribute, as it is non-standard. The thead element should be styled using the CSS background-color property, which can be applied to any element, including the thead, <tr>, <td> and <th> elements.",
+					"description": "Defines the background color of each head cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "This attribute is used to set the character to align the cells in a column on. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
+					"description": "Specifies the alignment of the content to a character of each head cell. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "This attribute is used to indicate the number of characters to offset the column data from the alignment characters specified by the char attribute. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard.",
+					"description": "Specifies the number of characters to offset the head cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
-					"description": "This attribute specifies the vertical alignment of the text within each row of cells of the table header. Possible values for this attribute are: baseline, which will put the text as close to the bottom of the cell as it is possible, but align it on the baseline of the characters instead of the bottom of them. If characters are all of the size, this has the same effect as bottom. bottom, which will put the text as close to the bottom of the cell as it is possible; middle, which will center the text in the cell; top, which will put the text as close to the top of the cell as it is possible. Note: Do not use this attribute as it is obsolete (and not supported) in the latest standard: instead set the CSS vertical-align property on it.",
+					"description": "Specifies the vertical alignment of each head cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41690,23 +41448,23 @@
 			},
 			"attributes": {
 				"align": {
-					"description": "A string which specifies how the cell's context should be aligned horizontally within the cells in the row; this is shorthand for using align on every cell in the row individually. Possible values are: left Align the content of each cell at its left edge. center Center the contents of each cell between their left and right edges. right Align the content of each cell at its right edge. justify Widen whitespaces within the text of each cell so that the text fills the full width of each cell (full justification). char Align each cell in the row on a specific character (such that each row in the column that is configured this way will horizontally align its cells on that character). This uses the char and charoff to establish the alignment character (typically \".\" or \",\" when aligning numerical data) and the number of characters that should follow the alignment character. This alignment type was never widely supported. If no value is expressly set for align, the parent node's value is inherited. Note: Instead of using the obsolete align attribute, you should instead use the CSS text-align property to establish left, center, right, or justify alignment for the row's cells. To apply character-based alignment, set the CSS text-align property to the alignment character (such as \".\" or \",\").",
+					"description": "Specifies the horizontal alignment of each row cell. The possible enumerated values are left, center, right, justify, and char. When supported, the char value aligns the textual content on the character defined in the char attribute and on offset defined by the charoff attribute. Use the text-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "A string specifying a color to apply to the backgrounds of each of the row's cells. This can be either a hexadecimal #RRGGBB or #RGB value or a color keyword. Omitting the attribute or setting it to null in JavaScript causes the row's cells to inherit the row's parent element's background color. Note: The <tr> element should be styled using CSS. To give a similar effect as the bgcolor attribute, use the CSS property background-color.",
+					"description": "Defines the background color of each row cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
-					"description": "A string that sets the character to align the cells in each row's columns (each row's centering that uses the same character gets aligned with others using the same character. Typical values for this include a period (\".\") or comma (\",\") when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored. Note: This attribute is obsolete and rarely implemented anyway. To achieve the same effect as the char attribute, set the CSS text-align property to the same string you would specify for the char property, such as text-align: \".\".",
+					"description": "Specifies the alignment of the content to a character of each row cell. Typical values for this include a period (.) when attempting to align numbers or monetary values. If align is not set to char, this attribute is ignored.",
 					"deprecated": true
 				},
 				"charoff": {
-					"description": "A string indicating the number of characters on the tail end of the column's data should be displayed after the alignment character specified by the char attribute. For example, when displaying money values for currencies that use hundredths of a unit (such as the dollar, which is divided into 100 cents), you would typically specify a value of 2, so that in tandem with char being set to \".\", the values in a column would be cleanly aligned on the decimal points, with the number of cents properly displayed to the right of the decimal point. Note: This attribute is obsolete, and was never widely supported anyway.",
+					"description": "Specifies the number of characters to offset the row cell content from the alignment character specified by the char attribute.",
 					"deprecated": true
 				},
 				"valign": {
-					"description": "A string specifying the vertical alignment of the text within each cell in the row. Possible values for this attribute are: baseline Aligns each cell's content text as closely as possible to the bottom of the cell, handling alignment of different fonts and font sizes by aligning the characters along the baseline of the font(s) used in the row. If all the characters in the row are the same size, the effect is the same as bottom. bottom, Draws the text in each of the row's cells as closely as possible to the bottom edge of those cells. middle Each cell's text is vertically centered. top Each cell's text is drawn as closely as possible to the top edge of the containing cell. Note: Don't use the obsolete valign attribute. Instead, add the CSS vertical-align property to the row.",
+					"description": "Specifies the vertical alignment of each row cell. The possible enumerated values are baseline, bottom, middle, and top. Use the vertical-align CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				}
 			}
@@ -41853,13 +41611,11 @@
 			"attributes": {
 				"compact": {
 					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent, and it doesn't work in all browsers. Warning: Do not use this attribute, as it has been deprecated: use CSS instead. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"type": {
 					"description": "This attribute sets the bullet style for the list. The values defined under HTML3.2 and the transitional version of HTML 4.0/4.01 are: circle disc square A fourth bullet type has been defined in the WebTV interface, but not all browsers support it: triangle. If not present and if no CSS list-style-type property applies to the element, the user agent selects a bullet type depending on the nesting level of the list. Warning: Do not use this attribute, as it has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				}
 			}
 		},
@@ -41966,8 +41722,7 @@
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related video. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e. without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disablepictureinpicture": {
-					"description": "Prevents the browser from suggesting a Picture-in-Picture context menu or to request Picture-in-Picture automatically in some cases.",
-					"experimental": true
+					"description": "Prevents the browser from suggesting a Picture-in-Picture context menu or to request Picture-in-Picture automatically in some cases."
 				},
 				"disableremoteplayback": {
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
@@ -45254,7 +45009,7 @@
 					{
 						"zeroOrMore": [
 							":model(SVGDescriptive)",
-							"#SVGFilterPrimitive",
+							":model(SVGFilterPrimitive)",
 							"svg|animate",
 							"svg|script",
 							"svg|set"

@@ -1,12 +1,12 @@
 # Ignoring code
 
-## Ignoring file
+## Ignoring file {#ignoring-file}
 
 Use [`excludeFiles`](/docs/configuration/properties#excludefiles) property on the configuration.
 
 ## Disable rules
 
-### Disable by selector
+### Disable by selector {#disable-by-selector}
 
 Use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules) property on the configuration.
 See [Applying to some](./applying-rules/#applying-to-some).

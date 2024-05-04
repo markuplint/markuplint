@@ -167,6 +167,7 @@ type ExtendableAttributeSpec = Omit<ReadonlyDeep<AttributeJSON>, 'type'>;
 export type ARIARole = {
 	readonly name: string;
 	readonly isAbstract: boolean;
+	readonly deprecated: boolean;
 	readonly requiredContextRole: readonly string[];
 	readonly requiredOwnedElements: readonly string[];
 	readonly accessibleNameRequired: boolean;

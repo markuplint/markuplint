@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/shared",
-	"version": "4.0.0-alpha.9",
+	"version": "4.1.0",
 	"description": "Shared functions for Markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,6 +24,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"html-entities": "^2.4.0"
+		"html-entities": "2.5.2"
 	}
 }

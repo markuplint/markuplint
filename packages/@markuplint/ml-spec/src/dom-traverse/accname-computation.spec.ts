@@ -1,5 +1,5 @@
 import { createJSDOMElement as c } from '@markuplint/test-tools';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { getAccname } from './accname-computation.js';
 
@@ -67,4 +67,10 @@ test('accname-1.1 Example 3', () => {
 test('with comment', () => {
 	expect(getAccname(c('<button>label</button>'))).toBe('label');
 	expect(getAccname(c('<button>label<!-- comment --></button>'))).toBe('label');
+});
+
+describe('Issues', () => {
+	test('#1478', () => {
+		expect(getAccname(c('<input placeholder=" placeholder text " />'))).toBe('placeholder text');
+	});
 });

@@ -18,7 +18,7 @@ description: 終了タグがない場合は警告します。
 
 ```html
 <div>
-	<span>There is not an end tag.
+  <span>There is not an end tag.
 </div>
 ```
 

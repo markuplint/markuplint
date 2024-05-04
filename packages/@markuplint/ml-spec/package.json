@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "4.0.0-alpha.9",
+	"version": "4.2.0",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -32,14 +32,14 @@
 		"schema:prettier": "prettier --write \"./schemas/*.json\" \"./src/types/*.ts\" --log-level warn"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "4.0.0-alpha.9",
-		"@markuplint/types": "4.0.0-alpha.9",
-		"dom-accessibility-api": "^0.6.3",
-		"is-plain-object": "^5.0.0",
-		"type-fest": "^4.9.0"
+		"@markuplint/ml-ast": "4.1.0",
+		"@markuplint/types": "4.1.0",
+		"dom-accessibility-api": "0.6.3",
+		"is-plain-object": "5.0.0",
+		"type-fest": "4.14.0"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "4.0.0-alpha.9",
-		"json-schema-to-typescript": "13.1.1"
+		"@markuplint/test-tools": "4.2.0",
+		"json-schema-to-typescript": "13.1.2"
 	}
 }

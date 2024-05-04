@@ -1,677 +1,404 @@
 import { test, expect } from 'vitest';
 
 import { attrTokenizer } from './attr-tokenizer.js';
+import { AttrState } from './enums.js';
 
-test('void attribute', () => {
-	expect(attrTokenizer(' abc', 1, 1, 0)).toMatchObject({
-		raw: 'abc',
-		startLine: 1,
-		endLine: 1,
-		startCol: 2,
-		endCol: 5,
-		startOffset: 1,
-		endOffset: 4,
-		spacesBeforeName: {
-			raw: ' ',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 1,
-		},
-		name: {
-			raw: 'abc',
-			startLine: 1,
-			endLine: 1,
-			startCol: 2,
-			endCol: 5,
-			startOffset: 1,
-			endOffset: 4,
-		},
-		spacesBeforeEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		equal: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		spacesAfterEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		startQuote: {
-			endCol: 5,
-			endLine: 1,
-			endOffset: 4,
-			raw: '',
-			startCol: 5,
-			startLine: 1,
-			startOffset: 4,
-		},
-		value: {
-			endCol: 5,
-			endLine: 1,
-			endOffset: 4,
-			raw: '',
-			startCol: 5,
-			startLine: 1,
-			startOffset: 4,
-		},
-		endQuote: {
-			endCol: 5,
-			endLine: 1,
-			endOffset: 4,
-			raw: '',
-			startCol: 5,
-			startLine: 1,
-			startOffset: 4,
-		},
-	});
+test('name', () => {
+	expect(attrTokenizer('a').attrName).toBe('a');
+	expect(attrTokenizer('abc').attrName).toBe('abc');
+	expect(attrTokenizer('abc:').attrName).toBe('abc:');
+	expect(attrTokenizer(':abc').attrName).toBe(':abc');
+	expect(attrTokenizer('xxx:abc').attrName).toBe('xxx:abc');
+	expect(attrTokenizer('@abc').attrName).toBe('@abc');
 });
 
-test('normal', () => {
-	expect(attrTokenizer(' abc="123"', 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 2,
-		endCol: 11,
-		startOffset: 1,
-		endOffset: 10,
-		raw: 'abc="123"',
-		spacesBeforeName: {
-			raw: ' ',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 1,
-		},
-		name: {
-			raw: 'abc',
-			startLine: 1,
-			endLine: 1,
-			startCol: 2,
-			endCol: 5,
-			startOffset: 1,
-			endOffset: 4,
-		},
-		spacesBeforeEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 6,
-			startOffset: 4,
-			endOffset: 5,
-		},
-		spacesAfterEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 6,
-			endCol: 6,
-			startOffset: 5,
-			endOffset: 5,
-		},
-		startQuote: {
-			raw: '"',
-			startLine: 1,
-			endLine: 1,
-			startCol: 6,
-			endCol: 7,
-			startOffset: 5,
-			endOffset: 6,
-		},
-		value: {
-			raw: '123',
-			startLine: 1,
-			endLine: 1,
-			startCol: 7,
-			endCol: 10,
-			startOffset: 6,
-			endOffset: 9,
-		},
-		endQuote: {
-			endCol: 11,
-			endLine: 1,
-			endOffset: 10,
-			raw: '"',
-			startCol: 10,
-			startLine: 1,
-			startOffset: 9,
-		},
-	});
+test('value', () => {
+	expect(attrTokenizer('a=b').attrValue).toBe('b');
+	expect(attrTokenizer('abc=xyz').attrValue).toBe('xyz');
+	expect(attrTokenizer('abc:="xyz"').attrValue).toBe('xyz');
 });
 
-test('after line break', () => {
-	expect(attrTokenizer('\n abc="123"', 1, 1, 0)).toMatchObject({
-		startLine: 2,
-		endLine: 2,
-		startCol: 2,
-		endCol: 11,
-		startOffset: 2,
-		endOffset: 11,
-		raw: 'abc="123"',
-		spacesBeforeName: {
-			raw: '\n ',
-			startLine: 1,
-			endLine: 2,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 2,
-		},
-		name: {
-			raw: 'abc',
-			startLine: 2,
-			endLine: 2,
-			startCol: 2,
-			endCol: 5,
-			startOffset: 2,
-			endOffset: 5,
-		},
-		spacesBeforeEqual: {
-			raw: '',
-			startLine: 2,
-			endLine: 2,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 5,
-			endOffset: 5,
-		},
-		equal: {
-			raw: '=',
-			startLine: 2,
-			endLine: 2,
-			startCol: 5,
-			endCol: 6,
-			startOffset: 5,
-			endOffset: 6,
-		},
-		spacesAfterEqual: {
-			raw: '',
-			startLine: 2,
-			endLine: 2,
-			startCol: 6,
-			endCol: 6,
-			startOffset: 6,
-			endOffset: 6,
-		},
-		startQuote: {
-			raw: '"',
-			startLine: 2,
-			endLine: 2,
-			startCol: 6,
-			endCol: 7,
-			startOffset: 6,
-			endOffset: 7,
-		},
-		value: {
-			raw: '123',
-			startLine: 2,
-			endLine: 2,
-			startCol: 7,
-			endCol: 10,
-			startOffset: 7,
-			endOffset: 10,
-		},
-		endQuote: {
-			raw: '"',
-			startLine: 2,
-			endLine: 2,
-			startCol: 10,
-			endCol: 11,
-			startOffset: 10,
-			endOffset: 11,
-		},
-	});
-});
-
-test('after line break', () => {
-	expect(attrTokenizer('\n abc="123"', 1, 3, 0)).toMatchObject({
-		spacesBeforeName: {
-			raw: '\n ',
-			startLine: 1,
-			endLine: 2,
-			startCol: 3,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 2,
-		},
-	});
-});
-
-test('single quote', () => {
-	expect(attrTokenizer("  q='a'", 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 3,
-		endCol: 8,
-		startOffset: 2,
-		endOffset: 7,
-		raw: "q='a'",
-		spacesBeforeName: {
-			raw: '  ',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 3,
-			startOffset: 0,
-			endOffset: 2,
-		},
-		name: {
-			raw: 'q',
-			startLine: 1,
-			endLine: 1,
-			startCol: 3,
-			endCol: 4,
-			startOffset: 2,
-			endOffset: 3,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 4,
-			endCol: 5,
-			startOffset: 3,
-			endOffset: 4,
-		},
-		value: {
-			raw: 'a',
-			startLine: 1,
-			endLine: 1,
-			startCol: 6,
-			endCol: 7,
-			startOffset: 5,
-			endOffset: 6,
-		},
-	});
-});
-
-test('no quote', () => {
-	expect(attrTokenizer('q=a', 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 4,
-		startOffset: 0,
-		endOffset: 3,
-		raw: 'q=a',
-		name: {
-			raw: 'q',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 1,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 2,
-			endCol: 3,
-			startOffset: 1,
-			endOffset: 2,
-		},
-		value: {
-			raw: 'a',
-			startLine: 1,
-			endLine: 1,
-			startCol: 3,
-			endCol: 4,
-			startOffset: 2,
-			endOffset: 3,
-		},
-	});
-});
-
-test('empty', () => {
-	expect(attrTokenizer('q', 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 2,
-		startOffset: 0,
-		endOffset: 1,
-		raw: 'q',
-		name: {
-			raw: 'q',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 1,
-		},
-		equal: {},
-		value: {},
-	});
-});
-
-test('no value', () => {
-	expect(attrTokenizer('q=', 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 3,
-		startOffset: 0,
-		endOffset: 2,
-		raw: 'q=',
-		name: {
-			raw: 'q',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 2,
-			startOffset: 0,
-			endOffset: 1,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 2,
-			endCol: 3,
-			startOffset: 1,
-			endOffset: 2,
-		},
-		value: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 3,
-			endCol: 3,
-			startOffset: 2,
-			endOffset: 2,
-		},
-	});
-});
-
-test('spaces', () => {
-	expect(attrTokenizer('abc  =  "efg"', 1, 1, 0)).toMatchObject({
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 14,
-		startOffset: 0,
-		endOffset: 13,
-		raw: 'abc  =  "efg"',
-		name: {
-			raw: 'abc',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 4,
-			startOffset: 0,
-			endOffset: 3,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 6,
-			endCol: 7,
-			startOffset: 5,
-			endOffset: 6,
-		},
-		value: {
-			raw: 'efg',
-			startLine: 1,
-			endLine: 1,
-			startCol: 10,
-			endCol: 13,
-			startOffset: 9,
-			endOffset: 12,
-		},
-	});
-});
-
-test('line break', () => {
+test('complex', () => {
 	expect(
 		attrTokenizer(
-			`
- abc
-
-   =
-
-  "e
-
-     fg
-
-"`,
-			1,
-			1,
-			0,
+			//
+			' @a:x.y\n= x + y ',
+			undefined,
+			undefined,
+			undefined,
+			[],
 		),
-	).toMatchObject({
-		startLine: 2,
-		endLine: 10,
-		startCol: 2,
-		endCol: 2,
-		startOffset: 2,
-		endOffset: 29,
-		raw: 'abc\n\n   =\n\n  "e\n\n     fg\n\n"',
-		name: {
-			raw: 'abc',
-			startLine: 2,
-			endLine: 2,
-			startCol: 2,
-			endCol: 5,
-			startOffset: 2,
-			endOffset: 5,
-		},
-		equal: {
-			raw: '=',
-			startLine: 4,
-			endLine: 4,
-			startCol: 4,
-			endCol: 5,
-			startOffset: 10,
-			endOffset: 11,
-		},
-		value: {
-			raw: 'e\n\n     fg\n\n',
-			startLine: 6,
-			endLine: 10,
-			startCol: 4,
-			endCol: 1,
-			startOffset: 16,
-			endOffset: 28,
-		},
+	).toStrictEqual({
+		spacesBeforeAttrName: ' ',
+		attrName: '@a:x.y',
+		spacesBeforeEqual: '\n',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: ' x + y ',
+		quoteEnd: '',
+		leftover: '',
+	});
+
+	expect(attrTokenizer(' @a:x.y\n= " x\' + y " ')).toStrictEqual({
+		spacesBeforeAttrName: ' ',
+		attrName: '@a:x.y',
+		spacesBeforeEqual: '\n',
+		equal: '=',
+		spacesAfterEqual: ' ',
+		quoteStart: '"',
+		attrValue: " x' + y ",
+		quoteEnd: '"',
+		leftover: ' ',
 	});
 });
 
-test('includes gt sign', () => {
-	expect(attrTokenizer('abc="d>e"', 1, 1, 0)).toMatchObject({
-		raw: 'abc="d>e"',
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 10,
-		startOffset: 0,
-		endOffset: 9,
-		spacesBeforeName: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 1,
-			startOffset: 0,
-			endOffset: 0,
-		},
-		name: {
-			raw: 'abc',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 4,
-			startOffset: 0,
-			endOffset: 3,
-		},
-		spacesBeforeEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 4,
-			endCol: 4,
-			startOffset: 3,
-			endOffset: 3,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 4,
-			endCol: 5,
-			startOffset: 3,
-			endOffset: 4,
-		},
-		spacesAfterEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		startQuote: {
-			endCol: 6,
-			endLine: 1,
-			endOffset: 5,
-			raw: '"',
-			startCol: 5,
-			startLine: 1,
-			startOffset: 4,
-		},
-		value: {
-			endCol: 9,
-			endLine: 1,
-			endOffset: 8,
-			raw: 'd>e',
-			startCol: 6,
-			startLine: 1,
-			startOffset: 5,
-		},
-		endQuote: {
-			endCol: 10,
-			endLine: 1,
-			endOffset: 9,
-			raw: '"',
-			startCol: 9,
-			startLine: 1,
-			startOffset: 8,
-		},
+test('jsx', () => {
+	expect(
+		attrTokenizer(
+			' className={classList.map((c) => `${c.toLowerCase()}`).join(",")} ',
+			[
+				{ start: '"', end: '"' },
+				{ start: "'", end: "'" },
+				{ start: '{', end: '}' },
+			],
+			0,
+			[
+				{ start: '"', end: '"' },
+				{ start: "'", end: "'" },
+				{ start: '`', end: '`' },
+				{ start: '${', end: '}' },
+			],
+		),
+	).toStrictEqual({
+		spacesBeforeAttrName: ' ',
+		attrName: 'className',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '{',
+		attrValue: 'classList.map((c) => `${c.toLowerCase()}`).join(",")',
+		quoteEnd: '}',
+		leftover: ' ',
 	});
-	expect(attrTokenizer('abc="d=>e"', 1, 1, 0)).toMatchObject({
-		raw: 'abc="d=>e"',
-		startLine: 1,
-		endLine: 1,
-		startCol: 1,
-		endCol: 11,
-		startOffset: 0,
-		endOffset: 10,
-		spacesBeforeName: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 1,
-			startOffset: 0,
-			endOffset: 0,
-		},
-		name: {
-			raw: 'abc',
-			startLine: 1,
-			endLine: 1,
-			startCol: 1,
-			endCol: 4,
-			startOffset: 0,
-			endOffset: 3,
-		},
-		spacesBeforeEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 4,
-			endCol: 4,
-			startOffset: 3,
-			endOffset: 3,
-		},
-		equal: {
-			raw: '=',
-			startLine: 1,
-			endLine: 1,
-			startCol: 4,
-			endCol: 5,
-			startOffset: 3,
-			endOffset: 4,
-		},
-		spacesAfterEqual: {
-			raw: '',
-			startLine: 1,
-			endLine: 1,
-			startCol: 5,
-			endCol: 5,
-			startOffset: 4,
-			endOffset: 4,
-		},
-		startQuote: {
-			endCol: 6,
-			endLine: 1,
-			endOffset: 5,
-			raw: '"',
-			startCol: 5,
-			startLine: 1,
-			startOffset: 4,
-		},
-		value: {
-			endCol: 10,
-			endLine: 1,
-			endOffset: 9,
-			raw: 'd=>e',
-			startCol: 6,
-			startLine: 1,
-			startOffset: 5,
-		},
-		endQuote: {
-			endCol: 11,
-			endLine: 1,
-			endOffset: 10,
-			raw: '"',
-			startCol: 10,
-			startLine: 1,
-			startOffset: 9,
-		},
+});
+
+test('abc', () => {
+	expect(attrTokenizer('abc')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'abc',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '',
+	});
+});
+
+test('␣␣abc␣␣', () => {
+	expect(attrTokenizer('  abc  ')).toStrictEqual({
+		spacesBeforeAttrName: '  ',
+		attrName: 'abc',
+		spacesBeforeEqual: '  ',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '',
+	});
+});
+
+test('␣␣abc␣=', () => {
+	expect(attrTokenizer('  abc =')).toStrictEqual({
+		spacesBeforeAttrName: '  ',
+		attrName: 'abc',
+		spacesBeforeEqual: ' ',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '',
+	});
+});
+
+test('␣␣abc␣=␣d', () => {
+	expect(attrTokenizer('  abc = d')).toStrictEqual({
+		spacesBeforeAttrName: '  ',
+		attrName: 'abc',
+		spacesBeforeEqual: ' ',
+		equal: '=',
+		spacesAfterEqual: ' ',
+		quoteStart: '',
+		attrValue: 'd',
+		quoteEnd: '',
+		leftover: '',
+	});
+});
+
+test('␣␣abc␣=␣"de"', () => {
+	expect(attrTokenizer('  abc = "de"')).toStrictEqual({
+		spacesBeforeAttrName: '  ',
+		attrName: 'abc',
+		spacesBeforeEqual: ' ',
+		equal: '=',
+		spacesAfterEqual: ' ',
+		quoteStart: '"',
+		attrValue: 'de',
+		quoteEnd: '"',
+		leftover: '',
+	});
+});
+
+test('␣␣abc␣=␣{de}', () => {
+	expect(
+		attrTokenizer('  abc = {de}', [
+			{ start: '"', end: '"' },
+			{ start: "'", end: "'" },
+			{ start: '{', end: '}' },
+		]),
+	).toStrictEqual({
+		spacesBeforeAttrName: '  ',
+		attrName: 'abc',
+		spacesBeforeEqual: ' ',
+		equal: '=',
+		spacesAfterEqual: ' ',
+		quoteStart: '{',
+		attrValue: 'de',
+		quoteEnd: '}',
+		leftover: '',
+	});
+});
+
+test('␣abc="123"', () => {
+	expect(attrTokenizer(' abc="123"')).toStrictEqual({
+		spacesBeforeAttrName: ' ',
+		attrName: 'abc',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '"',
+		attrValue: '123',
+		quoteEnd: '"',
+		leftover: '',
+	});
+});
+
+test('abc=', () => {
+	expect(attrTokenizer('abc=')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'abc',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '',
+	});
+});
+
+test('abc=""', () => {
+	expect(attrTokenizer('abc=""')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'abc',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '"',
+		attrValue: '',
+		quoteEnd: '"',
+		leftover: '',
+	});
+});
+
+test('abc="123', () => {
+	expect(() => attrTokenizer('abc="123')).toThrowError('Unclosed attribute value');
+});
+
+test('{variableAsName}', () => {
+	expect(attrTokenizer('{variableAsName}', [{ start: '{', end: '}' }], AttrState.BeforeValue)).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: '',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '{',
+		attrValue: 'variableAsName',
+		quoteEnd: '}',
+		leftover: '',
+	});
+});
+
+test('literal={ `abc${def}ghi${`jkl${mno}pqr`}` }', () => {
+	expect(
+		attrTokenizer(
+			//
+			'literal={ `abc${def}ghi${`jkl${mno}pqr`}` }',
+			[{ start: '{', end: '}' }],
+			0,
+			[
+				{ start: '"', end: '"' },
+				{ start: "'", end: "'" },
+				{ start: '`', end: '`' },
+				{ start: '${', end: '}' },
+			],
+		),
+	).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'literal',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '{',
+		attrValue: ' `abc${def}ghi${`jkl${mno}pqr`}` ',
+		quoteEnd: '}',
+		leftover: '',
+	});
+});
+
+test('transition:fade="{{ duration: 2000 }}"', () => {
+	expect(
+		attrTokenizer(
+			//
+			'transition:fade="{{ duration: 2000 }}"',
+			[
+				{ start: '"', end: '"' },
+				{ start: "'", end: "'" },
+				{ start: '{', end: '}' },
+			],
+			0,
+			[
+				{ start: '"', end: '"' },
+				{ start: "'", end: "'" },
+				{ start: '`', end: '`' },
+				{ start: '${', end: '}' },
+			],
+		),
+	).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'transition:fade',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '"',
+		attrValue: '{{ duration: 2000 }}',
+		quoteEnd: '"',
+		leftover: '',
+	});
+});
+
+test('abc=def␣ghi', () => {
+	expect(attrTokenizer('abc=def ghi')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'abc',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: 'def',
+		quoteEnd: '',
+		leftover: ' ghi',
+	});
+});
+
+test('a␣b␣c', () => {
+	expect(attrTokenizer('a b c')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: ' b c',
+	});
+});
+
+test('a>', () => {
+	expect(attrTokenizer('a>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '>',
+	});
+});
+
+test('a=>', () => {
+	expect(attrTokenizer('a=>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '>',
+	});
+});
+
+test('a=a>', () => {
+	expect(attrTokenizer('a=a>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: 'a',
+		quoteEnd: '',
+		leftover: '>',
+	});
+});
+
+test('a/>', () => {
+	expect(attrTokenizer('a/>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '/>',
+	});
+});
+
+test('a=/>', () => {
+	expect(attrTokenizer('a=/>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: '',
+		quoteEnd: '',
+		leftover: '/>',
+	});
+});
+
+test('a=a/>', () => {
+	expect(attrTokenizer('a=a/>')).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '',
+		attrValue: 'a',
+		quoteEnd: '',
+		leftover: '/>',
 	});
 });

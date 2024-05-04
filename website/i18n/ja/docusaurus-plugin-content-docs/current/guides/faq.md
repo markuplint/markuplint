@@ -61,13 +61,13 @@
 
 ## OGPで怒られます
 
-Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/invalid-attr#open-graph%E3%83%97%E3%83%AD%E3%83%88%E3%82%B3%E3%83%AB)がありますので参考にしてください。
+Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応していません。[対応できる設定例](/docs/rules/invalid-attr#the-open-graph-protocol)がありますので参考にしてください。
 
 ## `invalid-attr`ルールで怒られます
 
-[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/docs/rules/invalid-attr#attrs%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E8%A8%AD%E5%AE%9A)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
+[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/docs/rules/invalid-attr#setting-attrs-option)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
 
-また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/besides-html#%E3%81%AA%E3%81%9C%E3%82%B9%E3%83%9A%E3%83%83%E3%82%AF%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%8C%E5%BF%85%E8%A6%81%E3%81%AA%E3%81%AE%E3%81%A7%E3%81%99%E3%81%8B)）
+また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/besides-html#why-need-the-spec-plugins)）
 
 もしも構文やフレームワーク（[Next.js](https://nextjs.org/)や[Nuxt](https://nuxtjs.org/)など）のスペックプラグインがあると便利になるのであれば[リクエスト](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Features%3A+Proposal&template=feature.md&title=Supporting+for)してください。
 

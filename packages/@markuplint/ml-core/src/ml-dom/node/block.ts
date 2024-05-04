@@ -16,7 +16,6 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly isTransparent: boolean;
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		astNode: MLASTPreprocessorSpecificBlock,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,

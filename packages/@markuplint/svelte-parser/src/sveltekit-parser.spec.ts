@@ -1,7 +1,9 @@
 import { nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { test, expect } from 'vitest';
 
-import { parse } from './sveltekit-parser.js';
+import { parser } from './sveltekit-parser.js';
+
+const parse = parser.parse.bind(parser);
 
 test('app.html', () => {
 	expect(

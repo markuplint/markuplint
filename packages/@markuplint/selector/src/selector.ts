@@ -35,7 +35,7 @@ export class Selector {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: ParentNode | null,
 	): Specificity | false {
-		scope = isElement(el) ? el : null;
+		scope = scope ?? (isElement(el) ? el : null);
 		const results = this.search(el, scope);
 		for (const result of results) {
 			if (result.matched) {
@@ -51,7 +51,7 @@ export class Selector {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: ParentNode | null,
 	) {
-		scope = isElement(el) ? el : null;
+		scope = scope ?? (isElement(el) ? el : null);
 		return this.#ruleset.match(el, scope);
 	}
 }
@@ -94,15 +94,21 @@ class Ruleset {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope: ParentNode | null,
 	): SelectorResult[] {
-		coreLog(
-			'<%s> (%s)',
-			isElement(el) ? el.localName : el.nodeName,
-			scope ? (isElement(scope) ? scope.localName : scope.nodeName) : null,
-		);
+		if (coreLog.enabled) {
+			coreLog(
+				'<%s> (%s)',
+				isElement(el) ? el.localName : el.nodeName,
+				scope ? (isElement(scope) ? scope.localName : scope.nodeName) : null,
+			);
+		}
 		return this.#selectorGroup.map(selector => {
-			selLog('"%s"', selector.selector);
+			if (selLog.enabled) {
+				selLog('"%s"', selector.selector);
+			}
 			const res = selector.match(el, scope);
-			resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
+			if (resLog.enabled) {
+				resLog('%s "%s" => %o', isElement(el) ? el.localName : el.nodeName, selector.selector, res);
+			}
 			return res;
 		});
 	}
@@ -468,6 +474,14 @@ class SelectorTarget {
 		}
 	}
 
+	/**
+	 * Matching is executed in this order: ID > tag name > classes > attributes > pseudo-elements.
+	 * If any of the selectors are unmatched, the rest of the selectors is skipped for better performance.
+	 *
+	 * @param el
+	 * @param scope
+	 * @private
+	 */
 	private _matchWithoutCombineChecking(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		el: Node,
@@ -516,37 +530,12 @@ class SelectorTarget {
 			matched = false;
 		}
 
-		if (!this.id.every(id => id.value === el.id)) {
+		if (matched && !this.id.every(id => id.value === el.id)) {
 			matched = false;
 		}
 		specificity[0] += this.id.length;
 
-		if (!this.class.every(className => el.classList.contains(className.value))) {
-			matched = false;
-		}
-		specificity[1] += this.class.length;
-
-		if (!this.attr.every(attr => attrMatch(attr, el))) {
-			matched = false;
-		}
-		specificity[1] += this.attr.length;
-
-		for (const pseudo of this.pseudo) {
-			const pseudoRes = pseudoMatch(pseudo, el, scope, this.#extended, this.depth);
-
-			specificity[0] += pseudoRes.specificity[0];
-			specificity[1] += pseudoRes.specificity[1];
-			specificity[2] += pseudoRes.specificity[2];
-
-			if (pseudoRes.matched) {
-				has.push(...pseudoRes.has);
-			} else {
-				not.push(...(pseudoRes.not ?? []));
-				matched = false;
-			}
-		}
-
-		if (this.tag && this.tag.type === 'tag') {
+		if (matched && this.tag && this.tag.type === 'tag') {
 			specificity[2] += 1;
 
 			let a = this.tag.value;
@@ -559,6 +548,33 @@ class SelectorTarget {
 
 			if (a !== b) {
 				matched = false;
+			}
+		}
+
+		if (matched && !this.class.every(className => el.classList.contains(className.value))) {
+			matched = false;
+		}
+		specificity[1] += this.class.length;
+
+		if (matched && !this.attr.every(attr => attrMatch(attr, el))) {
+			matched = false;
+		}
+		specificity[1] += this.attr.length;
+
+		if (matched) {
+			for (const pseudo of this.pseudo) {
+				const pseudoRes = pseudoMatch(pseudo, el, scope, this.#extended, this.depth);
+
+				specificity[0] += pseudoRes.specificity[0];
+				specificity[1] += pseudoRes.specificity[1];
+				specificity[2] += pseudoRes.specificity[2];
+
+				if (pseudoRes.matched) {
+					has.push(...pseudoRes.has);
+				} else {
+					not.push(...(pseudoRes.not ?? []));
+					matched = false;
+				}
 			}
 		}
 

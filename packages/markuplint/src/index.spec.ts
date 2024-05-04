@@ -80,8 +80,33 @@ describe('basic test', () => {
 		const errors = violations.filter(v => v.severity === 'error');
 		const warns = violations.filter(v => v.severity === 'warning');
 
-		expect(errors.length).toBe(42);
-		expect(warns.length).toBe(4);
+		expect(errors.map(_ => _.message)).toStrictEqual([
+			'The "color" attribute is deprecated',
+			'The "align" attribute is deprecated',
+			'The "font" element is obsolete',
+			'Never declare obsolete doctype',
+			'The value of the "id" attribute is duplicated',
+			'The "font" element is not allowed in the "body" element in this context',
+			'Require accessible name',
+			'Require accessible name',
+			'Require accessible name',
+			'The "script" element expects the "defer" attribute',
+			'The "script" element expects the "defer" attribute',
+			'The "img" element expects the "width" attribute',
+			'The "img" element expects the "height" attribute',
+			'The "img" element expects the "width" attribute',
+			'The "img" element expects the "height" attribute',
+			'The "img" element expects the "width" attribute',
+			'The "img" element expects the "height" attribute',
+			'Cannot overwrite the "document" role to the "a" element according to ARIA in HTML specification',
+			'Cannot overwrite the role of the "label" element according to ARIA in HTML specification',
+		]);
+		expect(warns.map(_ => _.message)).toStrictEqual([
+			'Attribute value is must quote on double quotation mark',
+			'Attribute value is must quote on double quotation mark',
+			'Attribute value is must quote on double quotation mark',
+			'Attribute value is must quote on double quotation mark',
+		]);
 	});
 
 	it('is reported from 006.html', async () => {
@@ -100,7 +125,7 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(75);
+		expect(violations.length).toEqual(76);
 	});
 
 	it('is ignoring 008.html', async () => {

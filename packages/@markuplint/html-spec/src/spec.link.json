@@ -32,6 +32,7 @@
 							"canonical",
 							"author",
 							"dns-prefetch",
+							"expect",
 							"help",
 							"icon",
 							"manifest",
@@ -44,6 +45,7 @@
 							"preload",
 							"prerender",
 							"prev",
+							"privacy-policy",
 							"search",
 							"stylesheet",
 							"terms-of-service"

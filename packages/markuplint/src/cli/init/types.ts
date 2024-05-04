@@ -6,6 +6,7 @@ export type Langs =
 	| 'svelte'
 	| 'sveltekit'
 	| 'astro'
+	| 'alpine'
 	| 'pug'
 	| 'php'
 	| 'smarty'

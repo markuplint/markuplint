@@ -1,5 +1,7 @@
-import { copyContributing } from './contributing.mjs';
+import { copyRawDocs } from './copy-raw-docs.mjs';
+import { getContributors } from './get-contributors.mjs';
 import { createRuleDocs } from './rules.mjs';
 
 await createRuleDocs();
-await copyContributing();
+await copyRawDocs();
+await getContributors();

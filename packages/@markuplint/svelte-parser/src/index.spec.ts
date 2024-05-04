@@ -1,9 +1,11 @@
 // @ts-nocheck
 
-import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { attributesToDebugMaps, nodeListToDebugMaps, nodeTreeDebugView } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('parser', () => {
 	test('syntax error', () => {
@@ -85,11 +87,11 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
-			'[1:6]>[1:16](5,15)IfBlock: {#if␣bool}',
+			'[1:6]>[1:16](5,15)#ps:if: {#if␣bool}',
 			'[1:16]>[1:20](15,19)#text: true',
-			'[1:20]>[1:27](19,26)ElseBlock: {:else}',
+			'[1:20]>[1:27](19,26)#ps:else: {:else}',
 			'[1:27]>[1:32](26,31)#text: false',
-			'[1:32]>[1:37](31,36)IfBlock: {/if}',
+			'[1:32]>[1:37](31,36)#ps:/if: {/if}',
 			'[1:37]>[1:43](36,42)div: </div>',
 		]);
 	});
@@ -108,21 +110,19 @@ describe('parser', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
 			'[1:6]>[2:2](5,7)#text: ⏎→',
-			'[2:2]>[3:3](7,42)IfBlock: {#if␣porridge.temperature␣>␣100}⏎→→',
+			'[2:2]>[3:3](7,42)#ps:if: {#if␣porridge.temperature␣>␣100}⏎→→',
 			'[3:3]>[3:6](42,45)p: <p>',
 			'[3:6]>[3:14](45,53)#text: too␣hot!',
 			'[3:14]>[3:18](53,57)p: </p>',
-			'[3:18]>[5:3](57,98)ElseIfBlock: ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
+			'[3:18]>[5:3](57,98)#ps:elseif: ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
 			'[5:3]>[5:6](98,101)p: <p>',
 			'[5:6]>[5:15](101,110)#text: too␣cold!',
 			'[5:15]>[5:19](110,114)p: </p>',
-			'[5:19]>[6:9](114,123)ElseBlock: ⏎→{:else}',
-			'[6:9]>[7:3](123,126)#text: ⏎→→',
+			'[5:19]>[7:3](114,126)#ps:else: ⏎→{:else}⏎→→',
 			'[7:3]>[7:6](126,129)p: <p>',
 			'[7:6]>[7:17](129,140)#text: just␣right!',
 			'[7:17]>[7:21](140,144)p: </p>',
-			'[7:21]>[8:2](144,146)#text: ⏎→',
-			'[8:2]>[8:7](146,151)IfBlock: {/if}',
+			'[7:21]>[8:7](144,151)#ps:/if: ⏎→{/if}',
 			'[8:7]>[9:1](151,152)#text: ⏎',
 			'[9:1]>[9:7](152,158)div: </div>',
 		]);
@@ -132,21 +132,27 @@ describe('parser', () => {
 		const r = parse('{#each expression as name}...{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:27](0,26)EachBlock: {#each␣expression␣as␣name}',
+			'[1:1]>[1:27](0,26)#ps:each: {#each␣expression␣as␣name}',
 			'[1:27]>[1:30](26,29)#text: ...',
-			'[1:30]>[1:37](29,36)EachBlock: {/each}',
+			'[1:30]>[1:37](29,36)#ps:/each: {/each}',
 		]);
+	});
+
+	test('each statement (empty)', () => {
+		const r = parse('{#each expression as name}{/each}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual(['[1:1]>[1:34](0,33)#ps:each: {#each␣expression␣as␣name}{/each}']);
 	});
 
 	test('each else statement', () => {
 		const r = parse('{#each expression as name}...{:else}...{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:27](0,26)EachBlock: {#each␣expression␣as␣name}',
+			'[1:1]>[1:27](0,26)#ps:each: {#each␣expression␣as␣name}',
 			'[1:27]>[1:30](26,29)#text: ...',
-			'[1:30]>[1:37](29,36)ElseBlock: {:else}',
+			'[1:30]>[1:37](29,36)#ps:else: {:else}',
 			'[1:37]>[1:40](36,39)#text: ...',
-			'[1:40]>[1:47](39,46)EachBlock: {/each}',
+			'[1:40]>[1:47](39,46)#ps:/each: {/each}',
 		]);
 	});
 
@@ -155,12 +161,11 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
-			'[1:5]>[1:19](4,18)EachBlock: {#each␣a␣as␣b}',
+			'[1:5]>[1:19](4,18)#ps:each: {#each␣a␣as␣b}',
 			'[1:19]>[1:23](18,22)li: <li>',
-			'[1:23]>[1:37](22,36)EachBlock: {#each␣c␣as␣d}',
-			'[1:37]>[1:44](36,43)EachBlock: {/each}',
+			'[1:23]>[1:44](22,43)#ps:each: {#each␣c␣as␣d}{/each}',
 			'[1:44]>[1:49](43,48)li: </li>',
-			'[1:49]>[1:56](48,55)EachBlock: {/each}',
+			'[1:49]>[1:56](48,55)#ps:/each: {/each}',
 			'[1:56]>[1:61](55,60)ul: </ul>',
 		]);
 	});
@@ -169,13 +174,13 @@ describe('parser', () => {
 		const r = parse('{#await expression}...{:then name}...{:catch name}...{/await}');
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
-			'[1:1]>[1:20](0,19)PendingBlock: {#await␣expression}',
+			'[1:1]>[1:20](0,19)#ps:await: {#await␣expression}',
 			'[1:20]>[1:23](19,22)#text: ...',
-			'[1:23]>[1:35](22,34)ThenBlock: {:then␣name}',
+			'[1:23]>[1:35](22,34)#ps:then: {:then␣name}',
 			'[1:35]>[1:38](34,37)#text: ...',
-			'[1:38]>[1:51](37,50)CatchBlock: {:catch␣name}',
+			'[1:38]>[1:51](37,50)#ps:catch: {:catch␣name}',
 			'[1:51]>[1:54](50,53)#text: ...',
-			'[1:54]>[1:62](53,61)AwaitBlock: {/await}',
+			'[1:54]>[1:62](53,61)#ps:/await: {/await}',
 		]);
 	});
 
@@ -185,7 +190,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:22](4,21)attr-name: attr-name="value"',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:14](4,13)name: attr-name',
 				'  [1:14]>[1:14](13,13)bE: ',
 				'  [1:14]>[1:15](13,14)equal: =',
@@ -205,7 +210,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:36](4,35)on:eventname: on:eventname={␣`abc${def}ghi`␣}',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:17](4,16)name: on:eventname',
 				'  [1:17]>[1:17](16,16)bE: ',
 				'  [1:17]>[1:18](16,17)equal: =',
@@ -225,7 +230,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:39](4,38)on:eventname|modifiers: on:eventname|modifiers␣=␣{handler}',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:27](4,26)name: on:eventname|modifiers',
 				'  [1:27]>[1:28](26,27)bE: ␣',
 				'  [1:28]>[1:29](27,28)equal: =',
@@ -245,7 +250,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:17](4,16)on:eventname: on:eventname',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:17](4,16)name: on:eventname',
 				'  [1:17]>[1:17](16,16)bE: ',
 				'  [1:17]>[1:17](16,16)equal: ',
@@ -265,7 +270,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:29](4,28)property: bind:property={variable}',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:18](4,17)name: bind:property',
 				'  [1:18]>[1:18](17,17)bE: ',
 				'  [1:18]>[1:19](17,18)equal: =',
@@ -286,7 +291,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:18](4,17)property: bind:property',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:18](4,17)name: bind:property',
 				'  [1:18]>[1:18](17,17)bE: ',
 				'  [1:18]>[1:18](17,17)equal: ',
@@ -323,7 +328,7 @@ describe('parser', () => {
 	animate:name2={params}
 />`);
 		const attrs = r.nodeList[0].attributes;
-		expect(attrs.every(attr => (attr.type === 'html-attr' ? attr.isDirective : false))).toBe(true);
+		expect(attrs.every(attr => (attr.type === 'attr' ? attr.isDirective : false))).toBe(true);
 	});
 
 	test('multiple class directives', () => {
@@ -332,7 +337,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:34](4,33)class: class:selected="{isSelected}"',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:19](4,18)name: class:selected',
 				'  [1:19]>[1:19](18,18)bE: ',
 				'  [1:19]>[1:20](18,19)equal: =',
@@ -346,7 +351,7 @@ describe('parser', () => {
 			],
 			[
 				'[1:35]>[1:62](34,61)class: class:focused="{isFocused}"',
-				'  [1:35]>[1:35](34,34)bN: ',
+				'  [1:34]>[1:35](33,34)bN: ␣',
 				'  [1:35]>[1:48](34,47)name: class:focused',
 				'  [1:48]>[1:48](47,47)bE: ',
 				'  [1:48]>[1:49](47,48)equal: =',
@@ -367,7 +372,7 @@ describe('parser', () => {
 		expect(attr).toStrictEqual([
 			[
 				'[1:5]>[1:12](4,11)items: {items}',
-				'  [1:5]>[1:5](4,4)bN: ',
+				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:5](4,4)name: ',
 				'  [1:5]>[1:5](4,4)bE: ',
 				'  [1:5]>[1:5](4,4)equal: ',
@@ -385,9 +390,13 @@ describe('parser', () => {
 	test('spread attributes', () => {
 		const r = parse('<el { ... attrs} />');
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
-		expect(attr).toStrictEqual([]);
-		// @ts-ignore
-		expect(r.nodeList[0].hasSpreadAttr).toBeTruthy();
+		expect(attr).toStrictEqual([
+			[
+				//
+				'[1:5]>[1:17](4,16)#spread: {␣...␣attrs}',
+				'  #spread: {␣...␣attrs}',
+			],
+		]);
 	});
 
 	test('namespace', () => {
@@ -412,9 +421,9 @@ bool
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[2:2](0,7)div: <div␣⏎>',
-			'[2:2]>[5:2](7,22)IfBlock: {␣⏎#if␣⏎bool␣⏎}',
+			'[2:2]>[5:2](7,22)#ps:if: {␣⏎#if␣⏎bool␣⏎}',
 			'[5:2]>[5:6](22,26)#text: true',
-			'[5:6]>[5:11](26,31)IfBlock: {/if}',
+			'[5:6]>[5:11](26,31)#ps:/if: {/if}',
 			'[5:11]>[6:2](31,39)div: </div␣⏎>',
 		]);
 	});
@@ -508,24 +517,23 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
-			'[2:2]>[3:3](6,30)IfBlock: {#if␣cond␣===␣valueA}⏎→→',
+			'[2:2]>[3:3](6,30)#ps:if: {#if␣cond␣===␣valueA}⏎→→',
 			'[3:3]>[3:7](30,34)li: <li>',
 			'[3:7]>[3:8](34,35)#text: A',
 			'[3:8]>[3:13](35,40)li: </li>',
-			'[3:13]>[5:3](40,71)ElseIfBlock: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[3:13]>[5:3](40,71)#ps:elseif: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
 			'[5:3]>[5:7](71,75)li: <li>',
 			'[5:7]>[5:8](75,76)#text: B',
 			'[5:8]>[5:13](76,81)li: </li>',
-			'[5:13]>[6:2](81,83)#text: ⏎→',
-			'[6:2]>[6:7](83,88)IfBlock: {/if}',
+			'[5:13]>[6:7](81,88)#ps:/if: ⏎→{/if}',
 			'[6:7]>[7:1](88,89)#text: ⏎',
 			'[7:1]>[7:6](89,94)ul: </ul>',
 		]);
 
-		expect(r.nodeList[0].childNodes[4].raw).toBe('{/if}');
-		expect(r.nodeList[11].raw).toBe('{/if}');
-		expect(r.nodeList[0].childNodes[4].raw).toBe(r.nodeList[11].raw);
-		expect(r.nodeList[0].childNodes[4].uuid).toBe(r.nodeList[11].uuid);
+		expect(r.nodeList[0].childNodes[3].raw).toBe('\n\t{/if}');
+		expect(r.nodeList[10].raw).toBe('\n\t{/if}');
+		expect(r.nodeList[0].childNodes[3].raw).toBe(r.nodeList[10].raw);
+		expect(r.nodeList[0].childNodes[3].uuid).toBe(r.nodeList[10].uuid);
 	});
 
 	test('#991', () => {
@@ -550,7 +558,7 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:17](0,16)div: <div␣id={uid()}>',
 			'[1:6]>[1:16](5,15)id: id={uid()}',
-			'  [1:6]>[1:6](5,5)bN: ',
+			'  [1:5]>[1:6](4,5)bN: ␣',
 			'  [1:6]>[1:8](5,7)name: id',
 			'  [1:8]>[1:8](7,7)bE: ',
 			'  [1:8]>[1:9](7,8)equal: =',
@@ -570,7 +578,7 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
 			'[1:6]>[2:1](5,6)#text: ⏎',
-			'[2:1]>[2:30](6,35)Comment: <!--␣It␣is␣a␣comment␣node␣-->',
+			'[2:1]>[2:30](6,35)#comment: <!--␣It␣is␣a␣comment␣node␣-->',
 			'[2:30]>[3:1](35,36)#text: ⏎',
 			'[3:1]>[3:7](36,42)div: </div>',
 		]);
@@ -581,42 +589,42 @@ describe('Issues', () => {
 			const r = parse('{\n\t#if cond\n}...{\n\t:else\n}...{\n\t/if\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,13)IfBlock: {⏎→#if␣cond⏎}',
+				'[1:1]>[3:2](0,13)#ps:if: {⏎→#if␣cond⏎}',
 				'[3:2]>[3:5](13,16)#text: ...',
-				'[3:5]>[5:2](16,26)ElseBlock: {⏎→:else⏎}',
+				'[3:5]>[5:2](16,26)#ps:else: {⏎→:else⏎}',
 				'[5:2]>[5:5](26,29)#text: ...',
-				'[5:5]>[7:2](29,37)IfBlock: {⏎→/if⏎}',
+				'[5:5]>[7:2](29,37)#ps:/if: {⏎→/if⏎}',
 			]);
 		});
 		test('each', () => {
 			const r = parse('{\n\t#each expression as name\n}...{\n\t/each\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,29)EachBlock: {⏎→#each␣expression␣as␣name⏎}',
+				'[1:1]>[3:2](0,29)#ps:each: {⏎→#each␣expression␣as␣name⏎}',
 				'[3:2]>[3:5](29,32)#text: ...',
-				'[3:5]>[5:2](32,42)EachBlock: {⏎→/each⏎}',
+				'[3:5]>[5:2](32,42)#ps:/each: {⏎→/each⏎}',
 			]);
 		});
 		test('await', () => {
 			const r = parse('{\n\t#await expression\n}...{\n\t:then name\n}...{\n\t:catch name\n}...{\n\t/await\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,22)PendingBlock: {⏎→#await␣expression⏎}',
+				'[1:1]>[3:2](0,22)#ps:await: {⏎→#await␣expression⏎}',
 				'[3:2]>[3:5](22,25)#text: ...',
-				'[3:5]>[5:2](25,40)ThenBlock: {⏎→:then␣name⏎}',
+				'[3:5]>[5:2](25,40)#ps:then: {⏎→:then␣name⏎}',
 				'[5:2]>[5:5](40,43)#text: ...',
-				'[5:5]>[7:2](43,59)CatchBlock: {⏎→:catch␣name⏎}',
+				'[5:5]>[7:2](43,59)#ps:catch: {⏎→:catch␣name⏎}',
 				'[7:2]>[7:5](59,62)#text: ...',
-				'[7:5]>[9:2](62,73)AwaitBlock: {⏎→/await⏎}',
+				'[7:5]>[9:2](62,73)#ps:/await: {⏎→/await⏎}',
 			]);
 		});
 		test('key', () => {
 			const r = parse('{\n\t#key expression\n}...{\n\t/key\n}');
 			const map = nodeListToDebugMaps(r.nodeList, true);
 			expect(map).toStrictEqual([
-				'[1:1]>[3:2](0,20)KeyBlock: {⏎→#key␣expression⏎}',
+				'[1:1]>[3:2](0,20)#ps:key: {⏎→#key␣expression⏎}',
 				'[3:2]>[3:5](20,23)#text: ...',
-				'[3:5]>[5:2](23,32)KeyBlock: {⏎→/key⏎}',
+				'[3:5]>[5:2](23,32)#ps:/key: {⏎→/key⏎}',
 			]);
 		});
 	});
@@ -627,12 +635,12 @@ describe('Issues', () => {
 {/each}`);
 		const map = nodeListToDebugMaps(ast.nodeList, true);
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)EachBlock: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[2:2](0,39)#ps:each: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
 			'[2:2]>[2:7](39,44)div: <div>',
 			'[2:7]>[2:13](44,50)#ps:MustacheTag: {item}',
 			'[2:13]>[2:19](50,56)div: </div>',
 			'[2:19]>[3:1](56,57)#text: ⏎',
-			'[3:1]>[3:8](57,64)EachBlock: {/each}',
+			'[3:1]>[3:8](57,64)#ps:/each: {/each}',
 		]);
 	});
 
@@ -642,7 +650,7 @@ describe('Issues', () => {
 		expect(map).toEqual([
 			'[1:1]>[1:29](0,28)a: <a␣href={`https://${host}`}>',
 			'[1:4]>[1:28](3,27)href: href={`https://${host}`}',
-			'  [1:4]>[1:4](3,3)bN: ',
+			'  [1:3]>[1:4](2,3)bN: ␣',
 			'  [1:4]>[1:8](3,7)name: href',
 			'  [1:8]>[1:8](7,7)bE: ',
 			'  [1:8]>[1:9](7,8)equal: =',
@@ -654,5 +662,165 @@ describe('Issues', () => {
 			'  isDynamicValue: true',
 			'[1:29]>[1:33](28,32)a: </a>',
 		]);
+	});
+
+	test('#1432', () => {
+		expect(nodeListToDebugMaps(parse('<div style={{ a: b }}></div>').nodeList, true)).toStrictEqual([
+			'[1:1]>[1:23](0,22)div: <div␣style={{␣a:␣b␣}}>',
+			'[1:6]>[1:22](5,21)style: style={{␣a:␣b␣}}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:11](5,10)name: style',
+			'  [1:11]>[1:11](10,10)bE: ',
+			'  [1:11]>[1:12](10,11)equal: =',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:13](11,12)sQ: {',
+			'  [1:13]>[1:21](12,20)value: {␣a:␣b␣}',
+			'  [1:21]>[1:22](20,21)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[1:23]>[1:29](22,28)div: </div>',
+		]);
+	});
+
+	test('#1442', () => {
+		const ast = parse(`<script>
+	const type = 'c';
+</script>
+
+{#if type === 'a'}
+	<a>a</a>
+{:else if type === 'b'}
+	<b>b</b>
+{:else if type === 'c'}
+	<c>
+		{#if type === 'a'}
+			<a>a</a>
+		{:else if type === 'b'}
+			<b>b</b>
+		{:else}
+			<e>e</e>
+		{/if}
+	</c>
+{:else if type === 'd'}
+	<d>d</d>
+{:else}
+	<e>e</e>
+{/if}`);
+
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			"[1:1]>[3:10](0,37)#ps:Script: <script>⏎→const␣type␣=␣'c';⏎</script>",
+			'[3:10]>[5:1](37,39)#text: ⏎⏎',
+			"[5:1]>[6:2](39,59)#ps:if: {#if␣type␣===␣'a'}⏎→",
+			'[6:2]>[6:5](59,62)a: <a>',
+			'[6:5]>[6:6](62,63)#text: a',
+			'[6:6]>[6:10](63,67)a: </a>',
+			"[6:10]>[8:2](67,93)#ps:elseif: ⏎{:else␣if␣type␣===␣'b'}⏎→",
+			'[8:2]>[8:5](93,96)b: <b>',
+			'[8:5]>[8:6](96,97)#text: b',
+			'[8:6]>[8:10](97,101)b: </b>',
+			"[8:10]>[10:2](101,127)#ps:elseif: ⏎{:else␣if␣type␣===␣'c'}⏎→",
+			'[10:2]>[10:5](127,130)c: <c>',
+			'[10:5]>[11:3](130,133)#text: ⏎→→',
+			"[11:3]>[12:4](133,155)#ps:if: {#if␣type␣===␣'a'}⏎→→→",
+			'[12:4]>[12:7](155,158)a: <a>',
+			'[12:7]>[12:8](158,159)#text: a',
+			'[12:8]>[12:12](159,163)a: </a>',
+			"[12:12]>[14:4](163,193)#ps:elseif: ⏎→→{:else␣if␣type␣===␣'b'}⏎→→→",
+			'[14:4]>[14:7](193,196)b: <b>',
+			'[14:7]>[14:8](196,197)#text: b',
+			'[14:8]>[14:12](197,201)b: </b>',
+			'[14:12]>[16:4](201,215)#ps:else: ⏎→→{:else}⏎→→→',
+			'[16:4]>[16:7](215,218)e: <e>',
+			'[16:7]>[16:8](218,219)#text: e',
+			'[16:8]>[16:12](219,223)e: </e>',
+			'[16:12]>[17:8](223,231)#ps:/if: ⏎→→{/if}',
+			'[17:8]>[18:2](231,233)#text: ⏎→',
+			'[18:2]>[18:6](233,237)c: </c>',
+			"[18:6]>[20:2](237,263)#ps:elseif: ⏎{:else␣if␣type␣===␣'d'}⏎→",
+			'[20:2]>[20:5](263,266)d: <d>',
+			'[20:5]>[20:6](266,267)#text: d',
+			'[20:6]>[20:10](267,271)d: </d>',
+			'[20:10]>[22:2](271,281)#ps:else: ⏎{:else}⏎→',
+			'[22:2]>[22:5](281,284)e: <e>',
+			'[22:5]>[22:6](284,285)#text: e',
+			'[22:6]>[22:10](285,289)e: </e>',
+			'[22:10]>[23:6](289,295)#ps:/if: ⏎{/if}',
+		]);
+		const tree = nodeTreeDebugView(ast.nodeList);
+		expect(tree.map(n => n?.replaceAll(/[\da-z]{8}/g, '▓'.repeat(8)))).toEqual([
+			'000: [▓▓▓▓▓▓▓▓] #ps:Script(▓▓▓▓▓▓▓▓)',
+			'001: [▓▓▓▓▓▓▓▓] #text(▓▓▓▓▓▓▓▓)',
+			'002: [▓▓▓▓▓▓▓▓] #ps:if(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ a(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ /a(▓▓▓▓▓▓▓▓)',
+			'003: [▓▓▓▓▓▓▓▓]   a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'004: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'005: [▓▓▓▓▓▓▓▓]   /a(▓▓▓▓▓▓▓▓)',
+			'006: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ b(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ /b(▓▓▓▓▓▓▓▓)',
+			'007: [▓▓▓▓▓▓▓▓]   b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'008: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'009: [▓▓▓▓▓▓▓▓]   /b(▓▓▓▓▓▓▓▓)',
+			'010: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ c(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ /c(▓▓▓▓▓▓▓▓)',
+			'011: [▓▓▓▓▓▓▓▓]   c(▓▓▓▓▓▓▓▓) => /c(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #ps:if(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #ps:else(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #ps:/if(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'012: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'013: [▓▓▓▓▓▓▓▓]     #ps:if(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ a(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ /a(▓▓▓▓▓▓▓▓)',
+			'014: [▓▓▓▓▓▓▓▓]       a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
+			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'015: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'016: [▓▓▓▓▓▓▓▓]       /a(▓▓▓▓▓▓▓▓)',
+			'017: [▓▓▓▓▓▓▓▓]     #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ b(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ /b(▓▓▓▓▓▓▓▓)',
+			'018: [▓▓▓▓▓▓▓▓]       b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
+			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'019: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'020: [▓▓▓▓▓▓▓▓]       /b(▓▓▓▓▓▓▓▓)',
+			'021: [▓▓▓▓▓▓▓▓]     #ps:else(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ e(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ /e(▓▓▓▓▓▓▓▓)',
+			'022: [▓▓▓▓▓▓▓▓]       e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
+			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'023: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'024: [▓▓▓▓▓▓▓▓]       /e(▓▓▓▓▓▓▓▓)',
+			'025: [▓▓▓▓▓▓▓▓]     #ps:/if(▓▓▓▓▓▓▓▓)',
+			'026: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'027: [▓▓▓▓▓▓▓▓]   /c(▓▓▓▓▓▓▓▓)',
+			'028: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ d(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ /d(▓▓▓▓▓▓▓▓)',
+			'029: [▓▓▓▓▓▓▓▓]   d(▓▓▓▓▓▓▓▓) => /d(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'030: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'031: [▓▓▓▓▓▓▓▓]   /d(▓▓▓▓▓▓▓▓)',
+			'032: [▓▓▓▓▓▓▓▓] #ps:else(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ e(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ /e(▓▓▓▓▓▓▓▓)',
+			'033: [▓▓▓▓▓▓▓▓]   e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
+			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'034: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'035: [▓▓▓▓▓▓▓▓]   /e(▓▓▓▓▓▓▓▓)',
+			'036: [▓▓▓▓▓▓▓▓] #ps:/if(▓▓▓▓▓▓▓▓)',
+		]);
+	});
+
+	test('#1451', () => {
+		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
+		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
 	});
 });

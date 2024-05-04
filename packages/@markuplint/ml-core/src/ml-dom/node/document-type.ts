@@ -17,7 +17,6 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	readonly systemId: string;
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		astNode: MLASTDoctype,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,

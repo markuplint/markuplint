@@ -1,5 +1,49 @@
 # Change Log
 
+## 4.4.0
+
+- Depends: `markuplint@4.4.0`
+
+## 4.3.0
+
+- Depends: `markuplint@4.3.0`
+
+## 4.2.0
+
+- Depends: `markuplint@4.2.0`
+
+## 4.1.1
+
+- Depends: `markuplint@4.1.1`
+
+## 4.1.0
+
+- Depends: `markuplint@4.1.0`
+
+## 4.0.3
+
+- Depends: `markuplint@4.0.3`
+
+## 4.0.2
+
+- Depends: `markuplint@4.0.2`
+
+## 4.0.1
+
+- Depends: `markuplint@4.0.1`
+
+## 4.0.0
+
+- Depends: `markuplint@4.0.0`
+
+## 3.10.0
+
+- Depends: `markuplint@3.15.0`
+
+## 3.9.0
+
+- Depends: `markuplint@3.14.0`
+
 ## 3.8.0
 
 - Depends: `markuplint@3.13.0`

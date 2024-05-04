@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/spec-generator",
-	"version": "4.0.0-alpha.9",
+	"version": "4.3.0",
 	"description": "Generates @markuplint/html-spec",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,18 +21,18 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@types/cheerio": "^0.22.35",
-		"ajv": "^8.12.0",
-		"cheerio": "^1.0.0-rc.12",
-		"cli-progress": "^3.12.0",
-		"fast-xml-parser": "^4.3.1",
-		"glob": "^10.3.6",
-		"strip-json-comments": "^5.0.1"
+		"@types/cheerio": "0.22.35",
+		"ajv": "8.12.0",
+		"cheerio": "1.0.0-rc.12",
+		"cli-progress": "3.12.0",
+		"fast-xml-parser": "4.3.6",
+		"glob": "10.3.9",
+		"strip-json-comments": "5.0.1"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "4.0.0-alpha.9",
-		"@markuplint/test-tools": "4.0.0-alpha.9",
-		"@types/cli-progress": "^3.11.5",
-		"type-fest": "^4.9.0"
+		"@markuplint/ml-spec": "4.2.0",
+		"@markuplint/test-tools": "4.2.0",
+		"@types/cli-progress": "3.11.5",
+		"type-fest": "4.14.0"
 	}
 }

@@ -2,6 +2,7 @@
 
 import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
+import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
@@ -11,7 +12,6 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { resolveNamespace } from '@markuplint/ml-spec';
 import { createSelector } from '@markuplint/selector';
 
-import { stringSplice } from '../../utils/string-splice.js';
 import { getAccname } from '../helper/accname.js';
 import {
 	after,
@@ -25,6 +25,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
+import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
@@ -37,7 +38,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
 	#attributes: MLAttr<T, O>[];
-	readonly closeTag: MLToken | null;
+	readonly closeTag: MLElementCloseTag<T, O> | null;
 
 	/**
 	 * Element type
@@ -47,10 +48,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
 	 */
 	readonly elementType: ElementType;
-	readonly endSpace: MLToken | null;
 	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
-	readonly hasSpreadAttr: boolean;
 	readonly isForeignElement: boolean;
 	readonly isOmitted: boolean;
 	#localName: string;
@@ -100,20 +99,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly selfClosingSolidus: MLToken | null;
-	readonly #tagOpenChar: string;
+	readonly tagCloseChar: string;
+	readonly tagOpenChar: string;
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		astNode: MLASTElement,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.hasSpreadAttr = astNode.hasSpreadAttr;
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
-		this.endSpace = astNode.endSpace ? new MLToken(astNode.endSpace) : null;
-		this.closeTag = astNode.pearNode ? new MLToken(astNode.pearNode) : null;
+		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
 		this.elementType = astNode.elementType;
@@ -123,7 +120,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		this.isOmitted = astNode.isGhost;
 
-		this.#tagOpenChar = astNode.tagOpenChar;
+		this.tagOpenChar = astNode.tagOpenChar;
+		this.tagCloseChar = astNode.tagCloseChar;
 	}
 
 	/**
@@ -245,6 +243,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get ariaCurrent(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaCurrent" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaDescription(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaDescription" property');
 	}
 
 	/**
@@ -771,6 +780,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return this.#fixedNodeName;
 	}
 
+	get hasSpreadAttr() {
+		return this.#attributes.some(attr => attr.localName === '#spread');
+	}
+
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
@@ -1105,6 +1118,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get onbeforetoggle():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onbeforetoggle" property');
 	}
 
 	/**
@@ -2707,29 +2738,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return previousElementSibling(this);
 	}
 
-	get raw() {
-		if (this.pretenderContext?.type === 'pretender') {
-			return this.originRaw;
-		}
-
-		let fixed = this.originRaw;
-		let gap = 0;
-		if (this.nodeName !== this.fixedNodeName) {
-			fixed = stringSplice(fixed, this.#tagOpenChar.length, this.nodeName.length, this.fixedNodeName);
-			gap = gap + this.fixedNodeName.length - this.nodeName.length;
-		}
-		for (const attr of this.attributes) {
-			const startOffset = (attr.spacesBeforeName?.startOffset ?? attr.startOffset) - this.startOffset;
-			const fixedAttr = attr.toString();
-			if (attr.originRaw !== fixedAttr) {
-				fixed = stringSplice(fixed, startOffset + gap, attr.originRaw.length, fixedAttr);
-				gap = gap + fixedAttr.length - attr.originRaw.length;
-			}
-		}
-
-		return fixed;
-	}
-
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
@@ -2909,7 +2917,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	after(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
+		...nodes: (string | MLNode<any, any>)[]
 	): void {
 		after(this, ...nodes);
 	}
@@ -3255,7 +3263,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return {
 			offset: this.startOffset,
 			line: this.startLine,
-			col: this.startCol + this.#tagOpenChar.length,
+			col: this.startCol + this.tagOpenChar.length,
 		};
 	}
 
@@ -3423,11 +3431,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-matches%E2%91%A0
 	 */
-	matches(selector: string): boolean {
+	matches(
+		selector: string,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: MLParentNode<T, O>,
+	): boolean {
 		return (
 			createSelector(selector, this.ownerMLDocument.specs).match(
 				// Prioritize the pretender
 				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
+				scope,
 			) !== false
 		);
 	}
@@ -3475,7 +3488,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
-							type: 'html-attr',
+							type: 'attr',
 							nodeName: name,
 							spacesBeforeName: {
 								...this._astToken,
@@ -3772,7 +3785,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (node.is(node.ELEMENT_NODE)) {
 				return node.toNormalizeString();
 			}
-			return node.originRaw;
+			return node.raw;
 		});
 		const endTag = `</${this.nodeName}>`;
 		const normalizedString = `${startTag}${childNodes.join('')}${endTag}`;
@@ -3784,8 +3797,51 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
-	toString() {
-		return this.raw;
+	toString(fixed = false) {
+		if (!fixed) {
+			return this.raw;
+		}
+
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.raw;
+		}
+
+		if (this.nodeName.startsWith('#')) {
+			return this.raw;
+		}
+
+		if (this.isOmitted) {
+			return this.raw;
+		}
+
+		let raw = this.raw;
+		let offset = 0;
+
+		const overlayedCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
+			if (node.is(node.COMMENT_NODE)) {
+				return this.startOffset < node.startOffset && node.endOffset < this.endOffset;
+			}
+			return false;
+		});
+
+		const nodes = [
+			{
+				toString: () => this.tagOpenChar + this.fixedNodeName,
+				startOffset: this.startOffset,
+				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
+			},
+			...overlayedCommentNodes,
+			...this.attributes,
+		];
+		for (const node of nodes) {
+			const before = raw.slice(0, node.startOffset + offset - this.startOffset);
+			const rawCode = node.toString(true);
+			const after = raw.slice(node.endOffset + offset - this.startOffset);
+			raw = before + rawCode + after;
+			offset += rawCode.length - (node.endOffset - node.startOffset);
+		}
+
+		return raw;
 	}
 
 	/**
@@ -3806,7 +3862,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://html.spec.whatwg.org/multipage/popover.html#dom-togglepopover
 	 */
-	togglePopover(force?: boolean): void {
+	togglePopover(force?: boolean): boolean {
 		throw new UnexpectedCallError('Not supported "togglePopover" method');
 	}
 

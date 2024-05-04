@@ -1,0 +1,26 @@
+{
+	"name": "@markuplint/svelte-spec",
+	"version": "4.2.0",
+	"description": "Extended specification for tags and attributes in Svelte",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		}
+	},
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"@markuplint/ml-spec": "4.2.0"
+	}
+}

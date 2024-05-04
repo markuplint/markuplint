@@ -1,7 +1,13 @@
-export function ignoreFrontMatter(code: string) {
+export function ignoreFrontMatter(code: string): {
+	code: string;
+	frontMatter: string | null;
+} {
 	const reStart = /^(?:\s*\n)?---\r?\n/.exec(code);
 	if (!reStart) {
-		return code;
+		return {
+			code,
+			frontMatter: null,
+		};
 	}
 
 	const startPoint = reStart[0].length;
@@ -10,7 +16,10 @@ export function ignoreFrontMatter(code: string) {
 	const reEnd = /\r?\n---\r?\n/.exec(afterStart);
 
 	if (!reEnd) {
-		return code;
+		return {
+			code,
+			frontMatter: null,
+		};
 	}
 
 	const endPoint = startPoint + reEnd.index + reEnd[0].length;
@@ -20,5 +29,8 @@ export function ignoreFrontMatter(code: string) {
 
 	const masked = frontMatter.replaceAll(/[^\n\r]/g, ' ');
 
-	return masked + afterCode;
+	return {
+		code: masked + afterCode,
+		frontMatter,
+	};
 }

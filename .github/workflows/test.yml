@@ -9,11 +9,13 @@ on:
         paths:
             - '.github/workflows/test.yml'
             - 'packages/**'
+            - '!**/*.md'
+            - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
             - 'yarn.lock'
 
 env:
-    NODE_BUILD_VERSION: 18
+    NODE_BUILD_VERSION: 20
 
 jobs:
     dev-setup:
@@ -35,7 +37,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -47,7 +49,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -72,14 +74,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: |
                       packages/**/lib
@@ -96,7 +98,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -128,14 +130,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: |
                       packages/**/lib
@@ -170,6 +172,8 @@ jobs:
                 include:
                     - node: 20
                       os: ubuntu-latest
+                    - node: 21
+                      os: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
               with:
@@ -183,7 +187,7 @@ jobs:
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -198,7 +202,7 @@ jobs:
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@v3
+              uses: actions/cache/save@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -216,6 +220,9 @@ jobs:
                     - node: 20
                       os: ubuntu-latest
                       shard: 1/1
+                    - node: 21
+                      os: ubuntu-latest
+                      shard: 1/1
         steps:
             - uses: actions/checkout@v4
               with:
@@ -228,13 +235,13 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -259,7 +266,7 @@ jobs:
               shell: bash
 
             - name: Test
-              uses: nick-fields/retry@v2
+              uses: nick-fields/retry@v3
               with:
                   timeout_minutes: 20
                   max_attempts: 3
@@ -270,7 +277,7 @@ jobs:
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
         env:
-            PACKAGES: 'markuplint @markuplint/astro-parser @markuplint/config-presets @markuplint/cli-utils @markuplint/ejs-parser @markuplint/erb-parser @markuplint/file-resolver @markuplint/html-parser @markuplint/html-spec @markuplint/i18n @markuplint/jsx-parser @markuplint/liquid-parser @markuplint/ml-ast @markuplint/ml-config @markuplint/ml-core @markuplint/ml-spec @markuplint/mustache-parser @markuplint/nunjucks-parser @markuplint/parser-utils @markuplint/php-parser @markuplint/pug-parser @markuplint/react-spec @markuplint/rule-textlint @markuplint/rules @markuplint/selector @markuplint/shared @markuplint/smarty-parser @markuplint/svelte-parser @markuplint/types @markuplint/vue-parser @markuplint/vue-spec'
+            PACKAGES: 'markuplint @markuplint/alpine-parser @markuplint/astro-parser @markuplint/config-presets @markuplint/cli-utils @markuplint/ejs-parser @markuplint/erb-parser @markuplint/file-resolver @markuplint/html-parser @markuplint/html-spec @markuplint/i18n @markuplint/jsx-parser @markuplint/liquid-parser @markuplint/ml-ast @markuplint/ml-config @markuplint/ml-core @markuplint/ml-spec @markuplint/mustache-parser @markuplint/nunjucks-parser @markuplint/parser-utils @markuplint/php-parser @markuplint/pug-parser @markuplint/react-spec @markuplint/rule-textlint @markuplint/rules @markuplint/selector @markuplint/shared @markuplint/smarty-parser @markuplint/svelte-parser @markuplint/types @markuplint/vue-parser @markuplint/vue-spec'
         strategy:
             fail-fast: false
             matrix:
@@ -289,13 +296,13 @@ jobs:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@v3
+              uses: actions/cache/restore@v4
               with:
                   enableCrossOsArchive: true
                   path: |

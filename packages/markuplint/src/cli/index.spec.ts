@@ -1,8 +1,9 @@
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { execa } from '@markuplint/test-tools';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeAll } from 'vitest';
 
 import { cli } from './bootstrap.js';
 
@@ -11,6 +12,18 @@ const __dirname = path.dirname(__filename);
 const entryFilePath = path.resolve(__dirname, '../../bin/markuplint.mjs');
 
 const escape = (path: string) => path.replaceAll('\\', '\\\\'); // For Windows
+
+async function delay(ms: number) {
+	await new Promise(r => setTimeout(r, ms));
+}
+
+beforeAll(async () => {
+	const originFilePath = path.resolve(__dirname, '../../test/fix/origin.html');
+	const fixedFilePath = path.resolve(__dirname, '../../test/fix/fixed.html');
+	const originContent = await readFile(originFilePath, { encoding: 'utf8' });
+	await writeFile(fixedFilePath, originContent, { encoding: 'utf8' });
+	await delay(500);
+});
 
 describe('STDOUT Test', () => {
 	test('empty', async () => {
@@ -102,5 +115,20 @@ describe('STDOUT Test', () => {
 			reject: false,
 		});
 		expect(exitCode).toBe(1);
+	});
+});
+
+describe('Issues', () => {
+	test('#1042', async () => {
+		const originFilePath = path.resolve(__dirname, '../../test/fix/origin.html');
+		const fixedFilePath = path.resolve(__dirname, '../../test/fix/fixed.html');
+		const originContent = await readFile(originFilePath, { encoding: 'utf8' });
+
+		await execa(entryFilePath, ['--fix', escape(fixedFilePath)], {
+			reject: false,
+		});
+
+		const fixedContent = await readFile(fixedFilePath, { encoding: 'utf8' });
+		expect(originContent).toBe(fixedContent);
 	});
 });

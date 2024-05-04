@@ -36,11 +36,14 @@
 				"doctype": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/doctype/schema.json"
 				},
-				"id-duplication": {
-					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/id-duplication/schema.json"
-				},
 				"end-tag": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/end-tag/schema.json"
+				},
+				"heading-levels": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/heading-levels/schema.json"
+				},
+				"id-duplication": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/id-duplication/schema.json"
 				},
 				"ineffective-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/ineffective-attr/schema.json"
@@ -54,11 +57,20 @@
 				"landmark-roles": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},
+				"neighbor-popovers": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/neighbor-popovers/schema.json"
+				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
 				},
+				"no-consecutive-br": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-consecutive-br/schema.json"
+				},
 				"no-default-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-default-value/schema.json"
+				},
+				"no-duplicate-dt": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-dt/schema.json"
 				},
 				"no-empty-palpable-content": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-empty-palpable-content/schema.json"

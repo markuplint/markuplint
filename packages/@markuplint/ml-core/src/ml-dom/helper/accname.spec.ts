@@ -1,4 +1,4 @@
-import { parse } from '@markuplint/html-parser';
+import { parser } from '@markuplint/html-parser';
 import { test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
@@ -9,7 +9,7 @@ import { getAccname } from './accname.js';
 import { createNode } from './create-node.js';
 
 function c(sourceCode: string) {
-	const ast = parse(sourceCode);
+	const ast = parser.parse(sourceCode);
 	const astNode = ast.nodeList[0]!;
 	const ruleset = convertRuleset({});
 	const document = new MLDocument(ast, ruleset, dummySchemas());
@@ -27,7 +27,7 @@ test('Get accessible name', () => {
 	expect(getAccname(c('<span aria-label="label">text</span>'), '1.2')).toBe('label');
 	expect(getAccname(c('<img alt="alternative-text" />'), '1.2')).toBe('alternative-text');
 	expect(getAccname(c('<img title="title" />'), '1.2')).toBe('title');
-	expect(getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1]!, '1.2')).toBe('label');
+	expect(getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1], '1.2')).toBe('label');
 });
 
 test('Invisible element', () => {
@@ -47,9 +47,9 @@ test('accname-1.1 Example 1', () => {
 <input id="el2" aria-labelledby="el1" />
 <h1 id="el3"> hello </h1>
 </div>`);
-	expect(getAccname(complex.children[0]!, '1.2')).toBe('hello');
-	expect(getAccname(complex.children[1]!, '1.2')).toBe('');
-	expect(getAccname(complex.children[2]!, '1.2')).toBe('hello');
+	expect(getAccname(complex.children[0], '1.2')).toBe('hello');
+	expect(getAccname(complex.children[1], '1.2')).toBe('');
+	expect(getAccname(complex.children[2], '1.2')).toBe('hello');
 });
 
 /**
@@ -67,8 +67,8 @@ test('accname-1.1 Example 2', () => {
 	</li>
 </ul>`);
 	const spans = complex.querySelectorAll('span');
-	expect(getAccname(spans[0]!, '1.2')).toBe('Delete Documentation.pdf');
-	expect(getAccname(spans[1]!, '1.2')).toBe('Delete HolidayLetter.pdf');
+	expect(getAccname(spans[0], '1.2')).toBe('Delete Documentation.pdf');
+	expect(getAccname(spans[1], '1.2')).toBe('Delete HolidayLetter.pdf');
 });
 
 /**

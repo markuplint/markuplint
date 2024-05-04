@@ -2,7 +2,7 @@ import type { MLRule } from './ml-rule/index.js';
 import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { MLASTDocument, MLMarkupLanguageParser, ParserOptions } from '@markuplint/ml-ast';
+import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
@@ -23,7 +23,7 @@ export class MLCore {
 	#document!: Document<RuleConfigValue, PlainData> | ParserError;
 	#filename: string;
 	#locale: LocaleSet;
-	#parser: MLMarkupLanguageParser;
+	#parser: MLParser;
 	#parserOptions: ParserOptions;
 	#pretenders: Pretender[];
 	#rules: Readonly<MLRule<RuleConfigValue, PlainData>>[];
@@ -184,6 +184,7 @@ export class MLCore {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,
+				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
 		} catch (error) {

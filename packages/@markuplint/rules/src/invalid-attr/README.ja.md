@@ -290,7 +290,7 @@ const Component = (props) => {
 
 *[Open Graph プロトコル](https://ogp.me/)*および*[RDFa](https://rdfa.info/)*は*HTML 標準*とは異なる仕様です。そのため、必要な場合は次のように手動で指定する必要があります。
 
-### Open Graphプロトコル
+### Open Graphプロトコル {#the-open-graph-protocol}
 
 ```json class=config
 {

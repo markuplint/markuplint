@@ -1,4 +1,4 @@
-import type { ConfigLoadError } from './cosmiconfig.js';
+import type { ConfigLoadError } from './config-load-error.js';
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

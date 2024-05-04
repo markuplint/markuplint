@@ -1,0 +1,33 @@
+{
+	"name": "@markuplint/alpine-parser",
+	"version": "4.3.0",
+	"description": "Alpine.js parser for markuplint",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js"
+		},
+		"./spec": {
+			"import": "./lib/spec.js"
+		}
+	},
+	"types": "lib/index.d.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc",
+		"clean": "tsc --build --clean"
+	},
+	"dependencies": {
+		"@markuplint/html-parser": "4.3.0"
+	},
+	"devDependencies": {
+		"@markuplint/ml-spec": "4.2.0",
+		"@markuplint/parser-utils": "4.3.0"
+	}
+}

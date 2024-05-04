@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.0.0-alpha.7",
+	"version": "4.4.0",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -13,7 +13,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.83.0"
+		"vscode": "^1.87.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -109,21 +109,22 @@
 		"vscode:release": "vsce publish --no-yarn"
 	},
 	"devDependencies": {
-		"@types/mocha": "^10.0.6",
-		"@types/node": "18.15",
-		"@types/semver": "7.5.6",
-		"@types/vscode": "1.85.0",
-		"@vscode/test-electron": "^2.3.8",
-		"@vscode/vsce": "2.22.0",
-		"typescript": "5.3.3"
+		"@markuplint/file-resolver": "4.4.0",
+		"@types/mocha": "10.0.6",
+		"@types/node": "18.17",
+		"@types/semver": "7.5.8",
+		"@types/vscode": "1.87.0",
+		"@vscode/test-electron": "2.3.9",
+		"@vscode/vsce": "2.24.0",
+		"typescript": "5.4.3"
 	},
 	"dependencies": {
-		"@markuplint/esm-adapter": "4.0.0-alpha.9",
-		"debug": "^4.3.4",
-		"glob": "^10.3.10",
-		"markuplint": "4.0.0-alpha.9",
-		"mocha": "^10.2.0",
-		"semver": "7.5.4",
+		"@markuplint/esm-adapter": "4.1.0",
+		"debug": "4.3.4",
+		"glob": "10.3.9",
+		"markuplint": "4.4.0",
+		"mocha": "10.3.0",
+		"semver": "7.6.0",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.11"

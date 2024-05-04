@@ -1,15 +1,3 @@
-export interface MLToken {
-	readonly uuid: string;
-	raw: string;
-	startOffset: number;
-	endOffset: number;
-	startLine: number;
-	endLine: number;
-	startCol: number;
-	endCol: number;
-	[extendKey: `__${string}`]: string | number | boolean | null;
-}
-
 export type MLASTNodeType =
 	| 'doctype'
 	| 'starttag'
@@ -18,41 +6,9 @@ export type MLASTNodeType =
 	| 'text'
 	| 'omittedtag'
 	| 'psblock'
-	| 'html-attr'
-	| 'ps-attr';
-
-export type MLASTNode = MLASTDoctype | MLASTTag | MLASTComment | MLASTText | MLASTPreprocessorSpecificBlock | MLASTAttr;
-
-export interface MLASTAbstractNode extends MLToken {
-	readonly type: MLASTNodeType;
-	nodeName: string;
-	parentNode: MLASTParentNode | null;
-	prevNode: MLASTNode | null;
-	nextNode: MLASTNode | null;
-	isFragment: boolean;
-	isGhost: boolean;
-}
-
-export interface MLASTDoctype extends MLASTAbstractNode {
-	readonly type: 'doctype';
-	name: string;
-	readonly publicId: string;
-	readonly systemId: string;
-}
-
-export interface MLASTElement extends MLASTAbstractNode {
-	readonly type: 'starttag';
-	namespace: string;
-	elementType: ElementType;
-	attributes: MLASTAttr[];
-	hasSpreadAttr: boolean;
-	childNodes?: MLASTNode[];
-	pearNode: MLASTElementCloseTag | null;
-	readonly selfClosingSolidus?: MLToken;
-	readonly endSpace?: MLToken;
-	readonly tagOpenChar: string;
-	readonly tagCloseChar: string;
-}
+	| 'invalid'
+	| 'attr'
+	| 'spread';
 
 /**
  * Element type
@@ -63,78 +19,174 @@ export interface MLASTElement extends MLASTAbstractNode {
  */
 export type ElementType = 'html' | 'web-component' | 'authored';
 
+export type MLASTNode =
+	| MLASTDoctype
+	| MLASTTag
+	| MLASTComment
+	| MLASTText
+	| MLASTPreprocessorSpecificBlock
+	| MLASTInvalid
+	| MLASTAttr;
+
+export type MLASTParentNode = MLASTElement | MLASTPreprocessorSpecificBlock;
+
+export type MLASTNodeTreeItem = MLASTChildNode | MLASTDoctype;
+
+export type MLASTChildNode = MLASTTag | MLASTText | MLASTComment | MLASTPreprocessorSpecificBlock | MLASTInvalid;
+
+export type MLASTTag = MLASTElement | MLASTElementCloseTag;
+
+export type MLASTAttr = MLASTHTMLAttr | MLASTSpreadAttr;
+
+export interface MLASTToken {
+	readonly uuid: string;
+	readonly raw: string;
+	readonly startOffset: number;
+	readonly endOffset: number;
+	readonly startLine: number;
+	readonly endLine: number;
+	readonly startCol: number;
+	readonly endCol: number;
+}
+
+interface MLASTAbstractNode extends MLASTToken {
+	readonly type: MLASTNodeType;
+	readonly nodeName: string;
+	readonly parentNode: MLASTParentNode | null;
+}
+
+export interface MLASTDoctype extends MLASTAbstractNode {
+	readonly type: 'doctype';
+	readonly depth: number;
+	readonly name: string;
+	readonly publicId: string;
+	readonly systemId: string;
+}
+
+export interface MLASTElement extends MLASTAbstractNode {
+	readonly type: 'starttag';
+	readonly depth: number;
+	readonly namespace: string;
+	readonly elementType: ElementType;
+	readonly attributes: readonly MLASTAttr[];
+	readonly hasSpreadAttr?: boolean;
+	readonly childNodes: readonly MLASTChildNode[];
+	readonly pairNode: MLASTElementCloseTag | null;
+	readonly selfClosingSolidus?: MLASTToken;
+	readonly tagOpenChar: string;
+	readonly tagCloseChar: string;
+	readonly isGhost: boolean;
+}
+
 export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	readonly type: 'endtag';
-	readonly namespace: string;
-	attributes: MLASTAttr[];
-	childNodes?: MLASTNode[];
-	pearNode: MLASTTag | null;
+	readonly depth: number;
+	readonly parentNode: null;
+	readonly pairNode: MLASTElement;
 	readonly tagOpenChar: string;
 	readonly tagCloseChar: string;
 }
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
-	nodeName: string;
-	parentNode: MLASTParentNode | null;
-	prevNode: MLASTNode | null;
-	nextNode: MLASTNode | null;
-	childNodes?: MLASTNode[];
-	branchedChildNodes?: MLASTNode[];
+	readonly depth: number;
+	readonly nodeName: string;
+	readonly childNodes: readonly MLASTChildNode[];
+	readonly branchedChildNodes?: readonly MLASTNode[];
+	readonly isBogus: boolean;
 }
-
-export type MLASTTag = MLASTElement | MLASTElementCloseTag;
-
-export type MLASTParentNode = MLASTElement | MLASTPreprocessorSpecificBlock;
 
 export interface MLASTComment extends MLASTAbstractNode {
 	readonly type: 'comment';
+	readonly nodeName: '#comment';
+	readonly depth: number;
+	readonly isBogus: boolean;
 }
 
 export interface MLASTText extends MLASTAbstractNode {
 	readonly type: 'text';
+	readonly nodeName: '#text';
+	readonly depth: number;
 }
 
-export type MLASTAttr = MLASTHTMLAttr | MLASTPreprocessorSpecificAttr;
-
-export interface MLASTHTMLAttr extends MLASTAbstractNode {
-	readonly type: 'html-attr';
-	spacesBeforeName: MLToken;
-	name: MLToken;
-	spacesBeforeEqual: MLToken;
-	equal: MLToken;
-	spacesAfterEqual: MLToken;
-	startQuote: MLToken;
-	value: MLToken;
-	endQuote: MLToken;
-	isDynamicValue?: true;
-	isDirective?: true;
-	potentialName?: string;
-	potentialValue?: string;
-	candidate?: string;
-	isDuplicatable: boolean;
-	parentNode: null;
-	nextNode: null;
-	prevNode: null;
-	isFragment: false;
-	isGhost: false;
+export interface MLASTInvalid extends MLASTAbstractNode {
+	readonly type: 'invalid';
+	readonly nodeName: '#invalid';
+	readonly depth: number;
+	readonly kind?: Exclude<MLASTChildNode['type'], 'invalid'>;
+	readonly isBogus: true;
 }
 
-export interface MLASTPreprocessorSpecificAttr extends MLASTAbstractNode {
-	readonly type: 'ps-attr';
-	readonly potentialName: string;
-	readonly potentialValue: string;
-	readonly valueType: 'string' | 'number' | 'boolean' | 'code';
-	isDuplicatable: boolean;
+export interface MLASTHTMLAttr extends MLASTToken {
+	readonly type: 'attr';
+	readonly nodeName: string;
+	readonly spacesBeforeName: MLASTToken;
+	readonly name: MLASTToken;
+	readonly spacesBeforeEqual: MLASTToken;
+	readonly equal: MLASTToken;
+	readonly spacesAfterEqual: MLASTToken;
+	readonly startQuote: MLASTToken;
+	readonly value: MLASTToken;
+	readonly endQuote: MLASTToken;
+	readonly isDynamicValue?: true;
+	readonly isDirective?: true;
+	readonly potentialName?: string;
+	readonly potentialValue?: string;
+	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
+	readonly candidate?: string;
+	readonly isDuplicatable: boolean;
+}
+
+export interface MLASTSpreadAttr extends MLASTToken {
+	readonly type: 'spread';
+	readonly nodeName: '#spread';
 }
 
 export interface MLASTDocument {
-	nodeList: MLASTNode[];
+	readonly raw: string;
+	readonly nodeList: readonly MLASTNodeTreeItem[];
 	readonly isFragment: boolean;
-	unknownParseError?: string;
+	readonly unknownParseError?: string;
 }
 
+/**
+ * @deprecated Use `MLParser` instead. This will be dropped in v5.
+ */
 export interface MLMarkupLanguageParser {
+	/**
+	 * @deprecated
+	 */
+	parse(
+		sourceCode: string,
+		options?: ParserOptions & {
+			readonly offsetOffset?: number;
+			readonly offsetLine?: number;
+			readonly offsetColumn?: number;
+		},
+	): MLASTDocument;
+
+	/**
+	 * @default "omittable"
+	 * @deprecated
+	 */
+	endTag?: EndTagType;
+
+	/**
+	 * Detect value as a true if its attribute is booleanish value and omitted.
+	 *
+	 * Ex:
+	 * ```jsx
+	 * <Component aria-hidden />
+	 * ```
+	 *
+	 * In the above, the `aria-hidden` is `true`.
+	 *
+	 * @deprecated
+	 */
+	booleanish?: boolean;
+}
+
+export interface MLParser {
 	parse(
 		sourceCode: string,
 		options?: ParserOptions & {
@@ -160,6 +212,12 @@ export interface MLMarkupLanguageParser {
 	 * In the above, the `aria-hidden` is `true`.
 	 */
 	booleanish?: boolean;
+
+	tagNameCaseSensitive?: boolean;
+}
+
+export interface MLParserModule {
+	readonly parser: MLParser;
 }
 
 /**
@@ -184,11 +242,14 @@ export type ParserAuthoredElementNameDistinguishing =
 
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
 
+/**
+ * @deprecated
+ */
 export type Parse = MLMarkupLanguageParser['parse'];
 
-export type Walker = (
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: MLASTNode,
+export type Walker<Node extends MLASTNodeTreeItem> = (
+	node: Node,
+	sequentailPrevNode: MLASTNodeTreeItem | null,
 	depth: number,
 ) => void;
 

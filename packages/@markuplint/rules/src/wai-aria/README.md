@@ -17,6 +17,7 @@ Warn if:
   - Use the not permitted role according to ARIA in HTML.
   - Don't set the required property/state.
 - Unrecommended.
+  - Set the deprecated role.
   - Set the deprecated property/state.
   - Set the implicit role explicitly according to ARIA in HTML.
   - Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.

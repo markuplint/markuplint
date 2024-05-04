@@ -16,7 +16,8 @@
     },
     "import/resolver": {
       "typescript": []
-    }
+    },
+    "import/ignore": ["@docusaurus/*"]
   },
   "rules": {
     "react/display-name": 0,
@@ -59,6 +60,12 @@
       "files": ["./*.mjs"],
       "rules": {
         "import/no-named-as-default-member": 0
+      }
+    },
+    {
+      "files": ["./docusaurus.config.ts", "./*.ts"],
+      "rules": {
+        "import/no-default-export": 0
       }
     }
   ],

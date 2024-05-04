@@ -10,9 +10,9 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { EndTagType, MLASTDocument, MLASTNode } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
-import type { MLMLSpec } from '@markuplint/ml-spec';
+import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import {
@@ -131,6 +131,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly specs: MLMLSpec;
 
+	readonly tagNameCaseSensitive: boolean;
+
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 
 	/**
@@ -139,7 +141,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @param ruleset ruleset object
 	 */
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: MLSchema,
@@ -147,6 +148,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
+			readonly tagNameCaseSensitive?: boolean;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -158,6 +160,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.booleanish = options?.booleanish ?? false;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
+		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
@@ -166,7 +169,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					if (astNode.type === 'endtag') {
 						return;
 					}
-					return createNode<MLASTNode, T, O>(astNode, this);
+					return createNode<MLASTNodeTreeItem, T, O>(astNode, this);
 				})
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
@@ -739,6 +742,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onbeforeinput" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get onbeforetoggle():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onbeforetoggle" property');
 	}
 
 	/**
@@ -2816,7 +2837,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	getAccessibilityProp(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O>,
-		ariaVersion = ARIA_RECOMMENDED_VERSION,
+		ariaVersion: ARIAVersion = ARIA_RECOMMENDED_VERSION,
 	): AccessibilityProperties | null {
 		if (!node.is(node.ELEMENT_NODE)) {
 			return null;
@@ -3105,12 +3126,21 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 */
-	toString() {
-		const html: string[] = [];
-		for (const node of this.getTokenList()) {
-			html.push(node.toString());
+	toString(fixed = false) {
+		if (!fixed) {
+			return this.raw;
 		}
-		return html.join('');
+		let raw = this.raw;
+		let offset = 0;
+		for (const node of this.getTokenList()) {
+			const nodeRaw = node.toString(true);
+			if (nodeRaw === node.raw) {
+				continue;
+			}
+			raw = raw.slice(0, node.startOffset + offset) + nodeRaw + raw.slice(node.endOffset + offset);
+			offset += nodeRaw.length - (node.endOffset - node.startOffset);
+		}
+		return raw;
 	}
 
 	/**

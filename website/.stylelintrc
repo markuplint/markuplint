@@ -2,7 +2,6 @@
   "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
   "plugins": ["stylelint-order"],
   "rules": {
-    "declaration-colon-newline-after": null,
     "selector-class-pattern": null,
     "value-keyword-case": [
       "lower",

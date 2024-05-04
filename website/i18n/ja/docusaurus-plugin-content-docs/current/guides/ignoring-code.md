@@ -1,12 +1,12 @@
 # 除外設定
 
-## ファイルの除外
+## ファイルの除外 {#ignoring-file}
 
 設定の[`excludeFiles`](/docs/configuration/properties#excludefiles)プロパティを使用します。
 
 ## ルールの無効化
 
-### セレクタによる無効化
+### セレクタによる無効化 {#disable-by-selector}
 
 設定の[`nodeRules`](/docs/configuration/properties#noderules)もしくは[`childNodeRules`](/docs/configuration/properties#childnoderules)プロパティを使います。
 [部分的な適用](./applying-rules/#applying-to-some)を参考にしてください。

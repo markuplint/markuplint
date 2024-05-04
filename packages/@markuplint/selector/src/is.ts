@@ -12,6 +12,15 @@ export function isNonDocumentTypeChildNode(
 	return 'previousElementSibling' in node && 'nextElementSibling' in node;
 }
 
+/**
+ * Checks if the given element is a pure HTML element.
+ *
+ * If a pure HTML element, `localName` returns lowercase,
+ * `nodeName` returns uppercase.
+ *
+ * @param el The element to check.
+ * @returns Returns true if the element is a pure HTML element, otherwise returns false.
+ */
 export function isPureHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,

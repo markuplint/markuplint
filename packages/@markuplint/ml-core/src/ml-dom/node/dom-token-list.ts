@@ -1,7 +1,7 @@
 import type { MLAttr } from './attr.js';
 import type { RuleInfo } from '@markuplint/ml-config';
 
-import { getCol, getLine } from '@markuplint/parser-utils';
+import { getPosition } from '@markuplint/parser-utils/location';
 
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
@@ -144,8 +144,9 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			if (startOffset === -1) {
 				continue;
 			}
-			const startLine = getLine(this.#origin, startOffset);
-			const startCol = getCol(this.#origin, startOffset);
+			const position = getPosition(this.#origin, startOffset);
+			const startLine = position.line;
+			const startCol = position.column;
 
 			return {
 				raw: token,

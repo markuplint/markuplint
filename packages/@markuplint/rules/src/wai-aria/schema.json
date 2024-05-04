@@ -14,6 +14,12 @@
 					"description": "Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.",
 					"description:ja": "プロパティ/ステートの値をチェックします。このオプションは、Markuplintが許可リストに追加するよりも先にWAI-ARIAの仕様が更新された場合などに、必要に応じて一時的に無効化できるようにしています。基本的に無効化を推奨しません。"
 				},
+				"checkingDeprecatedRole": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Warn if use deprecated role. You can temporarily disable this not to evaluate WAI-ARIA old version. Don't recommend disabling basically.",
+					"description:ja": "非推奨（廃止予定）のロールをチェックします。WAI-ARIAの古いバージョンのためにこの評価を無効化できます。基本的に無効化を推奨しません。"
+				},
 				"checkingDeprecatedProps": {
 					"type": "boolean",
 					"default": "true",

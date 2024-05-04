@@ -369,7 +369,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 32,
 				message:
-					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+					'The "aria-checked" ARIA state must not use on the "input" element. As its state is already provided by the "checked" attribute',
 				raw: 'aria-checked="true"',
 			},
 			{
@@ -392,7 +392,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 32,
 				message:
-					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+					'The "aria-checked" ARIA state must not use on the "input" element. As its state is already provided by the "checked" attribute',
 				raw: 'aria-checked="false"',
 			},
 			{
@@ -436,7 +436,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 				line: 1,
 				col: 32,
 				message:
-					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
+					'The "aria-checked" ARIA state must not use on the "input" element. As its state is already provided by the "checked" attribute',
 				raw: 'aria-checked="mixed"',
 			},
 		]);
@@ -502,16 +502,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 			},
 		});
 
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 32,
-				message:
-					'The "aria-checked" ARIA state must not use on the "input" element. Add the "checked" attribute if you use the ARIA state',
-				raw: 'aria-checked="true"',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -1233,5 +1224,94 @@ describe('Issues', () => {
 			</template>
 		`;
 		expect((await mlRuleTest(rule, sourceCode, config)).violations).toStrictEqual([]);
+	});
+
+	test('#1498', async () => {
+		const sourceCode = `<ol role="directory">
+	<li aria-dropeffect="none">text</li>
+</ol>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'The "directory" role is deprecated',
+				raw: 'role="directory"',
+			},
+		]);
+	});
+
+	test('#1517', async () => {
+		const config = {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		};
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<input
+type="checkbox"
+role="switch"
+{...otherProps}
+/>`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				col: 1,
+				line: 1,
+				message: 'Require the "aria-checked" ARIA state on the "switch" role',
+				raw: `<input
+type="checkbox"
+role="switch"
+{...otherProps}
+/>`,
+				severity: 'error',
+			},
+		]);
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<input
+type="checkbox"
+role="switch"
+checked={isChecked}
+{...otherProps}
+/>`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`<input
+type="checkbox"
+role="switch"
+checked={isChecked}
+aria-checked={isChecked}
+{...otherProps}
+/>`,
+					config,
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				col: 1,
+				line: 5,
+				message:
+					'The "aria-checked" ARIA state must not use on the "input" element. As its state is already provided by the "checked" attribute',
+				raw: 'aria-checked={isChecked}',
+				severity: 'error',
+			},
+		]);
 	});
 });

@@ -1,0 +1,346 @@
+import type { ASTNode } from './pug-parser/index.js';
+import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
+
+import { HtmlParser, getNamespace } from '@markuplint/html-parser';
+import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
+
+import { pugParse } from './pug-parser/index.js';
+
+class HtmlInPugParser extends HtmlParser {
+	constructor() {
+		super({
+			ignoreTags: [
+				/**
+				 * Tag Interpolation
+				 *
+				 * @see https://pugjs.org/language/interpolation.html#tag-interpolation
+				 */
+				{
+					type: 'tag-interpolation',
+					start: '#[',
+					end: ']',
+				},
+			],
+		});
+	}
+}
+
+class PugParser extends Parser<ASTNode> {
+	constructor() {
+		super({
+			endTagType: 'never',
+		});
+	}
+
+	tokenize(options?: ParseOptions) {
+		const offsetOffset = options?.offsetOffset ?? 0;
+		return {
+			ast: pugParse(this.rawCode, offsetOffset >= 1).nodes,
+			isFragment: true,
+		};
+	}
+
+	parseError(error: any) {
+		if (error instanceof Error && 'msg' in error && 'line' in error && 'column' in error && 'src' in error) {
+			return new ParserError(error.msg as string, {
+				line: error.line as number,
+				col: error.column as number,
+				raw: error.src as string,
+			});
+		}
+		return super.parseError(error);
+	}
+
+	nodeize(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originNode: ASTNode,
+		parentNode: MLASTParentNode | null,
+		depth: number,
+	) {
+		const parentNamespace =
+			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
+
+		const token = this.sliceFragment(originNode.offset, originNode.endOffset);
+
+		switch (originNode.type) {
+			case 'Doctype': {
+				return this.visitDoctype({
+					...token,
+					depth,
+					parentNode,
+					name: originNode.val ?? '',
+					publicId: '',
+					systemId: '',
+				});
+			}
+			case 'Text': {
+				if (originNode.raw.trim() === '') {
+					return [];
+				}
+
+				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
+					offsetOffset: originNode.offset,
+					offsetLine: originNode.line,
+					offsetColumn: originNode.column,
+					depth,
+				});
+
+				const newNodeList: MLASTNodeTreeItem[] = [];
+				for (const node of htmlDoc.nodeList) {
+					if (node.nodeName === '#ps:tag-interpolation') {
+						// Remove `#[` and `]`
+						const raw = node.raw.slice(2, -1);
+						const innerNodes = new PugParser().parse(raw, {
+							offsetOffset: node.startOffset + 2,
+							offsetLine: node.startLine,
+							offsetColumn: node.startCol + 2,
+							depth: node.depth,
+						});
+						newNodeList.push(...innerNodes.nodeList);
+						continue;
+					}
+
+					newNodeList.push(node);
+				}
+
+				return newNodeList;
+			}
+			case 'Comment': {
+				return this.visitComment(
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					{
+						isBogus: false,
+					},
+				);
+			}
+			case 'Tag': {
+				const namespace = getNamespace(originNode.name, parentNamespace);
+
+				const attrs = originNode.attrs.map(attr => {
+					// eslint-disable-next-line prefer-const
+					let { offset, endOffset } = this.getOffsetsFromCode(
+						attr.line,
+						attr.column,
+						attr.endLine,
+						attr.endColumn,
+					);
+
+					if (
+						(attr.name === 'id' || attr.name === 'class') &&
+						attr.offset === attr.endOffset &&
+						typeof attr.val === 'string'
+					) {
+						/**
+						 * #value =>
+						 * {
+						 *   name: 'id',
+						 *   val: "'value'",
+						 * }
+						 * Remove single quotes and add (#|.) prefix
+						 */
+						endOffset = attr.offset + attr.val.length - 1;
+					}
+
+					const token = this.sliceFragment(offset, endOffset);
+					return this.visitAttr(token);
+				});
+
+				// &attributes(syntax)
+				const andAttr = originNode.attributeBlocks.map(block => {
+					const blockLength = '&attributes('.length;
+					const { offset, endOffset } = this.getOffsetsFromCode(
+						block.line,
+						block.column + blockLength,
+						block.line,
+						block.column + blockLength + block.val.length,
+					);
+					const token = this.sliceFragment(offset, endOffset);
+					const node = this.createToken(token.raw, token.startOffset, token.startLine, token.startCol);
+					return {
+						...node,
+						type: 'spread',
+						nodeName: '#spread',
+					} as const;
+				});
+
+				return this.visitElement(
+					{
+						...token,
+						depth,
+						parentNode,
+						nodeName: originNode.name,
+						namespace,
+					},
+					originNode.block.nodes,
+					{
+						overwriteProps: {
+							attributes: [...attrs, ...andAttr],
+						},
+					},
+				);
+			}
+			default: {
+				return this.visitPsBlock(
+					{
+						...token,
+						depth,
+						parentNode,
+						nodeName: originNode.type,
+					},
+					'block' in originNode && originNode.block ? originNode.block.nodes : [],
+				);
+			}
+		}
+	}
+
+	afterFlattenNodes(nodeList: readonly MLASTNodeTreeItem[]) {
+		return super.afterFlattenNodes(nodeList, {
+			exposeInvalidNode: false,
+			exposeWhiteSpace: false,
+		});
+	}
+
+	visitElement(
+		token: ChildToken & {
+			readonly nodeName: string;
+			readonly namespace: string;
+		},
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		childNodes: readonly ASTNode[],
+		options: {
+			readonly overwriteProps: {
+				readonly attributes: readonly MLASTAttr[];
+			};
+		},
+	) {
+		const startTag: MLASTElement = {
+			...token,
+			...this.createToken(token),
+			...options.overwriteProps,
+			type: 'starttag',
+			elementType: this.detectElementType(token.nodeName),
+			childNodes: [],
+			pairNode: null,
+			tagOpenChar: '',
+			tagCloseChar: '',
+			isGhost: false,
+		};
+
+		const siblings = this.visitChildren(childNodes, startTag);
+
+		return [startTag, ...siblings];
+	}
+
+	visitAttr(token: Token): MLASTAttr {
+		if (token.raw[0] === '#' || token.raw[0] === '.') {
+			const attr = super.visitAttr(token, {
+				startState: AttrState.BeforeValue,
+				quoteSet: [],
+				quoteInValueChars: [],
+				endOfUnquotedValueChars: [],
+			});
+
+			if (attr.type === 'spread') {
+				return attr;
+			}
+
+			const potentialName = token.raw[0] === '#' ? 'id' : 'class';
+
+			this.updateAttr(attr, {
+				potentialName,
+				potentialValue: attr.raw.slice(1),
+				isDuplicatable: potentialName === 'class',
+			});
+
+			return attr;
+		}
+
+		const attr = super.visitAttr(token, {
+			quoteSet: [],
+			quoteInValueChars: [],
+			endOfUnquotedValueChars: [],
+		});
+
+		if (attr.type === 'spread') {
+			return attr;
+		}
+
+		if (attr.name.raw.toLowerCase() === 'class') {
+			this.updateAttr(attr, { isDuplicatable: true });
+		}
+
+		if (attr.name.raw.startsWith("'") && attr.name.raw.endsWith("'")) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(1, -1),
+			});
+		}
+
+		if (attr.name.raw.endsWith('!')) {
+			this.updateAttr(attr, {
+				potentialName: attr.name.raw.slice(0, -1),
+			});
+		}
+
+		const valueCodeTokens = scriptParser(attr.value.raw.trim());
+
+		if (valueCodeTokens.length === 1) {
+			const token = valueCodeTokens[0]!;
+			switch (token.type) {
+				case 'Numeric': {
+					return {
+						...attr,
+						valueType: 'number',
+					};
+				}
+				case 'Boolean': {
+					return {
+						...attr,
+						valueType: 'boolean',
+					};
+				}
+				case 'String':
+				case 'Template': {
+					const value = super.visitAttr(attr.value, {
+						startState: AttrState.BeforeValue,
+						quoteSet: [
+							{ start: '"', end: '"' },
+							{ start: "'", end: "'" },
+							{ start: '`', end: '`' },
+						],
+						quoteInValueChars: [
+							{ start: '"', end: '"' },
+							{ start: "'", end: "'" },
+							{ start: '`', end: '`' },
+							{ start: '${', end: '}' },
+						],
+					});
+
+					if (value.type === 'spread') {
+						throw new ParserError('Unexpected attribute value', value);
+					}
+
+					return {
+						...attr,
+						startQuote: value.startQuote,
+						value: value.value,
+						endQuote: value.endQuote,
+						...(attr.name.raw.endsWith('!') ? { valueType: 'code' } : {}),
+					};
+				}
+			}
+		}
+
+		return {
+			...attr,
+			isDynamicValue: true,
+			valueType: 'code',
+		};
+	}
+}
+
+export const parser = new PugParser();

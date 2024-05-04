@@ -17,9 +17,6 @@ const voidElements = new Set([
 	'wbr',
 ]);
 
-export function isVoidElement(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
-) {
+export function isVoidElement(el: { readonly localName: string }) {
 	return voidElements.has(el.localName);
 }

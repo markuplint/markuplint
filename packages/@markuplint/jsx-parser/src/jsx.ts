@@ -2,17 +2,15 @@ import type { TSESTree } from '@typescript-eslint/types';
 
 import { AST_NODE_TYPES, parse } from '@typescript-eslint/typescript-estree';
 
-export type JSXAttribute = TSESTree.JSXAttribute;
-export type JSXChild = TSESTree.JSXChild;
-export type JSXElement = TSESTree.JSXElement;
-export type JSXFragment = TSESTree.JSXFragment;
-export type JSXIdentifier = TSESTree.JSXIdentifier;
-export type JSXNamespacedName = TSESTree.JSXNamespacedName;
-export type JSXSpreadAttribute = TSESTree.JSXSpreadAttribute;
-export type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
-export type Node = TSESTree.Node;
+type JSXChild = TSESTree.JSXChild;
+type JSXElement = TSESTree.JSXElement;
+type JSXFragment = TSESTree.JSXFragment;
+type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
+type Node = TSESTree.Node;
 
-export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute) & {
+export type JSXComment = TSESTree.Comment;
+
+export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute | JSXComment) & {
 	__alreadyNodeized?: true;
 	__parentId?: number | null;
 };
@@ -31,7 +29,15 @@ export function jsxParser(jsxCode: string): JSXNode[] {
 		useJSXTextNode: true,
 	});
 
-	return recursiveSearchJSXElements(ast.body, null);
+	return [
+		...recursiveSearchJSXElements(ast.body, null),
+		...ast.comments.map(comment => {
+			return {
+				...comment,
+				__parentId: null,
+			};
+		}),
+	];
 }
 
 export function getName(
@@ -53,36 +59,6 @@ export function getName(
 			return '';
 		}
 	}
-}
-
-export function getAttr(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	attributes: readonly (JSXAttribute | JSXSpreadAttribute)[],
-) {
-	let hasSpreadAttr = false;
-	const attrs: JSXAttribute[] = [];
-	for (const attr of attributes) {
-		if (attr.type === 'JSXAttribute') {
-			attrs.push(attr);
-		} else {
-			hasSpreadAttr = true;
-		}
-	}
-
-	return {
-		attrs,
-		hasSpreadAttr,
-	};
-}
-
-export function getAttrName(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	name: JSXIdentifier | JSXNamespacedName,
-): string {
-	if (typeof name.name === 'string') {
-		return name.name;
-	}
-	return name.name.name;
 }
 
 function recursiveSearchJSXElements(
@@ -275,7 +251,9 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.TSExportAssignment:
 			case AST_NODE_TYPES.TSExternalModuleReference:
 			case AST_NODE_TYPES.TSNonNullExpression:
-			case AST_NODE_TYPES.TSTypeAssertion: {
+			case AST_NODE_TYPES.TSTypeAssertion:
+			case AST_NODE_TYPES.TSInstantiationExpression:
+			case AST_NODE_TYPES.TSSatisfiesExpression: {
 				jsxList.push(...recursiveSearchJSXElements([node.expression], parentId));
 				continue;
 			}
@@ -291,15 +269,12 @@ function recursiveSearchJSXElements(
 				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
 				continue;
 			}
-			case AST_NODE_TYPES.MethodDefinition: {
-				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-				if (node.decorators) {
-					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
-				}
-				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
-				continue;
-			}
-			case AST_NODE_TYPES.TSAbstractMethodDefinition: {
+			case AST_NODE_TYPES.MethodDefinition:
+			case AST_NODE_TYPES.TSAbstractMethodDefinition:
+			case AST_NODE_TYPES.PropertyDefinition:
+			case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+			case AST_NODE_TYPES.AccessorProperty:
+			case AST_NODE_TYPES.TSAbstractAccessorProperty: {
 				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 				if (node.decorators) {
 					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
@@ -424,7 +399,7 @@ function recursiveSearchJSXElements(
 				continue;
 			}
 			case AST_NODE_TYPES.TSPropertySignature: {
-				jsxList.push(...recursiveSearchJSXElements([node.key, null], parentId));
+				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
 				continue;
 			}
 			case AST_NODE_TYPES.TSTypeLiteral: {
@@ -434,14 +409,8 @@ function recursiveSearchJSXElements(
 			case AST_NODE_TYPES.PrivateIdentifier: {
 				continue;
 			}
-			case AST_NODE_TYPES.PropertyDefinition:
-			case AST_NODE_TYPES.TSAbstractPropertyDefinition: {
-				jsxList.push(...recursiveSearchJSXElements([node.value], parentId));
-				// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-				if (node.decorators) {
-					jsxList.push(...recursiveSearchJSXElements(node.decorators, parentId));
-				}
-				jsxList.push(...recursiveSearchJSXElements([node.key], parentId));
+			case AST_NODE_TYPES.ImportAttribute: {
+				jsxList.push(...recursiveSearchJSXElements([node.value, node.key], parentId));
 				continue;
 			}
 		}

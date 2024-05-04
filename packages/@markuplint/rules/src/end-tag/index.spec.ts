@@ -148,13 +148,6 @@ test('Astro', async () => {
 		{
 			severity: 'warning',
 			line: 1,
-			col: 1,
-			message: 'Missing the end tag',
-			raw: '<div>',
-		},
-		{
-			severity: 'warning',
-			line: 1,
 			col: 6,
 			message: 'Missing the end tag',
 			raw: '<span>',

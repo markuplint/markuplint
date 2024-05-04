@@ -2,6 +2,7 @@ export type ParserErrorInfo = {
 	readonly line?: number;
 	readonly col?: number;
 	readonly raw?: string;
+	readonly stack?: string;
 };
 
 export class ParserError extends Error {
@@ -15,6 +16,7 @@ export class ParserError extends Error {
 		this.line = info.line ?? 1;
 		this.col = info.col ?? 0;
 		this.raw = info.raw ?? '';
+		this.stack = info.stack ?? this.stack;
 	}
 }
 

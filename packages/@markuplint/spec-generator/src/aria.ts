@@ -93,6 +93,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
+		const deprecated =
+			description.toLowerCase().search(
+				// eslint-disable-next-line regexp/strict
+				/\[deprecated in aria 1\.\d]/i,
+			) === -1
+				? undefined
+				: true;
 		const $features = $el.find('.role-features tr');
 		const generalization = $features
 			.find('.role-parent a')
@@ -151,6 +158,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			name,
 			description,
 			isAbstract,
+			deprecated,
 			generalization,
 			requiredContextRole,
 			requiredOwnedElements,
@@ -164,7 +172,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		});
 	});
 
-	// the "none" role is synonym
+	// Synonym
 	if (version === '1.1' || version === '1.2') {
 		const presentationRole = roles.find(role => role.name === 'presentation');
 		if (presentationRole) {
@@ -183,6 +191,16 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				...noneRole,
 				name: 'presentation',
 				description: roles[noneRoleIndex]?.description,
+			};
+		}
+
+		const imageRole = roles.find(role => role.name === 'image');
+		if (imageRole) {
+			const imgRoleIndex = roles.findIndex(role => role.name === 'img');
+			roles[imgRoleIndex] = {
+				...imageRole,
+				name: 'img',
+				description: roles[imgRoleIndex]?.description,
 			};
 		}
 	}
@@ -208,7 +226,12 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 	const globalStatesAndProperties = new Set(
 		$('#global_states li a')
 			.toArray()
-			.map(el => $(el).attr('href')?.replace('#', ''))
+			.map(el => {
+				const href = $(el).prop('href');
+				const hashIndex = href.indexOf('#');
+				const hash = hashIndex === -1 ? undefined : href.slice(hashIndex);
+				return hash?.slice(1);
+			})
 			.filter((s): s is string => !!s),
 	);
 	const arias = [...ariaNameList].sort().map((name): ARIAProperty => {

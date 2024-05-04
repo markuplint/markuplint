@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean",
+			"description": "Warns for skipped heading levels",
+			"description:ja": "見出しレベルをスキップすると警告します"
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "error"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}

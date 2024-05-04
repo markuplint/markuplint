@@ -3,7 +3,9 @@
 import { attributesToDebugMaps, nodeListToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
-import { parse } from './parse.js';
+import { parser } from './parser.js';
+
+const parse = parser.parse.bind(parser);
 
 describe('parse', () => {
 	test('parse error', () => {
@@ -95,7 +97,7 @@ describe('parse', () => {
 	test('Children', () => {
 		const ast = parse('<ul>{[1, 2, 3].map(item => (<li key={item}>{item}</li>))}</ul>');
 		expect(ast.nodeList[0].nodeName).toBe('ul');
-		expect(ast.nodeList[1].nodeName).toBe('JSXExpressionContainer');
+		expect(ast.nodeList[1].nodeName).toBe('#ps:JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[1].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
 		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[1].uuid);
@@ -137,9 +139,9 @@ describe('parse', () => {
 		expect(maps).toStrictEqual([
 			'[3:3]>[3:7](38,42)ul: <ul>',
 			'[3:7]>[4:4](42,46)#text: ⏎→→→',
-			'[4:4]>[6:7](46,108)JSXExpressionContainer: {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
+			'[4:4]>[6:7](46,108)#ps:JSXExpressionContainer: {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
 			'[5:5]>[5:20](75,90)li: <li␣key={item}>',
-			'[5:20]>[5:26](90,96)JSXExpressionContainer: {item}',
+			'[5:20]>[5:26](90,96)#ps:JSXExpressionContainer: {item}',
 			'[5:26]>[5:31](96,101)li: </li>',
 			'[6:7]>[7:3](108,111)#text: ⏎→→',
 			'[7:3]>[7:8](111,116)ul: </ul>',
@@ -161,7 +163,7 @@ describe('parse', () => {
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[0].nodeName).toBe('#text');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('JSXExpressionContainer');
+		expect(ast.nodeList[0].childNodes[1].nodeName).toBe('#ps:JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
 		// @ts-ignore
@@ -290,7 +292,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 			'[3:17]>[3:24](44,51)El1: <El1␣/>',
 			'[4:13]>[4:20](72,79)El2: <El2␣/>',
 			'[5:10]>[5:12](92,94)#jsx-fragment: <>',
-			'[5:12]>[5:35](94,117)JSXExpressionContainer: {prop␣?␣<El3␣/>␣:␣null}',
+			'[5:12]>[5:35](94,117)#ps:JSXExpressionContainer: {prop␣?␣<El3␣/>␣:␣null}',
 			'[5:20]>[5:27](102,109)El3: <El3␣/>',
 			'[5:35]>[5:38](117,120)#jsx-fragment: </>',
 			'[7:18]>[7:25](149,156)El4: <El4␣/>',
@@ -302,7 +304,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const maps = nodeListToDebugMaps(ast.nodeList);
 		expect(maps).toStrictEqual([
 			'[1:1]>[1:4](0,3)p: <p>',
-			'[1:4]>[1:27](3,26)JSXExpressionContainer: {array.map(_␣=>␣<></>)}',
+			'[1:4]>[1:27](3,26)#ps:JSXExpressionContainer: {array.map(_␣=>␣<></>)}',
 			'[1:20]>[1:22](19,21)#jsx-fragment: <>',
 			'[1:22]>[1:25](21,24)#jsx-fragment: </>',
 			'[1:27]>[1:31](26,30)p: </p>',
@@ -316,14 +318,14 @@ const Component3 = memo(() => <div>Component3</div>);`);
 
 		expect(ast.nodeList[3].raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.raw).toBe('</>');
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.uuid).toBe(ast.nodeList[3].uuid);
 
 		// @ts-ignore
-		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pearNode.uuid);
+		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNode.uuid);
 		// @ts-ignore
-		expect(ast.nodeList[2].pearNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[2].pairNode.uuid).toBe(ast.nodeList[3].uuid);
 	});
 
 	test('Attribute', () => {
@@ -394,15 +396,15 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  isDynamicValue: false',
 			],
 			[
-				'[1:76]>[1:95](75,94)theProp: ␣theProp={variable}',
+				'[1:77]>[1:95](76,94)theProp: theProp={variable}',
 				'  [1:76]>[1:77](75,76)bN: ␣',
 				'  [1:77]>[1:84](76,83)name: theProp',
 				'  [1:84]>[1:84](83,83)bE: ',
 				'  [1:84]>[1:85](83,84)equal: =',
 				'  [1:85]>[1:85](84,84)aE: ',
-				'  [1:85]>[1:85](84,84)sQ: ',
-				'  [1:85]>[1:95](84,94)value: {variable}',
-				'  [1:95]>[1:95](94,94)eQ: ',
+				'  [1:85]>[1:86](84,85)sQ: {',
+				'  [1:86]>[1:94](85,93)value: variable',
+				'  [1:94]>[1:95](93,94)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
 			],
@@ -437,15 +439,15 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:3]>[1:11](2,10)href: ␣href={}',
+				'[1:4]>[1:11](3,10)href: href={}',
 				'  [1:3]>[1:4](2,3)bN: ␣',
 				'  [1:4]>[1:8](3,7)name: href',
 				'  [1:8]>[1:8](7,7)bE: ',
 				'  [1:8]>[1:9](7,8)equal: =',
 				'  [1:9]>[1:9](8,8)aE: ',
-				'  [1:9]>[1:9](8,8)sQ: ',
-				'  [1:9]>[1:11](8,10)value: {}',
-				'  [1:11]>[1:11](10,10)eQ: ',
+				'  [1:9]>[1:10](8,9)sQ: {',
+				'  [1:10]>[1:10](9,9)value: ',
+				'  [1:10]>[1:11](9,10)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
 				'  potentialName: href',
@@ -478,9 +480,9 @@ key
 		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
 			'[4:3]>[5:2](41,47)ul: <ul␣⏎>',
 			'[5:2]>[6:1](47,49)#text: ␣⏎',
-			'[6:1]>[16:7](49,126)JSXExpressionContainer: {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
+			'[6:1]>[16:7](49,126)#ps:JSXExpressionContainer: {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
 			'[8:1]>[13:3](77,102)li: <li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>',
-			'[13:3]>[15:2](102,113)JSXExpressionContainer: {␣⏎→item␣⏎}',
+			'[13:3]>[15:2](102,113)#ps:JSXExpressionContainer: {␣⏎→item␣⏎}',
 			'[15:2]>[15:7](113,118)li: </li>',
 			'[16:7]>[17:3](126,130)#text: ␣⏎→→',
 			'[17:3]>[17:8](130,135)ul: </ul>',
@@ -491,7 +493,13 @@ key
 		const ast = parse('<a {...props}/>');
 		// @ts-ignore
 		const attrMaps = attributesToDebugMaps(ast.nodeList[0].attributes);
-		expect(attrMaps).toStrictEqual([]);
+		expect(attrMaps).toStrictEqual([
+			[
+				//
+				'[1:4]>[1:14](3,13)#spread: {...props}',
+				'  #spread: {...props}',
+			],
+		]);
 	});
 
 	test('namespace', () => {
@@ -526,5 +534,94 @@ key
 		expect(parse('<div><Component/></div>').nodeList[1].elementType).toBe('authored');
 		expect(parse('<svg><Component/></svg>').nodeList[1].elementType).toBe('authored');
 		expect(parse('<svg><feBlend/></svg>').nodeList[1].elementType).toBe('html');
+	});
+
+	test('Comment', () => {
+		const ast = parse(`// comment 1
+/* comment 2 */`);
+		const map = nodeListToDebugMaps(ast.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:13](0,12)#comment: //␣comment␣1',
+			'[2:1]>[2:16](13,28)#comment: /*␣comment␣2␣*/',
+		]);
+	});
+
+	test('Comment in element', () => {
+		const ast = parse(`// comment 1
+/* comment 2 */
+
+<div
+// comment 3
+/**
+ * comment 4
+ */
+attr={value}
+/>`);
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:13](0,12)#comment: //␣comment␣1',
+			'[2:1]>[2:16](13,28)#comment: /*␣comment␣2␣*/',
+			'[4:1]>[10:3](30,84)div: <div⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎attr={value}⏎/>',
+			'[9:1]>[9:13](69,81)attr: attr={value}',
+			'  [4:5]>[9:1](34,69)bN: ⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎␣␣␣␣␣␣␣␣␣␣␣␣⏎␣␣␣⏎',
+			'  [9:1]>[9:5](69,73)name: attr',
+			'  [9:5]>[9:5](73,73)bE: ',
+			'  [9:5]>[9:6](73,74)equal: =',
+			'  [9:6]>[9:6](74,74)aE: ',
+			'  [9:6]>[9:7](74,75)sQ: {',
+			'  [9:7]>[9:12](75,80)value: value',
+			'  [9:12]>[9:13](80,81)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'[5:1]>[5:13](35,47)#comment: //␣comment␣3',
+			'[6:1]>[8:4](48,68)#comment: /**⏎␣*␣comment␣4⏎␣*/',
+		]);
+	});
+});
+
+describe('Issues', () => {
+	test('#1432', () => {
+		const doc = parse(`const Component = () => {
+  return (
+    <div style={{ color: 'red' }}></div>
+  );
+};`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			"[3:5]>[3:35](41,71)div: <div␣style={{␣color:␣'red'␣}}>",
+			"[3:10]>[3:34](46,70)style: style={{␣color:␣'red'␣}}",
+			'  [3:9]>[3:10](45,46)bN: ␣',
+			'  [3:10]>[3:15](46,51)name: style',
+			'  [3:15]>[3:15](51,51)bE: ',
+			'  [3:15]>[3:16](51,52)equal: =',
+			'  [3:16]>[3:16](52,52)aE: ',
+			'  [3:16]>[3:17](52,53)sQ: {',
+			"  [3:17]>[3:33](53,69)value: {␣color:␣'red'␣}",
+			'  [3:33]>[3:34](69,70)eQ: }',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  potentialName: style',
+			'[3:35]>[3:41](71,77)div: </div>',
+		]);
+	});
+
+	test('#1440', () => {
+		const doc = parse(`type Key = "name" | "address";
+
+const x = {
+  name: "Alice",
+  address: "UK",
+} as const satisfies Record<Key, string>;
+
+const C = () => {
+  return <div />;
+};`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual(['[9:10]>[9:17](148,155)div: <div␣/>']);
+	});
+
+	test('#1451', () => {
+		expect(parse('<div></div>').nodeList[0].elementType).toBe('html');
+		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
+		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
 	});
 });

@@ -5,7 +5,13 @@ import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
 import type { RuleInfo } from '../../index.js';
-import type { MLASTAbstractNode, MLASTNode, MLASTParentNode } from '@markuplint/ml-ast';
+import type {
+	MLASTChildNode,
+	MLASTElementCloseTag,
+	MLASTInvalid,
+	MLASTNode,
+	MLASTParentNode,
+} from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLToken } from '../token/token.js';
@@ -18,7 +24,7 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
 export abstract class MLNode<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
-		A extends MLASTAbstractNode = MLASTAbstractNode,
+		A extends MLASTNode = MLASTNode,
 	>
 	extends MLToken<A>
 	implements Node
@@ -214,11 +220,17 @@ export abstract class MLNode<
 			this.is(this.ELEMENT_NODE) ||
 			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
 		) {
-			// @ts-ignore
-			const astChildren: MLASTNode[] = this._astToken.childNodes ?? [];
+			const astChildren: Exclude<MLASTChildNode, MLASTElementCloseTag | MLASTInvalid>[] =
+				// @ts-ignore
+				this._astToken?.childNodes?.filter(node => {
+					if (node.type === 'endtag' || node.type === 'invalid') {
+						return null;
+					}
+					return node;
+				}) ?? [];
 			const childNodes = astChildren
 				.map(node => nodeStore.getNode<typeof node, T, O>(node))
-				.filter((node): node is MLChildNode<T, O> => isChildNode(node));
+				.filter(node => isChildNode(node));
 
 			// Cache
 			this.#childNodes = toNodeList(childNodes);
@@ -267,21 +279,30 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get nextNode(): MLNode<T, O> | null {
-		if (!this._astToken.nextNode) {
-			return null;
-		}
-		return nodeStore.getNode<MLASTNode, T, O>(this._astToken.nextNode);
+		const siblings = [...(this.syntacticalParentNode?.childNodes ?? this.#ownerDocument.nodeList)];
+		const index = siblings.findIndex(node => node.uuid === this.uuid);
+		return siblings[index + 1] ?? null;
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The next sibling of an object is its first following sibling or null if it has no following sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-nextsibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-next-sibling
 	 */
-	get nextSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "nextSibling" property');
+	get nextSibling(): MLChildNode<T, O> | null {
+		let nextNode = this.nextNode;
+		while (nextNode) {
+			if (
+				isChildNode(nextNode) &&
+				((this.parentNode === null && nextNode.parentNode === null) ||
+					this.parentNode?.uuid === nextNode.parentNode?.uuid)
+			) {
+				return nextNode;
+			}
+			nextNode = nextNode.nextNode;
+		}
+		return null;
 	}
 
 	/**
@@ -421,10 +442,9 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get prevNode(): MLNode<T, O> | null {
-		if (!this._astToken.prevNode) {
-			return null;
-		}
-		return nodeStore.getNode<MLASTNode, T, O>(this._astToken.prevNode);
+		const siblings = [...(this.syntacticalParentNode?.childNodes ?? this.#ownerDocument.nodeList)];
+		const index = siblings.findIndex(node => node.uuid === this.uuid);
+		return siblings[index - 1] ?? null;
 	}
 
 	/**
@@ -460,14 +480,24 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The previous sibling of an object is its first preceding sibling or null if it has no preceding sibling.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-previoussibling%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#concept-tree-previous-sibling
 	 */
-	get previousSibling(): ChildNode | null {
-		throw new UnexpectedCallError('Not supported "previousSibling" property');
+	get previousSibling(): MLChildNode<T, O> | null {
+		let prevNode = this.prevNode;
+		while (prevNode) {
+			if (
+				isChildNode(prevNode) &&
+				((this.parentNode === null && prevNode.parentNode === null) ||
+					this.parentNode?.uuid === prevNode.parentNode?.uuid)
+			) {
+				return prevNode;
+			}
+			prevNode = prevNode.prevNode;
+		}
+		return null;
 	}
 
 	/**
@@ -538,6 +568,9 @@ export abstract class MLNode<
 		| MLElement<T, O>
 		| MLBlock<T, O>
 		| null {
+		if (this._astToken.type === 'attr' || this._astToken.type === 'spread') {
+			return null;
+		}
 		if (!this._astToken.parentNode) {
 			return this.ownerMLDocument;
 		}
@@ -610,17 +643,21 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns true if other is an inclusive descendant of node; otherwise false.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
 	contains(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		other: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "contains" method');
+		other: MLNode<T, O> | null,
+	) {
+		for (const childNode of this.childNodes) {
+			if (other?.uuid === childNode.uuid || childNode.contains(other)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -635,6 +672,38 @@ export abstract class MLNode<
 		event: Event,
 	): boolean {
 		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
+	}
+
+	/**
+	 * Finds subsequent nodes that match the given selector.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 * @param selector - Optional selector to filter the nodes.
+	 * @returns An array of matched child nodes.
+	 */
+	findSubsequentNodes(selector?: string): MLChildNode<T, O>[] {
+		const matched: MLChildNode<T, O>[] = [];
+		for (const node of this.ownerMLDocument.nodeList) {
+			if (node.endOffset <= this.endOffset) {
+				continue;
+			}
+
+			if (this.contains(node)) {
+				continue;
+			}
+
+			if (selector) {
+				if (node.is(node.ELEMENT_NODE) && node.matches(selector)) {
+					matched.push(node);
+				}
+				continue;
+			}
+
+			if (isChildNode(node)) {
+				matched.push(node);
+			}
+		}
+		return matched;
 	}
 
 	/**

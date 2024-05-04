@@ -169,6 +169,18 @@
 				}
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-writingsuggestions
+		"writingsuggestions": {
+			"type": {
+				"enum": ["", "true", "false"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "default",
+				"missingValueDefault": "default",
+				"sameStates": {
+					"true": [""]
+				}
+			}
+		},
 		// https://html.spec.whatwg.org/multipage/dom.html#classes
 		"class": {
 			"type": "Any"

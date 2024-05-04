@@ -12,13 +12,13 @@ Warns when doesn't including DOCTYPE. Also warns when included obsolete type.
 <!-- prettier-ignore-start -->
 ```html
 <html>
-	<head>
-		<title>Any Page</title>
-	</head>
-	<body>
-		<h1>Any Page</h1>
-		<p>Anonymous</p>
-	</body>
+  <head>
+    <title>Any Page</title>
+  </head>
+  <body>
+    <h1>Any Page</h1>
+    <p>Anonymous</p>
+  </body>
 </html>
 ```
 <!-- prettier-ignore-end -->
@@ -29,13 +29,13 @@ Warns when doesn't including DOCTYPE. Also warns when included obsolete type.
 ```html
 <!doctype html>
 <html>
-	<head>
-		<title>Any Page</title>
-	</head>
-	<body>
-		<h1>Any Page</h1>
-		<p>Anonymous</p>
-	</body>
+  <head>
+    <title>Any Page</title>
+  </head>
+  <body>
+    <h1>Any Page</h1>
+    <p>Anonymous</p>
+  </body>
 </html>
 ```
 <!-- prettier-ignore-end -->

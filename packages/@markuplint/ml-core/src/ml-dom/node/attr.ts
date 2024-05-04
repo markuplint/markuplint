@@ -46,40 +46,44 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 
 	constructor(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		astToken: MLASTAttr,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ownElement: MLElement<T, O>,
 	) {
 		super(astToken, ownElement.ownerMLDocument);
 
-		if (this._astToken.type === 'html-attr') {
-			this.spacesBeforeName = new MLToken(this._astToken.spacesBeforeName);
-			this.nameNode = new MLToken(this._astToken.name);
-			this.spacesBeforeEqual = new MLToken(this._astToken.spacesBeforeEqual);
-			this.equal = new MLToken(this._astToken.equal);
-			this.spacesAfterEqual = new MLToken(this._astToken.spacesAfterEqual);
-			this.startQuote = new MLToken(this._astToken.startQuote);
-			this.valueNode = new MLToken(this._astToken.value);
-			this.endQuote = new MLToken(this._astToken.endQuote);
-			this.isDynamicValue = this._astToken.isDynamicValue;
-			this.isDirective = this._astToken.isDirective;
-			this.candidate = this._astToken.candidate;
-			this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
-			this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
-		} else {
-			this.valueType = this._astToken.valueType;
-			this.isDuplicatable = this._astToken.isDuplicatable;
-			this.#potentialName = this._astToken.potentialName;
-			this.#potentialValue = this._astToken.potentialValue;
+		this.ownerElement = ownElement;
+
+		if (this._astToken.type === 'spread') {
+			this.#namespaceURI = ownElement.namespaceURI;
+			this.valueType = 'code';
+			this.#localName = '#spread';
+			this.#potentialName = '#spread';
+			this.#potentialValue = this._astToken.raw;
+			this.isDirective = true;
+			this.isDynamicValue = true;
+			this.isDuplicatable = true;
+			return;
 		}
+
+		this.spacesBeforeName = new MLToken(this._astToken.spacesBeforeName);
+		this.nameNode = new MLToken(this._astToken.name);
+		this.spacesBeforeEqual = new MLToken(this._astToken.spacesBeforeEqual);
+		this.equal = new MLToken(this._astToken.equal);
+		this.spacesAfterEqual = new MLToken(this._astToken.spacesAfterEqual);
+		this.startQuote = new MLToken(this._astToken.startQuote);
+		this.valueNode = new MLToken(this._astToken.value);
+		this.endQuote = new MLToken(this._astToken.endQuote);
+		this.isDynamicValue = this._astToken.isDynamicValue;
+		this.isDirective = this._astToken.isDirective;
+		this.candidate = this._astToken.candidate;
+		this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
+		this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
+		this.isDuplicatable = this._astToken.isDuplicatable;
 
 		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
 		this.#localName = ns.localName;
 		this.#namespaceURI = ns.namespaceURI;
-
-		this.ownerElement = ownElement;
-		this.isDuplicatable = this._astToken.isDuplicatable;
 	}
 
 	/**
@@ -175,18 +179,69 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * Fixes the attribute value.
+	 * If the attribute is not a spread attribute, it calls the `fix` method of the `valueNode`.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 *
+	 * @param raw - The raw attribute value.
+	 */
+	fix(raw: string) {
+		if (this.localName === '#spread') {
+			return;
+		}
+
+		// `valueNode` is not null when it is no spread.
+		this.valueNode?.fix(raw);
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLAttr`
 	 */
 	toNormalizeString() {
 		if (this.nameNode && this.equal && this.startQuote && this.valueNode && this.endQuote) {
-			return (
-				this.nameNode.originRaw +
-				this.equal.originRaw +
-				this.startQuote.originRaw +
-				this.valueNode.originRaw +
-				this.endQuote.originRaw
-			);
+			return this.nameNode.raw + this.equal.raw + this.startQuote.raw + this.valueNode.raw + this.endQuote.raw;
 		}
 		return this.raw;
+	}
+
+	/**
+	 * Returns a string representation of the attribute.
+	 *
+	 * @implements DOM API: `Attr`
+	 *
+	 * @param includesSpacesBeforeName - Whether to include spaces before the attribute name.
+	 * @returns The string representation of the attribute.
+	 */
+	toString(fixed = false) {
+		if (!fixed) {
+			return this.raw;
+		}
+
+		if (this.localName === '#spread') {
+			return this.raw;
+		}
+
+		const tokens = [this.nameNode?.toString(true) ?? ''];
+		if (this.equal && this.equal.toString(true) !== '') {
+			tokens.push(
+				this.spacesBeforeEqual?.toString(true) ?? '',
+				this.equal?.toString(true) ?? '',
+				this.spacesAfterEqual?.toString(true) ?? '',
+				this.startQuote?.toString(true) ?? '',
+				this.valueNode?.toString(true) ?? '',
+				this.endQuote?.toString(true) ?? '',
+			);
+		} else if (this.valueNode && this.valueNode.toString(true) !== '') {
+			tokens.push(
+				//
+				'=',
+				this.startQuote?.toString(true) || '"',
+				this.valueNode.toString(true),
+				this.endQuote?.toString(true) || '"',
+			);
+		}
+
+		return tokens.join('');
 	}
 }

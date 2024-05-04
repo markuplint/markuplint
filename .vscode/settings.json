@@ -34,7 +34,7 @@
 				"/**/markuplint-*.json",
 				"/packages/@markuplint/config-presets/src/*.json"
 			],
-			"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
+			"url": "/config.schema.json"
 		},
 		{
 			"fileMatch": ["/packages/*markuplint/html-spec/src/spec.*.json"],

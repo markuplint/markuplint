@@ -289,7 +289,7 @@ In some parser, detect an attribute as a directive so ignored. (Ex: Ignore direc
 
 _[The Open Graph protocol](https://ogp.me/)_ and _[RDFa](https://rdfa.info/)_ are specifications that are different from the _HTML Standard_. So you should specify it manually as follow if you need it:
 
-### The Open Graph protocol
+### The Open Graph protocol {#the-open-graph-protocol}
 
 ```json class=config
 {
