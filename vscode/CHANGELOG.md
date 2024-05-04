@@ -1,5 +1,14 @@
 # Change Log
 
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [4.7.1-alpha.0](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.0...vscode-markuplint@4.7.1-alpha.0) (2024-05-04)
+
+**Note:** Version bump only for package vscode-markuplint
+
+# Change Log
+
 ## 4.7.0
 
 - Depends: `markuplint@4.7.0`
