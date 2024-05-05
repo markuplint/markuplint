@@ -8,6 +8,16 @@ type JSXFragment = TSESTree.JSXFragment;
 type JSXTagNameExpression = TSESTree.JSXTagNameExpression;
 type Node = TSESTree.Node;
 
+const parserOptions = {
+	comment: true,
+	errorOnUnknownASTType: false,
+	jsx: true,
+	loc: true,
+	range: true,
+	tokens: false,
+	useJSXTextNode: true,
+} as const;
+
 export type JSXComment = TSESTree.Comment;
 
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute | JSXComment) & {
@@ -17,17 +27,31 @@ export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute | JSXComment) & {
 
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
+export function attrParser(code: string) {
+	try {
+		parse(code, parserOptions);
+	} catch (error) {
+		if (
+			error instanceof Error &&
+			'location' in error &&
+			error.location instanceof Object &&
+			'start' in error.location &&
+			error.location.start instanceof Object &&
+			'offset' in error.location.start &&
+			typeof error.location.start.offset === 'number'
+		) {
+			const newError = new SyntaxError(error.message);
+			// @ts-ignore
+			newError.index = error.location.start.offset;
+			throw newError;
+		} else {
+			throw error;
+		}
+	}
+}
+
 export function jsxParser(jsxCode: string): JSXNode[] {
-	const ast = parse(jsxCode, {
-		comment: true,
-		errorOnUnknownASTType: false,
-		jsx: true,
-		loc: true,
-		// loggerFn: undefined,
-		range: true,
-		tokens: false,
-		useJSXTextNode: true,
-	});
+	const ast = parse(jsxCode, parserOptions);
 
 	return [
 		...recursiveSearchJSXElements(ast.body, null),

@@ -1,14 +1,14 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 type Value = 'always';
 type Option = {
 	denyObsoleteType: boolean;
 };
 
 export default createRule<Value, Option>({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	defaultValue: 'always',
 	defaultOptions: {
 		denyObsoleteType: true,

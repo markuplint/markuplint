@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			table {
+				border: solid 1px;
+				border-collapse: separate;
+			}
+			th,
+			td {
+				border: solid 1px;
+			}
+			[colspan] {
+				background-color: #0f0;
+			}
+			[rowspan] {
+				background-color: #f00;
+			}
+			[colspan][rowspan] {
+				background-image: linear-gradient(45deg, #f00 50%, #0f0 50%);
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td class="extra">Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td class="extra1">Cell</td>
+				<td class="extra2">Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+			</tr>
+			<tr class="missing">
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+				<th>Cell</th>
+			</tr>
+			<tr class="missing">
+				<td>Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+				<th colspan="3">Cell</th>
+				<th>Cell</th>
+			</tr>
+			<tr class="missing">
+				<td>Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr class="missing1">
+				<th>Cell</th>
+				<th rowspan="3">Cell</th>
+				<!-- missing -->
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr class="missing2">
+				<td>Cell</td>
+				<td>Cell</td>
+				<!-- missing -->
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<th>Cell</th>
+				<th colspan="3" rowspan="3">Cell</th>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<thead class="overflow">
+				<tr>
+					<th rowspan="3">Cell</th>
+					<th>Cell</th>
+				</tr>
+			</thead>
+			<tr>
+				<td>Cell</td>
+				<td colspan="8">Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+		</table>
+
+		<table>
+			<caption>
+				Table
+			</caption>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td rowspan="5">Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td colspan="5">Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+			<tr>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+				<td>Cell</td>
+			</tr>
+		</table>
+	</body>
+</html>

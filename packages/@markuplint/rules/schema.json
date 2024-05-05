@@ -60,6 +60,9 @@
 				"neighbor-popovers": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/neighbor-popovers/schema.json"
 				},
+				"no-ambiguous-navigable-target-names": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-ambiguous-navigable-target-names/schema.json"
+				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
 				},
@@ -77,6 +80,9 @@
 				},
 				"no-hard-code-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-hard-code-id/schema.json"
+				},
+				"no-orphaned-end-tag": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-orphaned-end-tag/schema.json"
 				},
 				"no-refer-to-non-existent-id": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-refer-to-non-existent-id/schema.json"
@@ -104,6 +110,9 @@
 				},
 				"required-h1": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-h1/schema.json"
+				},
+				"table-row-column-alignment": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/table-row-column-alignment/schema.json"
 				},
 				"use-list": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/use-list/schema.json"

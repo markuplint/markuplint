@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "4.4.0",
+	"version": "4.8.0",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -25,17 +25,17 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "4.2.0",
-		"@markuplint/file-resolver": "4.4.0",
-		"@markuplint/html-parser": "4.3.0",
-		"@markuplint/html-spec": "4.4.0",
-		"@markuplint/i18n": "4.2.0",
-		"@markuplint/ml-ast": "4.1.0",
-		"@markuplint/ml-config": "4.3.0",
-		"@markuplint/ml-core": "4.4.0",
-		"@markuplint/ml-spec": "4.2.0",
-		"@markuplint/rules": "4.4.0",
-		"@markuplint/shared": "4.1.0",
+		"@markuplint/cli-utils": "4.4.1",
+		"@markuplint/file-resolver": "4.7.1",
+		"@markuplint/html-parser": "4.6.1",
+		"@markuplint/html-spec": "4.7.1",
+		"@markuplint/i18n": "4.5.0",
+		"@markuplint/ml-ast": "4.3.1",
+		"@markuplint/ml-config": "4.6.1",
+		"@markuplint/ml-core": "4.7.1",
+		"@markuplint/ml-spec": "4.5.1",
+		"@markuplint/rules": "4.8.0",
+		"@markuplint/shared": "4.3.1",
 		"@types/debug": "4.1.12",
 		"chokidar": "3.6.0",
 		"debug": "4.3.4",
@@ -44,6 +44,6 @@
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.1.0",
-		"type-fest": "4.14.0"
+		"type-fest": "4.18.1"
 	}
 }

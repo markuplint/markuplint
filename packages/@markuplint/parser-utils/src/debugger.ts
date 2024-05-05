@@ -89,7 +89,7 @@ function tokenDebug<N extends MLASTToken>(n: N | null, type = '') {
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
 		// @ts-ignore
 		n.potentialName ?? n.nodeName ?? n.name ?? n.type ?? type
-	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}: ${visibleWhiteSpace(
+	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}${'conditionalType' in n && n.conditionalType ? ` (${n.conditionalType})` : ''}: ${visibleWhiteSpace(
 		n.raw,
 	)}`;
 }

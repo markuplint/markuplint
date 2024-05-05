@@ -3317,6 +3317,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	hasMutableChildren(attr = false) {
 		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+				if (child.conditionalType) {
+					continue;
+				}
 				return true;
 			}
 			if (child.is(child.ELEMENT_NODE)) {
@@ -3451,7 +3454,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretending(pretenders?: readonly Pretender[]) {
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
 		const asAttrValue = this.getAttribute('as');
-		const pretenderElement =
+		const pretenderElement: Pretender['as'] | null =
 			pretenderConfig?.as ??
 			(this.elementType === 'html' || !asAttrValue
 				? null

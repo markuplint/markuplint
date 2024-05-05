@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export type Type = 'double' | 'single';
 export type Quote = '"' | "'";
 export type QuoteMap = { [P in Type]: Quote };
@@ -10,9 +12,7 @@ const quoteList: QuoteMap = {
 };
 
 export default createRule<Type>({
-	meta: {
-		category: 'style',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultValue: 'double',
 	async verify({ document, report, t }) {

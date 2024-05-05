@@ -14,6 +14,7 @@
   "nodeRules": [],
   "childNodeRules": [],
   "pretenders": [],
+  "overrideMode": "reset",
   "overrides": {}
 }
 ```
@@ -30,6 +31,7 @@
 | [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#noderules/interface)      |
 | [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#childnoderules/interface) |
 | [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/besides-html#pretenders)                                                              | [インターフェイス](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overridemode/interface)   |
 | [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overrides/interface)      |
 
 ## パスの解決 {#resolving-specified-paths}
@@ -810,6 +812,34 @@ type OriginalNode = {
 };
 ```
 
+### `overrideMode`
+
+このオプションは、[`overrides`](#overrides) セクションの振る舞いを制御します。このオプションを設定することで、プロジェクトの特定の部分に適用する異なるLintルールの設定の扱い方を指定できます。
+
+#### `reset`
+
+リセットモードでは、`overrides` セクションの設定は全く新しい設定として扱われ、既存の設定は無視されます。このモードは、特定のファイルやディレクトリに完全に新しいLintルールを適用したい場合に役立ちます。**`overrides` セクションに指定された設定のみが使用され、他の設定は適用されません。**
+
+#### `merge`
+
+このモードを選択すると、`overrides` セクションで指定された設定が既存の全体設定とマージされます。具体的には、`overrides` セクションに記載されたルールが追加されたり、既存のものを上書きしますが、他の設定は保持されます。このモードは、既存の設定に対して部分的な変更や追加を行いたい場合に適しています。
+
+:::note 既定値と推奨
+
+`overrideMode` の既定値は、互換性を保つために `reset` に設定されています。この設定は、デフォルトで `overrides` セクションが既存の設定を完全に置き換え、特定のファイルやディレクトリに特化したクリーンな状態を提供することを保証します。
+
+既存のルールと新しいルールを融合させるより一般的な振る舞いを期待する場合は、`overrideMode` を `merge` に明示的に設定するべきです。これにより、`overrides` の設定がグローバル設定とシームレスに統合され、指定された変更のみが適用される一方で、既存のルールも維持されます。
+
+:::
+
+#### インターフェイス {#overridemode/interface}
+
+```ts
+interface Config {
+  overrideMode?: 'reset' | 'merge';
+}
+```
+
 ### `overrides`
 
 `overrides`オプションを指定すると、特定のファイルに対して設定を上書きできます。キーに指定されたglob形式のパスに適用します。([minimatch](https://www.npmjs.com/package/minimatch)を用いて解決されます)
@@ -846,7 +876,7 @@ type OriginalNode = {
 ```ts
 interface Config {
   overrides?: {
-    [path: string]: Omit<Config, 'extends' | 'overrides'>;
+    [path: string]: Omit<Config, 'extends' | 'overrideMode' | 'overrides'>;
   };
 }
 ```

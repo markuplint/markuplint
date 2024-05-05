@@ -1,14 +1,14 @@
 /**
- *
- * @param {string} content
- * @param {string} name
- * @param {string} value
- * @param {Object} options
- * @param {string} severity
- * @param {string} [lang]
  * @returns {string} Rewrote content
  */
-export function rewriteRuleContent(content, name, value, options, severity, lang) {
+export function rewriteRuleContent(
+  content: string,
+  name: string,
+  value: string,
+  options: object,
+  severity: string,
+  lang?: string,
+): string {
   // Replace internal page URL
   content = content.replaceAll('(https://markuplint.dev/', '(/');
 
@@ -39,11 +39,11 @@ export function rewriteRuleContent(content, name, value, options, severity, lang
   return content;
 }
 
-function type(value, escape = false) {
+function type(value: any, escape = false): string {
   const verticalBar = escape ? ' &#x7C;<wbr /> ' : ' | ';
 
   if (value.oneOf) {
-    return value.oneOf.map(v => type(v, escape)).join(verticalBar);
+    return value.oneOf.map((v: any) => type(v, escape)).join(verticalBar);
   }
 
   if (value.type === 'array') {
@@ -58,7 +58,7 @@ function type(value, escape = false) {
   }
 
   if (value.type === 'string' && value.enum) {
-    return value.enum.map(e => `"${e}"`).join(verticalBar);
+    return value.enum.map((e: string) => `"${e}"`).join(verticalBar);
   }
 
   if (value.type === 'object') {
@@ -71,11 +71,11 @@ function type(value, escape = false) {
   return value.type;
 }
 
-function code(value, escape = false) {
+function code(value: any, escape = false): string {
   const arraySeparator = escape ? ',<wbr />' : ',';
 
   if (Array.isArray(value)) {
-    return '[' + value.map(item => code(item, escape)).join(arraySeparator) + ']';
+    return '[' + value.map((item: any) => code(item, escape)).join(arraySeparator) + ']';
   }
 
   if (typeof value === 'string') {
@@ -85,13 +85,7 @@ function code(value, escape = false) {
   return value;
 }
 
-/**
- *
- * @param {Value} value
- * @param {string} [lang]
- * @returns
- */
-function valueDoc(value, lang) {
+function valueDoc(value: any, lang?: string): string[] {
   if (value.enum && value._description) {
     const table = [
       //
@@ -100,7 +94,7 @@ function valueDoc(value, lang) {
     ];
 
     table.push(
-      ...value.enum.map(e => {
+      ...value.enum.map((e: string) => {
         const desc = value[`_description:${lang}`]?.[e] ?? value._description[e];
         return `\`"${e}"\`|${value.default === e ? '✓' : ''}|${desc}`;
       }),
@@ -118,7 +112,7 @@ function valueDoc(value, lang) {
   return [];
 }
 
-function optionDoc(name, options, lang) {
+function optionDoc(name: string, options: any, lang?: string): string[] {
   if (!options) {
     return [];
   }
@@ -127,7 +121,7 @@ function optionDoc(name, options, lang) {
     return `"${k}"?: ${type(v)}`;
   });
 
-  const table = Object.entries(options.properties).map(([k, v]) => {
+  const table = Object.entries(options.properties).map(([k, v]: readonly [string, any]) => {
     const desc = v[`description:${lang}`] ?? v.description;
     return `\`${k}\`|<code>${type(v, true)}</code>|<code>${code(v.default, true)}</code>|${desc}`;
   });

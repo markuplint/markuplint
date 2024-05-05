@@ -5,7 +5,7 @@ import type { ChildToken, Token } from '@markuplint/parser-utils';
 import { getNamespace } from '@markuplint/html-parser';
 import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
 
-import { jsxParser, getName } from './jsx.js';
+import { jsxParser, attrParser, getName } from './jsx.js';
 
 type State = {
 	comments: readonly JSXComment[];
@@ -210,6 +210,7 @@ class JSXParser extends Parser<JSXNode, State> {
 						nodeName: originNode.type,
 					},
 					[],
+					null, // TODO: Infer conditionalType
 					originNode,
 				);
 
@@ -244,16 +245,9 @@ class JSXParser extends Parser<JSXNode, State> {
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
 			quoteSet: [
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '{', end: '}' },
-			],
-			quoteInValueChars: [
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '`', end: '`' },
-				{ start: '{', end: '}' },
-				{ start: '${', end: '}' },
+				{ start: '"', end: '"', type: 'string' },
+				{ start: "'", end: "'", type: 'string' },
+				{ start: '{', end: '}', type: 'script', parser: attrParser },
 			],
 		});
 

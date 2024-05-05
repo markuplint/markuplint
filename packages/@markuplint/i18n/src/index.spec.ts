@@ -13,9 +13,15 @@ const ja = {
 
 test('Listup', () => {
 	const t1 = translator();
+	expect(t1(['1'])).toBe('"1"');
+	expect(t1(['1', '2'])).toBe('"1", "2"');
 	expect(t1(['1', '2', '3'])).toBe('"1", "2", "3"');
+	expect(t1(['1'], true)).toBe('"1"');
+	expect(t1(['1', '2'], true)).toBe('"1" and "2"');
+	expect(t1(['1', '2', '3'], true)).toBe('"1", "2" and "3"');
 	const t2 = translator(ja);
 	expect(t2(['1', '2', '3'])).toBe('「1」「2」「3」');
+	expect(t2(['1', '2', '3'], true)).toBe('「1」「2」「3」');
 	expect(t2(['element', 'attribute', 'value'])).toBe('「要素」「属性」「値」');
 });
 

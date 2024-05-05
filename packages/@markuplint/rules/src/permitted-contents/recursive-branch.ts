@@ -10,20 +10,20 @@ import { Collection, isModel } from './utils.js';
 export function recursiveBranch(
 	model: ReadonlyDeep<Model | PermittedContentPattern[]>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodes: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
 ): SelectorResult {
 	if (!isModel(model)) {
-		return order(model, nodes, specs, options, depth + 1);
+		return order(model, childNodes, specs, options, depth + 1);
 	}
 
 	if (typeof model === 'string') {
-		return matchesSelector(model, nodes[0], specs, depth);
+		return matchesSelector(model, childNodes[0], specs, depth);
 	}
 
-	const collection = new Collection(nodes);
+	const collection = new Collection(childNodes);
 
 	let lastUnmatched: SelectorResult | null = null;
 	for (const query of model) {

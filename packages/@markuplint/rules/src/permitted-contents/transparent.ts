@@ -6,15 +6,15 @@ const transparentLog = cmLog.extend('transparent');
 
 export function transparent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodes: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 ): Result {
-	if (nodes.length === 0 || nodes[0]?.parentElement?.parentElement) {
+	if (childNodes.length === 0 || childNodes[0]?.parentElement?.parentElement) {
 		transparentLog('Skipped');
 		return {
-			type: nodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',
-			matched: [...nodes],
+			type: childNodes.length === 0 ? 'MATCHED_ZERO' : 'MATCHED',
+			matched: [...childNodes],
 			unmatched: [],
-			zeroMatch: nodes.length === 0,
+			zeroMatch: childNodes.length === 0,
 			query: 'transparent',
 			hint: {},
 		};
@@ -24,7 +24,7 @@ export function transparent(
 
 	return {
 		type: 'MATCHED',
-		matched: [...nodes],
+		matched: [...childNodes],
 		unmatched: [],
 		zeroMatch: false,
 		query: 'transparent',

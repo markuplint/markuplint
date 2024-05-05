@@ -466,6 +466,10 @@
 		"onscroll": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onscrollend
+		"onscrollend": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onsecuritypolicyviolation
 		"onsecuritypolicyviolation": {
 			"type": "FunctionBody"

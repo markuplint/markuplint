@@ -7,6 +7,7 @@ import type {
 	ParseOptions,
 	ParserOptions,
 	Tokenized,
+	ValueType,
 } from './types.js';
 import type {
 	EndTagType,
@@ -30,6 +31,7 @@ import type {
 	MLASTInvalid,
 	Walker,
 	MLASTHTMLAttr,
+	MLASTPreprocessorSpecificBlockConditionalType,
 } from '@markuplint/ml-ast';
 
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
@@ -445,12 +447,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly nodeName: string;
 		},
 		childNodes: readonly Node[] = [],
+		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
 		const block: MLASTPreprocessorSpecificBlock = {
 			...token,
 			...this.createToken(token),
 			type: 'psblock',
+			conditionalType,
 			nodeName: `#ps:${token.nodeName}`,
 			childNodes: [],
 			isBogus: false,
@@ -506,7 +510,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		token: Token,
 		options?: {
 			readonly quoteSet?: readonly QuoteSet[];
-			readonly quoteInValueChars?: readonly QuoteSet[];
+			readonly noQuoteValueType?: ValueType;
 			readonly endOfUnquotedValueChars?: readonly string[];
 			readonly startState?: AttrState;
 		},
@@ -515,7 +519,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const quoteSet = options?.quoteSet;
 		const startState = options?.startState ?? AttrState.BeforeName;
-		const quoteInValueChars = options?.quoteInValueChars;
+		const noQuoteValueType = options?.noQuoteValueType;
 		const endOfUnquotedValueChars = options?.endOfUnquotedValueChars;
 
 		let startOffset = token.startOffset;
@@ -524,7 +528,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		let tokens: ReturnType<typeof attrTokenizer>;
 		try {
-			tokens = attrTokenizer(raw, quoteSet, startState, quoteInValueChars, endOfUnquotedValueChars);
+			tokens = attrTokenizer(raw, quoteSet, startState, noQuoteValueType, endOfUnquotedValueChars);
 		} catch (error) {
 			if (error instanceof SyntaxError) {
 				throw new ParserError(error.message, token);
@@ -1106,7 +1110,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			if (node.type === 'endtag') {
 				const endTagUUID = node.uuid;
 				const openTag = newNodeList.findLast<MLASTElement>((n): n is MLASTElement =>
-					n.type === 'starttag' ? n.pairNode?.uuid === endTagUUID : false,
+					n.type === 'starttag' && !n.isGhost ? n.pairNode?.uuid === endTagUUID : false,
 				);
 				if (!openTag) {
 					node = this.#convertIntoInvalidNode(node);

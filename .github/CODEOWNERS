@@ -1,8 +1,18 @@
 # SEE: https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
 
+# Core Developer
 * @YusukeHirao
 
+# Contributors
 Dockerfile @conao3
 .github/workflows/ @tyankatsu0105
 website/ @kagankan
 playground/ @kagankan
+
+# Renovate
+package.json
+yarn.lock
+website/package.json
+website/yarn.lock
+playground/package.json
+playground/yarn.lock

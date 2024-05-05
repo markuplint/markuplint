@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	verify({ document, report, t }) {
 		const dlList = [...document.querySelectorAll('dl')];
 		for (const dl of dlList) {

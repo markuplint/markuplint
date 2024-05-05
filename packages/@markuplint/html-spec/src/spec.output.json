@@ -18,7 +18,12 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-output-for
 		"for": {
-			"type": "DOMID"
+			"type": {
+				"token": "DOMID",
+				"separator": "space",
+				"unique": true,
+				"caseInsensitive": true
+			}
 		}
 	},
 	"aria": {

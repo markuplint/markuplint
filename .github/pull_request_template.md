@@ -41,9 +41,7 @@ Fill out the checks for the applicable purpose.
     - [ ] And add to [Rulesets of base presets](https://markuplint.dev/docs/guides/presets#rulesets-of-base-presets)
       - [ ] Add to a [doc file](https://github.com/markuplint/markuplint/blob/main/website/docs/guides/presets.md)
       - [ ] Add to a [doc file (ja)](https://github.com/markuplint/markuplint/blob/main/website/i18n/ja/docusaurus-plugin-content-docs/current/guides/presets.md), or create an issue that requests translating the doc if you want.
-  - [ ] Add to the [Playground](https://playground.markuplint.dev/)
-    - [ ] Add to a [config object](https://github.com/markuplint/markuplint/blob/main/playground/src/ml-playground-home.svelte)
 - [ ] Add new parser
   - [ ] Add a test
     - [ ] Do a test with some parser.
-  - [ ] Add to [initializer](https://github.com/markuplint/markuplint/blob/main/packages/markuplint/src/cli/init/index.ts)
+  - [ ] Add to [initializer](https://github.com/markuplint/markuplint/blob/main/packages/markuplint/src/cli/init/create-config.ts)

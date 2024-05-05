@@ -3,7 +3,6 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "husky install",
 		"all": "run-s up lint clean build test site:up pg:up",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
@@ -23,8 +22,8 @@
 		"up:deps": "yarn upgrade-interactive --latest",
 		"up:gen": "cd packages/\\@markuplint/html-spec/; yarn gen;",
 		"up:schema": "lerna run schema",
-		"release": "lerna publish --exact",
-		"release:next": "lerna publish --dist-tag next --exact --force-publish",
+		"release": "lerna publish --exact --conventional-commits --conventional-graduate",
+		"release:next": "lerna publish --dist-tag next --exact --force-publish --conventional-commits --conventional-prerelease --preid alpha",
 		"release:canary": "lerna publish --preid dev --canary --exact --force-publish",
 		"prerelease": "run-s build test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
@@ -43,7 +42,9 @@
 		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"cli": "npx markuplint",
-		"create-rule": "npx @markuplint/create-rule"
+		"create-rule": "npx @markuplint/create-rule",
+		"commit": "cz",
+		"co": "cz"
 	},
 	"lint-staged": {
 		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
@@ -68,16 +69,21 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "7.3.1",
-		"@typescript-eslint/parser": "7.3.1",
-		"cspell": "8.6.0",
+		"@commitlint/cli": "19.3.0",
+		"@commitlint/config-conventional": "19.2.2",
+		"@commitlint/config-lerna-scopes": "19.0.0",
+		"@typescript-eslint/eslint-plugin": "7.8.0",
+		"@typescript-eslint/parser": "7.8.0",
+		"commitizen": "4.3.0",
+		"cspell": "8.8.0",
+		"cz-conventional-changelog": "3.3.0",
 		"eslint": "8.57.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-eslint-comments": "3.2.0",
 		"eslint-plugin-import": "2.29.1",
-		"eslint-plugin-jsdoc": "48.2.1",
-		"eslint-plugin-node": "11.1.0",
-		"eslint-plugin-regexp": "2.4.0",
+		"eslint-plugin-jsdoc": "48.2.3",
+		"eslint-plugin-n": "17.4.0",
+		"eslint-plugin-regexp": "2.5.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
 		"eslint-plugin-unicorn": "51.0.1",
 		"heapdump": "0.3.15",
@@ -88,19 +94,24 @@
 		"prettier": "3.2.5",
 		"textlint": "14.0.4",
 		"textlint-filter-rule-comments": "1.2.2",
-		"textlint-rule-preset-ja-spacing": "2.3.1",
+		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "10.0.1",
 		"textlint-rule-preset-japanese": "10.0.3",
 		"textlint-rule-preset-jtf-style": "2.3.14",
 		"ts-node": "10.9.2",
-		"typedoc": "0.25.12",
-		"typedoc-plugin-mdn-links": "3.1.18",
+		"typedoc": "0.25.13",
+		"typedoc-plugin-mdn-links": "3.1.23",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
-		"typescript": "5.4.3"
+		"typescript": "5.4.5"
 	},
 	"resolutions": {
 		"lerna/**/string-width": "4",
 		"lerna/**/strip-ansi": "6",
 		"lerna/**/wrap-ansi": "7"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
 	}
 }

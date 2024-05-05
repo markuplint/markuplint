@@ -20,8 +20,10 @@ function c(html: string, version: ARIAVersion) {
 
 describe('getImplicitRole', () => {
 	test('the a element', () => {
-		expect(c('<a></a>', '1.2')).toBe(false);
-		expect(c('<a name="foo"></a>', '1.2')).toBe(false);
+		expect(c('<a></a>', '1.1')).toBe(false);
+		expect(c('<a name="foo"></a>', '1.1')).toBe(false);
+		expect(c('<a></a>', '1.2')).toBe('generic');
+		expect(c('<a name="foo"></a>', '1.2')).toBe('generic');
 		expect(c('<a href></a>', '1.2')).toBe('link');
 		expect(c('<a href=""></a>', '1.2')).toBe('link');
 		expect(c('<a href="path/to"></a>', '1.2')).toBe('link');

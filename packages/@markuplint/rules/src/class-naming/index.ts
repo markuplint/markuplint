@@ -3,12 +3,12 @@ import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { match } from '../helpers.js';
 
+import meta from './meta.js';
+
 export type Value = string | string[] | null;
 
 export default createRule<Value>({
-	meta: {
-		category: 'naming-convention',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultValue: null,
 	async verify({ document, report, t }) {

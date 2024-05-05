@@ -14,6 +14,8 @@ import type {
 } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
+import { branchesToPatterns } from '@markuplint/shared';
+
 import { MLToken } from '../token/token.js';
 
 import { isChildNode } from './child-node.js';
@@ -162,6 +164,11 @@ export abstract class MLNode<
 	 * Cached `prevToken` property
 	 */
 	#prevToken: MLNode<T, O> | null | undefined;
+
+	/**
+	 * Cached `conditionalChildNodes` mothod
+	 */
+	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 
 	/**
 	 *
@@ -640,6 +647,98 @@ export abstract class MLNode<
 		other: Node,
 	): number {
 		throw new UnexpectedCallError('Not supported "compareDocumentPosition" method');
+	}
+
+	/**
+	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
+	 * Conditional child nodes are nodes that are nested within
+	 * **preprocessor blocks** such as `if`, `each`, or `switch`.
+	 * Each NodeList represents a branch of conditional child nodes.
+	 *
+	 * Note: NodeList doesn't include whitespace nodes.
+	 *
+	 * @returns An array of NodeLists representing the conditional child nodes.
+	 *
+	 * @experemental
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 */
+	conditionalChildNodes(): NodeListOf<MLChildNode<T, O>>[] {
+		if (this.#conditionalChildNodes != null) {
+			return this.#conditionalChildNodes;
+		}
+
+		const branches: (MLChildNode<T, O> | (MLChildNode<T, O> | null)[])[] = [];
+		let mode: 'if' | 'each' | 'switch' | null = null;
+		let openConditional = false;
+		let subBranches: (MLChildNode<T, O> | null)[] = [];
+
+		for (const child of this.childNodes) {
+			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+				switch (child.conditionalType) {
+					case 'if':
+					case 'if:elseif': {
+						mode = 'if';
+						break;
+					}
+					case 'each': {
+						mode = 'each';
+						break;
+					}
+					case 'switch:case': {
+						mode = 'switch';
+						break;
+					}
+
+					/* No default mode */
+					case 'if:else':
+					case 'each:empty':
+					case 'switch:default':
+					case 'await':
+					case 'await:catch':
+					case 'await:then': {
+						break;
+					}
+
+					default: {
+						continue;
+					}
+				}
+
+				const conditionalChildNodes = child.conditionalChildNodes();
+				subBranches.push(...conditionalChildNodes.flatMap(nodeList => [...nodeList]));
+
+				openConditional = true;
+				continue;
+			}
+
+			if (openConditional) {
+				if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+					subBranches.push(null);
+				}
+				branches.push(subBranches);
+
+				mode = null;
+				openConditional = false;
+				subBranches = [];
+			}
+
+			if (child.is(child.TEXT_NODE) && child.isWhitespace()) {
+				continue;
+			}
+
+			branches.push(child);
+		}
+
+		if (subBranches.length > 0) {
+			if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+				subBranches.push(null);
+			}
+			branches.push(subBranches);
+		}
+
+		const cache = branchesToPatterns(branches).map(array => toNodeList(array));
+		this.#conditionalChildNodes = cache;
+		return cache;
 	}
 
 	/**

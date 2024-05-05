@@ -113,6 +113,7 @@ export const globalAttrs: Record<
 			'onreset',
 			'onresize',
 			'onscroll',
+			'onscrollend',
 			'onsecuritypolicyviolation',
 			'onseeked',
 			'onseeking',

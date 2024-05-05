@@ -1,9 +1,9 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export default createRule({
-	meta: {
-		category: 'validation',
-	},
+	meta: meta,
 	async verify({ document, report, t }) {
 		const message = t('{0} is {1:c}', t('the {0}', 'attribute name'), 'duplicated');
 		await document.walkOn('Element', node => {

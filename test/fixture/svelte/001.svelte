@@ -12,4 +12,8 @@
 	<a href="path/to">link</a>
 </button>
 
+<select bind:value={foo}>
+	<option value="1">1</option>
+	<option value="2">2</option>
+</select>
 <textarea bind:value={foo}></textarea>

@@ -66,6 +66,12 @@
 		"no-refer-to-non-existent-id": true,
 
 		/**
+		 * No use **orphaned end tag**
+		 *
+		 */
+		"no-orphaned-end-tag": true,
+
+		/**
 		 * Allow only **permitted contents**
 		 *
 		 */

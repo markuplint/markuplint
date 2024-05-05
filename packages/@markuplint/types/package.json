@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "4.1.0",
+	"version": "4.4.1",
 	"description": "Type declaration and value checker",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -36,7 +36,7 @@
 		"css-tree": "2.3.1",
 		"debug": "4.3.4",
 		"leven": "4.0.0",
-		"type-fest": "4.14.0",
+		"type-fest": "4.18.1",
 		"whatwg-mimetype": "4.0.0"
 	}
 }

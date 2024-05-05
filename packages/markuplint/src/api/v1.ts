@@ -1,3 +1,4 @@
+import type { MLResultInfo } from '../types.js';
 import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLRule } from '@markuplint/ml-core';
 
@@ -62,7 +63,7 @@ export async function lint_v1(options: {
 	 * Locale
 	 */
 	readonly locale?: string;
-}) {
+}): Promise<MLResultInfo[]> {
 	const filePathList = toNoEmptyStringArrayFromStringOrArray(options.files);
 	const codes = toNoEmptyStringArrayFromStringOrArray(options.sourceCodes);
 

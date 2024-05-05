@@ -1,4 +1,7 @@
-import type { MLParser } from '@markuplint/ml-ast';
+import type { MLElement } from '../ml-dom/node/element.js';
+import type { MLNode } from '../ml-dom/node/node.js';
+import type { MLToken } from '../ml-dom/token/token.js';
+import type { MLASTNode, MLASTToken, MLParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -6,7 +9,7 @@ import { parser } from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
 
 import { convertRuleset } from '../convert-ruleset.js';
-import { Document } from '../ml-dom/index.js';
+import { MLDocument } from '../ml-dom/node/document.js';
 
 export type CreateTestOptions = {
 	readonly config?: Config;
@@ -17,28 +20,31 @@ export type CreateTestOptions = {
 export function createTestDocument<T extends RuleConfigValue = any, O extends PlainData = any>(
 	sourceCode: string,
 	options?: CreateTestOptions,
-) {
+): MLDocument<T, O> {
 	const ast = options?.parser
 		? 'parser' in options.parser
 			? options.parser.parser.parse(sourceCode, options.config?.parserOptions)
 			: options.parser.parse(sourceCode, options.config?.parserOptions)
 		: parser.parse(sourceCode, options?.config?.parserOptions);
 	const ruleset = convertRuleset(options?.config);
-	const document = new Document<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}]);
+	const document = new MLDocument<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}]);
 	return document;
 }
 
-export function createTestNodeList(sourceCode: string, options?: CreateTestOptions) {
+export function createTestNodeList(
+	sourceCode: string,
+	options?: CreateTestOptions,
+): readonly MLNode<any, any, MLASTNode>[] {
 	const document = createTestDocument(sourceCode, options);
 	return document.nodeList;
 }
 
-export function createTestTokenList(sourceCode: string, options?: CreateTestOptions) {
+export function createTestTokenList(sourceCode: string, options?: CreateTestOptions): readonly MLToken<MLASTToken>[] {
 	const document = createTestDocument(sourceCode, options);
 	return document.getTokenList();
 }
 
-export function createTestElement(sourceCode: string, options?: CreateTestOptions) {
+export function createTestElement(sourceCode: string, options?: CreateTestOptions): MLElement<any, any> {
 	const document = createTestDocument(sourceCode, options);
 	const el = document.nodeList[0];
 	if (el && el.is(el.ELEMENT_NODE)) {

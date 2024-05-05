@@ -17,7 +17,7 @@ type Condition = {
 export function matchesSelector(
 	query: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: ChildNode | undefined,
+	childNode: ChildNode | undefined,
 	specs: Specs,
 	depth: number,
 ): SelectorResult {
@@ -25,7 +25,7 @@ export function matchesSelector(
 
 	const { selector, hasText, hasCustom } = optCondition(query, specs);
 
-	if (node == null) {
+	if (childNode == null) {
 		if (hasText) {
 			nodeLog('<#text>.matches(%s) => ""', query);
 			return {
@@ -47,12 +47,12 @@ export function matchesSelector(
 		};
 	}
 
-	if (node.is(node.TEXT_NODE)) {
+	if (childNode.is(childNode.TEXT_NODE)) {
 		if (hasText) {
-			nodeLog('<#text>.matches(%s) => "%s"', query, node.raw.trim());
+			nodeLog('<#text>.matches(%s) => "%s"', query, childNode.raw.trim());
 			return {
 				type: 'MATCHED',
-				matched: [node],
+				matched: [childNode],
 				unmatched: [],
 				zeroMatch: true,
 				query,
@@ -60,11 +60,11 @@ export function matchesSelector(
 			};
 		}
 
-		if (node.isWhitespace()) {
+		if (childNode.isWhitespace()) {
 			nodeLog('<#text>.matches(%s) => WHITESPACE', query);
 			return {
 				type: 'MATCHED',
-				matched: [node],
+				matched: [childNode],
 				unmatched: [],
 				zeroMatch: true,
 				query,
@@ -76,18 +76,18 @@ export function matchesSelector(
 		return {
 			type: 'UNEXPECTED_EXTRA_NODE',
 			matched: [],
-			unmatched: [node],
+			unmatched: [childNode],
 			zeroMatch: false,
 			query,
 			hint: {},
 		};
 	}
 
-	if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-		nodeLog('%s.matches(%s) => PBlock', node.raw, query);
+	if (childNode.is(childNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+		nodeLog('%s.matches(%s) => PBlock', childNode.raw, query);
 		return {
 			type: 'MATCHED',
-			matched: [node],
+			matched: [childNode],
 			unmatched: [],
 			zeroMatch: !!hasText,
 			query,
@@ -95,12 +95,12 @@ export function matchesSelector(
 		};
 	}
 
-	if (node.is(node.ELEMENT_NODE)) {
-		if (node.elementType !== 'html' && hasCustom) {
-			nodeLog('%s.matches(%s) => CustomElement', node.raw, query);
+	if (childNode.is(childNode.ELEMENT_NODE)) {
+		if (childNode.elementType !== 'html' && hasCustom) {
+			nodeLog('%s.matches(%s) => CustomElement', childNode.raw, query);
 			return {
 				type: 'MATCHED',
-				matched: [node],
+				matched: [childNode],
 				unmatched: [],
 				zeroMatch: !!hasText,
 				query,
@@ -108,13 +108,13 @@ export function matchesSelector(
 			};
 		}
 
-		const result = matches(selector, node, specs);
-		nodeLog('%s.matches(%s) => %s', node.raw, query, result.matched);
+		const result = matches(selector, childNode, specs);
+		nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
 
 		if (result.matched) {
 			return {
 				type: 'MATCHED',
-				matched: [node],
+				matched: [childNode],
 				unmatched: [],
 				zeroMatch: !!hasText,
 				query,
@@ -126,7 +126,7 @@ export function matchesSelector(
 			return {
 				type: 'UNMATCHED_SELECTOR_BUT_MAY_EMPTY',
 				matched: [],
-				unmatched: [node],
+				unmatched: [childNode],
 				zeroMatch: true,
 				query,
 				hint: cleanObject({
@@ -138,7 +138,7 @@ export function matchesSelector(
 		return {
 			type: 'UNMATCHED_SELECTORS',
 			matched: [],
-			unmatched: [node],
+			unmatched: [childNode],
 			zeroMatch: false,
 			query,
 			hint: cleanObject({
@@ -149,7 +149,7 @@ export function matchesSelector(
 
 	return {
 		type: 'MATCHED',
-		matched: [node],
+		matched: [childNode],
 		unmatched: [],
 		zeroMatch: !!hasText,
 		query,

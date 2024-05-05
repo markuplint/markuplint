@@ -17,7 +17,7 @@ const cLog = cmLog.extend('countCompereResult');
  * Check count
  *
  * @param pattern
- * @param elements
+ * @param childNodes
  * @param specs
  * @param options
  * @param depth
@@ -30,13 +30,13 @@ export function countPattern(
 		| ReadonlyDeep<PermittedContentRequire>
 		| ReadonlyDeep<PermittedContentZeroOrMore>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	elements: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
 ): Result {
 	const ptLog = cmLog.extend(`countPattern#${depth}`);
-	const collection = new Collection(elements);
+	const collection = new Collection(childNodes);
 
 	const { model, min, max, repeat, missingType } = normalizeModel(pattern);
 

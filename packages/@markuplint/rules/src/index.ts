@@ -18,12 +18,14 @@ import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
+import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
 import NoEmptyPalpableContent from './no-empty-palpable-content/index.js';
 import NoHardCodeId from './no-hard-code-id/index.js';
+import NoOrphanedEndTag from './no-orphaned-end-tag/index.js';
 import NoReferToNonExistentId from './no-refer-to-non-existent-id/index.js';
 import NoUseEventHandlerAttr from './no-use-event-handler-attr/index.js';
 import PermittedContents from './permitted-contents/index.js';
@@ -33,6 +35,7 @@ import RequireDatetime from './require-datetime/index.js';
 import RequiredAttr from './required-attr/index.js';
 import RequiredElement from './required-element/index.js';
 import RequiredH1 from './required-h1/index.js';
+import TableRowColumnAlignment from './table-row-column-alignment/index.js';
 import UseList from './use-list/index.js';
 import WaiAria from './wai-aria/index.js';
 
@@ -55,12 +58,14 @@ const rules = {
 	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
 	'neighbor-popovers': NeighborPopovers,
+	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
 	'no-duplicate-dt': NoDuplicateDt,
 	'no-empty-palpable-content': NoEmptyPalpableContent,
 	'no-hard-code-id': NoHardCodeId,
+	'no-orphaned-end-tag': NoOrphanedEndTag,
 	'no-refer-to-non-existent-id': NoReferToNonExistentId,
 	'no-use-event-handler-attr': NoUseEventHandlerAttr,
 	'permitted-contents': PermittedContents,
@@ -70,6 +75,7 @@ const rules = {
 	'required-attr': RequiredAttr,
 	'required-element': RequiredElement,
 	'required-h1': RequiredH1,
+	'table-row-column-alignment': TableRowColumnAlignment,
 	'use-list': UseList,
 	'wai-aria': WaiAria,
 } as const satisfies Record<string, AnyRuleSeed<any, any>>;

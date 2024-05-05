@@ -1,0 +1,14 @@
+{
+	"rules": {
+		"foo": true,
+		"bar": true
+	},
+	"overrideMode": "merge",
+	"overrides": {
+		"./*.vue": {
+			"rules": {
+				"foo": false
+			}
+		}
+	}
+}

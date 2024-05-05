@@ -303,6 +303,11 @@
 				}
 			}
 		},
+		"overrideMode": {
+			"type": "string",
+			"enum": ["reset", "merge"],
+			"default": "reset"
+		},
 		"overrides": {
 			"type": "object",
 			"minProperties": 1,

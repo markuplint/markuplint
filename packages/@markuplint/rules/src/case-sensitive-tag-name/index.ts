@@ -1,11 +1,11 @@
 import { createRule } from '@markuplint/ml-core';
 
+import meta from './meta.js';
+
 export type Value = 'lower' | 'upper';
 
 export default createRule<Value>({
-	meta: {
-		category: 'style',
-	},
+	meta: meta,
 	defaultSeverity: 'warning',
 	defaultValue: 'lower',
 	async verify({ document, report, t }) {

@@ -51,6 +51,8 @@ describe('test', () => {
 			'[33:2] The "font" element is obsolete',
 			'[1:1] Never declare obsolete doctype',
 			'[22:9] The value of the "id" attribute is duplicated',
+			'[55:2] Orphaned end tag detected',
+			'[56:1] Orphaned end tag detected',
 			'[33:2] The "font" element is not allowed in the "body" element in this context',
 			'[37:23] Require accessible name',
 			'[38:2] Require accessible name',

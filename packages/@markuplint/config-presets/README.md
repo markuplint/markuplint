@@ -30,10 +30,12 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 **Popover** trigger and target must be adjacent| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+[No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+Align row and column| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Use `<ul>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Conform to **WAI-ARIA**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 Require `<html lang>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
@@ -50,6 +52,7 @@ No use deprecated element|You should not use deprecated elements from the viewpo
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use ineffective attr| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 [No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name)|Within a single dl element, there should not be more than one dt element for each name.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+No use **orphaned end tag**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|

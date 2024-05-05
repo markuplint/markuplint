@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import { attrTokenizer } from './attr-tokenizer.js';
 import { AttrState } from './enums.js';
@@ -25,7 +25,7 @@ test('complex', () => {
 			' @a:x.y\n= x + y ',
 			undefined,
 			undefined,
-			undefined,
+			'script',
 			[],
 		),
 	).toStrictEqual({
@@ -55,21 +55,11 @@ test('complex', () => {
 
 test('jsx', () => {
 	expect(
-		attrTokenizer(
-			' className={classList.map((c) => `${c.toLowerCase()}`).join(",")} ',
-			[
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '{', end: '}' },
-			],
-			0,
-			[
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '`', end: '`' },
-				{ start: '${', end: '}' },
-			],
-		),
+		attrTokenizer(' className={classList.map((c) => `${c.toLowerCase()}`).join(",")} ', [
+			{ start: '"', end: '"', type: 'string' },
+			{ start: "'", end: "'", type: 'string' },
+			{ start: '{', end: '}', type: 'script' },
+		]),
 	).toStrictEqual({
 		spacesBeforeAttrName: ' ',
 		attrName: 'className',
@@ -156,9 +146,9 @@ test('␣␣abc␣=␣"de"', () => {
 test('␣␣abc␣=␣{de}', () => {
 	expect(
 		attrTokenizer('  abc = {de}', [
-			{ start: '"', end: '"' },
-			{ start: "'", end: "'" },
-			{ start: '{', end: '}' },
+			{ start: '"', end: '"', type: 'string' },
+			{ start: "'", end: "'", type: 'string' },
+			{ start: '{', end: '}', type: 'script' },
 		]),
 	).toStrictEqual({
 		spacesBeforeAttrName: '  ',
@@ -220,7 +210,14 @@ test('abc="123', () => {
 });
 
 test('{variableAsName}', () => {
-	expect(attrTokenizer('{variableAsName}', [{ start: '{', end: '}' }], AttrState.BeforeValue)).toStrictEqual({
+	expect(
+		attrTokenizer(
+			//
+			'{variableAsName}',
+			[{ start: '{', end: '}', type: 'script' }],
+			AttrState.BeforeValue,
+		),
+	).toStrictEqual({
 		spacesBeforeAttrName: '',
 		attrName: '',
 		spacesBeforeEqual: '',
@@ -238,14 +235,7 @@ test('literal={ `abc${def}ghi${`jkl${mno}pqr`}` }', () => {
 		attrTokenizer(
 			//
 			'literal={ `abc${def}ghi${`jkl${mno}pqr`}` }',
-			[{ start: '{', end: '}' }],
-			0,
-			[
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '`', end: '`' },
-				{ start: '${', end: '}' },
-			],
+			[{ start: '{', end: '}', type: 'script' }],
 		),
 	).toStrictEqual({
 		spacesBeforeAttrName: '',
@@ -266,16 +256,9 @@ test('transition:fade="{{ duration: 2000 }}"', () => {
 			//
 			'transition:fade="{{ duration: 2000 }}"',
 			[
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '{', end: '}' },
-			],
-			0,
-			[
-				{ start: '"', end: '"' },
-				{ start: "'", end: "'" },
-				{ start: '`', end: '`' },
-				{ start: '${', end: '}' },
+				{ start: '"', end: '"', type: 'string' },
+				{ start: "'", end: "'", type: 'string' },
+				{ start: '{', end: '}', type: 'script' },
 			],
 		),
 	).toStrictEqual({
@@ -400,5 +383,74 @@ test('a=a/>', () => {
 		attrValue: 'a',
 		quoteEnd: '',
 		leftover: '/>',
+	});
+});
+
+test('a={...b}', () => {
+	expect(attrTokenizer('a={...b}', [{ start: '{', end: '}', type: 'script' }])).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: 'a',
+		spacesBeforeEqual: '',
+		equal: '=',
+		spacesAfterEqual: '',
+		quoteStart: '{',
+		attrValue: '...b',
+		quoteEnd: '}',
+		leftover: '',
+	});
+});
+
+test('{a} {...b}', () => {
+	expect(
+		attrTokenizer(
+			'{a} {...b}',
+			//
+			[{ start: '{', end: '}', type: 'script' }],
+			AttrState.BeforeValue,
+		),
+	).toStrictEqual({
+		spacesBeforeAttrName: '',
+		attrName: '',
+		spacesBeforeEqual: '',
+		equal: '',
+		spacesAfterEqual: '',
+		quoteStart: '{',
+		attrValue: 'a',
+		quoteEnd: '}',
+		leftover: ' {...b}',
+	});
+});
+
+describe('Issues', () => {
+	test('#1561', () => {
+		expect(attrTokenizer(' title="Today is \'24/04/01">text</p>')).toStrictEqual({
+			spacesBeforeAttrName: ' ',
+			attrName: 'title',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '"',
+			attrValue: "Today is '24/04/01",
+			quoteEnd: '"',
+			leftover: '>text</p>',
+		});
+
+		expect(
+			attrTokenizer(' title="Today is \'24/04/01">text</p>', [
+				{ start: '"', end: '"', type: 'string' },
+				{ start: "'", end: "'", type: 'string' },
+				{ start: '{', end: '}', type: 'script' },
+			]),
+		).toStrictEqual({
+			spacesBeforeAttrName: ' ',
+			attrName: 'title',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '"',
+			attrValue: "Today is '24/04/01",
+			quoteEnd: '"',
+			leftover: '>text</p>',
+		});
 	});
 });

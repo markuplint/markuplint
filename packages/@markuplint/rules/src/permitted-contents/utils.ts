@@ -1,4 +1,4 @@
-import type { ChildNode, Element, Hints, MissingNodeReason, RepeatSign, Specs } from './types.js';
+import type { ChildNode, Hints, MissingNodeReason, RepeatSign, Specs } from './types.js';
 import type {
 	PermittedContentPattern,
 	PermittedContentChoice,
@@ -17,22 +17,6 @@ import { createSelector } from '@markuplint/selector';
 
 import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug.js';
 import { transparentMode } from './represent-transparent-nodes.js';
-
-const getChildNodesWithoutWhitespacesCaches = new Map<Element, ChildNode[]>();
-export function getChildNodesWithoutWhitespaces(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
-): ChildNode[] {
-	let nodes = getChildNodesWithoutWhitespacesCaches.get(el);
-	if (nodes) {
-		return nodes;
-	}
-	nodes = [...el.childNodes].filter(node => {
-		return !(node.is(node.TEXT_NODE) && node.isWhitespace());
-	});
-	getChildNodesWithoutWhitespacesCaches.set(el, nodes);
-	return nodes;
-}
 
 export function isModel(model: ReadonlyDeep<Model | PermittedContentPattern[]>): model is ReadonlyDeep<Model> {
 	if (typeof model === 'string') {

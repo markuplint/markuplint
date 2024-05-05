@@ -115,6 +115,10 @@ test('none', () => {
 				category: 'a11y',
 				defaultValue: true,
 			},
+			'table-row-column-alignment': {
+				category: 'a11y',
+				defaultValue: false,
+			},
 			'use-list': {
 				category: 'a11y',
 				defaultValue: false,
@@ -174,6 +178,7 @@ test('none', () => {
 			'required-attr': true,
 			'required-element': true,
 			'required-h1': true,
+			'table-row-column-alignment': false,
 			'use-list': false,
 			'wai-aria': true,
 		},
@@ -290,6 +295,10 @@ test('custom:a11y', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'table-row-column-alignment': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'use-list': {
 			category: 'a11y',
 			defaultValue: false,
@@ -313,6 +322,7 @@ test('custom:a11y', () => {
 			'no-refer-to-non-existent-id': true,
 			'require-accessible-name': true,
 			'required-h1': true,
+			'table-row-column-alignment': false,
 			'use-list': false,
 			'wai-aria': true,
 		},
@@ -428,6 +438,10 @@ test('recommended', () => {
 		'required-h1': {
 			category: 'a11y',
 			defaultValue: true,
+		},
+		'table-row-column-alignment': {
+			category: 'a11y',
+			defaultValue: false,
 		},
 		'use-list': {
 			category: 'a11y',

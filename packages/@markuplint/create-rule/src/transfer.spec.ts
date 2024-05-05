@@ -44,6 +44,7 @@ test('transfer', async () => {
 		'core/README.ja.md',
 		'core/README.md',
 		'core/index.ts',
+		'core/meta.ts',
 		'core/schema.json',
 		'package',
 		'package/README.md',

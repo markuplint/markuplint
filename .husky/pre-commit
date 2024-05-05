@@ -1,4 +1,14 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Get the current branch name
+branch_name=$(git symbolic-ref --short HEAD)
+
+# Prevent direct commits to the main or dev branch
+if [ "$branch_name" = "dev" ]; then
+  echo "Direct commits to the $branch_name branch are prohibited."
+  echo "Please commit to an appropriate branch and merge it instead."
+  exit 1
+fi
+
 yarn lint-staged

@@ -1,4 +1,8 @@
-export type Translator = (messageTmpl: string | readonly string[], ...keywords: readonly Primitive[]) => string;
+export interface Translator {
+	(messageTmpl: string, ...keywords: readonly Primitive[]): string;
+	(messageTmpl: readonly string[], useLastSeparator?: boolean): string;
+	(messageTmpl: string | readonly string[], ...keywords: readonly Primitive[]): string;
+}
 
 export type LocaleSet = {
 	readonly locale: string;
@@ -11,6 +15,7 @@ export type ListFormat = {
 	readonly quoteStart: string;
 	readonly quoteEnd: string;
 	readonly separator: string;
+	readonly lastSeparator?: string;
 };
 
 export type Primitive = string | number | boolean;

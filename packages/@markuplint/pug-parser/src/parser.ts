@@ -241,7 +241,6 @@ class PugParser extends Parser<ASTNode> {
 			const attr = super.visitAttr(token, {
 				startState: AttrState.BeforeValue,
 				quoteSet: [],
-				quoteInValueChars: [],
 				endOfUnquotedValueChars: [],
 			});
 
@@ -262,7 +261,7 @@ class PugParser extends Parser<ASTNode> {
 
 		const attr = super.visitAttr(token, {
 			quoteSet: [],
-			quoteInValueChars: [],
+			noQuoteValueType: 'script',
 			endOfUnquotedValueChars: [],
 		});
 
@@ -307,17 +306,7 @@ class PugParser extends Parser<ASTNode> {
 				case 'Template': {
 					const value = super.visitAttr(attr.value, {
 						startState: AttrState.BeforeValue,
-						quoteSet: [
-							{ start: '"', end: '"' },
-							{ start: "'", end: "'" },
-							{ start: '`', end: '`' },
-						],
-						quoteInValueChars: [
-							{ start: '"', end: '"' },
-							{ start: "'", end: "'" },
-							{ start: '`', end: '`' },
-							{ start: '${', end: '}' },
-						],
+						noQuoteValueType: 'script',
 					});
 
 					if (value.type === 'spread') {

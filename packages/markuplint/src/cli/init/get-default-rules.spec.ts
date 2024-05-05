@@ -77,6 +77,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-ambiguous-navigable-target-names': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'no-boolean-attr-value': {
 			category: 'style',
 			defaultValue: false,
@@ -100,6 +104,10 @@ test('default-rules', () => {
 		'no-hard-code-id': {
 			category: 'maintainability',
 			defaultValue: false,
+		},
+		'no-orphaned-end-tag': {
+			category: 'validation',
+			defaultValue: true,
 		},
 		'no-refer-to-non-existent-id': {
 			category: 'a11y',
@@ -136,6 +144,10 @@ test('default-rules', () => {
 		'required-h1': {
 			category: 'a11y',
 			defaultValue: true,
+		},
+		'table-row-column-alignment': {
+			category: 'a11y',
+			defaultValue: false,
 		},
 		'use-list': {
 			category: 'a11y',

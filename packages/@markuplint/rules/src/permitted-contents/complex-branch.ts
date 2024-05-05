@@ -11,7 +11,7 @@ import { isChoice, isTransparent } from './utils.js';
  * Check content condition
  *
  * @param pattern
- * @param elements
+ * @param childNodes
  * @param specs
  * @param options
  * @param depth
@@ -20,18 +20,18 @@ import { isChoice, isTransparent } from './utils.js';
 export function complexBranch(
 	pattern: ReadonlyDeep<PermittedContentPattern>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	elements: readonly ChildNode[],
+	childNodes: readonly ChildNode[],
 	specs: Specs,
 	options: Options,
 	depth: number,
 ): Result {
 	if (isChoice(pattern)) {
-		return choice(pattern, elements, specs, options, depth);
+		return choice(pattern, childNodes, specs, options, depth);
 	}
 
 	if (isTransparent(pattern)) {
-		return transparent(elements);
+		return transparent(childNodes);
 	}
 
-	return countPattern(pattern, elements, specs, options, depth);
+	return countPattern(pattern, childNodes, specs, options, depth);
 }

@@ -1,6 +1,8 @@
 import { createRule } from '@markuplint/ml-core';
 import { decodeEntities } from '@markuplint/shared';
 
+import meta from './meta.js';
+
 type Bullets = readonly string[];
 
 type Options = {
@@ -12,9 +14,7 @@ type Options = {
 };
 
 export default createRule<Bullets, Options>({
-	meta: {
-		category: 'a11y',
-	},
+	meta: meta,
 	defaultValue: [
 		/**
 		 * @see https://en.wikipedia.org/wiki/Bullet_(typography)#In_Unicode
@@ -113,7 +113,7 @@ export default createRule<Bullets, Options>({
 			if (isMayListItem(text, bullets, spaceNeededBullets)) {
 				report({
 					scope: textNode,
-					message: t('Use {0}', t('the {0}', t('{0*} element', 'li'))),
+					message: t('Use {0}', t('the "{0*}" {1}', 'li', 'element')),
 				});
 			}
 		});

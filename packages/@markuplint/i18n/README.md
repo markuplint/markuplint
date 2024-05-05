@@ -121,7 +121,7 @@ console.log(phrase);
 ### Translate listed phrases
 
 ```ts
-type T = (phrases: string[]) => string;
+type T = (phrases: string[], useLastSeparator?: boolean) => string;
 ```
 
 ```ts
@@ -135,12 +135,23 @@ console.log(list);
 // => "element", "attribute", "value"
 ```
 
+```ts
+const list = t(['element', 'attribute', 'value'], true);
+
+console.log(list);
+// => 「要素」「属性」「値」
+
+/* If locale is "en" */
+console.log(list);
+// => "element", "attribute" and "value"
+```
+
 It converts the character-separated list specified in each locale.
 
-| Locale | Separator            | Before Char                | After Char                  |
-| ------ | -------------------- | -------------------------- | --------------------------- |
-| **en** | `, ` (comma + space) | `"` (double quote)         | `"` (double quote)          |
-| **ja** | none (empty string)  | `「` (left corner bracket) | `」` (right corner bracket) |
+| Locale | Separator            | Before Char                | After Char                  | Last Separator                 |
+| ------ | -------------------- | -------------------------- | --------------------------- | ------------------------------ |
+| **en** | `, ` (comma + space) | `"` (double quote)         | `"` (double quote)          | `and` (space + chars + space ) |
+| **ja** | none (empty string)  | `「` (left corner bracket) | `」` (right corner bracket) | none (empty string)            |
 
 ### Avoid translation
 
