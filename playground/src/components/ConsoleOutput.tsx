@@ -25,7 +25,6 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 			});
 			terminalRef.current = terminal;
 			terminal.open(wrapperRef.current);
-
 			return () => {
 				terminal.dispose();
 				terminalRef.current = null;

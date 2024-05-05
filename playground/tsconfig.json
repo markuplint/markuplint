@@ -20,14 +20,5 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"references": [
-		{ "path": "../packages/@markuplint/html-parser" },
-		{ "path": "../packages/@markuplint/html-spec" },
-		{ "path": "../packages/@markuplint/i18n" },
-		{ "path": "../packages/@markuplint/ml-config" },
-		{ "path": "../packages/@markuplint/ml-core" },
-		{ "path": "../packages/@markuplint/parser-utils" },
-		{ "path": "../packages/@markuplint/rules" }
-	],
-	"include": ["src"]
+	"include": ["src", "__mocks__"]
 }

@@ -58,6 +58,20 @@
 			"rules": {
 				"unicorn/filename-case": 0
 			}
+		},
+		{
+			"files": ["./**/*.spec.ts", "./**/*.spec.tsx"],
+			"extends": ["plugin:vitest/recommended", "plugin:testing-library/react"],
+			"rules": {
+				"testing-library/prefer-user-event": 2,
+				"testing-library/no-manual-cleanup": 0
+			}
+		},
+		{
+			"files": ["./vitest.config.ts"],
+			"rules": {
+				"import/no-default-export": 0
+			}
 		}
 	]
 }
