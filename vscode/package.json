@@ -124,7 +124,7 @@
 		"glob": "10.3.12",
 		"markuplint": "4.8.0",
 		"mocha": "10.4.0",
-		"semver": "7.6.0",
+		"semver": "7.6.1",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.11"
