@@ -122,3 +122,12 @@ test('directive', () => {
 	expect(check('nex #id', directive).matched).toBeFalsy();
 	expect(check(' next #id', directive).matched).toBeFalsy();
 });
+
+test('JSON', () => {
+	expect(check('{"a": 1}', 'JSON').matched).toBeTruthy();
+	expect(check('{"a": 1', 'JSON').matched).toBeFalsy();
+	expect(check('{"a": 1,}', 'JSON').matched).toBeFalsy();
+	expect(check('{"a": 1, "b": 2}', 'JSON').matched).toBeTruthy();
+	expect(check('{"a": 1, "b": 2', 'JSON').matched).toBeFalsy();
+	expect(check('{"a": 1, "b": 2,}', 'JSON').matched).toBeFalsy();
+});
