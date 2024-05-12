@@ -13433,7 +13433,7 @@
 							}
 						],
 						"valueDescriptions": {
-							"false": "The element is exposed to the accessibility API as if it was rendered.",
+							"false": "The element's hidden state is determined by the user agent based on whether it is rendered. Synonym of undefined.",
 							"true": "The element is hidden from the accessibility API.",
 							"undefined": "The element's hidden state is determined by the user agent based on whether it is rendered."
 						}
@@ -41761,7 +41761,7 @@
 					"type": "URL"
 				},
 				"preload": {
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: Synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint."
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g. length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint."
 				},
 				"src": {
 					"description": "The URL of the video to embed. This is optional; you may instead use the <source> element within the video block to specify the video to embed."
