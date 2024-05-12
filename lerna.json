@@ -5,7 +5,7 @@
 	"packages": ["packages/*", "packages/@markuplint/*", "vscode"],
 	"command": {
 		"version": {
-			"message": "chore(release): publish %s"
+			"message": "chore(release): publish"
 		}
 	}
 }
