@@ -103,3 +103,22 @@ test('legacy-transform', () => {
 	expect(check('translate(300,300)', "<'transform'>").matched).toBeTruthy();
 	expect(check('translate(300px,300px)', "<'transform'>").matched).toBeTruthy();
 });
+
+test('directive', () => {
+	const directive = {
+		directive: ['/^closest\\s+(?<token>.+)$/', '/^previous\\s+(?<token>.+)$/', 'next '],
+		token: '<complex-selector-list>',
+	} as const;
+
+	expect(check('closest #id', directive)).toBeTruthy();
+	expect(check('closest .class', directive).matched).toBeTruthy();
+	expect(check('closest type', directive).matched).toBeTruthy();
+	expect(check('closes type', directive).matched).toBeFalsy();
+	expect(check('previous #id', directive).matched).toBeTruthy();
+	expect(check('previous .class', directive).matched).toBeTruthy();
+	expect(check('previous type', directive).matched).toBeTruthy();
+	expect(check('prev #id', directive).matched).toBeFalsy();
+	expect(check('next #id', directive).matched).toBeTruthy();
+	expect(check('nex #id', directive).matched).toBeFalsy();
+	expect(check(' next #id', directive).matched).toBeFalsy();
+});
