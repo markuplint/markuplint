@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.8.0...@markuplint/rules@4.9.0) (2024-05-12)
+
+### Features
+
+- **rules:** support directive type ([2303ca7](https://github.com/markuplint/markuplint/commit/2303ca7118d1c25b336e5fca6ebb2380b63b4b2f))
+
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.8.0-alpha.0...@markuplint/rules@4.8.0) (2024-05-04)
 
 **Note:** Version bump only for package @markuplint/rules
