@@ -28,7 +28,7 @@ beforeAll(async () => {
 describe('STDOUT Test', () => {
 	test('empty', async () => {
 		const resultPromise = execa(entryFilePath, []);
-		await expect(resultPromise).rejects.toThrow(cli.help);
+		await expect(resultPromise).rejects.toThrow(cli.help.trim().replaceAll('\n  \t', '\n  \\t'));
 	});
 
 	test('version', async () => {
@@ -41,10 +41,11 @@ describe('STDOUT Test', () => {
 		expect(stdout).toBe(cli.pkg.version);
 	});
 
-	test('version', async () => {
+	test('help', async () => {
 		const { stdout } = await execa(entryFilePath, ['--help']);
 		const { stdout: stdoutShort } = await execa(entryFilePath, ['-h']);
 		expect(stdout).toBe(stdoutShort);
+		expect(stdout).toBe(cli.help);
 	});
 
 	test('verify', async () => {
