@@ -1046,6 +1046,7 @@ export type ExtendedType =
 	| 'IconSize'
 	| 'Int'
 	| 'ItemProp'
+	| 'JSON'
 	| 'MIMEType'
 	| 'NavigableTargetName'
 	| 'NavigableTargetNameOrKeyword'

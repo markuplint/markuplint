@@ -89,6 +89,24 @@ export const types: Defs = {
 		is: value => (isUint(value) ? matched() : unmatched(value, 'unexpected-token')),
 	},
 
+	JSON: {
+		ref: '',
+		expects: [
+			{
+				type: 'format',
+				value: 'JSON',
+			},
+		],
+		is: value => {
+			try {
+				JSON.parse(value);
+			} catch {
+				return unmatched(value, 'syntax-error');
+			}
+			return matched();
+		},
+	},
+
 	XMLName: {
 		ref: 'https://www.w3.org/TR/xml/#NT-Name',
 		expects: [
