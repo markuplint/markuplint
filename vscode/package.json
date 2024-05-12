@@ -121,7 +121,7 @@
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.3.1",
 		"debug": "4.3.4",
-		"glob": "10.3.14",
+		"glob": "10.3.15",
 		"markuplint": "4.8.0",
 		"mocha": "10.4.0",
 		"semver": "7.6.2",
