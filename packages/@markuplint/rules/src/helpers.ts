@@ -115,7 +115,7 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');
 		}
 	} else {
-		if ('token' in spec.type) {
+		if ('separator' in spec.type) {
 			if (spec.type.caseInsensitive) {
 				normalized = normalized.toLowerCase();
 			}

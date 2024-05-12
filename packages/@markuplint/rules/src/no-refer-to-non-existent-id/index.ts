@@ -93,7 +93,7 @@ export default createRule({
 					});
 				}
 
-				if (typeof spec.type !== 'string' && 'token' in spec.type && spec.type.token === 'DOMID') {
+				if (typeof spec.type !== 'string' && 'separator' in spec.type && spec.type.token === 'DOMID') {
 					const refs = value
 						.split(spec.type.separator === 'space' ? /\s/ : ',')
 						.map(id => id.trim())

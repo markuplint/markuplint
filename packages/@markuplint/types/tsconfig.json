@@ -5,7 +5,11 @@
 		"outDir": "./lib",
 		"rootDir": "./src"
 	},
-	"references": [],
+	"references": [
+		{
+			"path": "../shared"
+		}
+	],
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
 }

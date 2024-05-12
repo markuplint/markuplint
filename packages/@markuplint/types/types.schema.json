@@ -1135,12 +1135,29 @@
 				"clampable": { "type": "boolean" }
 			}
 		},
+		"directive": {
+			"description": "Allows separating and individually validating directives and tokens within attribute values. Ensures precise validation for complex attributes by checking each part according to its rules.",
+			"type": "object",
+			"required": ["directive", "token"],
+			"additionalProperties": false,
+			"properties": {
+				"directive": {
+					"type": "array",
+					"minItems": 1,
+					"uniqueItems": true,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"token": { "$ref": "#/definitions/type" },
+				"ref": { "type": "string" }
+			}
+		},
 		"type": {
 			"oneOf": [
 				{ "$ref": "#/definitions/keyword-defined-type" },
 				{ "$ref": "#/definitions/list" },
 				{ "$ref": "#/definitions/enum" },
-				{ "$ref": "#/definitions/number" }
+				{ "$ref": "#/definitions/number" },
+				{ "$ref": "#/definitions/directive" }
 			]
 		}
 	},

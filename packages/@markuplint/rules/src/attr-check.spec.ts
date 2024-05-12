@@ -78,3 +78,19 @@ test('DateTime', () => {
 		},
 	]);
 });
+
+test('Directive', () => {
+	const directive = {
+		directive: ['find '],
+		token: '<complex-selector-list>',
+	} as const;
+	expect(valueCheck(t, 'x-attr', 'find #id', directive)).toBeFalsy();
+	expect(valueCheck(t, 'x-attr', 'fin #id', directive)).toStrictEqual([
+		'Missing a token. the "x-attr" attribute needs a directive',
+		{
+			col: 0,
+			line: 0,
+			raw: 'fin #id',
+		},
+	]);
+});

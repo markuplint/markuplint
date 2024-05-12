@@ -125,3 +125,30 @@ export function branchesToPatterns<T>(branches: ReadonlyArray<Nullable<T> | Read
 		[[]],
 	);
 }
+
+/**
+ * Parses a regular expression pattern in the form of `/pattern/flags`.
+ * The pattern is parsed using the `RegExp` constructor.
+ * If the pattern is invalid, `null` is returned.
+ * The pattern must be a valid regular expression pattern.
+ * Throws an error if the pattern or flags are invalid.
+ *
+ * @param regexpLikeString - The regular expression pattern to parse.
+ * @returns - The parsed regular expression or null if the pattern is invalid.
+ */
+export function regexParser(regexpLikeString: string): RegExp | null {
+	if (!regexpLikeString.startsWith('/')) {
+		// Early return if the string does not start with a slash.
+		return null;
+	}
+	const match = regexpLikeString.match(/^\/(?<pattern>.+)\/(?<flags>[dgimsuvy]*)$/); // cspell: disable-line
+	if (!match) {
+		return null;
+	}
+	const { pattern, flags } = match.groups!;
+	if (!pattern) {
+		return null;
+	}
+	// Throws an error if `pattern` or `flags` is invalid.
+	return new RegExp(pattern, flags);
+}
