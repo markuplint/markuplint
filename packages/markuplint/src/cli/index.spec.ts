@@ -41,7 +41,7 @@ describe('STDOUT Test', () => {
 		expect(stdout).toBe(cli.pkg.version);
 	});
 
-	test('version', async () => {
+	test('help', async () => {
 		const { stdout } = await execa(entryFilePath, ['--help']);
 		const { stdout: stdoutShort } = await execa(entryFilePath, ['-h']);
 		expect(stdout).toBe(stdoutShort);
