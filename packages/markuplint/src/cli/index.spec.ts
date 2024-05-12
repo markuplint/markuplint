@@ -45,6 +45,7 @@ describe('STDOUT Test', () => {
 		const { stdout } = await execa(entryFilePath, ['--help']);
 		const { stdout: stdoutShort } = await execa(entryFilePath, ['-h']);
 		expect(stdout).toBe(stdoutShort);
+		expect(stdout).toBe(cli.help);
 	});
 
 	test('verify', async () => {
