@@ -166,6 +166,32 @@ It also needs `<`, `>`, and `'`.
 }
 ```
 
+### Directive
+
+Allows separating and individually validating directives and tokens within attribute values. Ensures precise validation for complex attributes by checking each part according to its rules.
+
+- Specify an array of directive affixes
+  - Evaluate as the prefix if its type is a string
+  - Specify a regular expression if a complex directive is needed
+  - Specify a regular expression with a named group `token` if a directive with a suffix is needed
+- Specify a token type
+- Optionally, specify a reference URL
+
+```json
+{
+  "type": {
+    "directive": [
+      "directive:",
+      "command ",
+      "/^regexp\\([a-z0-9]+\\)\\s+/i",
+      "/^regexp\\s+(?<token>[a-z]+)\\s+suffix$/"
+    ],
+    "token": "MIMEType",
+    "ref": "https://example.com/#document"
+  }
+}
+```
+
 ### Multiple types
 
 Can specify types multiple as array. It is an **OR** condition.
@@ -185,7 +211,7 @@ Can specify types multiple as array. It is an **OR** condition.
 ## Interface
 
 ```ts
-type Type = TypeIdentifier | List | Enum | Number;
+type Type = TypeIdentifier | List | Enum | Number | Directive;
 
 type TypeIdentifier = KeywordType | CSSSyntax;
 type KeywordType = string;
@@ -214,5 +240,11 @@ interface Number {
   lt?: number;
   lte?: number;
   clampable?: boolean;
+}
+
+interface Directive {
+  directive: string[];
+  token: Type;
+  ref?: string;
 }
 ```

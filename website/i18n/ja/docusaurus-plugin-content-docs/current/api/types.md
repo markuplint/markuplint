@@ -167,6 +167,32 @@
 }
 ```
 
+### ディレクティブ型
+
+属性値内のディレクティブとトークンを分離し、個別に検証できる機能。複雑な属性に対して、それぞれの部分を正確に検証します。
+
+- ディレクティブ接辞の配列を指定します
+  - 文字列の場合、接頭辞として評価します
+  - 複雑なディレクティブが必要な場合、正規表現を指定します
+  - 接尾辞を持つディレクティブが必要な場合、名前付きグループ `token` を含む正規表現を指定します
+- トークンの型を指定します
+- 任意に、参照URLを指定します
+
+```json
+{
+  "type": {
+    "directive": [
+      "directive:",
+      "command ",
+      "/^regexp\\([a-z0-9]+\\)\\s+/i",
+      "/^regexp\\s+(?<token>[a-z]+)\\s+suffix$/"
+    ],
+    "token": "MIMEType",
+    "ref": "https://example.com/#document"
+  }
+}
+```
+
 ### 複数型
 
 複数の型を配列で指定できます。条件は**OR**となります。
@@ -186,7 +212,7 @@
 ## インターフェイス
 
 ```ts
-type Type = TypeIdentifier | List | Enum | Number;
+type Type = TypeIdentifier | List | Enum | Number | Directive;
 
 type TypeIdentifier = KeywordType | CSSSyntax;
 type KeywordType = string;
@@ -215,5 +241,11 @@ interface Number {
   lt?: number;
   lte?: number;
   clampable?: boolean;
+}
+
+interface Directive {
+  directive: string[];
+  token: Type;
+  ref?: string;
 }
 ```
