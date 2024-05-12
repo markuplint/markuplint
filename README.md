@@ -25,14 +25,16 @@
 
 ## Template Parser Plugins
 
-| Package    | Name                                                                | NPM                                                                                                                                   | Platform  |
-| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| **JSX**    | [`@markuplint/jsx-parser`](./packages/@markuplint/jsx-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fjsx-parser.svg)](https://www.npmjs.com/package/@markuplint/jsx-parser)       | Universal |
-| **Vue**    | [`@markuplint/vue-parser`](./packages/@markuplint/vue-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser)       | Universal |
-| **Svelte** | [`@markuplint/svelte-parser`](./packages/@markuplint/svelte-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsvelte-parser.svg)](https://www.npmjs.com/package/@markuplint/svelte-parser) | Universal |
-| **Astro**  | [`@markuplint/astro-parser`](./packages/@markuplint/astro-parser)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fastro-parser.svg)](https://www.npmjs.com/package/@markuplint/astro-parser)   | Universal |
-| **Pug**    | [`@markuplint/pug-parser`](./packages/@markuplint/pug-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)       | Universal |
-| **PHP**    | [`@markuplint/php-parser`](./packages/@markuplint/php-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fphp-parser.svg)](https://www.npmjs.com/package/@markuplint/php-parser)       | Universal |
+| Package       | Name                                                                | NPM                                                                                                                                   | Platform  |
+| ------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| **JSX**       | [`@markuplint/jsx-parser`](./packages/@markuplint/jsx-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fjsx-parser.svg)](https://www.npmjs.com/package/@markuplint/jsx-parser)       | Universal |
+| **Vue**       | [`@markuplint/vue-parser`](./packages/@markuplint/vue-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fvue-parser.svg)](https://www.npmjs.com/package/@markuplint/vue-parser)       | Universal |
+| **Svelte**    | [`@markuplint/svelte-parser`](./packages/@markuplint/svelte-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fsvelte-parser.svg)](https://www.npmjs.com/package/@markuplint/svelte-parser) | Universal |
+| **Astro**     | [`@markuplint/astro-parser`](./packages/@markuplint/astro-parser)   | [![npm version](https://badge.fury.io/js/%40markuplint%2Fastro-parser.svg)](https://www.npmjs.com/package/@markuplint/astro-parser)   | Universal |
+| **Alpine.js** | [`@markuplint/alpine-parser`](./packages/@markuplint/alpine-parser) | [![npm version](https://badge.fury.io/js/%40markuplint%2Falpine-parser.svg)](https://www.npmjs.com/package/@markuplint/alpine-parser) | Universal |
+| **HTMX**      | [`@markuplint/htmx-parser`](./packages/@markuplint/htmx-parser)     | [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtmx-parser.svg)](https://www.npmjs.com/package/@markuplint/htmx-parser)     | Universal |
+| **Pug**       | [`@markuplint/pug-parser`](./packages/@markuplint/pug-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fpug-parser.svg)](https://www.npmjs.com/package/@markuplint/pug-parser)       | Universal |
+| **PHP**       | [`@markuplint/php-parser`](./packages/@markuplint/php-parser)       | [![npm version](https://badge.fury.io/js/%40markuplint%2Fphp-parser.svg)](https://www.npmjs.com/package/@markuplint/php-parser)       | Universal |
 
 [More Template Parser Plugins...](./packages/%40markuplint/)
 

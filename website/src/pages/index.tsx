@@ -64,8 +64,9 @@ export default function Home(): JSX.Element {
               description: (
                 <>
                   Markuplint can evaluate it for syntaxes and template engines besides HTML through plugins. There are
-                  plugins for Pug, JSX(React), Vue, Svelte, Astro, PHP, Smarty, eRuby, EJS, Mustache/Handlebars,
-                  Nunjucks, and Liquid. And it also provides the API that creates the plugin for the syntax you want.
+                  plugins for Pug, JSX(React), Vue, Svelte, Astro, Alpine.js, HTMX, PHP, Smarty, eRuby, EJS,
+                  Mustache/Handlebars, Nunjucks, and Liquid. And it also provides the API that creates the plugin for
+                  the syntax you want.
                 </>
               ),
             },

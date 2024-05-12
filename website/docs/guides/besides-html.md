@@ -30,6 +30,7 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 | [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit` | -                                |
 | [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`      | -                                |
 | [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`     | `@markuplint/alpine-parser/spec` |
+| [**HTMX**](https://htmx.org)                                                               | `@markuplint/htmx-parser`       | `@markuplint/htmx-parser/spec`   |
 | [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`        | -                                |
 | [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`        | -                                |
 | [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`     | -                                |

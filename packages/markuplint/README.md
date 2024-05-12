@@ -13,7 +13,7 @@
 
 - Conformance checking according to _HTML Standard_, _WAI-ARIA_, _ARIA in HTML_, etc.
 - Supports _CSS_ and _SVG_ values.
-- Supports _React_, _Vue_, _Svelte_, _Pug_, _PHP_, and more.
+- Supports _React_, _Vue_, _Svelte_, _Alpine.js_, _HTMX_, _Pug_, _PHP_, and more.
 - Possible to specify the rule for each element if you use _CSS Selector_.
 - Potential to create a custom rule.
 
