@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { toNoEmptyStringArrayFromStringOrArray, decodeEntities, branchesToPatterns } from './functions.js';
+import { toNoEmptyStringArrayFromStringOrArray, decodeEntities, branchesToPatterns, regexParser } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
 	expect(toNoEmptyStringArrayFromStringOrArray('')).toStrictEqual([]);
@@ -75,4 +75,23 @@ test('branchesToPatterns', () => {
 		[2, 4, 6],
 	]);
 	expect(branchesToPatterns([1, [], 2])).toStrictEqual([[1, 2]]);
+});
+
+test('regexParser', () => {
+	expect(regexParser('/[a-z]/')).toBeInstanceOf(RegExp);
+	expect(regexParser('/[a-z]/')!.source).toBe('[a-z]');
+	expect(regexParser('/[a-z]/')!.flags).toBe('');
+	expect(regexParser('/[a-z]/g')!.flags).toBe('g');
+	expect(regexParser('/[a-z]/i')!.flags).toBe('i');
+	expect(regexParser('/[a-z]/u')!.flags).toBe('u');
+	expect(regexParser('/[a-z]/y')!.flags).toBe('y');
+	expect(regexParser('/[a-z]/m')!.flags).toBe('m');
+	expect(regexParser('/[a-z]/s')!.flags).toBe('s');
+	expect(regexParser('/[a-z]/d')!.flags).toBe('d');
+	expect(regexParser('//')).toBeNull();
+	expect(regexParser('/')).toBeNull();
+	expect(regexParser('/[a-z]')).toBeNull();
+	expect(regexParser('[a-z]/')).toBeNull();
+	expect(regexParser(' ')).toBeNull();
+	expect(regexParser(' // ')).toBeNull();
 });
