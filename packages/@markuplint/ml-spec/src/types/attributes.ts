@@ -1068,7 +1068,8 @@ export type AttributeType =
 	  )
 	| List
 	| Enum
-	| Number;
+	| Number
+	| Directive;
 export type AttributeCondition = string | [string, string, ...string[]];
 
 export interface AttributesSchema {
@@ -1538,4 +1539,15 @@ export interface Number {
 	lt?: number;
 	lte?: number;
 	clampable?: boolean;
+}
+/**
+ * Allows separating and individually validating directives and tokens within attribute values. Ensures precise validation for complex attributes by checking each part according to its rules.
+ */
+export interface Directive {
+	/**
+	 * @minItems 1
+	 */
+	directive: [string, ...string[]];
+	token: AttributeType;
+	ref?: string;
 }

@@ -1,6 +1,6 @@
 import type { cssSyntaxMatch } from './css-syntax.js';
 
-export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number } from './types.schema.js';
+export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number, Directive } from './types.schema.js';
 
 export type Result = UnmatchedResult | MatchedResult;
 

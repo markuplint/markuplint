@@ -4,7 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Type = KeywordDefinedType | List | Enum | Number;
+export type Type = KeywordDefinedType | List | Enum | Number | Directive;
 export type KeywordDefinedType = CssSyntax | ExtendedType | HtmlAttrRequirement;
 export type CssSyntax =
 	| "<'--*'>"
@@ -1112,4 +1112,15 @@ export interface Number {
 	lt?: number;
 	lte?: number;
 	clampable?: boolean;
+}
+/**
+ * Allows separating and individually validating directives and tokens within attribute values. Ensures precise validation for complex attributes by checking each part according to its rules.
+ */
+export interface Directive {
+	/**
+	 * @minItems 1
+	 */
+	directive: [string, ...string[]];
+	token: Type;
+	ref?: string;
 }
