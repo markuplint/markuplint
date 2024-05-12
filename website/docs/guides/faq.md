@@ -96,7 +96,7 @@ markuplint "**/*.html"
 
 ## Can I use it with React?
 
-Of course, it can be used with React (JSX) and Vue, Svelte, Astro, Pug, PHP, etc. To use these, you need to use the official plug-ins provided by Markuplint. For more information, please refer to [Using to besides HTML](/docs/guides/besides-html).
+Of course, it can be used with React (JSX) and Vue, Svelte, Astro, Alpine.js, HTMX, Pug, PHP, etc. To use these, you need to use the official plug-ins provided by Markuplint. For more information, please refer to [Using to besides HTML](/docs/guides/besides-html).
 
 ## Does it seem that Angular is not supported?
 

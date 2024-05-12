@@ -63,7 +63,8 @@ export default function Home(): JSX.Element {
               description: (
                 <>
                   Markuplintは、プラグインを通じてHTML以外の構文やテンプレートエンジンについても評価することができます。Pug,
-                  JSX(React), Vue, Svelte, Astro, PHP, Smarty, eRuby, EJS, Mustache/Handlebars, Nunjucks,
+                  JSX(React), Vue, Svelte, Astro, Alpine.js, HTMX, PHP, Smarty, eRuby, EJS, Mustache/Handlebars,
+                  Nunjucks,
                   Liquid用のプラグインが用意されています。また、欲しい構文に対応したプラグインを作成するAPIも提供します。
                 </>
               ),

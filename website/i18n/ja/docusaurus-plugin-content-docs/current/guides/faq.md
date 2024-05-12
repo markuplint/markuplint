@@ -109,7 +109,7 @@ markuplint "**/*.html"
 
 ## Reactで使えますか？
 
-もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外につかう](/docs/guides/besides-html)を御覧ください。
+もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Alpine.js、HTMX、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外につかう](/docs/guides/besides-html)を御覧ください。
 
 ## Angularに対応していないようですが？
 
