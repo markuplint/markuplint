@@ -29,6 +29,7 @@
 		"schema:prettier": "prettier --write \"./src/types.schema.ts\" \"./types.schema.json\" --log-level warn"
 	},
 	"dependencies": {
+		"@markuplint/shared": "4.3.1",
 		"@types/css-tree": "2.3.7",
 		"@types/debug": "4.1.12",
 		"@types/whatwg-mimetype": "3.0.2",
