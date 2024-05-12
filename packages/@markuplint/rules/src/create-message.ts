@@ -3,7 +3,7 @@ import type { AttributeType } from '@markuplint/ml-spec';
 import type { UnmatchedResult, List, Number, Expect } from '@markuplint/types';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { isList, isKeyword, isEnum } from '@markuplint/types';
+import { isList, isKeyword, isEnum, isNumber, isDirective } from '@markuplint/types';
 
 export function createMessageValueExpected(
 	t: Translator,
@@ -242,8 +242,10 @@ function createExpectedObject(
 		}
 	} else if (isEnum(type)) {
 		expectedObject.push(...type.enum);
-	} else {
+	} else if (isNumber(type)) {
 		expectedObject.push(createExpectedNumber(t, type));
+	} else if (isDirective(type)) {
+		expectedObject.push(t('a {0}', 'directive'));
 	}
 
 	const expects =
