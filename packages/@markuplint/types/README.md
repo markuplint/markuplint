@@ -41,6 +41,7 @@ check('2020-02-30', 'DateTime');
 | `Zero`                             | Some attributes                             |                                                                                                                    | ✅        |
 | `Number`                           | Some attributes                             |                                                                                                                    | ✅        |
 | `Uint`                             | Some attributes                             |                                                                                                                    | ✅        |
+| `JSON`                             | Attributes on some frameworks etc.          |                                                                                                                    | ✅        |
 | `XMLName`                          | `svg\|[attributeName]` and more             | [XML](https://www.w3.org/TR/xml/#d0e804)                                                                           | ✅        |
 | `DOMID`                            | The `id` attribute and more                 | [WHATWG](https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)                             | ✅        |
 | `FunctionBody`                     | Event handler attributes                    |                                                                                                                    | 🚧        |
