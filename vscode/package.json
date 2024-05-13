@@ -114,7 +114,7 @@
 		"@types/node": "18.17",
 		"@types/semver": "7.5.8",
 		"@types/vscode": "1.89.0",
-		"@vscode/test-electron": "2.3.9",
+		"@vscode/test-electron": "2.3.10",
 		"@vscode/vsce": "2.26.1",
 		"typescript": "5.4.5"
 	},
