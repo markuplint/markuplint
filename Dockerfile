@@ -1,4 +1,4 @@
-FROM node:21.7@sha256:bda531283f4bafd1cb41294493de89ae3c4cf55933da14710e46df970e77365e
+FROM node:21.7@sha256:f3f975c2c041b0bccb9ee1d71c34d7d98f0e88c21cf5826b67352e36cb1095a6
 
 COPY . /markuplint
 
