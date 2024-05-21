@@ -12,6 +12,7 @@ export const isJSONSchema = (value: JSONSchema7Definition | undefined): value is
 
 const definitionMap = new Map<string, Readonly<JSONSchema | JSONSchema7Definition>>();
 const jsonCache = new Map<string, JSONSchema>();
+const dereferencingSet = new Set<string>();
 
 /**
  * Fetch JSON Schema or JSON Schema Definition
@@ -52,11 +53,21 @@ async function fetchSchema(urlString: string): Promise<JSONSchema | JSONSchema7D
 }
 
 export async function fetchDereferencedSchema(url: URL) {
+	const dereferencingSetKey = url.toString();
+	// Avoid circular reference
+	if (dereferencingSet.has(dereferencingSetKey)) {
+		return;
+	} else {
+		dereferencingSet.add(dereferencingSetKey);
+	}
+
 	const schema = await fetchSchema(url.toString());
 	if (schema === undefined) {
 		return schema;
 	}
 	const result = await dereference(schema, url);
+
+	dereferencingSet.delete(dereferencingSetKey);
 	return result;
 }
 
