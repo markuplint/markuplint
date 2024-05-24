@@ -1519,4 +1519,25 @@ describe('Issues', () => {
 		expect(text.uuid).toBe(span.childNodes[0].uuid);
 		expect(spanClose.uuid).toBe(span.pairNode.uuid);
 	});
+
+	test('#1741', () => {
+		const doc = parse(`
+html
+	head
+		block head
+			+meta
+	body
+		p Hello, World!
+`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[2:1]>[2:5](1,5)html: html',
+			'[3:2]>[3:6](7,11)head: head',
+			'[4:3]>[4:13](14,24)#ps:NamedBlock: block␣head',
+			'[5:4]>[5:9](28,33)#ps:Mixin: +meta',
+			'[6:2]>[6:6](35,39)body: body',
+			'[7:3]>[7:4](42,43)p: p',
+			'[7:5]>[8:1](44,58)#text: Hello,␣World!⏎',
+		]);
+	});
 });

@@ -224,6 +224,29 @@ function optimizeAST(
 				nodes.push(mixinNode);
 				continue;
 			}
+			case 'NamedBlock': {
+				const namedBlockNode: ASTNamedBlockNode = {
+					...node,
+					nodes: optimizeAST(
+						{
+							...node,
+							type: 'Block',
+						},
+						tokens,
+						pug,
+					).nodes,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(namedBlockNode);
+				continue;
+			}
 			case 'Comment': {
 				const commentNode: ASTComment = {
 					type: node.type,
@@ -704,6 +727,7 @@ export type ASTNode =
 	| ASTIncludeNode
 	| ASTMixinNode
 	| ASTMixinSlotNode
+	| ASTNamedBlockNode
 	| ASTFilterNode
 	| ASTEachNode
 	| ASTConditionalNode
@@ -727,6 +751,8 @@ export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AdditionalASTData;
 export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AdditionalASTData;
 
 export type ASTMixinSlotNode = PugASTMixinSlotNode & AdditionalASTData;
+
+export type ASTNamedBlockNode = PugASTNamedBlockNode<ASTNode> & AdditionalASTData;
 
 export type ASTFilterNode = PugASTFilterNode<ASTAttr, ASTBlock> & AdditionalASTData;
 
@@ -765,6 +791,7 @@ type PugASTNode =
 	| PugASTIncludeNode<PugAST<PugASTNode>>
 	| PugASTMixinNode<PugASTAttr, PugAST<PugASTNode>>
 	| PugASTMixinSlotNode
+	| PugASTNamedBlockNode<PugASTNode>
 	| PugASTFilterNode<PugASTAttr, PugAST<PugASTTextNode>>
 	| PugASTEachNode<PugAST<PugASTNode>>
 	| PugASTConditionalNode<PugAST<PugASTNode>>
@@ -868,6 +895,15 @@ type PugASTMixinSlotNode = {
 	line: number;
 	column: number;
 };
+
+interface PugASTNamedBlockNode<N> {
+	type: 'NamedBlock';
+	name: string;
+	mode: 'replace' | 'append' | 'prepend';
+	nodes: N[];
+	line: number;
+	column: number;
+}
 
 type PugASTFilterNode<A, B> = {
 	type: 'Filter';
