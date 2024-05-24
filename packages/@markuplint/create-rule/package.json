@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.1",
 		"@markuplint/ml-core": "4.7.2",
-		"glob": "10.3.16",
+		"glob": "10.4.0",
 		"prettier": "3.2.5",
 		"ts-node": "10.9.2",
 		"typescript": "5.4.5"
