@@ -192,7 +192,11 @@ class PugParser extends Parser<ASTNode> {
 						parentNode,
 						nodeName: originNode.type,
 					},
-					'block' in originNode && originNode.block ? originNode.block.nodes : [],
+					'block' in originNode && originNode.block
+						? originNode.block.nodes
+						: 'nodes' in originNode
+							? originNode.nodes
+							: [],
 				);
 			}
 		}
