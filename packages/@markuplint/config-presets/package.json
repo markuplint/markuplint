@@ -13,7 +13,7 @@
 		"build": "node build.mjs"
 	},
 	"devDependencies": {
-		"glob": "10.4.0",
+		"glob": "10.4.1",
 		"jsonc-parser": "3.2.1",
 		"mustache": "4.2.0"
 	}
