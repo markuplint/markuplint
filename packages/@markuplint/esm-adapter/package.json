@@ -25,6 +25,7 @@
 		"strict-event-emitter": "0.5.1"
 	},
 	"devDependencies": {
-		"@types/debug": "4.1.12"
+		"@types/debug": "4.1.12",
+		"semver": "7.6.2"
 	}
 }
