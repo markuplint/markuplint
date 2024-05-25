@@ -12,7 +12,7 @@
 		"pg:up": "yarn upgrade-interactive --latest"
 	},
 	"dependencies": {
-		"@headlessui/react": "1.7.19",
+		"@headlessui/react": "2.0.4",
 		"@markuplint/parser-utils": "4.6.2",
 		"@monaco-editor/react": "4.6.0",
 		"@webcontainer/api": "1.1.9",
