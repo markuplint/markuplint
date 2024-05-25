@@ -52,3 +52,7 @@ console.log(result);
 `@markuplint/esm-adapter` was created specifically for VS Code extensions that do not support ESM. Because of this, the implemented APIs are extremely limited if you are not using them within an extension.
 Additionally, it internally uses **[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**, so it only works on the Node.js platform.
 :::
+
+:::warning
+`@markuplint/esm-adapter` is supported only on Node.js versions **below 22**.
+:::

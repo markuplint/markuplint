@@ -52,3 +52,7 @@ console.log(result);
 `@markuplint/esm-adapter`はESMの対応していない**VS Code拡張機能**のために作られたモジュールです。拡張機能で利用しないAPIは実装されていないため極めて限定的です。
 また、内部的には**[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**を利用しているため、プラットフォームはNode.jsのみとなります。
 :::
+
+:::warning
+`@markuplint/esm-adapter`はNode.jsのバージョン**22未満**でのみサポートしています。
+:::

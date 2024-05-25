@@ -4,6 +4,10 @@
 
 A library for utilizing ESM-converted Markuplint modules through a subprocess from a CJS environment.
 
+## CAUTION
+
+This module is supported only on Node.js versions **below 22**.
+
 ## Install
 
 ```shell
