@@ -198,6 +198,49 @@ describe('parser', () => {
 	});
 });
 
+/**
+ * @see https://github.com/sveltejs/svelte/blob/svelte%405.0.0-next.141/packages/svelte/src/compiler/types/template.d.ts
+ */
+describe('Node types', () => {
+	// https://svelte.dev/docs/basic-markup
+	test('RegularElement', () => expect(svelteParse('<div></div>')?.[0]?.type).toBe('RegularElement'));
+	test('Component', () => expect(svelteParse('<Co></Co>')?.[0]?.type).toBe('Component'));
+	test('Component (Namepace)', () => expect(svelteParse('<N.Co></N.Co>')?.[0]?.type).toBe('Component'));
+	test('Text', () => expect(svelteParse('text')?.[0]?.type).toBe('Text'));
+	test('ExpressionTag', () => expect(svelteParse('{e}')?.[0]?.type).toBe('ExpressionTag'));
+	test('Comment', () => expect(svelteParse('<!-- c -->')?.[0]?.type).toBe('Comment'));
+
+	// https://svelte.dev/docs/logic-blocks
+	test('IfBlock', () => expect(svelteParse('{#if cond}{/if}')?.[0]?.type).toBe('IfBlock'));
+	test('EachBlock', () => expect(svelteParse('{#each e as n}{/each}')?.[0]?.type).toBe('EachBlock'));
+	test('AwaitBlock', () => expect(svelteParse('{#await e}{/await}')?.[0]?.type).toBe('AwaitBlock'));
+	test('KeyBlock', () => expect(svelteParse('{#key e}{/key}')?.[0]?.type).toBe('KeyBlock'));
+	// Since svelte/compiler@5 - @see https://svelte-5-preview.vercel.app/docs/snippets
+	test('SnippetBlock', () => expect(svelteParse('{#snippet e(p)}{/snippet}')?.[0]?.type).toBe('SnippetBlock'));
+
+	// https://svelte.dev/docs/special-tags
+	test('HtmlTag', () => expect(svelteParse('{@html e}')?.[0]?.type).toBe('HtmlTag'));
+	test('DebugTag', () => expect(svelteParse('{@debug e}')?.[0]?.type).toBe('DebugTag'));
+	test('ConstTag', () => expect(svelteParse('{@const e = 0}')?.[0]?.type).toBe('ConstTag'));
+	// Since svelte/compiler@5 - @see https://svelte-5-preview.vercel.app/docs/snippets
+	test('RenderTag', () => expect(svelteParse('{@render f()}')?.[0]?.type).toBe('RenderTag'));
+
+	// https://svelte.dev/docs/special-elements
+	test('SlotElement', () => expect(svelteParse('<slot><!-- fallback --></slot>')?.[0]?.type).toBe('SlotElement'));
+	test('SvelteSelf', () =>
+		// @ts-ignore
+		expect(svelteParse('{#if e}<svelte:self />{/if}')?.[0]?.consequent.nodes[0]?.type).toBe('SvelteSelf'));
+	test('SvelteComponent', () =>
+		expect(svelteParse('<svelte:component this={e} />')?.[0]?.type).toBe('SvelteComponent'));
+	test('SvelteElement', () => expect(svelteParse('<svelte:element this={e} />')?.[0]?.type).toBe('SvelteElement'));
+	test('SvelteWindow', () => expect(svelteParse('<svelte:window />')?.[0]?.type).toBe('SvelteWindow'));
+	test('SvelteDocument', () => expect(svelteParse('<svelte:document />')?.[0]?.type).toBe('SvelteDocument'));
+	test('SvelteBody', () => expect(svelteParse('<svelte:body />')?.[0]?.type).toBe('SvelteBody'));
+	test('SvelteHead', () => expect(svelteParse('<svelte:head />')?.[0]?.type).toBe('SvelteHead'));
+	test('SvelteFragment', () => expect(svelteParse('<svelte:fragment />')?.[0]?.type).toBe('SvelteFragment'));
+	test('<svelte:options>', () => expect(svelteParse('<svelte:options />').length).toBe(0));
+});
+
 describe('Issues', () => {
 	test('#991', () => {
 		expect(svelteParse("<CustomElement><div>Evaluation doesn't work</div></CustomElement>")).toEqual([
