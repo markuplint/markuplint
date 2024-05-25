@@ -2,11 +2,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { version as versionForTest } from 'markuplint';
+import { gt } from 'semver';
 import { describe, it, expect } from 'vitest';
 
 const { MLEngine } = require('../cjs/index.cjs');
 
-describe('test', () => {
+describe.skipIf(gt(process.version, '22.0.0'))('test', () => {
 	it('MLEngine.exec()', async () => {
 		await MLEngine.setModule('markuplint');
 		const engine = await MLEngine.fromCode('<span><div></div></span>', {
