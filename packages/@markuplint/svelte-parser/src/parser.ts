@@ -83,12 +83,12 @@ class SvelteParser extends Parser<SvelteNode> {
 					parentNode,
 				});
 			}
-			case 'MustacheTag': {
+			case 'ExpressionTag': {
 				return this.visitPsBlock({
 					...token,
 					depth,
 					parentNode,
-					nodeName: 'MustacheTag',
+					nodeName: 'ExpressionTag',
 				});
 			}
 			case 'InlineComponent':
