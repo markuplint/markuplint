@@ -11,7 +11,8 @@ describe('parser', () => {
 	test('syntax error', () => {
 		expect(() => {
 			parse('<div></div\nattr>');
-		}).toThrow('Expected >\n1: <div></div\n2: attr>\n   ^');
+		}).toThrowError(`CompileError: Expected token >
+(expected_token)`);
 	});
 
 	test('standard', () => {
