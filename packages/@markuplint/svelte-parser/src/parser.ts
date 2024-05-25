@@ -91,9 +91,9 @@ class SvelteParser extends Parser<SvelteNode> {
 					nodeName: 'ExpressionTag',
 				});
 			}
-			case 'InlineComponent':
-			case 'Element': {
-				const children = originNode.children ?? [];
+			case 'Component':
+			case 'RegularElement': {
+				const children = originNode.fragment.nodes ?? [];
 				const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
 				const startTagEndOffset =
 					children.length > 0
@@ -109,7 +109,7 @@ class SvelteParser extends Parser<SvelteNode> {
 						nodeName: originNode.name,
 						namespace: getNamespace(originNode.name, parentNamespace),
 					},
-					originNode.children,
+					originNode.fragment.nodes,
 					{
 						createEndTagToken: () => {
 							if (!reEndTag.test(token.raw)) {
