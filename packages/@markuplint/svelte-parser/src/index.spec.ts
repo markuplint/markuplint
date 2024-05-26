@@ -166,6 +166,20 @@ describe('parser', () => {
 		]);
 	});
 
+	test('each list', () => {
+		const r = parse('<ul>{#each a as b}<li>item</li>{/each}</ul>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[1:19](4,18)#ps:each (each): {#each␣a␣as␣b}',
+			'[1:19]>[1:23](18,22)li: <li>',
+			'[1:23]>[1:27](22,26)#text: item',
+			'[1:27]>[1:32](26,31)li: </li>',
+			'[1:32]>[1:39](31,38)#ps:/each (end): {/each}',
+			'[1:39]>[1:44](38,43)ul: </ul>',
+		]);
+	});
+
 	test('deep each statement', () => {
 		const r = parse('<ul>{#each a as b}<li>{#each c as d}{/each}</li>{/each}</ul>');
 		const map = nodeListToDebugMaps(r.nodeList);
