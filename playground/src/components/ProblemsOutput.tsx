@@ -1,9 +1,11 @@
+import { useId } from 'react';
 import type { Violations } from '../modules/violations';
 
 export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations | null }>) => {
+	const headingId = useId();
 	return (
-		<section className="grid grid-rows-[auto_minmax(0,1fr)] text-sm">
-			<h3 className="flex items-center gap-2 bg-slate-50 px-3 py-1 text-base font-bold">
+		<section aria-labelledby={headingId} className="grid grid-rows-[auto_minmax(0,1fr)] text-sm">
+			<h3 id={headingId} className="flex items-center gap-2 bg-slate-50 px-3 py-1 text-base font-bold">
 				Problems
 				{violations && (
 					<span className="rounded-full bg-slate-200 px-1.5 py-1 text-xs leading-none">
