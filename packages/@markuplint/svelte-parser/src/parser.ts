@@ -222,6 +222,19 @@ export class SvelteParser extends Parser<SvelteNode> {
 					})[0],
 				];
 			}
+			default: {
+				const childNodes = 'fragment' in originNode ? originNode.fragment.nodes : [];
+
+				return this.visitPsBlock(
+					{
+						...token,
+						depth,
+						parentNode,
+						nodeName: originNode.type,
+					},
+					childNodes,
+				);
+			}
 		}
 	}
 
@@ -624,156 +637,6 @@ export class SvelteParser extends Parser<SvelteNode> {
 		}
 
 		return result;
-	}
-
-	visitExpression(
-		token: ChildToken,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		originBlockNode: SvelteNode,
-	) {
-		const props = ['', 'else', 'pending', 'then', 'catch'];
-		const expressions: MLASTPreprocessorSpecificBlock[] = [];
-
-		if (originBlockNode.type === 'IfBlock') {
-			const ifElseBlocks = this.#traverseIfBlock(originBlockNode);
-			for (const ifElseBlock of ifElseBlocks) {
-				const expression = this.visitPsBlock(
-					{
-						...ifElseBlock,
-						depth: token.depth,
-						parentNode: token.parentNode,
-						nodeName: ifElseBlock.nodeName,
-					},
-					ifElseBlock.children,
-					(
-						{
-							if: 'if',
-							elseif: 'if:elseif',
-							else: 'if:else',
-							'/if': 'end',
-						} as const
-					)[ifElseBlock.nodeName],
-				)[0];
-				expressions.push(expression);
-			}
-			return expressions;
-		}
-
-		const blockType = originBlockNode.type.toLowerCase().replace('block', '');
-
-		const nodeList = new Map<SvelteNode, MLASTPreprocessorSpecificBlockConditionalType>();
-
-		for (const prop of props) {
-			let node: SvelteNode | null = (originBlockNode[prop] ?? originBlockNode) as SvelteNode;
-
-			if (nodeList.has(node)) {
-				continue;
-			}
-
-			if (node.type === 'ElseBlock' && node.children?.[0]?.elseif) {
-				node = node.children[0];
-
-				while (node != null) {
-					if (!['IfBlock', 'ElseBlock'].includes(node.type)) {
-						break;
-					}
-					const type: MLASTPreprocessorSpecificBlockConditionalType = node.elseif ? 'if:elseif' : 'if:else';
-					nodeList.set(node, type);
-
-					node = node.else ?? node.children?.[0] ?? null;
-				}
-				continue;
-			}
-
-			const typeMap: Record<string, MLASTPreprocessorSpecificBlockConditionalType> = {
-				if: 'if',
-				else: 'if:else',
-				each: 'each',
-				pending: 'await',
-				then: 'await:then', // eslint-disable-line unicorn/no-thenable
-				catch: 'await:catch',
-			};
-
-			const type: MLASTPreprocessorSpecificBlockConditionalType = typeMap[prop || blockType] ?? null;
-
-			nodeList.set(node, type);
-		}
-
-		let lastChild: SvelteNode | null = null;
-		for (const [node, _type] of nodeList.entries()) {
-			let type: MLASTPreprocessorSpecificBlockConditionalType = _type;
-			let start = node.start;
-			let end = node.end;
-
-			if (type === 'await') {
-				start = originBlockNode.start;
-			}
-
-			end = node.children?.[0]?.start ?? end;
-
-			if (type === 'if:else' && originBlockNode.type === 'EachBlock') {
-				type = 'each:empty';
-				start = lastChild?.end ?? start;
-			}
-
-			if (
-				(['if:else', 'if:elseif'] as MLASTPreprocessorSpecificBlockConditionalType[]).includes(type) &&
-				originBlockNode.type === 'IfBlock'
-			) {
-				start = lastChild?.end ?? start;
-			}
-
-			const tag = this.sliceFragment(start, end);
-
-			if (type === 'if:else' && node.type === 'ElseBlock' && node.children?.[0]?.type === 'IfBlock') {
-				type = 'if:elseif';
-			}
-
-			if (node.children && Array.isArray(node.children)) {
-				lastChild = node.children.at(-1) ?? null;
-			}
-
-			if (tag.raw === '') {
-				continue;
-			}
-
-			const expression = this.visitPsBlock(
-				{
-					...tag,
-					depth: token.depth,
-					parentNode: token.parentNode,
-					nodeName: type ?? blockType,
-				},
-				node.children,
-				type,
-			)[0];
-			expressions.push(expression);
-		}
-
-		const lastText = this.sliceFragment(lastChild?.end ?? originBlockNode.end, originBlockNode.end);
-
-		if (lastText.raw) {
-			// Cut before whitespace
-			const index = lastText.raw.search(/\S/);
-			const lastToken = this.sliceFragment(lastText.startOffset + index, originBlockNode.end);
-
-			if (lastToken.raw) {
-				const expression = this.visitPsBlock(
-					{
-						...lastToken,
-						depth: token.depth,
-						parentNode: token.parentNode,
-						nodeName: '/' + blockType,
-					},
-					[],
-					'end',
-				)[0];
-
-				expressions.push(expression);
-			}
-		}
-
-		return expressions;
 	}
 }
 
