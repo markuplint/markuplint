@@ -5,8 +5,8 @@ import type { PlaygroundValues } from './modules/save-values';
 import type { Violations } from './modules/violations';
 import type { Config } from '@markuplint/ml-config';
 
-import { Popover, Tab } from '@headlessui/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -75,6 +75,7 @@ export function App() {
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
 	const [version, setVersion] = useState<string>();
 	const tabsRef = useRef<HTMLElement>(null);
+	const configHeadingId = useId();
 	const handleSelectExample = useCallback((example: ExampleData) => {
 		setConfigString(example.config);
 		setFileType(example.codeFileType);
@@ -293,27 +294,23 @@ export function App() {
 							selectedTab === null ? 'overflow-x-hidden' : selectedTab === 'code' ? '!w-full' : 'hidden'
 						}
 					>
-						<section>
-							<CodeEditor
-								value={code}
-								filename={filename}
-								violations={violations ?? []}
-								onChange={setCode}
-							/>
-						</section>
+						<CodeEditor value={code} filename={filename} violations={violations ?? []} onChange={setCode} />
+
 						<div className="grid grid-rows-1">
 							<ProblemsOutput violations={violations} />
 						</div>
 					</Split>
 					<section
-						className={`grid grid-rows-[auto_minmax(0,1fr)] ${
-							selectedTab === null ? '' : selectedTab === 'config' ? '!w-full' : 'hidden'
-						}`}
+						aria-labelledby={configHeadingId}
+						className={selectedTab === null ? '' : selectedTab === 'config' ? '!w-full' : 'hidden'}
 					>
-						<Tab.Group>
+						<TabGroup className="grid h-full grid-rows-[auto_minmax(0,1fr)]">
 							<div className="flex min-h-[2.5rem] items-center justify-between gap-2 bg-slate-100 px-4 py-1">
 								<hgroup className="flex flex-wrap items-baseline gap-x-2">
-									<h2 className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only">
+									<h2
+										id={configHeadingId}
+										className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only"
+									>
 										<span className="icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
 										Config
 									</h2>
@@ -321,7 +318,7 @@ export function App() {
 										<code>.markuplintrc</code>
 									</p>
 								</hgroup>
-								<Tab.List className="flex rounded-lg border">
+								<TabList className="flex rounded-lg border">
 									{(['JSON', 'Visual'] as const).map((label, i) => (
 										<Tab
 											key={i}
@@ -344,14 +341,14 @@ export function App() {
 											{label}
 										</Tab>
 									))}
-								</Tab.List>
+								</TabList>
 							</div>
 
-							<Tab.Panels>
-								<Tab.Panel unmount={false} className="grid h-full">
+							<TabPanels>
+								<TabPanel unmount={false} className="grid h-full">
 									<ConfigEditor value={configString} onChange={setConfigString} />
-								</Tab.Panel>
-								<Tab.Panel unmount={false} className="h-full overflow-y-auto">
+								</TabPanel>
+								<TabPanel unmount={false} className="h-full overflow-y-auto">
 									<ConfigForm
 										fileType={fileType}
 										version={version}
@@ -359,9 +356,9 @@ export function App() {
 										onChangeFileType={setFileType}
 										onChangeConfig={handleChangeConfig}
 									/>
-								</Tab.Panel>
-							</Tab.Panels>
-						</Tab.Group>
+								</TabPanel>
+							</TabPanels>
+						</TabGroup>
 					</section>
 				</Split>
 			</main>
@@ -420,7 +417,7 @@ export function App() {
 					}
 				</output>
 				<Popover>
-					<Popover.Button
+					<PopoverButton
 						className="
 						ml-2 flex items-center gap-1
 						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
@@ -429,16 +426,16 @@ export function App() {
 					>
 						<span className="icon-heroicons-solid-command-line"></span>
 						Console
-					</Popover.Button>
-					<Popover.Panel
+					</PopoverButton>
+					<PopoverPanel
 						unmount={false}
 						className="absolute bottom-[calc(100%+1rem)] right-4 z-10 w-[calc(100%-3rem)] max-w-4xl overflow-hidden rounded-lg border bg-white shadow-lg"
 					>
 						<ConsoleOutput ref={consoleRef} />
-					</Popover.Panel>
+					</PopoverPanel>
 				</Popover>
 				<Popover>
-					<Popover.Button
+					<PopoverButton
 						className="
 						ml-2 flex items-center gap-1
 						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
@@ -447,8 +444,8 @@ export function App() {
 					>
 						<span className="icon-heroicons-solid-tag"></span>
 						{`v${version}`}
-					</Popover.Button>
-					<Popover.Panel
+					</PopoverButton>
+					<PopoverPanel
 						unmount={false}
 						className="absolute bottom-[calc(100%+1rem)] left-4 right-4 z-10 ml-auto w-fit overflow-hidden rounded-lg border bg-white shadow-lg"
 					>
@@ -459,7 +456,7 @@ export function App() {
 							depsPackages={depsPackages}
 							onChange={setDistTag}
 						/>
-					</Popover.Panel>
+					</PopoverPanel>
 				</Popover>
 			</footer>
 		</>

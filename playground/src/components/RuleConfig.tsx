@@ -3,7 +3,7 @@ import type { AnyRule } from '@markuplint/ml-config';
 import type { JSONSchema7Definition } from 'json-schema';
 import type { ReactNode } from 'react';
 
-import { createContext, useContext, useCallback, useEffect, useState, useMemo, memo } from 'react';
+import { createContext, useContext, useCallback, useEffect, useState, useMemo, memo, useId } from 'react';
 
 import { isJSONSchema, type JSONSchema } from '../modules/json-schema';
 
@@ -19,6 +19,7 @@ type Props = Readonly<{
 const RuleConfigRaw = ({ value, ruleName, schema, onChange }: Props) => {
 	const [valueSelect, setValueSelect] = useState<string>('unset');
 	const [customConfig, setCustomConfig] = useState<Readonly<Record<string, any>>>({});
+	const headingId = useId();
 	const handleChangeCustom = useCallback(
 		(value: any | undefined) => {
 			const newCustomConfig = value ?? {};
@@ -80,7 +81,7 @@ const RuleConfigRaw = ({ value, ruleName, schema, onChange }: Props) => {
 							target="_blank"
 							rel="noreferrer"
 						>
-							{ruleName}
+							<span id={headingId}>{ruleName}</span>
 							<span className="icon-majesticons-open ml-1 translate-y-1 overflow-hidden">
 								(Open in new tab)
 							</span>
@@ -88,8 +89,8 @@ const RuleConfigRaw = ({ value, ruleName, schema, onChange }: Props) => {
 						:
 					</code>
 				</h4>
-				{/* FIXME: this select element has no accessible name */}
 				<select
+					aria-labelledby={headingId}
 					className="select-arrow ml-6 w-[8em] rounded-md border border-slate-300"
 					value={valueSelect}
 					onChange={e => {
