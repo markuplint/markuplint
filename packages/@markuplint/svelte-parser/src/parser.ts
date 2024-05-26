@@ -222,6 +222,35 @@ export class SvelteParser extends Parser<SvelteNode> {
 					})[0],
 				];
 			}
+			case 'SnippetBlock': {
+				const { openToken, closeToken } = parseBlock(
+					this,
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+
+				return [
+					this.visitPsBlock(
+						{
+							...openToken,
+							depth,
+							parentNode,
+							nodeName: 'snippet',
+						},
+						originNode.body.nodes,
+					)[0],
+					this.visitPsBlock({
+						...closeToken,
+						depth,
+						parentNode,
+						nodeName: '/snippet',
+					})[0],
+				];
+			}
 			default: {
 				const childNodes = 'fragment' in originNode ? originNode.fragment.nodes : [];
 
