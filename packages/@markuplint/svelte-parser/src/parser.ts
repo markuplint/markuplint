@@ -9,7 +9,7 @@ import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 import { getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
-import { svelteParse } from './svelte-parser/index.js';
+import { blockOrTags, svelteParse } from './svelte-parser/index.js';
 
 class SvelteParser extends Parser<SvelteNode> {
 	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
@@ -64,9 +64,23 @@ class SvelteParser extends Parser<SvelteNode> {
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		const token = this.sliceFragment(originNode.start, originNode.end);
+		let token = this.sliceFragment(originNode.start, originNode.end);
 		const parentNamespace =
 			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
+
+		/**
+		 * Temporarily correct location shift issue with the new parser.
+		 */
+		if (blockOrTags.includes(originNode.type) && !token.raw.startsWith('{')) {
+			let start = token.startOffset;
+			while (this.rawCode[start] !== '{') {
+				start--;
+			}
+			token = {
+				...token,
+				...this.sliceFragment(start, originNode.end),
+			};
+		}
 
 		switch (originNode.type) {
 			case 'Text': {
