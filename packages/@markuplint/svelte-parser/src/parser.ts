@@ -1,4 +1,4 @@
-import type { SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
+import type { SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
@@ -9,9 +9,10 @@ import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 import { getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
+import { parseBlock } from './parse-block.js';
 import { blockOrTags, svelteParse } from './svelte-parser/index.js';
 
-class SvelteParser extends Parser<SvelteNode> {
+export class SvelteParser extends Parser<SvelteNode> {
 	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
 
 	constructor() {
@@ -172,8 +173,8 @@ class SvelteParser extends Parser<SvelteNode> {
 				}
 				return expressions;
 			}
-			default: {
-				return this.visitExpression(
+			case 'EachBlock': {
+				return this.#parseEachBlock(
 					{
 						...token,
 						depth,
@@ -288,6 +289,93 @@ class SvelteParser extends Parser<SvelteNode> {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
+	}
+
+	#parseEachBlock(
+		token: ChildToken,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originBlockNode: SvelteEachBlock,
+	) {
+		const expressions: MLASTPreprocessorSpecificBlock[] = [];
+
+		/**
+		 * `{/each}`
+		 */
+		const { closeToken } = parseBlock(this, token, originBlockNode);
+
+		/**
+		 * `{#each expression as name}...{:else}...{/each}`
+		 *                     find___^
+		 */
+		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.startOffset;
+
+		/**
+		 * `{#each expression as name}...{:else}...{/each}`
+		 *                               find___^
+		 */
+		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.startOffset;
+
+		/**
+		 * `{#each expression as name}...{:else}`
+		 */
+		const rawUntilFallbackScope = this.rawCode.slice(token.startOffset, fallbackScopeStart);
+
+		let elseToken: Token | null = null;
+
+		/**
+		 * `{#each expression as name}...{:else}`
+		 *                        find___^
+		 */
+		// eslint-disable-next-line regexp/strict
+		const elseTokenStart = rawUntilFallbackScope.match(/{\s*:else\s*}$/)?.index;
+		if (elseTokenStart != null) {
+			elseToken = this.sliceFragment(token.startOffset + elseTokenStart, fallbackScopeStart);
+		}
+
+		const eachToken = this.sliceFragment(token.startOffset, bodyStart);
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...eachToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: 'each',
+				},
+				originBlockNode.body.nodes,
+				'each',
+			)[0],
+		);
+
+		if (elseToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...elseToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'each:empty',
+					},
+					originBlockNode.fallback?.nodes,
+					'each:empty',
+				)[0],
+			);
+		}
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...closeToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: '/each',
+				},
+				undefined,
+				'end',
+			)[0],
+		);
+
+		return expressions;
 	}
 
 	#traverseIfBlock(
