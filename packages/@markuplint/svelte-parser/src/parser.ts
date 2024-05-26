@@ -1,4 +1,4 @@
-import type { SvelteNode } from './svelte-parser/index.js';
+import type { SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
@@ -147,6 +147,31 @@ class SvelteParser extends Parser<SvelteNode> {
 					},
 				);
 			}
+			case 'IfBlock': {
+				const expressions: MLASTPreprocessorSpecificBlock[] = [];
+				const ifElseBlocks = this.#traverseIfBlock(originNode, token.startOffset);
+				for (const ifElseBlock of ifElseBlocks) {
+					const expression = this.visitPsBlock(
+						{
+							...ifElseBlock,
+							depth,
+							parentNode,
+							nodeName: ifElseBlock.type,
+						},
+						ifElseBlock.children,
+						(
+							{
+								if: 'if',
+								elseif: 'if:elseif',
+								else: 'if:else',
+								'/if': 'end',
+							} as const
+						)[ifElseBlock.type],
+					)[0];
+					expressions.push(expression);
+				}
+				return expressions;
+			}
 			default: {
 				return this.visitExpression(
 					{
@@ -267,31 +292,34 @@ class SvelteParser extends Parser<SvelteNode> {
 
 	#traverseIfBlock(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		originBlockNode: SvelteNode,
-		start?: number,
-		nodeName: 'if' | 'elseif' | 'else' = 'if',
+		originBlockNode: SvelteIfBlock,
+		start: number,
+		type: 'if' | 'elseif' | 'else' = 'if',
 	) {
-		const result: (Token & { children: SvelteNode[]; nodeName: 'if' | 'elseif' | 'else' | '/if' })[] = [];
+		const result: (Token & { children: SvelteNode[]; type: 'if' | 'elseif' | 'else' | '/if' })[] = [];
 
-		start = start ?? originBlockNode.start;
-		const end = originBlockNode.children?.[0]?.start ?? originBlockNode.end;
+		const end = originBlockNode.consequent.nodes?.[0]?.start ?? originBlockNode.end;
 		const tag = this.sliceFragment(start, end);
-		const children = originBlockNode.children ?? [];
+		const children = originBlockNode.consequent.nodes;
 
-		result.push({ ...tag, children, nodeName });
+		result.push({ ...tag, children, type });
 
-		if (originBlockNode.else) {
-			if (originBlockNode.else.children[0].type === 'IfBlock') {
-				const elseif = this.#traverseIfBlock(originBlockNode.else.children[0], children.at(-1)?.end, 'elseif');
+		if (originBlockNode.alternate) {
+			if (originBlockNode.alternate.nodes?.[0]?.type === 'IfBlock') {
+				const elseif = this.#traverseIfBlock(
+					originBlockNode.alternate.nodes[0],
+					children.at(-1)?.end ?? start,
+					'elseif',
+				);
 				result.push(...elseif);
 			} else {
 				const start = children.at(-1)?.end ?? originBlockNode.end;
-				const end = originBlockNode.else.children[0].start;
+				const end = originBlockNode.alternate.nodes?.[0]?.start;
 				const tag = this.sliceFragment(start, end);
 				result.push({
 					...tag,
-					children: originBlockNode.else.children,
-					nodeName: 'else',
+					children: originBlockNode.alternate.nodes,
+					type: 'else',
 				});
 			}
 		}
@@ -301,7 +329,7 @@ class SvelteParser extends Parser<SvelteNode> {
 			const end = originBlockNode.end;
 			const tag = this.sliceFragment(start, end);
 			if (tag.raw) {
-				result.push({ ...tag, children: [], nodeName: '/if' });
+				result.push({ ...tag, children: [], type: '/if' });
 			}
 		}
 
