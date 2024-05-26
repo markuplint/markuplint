@@ -193,6 +193,35 @@ export class SvelteParser extends Parser<SvelteNode> {
 					originNode,
 				);
 			}
+			case 'KeyBlock': {
+				const { openToken, closeToken } = parseBlock(
+					this,
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+
+				return [
+					this.visitPsBlock(
+						{
+							...openToken,
+							depth,
+							parentNode,
+							nodeName: 'key',
+						},
+						originNode.fragment.nodes,
+					)[0],
+					this.visitPsBlock({
+						...closeToken,
+						depth,
+						parentNode,
+						nodeName: '/key',
+					})[0],
+				];
+			}
 		}
 	}
 
