@@ -1,4 +1,4 @@
-import type { SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
+import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
@@ -183,6 +183,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 					originNode,
 				);
 			}
+			case 'AwaitBlock': {
+				return this.#parseAwaitBlock(
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+			}
 		}
 	}
 
@@ -289,6 +299,169 @@ export class SvelteParser extends Parser<SvelteNode> {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
+	}
+
+	#parseAwaitBlock(
+		token: ChildToken,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originBlockNode: SvelteAwaitBlock,
+	) {
+		const { closeToken } = parseBlock(this, token, originBlockNode);
+
+		const pendingNodes = originBlockNode.pending?.nodes ?? [];
+		const thenNodes = originBlockNode.then?.nodes ?? [];
+
+		const pendingEnd = pendingNodes.at(-1)?.end;
+		const thenEnd = thenNodes.at(-1)?.end;
+
+		// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+		const awaitConditionEnd: number = originBlockNode.expression.end;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *            find___^ and cut
+		 *
+		 * `}...{:then name}...{:catch name}...{/await}`
+		 */
+		const rawAwaitConditionBelow = this.rawCode.slice(awaitConditionEnd, originBlockNode.end);
+
+		/**
+		 * `}...{:then name}...{:catch name}...{/await}`
+		 *  ^___find
+		 */
+		const awaitExpEnd = awaitConditionEnd + rawAwaitConditionBelow.indexOf('}') + 1;
+
+		/**
+		 * `{#await expression}`
+		 */
+		const awaitExpToken = this.sliceFragment(token.startOffset, awaitExpEnd);
+
+		let thenToken: Token | null = null;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *                 find___^
+		 */
+		const thenExpStart = pendingEnd ?? awaitExpEnd;
+
+		/**
+		 * `{:then name}...{:catch name}...{/await}`
+		 */
+		const rawPendingNodesBelow = this.rawCode.slice(thenExpStart, originBlockNode.end);
+		if (
+			// eslint-disable-next-line regexp/strict
+			/^{\s*:then[\s|}]/.test(rawPendingNodesBelow)
+		) {
+			let thenExpEndCharOffset: number;
+			if (originBlockNode.value) {
+				const thenIdentifierEnd =
+					// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+					originBlockNode.value.end;
+				const rawThenExpCloseCharAndBelow = this.rawCode.slice(thenIdentifierEnd, originBlockNode.end);
+				const thenExpEndCharIndex = rawThenExpCloseCharAndBelow.indexOf('}') + 1;
+				thenExpEndCharOffset = thenIdentifierEnd + thenExpEndCharIndex;
+			} else {
+				thenExpEndCharOffset = thenExpStart + rawPendingNodesBelow.indexOf('}') + 1;
+			}
+			thenToken = this.sliceFragment(token.startOffset + thenExpStart, thenExpEndCharOffset);
+		}
+
+		let catchToken: Token | null = null;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *                                find___^
+		 *
+		 * If `then` block is not found:
+		 *
+		 * `{#await expression}...{:catch name}...{/await}`
+		 *                 find___^
+		 */
+		const catchExpStart = thenToken
+			? thenEnd ?? thenToken.startOffset + thenToken.raw.length
+			: pendingEnd ?? awaitExpEnd;
+
+		/**
+		 * `{:catch name}...{/await}`
+		 */
+		const rawThenNodesBelow = this.rawCode.slice(catchExpStart, originBlockNode.end);
+		if (
+			// eslint-disable-next-line regexp/strict
+			/^{\s*:catch[\s|}]/.test(rawThenNodesBelow)
+		) {
+			let catchExpEndCharOffset: number;
+			if (originBlockNode.error) {
+				const catchIdentifierEnd =
+					// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+					originBlockNode.error.end;
+				const rawCatchExpCloseCharAndBelow = this.rawCode.slice(catchIdentifierEnd, originBlockNode.end);
+				const catchExpEndCharIndex = rawCatchExpCloseCharAndBelow.indexOf('}') + 1;
+				catchExpEndCharOffset = catchIdentifierEnd + catchExpEndCharIndex;
+			} else {
+				catchExpEndCharOffset = catchExpStart + rawThenNodesBelow.indexOf('}') + 1;
+			}
+			catchToken = this.sliceFragment(token.startOffset + catchExpStart, catchExpEndCharOffset);
+		}
+
+		const expressions: MLASTPreprocessorSpecificBlock[] = [];
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...awaitExpToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: 'await',
+				},
+				originBlockNode.pending?.nodes,
+				'await',
+			)[0],
+		);
+
+		if (thenToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...thenToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'await:then',
+					},
+					originBlockNode.then?.nodes,
+					'await:then',
+				)[0],
+			);
+		}
+
+		if (catchToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...catchToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'await:catch',
+					},
+					originBlockNode.catch?.nodes,
+					'await:catch',
+				)[0],
+			);
+		}
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...closeToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: '/await',
+				},
+				undefined,
+				'end',
+			)[0],
+		);
+
+		return expressions;
 	}
 
 	#parseEachBlock(

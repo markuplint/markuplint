@@ -1,5 +1,6 @@
 import type {
 	Attribute,
+	AwaitBlock,
 	Block,
 	Comment,
 	Directive,
@@ -16,6 +17,7 @@ import { parse } from 'svelte/compiler';
 export type SvelteNode = Text | Tag | ElementLike | Comment | Block;
 export type SvelteIfBlock = IfBlock;
 export type SvelteEachBlock = EachBlock;
+export type SvelteAwaitBlock = AwaitBlock;
 
 export function svelteParse(template: string): SvelteNode[] {
 	const ast = parse(template, { modern: true });
