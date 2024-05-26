@@ -209,6 +209,118 @@ describe('parser', () => {
 		]);
 	});
 
+	test('await then catch statement (2)', () => {
+		const r = parse('{#await expression}...{:then}...{:catch}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:await:catch (await:catch): {:catch}',
+			'[1:41]>[1:44](40,43)#text: ...',
+			'[1:44]>[1:52](43,51)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (3)', () => {
+		const r = parse('{#await expression}{:then name}{:catch name}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:32](19,31)#ps:await:then (await:then): {:then␣name}',
+			'[1:32]>[1:45](31,44)#ps:await:catch (await:catch): {:catch␣name}',
+			'[1:45]>[1:53](44,52)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (4)', () => {
+		const r = parse('{#await expression}{:then}{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:27](19,26)#ps:await:then (await:then): {:then}',
+			'[1:27]>[1:35](26,34)#ps:await:catch (await:catch): {:catch}',
+			'[1:35]>[1:43](34,42)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (5)', () => {
+		const r = parse('{#await expression}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:28](19,27)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (6)', () => {
+		const r = parse('{#await expression}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:31](22,30)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (7)', () => {
+		const r = parse('{#await expression}...{:then}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:38](29,37)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (8)', () => {
+		const r = parse('{#await expression}...{:then}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (9)', () => {
+		const r = parse('{#await expression}...{:then}...{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:await:catch (await:catch): {:catch}',
+			'[1:41]>[1:49](40,48)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (10)', () => {
+		const r = parse('{#await expression}...{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:31](22,30)#ps:await:catch (await:catch): {:catch}',
+			'[1:31]>[1:39](30,38)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (11)', () => {
+		const r = parse('{#await expression}{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:28](19,27)#ps:await:catch (await:catch): {:catch}',
+			'[1:28]>[1:36](27,35)#ps:/await (end): {/await}',
+		]);
+	});
+
 	test('attribute', () => {
 		const r = parse('<el attr-name="value" />');
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
