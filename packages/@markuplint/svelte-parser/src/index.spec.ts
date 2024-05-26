@@ -321,6 +321,75 @@ describe('parser', () => {
 		]);
 	});
 
+	// https://svelte-5-preview.vercel.app/docs/snippets
+	test('snippet', () => {
+		const r = parse('{#snippet name(param)}<div />{/snippet}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:23](0,22)#ps:snippet: {#snippet␣name(param)}',
+			'[1:23]>[1:30](22,29)div: <div␣/>',
+			'[1:30]>[1:40](29,39)#ps:/snippet: {/snippet}',
+		]);
+	});
+
+	test('Snippets API', () => {
+		const r = parse(`{#snippet figure(image)}
+	<figure>
+		<img
+			src={image.src}
+			alt={image.caption}
+			width={image.width}
+			height={image.height}
+		/>
+		<figcaption>{image.caption}</figcaption>
+	</figure>
+{/snippet}
+
+{#each images as image}
+	{#if image.href}
+		<a href={image.href}>
+			{@render figure(image)}
+		</a>
+	{:else}
+		{@render figure(image)}
+	{/if}
+{/each}`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:25](0,24)#ps:snippet: {#snippet␣figure(image)}',
+			'[1:25]>[2:2](24,26)#text: ⏎→',
+			'[2:2]>[2:10](26,34)figure: <figure>',
+			'[2:10]>[3:3](34,37)#text: ⏎→→',
+			'[3:3]>[8:5](37,136)img: <img⏎→→→src={image.src}⏎→→→alt={image.caption}⏎→→→width={image.width}⏎→→→height={image.height}⏎→→/>',
+			'[8:5]>[9:3](136,139)#text: ⏎→→',
+			'[9:3]>[9:15](139,151)figcaption: <figcaption>',
+			'[9:15]>[9:30](151,166)#ps:ExpressionTag: {image.caption}',
+			'[9:30]>[9:43](166,179)figcaption: </figcaption>',
+			'[9:43]>[10:2](179,181)#text: ⏎→',
+			'[10:2]>[10:11](181,190)figure: </figure>',
+			'[10:11]>[11:1](190,191)#text: ⏎',
+			'[11:1]>[11:11](191,201)#ps:/snippet: {/snippet}',
+			'[11:11]>[13:1](201,203)#text: ⏎⏎',
+			'[13:1]>[13:24](203,226)#ps:each (each): {#each␣images␣as␣image}',
+			'[13:24]>[14:2](226,228)#text: ⏎→',
+			'[14:2]>[14:18](228,244)#ps:if (if): {#if␣image.href}',
+			'[14:18]>[15:3](244,247)#text: ⏎→→',
+			'[15:3]>[15:24](247,268)a: <a␣href={image.href}>',
+			'[15:24]>[16:4](268,272)#text: ⏎→→→',
+			'[16:4]>[16:27](272,295)#ps:RenderTag: {@render␣figure(image)}',
+			'[16:27]>[17:3](295,298)#text: ⏎→→',
+			'[17:3]>[17:7](298,302)a: </a>',
+			'[17:7]>[18:2](302,304)#text: ⏎→',
+			'[18:2]>[18:9](304,311)#ps:else (if:else): {:else}',
+			'[18:9]>[19:3](311,314)#text: ⏎→→',
+			'[19:3]>[19:26](314,337)#ps:RenderTag: {@render␣figure(image)}',
+			'[19:26]>[20:2](337,339)#text: ⏎→',
+			'[20:2]>[20:7](339,344)#ps:/if (end): {/if}',
+			'[20:7]>[21:1](344,345)#text: ⏎',
+			'[21:1]>[21:8](345,352)#ps:/each (end): {/each}',
+		]);
+	});
+
 	test('attribute', () => {
 		const r = parse('<el attr-name="value" />');
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
