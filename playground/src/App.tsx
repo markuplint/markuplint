@@ -6,7 +6,7 @@ import type { Violations } from './modules/violations';
 import type { Config } from '@markuplint/ml-config';
 
 import { Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Split from 'react-split';
 
 import logo from './assets/images/logo-horizontal.svg';
@@ -75,6 +75,7 @@ export function App() {
 	const [selectedTab, setSelectedTab] = useState<'code' | 'config' | null>(null);
 	const [version, setVersion] = useState<string>();
 	const tabsRef = useRef<HTMLElement>(null);
+	const configHeadingId = useId();
 	const handleSelectExample = useCallback((example: ExampleData) => {
 		setConfigString(example.config);
 		setFileType(example.codeFileType);
@@ -293,23 +294,23 @@ export function App() {
 							selectedTab === null ? 'overflow-x-hidden' : selectedTab === 'code' ? '!w-full' : 'hidden'
 						}
 					>
-						<section>
-							<CodeEditor
-								value={code}
-								filename={filename}
-								violations={violations ?? []}
-								onChange={setCode}
-							/>
-						</section>
+						<CodeEditor value={code} filename={filename} violations={violations ?? []} onChange={setCode} />
+
 						<div className="grid grid-rows-1">
 							<ProblemsOutput violations={violations} />
 						</div>
 					</Split>
-					<section className={selectedTab === null ? '' : selectedTab === 'config' ? '!w-full' : 'hidden'}>
+					<section
+						aria-labelledby={configHeadingId}
+						className={selectedTab === null ? '' : selectedTab === 'config' ? '!w-full' : 'hidden'}
+					>
 						<TabGroup className="grid h-full grid-rows-[auto_minmax(0,1fr)]">
 							<div className="flex min-h-[2.5rem] items-center justify-between gap-2 bg-slate-100 px-4 py-1">
 								<hgroup className="flex flex-wrap items-baseline gap-x-2">
-									<h2 className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only">
+									<h2
+										id={configHeadingId}
+										className="sr-only flex items-baseline gap-2 text-lg font-bold md:not-sr-only"
+									>
 										<span className="icon-heroicons-solid-cog-6-tooth translate-y-[0.15em] text-xl text-slate-500"></span>
 										Config
 									</h2>
