@@ -1212,7 +1212,8 @@ describe('Issues', () => {
 		);
 		const map = dom.debugMap();
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#ml-block: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[1:38](0,37)#ml-block: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}',
+			'[1:38]>[2:2](37,39)#text: ⏎→',
 			'[2:2]>[2:7](39,44)DIV: <div>',
 			'  namespaceURI: true',
 			'  elementType: html',

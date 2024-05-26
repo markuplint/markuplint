@@ -148,7 +148,10 @@ describe('parser', () => {
 	test('each statement (empty)', () => {
 		const r = parse('{#each expression as name}{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
-		expect(map).toStrictEqual(['[1:1]>[1:34](0,33)#ps:each (each): {#each␣expression␣as␣name}{/each}']);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:27](0,26)#ps:each (each): {#each␣expression␣as␣name}',
+			'[1:27]>[1:34](26,33)#ps:/each (end): {/each}',
+		]);
 	});
 
 	test('each else statement', () => {
@@ -170,7 +173,8 @@ describe('parser', () => {
 			'[1:1]>[1:5](0,4)ul: <ul>',
 			'[1:5]>[1:19](4,18)#ps:each (each): {#each␣a␣as␣b}',
 			'[1:19]>[1:23](18,22)li: <li>',
-			'[1:23]>[1:44](22,43)#ps:each (each): {#each␣c␣as␣d}{/each}',
+			'[1:23]>[1:37](22,36)#ps:each (each): {#each␣c␣as␣d}',
+			'[1:37]>[1:44](36,43)#ps:/each (end): {/each}',
 			'[1:44]>[1:49](43,48)li: </li>',
 			'[1:49]>[1:56](48,55)#ps:/each (end): {/each}',
 			'[1:56]>[1:61](55,60)ul: </ul>',
@@ -646,7 +650,8 @@ describe('Issues', () => {
 {/each}`);
 		const map = nodeListToDebugMaps(ast.nodeList, true);
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#ps:each (each): {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[1:38](0,37)#ps:each (each): {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}',
+			'[1:38]>[2:2](37,39)#text: ⏎→',
 			'[2:2]>[2:7](39,44)div: <div>',
 			'[2:7]>[2:13](44,50)#ps:ExpressionTag: {item}',
 			'[2:13]>[2:19](50,56)div: </div>',
