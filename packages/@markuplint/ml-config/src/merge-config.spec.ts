@@ -18,7 +18,20 @@ describe('mergeConfig', () => {
 				},
 			),
 		).toStrictEqual({
-			plugins: ['a', 'b', 'c', 'd'],
+			plugins: [
+				{
+					name: 'a',
+				},
+				{
+					name: 'b',
+				},
+				{
+					name: 'c',
+				},
+				{
+					name: 'd',
+				},
+			],
 		});
 	});
 
@@ -34,8 +47,12 @@ describe('mergeConfig', () => {
 			),
 		).toStrictEqual({
 			plugins: [
-				'a',
-				'b',
+				{
+					name: 'a',
+				},
+				{
+					name: 'b',
+				},
 				{
 					name: 'c',
 					settings: {
@@ -44,7 +61,9 @@ describe('mergeConfig', () => {
 						foo2: 'foo2',
 					},
 				},
-				'd',
+				{
+					name: 'd',
+				},
 			],
 		});
 	});
@@ -292,6 +311,105 @@ describe('mergeRule', () => {
 		).toStrictEqual({
 			value: [],
 			options: {},
+		});
+	});
+});
+
+describe('Preteners', () => {
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: {
+						files: ['./pretenders.json'],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				files: ['./pretenders.json'],
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+		});
+	});
+
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: undefined,
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+		});
+	});
+
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: {
+						files: ['../pretenders.json'],
+						data: [
+							{
+								selector: 'MyComponent2',
+								as: 'section',
+							},
+						],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				files: ['../pretenders.json'],
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+					{
+						selector: 'MyComponent2',
+						as: 'section',
+					},
+				],
+			},
 		});
 	});
 });

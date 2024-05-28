@@ -66,6 +66,7 @@
 	"workspaces": [
 		"packages/*",
 		"packages/@markuplint/*",
+		"packages/@markuplint-test/*",
 		"vscode"
 	],
 	"devDependencies": {

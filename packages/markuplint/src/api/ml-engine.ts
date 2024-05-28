@@ -4,7 +4,15 @@ import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
-import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
+import {
+	ConfigProvider,
+	resolveFiles,
+	resolveParser,
+	resolvePretenders,
+	resolveRules,
+	resolveSpecs,
+} from '@markuplint/file-resolver';
+import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { Emitter } from 'strict-event-emitter';
@@ -259,6 +267,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
+		const pretenders = await this.resolvePretenders(configSet);
+		fileLog('Resolved pretenders: %O', pretenders);
+
 		const ruleset = this.resolveRuleset(configSet);
 		fileLog('Resolved ruleset: %O', ruleset);
 
@@ -291,7 +302,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
-			pretenders: configSet.config.pretenders ?? [],
+			pretenders,
 			ruleset,
 			schemas,
 			rules,
@@ -304,7 +315,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 
-		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
+		const defaultConfigKey =
+			this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
@@ -317,7 +329,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
+		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
 		configLog('option.config: %s', configKey ?? 'N/A');
 		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
@@ -353,6 +365,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('parser', this.#file.path, parser.parserModName);
 		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
+	}
+
+	private async resolvePretenders(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		configSet: ConfigSet,
+	) {
+		const pretenders = await resolvePretenders(configSet.config.pretenders);
+		fileLog('Resolved pretenders: %O', pretenders);
+		return pretenders;
 	}
 
 	private async resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {

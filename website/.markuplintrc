@@ -4,6 +4,9 @@
     ".tsx$": "@markuplint/jsx-parser"
   },
   "specs": ["@markuplint/react-spec"],
+  "pretenders": {
+    "files": ["./pretenders.json"]
+  },
   "rules": {
     "attr-duplication": true,
     "attr-value-quotes": true,
