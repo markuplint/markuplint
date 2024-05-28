@@ -12,7 +12,7 @@ export type Config = {
 	readonly parserOptions?: ParserOptions;
 	readonly specs?: SpecConfig;
 	readonly excludeFiles?: readonly string[];
-	readonly pretenders?: readonly Pretender[];
+	readonly pretenders?: readonly Pretender[] | PretenderDetails;
 	readonly rules?: Rules;
 	readonly nodeRules?: readonly NodeRule[];
 	readonly childNodeRules?: readonly ChildNodeRule[];
@@ -40,9 +40,10 @@ type NoInherit = '$schema' | 'extends' | 'overrideMode' | 'overrides';
 
 export type OverrideConfig = Omit<Config, NoInherit>;
 
-export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'overrides'> & {
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'pretenders' | 'overrides'> & {
 	readonly extends?: readonly string[];
 	readonly plugins?: readonly PluginConfig[];
+	readonly pretenders?: PretenderDetails;
 	readonly overrides?: Readonly<Record<string, OptimizedOverrideConfig>>;
 };
 
@@ -59,6 +60,19 @@ export type ParserConfig = {
 
 export type SpecConfig = {
 	readonly [extensionPattern: string]: string /* module name or path */;
+};
+
+export type PretenderDetails = {
+	/**
+	 * @experimental
+	 */
+	readonly files?: readonly string[];
+
+	/**
+	 * @experimental
+	 */
+	readonly imports?: readonly string[];
+	readonly data?: readonly Pretender[];
 };
 
 export type PretenderFileData = {
