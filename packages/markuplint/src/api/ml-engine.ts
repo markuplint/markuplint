@@ -4,7 +4,14 @@ import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
-import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
+import {
+	ConfigProvider,
+	resolveFiles,
+	resolveParser,
+	resolvePretenders,
+	resolveRules,
+	resolveSpecs,
+} from '@markuplint/file-resolver';
 import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
@@ -260,6 +267,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
+		const pretenders = await this.resolvePretenders(configSet);
+		fileLog('Resolved pretenders: %O', pretenders);
+
 		const ruleset = this.resolveRuleset(configSet);
 		fileLog('Resolved ruleset: %O', ruleset);
 
@@ -292,7 +302,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
-			pretenders: configSet.config.pretenders ?? [],
+			pretenders,
 			ruleset,
 			schemas,
 			rules,
@@ -355,6 +365,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('parser', this.#file.path, parser.parserModName);
 		fileLog('Fetched Parser module: %s', parser.parserModName);
 		return parser;
+	}
+
+	private async resolvePretenders(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		configSet: ConfigSet,
+	) {
+		const pretenders = await resolvePretenders(configSet.config.pretenders);
+		fileLog('Resolved pretenders: %O', pretenders);
+		return pretenders;
 	}
 
 	private async resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
