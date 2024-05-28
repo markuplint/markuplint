@@ -453,4 +453,24 @@ describe('Issues', () => {
 			leftover: '>text</p>',
 		});
 	});
+
+	test('#1769', () => {
+		expect(
+			attrTokenizer('attr={"🐱"}', [
+				{ start: '"', end: '"', type: 'string' },
+				{ start: "'", end: "'", type: 'string' },
+				{ start: '{', end: '}', type: 'script' },
+			]),
+		).toStrictEqual({
+			spacesBeforeAttrName: '',
+			attrName: 'attr',
+			spacesBeforeEqual: '',
+			equal: '=',
+			spacesAfterEqual: '',
+			quoteStart: '{',
+			attrValue: '"🐱"',
+			quoteEnd: '}',
+			leftover: '',
+		});
+	});
 });
