@@ -314,3 +314,102 @@ describe('mergeRule', () => {
 		});
 	});
 });
+
+describe('Preteners', () => {
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: {
+						files: ['./pretenders.json'],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				files: ['./pretenders.json'],
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+		});
+	});
+
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: undefined,
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+				],
+			},
+		});
+	});
+
+	test('test', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: 'div',
+						},
+					],
+				},
+				{
+					pretenders: {
+						files: ['../pretenders.json'],
+						data: [
+							{
+								selector: 'MyComponent2',
+								as: 'section',
+							},
+						],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				files: ['../pretenders.json'],
+				data: [
+					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+					{
+						selector: 'MyComponent2',
+						as: 'section',
+					},
+				],
+			},
+		});
+	});
+});
