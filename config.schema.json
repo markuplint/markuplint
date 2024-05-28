@@ -211,6 +211,76 @@
 					}
 				]
 			}
+		},
+		"pretender": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["selector", "as"],
+			"properties": {
+				"selector": { "type": "string" },
+				"as": {
+					"oneOf": [
+						{ "type": "string" },
+						{
+							"type": "object",
+							"additionalProperties": false,
+							"required": ["element"],
+							"properties": {
+								"element": { "type": "string" },
+								"namespace": {
+									"type": "string",
+									"enum": ["svg"]
+								},
+								"attrs": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"additionalProperties": false,
+										"required": ["name"],
+										"properties": {
+											"name": { "type": "string" },
+											"value": {
+												"oneOf": [
+													{ "type": "string" },
+													{
+														"type": "object",
+														"additionalProperties": false,
+														"required": ["fromAttr"],
+														"properties": {
+															"fromAttr": { "type": "string" }
+														}
+													}
+												]
+											}
+										}
+									}
+								},
+								"aria": {
+									"type": "object",
+									"additionalProperties": false,
+									"required": ["name"],
+									"properties": {
+										"name": { "type": "string" },
+										"value": {
+											"oneOf": [
+												{ "type": "boolean" },
+												{
+													"type": "object",
+													"additionalProperties": false,
+													"required": ["fromAttr"],
+													"properties": {
+														"fromAttr": { "type": "string" }
+													}
+												}
+											]
+										}
+									}
+								}
+							}
+						}
+					]
+				}
+			}
 		}
 	},
 	"type": "object",
@@ -233,74 +303,7 @@
 		"pretenders": {
 			"type": "array",
 			"items": {
-				"type": "object",
-				"additionalProperties": false,
-				"required": ["selector", "as"],
-				"properties": {
-					"selector": { "type": "string" },
-					"as": {
-						"oneOf": [
-							{ "type": "string" },
-							{
-								"type": "object",
-								"additionalProperties": false,
-								"required": ["element"],
-								"properties": {
-									"element": { "type": "string" },
-									"namespace": {
-										"type": "string",
-										"enum": ["svg"]
-									},
-									"attrs": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"additionalProperties": false,
-											"required": ["name"],
-											"properties": {
-												"name": { "type": "string" },
-												"value": {
-													"oneOf": [
-														{ "type": "string" },
-														{
-															"type": "object",
-															"additionalProperties": false,
-															"required": ["fromAttr"],
-															"properties": {
-																"fromAttr": { "type": "string" }
-															}
-														}
-													]
-												}
-											}
-										}
-									},
-									"aria": {
-										"type": "object",
-										"additionalProperties": false,
-										"required": ["name"],
-										"properties": {
-											"name": { "type": "string" },
-											"value": {
-												"oneOf": [
-													{ "type": "boolean" },
-													{
-														"type": "object",
-														"additionalProperties": false,
-														"required": ["fromAttr"],
-														"properties": {
-															"fromAttr": { "type": "string" }
-														}
-													}
-												]
-											}
-										}
-									}
-								}
-							}
-						]
-					}
-				}
+				"$ref": "#/definitions/pretender"
 			}
 		},
 		"overrideMode": {
