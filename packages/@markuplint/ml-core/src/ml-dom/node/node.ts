@@ -153,6 +153,11 @@ export abstract class MLNode<
 	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
 
 	/**
+	 * Returns child nodes when parent node access by `childNodes` property.
+	 */
+	readonly isFragment: boolean;
+
+	/**
 	 * Owner `Document`
 	 *
 	 * @implements DOM API: `Node`
@@ -181,10 +186,12 @@ export abstract class MLNode<
 		astNode: A,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
+		isFragment?: boolean,
 	) {
 		super(astNode);
 		this._astToken = astNode;
 		this.#ownerDocument = document;
+		this.isFragment = !!isFragment;
 		nodeStore.setNode(astNode, this);
 	}
 
