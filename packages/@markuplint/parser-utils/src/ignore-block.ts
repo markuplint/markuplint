@@ -103,6 +103,7 @@ export function restoreNode(
 				parentNode: node.parentNode,
 				childNodes: [],
 				isBogus: false,
+				isFragment: false, // TODO: Case by case
 			};
 
 			replacementChildNodes.push(psNode);
@@ -148,6 +149,7 @@ export function restoreNode(
 				parentNode: node.parentNode,
 				childNodes: [],
 				isBogus: false,
+				isFragment: false, // TODO: Case by case
 			};
 			replacementChildNodes.push(psNode);
 

@@ -175,6 +175,7 @@ class PugParser extends Parser<ASTNode> {
 						parentNode,
 						nodeName: originNode.name,
 						namespace,
+						isFragment: false,
 					},
 					originNode.block.nodes,
 					{
@@ -191,6 +192,7 @@ class PugParser extends Parser<ASTNode> {
 						depth,
 						parentNode,
 						nodeName: originNode.type,
+						isFragment: true,
 					},
 					'block' in originNode && originNode.block
 						? originNode.block.nodes
@@ -213,6 +215,7 @@ class PugParser extends Parser<ASTNode> {
 		token: ChildToken & {
 			readonly nodeName: string;
 			readonly namespace: string;
+			readonly isFragment: false;
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		childNodes: readonly ASTNode[],

@@ -89,6 +89,7 @@ class SvelteParser extends Parser<SvelteNode> {
 					depth,
 					parentNode,
 					nodeName: 'MustacheTag',
+					isFragment: false,
 				});
 			}
 			case 'InlineComponent':
@@ -149,6 +150,7 @@ class SvelteParser extends Parser<SvelteNode> {
 	visitPsBlock(
 		token: ChildToken & {
 			readonly nodeName: string;
+			readonly isFragment: boolean;
 		},
 		childNodes: readonly SvelteNode[] = [],
 		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
@@ -311,6 +313,7 @@ class SvelteParser extends Parser<SvelteNode> {
 						depth: token.depth,
 						parentNode: token.parentNode,
 						nodeName: ifElseBlock.nodeName,
+						isFragment: false,
 					},
 					ifElseBlock.children,
 					(
@@ -411,6 +414,7 @@ class SvelteParser extends Parser<SvelteNode> {
 					depth: token.depth,
 					parentNode: token.parentNode,
 					nodeName: type ?? blockType,
+					isFragment: false,
 				},
 				node.children,
 				type,
@@ -432,6 +436,7 @@ class SvelteParser extends Parser<SvelteNode> {
 						depth: token.depth,
 						parentNode: token.parentNode,
 						nodeName: '/' + blockType,
+						isFragment: false,
 					},
 					[],
 					'end',
