@@ -281,6 +281,12 @@
 					]
 				}
 			}
+		},
+		"pretenders": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/pretender"
+			}
 		}
 	},
 	"type": "object",
@@ -301,10 +307,7 @@
 		"nodeRules": { "$ref": "#/definitions/nodeRules" },
 		"childNodeRules": { "$ref": "#/definitions/childNodeRules" },
 		"pretenders": {
-			"type": "array",
-			"items": {
-				"$ref": "#/definitions/pretender"
-			}
+			"$ref": "#/definitions/pretenders"
 		},
 		"overrideMode": {
 			"type": "string",
