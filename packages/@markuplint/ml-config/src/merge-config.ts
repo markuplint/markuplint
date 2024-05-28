@@ -6,6 +6,8 @@ import type {
 	OptimizedConfig,
 	OverrideConfig,
 	OptimizedOverrideConfig,
+	PretenderDetails,
+	Pretender,
 } from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
@@ -32,7 +34,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
-		pretenders: concatArray(a.pretenders, b.pretenders),
+		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(
 			// TODO: Deep merge
 			a.rules,
@@ -96,6 +98,29 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+function mergePretenders(
+	a?: readonly Pretender[] | PretenderDetails,
+	b?: readonly Pretender[] | PretenderDetails,
+): PretenderDetails | undefined {
+	if (!a && !b) {
+		return;
+	}
+	const aDetails = a ? convertPretenersToDetails(a) : undefined;
+	const bDetails = b ? convertPretenersToDetails(b) : undefined;
+	const details = mergeObject(aDetails, bDetails) ?? {};
+	deleteUndefProp(details);
+	return details;
+}
+
+function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
+	if (isReadonlyArray(pretenders)) {
+		return {
+			data: pretenders,
+		};
+	}
+	return pretenders;
 }
 
 function mergeOverrides(
