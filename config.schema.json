@@ -287,6 +287,31 @@
 			"items": {
 				"$ref": "#/definitions/pretender"
 			}
+		},
+		"pretenderDetails": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"files": {
+					"description": "@experimental",
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "string"
+					}
+				},
+				"imports": {
+					"description": "@experimental",
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "string"
+					}
+				},
+				"data": {
+					"$ref": "#/definitions/pretenders"
+				}
+			}
 		}
 	},
 	"type": "object",
@@ -307,7 +332,14 @@
 		"nodeRules": { "$ref": "#/definitions/nodeRules" },
 		"childNodeRules": { "$ref": "#/definitions/childNodeRules" },
 		"pretenders": {
-			"$ref": "#/definitions/pretenders"
+			"oneOf": [
+				{
+					"$ref": "#/definitions/pretenders"
+				},
+				{
+					"$ref": "#/definitions/pretenderDetails"
+				}
+			]
 		},
 		"overrideMode": {
 			"type": "string",
