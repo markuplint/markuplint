@@ -41083,6 +41083,9 @@
 						"missingValueDefault": "none",
 						"invalidValueDefault": "none"
 					}
+				},
+				"shadowrootserializable": {
+					"type": "Boolean"
 				}
 			}
 		},
