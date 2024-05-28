@@ -18,7 +18,20 @@ describe('mergeConfig', () => {
 				},
 			),
 		).toStrictEqual({
-			plugins: ['a', 'b', 'c', 'd'],
+			plugins: [
+				{
+					name: 'a',
+				},
+				{
+					name: 'b',
+				},
+				{
+					name: 'c',
+				},
+				{
+					name: 'd',
+				},
+			],
 		});
 	});
 
@@ -34,8 +47,12 @@ describe('mergeConfig', () => {
 			),
 		).toStrictEqual({
 			plugins: [
-				'a',
-				'b',
+				{
+					name: 'a',
+				},
+				{
+					name: 'b',
+				},
 				{
 					name: 'c',
 					settings: {
@@ -44,7 +61,9 @@ describe('mergeConfig', () => {
 						foo2: 'foo2',
 					},
 				},
-				'd',
+				{
+					name: 'd',
+				},
 			],
 		});
 	});

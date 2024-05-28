@@ -1,6 +1,6 @@
 import type { MLFile } from './ml-file/index.js';
 import type { ConfigSet } from './types.js';
-import type { Config } from '@markuplint/ml-config';
+import type { Config, OptimizedConfig } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
 import path from 'node:path';
@@ -120,7 +120,7 @@ export class ConfigProvider {
 						const plugin = plugins.find(plugin => plugin.name === namespace);
 						const config = plugin?.configs?.[name ?? ''];
 						if (config) {
-							this.set(config, held);
+							this.set(mergeConfig(config), held);
 						}
 						break;
 					}
@@ -188,7 +188,7 @@ export class ConfigProvider {
 		return filePath;
 	}
 
-	set(config: Config, key?: string) {
+	set(config: OptimizedConfig, key?: string) {
 		key = key ?? uuid();
 		this.#store.set(key, config);
 		return key;
@@ -242,7 +242,7 @@ export class ConfigProvider {
 			errs.push(...keySet.errs);
 		}
 		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
-		let resultConfig: Config = {};
+		let resultConfig: OptimizedConfig = {};
 		for (const config of configs) {
 			if (config instanceof ConfigLoadError) {
 				errs.push(config);
@@ -259,15 +259,16 @@ export class ConfigProvider {
 	}
 
 	private async _pathResolve(config: Config, filePath: string): Promise<Config> {
+		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
 		return {
-			...config,
-			extends: await relPathToNameOrAbsPath(dir, config.extends),
-			plugins: await relPathToNameOrAbsPath(dir, config.plugins, ['name']),
-			parser: await relPathToNameOrAbsPath(dir, config.parser),
-			specs: await relPathToNameOrAbsPath(dir, config.specs),
-			excludeFiles: await relPathToNameOrAbsPath(dir, config.excludeFiles),
-			overrides: await relPathToNameOrAbsPath(dir, config.overrides, undefined, true),
+			...optimizedConfig,
+			extends: await relPathToNameOrAbsPath(dir, optimizedConfig.extends),
+			plugins: await relPathToNameOrAbsPath(dir, optimizedConfig.plugins, ['name']),
+			parser: await relPathToNameOrAbsPath(dir, optimizedConfig.parser),
+			specs: await relPathToNameOrAbsPath(dir, optimizedConfig.specs),
+			excludeFiles: await relPathToNameOrAbsPath(dir, optimizedConfig.excludeFiles),
+			overrides: await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true),
 		};
 	}
 

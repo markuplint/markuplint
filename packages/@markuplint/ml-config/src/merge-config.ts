@@ -1,4 +1,12 @@
-import type { Config, AnyRule, AnyRuleV2, Rules } from './types.js';
+import type {
+	Config,
+	AnyRule,
+	AnyRuleV2,
+	Rules,
+	OptimizedConfig,
+	OverrideConfig,
+	OptimizedOverrideConfig,
+} from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
@@ -6,15 +14,25 @@ import deepmerge from 'deepmerge';
 
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
-export function mergeConfig(a: Config, b: Config): Config {
-	const config: Config = {
+export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
+	const deleteExtendsProp = !!b;
+	b = b ?? {};
+	const config: OptimizedConfig = {
 		...a,
 		...b,
-		plugins: concatArray(a.plugins, b.plugins, true, 'name'),
+		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
+			if (typeof plugin === 'string') {
+				return {
+					name: plugin,
+				};
+			}
+			return plugin;
+		}),
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
+		pretenders: concatArray(a.pretenders, b.pretenders),
 		rules: mergeRules(
 			// TODO: Deep merge
 			a.rules,
@@ -23,10 +41,13 @@ export function mergeConfig(a: Config, b: Config): Config {
 		nodeRules: concatArray(a.nodeRules, b.nodeRules),
 		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
 		overrideMode: b.overrideMode ?? a.overrideMode,
-		overrides: mergeObject(a.overrides, b.overrides),
-		// delete all
-		extends: undefined,
+		overrides: mergeOverrides(a.overrides, b.overrides),
+		extends: concatArray(toReadonlyArray(a.extends), toReadonlyArray(b.extends)),
 	};
+	if (deleteExtendsProp) {
+		// @ts-ignore
+		delete config.extends;
+	}
 	deleteUndefProp(config);
 	return config;
 }
@@ -75,6 +96,35 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+function mergeOverrides(
+	a: Record<string, OverrideConfig> = {},
+	b: Record<string, OverrideConfig> = {},
+): Record<string, OptimizedOverrideConfig> | undefined {
+	const keys = new Set<string>();
+	for (const key of Object.keys(a)) keys.add(key);
+	for (const key of Object.keys(b)) keys.add(key);
+
+	if (keys.size === 0) {
+		return;
+	}
+
+	const result: Record<string, OptimizedOverrideConfig> = {};
+
+	for (const key of keys) {
+		const config = mergeConfig(a[key] ?? {}, b[key] ?? {});
+		// @ts-ignore
+		delete config.$schema;
+		// @ts-ignore
+		delete config.extends;
+		// @ts-ignore
+		delete config.overrides;
+		deleteUndefProp(config);
+		result[key] = config;
+	}
+
+	return result;
 }
 
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
@@ -194,4 +244,27 @@ function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined 
 		return rule;
 	}
 	return cleanOptions(rule);
+}
+
+function toReadonlyArray<T>(value: NonNullable<T> | readonly NonNullable<T>[] | undefined): readonly T[] {
+	if (value == null) {
+		return [];
+	}
+
+	return isReadonlyArray(value) ? value : ([value] as const);
+}
+
+/**
+ * Checks if a value is a readonly array.
+ *
+ * If the array is readonly, it passes the type check.
+ * However, it saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value is a readonly array, `false` otherwise.
+ * @template T - The type of elements in the array.
+ * @template X - The type of the value if it's not an array.
+ */
+function isReadonlyArray<T, X = unknown>(value: readonly T[] | X): value is ReadonlyArray<T> {
+	return Array.isArray(value);
 }

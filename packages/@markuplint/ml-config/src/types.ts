@@ -36,11 +36,21 @@ export type NonNullablePlainData =
 			readonly [key: string]: NonNullablePlainData;
 	  };
 
-export type OverrideConfig = Omit<Config, '$schema' | 'extends' | 'overrideMode' | 'overrides'>;
+type NoInherit = '$schema' | 'extends' | 'overrideMode' | 'overrides';
+
+export type OverrideConfig = Omit<Config, NoInherit>;
+
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'overrides'> & {
+	readonly extends?: readonly string[];
+	readonly plugins?: readonly PluginConfig[];
+	readonly overrides?: Readonly<Record<string, OptimizedOverrideConfig>>;
+};
+
+export type OptimizedOverrideConfig = Omit<OptimizedConfig, NoInherit>;
 
 export type PluginConfig = {
 	readonly name: string;
-	readonly settings: Readonly<Record<string, NonNullablePlainData>>;
+	readonly settings?: Readonly<Record<string, NonNullablePlainData>>;
 };
 
 export type ParserConfig = {

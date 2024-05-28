@@ -5,6 +5,7 @@ import type { PlainData } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import { ConfigProvider, resolveFiles, resolveParser, resolveRules, resolveSpecs } from '@markuplint/file-resolver';
+import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
 import { FSWatcher } from 'chokidar';
 import { Emitter } from 'strict-event-emitter';
@@ -304,7 +305,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 
-		const defaultConfigKey = this.#options?.defaultConfig && this.#configProvider.set(this.#options?.defaultConfig);
+		const defaultConfigKey =
+			this.#options?.defaultConfig && this.#configProvider.set(mergeConfig(this.#options?.defaultConfig));
 		configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 		this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
@@ -317,7 +319,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
-		const configKey = this.#options?.config && this.#configProvider.set(this.#options.config);
+		const configKey = this.#options?.config && this.#configProvider.set(mergeConfig(this.#options.config));
 		configLog('option.config: %s', configKey ?? 'N/A');
 		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
