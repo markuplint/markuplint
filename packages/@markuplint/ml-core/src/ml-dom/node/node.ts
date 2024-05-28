@@ -150,7 +150,7 @@ export abstract class MLNode<
 	/**
 	 * Cached `childNodes` property
 	 */
-	#childNodes: NodeListOf<MLChildNode<T, O>> | undefined;
+	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
 
 	/**
 	 * Owner `Document`
@@ -207,8 +207,8 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-childnodes%E2%91%A0
 	 */
 	get childNodes(): NodeListOf<MLChildNode<T, O>> {
-		if (this.#childNodes != null) {
-			return this.#childNodes;
+		if (this.#pureChildNodesCache != null) {
+			return this.#pureChildNodesCache;
 		}
 		if (this.is(this.DOCUMENT_NODE)) {
 			const childNodes: MLChildNode<T, O>[] = [];
@@ -219,8 +219,8 @@ export abstract class MLNode<
 			}
 
 			// Cache
-			this.#childNodes = toNodeList(childNodes);
-			return this.#childNodes;
+			this.#pureChildNodesCache = toNodeList(childNodes);
+			return this.#pureChildNodesCache;
 		}
 		if (
 			this.is(this.DOCUMENT_FRAGMENT_NODE) ||
@@ -240,12 +240,12 @@ export abstract class MLNode<
 				.filter(node => isChildNode(node));
 
 			// Cache
-			this.#childNodes = toNodeList(childNodes);
-			return this.#childNodes;
+			this.#pureChildNodesCache = toNodeList(childNodes);
+			return this.#pureChildNodesCache;
 		}
 		// Cache
-		this.#childNodes = toNodeList([]);
-		return this.#childNodes;
+		this.#pureChildNodesCache = toNodeList([]);
+		return this.#pureChildNodesCache;
 	}
 
 	/**
@@ -984,6 +984,6 @@ export abstract class MLNode<
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		childNodes?: NodeListOf<MLChildNode<T, O>>,
 	) {
-		this.#childNodes = childNodes ?? this.#childNodes;
+		this.#pureChildNodesCache = childNodes ?? this.#pureChildNodesCache;
 	}
 }
