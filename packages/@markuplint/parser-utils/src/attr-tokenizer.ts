@@ -154,7 +154,8 @@ export function attrTokenizer(
 					const raw = char + chars.join('');
 					const { validScript } = safeScriptParser(raw, parser);
 					attrValue += validScript;
-					chars.splice(0, validScript.length - 1);
+					const length = [...validScript].length;
+					chars.splice(0, length - 1);
 					break;
 				}
 
