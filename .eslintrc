@@ -4,6 +4,7 @@
 		"plugin:unicorn/recommended",
 		"plugin:regexp/recommended",
 		"plugin:import/recommended",
+		"plugin:@eslint-community/eslint-comments/recommended",
 		"plugin:import/typescript"
 	],
 	"env": {
@@ -12,7 +13,7 @@
 		"node": true,
 		"commonjs": false
 	},
-	"plugins": ["unicorn", "@typescript-eslint", "jsdoc", "eslint-comments", "import", "sort-class-members"],
+	"plugins": ["unicorn", "@typescript-eslint", "jsdoc", "import", "sort-class-members"],
 	"parserOptions": {
 		"ecmaVersion": 13
 	},
@@ -42,12 +43,7 @@
 		"unicorn/prefer-ternary": 0,
 		"unicorn/prevent-abbreviations": 0,
 
-		"eslint-comments/disable-enable-pair": "error",
-		"eslint-comments/no-duplicate-disable": "error",
-		"eslint-comments/no-unlimited-disable": "error",
-		"eslint-comments/no-unused-disable": "error",
-		"eslint-comments/no-unused-enable": "error",
-		"eslint-comments/no-use": "off",
+		"@eslint-community/eslint-comments/no-unused-disable": "error",
 
 		"import/no-named-as-default": 0,
 		"import/no-default-export": 2,
