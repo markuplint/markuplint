@@ -214,7 +214,16 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-childnodes%E2%91%A0
 	 */
 	get childNodes(): NodeListOf<MLChildNode<T, O>> {
-		return this.getPureChildNodes();
+		const pureChildNodes = [...this.getPureChildNodes()];
+
+		const childNodes = pureChildNodes.flatMap(node => {
+			if (node.isFragment) {
+				return [...node.childNodes];
+			}
+			return [node];
+		});
+
+		return toNodeList(childNodes);
 	}
 
 	/**
