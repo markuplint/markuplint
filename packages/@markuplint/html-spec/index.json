@@ -48386,7 +48386,7 @@
 			"name": "svg:view",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
-			"description": "A view is a defined way to view the image, like a zoom level or a detail view.",
+			"description": "The <view> SVG element defines a particular view of an SVG document. A specific view can be displayed by referencing the <view> element's id as the target fragment of a URL.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
