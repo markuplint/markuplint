@@ -8,6 +8,16 @@
 	"private": false,
 	"main": "index.js",
 	"types": "index.d.ts",
+	"exports": {
+		".": {
+			"import": {
+				"default": "./index.js",
+				"types": "./index.d.ts"
+			},
+			"require": "./index.js"
+		},
+		"./json": "./index.json"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
