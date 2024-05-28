@@ -54,6 +54,7 @@ class AstroParser extends Parser<Node, State> {
 					depth,
 					parentNode,
 					nodeName: 'Frontmatter',
+					isFragment: false,
 				});
 			}
 			case 'doctype': {
@@ -126,6 +127,7 @@ class AstroParser extends Parser<Node, State> {
 							depth,
 							parentNode,
 							nodeName: 'MustacheTag',
+							isFragment: false,
 						}),
 					);
 				}
@@ -140,6 +142,7 @@ class AstroParser extends Parser<Node, State> {
 							depth,
 							parentNode,
 							nodeName: 'MustacheTag',
+							isFragment: true,
 						},
 						originNode.children,
 					),

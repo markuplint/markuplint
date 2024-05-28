@@ -68,6 +68,7 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly depth: number;
 	readonly namespace: string;
 	readonly elementType: ElementType;
+	readonly isFragment: boolean;
 	readonly attributes: readonly MLASTAttr[];
 	readonly hasSpreadAttr?: boolean;
 	readonly childNodes: readonly MLASTChildNode[];
@@ -92,6 +93,7 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
 	readonly depth: number;
 	readonly nodeName: string;
+	readonly isFragment: boolean;
 	readonly childNodes: readonly MLASTChildNode[];
 	readonly isBogus: boolean;
 }

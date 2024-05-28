@@ -21,7 +21,7 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
 	) {
-		super(astNode, document);
+		super(astNode, document, astNode.isFragment);
 		// TODO:
 		this.isTransparent = true;
 		this.conditionalType = astNode.conditionalType;

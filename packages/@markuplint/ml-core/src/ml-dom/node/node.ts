@@ -150,7 +150,12 @@ export abstract class MLNode<
 	/**
 	 * Cached `childNodes` property
 	 */
-	#childNodes: NodeListOf<MLChildNode<T, O>> | undefined;
+	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
+
+	/**
+	 * Returns child nodes when parent node access by `childNodes` property.
+	 */
+	readonly isFragment: boolean;
 
 	/**
 	 * Owner `Document`
@@ -181,10 +186,12 @@ export abstract class MLNode<
 		astNode: A,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
+		isFragment?: boolean,
 	) {
 		super(astNode);
 		this._astToken = astNode;
 		this.#ownerDocument = document;
+		this.isFragment = !!isFragment;
 		nodeStore.setNode(astNode, this);
 	}
 
@@ -207,45 +214,16 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-childnodes%E2%91%A0
 	 */
 	get childNodes(): NodeListOf<MLChildNode<T, O>> {
-		if (this.#childNodes != null) {
-			return this.#childNodes;
-		}
-		if (this.is(this.DOCUMENT_NODE)) {
-			const childNodes: MLChildNode<T, O>[] = [];
-			for (const node of this.nodeList) {
-				if (isChildNode(node) && (node.parentNode === this || node.parentNode === null)) {
-					childNodes.push(node);
-				}
+		const pureChildNodes = [...this.getPureChildNodes()];
+
+		const childNodes = pureChildNodes.flatMap(node => {
+			if (node.isFragment) {
+				return [...node.childNodes];
 			}
+			return [node];
+		});
 
-			// Cache
-			this.#childNodes = toNodeList(childNodes);
-			return this.#childNodes;
-		}
-		if (
-			this.is(this.DOCUMENT_FRAGMENT_NODE) ||
-			this.is(this.ELEMENT_NODE) ||
-			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
-		) {
-			const astChildren: Exclude<MLASTChildNode, MLASTElementCloseTag | MLASTInvalid>[] =
-				// @ts-ignore
-				this._astToken?.childNodes?.filter(node => {
-					if (node.type === 'endtag' || node.type === 'invalid') {
-						return null;
-					}
-					return node;
-				}) ?? [];
-			const childNodes = astChildren
-				.map(node => nodeStore.getNode<typeof node, T, O>(node))
-				.filter(node => isChildNode(node));
-
-			// Cache
-			this.#childNodes = toNodeList(childNodes);
-			return this.#childNodes;
-		}
-		// Cache
-		this.#childNodes = toNodeList([]);
-		return this.#childNodes;
+		return toNodeList(childNodes);
 	}
 
 	/**
@@ -806,6 +784,52 @@ export abstract class MLNode<
 	}
 
 	/**
+	 *
+	 * @implements DOM API: `MLNode`
+	 */
+	getPureChildNodes(): NodeListOf<MLChildNode<T, O>> {
+		if (this.#pureChildNodesCache != null) {
+			return this.#pureChildNodesCache;
+		}
+		if (this.is(this.DOCUMENT_NODE)) {
+			const childNodes: MLChildNode<T, O>[] = [];
+			for (const node of this.nodeList) {
+				if (isChildNode(node) && (node.parentNode === this || node.parentNode === null)) {
+					childNodes.push(node);
+				}
+			}
+
+			// Cache
+			this.#pureChildNodesCache = toNodeList(childNodes);
+			return this.#pureChildNodesCache;
+		}
+		if (
+			this.is(this.DOCUMENT_FRAGMENT_NODE) ||
+			this.is(this.ELEMENT_NODE) ||
+			this.is(this.MARKUPLINT_PREPROCESSOR_BLOCK)
+		) {
+			const astChildren: Exclude<MLASTChildNode, MLASTElementCloseTag | MLASTInvalid>[] =
+				// @ts-ignore
+				this._astToken?.childNodes?.filter(node => {
+					if (node.type === 'endtag' || node.type === 'invalid') {
+						return null;
+					}
+					return node;
+				}) ?? [];
+			const childNodes = astChildren
+				.map(node => nodeStore.getNode<typeof node, T, O>(node))
+				.filter(node => isChildNode(node));
+
+			// Cache
+			this.#pureChildNodesCache = toNodeList(childNodes);
+			return this.#pureChildNodesCache;
+		}
+		// Cache
+		this.#pureChildNodesCache = toNodeList([]);
+		return this.#pureChildNodesCache;
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported
@@ -984,6 +1008,6 @@ export abstract class MLNode<
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		childNodes?: NodeListOf<MLChildNode<T, O>>,
 	) {
-		this.#childNodes = childNodes ?? this.#childNodes;
+		this.#pureChildNodesCache = childNodes ?? this.#pureChildNodesCache;
 	}
 }

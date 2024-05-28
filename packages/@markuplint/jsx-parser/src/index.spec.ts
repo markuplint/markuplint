@@ -81,6 +81,15 @@ describe('parse', () => {
 		]);
 	});
 
+	test('isFragment', () => {
+		const ast = parse('<div><><ul><li>item</li></ul></></div>');
+		expect(ast.nodeList[0].isFragment).toBe(false);
+		expect(ast.nodeList[1].isFragment).toBe(true);
+		expect(ast.nodeList[2].isFragment).toBe(false);
+		expect(ast.nodeList[3].isFragment).toBe(false);
+		expect(ast.nodeList[4].isFragment).toBe(undefined);
+	});
+
 	test('Code', () => {
 		const ast = parse('const El = <>item</>;const El2 = () => <>item2</>;');
 		const maps = nodeListToDebugMaps(ast.nodeList);
