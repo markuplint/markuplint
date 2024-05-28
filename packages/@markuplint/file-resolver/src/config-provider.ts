@@ -258,7 +258,7 @@ export class ConfigProvider {
 		};
 	}
 
-	private async _pathResolve(config: Config, filePath: string): Promise<Config> {
+	private async _pathResolve(config: Config, filePath: string): Promise<OptimizedConfig> {
 		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
 		return {
@@ -268,6 +268,12 @@ export class ConfigProvider {
 			parser: await relPathToNameOrAbsPath(dir, optimizedConfig.parser),
 			specs: await relPathToNameOrAbsPath(dir, optimizedConfig.specs),
 			excludeFiles: await relPathToNameOrAbsPath(dir, optimizedConfig.excludeFiles),
+			pretenders: optimizedConfig.pretenders
+				? {
+						...optimizedConfig.pretenders,
+						files: await relPathToNameOrAbsPath(dir, optimizedConfig.pretenders?.files),
+					}
+				: undefined,
 			overrides: await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true),
 		};
 	}
