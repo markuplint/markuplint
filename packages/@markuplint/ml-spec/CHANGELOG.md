@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.0...@markuplint/ml-spec@4.6.1) (2024-05-28)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
 # [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.5.1...@markuplint/ml-spec@4.6.0) (2024-05-12)
 
 ### Features
