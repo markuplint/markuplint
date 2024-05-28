@@ -29,25 +29,6 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 		}
 	}, [violations]);
 
-	useEffect(() => {
-		(async () => {
-			const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] as const satisfies Parameters<
-				typeof getHighlighter
-			>[0]['langs'];
-
-			for (const lang of ADDITIONAL_LANGUAGES) {
-				monacoRef.current?.languages.register({ id: lang });
-			}
-
-			const highlighter = await getHighlighter({
-				themes: ['dark-plus'],
-				langs: ADDITIONAL_LANGUAGES,
-			});
-
-			// https://shiki.matsu.io/packages/monaco
-			shikiToMonaco(highlighter, monacoRef.current);
-		})();
-	}, [monacoRef.current]);
 	return (
 		<section aria-labelledby={headingId}>
 			<div className="grid h-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
@@ -79,6 +60,24 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 					onMount={(editor, monaco) => {
 						editorRef.current = editor;
 						monacoRef.current = monaco;
+
+						(async () => {
+							const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] as const satisfies Parameters<
+								typeof getHighlighter
+							>[0]['langs'];
+
+							for (const lang of ADDITIONAL_LANGUAGES) {
+								monacoRef.current?.languages.register({ id: lang });
+							}
+
+							const highlighter = await getHighlighter({
+								themes: ['dark-plus'],
+								langs: ADDITIONAL_LANGUAGES,
+							});
+
+							// https://shiki.matsu.io/packages/monaco
+							shikiToMonaco(highlighter, monacoRef.current);
+						})();
 					}}
 					onChange={value => {
 						if (value !== undefined) {
