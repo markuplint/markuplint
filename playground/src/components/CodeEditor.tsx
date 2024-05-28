@@ -31,7 +31,7 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 
 	useEffect(() => {
 		(async () => {
-			const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] satisfies Parameters<
+			const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] as const satisfies Parameters<
 				typeof getHighlighter
 			>[0]['langs'];
 
@@ -41,7 +41,7 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 
 			const highlighter = await getHighlighter({
 				themes: ['dark-plus'],
-				langs: ['html', 'json', ...ADDITIONAL_LANGUAGES],
+				langs: ADDITIONAL_LANGUAGES,
 			});
 
 			// https://shiki.matsu.io/packages/monaco
