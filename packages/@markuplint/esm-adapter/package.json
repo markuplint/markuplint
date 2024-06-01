@@ -19,7 +19,7 @@
 	},
 	"scripts": {},
 	"dependencies": {
-		"debug": "4.3.4",
+		"debug": "4.3.5",
 		"default-markuplint": "npm:markuplint@latest",
 		"latest-markuplint-ml-spec": "npm:@markuplint/ml-spec@latest",
 		"strict-event-emitter": "0.5.1"
