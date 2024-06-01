@@ -178,6 +178,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					parentNode: null,
 					raw,
 					nodeName: 'front-matter',
+					isFragment: false,
 				})[0];
 				if (!fmNode) {
 					throw new ParserError('Unexpected front matter', firstTextNode ?? token);
@@ -406,6 +407,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tagCloseChar: '',
 				tagOpenChar: '',
 				isGhost: true,
+				isFragment: false,
 				...overwriteProps,
 			};
 
@@ -445,6 +447,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	visitPsBlock(
 		token: ChildToken & {
 			readonly nodeName: string;
+			readonly isFragment: boolean;
 		},
 		childNodes: readonly Node[] = [],
 		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
@@ -1351,9 +1354,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const tagToken = this.createToken(rawCodeFragment, tagStartOffset, tagStartLine, tagStartCol);
 
+		const isFragment = tagName === '';
+
 		const commons = {
 			depth,
-			nodeName: tagName || '#jsx-fragment',
+			nodeName: isFragment ? '#jsx-fragment' : tagName,
 			parentNode: null,
 		};
 
@@ -1371,6 +1376,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					tagCloseChar: selfClosingSolidusChar + '>',
 					selfClosingSolidus,
 					isGhost: false,
+					isFragment,
 				}
 			: {
 					...tagToken,

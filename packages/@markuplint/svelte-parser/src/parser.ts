@@ -104,6 +104,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					depth,
 					parentNode,
 					nodeName: 'ExpressionTag',
+					isFragment: false,
 				});
 			}
 			case 'Component':
@@ -158,6 +159,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 							depth,
 							parentNode,
 							nodeName: ifElseBlock.type,
+							isFragment: false,
 						},
 						ifElseBlock.children,
 						(
@@ -211,6 +213,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 							depth,
 							parentNode,
 							nodeName: 'key',
+							isFragment: true,
 						},
 						originNode.fragment.nodes,
 					)[0],
@@ -219,6 +222,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth,
 						parentNode,
 						nodeName: '/key',
+						isFragment: true,
 					})[0],
 				];
 			}
@@ -240,6 +244,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 							depth,
 							parentNode,
 							nodeName: 'snippet',
+							isFragment: false,
 						},
 						originNode.body.nodes,
 					)[0],
@@ -248,6 +253,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth,
 						parentNode,
 						nodeName: '/snippet',
+						isFragment: false,
 					})[0],
 				];
 			}
@@ -260,6 +266,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth,
 						parentNode,
 						nodeName: originNode.type,
+						isFragment: true,
 					},
 					childNodes,
 				);
@@ -270,6 +277,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	visitPsBlock(
 		token: ChildToken & {
 			readonly nodeName: string;
+			readonly isFragment: boolean;
 		},
 		childNodes: readonly SvelteNode[] = [],
 		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
@@ -483,6 +491,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					depth: token.depth,
 					parentNode: token.parentNode,
 					nodeName: 'await',
+					isFragment: false,
 				},
 				originBlockNode.pending?.nodes,
 				'await',
@@ -497,6 +506,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth: token.depth,
 						parentNode: token.parentNode,
 						nodeName: 'await:then',
+						isFragment: false,
 					},
 					originBlockNode.then?.nodes,
 					'await:then',
@@ -512,6 +522,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth: token.depth,
 						parentNode: token.parentNode,
 						nodeName: 'await:catch',
+						isFragment: false,
 					},
 					originBlockNode.catch?.nodes,
 					'await:catch',
@@ -526,6 +537,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					depth: token.depth,
 					parentNode: token.parentNode,
 					nodeName: '/await',
+					isFragment: false,
 				},
 				undefined,
 				'end',
@@ -585,6 +597,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					depth: token.depth,
 					parentNode: token.parentNode,
 					nodeName: 'each',
+					isFragment: false,
 				},
 				originBlockNode.body.nodes,
 				'each',
@@ -599,6 +612,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth: token.depth,
 						parentNode: token.parentNode,
 						nodeName: 'each:empty',
+						isFragment: false,
 					},
 					originBlockNode.fallback?.nodes,
 					'each:empty',
@@ -613,6 +627,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					depth: token.depth,
 					parentNode: token.parentNode,
 					nodeName: '/each',
+					isFragment: false,
 				},
 				undefined,
 				'end',

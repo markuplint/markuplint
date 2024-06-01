@@ -1631,4 +1631,15 @@ describe('Issues', () => {
 </svg>`;
 		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 	});
+
+	test('#1767', async () => {
+		const parser = {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		} as const;
+		expect((await mlRuleTest(rule, '<div><><span></span></></div>', parser)).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<ul><><li></li></></ul>', parser)).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
+	});
 });

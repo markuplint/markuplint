@@ -209,8 +209,7 @@ div#hoge.foo.bar
 				parser: await import('@markuplint/pug-parser'),
 			},
 		);
-		// @ts-ignore
-		const a = el.childNodes[0].childNodes[0];
+		const a = el.childNodes[0];
 		expect(el.matches('*')).toBeTruthy();
 		expect(el.matches('div')).toBeTruthy();
 		expect(el.matches('div#hoge')).toBeTruthy();
@@ -1070,17 +1069,17 @@ describe('Issues', () => {
 	});
 
 	test('#641', async () => {
-		const dom = createTestDocument('<p>{array.map(_ => <></>)}</p>', {
+		const dom = createTestDocument('<p>{array.map(_ => <>A</>)}</p>', {
 			parser: await import('@markuplint/jsx-parser'),
 		});
 		expect(dom.nodeList[0].raw).toBe('<p>');
-		expect(dom.nodeList[1].raw).toBe('{array.map(_ => <></>)}');
+		expect(dom.nodeList[1].raw).toBe('{array.map(_ => <>A</>)}');
 		expect(dom.nodeList[2].raw).toBe('<>');
-		expect(dom.nodeList[3]).toBeUndefined();
-		expect(dom.nodeList[0].childNodes[0].raw).toBe('{array.map(_ => <></>)}');
-		expect(dom.nodeList[0].childNodes[0].childNodes[0].raw).toBe('<>');
+		expect(dom.nodeList[3].raw).toBe('A');
+		expect(dom.nodeList[4]).toBeUndefined();
+		expect(dom.nodeList[0].childNodes[0].raw).toBe('A');
 		const elements = dom.querySelectorAll('*');
-		expect(elements.length).toBe(2);
+		expect(elements.length).toBe(1);
 	});
 
 	test('#698', async () => {

@@ -107,7 +107,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
 	) {
-		super(astNode, document);
+		super(astNode, document, astNode.isFragment);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
 		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
 		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
@@ -3315,7 +3315,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	hasMutableChildren(attr = false) {
-		for (const child of this.childNodes) {
+		for (const child of this.getPureChildNodes()) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 				if (child.conditionalType) {
 					continue;

@@ -3,6 +3,8 @@ import type { editor } from 'monaco-editor';
 
 import MonacoEditor, { type Monaco } from '@monaco-editor/react';
 import { useRef, useEffect, useId } from 'react';
+import { shikiToMonaco } from '@shikijs/monaco';
+import { getHighlighter } from 'shiki/bundle/web';
 
 import { getLanguage } from '../modules/monaco-editor';
 import { convertToMarkerData } from '../modules/violations';
@@ -58,6 +60,24 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 					onMount={(editor, monaco) => {
 						editorRef.current = editor;
 						monacoRef.current = monaco;
+
+						(async () => {
+							const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] as const satisfies Parameters<
+								typeof getHighlighter
+							>[0]['langs'];
+
+							for (const lang of ADDITIONAL_LANGUAGES) {
+								monacoRef.current?.languages.register({ id: lang });
+							}
+
+							const highlighter = await getHighlighter({
+								themes: ['dark-plus'],
+								langs: ADDITIONAL_LANGUAGES,
+							});
+
+							// https://shiki.matsu.io/packages/monaco
+							shikiToMonaco(highlighter, monacoRef.current);
+						})();
 					}}
 					onChange={value => {
 						if (value !== undefined) {

@@ -68,6 +68,7 @@ class VueParser extends Parser<ASTNode, State> {
 					depth,
 					parentNode,
 					nodeName: 'vue-expression-container',
+					isFragment: false,
 				});
 			}
 			default: {

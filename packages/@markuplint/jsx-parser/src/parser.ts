@@ -127,10 +127,9 @@ class JSXParser extends Parser<JSXNode, State> {
 			}
 			case 'JSXElement':
 			case 'JSXFragment': {
-				const openTag =
-					originNode.type === 'JSXElement' ? originNode.openingElement : originNode.openingFragment;
-				const nodeName =
-					originNode.type === 'JSXElement' ? getName(originNode.openingElement.name) : '#jsx-fragment';
+				const isFragment = originNode.type === 'JSXFragment';
+				const openTag = isFragment ? originNode.openingFragment : originNode.openingElement;
+				const nodeName = isFragment ? '#jsx-fragment' : getName(originNode.openingElement.name);
 
 				let token = this.sliceFragment(openTag.range[0], openTag.range[1]);
 				const namespace = getNamespace(nodeName, parentNamespace);
@@ -175,10 +174,7 @@ class JSXParser extends Parser<JSXNode, State> {
 					{
 						namelessFragment: true,
 						createEndTagToken: () => {
-							const closeTag =
-								originNode.type === 'JSXElement'
-									? originNode.closingElement
-									: originNode.closingFragment;
+							const closeTag = isFragment ? originNode.closingFragment : originNode.closingElement;
 
 							if (!closeTag) {
 								return null;
@@ -208,6 +204,7 @@ class JSXParser extends Parser<JSXNode, State> {
 						depth,
 						parentNode,
 						nodeName: originNode.type,
+						isFragment: true,
 					},
 					[],
 					null, // TODO: Infer conditionalType

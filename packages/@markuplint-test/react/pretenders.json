@@ -1,0 +1,10 @@
+{
+	"version": "0.0.4",
+	"data": [
+		{
+			"selector": "Sample",
+			"as": "div",
+			"filePath": "sample.jsx:1:16"
+		}
+	]
+}

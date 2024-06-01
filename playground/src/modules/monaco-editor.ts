@@ -14,7 +14,7 @@ export const getLanguage = (filename: string) => {
 			return 'javascript';
 		}
 		case 'jsx': {
-			return 'javascriptreact';
+			return 'jsx';
 		}
 		case 'ts':
 		case 'cts':
@@ -22,7 +22,13 @@ export const getLanguage = (filename: string) => {
 			return 'typescript';
 		}
 		case 'tsx': {
-			return 'typescriptreact';
+			return 'tsx';
+		}
+		case 'vue': {
+			return 'vue';
+		}
+		case 'svelte': {
+			return 'svelte';
 		}
 		case 'json': {
 			return 'json';

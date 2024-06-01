@@ -1,8 +1,8 @@
-import type { Config } from '@markuplint/ml-config';
+import type { OptimizedConfig } from '@markuplint/ml-config';
 import type { Plugin } from '@markuplint/ml-core';
 
 export interface ConfigSet {
-	readonly config: Config;
+	readonly config: OptimizedConfig;
 	readonly plugins: readonly Plugin[];
 	readonly files: ReadonlySet<string>;
 	readonly errs: readonly Readonly<Error>[];

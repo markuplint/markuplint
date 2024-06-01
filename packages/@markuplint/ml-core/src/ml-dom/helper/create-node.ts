@@ -46,6 +46,7 @@ export function createNode<N extends MLASTNode, T extends RuleConfigValue, O ext
 							tagOpenChar: '',
 							tagCloseChar: '',
 							isGhost: false,
+							isFragment: false,
 						},
 						document,
 					) as MappedNode<N, T, O>;

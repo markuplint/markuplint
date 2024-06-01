@@ -26,6 +26,10 @@
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootclonable
 		"shadowrootclonable": {
 			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootserializable
+		"shadowrootserializable": {
+			"type": "Boolean"
 		}
 	},
 	"aria": {
