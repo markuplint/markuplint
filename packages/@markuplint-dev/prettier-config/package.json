@@ -1,0 +1,21 @@
+{
+	"name": "@markuplint-dev/prettier-config",
+	"version": "1.0.0-alpha.0",
+	"description": "Prettier and config for Markuplint projects",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"private": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"prettier": "3.2.5"
+	}
+}
