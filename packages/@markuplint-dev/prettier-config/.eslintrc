@@ -1,0 +1,6 @@
+{
+	"extends": "@markuplint-dev/eslint-config",
+	"rules": {
+		"import/no-default-export": 0
+	}
+}
