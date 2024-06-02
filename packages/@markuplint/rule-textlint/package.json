@@ -8,9 +8,11 @@
 	"private": false,
 	"type": "module",
 	"exports": {
-		".": "./lib/index.js"
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
