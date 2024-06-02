@@ -9,13 +9,14 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		},
 		"./kit": {
-			"import": "./lib/sveltekit-parser.js"
+			"import": "./lib/sveltekit-parser.js",
+			"types": "./lib/sveltekit-parser.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
