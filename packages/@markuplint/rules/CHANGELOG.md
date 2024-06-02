@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.2-alpha.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.1...@markuplint/rules@4.9.2-alpha.0) (2024-06-02)
+
+**Note:** Version bump only for package @markuplint/rules
+
+
+
+
+
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.0...@markuplint/rules@4.9.1) (2024-05-28)
 
 **Note:** Version bump only for package @markuplint/rules

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/erb-parser",
-	"version": "4.6.3",
+	"version": "4.6.4-alpha.0",
 	"description": "eRuby template parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -21,9 +21,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.3"
+		"@markuplint/html-parser": "4.6.4-alpha.0"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "4.6.3"
+		"@markuplint/parser-utils": "4.6.4-alpha.0"
 	}
 }
