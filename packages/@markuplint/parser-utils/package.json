@@ -9,13 +9,14 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		},
 		"./location": {
-			"import": "./lib/get-location.js"
+			"import": "./lib/get-location.js",
+			"types": "./lib/get-location.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
