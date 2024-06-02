@@ -5,7 +5,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 1.0.0-alpha.1 (2024-06-02)
 
-
 ### Features
 
-* **tsconfig:** moved TypeScript configuration to `@markuplint-dev/tsconfig` ([4788294](https://github.com/markuplint/markuplint/commit/4788294cce1e864798925ce307b222d46be177e2))
+- **tsconfig:** moved TypeScript configuration to `@markuplint-dev/tsconfig` ([4788294](https://github.com/markuplint/markuplint/commit/4788294cce1e864798925ce307b222d46be177e2))

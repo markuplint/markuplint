@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/esm-adapter
 
-
-
-
-
 # [4.4.0](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.3.1...@markuplint/esm-adapter@4.4.0) (2024-05-28)
 
 ### Features

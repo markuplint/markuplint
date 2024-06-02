@@ -1100,6 +1100,18 @@
   dependencies:
     npmlog "^6.0.2"
 
+"@markuplint/cli-utils@4.4.1":
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/cli-utils/-/cli-utils-4.4.1.tgz#d3daa0674a8879b09b9ef667711ea3c68e06050f"
+  integrity sha512-8Wa2ioOxsLPVOGGM+liHnf8P1xJpvPafGOjxse4uAYWfbbq2xS90JtEIOJKr3nrUWtYfKHT2WQy3zAX+uS3OTQ==
+  dependencies:
+    cli-color "2.0.4"
+    detect-installed "2.0.4"
+    eastasianwidth "0.3.0"
+    enquirer "2.4.1"
+    has-yarn "3.0.0"
+    strip-ansi "7.1.0"
+
 "@markuplint/config-presets@4.5.1":
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-4.5.1.tgz#bed70eb836f7f4cf644d4210a19da4db2d1a7cc7"
@@ -1142,6 +1154,11 @@
   dependencies:
     "@markuplint/ml-spec" "4.6.0"
 
+"@markuplint/i18n@4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@markuplint/i18n/-/i18n-4.5.0.tgz#d8d59ce8d15b9ddc6834c7e1a402846d124d7bcb"
+  integrity sha512-u9nA7udq8XvYoFaJ2UDkhalkeIZJpSINa1i4yoN/xa5WEcIo+ga3eCbqqR10U5T/Cny1AaeyBuiB2nG6pB3oHg==
+
 "@markuplint/ml-ast@4.3.1":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.3.1.tgz#537b6940902b2bfe6142aa9cd2885dbd5c235aa5"
@@ -1182,6 +1199,7 @@
     type-fest "4.18.2"
 
 "@markuplint/ml-spec@4.6.0", "latest-markuplint-ml-spec@npm:@markuplint/ml-spec@latest":
+  name latest-markuplint-ml-spec
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.6.0.tgz#030449435aabff555e47f36cc6f652c6925f6eb2"
   integrity sha512-phCLP7jF2GKmmLcQFNRTMzgnp6jcz4l/DmDl1tOVN2kciaU+ZyMJxOSjzYzCnCRS0kVhHYAYvTdyANFI7tgsAA==

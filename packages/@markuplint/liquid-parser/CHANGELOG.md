@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/liquid-parser
 
-
-
-
-
 ## [4.6.3](https://github.com/markuplint/markuplint/compare/@markuplint/liquid-parser@4.6.2...@markuplint/liquid-parser@4.6.3) (2024-05-28)
 
 **Note:** Version bump only for package @markuplint/liquid-parser

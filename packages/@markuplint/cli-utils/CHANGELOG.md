@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/cli-utils
 
-
-
-
-
 ## [4.4.1](https://github.com/markuplint/markuplint/compare/@markuplint/cli-utils@4.4.1-alpha.0...@markuplint/cli-utils@4.4.1) (2024-05-04)
 
 **Note:** Version bump only for package @markuplint/cli-utils

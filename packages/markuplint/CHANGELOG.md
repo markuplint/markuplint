@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package markuplint
 
-
-
-
-
 # [4.9.0](https://github.com/markuplint/markuplint/compare/markuplint@4.8.1...markuplint@4.9.0) (2024-05-28)
 
 ### Features
