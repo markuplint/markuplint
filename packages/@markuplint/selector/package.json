@@ -29,7 +29,7 @@
 		"@types/debug": "4.1.12",
 		"debug": "4.3.5",
 		"postcss-selector-parser": "6.1.0",
-		"type-fest": "4.18.3"
+		"type-fest": "4.19.0"
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.7",
