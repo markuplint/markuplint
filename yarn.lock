@@ -4622,10 +4622,10 @@ eslint-plugin-import@2.29.1:
     semver "^6.3.1"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jsdoc@48.2.7:
-  version "48.2.7"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-48.2.7.tgz#2610b6fa1a9ba45c8296c2f335e0360bbd238772"
-  integrity sha512-fYj3roTnkFL9OFFTB129rico8lerC5G8Vp2ZW9SjO9RNWG0exVvI+i/Y8Bpm1ufjR0uvT38xtoab/U0Hp8Ybog==
+eslint-plugin-jsdoc@48.2.8:
+  version "48.2.8"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-48.2.8.tgz#e0c90b7cfac592c78367499b762dff784217ea68"
+  integrity sha512-b72WNCHxmcrtYh6ejy0Y5rQH0mJpym27fT4P3HU3fbqEo3J95/hdG7VlevOHK0PZrHk1pVnClCBH7wXw2RMIXg==
   dependencies:
     "@es-joy/jsdoccomment" "~0.43.1"
     are-docs-informative "^0.0.2"
