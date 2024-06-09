@@ -211,10 +211,11 @@ parentPort.on('message', async args => {
 		case 'getAccessibilityByLocation': {
 			const engine = engines.get(uid);
 
-			// TODO Refactor `MLEngine::setup()` so that `engine.document` becomes active without having to run `engine.exec()`
-			await engine.exec();
+			if (!engine?.document) {
+				await engine.exec();
+			}
 
-			if (!engine.document) {
+			if (!engine?.document) {
 				parentPort.postMessage({ method: 'getAccessibilityByLocation:return', data: [null] });
 				break;
 			}
