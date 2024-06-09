@@ -13,7 +13,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.89.0"
+		"vscode": "^1.90.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -111,11 +111,11 @@
 	"devDependencies": {
 		"@markuplint/file-resolver": "4.8.0",
 		"@types/mocha": "10.0.6",
-		"@types/node": "18.17",
+		"@types/node": "20.14.2",
 		"@types/semver": "7.5.8",
-		"@types/vscode": "1.89.0",
+		"@types/vscode": "1.90.0",
 		"@vscode/test-electron": "2.4.0",
-		"@vscode/vsce": "2.26.1",
+		"@vscode/vsce": "2.27.0",
 		"typescript": "5.4.5"
 	},
 	"dependencies": {
