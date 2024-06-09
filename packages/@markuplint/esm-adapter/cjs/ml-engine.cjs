@@ -10,6 +10,10 @@ class MLEngine extends Emitter {
 	static #worker = new Worker(path.resolve(__dirname, '..', 'esm', 'index.mjs'), { type: 'module' });
 	static #moduleName = 'default-markuplint';
 
+	static {
+		this.#worker.setMaxListeners(Number.POSITIVE_INFINITY);
+	}
+
 	/**
 	 * @param {string} sourceCode
 	 * @param {import("markuplint").FromCodeOptions & { moduleName?: string }} options
@@ -93,6 +97,10 @@ class MLEngine extends Emitter {
 		MLEngine.#worker.on('message', args => {
 			log('worker: %O', args);
 
+			if (args.method?.startsWith('log:') && args.uid !== this.#uid) {
+				return;
+			}
+
 			const logType = args.method?.replace(/^log:/, '');
 			if (logType) {
 				this.emit(logType, ...(args?.data ?? []));
@@ -102,6 +110,10 @@ class MLEngine extends Emitter {
 		MLEngine.#worker.on('error', args => {
 			throw args;
 		});
+	}
+
+	getWorkerListenerCount() {
+		return MLEngine.#worker.listenerCount('message');
 	}
 
 	/**

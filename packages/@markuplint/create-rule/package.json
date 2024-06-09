@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/create-rule",
-	"version": "4.7.2",
+	"version": "4.7.3",
 	"description": "Rule generator for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,10 +9,10 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"types": "./lib/index.d.ts",
 	"bin": {
 		"create-rule": "./bin/create-rule.mjs"
 	},
@@ -26,7 +26,7 @@
 	},
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.1",
-		"@markuplint/ml-core": "4.7.2",
+		"@markuplint/ml-core": "4.8.0",
 		"glob": "10.4.1",
 		"prettier": "3.2.5",
 		"ts-node": "10.9.2",

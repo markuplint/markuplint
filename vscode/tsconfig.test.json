@@ -1,7 +1,7 @@
 {
 	"extends": ["@markuplint-dev/tsconfig"],
 	"compilerOptions": {
-		"rootDir": "./src",
+		"rootDir": "./test",
 		"noEmit": true
 	},
 	"references": [
@@ -9,6 +9,6 @@
 			"path": "../packages/markuplint"
 		}
 	],
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "out", "test"]
+	"include": ["test/*.ts"],
+	"exclude": ["node_modules", "src", "out", "test/*.js"]
 }

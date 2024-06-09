@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/liquid-parser",
-	"version": "4.6.2",
+	"version": "4.6.3",
 	"description": "Liquid template parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,10 +9,10 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -21,9 +21,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.2"
+		"@markuplint/html-parser": "4.6.3"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "4.6.2"
+		"@markuplint/parser-utils": "4.6.3"
 	}
 }

@@ -1,9 +1,9 @@
-import type { Status } from './types';
+import type { Status } from './types.js';
 import type { StatusBarItem } from 'vscode';
 
 import { ThemeColor } from 'vscode';
 
-import { NAME } from './const';
+import { NAME } from './const.js';
 
 export class StatusBar {
 	#item: StatusBarItem;

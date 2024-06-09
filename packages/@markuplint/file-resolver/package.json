@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "4.7.2",
+	"version": "4.8.0",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,10 +9,10 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"types": "./lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -24,19 +24,19 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "20.13.0"
+		"@types/node": "20.14.2"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.2",
-		"@markuplint/ml-ast": "4.3.1",
-		"@markuplint/ml-config": "4.6.2",
-		"@markuplint/ml-core": "4.7.2",
-		"@markuplint/ml-spec": "4.6.0",
-		"@markuplint/parser-utils": "4.6.2",
-		"@markuplint/selector": "4.6.2",
-		"@markuplint/shared": "4.4.0",
+		"@markuplint/html-parser": "4.6.3",
+		"@markuplint/ml-ast": "4.4.0",
+		"@markuplint/ml-config": "4.7.0",
+		"@markuplint/ml-core": "4.8.0",
+		"@markuplint/ml-spec": "4.6.1",
+		"@markuplint/parser-utils": "4.6.3",
+		"@markuplint/selector": "4.6.3",
+		"@markuplint/shared": "4.4.1",
 		"cosmiconfig": "9.0.0",
-		"debug": "4.3.4",
+		"debug": "4.3.5",
 		"glob": "10.4.1",
 		"ignore": "5.3.1",
 		"import-meta-resolve": "4.1.0",

@@ -1,11 +1,11 @@
-import type { Log } from '../types';
+import type { Log } from '../types.js';
 import type { FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import path from 'node:path';
 
 import { MLEngine } from '@markuplint/esm-adapter';
-import { Files } from 'vscode-languageserver/node';
+import { Files } from 'vscode-languageserver/node.js';
 
 export async function getModule(baseDir: string, log: Log): Promise<OldModule | Module> {
 	try {

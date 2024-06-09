@@ -29,7 +29,7 @@
 		"xterm": "5.3.0"
 	},
 	"devDependencies": {
-		"@egoist/tailwindcss-icons": "1.8.0",
+		"@egoist/tailwindcss-icons": "1.8.1",
 		"@iconify-json/heroicons-solid": "1.1.11",
 		"@iconify-json/majesticons": "1.1.11",
 		"@markuplint/jsx-parser": "4.7.3",
@@ -45,7 +45,7 @@
 		"@types/semver": "7.5.8",
 		"@vitejs/plugin-react": "4.3.0",
 		"autoprefixer": "10.4.19",
-		"cspell": "8.8.3",
+		"cspell": "8.8.4",
 		"eslint": "8.57.0",
 		"eslint-plugin-react": "7.34.2",
 		"eslint-plugin-react-hooks": "4.6.2",
@@ -56,9 +56,9 @@
 		"postcss": "8.4.38",
 		"prettier": "3.2.5",
 		"prettier-plugin-tailwindcss": "0.5.14",
-		"tailwindcss": "3.4.3",
+		"tailwindcss": "3.4.4",
 		"typescript": "5.4.5",
-		"vite": "5.2.12",
+		"vite": "5.2.13",
 		"vitest": "1.6.0"
 	}
 }

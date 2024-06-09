@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.7.2",
+	"version": "4.7.3",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -13,7 +13,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.89.0"
+		"vscode": "^1.90.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -22,7 +22,8 @@
 	"activationEvents": [
 		"onLanguage"
 	],
-	"main": "./out/extension",
+	"type": "module",
+	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
 			"type": "object",
@@ -101,32 +102,46 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run vscode:build",
-		"vscode:build": "tsc -p ./",
-		"vscode:dev": "tsc -watch -p ./",
-		"vscode:test": "node ./out/test/run-tests.js",
+		"vscode:build": "run-p vscode:build:*",
+		"vscode:build:extension": "esbuild src/extension.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
+		"vscode:build:server": "esbuild src/server/index.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
+		"vscode:dev": "run-p vscode:dev:extension vscode:dev:server",
+		"vscode:dev:extension": "yarn vscode:build:extension --watch",
+		"vscode:dev:server": "yarn vscode:build:server --watch",
+		"vscode:typecheck": "tsc",
+		"vscode:test": "run-s vscode:test:pre vscode:test:suite",
+		"vscode:test:suite": "node ./test/suite/run-tests.js",
+		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
 		"vscode:package": "vsce package --no-yarn",
 		"vscode:release": "vsce publish --no-yarn"
 	},
 	"devDependencies": {
-		"@markuplint/file-resolver": "4.7.2",
+		"@markuplint-dev/tsconfig": "1.0.0-alpha.0",
+		"@markuplint/file-resolver": "4.8.0",
 		"@types/mocha": "10.0.6",
-		"@types/node": "18.17",
+		"@types/node": "20.14.2",
 		"@types/semver": "7.5.8",
-		"@types/vscode": "1.89.0",
+		"@types/vscode": "1.90.0",
 		"@vscode/test-electron": "2.4.0",
-		"@vscode/vsce": "2.26.1",
+		"@vscode/vsce": "2.27.0",
+		"esbuild": "0.21.4",
 		"typescript": "5.4.5"
 	},
 	"dependencies": {
-		"@markuplint/esm-adapter": "4.3.1",
-		"debug": "4.3.4",
+		"@markuplint/esm-adapter": "4.4.0",
+		"@markuplint/i18n": "4.5.0",
+		"debug": "4.3.5",
 		"glob": "10.4.1",
-		"markuplint": "4.8.1",
+		"markuplint": "4.9.0",
 		"mocha": "10.4.0",
 		"semver": "7.6.2",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.11"
+	},
+	"volta": {
+		"node": "20.9.0",
+		"yarn": "1.22.22"
 	}
 }

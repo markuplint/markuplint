@@ -1,5 +1,5 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { runTests } from '@vscode/test-electron';
 
@@ -19,8 +19,8 @@ function createSettings() {
 async function main() {
 	try {
 		const userDataDirectory = createSettings();
-		const extensionDevelopmentPath = path.resolve(__dirname, '../../');
-		const extensionTestsPath = path.resolve(__dirname, './suite/index.js');
+		const extensionDevelopmentPath = path.resolve(__dirname, '..', '..');
+		const extensionTestsPath = path.resolve(__dirname, 'index.js');
 		const workspacePath = path.resolve(process.cwd(), 'test', 'test.code-workspace');
 
 		await runTests({

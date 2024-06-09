@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/vue-spec",
-	"version": "4.5.2",
+	"version": "4.5.3",
 	"description": "Extended specification for tags and attributes in Vue",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,10 +9,10 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -21,6 +21,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "4.6.0"
+		"@markuplint/ml-spec": "4.6.1"
 	}
 }

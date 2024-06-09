@@ -1,17 +1,17 @@
-import type { SendDiagnostics } from './document-events';
-import type { LangConfigs, Log } from '../types';
-import type { InitializeResult } from 'vscode-languageserver/node';
+import type { SendDiagnostics } from './document-events.js';
+import type { LangConfigs, Log } from '../types.js';
+import type { InitializeResult } from 'vscode-languageserver/node.js';
 
-import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node';
+import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { NO_INSTALL_WARNING } from '../const';
-import { t } from '../i18n';
-import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp';
+import { NO_INSTALL_WARNING } from '../const.js';
+import { t } from '../i18n.js';
+import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp.js';
 
-import { verbosely } from './debug';
-import { createEventHandlers } from './document-events';
-import { getModule } from './get-module';
+import { verbosely } from './debug.js';
+import { createEventHandlers } from './document-events.js';
+import { getModule } from './get-module.js';
 
 const DEBUG = false;
 

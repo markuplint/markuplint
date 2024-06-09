@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0](https://github.com/markuplint/markuplint/compare/markuplint@4.8.1...markuplint@4.9.0) (2024-05-28)
+
+### Features
+
+- **file-resolver:** add `resolve-pretenders` function ([68ba7f5](https://github.com/markuplint/markuplint/commit/68ba7f5acaba13484172bca3ea5f60e0bf3044ef))
+
 ## [4.8.1](https://github.com/markuplint/markuplint/compare/markuplint@4.8.0...markuplint@4.8.1) (2024-05-12)
 
 **Note:** Version bump only for package markuplint

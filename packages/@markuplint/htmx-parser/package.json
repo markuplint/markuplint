@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/htmx-parser",
-	"version": "4.0.0",
+	"version": "4.0.1",
 	"description": "HTMX parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,13 +9,14 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		},
 		"./spec": {
-			"import": "./lib/spec.js"
+			"import": "./lib/spec.js",
+			"types": "./lib/spec.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -24,10 +25,10 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.2"
+		"@markuplint/html-parser": "4.6.3"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "4.6.0",
-		"@markuplint/parser-utils": "4.6.2"
+		"@markuplint/ml-spec": "4.6.1",
+		"@markuplint/parser-utils": "4.6.3"
 	}
 }

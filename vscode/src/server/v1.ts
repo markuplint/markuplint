@@ -1,11 +1,11 @@
-import type { SendDiagnostics } from './document-events';
-import type { Config } from '../types';
-import type { Diagnostic } from 'vscode-languageserver/node';
+import type { SendDiagnostics } from './document-events.js';
+import type { Config } from '../types.js';
+import type { Diagnostic } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { DiagnosticSeverity } from 'vscode-languageserver/node';
+import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
 
-import { getFilePath } from '../utils/get-file-path';
+import { getFilePath } from '../utils/get-file-path.js';
 
 export async function onDidChangeContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-ast",
-	"version": "4.3.1",
+	"version": "4.4.0",
 	"description": "The markuplint AST types.",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -9,10 +9,10 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./lib/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"types": "lib/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
