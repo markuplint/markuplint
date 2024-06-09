@@ -109,7 +109,9 @@
 		"vscode:dev:extension": "yarn vscode:build:extension --watch",
 		"vscode:dev:server": "yarn vscode:build:server --watch",
 		"vscode:typecheck": "tsc",
-		"vscode:test": "node ./out/test/run-tests.js",
+		"vscode:test": "run-s vscode:test:pre vscode:test:suite",
+		"vscode:test:suite": "node ./test/suite/run-tests.js",
+		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
 		"vscode:package": "vsce package --no-yarn",
 		"vscode:release": "vsce publish --no-yarn"

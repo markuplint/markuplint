@@ -3,3 +3,4 @@ out/*.js
 package-lock.json
 .tmp
 .vscode-test
+test/*.js
