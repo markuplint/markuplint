@@ -3,20 +3,20 @@ import type { Config } from '@markuplint/ml-config';
 import type { Writable } from 'type-fest';
 
 const extRExp: Record<Langs, `\\.${string}$`> = {
-	jsx: '\\.[jt]sx?$',
-	vue: '\\.vue$',
-	svelte: '\\.svelte$',
-	sveltekit: '\\.html$',
-	astro: '\\.astro$',
-	alpine: '\\.html$',
-	pug: '\\.pug$',
-	php: '\\.php$',
-	smarty: '\\.tpl$',
-	erb: '\\.erb$',
-	ejs: '\\.ejs$',
-	mustache: '\\.(mustache|hbs)$',
-	nunjucks: '\\.nunjucks$',
-	liquid: '\\.liquid$',
+	jsx: String.raw`\.[jt]sx?$`,
+	vue: String.raw`\.vue$`,
+	svelte: String.raw`\.svelte$`,
+	sveltekit: String.raw`\.html$`,
+	astro: String.raw`\.astro$`,
+	alpine: String.raw`\.html$`,
+	pug: String.raw`\.pug$`,
+	php: String.raw`\.php$`,
+	smarty: String.raw`\.tpl$`,
+	erb: String.raw`\.erb$`,
+	ejs: String.raw`\.ejs$`,
+	mustache: String.raw`\.(mustache|hbs)$`,
+	nunjucks: String.raw`\.nunjucks$`,
+	liquid: String.raw`\.liquid$`,
 };
 
 export const langs: Record<Langs, string> = {

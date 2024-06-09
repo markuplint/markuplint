@@ -110,7 +110,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(5);
 	});
 
-	test('<!DOCTYPE html>\\n', () => {
+	test(String.raw`<!DOCTYPE html>\n`, () => {
 		const doc = parse('<!DOCTYPE html>\n');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('html');
@@ -144,7 +144,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(5);
 	});
 
-	test('<!DOCTYPE html>\\ntext', () => {
+	test(String.raw`<!DOCTYPE html>\ntext`, () => {
 		const doc = parse('<!DOCTYPE html>\ntext');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('html');
@@ -156,7 +156,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(5);
 	});
 
-	test('<!DOCTYPE html>\\n<p>text', () => {
+	test(String.raw`<!DOCTYPE html>\n<p>text`, () => {
 		const doc = parse('<!DOCTYPE html>\n<p>text');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('html');
@@ -170,7 +170,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(7);
 	});
 
-	test('<!DOCTYPE html><p>\\ntext', () => {
+	test(String.raw`<!DOCTYPE html><p>\ntext`, () => {
 		const doc = parse('<!DOCTYPE html><p>\ntext');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('html');
@@ -183,7 +183,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(6);
 	});
 
-	test('<!DOCTYPE html>\\n<html>text', () => {
+	test(String.raw`<!DOCTYPE html>\n<html>text`, () => {
 		const doc = parse('<!DOCTYPE html>\n<html>text');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('#text');
@@ -196,7 +196,7 @@ describe('parser', () => {
 		expect(doc.nodeList.length).toBe(6);
 	});
 
-	test('<!DOCTYPE html><html>\\ntext', () => {
+	test(String.raw`<!DOCTYPE html><html>\ntext`, () => {
 		const doc = parse('<!DOCTYPE html><html>\ntext');
 		expect(doc.nodeList[0]?.type).toBe('doctype');
 		expect(doc.nodeList[1]?.nodeName).toBe('html');

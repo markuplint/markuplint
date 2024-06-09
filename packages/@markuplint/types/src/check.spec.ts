@@ -106,7 +106,7 @@ test('legacy-transform', () => {
 
 test('directive', () => {
 	const directive = {
-		directive: ['/^closest\\s+(?<token>.+)$/', '/^previous\\s+(?<token>.+)$/', 'next '],
+		directive: [String.raw`/^closest\s+(?<token>.+)$/`, String.raw`/^previous\s+(?<token>.+)$/`, 'next '],
 		token: '<complex-selector-list>',
 	} as const;
 
