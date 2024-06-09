@@ -24,7 +24,7 @@
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean",
 		"schema": "run-s schema:json schema:content-models schema:attributes schema:aria schema:prettier schema:eslint schema:prettier",
-		"schema:json": "node --loader ts-node/esm ./gen/gen.ts",
+		"schema:json": "tsx ./gen/gen.ts",
 		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts",
 		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/types/attributes.ts",
 		"schema:aria": "json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts",

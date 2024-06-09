@@ -23,7 +23,7 @@
 		"build": "tsc",
 		"clean": "tsc --build --clean",
 		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
-		"schema:types": "node --loader ts-node/esm \"./gen/types.ts\"",
+		"schema:types": "tsx \"./gen/types.ts\"",
 		"schema:schema": "json2ts \"./types.schema.json\" > \"./src/types.schema.ts\"",
 		"schema:eslint": "eslint --fix \"./src/types.schema.ts\"",
 		"schema:prettier": "prettier --write \"./src/types.schema.ts\" \"./types.schema.json\" --log-level warn"
