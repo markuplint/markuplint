@@ -45,6 +45,8 @@ export async function onDidOpen(
 		defaultConfig: config.defaultConfig,
 		watch: true,
 	});
+	log(`Engine created: ${key}`);
+	log(`Markuplint engine server instance count: ${engine.getWorkerListenerCount()}`);
 
 	let configSet: ConfigSet | null = null;
 
