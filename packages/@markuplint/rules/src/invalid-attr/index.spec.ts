@@ -1178,7 +1178,7 @@ test('regexSelector', async () => {
 					regexSelector: {
 						nodeName: 'img',
 						attrName: 'src',
-						attrValue: String.raw`/^(?<FileName>.+)\.(?<Exp>png|jpg|webp|gif)$/`,
+						attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
 						combination: {
 							combinator: ':has(~)',
 							nodeName: 'source',
@@ -1232,7 +1232,7 @@ test('regexSelector', async () => {
 					regexSelector: {
 						nodeName: 'img',
 						attrName: 'src',
-						attrValue: String.raw`/^(?<FileName>.+)\.(?<Exp>png|jpg|webp|gif)$/`,
+						attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
 						combination: {
 							combinator: ':has(~)',
 							nodeName: 'source',
@@ -1502,7 +1502,7 @@ describe('Deprecated options', () => {
 						regexSelector: {
 							nodeName: 'img',
 							attrName: 'src',
-							attrValue: String.raw`/^(?<FileName>.+)\.(?<Exp>png|jpg|webp|gif)$/`,
+							attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
 							combination: {
 								combinator: ':has(~)',
 								nodeName: 'source',

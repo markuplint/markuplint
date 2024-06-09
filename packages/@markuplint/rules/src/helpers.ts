@@ -50,8 +50,8 @@ export function match(needle: string, pattern: string) {
  * Originally, it is not possible to define a name including ASCII upper alphas in the custom element, but it is not treated as illegal by the HTML parser.
  */
 export const rePCENChar = [
-	String.raw`\-`,
-	String.raw`\.`,
+	'\\-',
+	'\\.',
 	'[0-9]',
 	'_',
 	'[a-z]',

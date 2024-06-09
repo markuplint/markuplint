@@ -133,7 +133,7 @@ describe('jsxScanner', () => {
 				extendingWrapper: [
 					'secondary',
 					{
-						identifier: String.raw`/namespace\.[a-z]+/i`,
+						identifier: '/namespace\\.[a-z]+/i',
 						numberOfArgument: 2,
 					},
 				],
