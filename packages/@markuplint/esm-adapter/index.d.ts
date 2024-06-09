@@ -34,5 +34,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		aria: AccessibilityProperties;
 	} | null>;
 
+	getWorkerListenerCount(): number;
+
 	setCode(sourceCode: string, baseDir?: string): Promise<void>;
 }
