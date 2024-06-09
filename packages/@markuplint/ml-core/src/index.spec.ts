@@ -1106,21 +1106,25 @@ describe('Issues', () => {
 			'  isInFragmentDocument: true',
 			'  isForeignElement: false',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
-			'[2:2]>[3:3](6,30)#ml-block: {#if␣cond␣===␣valueA}⏎→→',
+			'[2:2]>[2:23](6,27)#ml-block: {#if␣cond␣===␣valueA}',
+			'[2:23]>[3:3](27,30)#text: ⏎→→',
 			'[3:3]>[3:7](30,34)LI: <li>',
 			'  namespaceURI: true',
 			'  elementType: html',
 			'  isInFragmentDocument: true',
 			'  isForeignElement: false',
 			'[3:7]>[3:8](34,35)#text: A',
-			'[3:13]>[5:3](40,71)#ml-block: ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[3:13]>[4:2](40,42)#text: ⏎→',
+			'[4:2]>[4:28](42,68)#ml-block: {:else␣if␣cond␣===␣valueB}',
+			'[4:28]>[5:3](68,71)#text: ⏎→→',
 			'[5:3]>[5:7](71,75)LI: <li>',
 			'  namespaceURI: true',
 			'  elementType: html',
 			'  isInFragmentDocument: true',
 			'  isForeignElement: false',
 			'[5:7]>[5:8](75,76)#text: B',
-			'[5:13]>[6:7](81,88)#ml-block: ⏎→{/if}',
+			'[5:13]>[6:2](81,83)#text: ⏎→',
+			'[6:2]>[6:7](83,88)#ml-block: {/if}',
 			'[6:7]>[7:1](88,89)#text: ⏎',
 		]);
 	});
@@ -1207,7 +1211,8 @@ describe('Issues', () => {
 		);
 		const map = dom.debugMap();
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#ml-block: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[1:38](0,37)#ml-block: {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}',
+			'[1:38]>[2:2](37,39)#text: ⏎→',
 			'[2:2]>[2:7](39,44)DIV: <div>',
 			'  namespaceURI: true',
 			'  elementType: html',
