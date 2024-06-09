@@ -7,11 +7,11 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "node --loader ts-node/esm index.ts"
+		"test": "tsx index.ts"
 	},
 	"dependencies": {
 		"@types/node": "latest",
 		"typescript": "latest",
-		"ts-node": "latest"
+		"tsx": "latest"
 	}
 }
