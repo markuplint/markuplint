@@ -41,6 +41,7 @@
 		"pg:lint": "cd playground; yarn; yarn pg:lint",
 		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
+		"prepare": "husky",
 		"cli": "npx markuplint",
 		"create-rule": "npx @markuplint/create-rule",
 		"commit": "cz",
