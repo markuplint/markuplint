@@ -93,6 +93,10 @@ class MLEngine extends Emitter {
 		MLEngine.#worker.on('message', args => {
 			log('worker: %O', args);
 
+			if (args.method?.startsWith('log:') && args.uid !== this.#uid) {
+				return;
+			}
+
 			const logType = args.method?.replace(/^log:/, '');
 			if (logType) {
 				this.emit(logType, ...(args?.data ?? []));

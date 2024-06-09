@@ -95,51 +95,99 @@ parentPort.on('message', async args => {
 			const engine = await MLEngine.fromCode(sourceCode, options);
 
 			engine.on('code', (...params) => {
-				parentPort.postMessage({ method: 'log:code', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:code',
+					data: params,
+				});
 			});
 
 			engine.on('config', (...params) => {
-				parentPort.postMessage({ method: 'log:config', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:config',
+					data: params,
+				});
 			});
 
 			engine.on('config-errors', (...params) => {
-				parentPort.postMessage({ method: 'log:config-errors', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:config-errors',
+					data: params,
+				});
 			});
 
 			engine.on('exclude', (...params) => {
-				parentPort.postMessage({ method: 'log:exclude', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:exclude',
+					data: params,
+				});
 			});
 
 			engine.on('i18n', (...params) => {
-				parentPort.postMessage({ method: 'log:i18n', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:i18n',
+					data: params,
+				});
 			});
 
 			engine.on('lint', (...params) => {
-				parentPort.postMessage({ method: 'log:lint', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:lint',
+					data: params,
+				});
 			});
 
 			engine.on('lint-error', (...params) => {
-				parentPort.postMessage({ method: 'log:lint-error', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:lint-error',
+					data: params,
+				});
 			});
 
 			engine.on('log', (...params) => {
-				parentPort.postMessage({ method: 'log:log', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:log',
+					data: params,
+				});
 			});
 
 			engine.on('parser', (...params) => {
-				parentPort.postMessage({ method: 'log:parser', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:parser',
+					data: params,
+				});
 			});
 
 			engine.on('rules', (...params) => {
-				parentPort.postMessage({ method: 'log:rules', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:rules',
+					data: params,
+				});
 			});
 
 			engine.on('ruleset', (...params) => {
-				parentPort.postMessage({ method: 'log:ruleset', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:ruleset',
+					data: params,
+				});
 			});
 
 			engine.on('schemas', (...params) => {
-				parentPort.postMessage({ method: 'log:schemas', data: params });
+				parentPort.postMessage({
+					uid,
+					method: 'log:schemas',
+					data: params,
+				});
 			});
 
 			engines.set(uid, engine);
