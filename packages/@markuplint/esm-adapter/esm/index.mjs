@@ -92,6 +92,14 @@ parentPort.on('message', async args => {
 
 			const sourceCode = args.data[0];
 			const options = args.data[1] ?? {};
+
+			if (engines.has(uid)) {
+				const engine = engines.get(uid);
+				engine.setCode(sourceCode);
+				parentPort.postMessage({ method: 'fromCode:return' });
+				return;
+			}
+
 			const engine = await MLEngine.fromCode(sourceCode, options);
 
 			engine.on('code', (...params) => {
