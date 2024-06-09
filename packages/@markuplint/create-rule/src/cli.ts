@@ -1,6 +1,6 @@
 import type { CreateRuleCreatorCoreParams, CreateRuleLanguage, CreateRulePurpose } from './types.js';
 
-import { resolve } from 'node:path';
+import path from 'node:path';
 
 import { input, installModule, select, confirm, font, header } from '@markuplint/cli-utils';
 
@@ -86,7 +86,7 @@ export async function createRule() {
 			pluginName || 'core',
 			file.test ? '🖍 ' : icons[file.name] ?? '🛡 ',
 			file.fileName,
-			resolve(file.destDir, file.fileName + file.ext),
+			path.resolve(file.destDir, file.fileName + file.ext),
 		);
 	}
 

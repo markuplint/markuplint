@@ -253,7 +253,7 @@ describe('Rule', () => {
 						regexSelector: {
 							nodeName: 'img',
 							attrName: 'src',
-							attrValue: '/(?<fileName>[a-z0-9_-]+)\\.png$/',
+							attrValue: String.raw`/(?<fileName>[a-z0-9_-]+)\.png$/`,
 						},
 						rules: {
 							ruleA: {

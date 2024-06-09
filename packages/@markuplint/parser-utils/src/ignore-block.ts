@@ -267,5 +267,5 @@ function hasIgnoreBlock(textContent: string, maskChar: string) {
 }
 
 function escapeRegExpForStr(str: string) {
-	return str.replaceAll(/[!$()*+./:=?[\\\]^{|}]/g, '\\$&');
+	return str.replaceAll(/[!$()*+./:=?[\\\]^{|}]/g, String.raw`\$&`);
 }

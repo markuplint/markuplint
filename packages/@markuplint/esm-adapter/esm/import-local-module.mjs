@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { sep, resolve } from 'node:path';
+import path from 'node:path';
 
 /**
  *
@@ -9,10 +9,10 @@ import { sep, resolve } from 'node:path';
  */
 export async function importLocalModule(id, baseDir) {
 	baseDir = baseDir ?? process.cwd();
-	const dirArray = baseDir.split(sep);
+	const dirArray = baseDir.split(path.sep);
 	while (dirArray.length > 0) {
 		try {
-			const modDir = [...dirArray, 'node_modules', id].join(sep);
+			const modDir = [...dirArray, 'node_modules', id].join(path.sep);
 			const { module, modPath } = await importFromDirectory(modDir);
 			return { module, modPath };
 		} catch {
@@ -27,11 +27,11 @@ export async function importLocalModule(id, baseDir) {
  * @param {string} dirName
  */
 async function importFromDirectory(dirName) {
-	const packageJson = await readFile(resolve(dirName, 'package.json'), { encoding: 'utf8' });
+	const packageJson = await readFile(path.resolve(dirName, 'package.json'), { encoding: 'utf8' });
 	const { exports } = JSON.parse(packageJson);
 	const main = exports['.'];
 	const mainFile = typeof main === 'string' ? main : main.import;
-	const mainPath = resolve(dirName, ...mainFile.split('/'));
+	const mainPath = path.resolve(dirName, ...mainFile.split('/'));
 	const module = await import(mainPath);
 	return {
 		module,
