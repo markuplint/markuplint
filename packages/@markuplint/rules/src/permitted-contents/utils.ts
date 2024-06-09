@@ -262,7 +262,7 @@ export class Collection {
 	toString(highlightExtraNodes = false) {
 		const out: string[] = [];
 		for (const n of this.#origin) {
-			const raw = n.is(n.TEXT_NODE) ? `:text(${n.raw.replaceAll('\n', String.raw`\n`)})` : n.raw;
+			const raw = n.is(n.TEXT_NODE) ? `:text(${n.raw.replaceAll('\n', '\\n')})` : n.raw;
 			if (this.#locked.has(n)) {
 				if (transparentMode.has(n)) {
 					out.push(bgBlue.bold(raw));

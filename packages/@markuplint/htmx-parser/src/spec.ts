@@ -72,7 +72,7 @@ const spec: ExtendedSpec = {
 							enum: ['this'],
 						},
 						{
-							directive: [String.raw`/^closest\s+(?<token>.+)$/`],
+							directive: ['/^closest\\s+(?<token>.+)$/'],
 							token: '<complex-selector-list>',
 						},
 					],
@@ -197,10 +197,10 @@ const spec: ExtendedSpec = {
 						},
 						{
 							directive: [
-								String.raw`/^closest\s+(?<token>.+)$/`,
-								String.raw`/^find\s+(?<token>.+)$/`,
-								String.raw`/^next\s+(?<token>.+)$/`,
-								String.raw`/^previous\s+(?<token>.+)$/`,
+								'/^closest\\s+(?<token>.+)$/',
+								'/^find\\s+(?<token>.+)$/',
+								'/^next\\s+(?<token>.+)$/',
+								'/^previous\\s+(?<token>.+)$/',
 							],
 							token: '<complex-selector-list>',
 						},
@@ -214,10 +214,7 @@ const spec: ExtendedSpec = {
 					type: [
 						'<complex-selector-list>',
 						{
-							directive: [
-								String.raw`/^closest\s+(?<token>.+)$/`,
-								String.raw`/^previous\s+(?<token>.+)$/`,
-							],
+							directive: ['/^closest\\s+(?<token>.+)$/', '/^previous\\s+(?<token>.+)$/'],
 							token: '<complex-selector-list>',
 						},
 					],
@@ -370,10 +367,10 @@ const spec: ExtendedSpec = {
 						},
 						{
 							directive: [
-								String.raw`/^closest\s+(?<token>.+)$/`,
-								String.raw`/^find\s+(?<token>.+)$/`,
-								String.raw`/^next\s+(?<token>.+)$/`,
-								String.raw`/^previous\s+(?<token>.+)$/`,
+								'/^closest\\s+(?<token>.+)$/',
+								'/^find\\s+(?<token>.+)$/',
+								'/^next\\s+(?<token>.+)$/',
+								'/^previous\\s+(?<token>.+)$/',
 							],
 							token: '<complex-selector-list>',
 						},

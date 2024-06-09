@@ -168,7 +168,7 @@ test('with value requirement (regex)', async () => {
 				rule: [
 					{
 						name: 'src',
-						value: String.raw`/^\/|^https:\/\//i`,
+						value: '/^\\/|^https:\\/\\//i',
 					},
 				],
 			})
@@ -178,7 +178,7 @@ test('with value requirement (regex)', async () => {
 			severity: 'error',
 			line: 1,
 			col: 11,
-			message: String.raw`The "src" attribute expects "/^\/|^https:\/\//i"`,
+			message: 'The "src" attribute expects "/^\\/|^https:\\/\\//i"',
 			raw: './path/to',
 		},
 	]);
@@ -189,7 +189,7 @@ test('with value requirement (regex)', async () => {
 				rule: [
 					{
 						name: 'rel',
-						value: String.raw`/(?<![^\s]+)noreferrer(?![^\s]+)/`,
+						value: '/(?<![^\\s]+)noreferrer(?![^\\s]+)/',
 					},
 				],
 			})
@@ -199,7 +199,7 @@ test('with value requirement (regex)', async () => {
 			severity: 'error',
 			line: 1,
 			col: 46,
-			message: String.raw`The "rel" attribute expects "/(?<![^\s]+)noreferrer(?![^\s]+)/"`,
+			message: 'The "rel" attribute expects "/(?<![^\\s]+)noreferrer(?![^\\s]+)/"',
 			raw: 'noreferrernoopener',
 		},
 	]);
