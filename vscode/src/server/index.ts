@@ -1,3 +1,3 @@
-import { bootServer } from './server';
+import { bootServer } from './server.js';
 
 void bootServer();

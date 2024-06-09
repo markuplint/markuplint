@@ -1,8 +1,8 @@
-import type { LogArg, Status } from './types';
+import type { LogArg, Status } from './types.js';
 
 import { NotificationType, RequestType } from 'vscode-languageserver';
 
-import { ID } from './const';
+import { ID } from './const.js';
 
 export const status = new RequestType<Status, void, void>(`${ID}/ready`);
 export const logToPrimaryChannel = new NotificationType<LogArg>(`${ID}/log-primary-channel`);

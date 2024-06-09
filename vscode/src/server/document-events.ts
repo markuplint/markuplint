@@ -1,17 +1,17 @@
-import type { Module, OldModule } from './get-module';
-import type { LangConfigs, Log } from '../types';
-import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node';
+import type { Module, OldModule } from './get-module.js';
+import type { LangConfigs, Log } from '../types.js';
+import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { satisfies } from 'semver';
-import { MarkupKind } from 'vscode-languageserver/node';
+import { MarkupKind } from 'vscode-languageserver/node.js';
 
-import { t } from '../i18n';
+import { t } from '../i18n.js';
 
-import * as v1 from './v1';
-import * as v2 from './v2';
-import * as v3 from './v3';
-import * as v4 from './v4';
+import * as v1 from './v1.js';
+import * as v2 from './v2.js';
+import * as v3 from './v3.js';
+import * as v4 from './v4.js';
 
 export type SendDiagnostics = (
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -33,6 +33,8 @@ export function createEventHandlers(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	options: EventHandlerOptions,
 ) {
+	let uiInitialized = false;
+
 	return {
 		onDidOpen(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -46,9 +48,12 @@ export function createEventHandlers(
 				return;
 			}
 
-			options.log(`Enabled for languageId:${languageId} according to VS Code settings.`);
+			options.log(`Evaluate ${document.uri} from languageId:${languageId}`, 'info');
 
-			options.initUI();
+			if (!uiInitialized) {
+				options.initUI();
+				uiInitialized = true;
+			}
 
 			if (options.mod.type === 'v4') {
 				void v4.onDidOpen(
@@ -144,10 +149,10 @@ export function createEventHandlers(
 					'unknown' in aria
 						? `\n**${t('Unknown')}**`
 						: aria.exposed
-						? `${Object.entries(aria.labels)
-								.map(([key, value]) => `- ${key}: ${value}`)
-								.join('\n')}`
-						: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
+							? `${Object.entries(aria.labels)
+									.map(([key, value]) => `- ${key}: ${value}`)
+									.join('\n')}`
+							: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
 
 				return {
 					contents: {

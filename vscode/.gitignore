@@ -1,4 +1,4 @@
-out
+out/*.js
 *.vsix
 package-lock.json
 .tmp

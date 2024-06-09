@@ -1,17 +1,14 @@
-import type { SendDiagnostics } from './document-events';
-import type { Config, Log } from '../types';
+import type { SendDiagnostics } from './document-events.js';
+import type { Config, Log } from '../types.js';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
 import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-// import { getAccname, getComputedRole, mayBeFocusable, getComputedAriaProps, isExposed } from '@markuplint/ml-spec';
+import { getFilePath } from '../utils/get-file-path.js';
 
-// import { t } from '../i18n';
-import { getFilePath } from '../utils/get-file-path';
-
-import { convertDiagnostics } from './convert-diagnostics';
+import { convertDiagnostics } from './convert-diagnostics.js';
 
 const engines = new Map<string, _MLEngine>();
 

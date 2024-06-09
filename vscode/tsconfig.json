@@ -1,23 +1,8 @@
 {
+	"extends": ["@markuplint-dev/tsconfig"],
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2022",
-		"outDir": "./out",
 		"rootDir": "./src",
-		"strict": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
-		"allowSyntheticDefaultImports": true,
-		"experimentalDecorators": true,
-		"esModuleInterop": true,
-		"noImplicitAny": true,
-		"noUncheckedIndexedAccess": true,
-		"declaration": true,
-		"lib": ["esnext"],
-		"skipLibCheck": true,
-		"baseUrl": ".",
-		"moduleResolution": "node",
-		"preserveSymlinks": true
+		"noEmit": true
 	},
 	"references": [
 		{
