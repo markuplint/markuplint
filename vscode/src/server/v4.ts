@@ -117,10 +117,6 @@ export async function onDidOpen(
 			}
 
 			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
-			sendDiagnostics({
-				uri: document.uri,
-				diagnostics,
-			});
 
 			if (diagnostics.length > 0) {
 				diagnosticsLog(`  Violations(${diagnostics.length}):`);
@@ -130,6 +126,11 @@ export async function onDidOpen(
 			} else {
 				diagnosticsLog('  ✔ No violations');
 			}
+
+			sendDiagnostics({
+				uri: document.uri,
+				diagnostics,
+			});
 		}
 	});
 
