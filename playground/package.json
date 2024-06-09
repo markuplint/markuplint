@@ -32,7 +32,7 @@
 		"@egoist/tailwindcss-icons": "1.8.1",
 		"@iconify-json/heroicons-solid": "1.1.11",
 		"@iconify-json/majesticons": "1.1.11",
-		"@markuplint/jsx-parser": "4.7.3",
+		"@markuplint/jsx-parser": "4.7.4",
 		"@markuplint/react-spec": "4.5.3",
 		"@playwright/test": "1.44.1",
 		"@testing-library/jest-dom": "6.4.5",
