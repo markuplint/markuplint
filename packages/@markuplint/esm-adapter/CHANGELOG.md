@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.4.0...@markuplint/esm-adapter@4.5.0) (2024-06-09)
+
+
+### Bug Fixes
+
+* **esm-adapter:** fix to no emit messages from other UID instances ([404c104](https://github.com/markuplint/markuplint/commit/404c1043e63f53a961cc1cfd355f26e5dde8d780))
+
+
+### Features
+
+* **esm-adapter:** exports d.ts file ([042109c](https://github.com/markuplint/markuplint/commit/042109c0e5d1e46e6fd40e0c2faea843e6dd1751))
+* **esm-adapter:** expose `getWorkerListenerCount` method and set infinity to max listeners ([8d18eb4](https://github.com/markuplint/markuplint/commit/8d18eb45bd37af0166d9b79f41e20ffb10fee409))
+
+
+
+
+
 # [4.4.0](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.3.1...@markuplint/esm-adapter@4.4.0) (2024-05-28)
 
 ### Features

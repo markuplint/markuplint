@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/test-tools",
-	"version": "4.5.3",
+	"version": "4.5.4",
 	"description": "A private package for testing in this repository",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
