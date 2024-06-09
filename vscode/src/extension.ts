@@ -1,11 +1,11 @@
-import type { LangConfigs } from './types';
+import type { LangConfigs } from './types.js';
 import type { ExtensionContext } from 'vscode';
-import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
+import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
 
 import path from 'node:path';
 
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
-import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
+import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
@@ -13,10 +13,17 @@ import {
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
 	WATCHING_CONFIGURATION_GLOB,
-} from './const';
-import { Logger } from './logger';
-import { errorToPopup, infoToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from './lsp';
-import { StatusBar } from './status-bar';
+} from './const.js';
+import { Logger } from './logger.js';
+import {
+	errorToPopup,
+	infoToPopup,
+	logToDiagnosticsChannel,
+	logToPrimaryChannel,
+	status,
+	warningToPopup,
+} from './lsp.js';
+import { StatusBar } from './status-bar.js';
 
 let client: LanguageClient;
 
@@ -35,7 +42,7 @@ export function activate(
 		window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }),
 	);
 
-	const serverModule = context.asAbsolutePath(path.join('out', 'server', 'index.js'));
+	const serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
 
 	const debugOptions = {
 		execArgv: ['--nolazy', '--inspect=6009'],

@@ -11,8 +11,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode/"],
 			"sourceMaps": true,
-			"outFiles": ["${workspaceRoot}/vscode/out/**/*.js"],
-			"preLaunchTask": "vscode-watch"
+			"outFiles": ["${workspaceRoot}/vscode/out/**/*.js"]
 		}
 	]
 }

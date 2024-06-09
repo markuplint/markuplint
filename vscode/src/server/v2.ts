@@ -1,11 +1,11 @@
-import type { SendDiagnostics } from './document-events';
-import type { Config } from '../types';
+import type { SendDiagnostics } from './document-events.js';
+import type { Config } from '../types.js';
 import type { MLEngine as _MLEngine } from 'markuplint';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { getFilePath } from '../utils/get-file-path';
+import { getFilePath } from '../utils/get-file-path.js';
 
-import { convertDiagnostics } from './convert-diagnostics';
+import { convertDiagnostics } from './convert-diagnostics.js';
 
 const engines = new Map<string, _MLEngine>();
 

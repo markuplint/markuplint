@@ -1,15 +1,15 @@
-import type { SendDiagnostics } from './document-events';
-import type { Config, Log } from '../types';
+import type { SendDiagnostics } from './document-events.js';
+import type { Config, Log } from '../types.js';
 import type { MLEngine as ESMAdapterMLEngine, FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { t } from '../i18n';
-import { getFilePath } from '../utils/get-file-path';
+import { t } from '../i18n.js';
+import { getFilePath } from '../utils/get-file-path.js';
 
-import { convertDiagnostics } from './convert-diagnostics';
+import { convertDiagnostics } from './convert-diagnostics.js';
 
 const engines = new Map<string, ESMAdapterMLEngine>();
 
@@ -45,6 +45,8 @@ export async function onDidOpen(
 		defaultConfig: config.defaultConfig,
 		watch: true,
 	});
+	log(`Engine created: ${key}`);
+	log(`Markuplint engine server instance count: ${engine.getWorkerListenerCount()}`);
 
 	let configSet: ConfigSet | null = null;
 
@@ -117,10 +119,6 @@ export async function onDidOpen(
 			}
 
 			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
-			sendDiagnostics({
-				uri: document.uri,
-				diagnostics,
-			});
 
 			if (diagnostics.length > 0) {
 				diagnosticsLog(`  Violations(${diagnostics.length}):`);
@@ -130,6 +128,11 @@ export async function onDidOpen(
 			} else {
 				diagnosticsLog('  ✔ No violations');
 			}
+
+			sendDiagnostics({
+				uri: document.uri,
+				diagnostics,
+			});
 		}
 	});
 

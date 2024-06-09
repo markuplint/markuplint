@@ -1,5 +1,6 @@
-out
+out/*.js
 *.vsix
 package-lock.json
 .tmp
 .vscode-test
+test/*.js
