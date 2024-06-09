@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@headlessui/react": "^2.0.4",
-		"@markuplint/parser-utils": "4.6.3",
+		"@markuplint/parser-utils": "4.6.4",
 		"@monaco-editor/react": "4.6.0",
 		"@shikijs/monaco": "^1.6.1",
 		"@webcontainer/api": "1.1.9",
