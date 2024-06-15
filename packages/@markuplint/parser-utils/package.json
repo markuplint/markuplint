@@ -35,7 +35,7 @@
 		"debug": "4.3.5",
 		"espree": "10.0.1",
 		"type-fest": "4.20.0",
-		"uuid": "9.0.1"
+		"uuid": "10.0.0"
 	},
 	"devDependencies": {
 		"@typescript-eslint/typescript-estree": "7.12.0"
