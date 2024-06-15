@@ -239,6 +239,35 @@ div#hoge.foo.bar
 			}).matches('svg:has(>image[clip-path])'),
 		).toBeTruthy();
 	});
+
+	test('pretenders', async () => {
+		expect(createTestElement('<div as="span"></div>').matches('span')).toBeFalsy();
+		expect(createTestElement('<x-div as="span"></x-div>').matches('span')).toBeTruthy();
+
+		expect(
+			createTestElement('<Custom as="div"></Custom>', {
+				parser: await import('@markuplint/jsx-parser'),
+				pretenders: [
+					{
+						selector: 'Custom',
+						as: 'div',
+					},
+				],
+			}).matches('div'),
+		).toBeTruthy();
+
+		expect(
+			createTestElement('<Custom as="div"></Custom>', {
+				parser: await import('@markuplint/jsx-parser'),
+				pretenders: [
+					{
+						selector: 'Custom',
+						as: 'div',
+					},
+				],
+			}).matches('Custom'),
+		).toBeTruthy();
+	});
 });
 
 describe('Rule', () => {
