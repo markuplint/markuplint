@@ -4,7 +4,7 @@ import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
-import type { ElementNodeType, PretenderContext } from './types.js';
+import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
@@ -3439,13 +3439,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: MLParentNode<T, O>,
 	): boolean {
-		return (
-			createSelector(selector, this.ownerMLDocument.specs).match(
-				// Prioritize the pretender
-				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
-				scope,
-			) !== false
-		);
+		let matched = false;
+		const selectorMatcher = createSelector(selector, this.ownerMLDocument.specs);
+		if (this.pretenderContext?.type === 'pretender') {
+			matched = selectorMatcher.match(this, scope) !== false;
+		}
+
+		if (matched) {
+			return true;
+		}
+
+		let _pretender: PretenderContextPretender<MLElement<T, O>, T, O> | null = null;
+		// don't expose pretenders temporarily
+		if (this.pretenderContext?.type === 'pretender') {
+			_pretender = this.pretenderContext;
+			this.pretenderContext = null;
+		}
+
+		matched = selectorMatcher.match(this, scope) !== false;
+
+		if (_pretender) {
+			this.pretenderContext = _pretender;
+		}
+
+		return matched;
 	}
 
 	/**
