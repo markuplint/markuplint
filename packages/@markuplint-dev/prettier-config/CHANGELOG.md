@@ -5,7 +5,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 1.0.0 (2024-06-09)
 
-
 ### Features
 
-* **prettier:** moved Prettier configuration to `@markuplint-dev/prettier-config` ([1080d2d](https://github.com/markuplint/markuplint/commit/1080d2dbb7ac53a12bedd8ee92ec6250fbf73dca))
+- **prettier:** moved Prettier configuration to `@markuplint-dev/prettier-config` ([1080d2d](https://github.com/markuplint/markuplint/commit/1080d2dbb7ac53a12bedd8ee92ec6250fbf73dca))

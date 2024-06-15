@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.2](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.1...@markuplint/types@4.5.2) (2024-06-09)
 
-
 ### Bug Fixes
 
-* fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
-
-
-
-
+- fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
 
 ## [4.5.1](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.0...@markuplint/types@4.5.1) (2024-05-28)
 

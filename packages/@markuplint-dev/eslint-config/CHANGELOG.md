@@ -5,12 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 1.0.0 (2024-06-09)
 
-
 ### Bug Fixes
 
-* **eslint:** add tsconfig for test env ([fecaef8](https://github.com/markuplint/markuplint/commit/fecaef8e4878dba9552e864c83f3ab6e3651ade1))
-
+- **eslint:** add tsconfig for test env ([fecaef8](https://github.com/markuplint/markuplint/commit/fecaef8e4878dba9552e864c83f3ab6e3651ade1))
 
 ### Features
 
-* **eslint:** moved ESLint configuration to `@markuplint-dev/eslint-config` ([642d887](https://github.com/markuplint/markuplint/commit/642d887be920e610617fc93abb13db7c7f21eb70))
+- **eslint:** moved ESLint configuration to `@markuplint-dev/eslint-config` ([642d887](https://github.com/markuplint/markuplint/commit/642d887be920e610617fc93abb13db7c7f21eb70))

@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/html-spec
 
-
-
-
-
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.7.2...@markuplint/html-spec@4.8.0) (2024-05-28)
 
 ### Features

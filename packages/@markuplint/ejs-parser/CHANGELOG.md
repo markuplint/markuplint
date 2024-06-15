@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/ejs-parser@4.6.3...@markuplint/ejs-parser@4.6.4) (2024-06-09)
 
-
 ### Bug Fixes
 
-* fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
-
-
-
-
+- fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
 
 ## [4.6.3](https://github.com/markuplint/markuplint/compare/@markuplint/ejs-parser@4.6.2...@markuplint/ejs-parser@4.6.3) (2024-05-28)
 
