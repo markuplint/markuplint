@@ -43,6 +43,7 @@ module.exports = {
 		'unicorn/no-nested-ternary': 0,
 		'unicorn/no-null': 0,
 		'unicorn/prefer-query-selector': 0,
+		'unicorn/prefer-string-raw': 0,
 		'unicorn/prefer-ternary': 0,
 		'unicorn/prevent-abbreviations': 0,
 

@@ -1,5 +1,5 @@
 import { rm } from 'node:fs/promises';
-import { resolve, relative, sep, dirname } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { test, expect, afterAll, beforeAll } from 'vitest';
@@ -8,10 +8,10 @@ import { glob } from './glob.js';
 import { transfer } from './transfer.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-const SCAFFOLD = resolve(__dirname, '..', 'scaffold');
-const TEST_SANDBOX = resolve(__dirname, '..', '__test_sandbox__');
+const SCAFFOLD = path.resolve(__dirname, '..', 'scaffold');
+const TEST_SANDBOX = path.resolve(__dirname, '..', '__test_sandbox__');
 
 async function removeTestDir() {
 	await rm(TEST_SANDBOX, { recursive: true, force: true });
@@ -38,8 +38,8 @@ test('transfer', async () => {
 			ruleName: 'banana',
 		},
 	});
-	const fileList = await glob(resolve(TEST_SANDBOX, '**', '*'));
-	expect(fileList.sort().map(file => relative(TEST_SANDBOX, file).split(sep).join('/'))).toEqual([
+	const fileList = await glob(path.resolve(TEST_SANDBOX, '**', '*'));
+	expect(fileList.sort().map(file => path.relative(TEST_SANDBOX, file).split(path.sep).join('/'))).toEqual([
 		'core',
 		'core/README.ja.md',
 		'core/README.md',

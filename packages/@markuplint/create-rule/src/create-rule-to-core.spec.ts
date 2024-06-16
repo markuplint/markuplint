@@ -1,5 +1,5 @@
 import { rm, readdir } from 'node:fs/promises';
-import { resolve, sep } from 'node:path';
+import path from 'node:path';
 
 import { test, expect, afterAll, beforeAll } from 'vitest';
 
@@ -9,12 +9,12 @@ const sandboxDirName = '__foo';
 
 async function getTestDir(testDirName: string) {
 	const rulesDir = await getRulesDir();
-	return resolve(rulesDir, testDirName);
+	return path.resolve(rulesDir, testDirName);
 }
 
 async function removeTestDir() {
 	const sandboxDir = await getTestDir(sandboxDirName);
-	const sandboxDirTest = sandboxDir.replace(`${sep}src${sep}`, `${sep}test${sep}`);
+	const sandboxDirTest = sandboxDir.replace(`${path.sep}src${path.sep}`, `${path.sep}test${path.sep}`);
 	await rm(sandboxDir, { recursive: true, force: true });
 	await rm(sandboxDirTest, { recursive: true, force: true });
 }

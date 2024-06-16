@@ -2,7 +2,7 @@ import type { File } from './types.js';
 
 import { statSync } from 'node:fs';
 import fs from 'node:fs/promises';
-import { resolve, extname, basename, relative, dirname } from 'node:path';
+import path from 'node:path';
 
 import { format } from 'prettier';
 import tsc from 'typescript';
@@ -90,7 +90,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 		newFile.fileName = candidateName + (newFile.test ? '.spec' : '');
 	}
 
-	const dest = resolve(newFile.destDir, newFile.fileName + newFile.ext);
+	const dest = path.resolve(newFile.destDir, newFile.fileName + newFile.ext);
 
 	// Prettier
 	const parser =
@@ -115,7 +115,7 @@ async function transferFile(scaffoldType: 'core' | 'project' | 'package', file: 
 }
 
 async function scan(baseDir: string, destDir: string) {
-	const fileList = await glob(resolve(baseDir, '**', '*'));
+	const fileList = await glob(path.resolve(baseDir, '**', '*'));
 
 	const destList = fileList
 		.map(filePath => {
@@ -123,13 +123,13 @@ async function scan(baseDir: string, destDir: string) {
 			if (!stat.isFile()) {
 				return null;
 			}
-			const relPath = relative(baseDir, filePath);
-			const destPath = resolve(destDir, relPath);
-			const ext = extname(destPath);
-			const fileName = basename(destPath, ext);
-			const test = extname(fileName) === '.spec';
-			const name = basename(fileName, '.spec');
-			const destFileDir = dirname(destPath);
+			const relPath = path.relative(baseDir, filePath);
+			const destPath = path.resolve(destDir, relPath);
+			const ext = path.extname(destPath);
+			const fileName = path.basename(destPath, ext);
+			const test = path.extname(fileName) === '.spec';
+			const name = path.basename(fileName, '.spec');
+			const destFileDir = path.dirname(destPath);
 			return {
 				ext,
 				fileName,

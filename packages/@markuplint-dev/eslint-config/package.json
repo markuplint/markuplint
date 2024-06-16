@@ -22,6 +22,6 @@
 		"eslint-plugin-n": "17.8.1",
 		"eslint-plugin-regexp": "2.6.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
-		"eslint-plugin-unicorn": "51.0.1"
+		"eslint-plugin-unicorn": "53.0.0"
 	}
 }

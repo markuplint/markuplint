@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { sep } from 'node:path';
+import path from 'node:path';
 
 const require = createRequire(import.meta.url);
 
@@ -12,7 +12,7 @@ export function resolveModule(id) {
 		modulePath = require.resolve(id);
 	} catch (error) {
 		if (error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
-			const message = error.message.replaceAll(sep, '/');
+			const message = error.message.replaceAll(path.sep, '/');
 
 			const matched = /^no "exports" main defined in (.+)\/package\.json$/i.exec(message);
 
