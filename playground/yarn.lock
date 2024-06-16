@@ -906,10 +906,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@markuplint/cli-utils@4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@markuplint/cli-utils/-/cli-utils-4.4.1.tgz#d3daa0674a8879b09b9ef667711ea3c68e06050f"
-  integrity sha512-8Wa2ioOxsLPVOGGM+liHnf8P1xJpvPafGOjxse4uAYWfbbq2xS90JtEIOJKr3nrUWtYfKHT2WQy3zAX+uS3OTQ==
+"@markuplint/cli-utils@4.4.2":
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/@markuplint/cli-utils/-/cli-utils-4.4.2.tgz#2421f2942df091034ac9fb54c4cd939d43425d96"
+  integrity sha512-mWmwvIaJ+LBVfRx3SItE6K4Q7XA+TNLiNw1h0PAqn7/GmmmaAbFULh/+/lijGsRPvqGAE1Wq50xJGd6xNmzEGg==
   dependencies:
     cli-color "2.0.4"
     detect-installed "2.0.4"
@@ -918,41 +918,31 @@
     has-yarn "3.0.0"
     strip-ansi "7.1.0"
 
-"@markuplint/config-presets@4.5.2":
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-4.5.2.tgz#2097d870ff7233c6fa61f11cd989f07bb3e64c54"
-  integrity sha512-61QSDvWkxQO021+WCcwPfaE7uKaDoD29q2f6LnHJm3wfOEFBzM2+CfdoQZ/EH3MQ4AX6PazJF0fc5ZwnQM34aw==
+"@markuplint/config-presets@4.5.3":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@markuplint/config-presets/-/config-presets-4.5.3.tgz#f4eb1ad142dfb299806aa93cd76d736a6dbcd05a"
+  integrity sha512-8zLtJoI6qmsc63DfrZasPZ2K42EqS9NtfY/hp6CvKMOQ6v86JKcXyg50jHeLyunDJkxlSi3DZvNUUHAnziTcAQ==
 
-"@markuplint/file-resolver@4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/file-resolver/-/file-resolver-4.8.0.tgz#687dbe841ec5cee0341694fecdc98c6e7ae24234"
-  integrity sha512-l9GYErhP+Q+CQeap5csLIifyLj9zoklETYBArUwtZSinQZaLtk+02fvU1IwA1hqfxGZnXwK8Zdg2+8V1DlyJ2A==
+"@markuplint/file-resolver@4.8.1":
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/file-resolver/-/file-resolver-4.8.1.tgz#2cb4f6074012a7fd69a1f82fa3d89af2ecf5ae4c"
+  integrity sha512-Hk8FGox7EG4XjfwYMbODn0iZRbliC4EkNPDeWeuiCJATJ3L2gAxQUVXt9Ro+Dmo0fbYm2VW6IqsK2/F6mcEnyA==
   dependencies:
-    "@markuplint/html-parser" "4.6.3"
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/ml-config" "4.7.0"
-    "@markuplint/ml-core" "4.8.0"
-    "@markuplint/ml-spec" "4.6.1"
-    "@markuplint/parser-utils" "4.6.3"
-    "@markuplint/selector" "4.6.3"
-    "@markuplint/shared" "4.4.1"
+    "@markuplint/html-parser" "4.6.4"
+    "@markuplint/ml-ast" "4.4.1"
+    "@markuplint/ml-config" "4.7.1"
+    "@markuplint/ml-core" "4.8.1"
+    "@markuplint/ml-spec" "4.6.2"
+    "@markuplint/parser-utils" "4.6.4"
+    "@markuplint/selector" "4.6.4"
+    "@markuplint/shared" "4.4.2"
     cosmiconfig "9.0.0"
-    debug "4.3.4"
+    debug "4.3.5"
     glob "10.4.1"
     ignore "5.3.1"
     import-meta-resolve "4.1.0"
     jsonc "2.0.0"
     minimatch "9.0.4"
-
-"@markuplint/html-parser@4.6.3":
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/@markuplint/html-parser/-/html-parser-4.6.3.tgz#5ec0ce5b0b14dc416d9ab6b383add7f82c49efc1"
-  integrity sha512-aZFzlWRDSZhiJT+PfRKBdTpk7garomQ5PZPjyCRc98uw3klmX/8IppOysqQTvLjNsKbW3JoNHqFqARTY6MgPxA==
-  dependencies:
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/parser-utils" "4.6.3"
-    parse5 "7.1.2"
-    type-fest "4.18.3"
 
 "@markuplint/html-parser@4.6.4":
   version "4.6.4"
@@ -964,12 +954,12 @@
     parse5 "7.1.2"
     type-fest "4.20.0"
 
-"@markuplint/html-spec@4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.8.0.tgz#2c9144e0ff90737a1bab2ebfeadaf43a77d64981"
-  integrity sha512-Bbbcw8uG6T7uXMy9EOC5Ei49SSpDSprCiz0Z3RpALPb1sGaHoMKepIC9efCq3nStazw6tFr/luMEIKFfaGsAaA==
+"@markuplint/html-spec@4.8.1":
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/html-spec/-/html-spec-4.8.1.tgz#f4ce4729fe580c9fe38c38dec651e6938e145283"
+  integrity sha512-UsiTqZ/m17NLaAJrhGm78QFXdJxAMCc92Xrrc1cPEgAjZc5dpVm5uR/UM1glGIJ70hdj6E7z1tkrPbjmrtisdQ==
   dependencies:
-    "@markuplint/ml-spec" "4.6.1"
+    "@markuplint/ml-spec" "4.6.2"
 
 "@markuplint/i18n@4.5.0":
   version "4.5.0"
@@ -987,60 +977,44 @@
     "@typescript-eslint/types" "7.12.0"
     "@typescript-eslint/typescript-estree" "7.12.0"
 
-"@markuplint/ml-ast@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.4.0.tgz#c2fc6e62da4fd4b1959f1ecb20c42cf3593f7c37"
-  integrity sha512-CnBChr2N7BL21STm3Fr77h6GA2QMiMAR1P+Eh4JiWywz79TMmrutwrOOKkKPBM6V0NI2pAG8G8mR+92IPjp6eQ==
-
 "@markuplint/ml-ast@4.4.1":
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/@markuplint/ml-ast/-/ml-ast-4.4.1.tgz#66e40fdbb4d3fca818ed2beb8a84302b4b03cec3"
   integrity sha512-FGOTNeFsGOnE+oSUnRhrR6drjE0qZw8elHLmlt3kyvmdv4uIgd/ICRCOLlT78GbOT54VuTguqWt4a96l9evDkg==
 
-"@markuplint/ml-config@4.7.0":
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-4.7.0.tgz#39d7f14ddabc530c2635a2960173f58378624eb7"
-  integrity sha512-jpfNyLcHA7l9uI7QqD//NDyCPsvwkHV+IY6gPDWVek+6W0kj3qE8YdGuiR8uMpZDy5igDfYcJH2i9GIE2VfRBQ==
+"@markuplint/ml-config@4.7.1":
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-config/-/ml-config-4.7.1.tgz#04d1bb96e50f79a6c587f4cad88e5ed5f7d2aa9f"
+  integrity sha512-/cJdKzd1jCIMPbDYA8dBx/rcDnD4LN7J/sIatblXnjMdDxGG4YAVa6Y/tG1gtOxEengNec/dAS1GqOgZ5J5s6Q==
   dependencies:
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/selector" "4.6.3"
-    "@markuplint/shared" "4.4.1"
+    "@markuplint/ml-ast" "4.4.1"
+    "@markuplint/selector" "4.6.4"
+    "@markuplint/shared" "4.4.2"
     "@types/mustache" "4.2.5"
     deepmerge "4.3.1"
     is-plain-object "5.0.0"
     mustache "4.2.0"
-    type-fest "4.18.3"
+    type-fest "4.20.0"
 
-"@markuplint/ml-core@4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.8.0.tgz#e10f88f3cb619ef4637a3aa9c4cd3e8e307b347d"
-  integrity sha512-K/EJL3A6qN93rYzYVUpWLOw8lHYM3g8MuhIKwkWGpRDRC86YM9cCGBGclJpu65Qa5IZiQ3zc6cDJzMUP5mdVXA==
+"@markuplint/ml-core@4.8.1":
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@markuplint/ml-core/-/ml-core-4.8.1.tgz#34b26d702b698e6d22f1452c9815c0ad4177cdfd"
+  integrity sha512-UjLxlZnbKMmX7xWwmMuNMS+GMwBPxys1Mp/C3oYVNXI7RJQGNJiPOHodrJxaIGi7AtTxddZUnFjsGv5UOb+kKQ==
   dependencies:
-    "@markuplint/config-presets" "4.5.2"
-    "@markuplint/html-parser" "4.6.3"
-    "@markuplint/html-spec" "4.8.0"
+    "@markuplint/config-presets" "4.5.3"
+    "@markuplint/html-parser" "4.6.4"
+    "@markuplint/html-spec" "4.8.1"
     "@markuplint/i18n" "4.5.0"
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/ml-config" "4.7.0"
-    "@markuplint/ml-spec" "4.6.1"
-    "@markuplint/parser-utils" "4.6.3"
-    "@markuplint/selector" "4.6.3"
-    "@markuplint/shared" "4.4.1"
+    "@markuplint/ml-ast" "4.4.1"
+    "@markuplint/ml-config" "4.7.1"
+    "@markuplint/ml-spec" "4.6.2"
+    "@markuplint/parser-utils" "4.6.4"
+    "@markuplint/selector" "4.6.4"
+    "@markuplint/shared" "4.4.2"
     "@types/debug" "4.1.12"
-    debug "4.3.4"
+    debug "4.3.5"
     is-plain-object "5.0.0"
-    type-fest "4.18.3"
-
-"@markuplint/ml-spec@4.6.1":
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/@markuplint/ml-spec/-/ml-spec-4.6.1.tgz#97a74d761152abf1b840b7135d99afdde0001c92"
-  integrity sha512-5sNFc0JfmcYG4Bdvf0bQ4OCD4kjrM5kiML+yi7b8PK4VLcmKL5fkTemko30k80CqQ1vuZE1ekdBvI5tvGKgtKw==
-  dependencies:
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/types" "4.5.1"
-    dom-accessibility-api "0.6.3"
-    is-plain-object "5.0.0"
-    type-fest "4.18.3"
+    type-fest "4.20.0"
 
 "@markuplint/ml-spec@4.6.2":
   version "4.6.2"
@@ -1052,20 +1026,6 @@
     dom-accessibility-api "0.6.3"
     is-plain-object "5.0.0"
     type-fest "4.20.0"
-
-"@markuplint/parser-utils@4.6.3":
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/@markuplint/parser-utils/-/parser-utils-4.6.3.tgz#e08aa22c469a504d96ded2696030141150e51bcf"
-  integrity sha512-H2DRDpuBT6IuXZn/Br6q4cKIt1kjwoy5338Tt66jN7gxanqXBAm/PiXpFBYwFIvfVtmxCmR5hNfupAOokMY1iQ==
-  dependencies:
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/ml-spec" "4.6.1"
-    "@markuplint/types" "4.5.1"
-    "@types/uuid" "9.0.8"
-    debug "4.3.4"
-    espree "10.0.1"
-    type-fest "4.18.3"
-    uuid "9.0.1"
 
 "@markuplint/parser-utils@4.6.4":
   version "4.6.4"
@@ -1088,41 +1048,34 @@
   dependencies:
     "@markuplint/ml-spec" "4.6.2"
 
-"@markuplint/rules@4.9.1":
-  version "4.9.1"
-  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.9.1.tgz#ab11a8a4103422d4d9abdeea585e0f7920ee701d"
-  integrity sha512-Ktf+nUeYuEA8vIDXj+epWThXva3uF7wYGW/D1KMOpADFJ5nvLhEU4/7D5ZzjZJt4evHkpBVzqmpL5nb6RLlADg==
+"@markuplint/rules@4.9.2":
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/@markuplint/rules/-/rules-4.9.2.tgz#1770d440a56ee708355f1cdf5553767cb2ad8c7c"
+  integrity sha512-ThoZZRigQ4jYt9D8AnzsfKJXVMYJm3pBEdpzLOSQIxlNtSnt9O2EtoTtyN4O6fHRicBasr2WFZpU3Ea1Aky5SA==
   dependencies:
-    "@markuplint/html-spec" "4.8.0"
-    "@markuplint/ml-core" "4.8.0"
-    "@markuplint/ml-spec" "4.6.1"
-    "@markuplint/selector" "4.6.3"
-    "@markuplint/shared" "4.4.1"
-    "@markuplint/types" "4.5.1"
+    "@markuplint/html-spec" "4.8.1"
+    "@markuplint/ml-core" "4.8.1"
+    "@markuplint/ml-spec" "4.6.2"
+    "@markuplint/selector" "4.6.4"
+    "@markuplint/shared" "4.4.2"
+    "@markuplint/types" "4.5.2"
     "@types/debug" "4.1.12"
     "@ungap/structured-clone" "1.2.0"
     ansi-colors "4.1.3"
-    chrono-node "2.7.5"
-    debug "4.3.4"
-    type-fest "4.18.3"
+    chrono-node "2.7.6"
+    debug "4.3.5"
+    type-fest "4.20.0"
 
-"@markuplint/selector@4.6.3":
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/@markuplint/selector/-/selector-4.6.3.tgz#10423b020673e5bf052bb7958a77196b4b8cda2b"
-  integrity sha512-ET2Kkav88hhm6K2Ns4MYtb4hWMCRfKOOy8B0KAiiIY/Z/8WBBJegatFE+y1S9qxI8BWlGDup9QU2hJpy3VGZ1w==
+"@markuplint/selector@4.6.4":
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/@markuplint/selector/-/selector-4.6.4.tgz#d9b2531f28b0988c12484c065d2888f3fa20b8dd"
+  integrity sha512-3nKAUYc3pmo8aBnMCMlgIcZQB/5M8GaYF7IRComAzzdOwhsPTAZOgkJn4nUBc9bwoFKU4rZ2QNW5KanpCfHviQ==
   dependencies:
-    "@markuplint/ml-spec" "4.6.1"
+    "@markuplint/ml-spec" "4.6.2"
     "@types/debug" "4.1.12"
-    debug "4.3.4"
+    debug "4.3.5"
     postcss-selector-parser "6.1.0"
-    type-fest "4.18.3"
-
-"@markuplint/shared@4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@markuplint/shared/-/shared-4.4.1.tgz#c390defa9d23bc963a8aab56de517c6ead3b12ab"
-  integrity sha512-yog5u59pihJ/jc41se/Nbl+EOg5qd+MWMYWZQzcXmeaY5mvEm0G0dtHhD1CzL0Tzhv6XHERehR7SaWpBhpcItg==
-  dependencies:
-    html-entities "2.5.2"
+    type-fest "4.20.0"
 
 "@markuplint/shared@4.4.2":
   version "4.4.2"
@@ -1130,22 +1083,6 @@
   integrity sha512-/3Eqmvr69uTRlBVX0ZqQPViTQOHDqczpt0K9e+3s0SC7Bq9GEla0V8g/NUW7Fvz237U6aiL1z6o+BtXaZU73yg==
   dependencies:
     html-entities "2.5.2"
-
-"@markuplint/types@4.5.1":
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/@markuplint/types/-/types-4.5.1.tgz#c6ee4b0d13cb8f8a61c7f8f3d5aba5b25294f073"
-  integrity sha512-7STM8Ey/G5Tz20QYs4ZSwdP5may/kfCbpOGIvkF7BC3G0yPip58GgWGcT38x2e4zsTO6iYp+5VM9Mfhp6mM7tQ==
-  dependencies:
-    "@markuplint/shared" "4.4.1"
-    "@types/css-tree" "2.3.7"
-    "@types/debug" "4.1.12"
-    "@types/whatwg-mimetype" "3.0.2"
-    bcp-47 "2.1.0"
-    css-tree "2.3.1"
-    debug "4.3.4"
-    leven "4.0.0"
-    type-fest "4.18.3"
-    whatwg-mimetype "4.0.0"
 
 "@markuplint/types@4.5.2":
   version "4.5.2"
@@ -2095,10 +2032,10 @@ chokidar@3.6.0, chokidar@^3.5.3:
   optionalDependencies:
     fsevents "~2.3.2"
 
-chrono-node@2.7.5:
-  version "2.7.5"
-  resolved "https://registry.yarnpkg.com/chrono-node/-/chrono-node-2.7.5.tgz#1a8a03f94a7ae583b4d56b1427c766c0bafc3c1d"
-  integrity sha512-VJWqFN5rWmXVvXAxOD4i0jX8Tb4cLswaslyaAFhxM45zNXPsZleygPbgiaYBD7ORb9fj07zBgJb0Q6eKL+0iJg==
+chrono-node@2.7.6:
+  version "2.7.6"
+  resolved "https://registry.yarnpkg.com/chrono-node/-/chrono-node-2.7.6.tgz#46d338e5c515b4dcedc5b5f56b1239b0217bf4aa"
+  integrity sha512-yugKSRLHc6B6kXxm/DwNc94zhaddAjCSO9IOGH3w7NIWNM+gUoLl/2/XLndiw4I+XhU4H2LOhC5Ab2JjS6JWsA==
   dependencies:
     dayjs "^1.10.0"
 
@@ -2410,13 +2347,6 @@ debug@4, debug@4.3.5, debug@^4.1.0, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.5.tgz#e83444eceb9fedd4a1da56d671ae2446a01a6e1e"
   integrity sha512-pt0bNEmneDIvdL1Xsd9oDQ/wrQRkXDT4AUWlNZNPKvW5x/jyO9VFXkJUP07vQ2upmw5PlaITaPKc31jK13V+jg==
-  dependencies:
-    ms "2.1.2"
-
-debug@4.3.4:
-  version "4.3.4"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
-  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
   dependencies:
     ms "2.1.2"
 
@@ -4008,31 +3938,31 @@ magic-string@^0.30.5:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
-markuplint@4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.9.0.tgz#eaa6fb593f1da68463cc7e1af3684f391820f534"
-  integrity sha512-bP6DjyR/TY6n//nBMhKrMcD0YWwNNROt35Bk5ZC+LOUHwAlk1cgEaVCI5ZBsejX6KfACJCNSeVYUrCv1WnfDtw==
+markuplint@4.9.1:
+  version "4.9.1"
+  resolved "https://registry.yarnpkg.com/markuplint/-/markuplint-4.9.1.tgz#6e08781297b5dff6d6e1aa719a04ba611fdf1b47"
+  integrity sha512-wd9uWvx2efzUPXMQpr1Gn6bLnlmnb7f61JilMpkT20j8lGek74YkY1euowJM9/LWeumqkW+fdZbpvFGvvRLrnQ==
   dependencies:
-    "@markuplint/cli-utils" "4.4.1"
-    "@markuplint/file-resolver" "4.8.0"
-    "@markuplint/html-parser" "4.6.3"
-    "@markuplint/html-spec" "4.8.0"
+    "@markuplint/cli-utils" "4.4.2"
+    "@markuplint/file-resolver" "4.8.1"
+    "@markuplint/html-parser" "4.6.4"
+    "@markuplint/html-spec" "4.8.1"
     "@markuplint/i18n" "4.5.0"
-    "@markuplint/ml-ast" "4.4.0"
-    "@markuplint/ml-config" "4.7.0"
-    "@markuplint/ml-core" "4.8.0"
-    "@markuplint/ml-spec" "4.6.1"
-    "@markuplint/rules" "4.9.1"
-    "@markuplint/shared" "4.4.1"
+    "@markuplint/ml-ast" "4.4.1"
+    "@markuplint/ml-config" "4.7.1"
+    "@markuplint/ml-core" "4.8.1"
+    "@markuplint/ml-spec" "4.6.2"
+    "@markuplint/rules" "4.9.2"
+    "@markuplint/shared" "4.4.2"
     "@types/debug" "4.1.12"
     chokidar "3.6.0"
-    debug "4.3.4"
+    debug "4.3.5"
     get-stdin "9.0.0"
     meow "13.2.0"
     os-locale "6.0.2"
     strict-event-emitter "0.5.1"
     strip-ansi "7.1.0"
-    type-fest "4.18.3"
+    type-fest "4.20.0"
 
 mdn-data@2.0.30:
   version "2.0.30"
@@ -5254,11 +5184,6 @@ type-detect@^4.0.0, type-detect@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
   integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
-
-type-fest@4.18.3:
-  version "4.18.3"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.18.3.tgz#5249f96e7c2c3f0f1561625f54050e343f1c8f68"
-  integrity sha512-Q08/0IrpvM+NMY9PA2rti9Jb+JejTddwmwmVQGskAlhtcrw1wsRzoR6ode6mR+OAabNa75w/dxedSUY2mlphaQ==
 
 type-fest@4.20.0:
   version "4.20.0"
