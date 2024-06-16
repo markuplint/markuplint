@@ -42,5 +42,18 @@
         }
       }
     }
-  ]
+  ],
+  "overrideMode": "merge",
+  "overrides": {
+    "**/OgImgPlayground.tsx": {
+      "nodeRules": [
+        {
+          "selector": "img",
+          "rules": {
+            "required-attr": false
+          }
+        }
+      ]
+    }
+  }
 }
