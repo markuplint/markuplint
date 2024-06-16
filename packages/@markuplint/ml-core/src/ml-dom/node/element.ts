@@ -892,6 +892,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (this.isForeignElement || this.elementType !== 'html') {
 			return this.#localName;
 		}
+		if (this.ownerMLDocument.tagNameCaseSensitive) {
+			return this.#localName;
+		}
 		return this.#localName.toLowerCase();
 	}
 

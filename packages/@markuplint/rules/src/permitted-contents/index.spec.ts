@@ -1642,4 +1642,23 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<ul><><li></li></></ul>', parser)).violations.length).toBe(0);
 		expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
 	});
+
+	test('#1848', async () => {
+		const sourceCode = '<XComponent></XComponent>';
+		expect(
+			(
+				await mlRuleTest(rule, sourceCode, {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'XComponent',
+							as: 'Head',
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
 });
