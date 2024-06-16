@@ -2,7 +2,7 @@ import type { MLElement } from '../ml-dom/node/element.js';
 import type { MLNode } from '../ml-dom/node/node.js';
 import type { MLToken } from '../ml-dom/token/token.js';
 import type { MLASTNode, MLASTToken, MLParser } from '@markuplint/ml-ast';
-import type { Config, PlainData, RuleConfigValue } from '@markuplint/ml-config';
+import type { Config, PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { parser } from '@markuplint/html-parser';
@@ -15,6 +15,7 @@ export type CreateTestOptions = {
 	readonly config?: Config;
 	readonly parser?: { readonly parser: Readonly<MLParser> } | Readonly<MLParser>;
 	readonly specs?: MLMLSpec;
+	readonly pretenders?: readonly Pretender[];
 };
 
 export function createTestDocument<T extends RuleConfigValue = any, O extends PlainData = any>(

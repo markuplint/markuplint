@@ -181,7 +181,7 @@ class SelectorTarget {
 	id: ReadonlyDeep<parser.Identifier>[] = [];
 	#isAdded = false;
 	pseudo: ReadonlyDeep<parser.Pseudo>[] = [];
-	tag: ReadonlyDeep<parser.Tag> | ReadonlyDeep<parser.Universal> | null = null;
+	tag: ((ReadonlyDeep<parser.Tag> | ReadonlyDeep<parser.Universal>) & { _namespace?: string }) | null = null;
 
 	constructor(extended: ExtendedPseudoClass, depth: number) {
 		this.#extended = extended;
@@ -500,9 +500,7 @@ class SelectorTarget {
 		const has: SelectorMatchedResult[] = [];
 		const not: SelectorMatchedResult[] = [];
 
-		// @ts-ignore
 		if (this.tag && this.tag._namespace) {
-			// @ts-ignore
 			const namespace: string = `${this.tag._namespace}`.toLowerCase();
 			switch (namespace) {
 				case '*':
