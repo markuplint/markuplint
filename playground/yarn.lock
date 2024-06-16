@@ -1646,10 +1646,10 @@
     loupe "^2.3.7"
     pretty-format "^29.7.0"
 
-"@webcontainer/api@1.1.9":
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/@webcontainer/api/-/api-1.1.9.tgz#b546bc71f06740975d15c8dbf9b8287f51f92a9b"
-  integrity sha512-Sp6PV0K9D/3f8fSbCubqhfmBFH8XbngZCBOCF+aExyGqnz2etmw+KYvbQ/JxYvYX5KPaSxM+asFQwoP2RHl5cg==
+"@webcontainer/api@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@webcontainer/api/-/api-1.2.0.tgz#bdaa59d2b50bd7951eeedf08624dab91e5937d6c"
+  integrity sha512-tzoKBd4lLdhHy5GHFpUkl+ndoSba8JqmB7x0ZQFnWfjbcbQOvKQfxA8MEMUYhgqjWHnbrWdAfnBEHz5f5lYG5A==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
