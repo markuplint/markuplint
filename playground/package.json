@@ -16,7 +16,7 @@
 		"@markuplint/parser-utils": "4.6.4",
 		"@monaco-editor/react": "4.6.0",
 		"@shikijs/monaco": "^1.6.1",
-		"@webcontainer/api": "1.1.9",
+		"@webcontainer/api": "1.2.0",
 		"lz-string": "1.5.0",
 		"markuplint": "4.9.1",
 		"monaco-editor": "0.49.0",
