@@ -10,6 +10,11 @@
   padding: 15%;
 }
 
+.logo > img {
+  width: 100%;
+  height: auto;
+}
+
 .logoContainer > figcaption {
   padding: 0.4em 1em;
   font-weight: bold;
