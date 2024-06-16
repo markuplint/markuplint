@@ -15,7 +15,9 @@ import { output } from './output.js';
 
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fix = options.fix;
-	const configFile = options.config && path.join(process.cwd(), options.config);
+	const configFile =
+		options.config &&
+		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
 	const locale = options.locale;
 	const searchConfig = options.searchConfig;
 	const ignoreExt = options.ignoreExt;
