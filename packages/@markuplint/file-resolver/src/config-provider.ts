@@ -108,7 +108,8 @@ export class ConfigProvider {
 		const errors = this._validateConfig(configSet.config, filePath);
 		configSet.errs.push(...errors);
 
-		const plugins = await resolvePlugins(configSet.config.plugins);
+		const { plugins, errors: pluginErrors } = await resolvePlugins(configSet.config.plugins);
+		configSet.errs.push(...pluginErrors);
 
 		if (this.#held.size > 0) {
 			const extendHelds = [...this.#held.values()];
