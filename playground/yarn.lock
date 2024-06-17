@@ -1398,6 +1398,11 @@
   resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-1.6.2.tgz#29be410e33e604c8ccc7d5ab75cade1a52db8ec2"
   integrity sha512-guW5JeDzZ7uwOjTfCOFZ2VtVXk5tmkMzBYbKGfXsmAH1qYOej49L5jQDcGmwd6/OgvpmWhzO2GNJkQIFnbwLPQ==
 
+"@shikijs/core@1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-1.6.5.tgz#0b28cdab48ee977a792b4944cefbb6f6d10ff712"
+  integrity sha512-XcQYt6e4L61ruAxHiL3Xg1DL/XkWWjzDdeckB/DtN8jAxoAU+bcxsV6DetC8NafHpL4YpGhxy9iXF0ND/u6HmA==
+
 "@shikijs/monaco@^1.6.1":
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/@shikijs/monaco/-/monaco-1.6.2.tgz#9a8a32ce759c97260176a88864cc51e8eb832e59"
@@ -4950,11 +4955,11 @@ shebang-regex@^3.0.0:
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
 shiki@^1.6.1:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/shiki/-/shiki-1.6.2.tgz#082db563387a94c10e4002e0c62c61bc78e9cae7"
-  integrity sha512-X3hSm5GzzBd/BmPmGfkueOUADLyBoZo1ojYQXhd+NU2VJn458yt4duaS0rVzC+WtqftSV7mTVvDw+OB9AHi3Eg==
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/shiki/-/shiki-1.6.5.tgz#b29369381706bd3979b670aae478c76494f29509"
+  integrity sha512-iFzypldJG0zeyRHKAhaSGCf+YWXpMMyUyOrCVFBFKGGdF5vrB6jbd66/SQljxV20aSrVZEAQwUto/hhuNi/CIg==
   dependencies:
-    "@shikijs/core" "1.6.2"
+    "@shikijs/core" "1.6.5"
 
 side-channel@^1.0.4, side-channel@^1.0.6:
   version "1.0.6"
