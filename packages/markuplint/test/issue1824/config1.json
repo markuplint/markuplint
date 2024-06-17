@@ -1,0 +1,3 @@
+{
+	"plugins": ["./no-exist-plugin.js"]
+}
