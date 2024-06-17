@@ -1398,12 +1398,17 @@
   resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-1.6.2.tgz#29be410e33e604c8ccc7d5ab75cade1a52db8ec2"
   integrity sha512-guW5JeDzZ7uwOjTfCOFZ2VtVXk5tmkMzBYbKGfXsmAH1qYOej49L5jQDcGmwd6/OgvpmWhzO2GNJkQIFnbwLPQ==
 
+"@shikijs/core@1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-1.6.5.tgz#0b28cdab48ee977a792b4944cefbb6f6d10ff712"
+  integrity sha512-XcQYt6e4L61ruAxHiL3Xg1DL/XkWWjzDdeckB/DtN8jAxoAU+bcxsV6DetC8NafHpL4YpGhxy9iXF0ND/u6HmA==
+
 "@shikijs/monaco@^1.6.1":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@shikijs/monaco/-/monaco-1.6.2.tgz#9a8a32ce759c97260176a88864cc51e8eb832e59"
-  integrity sha512-0X/ud3naqebORTkXdC2dKNM3ymxMKxGBaS+H2qlWEG4O+UfEhdYdN9BFNFVibGwcnAft4dNNW+fIimYgBhZUpw==
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@shikijs/monaco/-/monaco-1.6.5.tgz#5343bf8ac265a6c6199712fa315bf5eaab665b62"
+  integrity sha512-kuxvZZ/No7/2s+zyTjbeLoMUIM+u6KlLHIJSWu56xdcKZM8oHMoJhH3V62PyV1b7JwleYN214IUAb6Txfhwd6g==
   dependencies:
-    "@shikijs/core" "1.6.2"
+    "@shikijs/core" "1.6.5"
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
