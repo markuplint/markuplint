@@ -784,7 +784,7 @@
   dependencies:
     "@floating-ui/dom" "^1.0.0"
 
-"@floating-ui/react@^0.26.13":
+"@floating-ui/react@^0.26.16":
   version "0.26.17"
   resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.26.17.tgz#efa2e1a0dea3d9d308965c5ccd49756bb64a883d"
   integrity sha512-ESD+jYWwqwVzaIgIhExrArdsCL1rOAzryG/Sjlu8yaD3Mtqi3uVyhbE2V7jD58Mo52qbzKz2eUY/Xgh5I86FCQ==
@@ -799,13 +799,13 @@
   integrity sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==
 
 "@headlessui/react@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-2.0.4.tgz#46cb39ca9dde3c2d15f4706c81dad78405b608f0"
-  integrity sha512-16d/rOLeYsFsmPlRmXGu8DCBzrWD0zV1Ccx3n73wN87yFu8Y9+X04zflv8EJEt9TAYRyLKOmQXUnOnqQl6NgpA==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-2.1.0.tgz#a699e60a6b72b6bc2eb3a23eacf5bda28e773926"
+  integrity sha512-/MizQk2xqR5ELkmCI1xWy3VgJULvR8gcAXtZhcK7sY53TNRCPeMdeODEXKSv9LPSSRlEAyzW1+NGJiaXq6dLRw==
   dependencies:
-    "@floating-ui/react" "^0.26.13"
-    "@react-aria/focus" "^3.16.2"
-    "@react-aria/interactions" "^3.21.1"
+    "@floating-ui/react" "^0.26.16"
+    "@react-aria/focus" "^3.17.1"
+    "@react-aria/interactions" "^3.21.3"
     "@tanstack/react-virtual" "3.5.0"
 
 "@humanwhocodes/config-array@^0.11.14":
@@ -1151,7 +1151,7 @@
   dependencies:
     playwright "1.44.1"
 
-"@react-aria/focus@^3.16.2":
+"@react-aria/focus@^3.17.1":
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/@react-aria/focus/-/focus-3.17.1.tgz#c796a188120421e2fedf438cadacdf463c77ad29"
   integrity sha512-FLTySoSNqX++u0nWZJPPN5etXY0WBxaIe/YuL/GTEeuqUIuC/2bJSaw5hlsM6T2yjy6Y/VAxBcKSdAFUlU6njQ==
@@ -1162,7 +1162,7 @@
     "@swc/helpers" "^0.5.0"
     clsx "^2.0.0"
 
-"@react-aria/interactions@^3.21.1", "@react-aria/interactions@^3.21.3":
+"@react-aria/interactions@^3.21.3":
   version "3.21.3"
   resolved "https://registry.yarnpkg.com/@react-aria/interactions/-/interactions-3.21.3.tgz#a2a3e354a8b894bed7a46e1143453f397f2538d7"
   integrity sha512-BWIuf4qCs5FreDJ9AguawLVS0lV9UU+sK4CCnbCNNmYqOWY+1+gRXCsnOM32K+oMESBxilAjdHW5n1hsMqYMpA==
