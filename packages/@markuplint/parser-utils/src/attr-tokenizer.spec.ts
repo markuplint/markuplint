@@ -473,4 +473,18 @@ describe('Issues', () => {
 			leftover: '',
 		});
 	});
+
+	test('#1876', () => {
+		expect(attrTokenizer("{...register('x', options)}", [{ start: '{', end: '}', type: 'script' }])).toStrictEqual({
+			spacesBeforeAttrName: '',
+			attrName: '',
+			spacesBeforeEqual: '',
+			equal: '',
+			spacesAfterEqual: '',
+			quoteStart: '{',
+			attrValue: "...register('x', options)",
+			quoteEnd: '}',
+			leftover: '',
+		});
+	});
 });
