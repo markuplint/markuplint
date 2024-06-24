@@ -175,6 +175,28 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaBrailleLabel(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaBrailleLabel" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaBrailleRoleDescription(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaBrailleRoleDescription" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaBusy(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaBusy" property');
 	}
@@ -3768,6 +3790,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		attr: Attr,
 	): Attr | null {
 		throw new UnexpectedCallError('Not supported "setAttributeNodeNS" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-element-sethtmlunsafe
+	 */
+	setHTMLUnsafe(html: string): void {
+		throw new UnexpectedCallError('Not supported "setHTMLUnsafe" method');
 	}
 
 	/**
