@@ -109,7 +109,7 @@ class MLDOMIndentation {
 		const lines = node.raw.split(/\r?\n/);
 		const index = this.line - line;
 		if (lines[index] != null) {
-			lines[index] = lines[index]!.replace(current, this.#fixed);
+			lines[index] = lines[index].replace(current, this.#fixed);
 		}
 		node.fix(lines.join('\n'));
 	}

@@ -59,7 +59,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 				if (Number.isNaN(num)) {
 					return $0;
 				}
-				const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
+				const keyword = keywords[num] == null ? '' : toString(keywords[num], localeSet?.locale);
 				// No translate
 				if (noTranslateIndex.has(number)) {
 					return keyword;

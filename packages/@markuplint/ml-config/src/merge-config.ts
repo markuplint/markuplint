@@ -227,7 +227,7 @@ function getName(item: any, comparePropName: string) {
 		return item;
 	}
 	if (typeof item === 'object' && item && comparePropName in item && typeof item[comparePropName] === 'string') {
-		return item[comparePropName] as string;
+		return item[comparePropName];
 	}
 	return null;
 }
