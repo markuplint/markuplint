@@ -95,7 +95,7 @@
 		"ts-node": "10.9.2",
 		"tsx": "4.15.7",
 		"typedoc": "0.25.13",
-		"typedoc-plugin-mdn-links": "3.1.30",
+		"typedoc-plugin-mdn-links": "3.2.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.5.2"
 	},
