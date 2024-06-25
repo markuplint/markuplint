@@ -28,7 +28,7 @@
 		"@markuplint/cli-utils": "4.4.3",
 		"@markuplint/ml-core": "4.8.2",
 		"glob": "10.4.2",
-		"prettier": "3.2.5",
+		"prettier": "3.3.2",
 		"ts-node": "10.9.2",
 		"typescript": "5.5.2"
 	},
