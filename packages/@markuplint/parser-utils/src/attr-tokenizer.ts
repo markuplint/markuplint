@@ -38,7 +38,14 @@ export function attrTokenizer(
 	let parser: CustomParser | undefined;
 	let quoteEnd = '';
 
-	const isBeforeValueStarted = startState === AttrState.BeforeValue;
+	// If the `quoteSet` contains a `script` type quotation mark and an attribute starts with that quotation mark,
+	// the attribute name and equals sign are considered omitted.
+	const scriptStartChars = quoteSet.filter(quote => quote.type === 'script').map(quote => quote.start);
+	if (scriptStartChars.some(scriptStartChar => raw.trim().startsWith(scriptStartChar))) {
+		state = AttrState.BeforeValue;
+	}
+
+	const isBeforeValueStarted = state === AttrState.BeforeValue;
 
 	const chars = [...raw];
 
