@@ -2,8 +2,8 @@ import type { Violations } from '../modules/violations';
 import type { editor } from 'monaco-editor';
 
 import MonacoEditor, { type Monaco } from '@monaco-editor/react';
-import { useRef, useEffect, useId } from 'react';
 import { shikiToMonaco } from '@shikijs/monaco';
+import { useRef, useEffect, useId } from 'react';
 import { getHighlighter } from 'shiki/bundle/web';
 
 import { getLanguage } from '../modules/monaco-editor';
@@ -61,7 +61,7 @@ export const CodeEditor = ({ value, filename, violations, onChange }: Props) => 
 						editorRef.current = editor;
 						monacoRef.current = monaco;
 
-						(async () => {
+						void (async () => {
 							const ADDITIONAL_LANGUAGES = ['jsx', 'tsx', 'vue', 'svelte'] as const satisfies Parameters<
 								typeof getHighlighter
 							>[0]['langs'];

@@ -1,5 +1,6 @@
-import { useId } from 'react';
 import type { Violations } from '../modules/violations';
+
+import { useId } from 'react';
 
 export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations | null }>) => {
 	const headingId = useId();
