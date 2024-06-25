@@ -33,7 +33,7 @@
 		"@iconify-json/heroicons-solid": "1.1.11",
 		"@iconify-json/majesticons": "1.1.11",
 		"@markuplint/jsx-parser": "4.7.4",
-		"@markuplint/react-spec": "4.5.4",
+		"@markuplint/react-spec": "4.5.5",
 		"@playwright/test": "1.45.0",
 		"@testing-library/jest-dom": "6.4.6",
 		"@testing-library/react": "15.0.7",
