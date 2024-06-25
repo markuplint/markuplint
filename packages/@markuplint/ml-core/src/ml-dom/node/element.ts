@@ -3873,7 +3873,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		let raw = this.raw;
 		let offset = 0;
 
-		const overlayedCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
+		const overriddenCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
 			if (node.is(node.COMMENT_NODE)) {
 				return this.startOffset < node.startOffset && node.endOffset < this.endOffset;
 			}
@@ -3886,7 +3886,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				startOffset: this.startOffset,
 				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
 			},
-			...overlayedCommentNodes,
+			...overriddenCommentNodes,
 			...this.attributes,
 		];
 		for (const node of nodes) {
