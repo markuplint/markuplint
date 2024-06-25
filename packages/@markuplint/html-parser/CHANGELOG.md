@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.5](https://github.com/markuplint/markuplint/compare/@markuplint/html-parser@4.6.4...@markuplint/html-parser@4.6.5) (2024-06-25)
+
+**Note:** Version bump only for package @markuplint/html-parser
+
+
+
+
+
 ## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/html-parser@4.6.3...@markuplint/html-parser@4.6.4) (2024-06-09)
 
 ### Bug Fixes

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.3](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.2...@markuplint/rules@4.9.3) (2024-06-25)
+
+
+### Bug Fixes
+
+* **ml-core:** `localName` returns lowercase when using case-sensitive parser for tag names ([b1acadd](https://github.com/markuplint/markuplint/commit/b1acaddfd6bf939ee809f6419ce85a701033ca4f))
+
+
+
+
+
 ## [4.9.2](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.1...@markuplint/rules@4.9.2) (2024-06-09)
 
 ### Bug Fixes
