@@ -18,7 +18,7 @@
     "@docusaurus/plugin-client-redirects": "3.4.0",
     "@docusaurus/preset-classic": "3.4.0",
     "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
-    "@octokit/rest": "21.0.0",
+    "@octokit/rest": "21.0.1",
     "clsx": "2.1.1",
     "dotenv": "16.4.5",
     "gray-matter": "4.0.3",
@@ -33,14 +33,14 @@
     "@imgix/js-core": "3.8.0",
     "@tsconfig/strictest": "2.0.5",
     "@types/glob": "8.1.0",
-    "eslint-plugin-react": "7.34.3",
+    "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "4.6.2",
-    "stylelint": "16.6.1",
+    "stylelint": "16.7.0",
     "stylelint-config-recess-order": "5.0.1",
     "stylelint-config-standard": "36.0.1",
     "stylelint-order": "6.0.4",
-    "tsx": "4.15.7",
-    "typescript": "5.5.2"
+    "tsx": "4.16.2",
+    "typescript": "5.5.4"
   },
   "engines": {
     "node": ">=18"
