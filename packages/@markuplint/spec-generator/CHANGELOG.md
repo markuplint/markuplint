@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/spec-generator
 
-
-
-
-
 ## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.3...@markuplint/spec-generator@4.6.4) (2024-06-09)
 
 **Note:** Version bump only for package @markuplint/spec-generator

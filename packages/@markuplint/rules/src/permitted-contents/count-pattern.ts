@@ -143,7 +143,7 @@ export function countPattern(
 				result.type === 'MISSING_NODE_ONE_OR_MORE' ||
 				result.type === 'TRANSPARENT_MODEL_DISALLOWS'
 					? result.type
-					: missingType ?? 'MISSING_NODE_REQUIRED';
+					: (missingType ?? 'MISSING_NODE_REQUIRED');
 
 			ptLog('%s(in %s); Needs %s', resultType, missingType, result.query);
 

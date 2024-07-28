@@ -386,7 +386,10 @@ describe('Issues', () => {
 					{
 						type: 'element',
 						name: 'html',
-						position: { start: { line: 1, column: 2, offset: 0 } },
+						position: {
+							start: { line: 1, column: 1, offset: 0 },
+							end: { line: 7, column: 8, offset: 147 },
+						},
 						attributes: [
 							{
 								type: 'attribute',
@@ -516,15 +519,15 @@ describe('Issues', () => {
 									end: { line: 7, column: 1, offset: 140 },
 								},
 							},
-							{
-								type: 'text',
-								value: '',
-								position: {
-									start: { line: 7, column: 8, offset: 140 },
-									end: { line: 8, column: 1, offset: 140 },
-								},
-							},
 						],
+					},
+					{
+						type: 'text',
+						value: '\n',
+						position: {
+							start: { line: 7, column: 8, offset: 147 },
+							end: { line: 8, column: 1, offset: 148 },
+						},
 					},
 				],
 			}),

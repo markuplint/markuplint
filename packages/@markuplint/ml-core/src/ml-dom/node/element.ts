@@ -3529,7 +3529,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 								? ''
 								: typeof value === 'string'
 									? value
-									: this.getAttribute(value.fromAttr) ?? '';
+									: (this.getAttribute(value.fromAttr) ?? '');
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,

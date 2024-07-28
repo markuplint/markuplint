@@ -29,8 +29,8 @@
 	"dependencies": {
 		"@markuplint/ml-config": "4.7.2",
 		"@markuplint/parser-utils": "4.6.5",
-		"glob": "10.4.2",
+		"glob": "11.0.0",
 		"meow": "13.2.0",
-		"typescript": "5.5.2"
+		"typescript": "5.5.4"
 	}
 }

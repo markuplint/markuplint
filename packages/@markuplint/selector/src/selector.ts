@@ -123,7 +123,7 @@ class StructuredSelector {
 		this.#selector = selector;
 		this.#edge = new SelectorTarget(extended, depth);
 		this.headCombinator =
-			this.#selector.nodes[0]?.type === 'combinator' ? this.#selector.nodes[0].value ?? null : null;
+			this.#selector.nodes[0]?.type === 'combinator' ? (this.#selector.nodes[0].value ?? null) : null;
 		const nodes = [...this.#selector.nodes];
 		if (0 < depth && this.headCombinator) {
 			// eslint-disable-next-line import/no-named-as-default-member

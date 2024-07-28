@@ -21,7 +21,7 @@ export function pugParse(pug: string, useOffset = false) {
 		lexOrigin = newLexOrigin;
 	}
 
-	const lex: lexer.Token[] = JSON.parse(JSON.stringify(lexOrigin));
+	const lex: lexer.Token[] = structuredClone(lexOrigin);
 	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
 	const ast = optimizeAST(originAst, lex, pug);
 	return ast;
@@ -523,7 +523,7 @@ function getLocationFromToken(
 	tokens: readonly lexer.Token[],
 	tokenType?: string | readonly string[],
 ) {
-	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : (tokenType ?? null);
 	let tokenOfCurrentNode: lexer.Token | null = null;
 	for (const token of tokens) {
 		if (

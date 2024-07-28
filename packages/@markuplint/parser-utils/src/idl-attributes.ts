@@ -425,12 +425,12 @@ export function searchIDLAttribute(name: string) {
 	const camelizedName = camelize(name);
 	const [idlPropName, contentAttrName] = /^on[a-z]/.test(name)
 		? [name.toLowerCase(), name.toLowerCase()]
-		: list.find(
+		: (list.find(
 				([idlPropName, contentAttrName]) =>
 					idlPropName.toLowerCase() === camelizedName.toLowerCase() ||
 					contentAttrName.toLowerCase() === name.toLowerCase() ||
 					hyphenize(idlPropName) === name.toLowerCase(),
-			) ?? [];
+			) ?? []);
 	return {
 		idlPropName,
 		contentAttrName,

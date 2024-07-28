@@ -15,7 +15,7 @@ import { decode as decodeHtmlEntities } from 'html-entities';
 export function toNoEmptyStringArrayFromStringOrArray(
 	value: string | readonly string[] | null | undefined,
 ): readonly string[] {
-	const array = typeof value === 'string' ? [value] : value ?? [];
+	const array = typeof value === 'string' ? [value] : (value ?? []);
 	return array.filter(noEmptyFilter);
 }
 
