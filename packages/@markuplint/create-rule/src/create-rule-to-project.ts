@@ -1,6 +1,6 @@
 import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js';
 
-import { resolve } from 'node:path';
+import path from 'node:path';
 
 import { CreateRuleHelperError } from './create-rule-helper-error.js';
 import { fsExists } from './fs-exists.js';
@@ -12,7 +12,7 @@ export async function createRuleToProject({
 	lang,
 	needTest,
 }: CreateRuleCreatorParams): Promise<CreateRuleHelperResult> {
-	const pluginDir = resolve(process.cwd(), pluginName);
+	const pluginDir = path.resolve(process.cwd(), pluginName);
 
 	if (await fsExists(pluginDir)) {
 		throw new CreateRuleHelperError(`The directory exists: ${pluginDir}`);
