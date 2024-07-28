@@ -122,7 +122,7 @@ describe('parser', () => {
 						{
 							type: 'IfBlock',
 							elseif: true,
-							start: 30,
+							start: 15,
 							end: 40,
 							test: {
 								type: 'Identifier',
