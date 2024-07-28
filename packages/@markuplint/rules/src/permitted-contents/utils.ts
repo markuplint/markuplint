@@ -52,7 +52,7 @@ export function matches(
 	}
 
 	const not = selectorResult
-		.flatMap(r => (r.matched ? [] : r.not ?? []))
+		.flatMap(r => (r.matched ? [] : (r.not ?? [])))
 		.flatMap(descendants)
 		.shift();
 

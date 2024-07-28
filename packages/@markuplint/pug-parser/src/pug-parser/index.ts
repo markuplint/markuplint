@@ -523,7 +523,7 @@ function getLocationFromToken(
 	tokens: readonly lexer.Token[],
 	tokenType?: string | readonly string[],
 ) {
-	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : tokenType ?? null;
+	const tokenTypes = typeof tokenType === 'string' ? (tokenType === '' ? null : [tokenType]) : (tokenType ?? null);
 	let tokenOfCurrentNode: lexer.Token | null = null;
 	for (const token of tokens) {
 		if (
