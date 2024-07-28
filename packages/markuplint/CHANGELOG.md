@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.9.2](https://github.com/markuplint/markuplint/compare/markuplint@4.9.1...markuplint@4.9.2) (2024-06-25)
 
-
 ### Bug Fixes
 
-* **markuplint:** ensure `--config` option correctly handles absolute paths ([fd36c1a](https://github.com/markuplint/markuplint/commit/fd36c1a4475f71d8b1e83212a60639c7361cd702))
-
-
-
-
+- **markuplint:** ensure `--config` option correctly handles absolute paths ([fd36c1a](https://github.com/markuplint/markuplint/commit/fd36c1a4475f71d8b1e83212a60639c7361cd702))
 
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/markuplint@4.9.0...markuplint@4.9.1) (2024-06-09)
 
