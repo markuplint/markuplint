@@ -25,15 +25,3 @@ export function svelteParse(template: string): SvelteNode[] {
 }
 
 export type SvelteDirective = Directive | Attribute | SpreadAttribute;
-
-export const blockOrTags = [
-	'IfBlock',
-	'EachBlock',
-	'AwaitBlock',
-	'KeyBlock',
-	'SnippetBlock',
-	'HtmlTag',
-	'DebugTag',
-	'ConstTag',
-	'RenderTag',
-];

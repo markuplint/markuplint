@@ -10,7 +10,7 @@ import { getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
-import { blockOrTags, svelteParse } from './svelte-parser/index.js';
+import { svelteParse } from './svelte-parser/index.js';
 
 export class SvelteParser extends Parser<SvelteNode> {
 	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
@@ -60,28 +60,14 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	nodeize(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		 
 		originNode: SvelteNode,
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		let token = this.sliceFragment(originNode.start, originNode.end);
+		const token = this.sliceFragment(originNode.start, originNode.end);
 		const parentNamespace =
 			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
-
-		/**
-		 * Temporarily correct location shift issue with the new parser.
-		 */
-		if (blockOrTags.includes(originNode.type) && !token.raw.startsWith('{')) {
-			let start = token.startOffset;
-			while (this.rawCode[start] !== '{') {
-				start--;
-			}
-			token = {
-				...token,
-				...this.sliceFragment(start, originNode.end),
-			};
-		}
 
 		switch (originNode.type) {
 			case 'Text': {
@@ -297,7 +283,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	visitChildren(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		 
 		children: readonly SvelteNode[],
 		parentNode: MLASTParentNode | null,
 	): never[] {
@@ -382,7 +368,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 	#parseAwaitBlock(
 		token: ChildToken,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		 
 		originBlockNode: SvelteAwaitBlock,
 	) {
 		const { closeToken } = parseBlock(this, token, originBlockNode);
@@ -457,8 +443,8 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 *                 find___^
 		 */
 		const catchExpStart = thenToken
-			? thenEnd ?? thenToken.startOffset + thenToken.raw.length
-			: pendingEnd ?? awaitExpEnd;
+			? (thenEnd ?? thenToken.startOffset + thenToken.raw.length)
+			: (pendingEnd ?? awaitExpEnd);
 
 		/**
 		 * `{:catch name}...{/await}`
@@ -549,7 +535,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 	#parseEachBlock(
 		token: ChildToken,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		 
 		originBlockNode: SvelteEachBlock,
 	) {
 		const expressions: MLASTPreprocessorSpecificBlock[] = [];
@@ -638,7 +624,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	#traverseIfBlock(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		 
 		originBlockNode: SvelteIfBlock,
 		start: number,
 		type: 'if' | 'elseif' | 'else' = 'if',
