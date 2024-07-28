@@ -38,12 +38,12 @@
 		"@markuplint/shared": "4.4.3",
 		"@types/debug": "4.1.12",
 		"chokidar": "3.6.0",
-		"debug": "4.3.5",
+		"debug": "4.3.6",
 		"get-stdin": "9.0.0",
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.1.0",
-		"type-fest": "4.20.1"
+		"type-fest": "4.23.0"
 	}
 }

@@ -27,10 +27,10 @@
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.3",
 		"@markuplint/ml-core": "4.8.2",
-		"glob": "10.4.2",
-		"prettier": "3.2.5",
+		"glob": "11.0.0",
+		"prettier": "3.3.3",
 		"ts-node": "10.9.2",
-		"typescript": "5.5.2"
+		"typescript": "5.5.4"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",

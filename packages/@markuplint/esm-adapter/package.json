@@ -20,13 +20,13 @@
 	},
 	"scripts": {},
 	"dependencies": {
-		"debug": "4.3.5",
+		"debug": "4.3.6",
 		"default-markuplint": "npm:markuplint@latest",
 		"latest-markuplint-ml-spec": "npm:@markuplint/ml-spec@latest",
 		"strict-event-emitter": "0.5.1"
 	},
 	"devDependencies": {
 		"@types/debug": "4.1.12",
-		"semver": "7.6.2"
+		"semver": "7.6.3"
 	}
 }

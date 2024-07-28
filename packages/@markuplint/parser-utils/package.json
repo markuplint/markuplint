@@ -32,12 +32,12 @@
 		"@markuplint/ml-spec": "4.6.3",
 		"@markuplint/types": "4.5.3",
 		"@types/uuid": "10.0.0",
-		"debug": "4.3.5",
+		"debug": "4.3.6",
 		"espree": "10.1.0",
-		"type-fest": "4.20.1",
+		"type-fest": "4.23.0",
 		"uuid": "10.0.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "7.14.1"
+		"@typescript-eslint/typescript-estree": "7.17.0"
 	}
 }

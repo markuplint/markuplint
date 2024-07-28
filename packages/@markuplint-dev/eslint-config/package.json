@@ -13,15 +13,15 @@
 	},
 	"dependencies": {
 		"@eslint-community/eslint-plugin-eslint-comments": "4.3.0",
-		"@typescript-eslint/eslint-plugin": "7.14.1",
-		"@typescript-eslint/parser": "7.14.1",
+		"@typescript-eslint/eslint-plugin": "7.17.0",
+		"@typescript-eslint/parser": "7.17.0",
 		"eslint": "8.57.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-import": "2.29.1",
-		"eslint-plugin-jsdoc": "48.4.0",
-		"eslint-plugin-n": "17.9.0",
+		"eslint-plugin-jsdoc": "48.8.3",
+		"eslint-plugin-n": "17.10.1",
 		"eslint-plugin-regexp": "2.6.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
-		"eslint-plugin-unicorn": "51.0.1"
+		"eslint-plugin-unicorn": "55.0.0"
 	}
 }
