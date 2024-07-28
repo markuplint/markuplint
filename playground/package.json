@@ -6,7 +6,11 @@
 	"scripts": {
 		"pg:dev": "vite",
 		"pg:build": "tsc && vite build",
-		"pg:lint": "eslint src --ext ts,tsx; markuplint 'src/**/*.tsx'; cspell '**' --no-progress; prettier --check 'src/**/*.{js,ts,tsx}'",
+		"pg:lint": "run-s pg:lint:eslint pg:lint:markuplint pg:lint:prettier pg:lint:cspell",
+		"pg:lint:eslint": "eslint src --ext ts,tsx",
+		"pg:lint:markuplint": "markuplint 'src/**/*.tsx'",
+		"pg:lint:prettier": "prettier --check 'src/**/*.{js,ts,tsx}'",
+		"pg:lint:cspell": "cspell '**' --no-progress",
 		"pg:test": "vitest",
 		"pg:preview": "vite preview",
 		"pg:up": "yarn upgrade-interactive --latest"
@@ -53,6 +57,7 @@
 		"eslint-plugin-vitest": "0.5.4",
 		"eslint": "8.57.0",
 		"jsdom": "24.1.1",
+		"npm-run-all2": "6.2.2",
 		"postcss": "8.4.40",
 		"prettier-plugin-tailwindcss": "0.6.5",
 		"prettier": "3.3.3",
