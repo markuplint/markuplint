@@ -69,7 +69,7 @@ export function start(
 					scope:
 						result.type === 'MISSING_NODE_REQUIRED' || result.type === 'MISSING_NODE_ONE_OR_MORE'
 							? el
-							: result.unmatched[0] ?? el,
+							: (result.unmatched[0] ?? el),
 					query: result.query,
 					hint: result.hint,
 				},

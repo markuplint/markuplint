@@ -1,7 +1,12 @@
 {
 	"root": true,
-	"extends": ["../.eslintrc", "plugin:react/recommended", "plugin:react-hooks/recommended"],
-	"plugins": ["react", "react-refresh"],
+	"extends": [
+		"@markuplint-dev/eslint-config",
+		"plugin:react/recommended",
+		"plugin:react-hooks/recommended",
+		"plugin:testing-library/react"
+	],
+	"plugins": ["react", "react-hooks", "react-refresh", "testing-library", "vitest"],
 	"env": {
 		"browser": true
 	},
@@ -61,7 +66,6 @@
 		},
 		{
 			"files": ["./**/*.spec.ts", "./**/*.spec.tsx"],
-			"extends": ["plugin:vitest/recommended", "plugin:testing-library/react"],
 			"rules": {
 				"testing-library/prefer-user-event": 2,
 				"testing-library/no-manual-cleanup": 0

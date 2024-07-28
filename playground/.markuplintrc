@@ -6,5 +6,16 @@
 	},
 	"specs": {
 		"\\.tsx$": "@markuplint/react-spec"
-	}
+	},
+	"rules": {
+		"heading-levels": false
+	},
+	"nodeRules": [
+		{
+			"selector": "option",
+			"rules": {
+				"permitted-contents": false
+			}
+		}
+	]
 }

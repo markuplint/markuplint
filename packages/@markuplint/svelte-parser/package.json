@@ -29,9 +29,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.3",
-		"@markuplint/ml-ast": "4.4.0",
-		"@markuplint/parser-utils": "4.6.3",
+		"@markuplint/html-parser": "4.6.5",
+		"@markuplint/ml-ast": "4.4.2",
+		"@markuplint/parser-utils": "4.6.5",
 		"svelte": "5.0.0-next.152"
 	}
 }

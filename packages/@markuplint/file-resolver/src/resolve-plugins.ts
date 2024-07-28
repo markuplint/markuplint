@@ -6,23 +6,43 @@ import { generalImport } from './general-import.js';
 
 const pLog = log.extend('resolve-plugins');
 
-const cache = new Map<string, Plugin>();
+const cache = new Map<string, Plugin | ReferenceError>();
 
-export async function resolvePlugins(pluginPaths?: readonly (string | PluginConfig)[]) {
+export async function resolvePlugins(pluginPaths?: readonly (string | PluginConfig)[]): Promise<{
+	plugins: Plugin[];
+	errors: ReferenceError[];
+}> {
 	if (!pluginPaths) {
-		return [];
+		return {
+			plugins: [],
+			errors: [],
+		};
 	}
 
-	const plugins = await Promise.all(pluginPaths.map(p => importPlugin(p)));
-	// Clone
-	return [...plugins];
+	const imported = await Promise.all(pluginPaths.map(p => importPlugin(p)));
+
+	const plugins: Plugin[] = [];
+	const errors: ReferenceError[] = [];
+
+	for (const item of imported) {
+		if (item instanceof ReferenceError) {
+			errors.push(item);
+		} else {
+			plugins.push(item);
+		}
+	}
+
+	return {
+		plugins,
+		errors,
+	};
 }
 
 export function cacheClear() {
 	cache.clear();
 }
 
-async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> {
+async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin | ReferenceError> {
 	const config = getPluginConfig(pluginPath);
 	const cached = cache.get(config.name);
 	if (cached) {
@@ -32,16 +52,23 @@ async function importPlugin(pluginPath: string | PluginConfig): Promise<Plugin> 
 
 	const pluginCreator = await generalImport<PluginCreator<any>>(config.name);
 
+	if (!pluginCreator) {
+		const error = new ReferenceError(`Plugin not found: ${config.name}`);
+		pLog('Error: %s', error.message);
+		cache.set(config.name, error);
+		return error;
+	}
+
 	let name = config.name;
 	let plugin: Plugin | null = null;
 
-	if (typeof pluginCreator?.create === 'function' || pluginCreator?.name) {
+	if (typeof pluginCreator.create === 'function' || pluginCreator?.name) {
 		plugin = {
 			name: pluginCreator.name,
 			...pluginCreator.create(config.settings),
 		};
 		name = plugin.name ?? name;
-	} else if (pluginCreator) {
+	} else {
 		pLog('Invalid plugin: %s', config.name);
 	}
 

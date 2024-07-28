@@ -196,13 +196,13 @@ function createGrid(
 
 				if (matrix[rowNum]?.[colNum] === '↓' && !spanStart && colSpan > 1) {
 					// Overlap
-					matrix[rowNum]![colNum] = 'x';
+					matrix[rowNum][colNum] = 'x';
 				} else {
-					matrix[rowNum]![colNum] = spanStart ? '◎' : addCol > 0 ? '↓' : colSpan > 1 ? '→' : '●';
+					matrix[rowNum][colNum] = spanStart ? '◎' : addCol > 0 ? '↓' : colSpan > 1 ? '→' : '●';
 				}
 
 				if (addCol === 1) {
-					matrix[rowNum]!.push('●');
+					matrix[rowNum].push('●');
 				}
 
 				colNum += 1;

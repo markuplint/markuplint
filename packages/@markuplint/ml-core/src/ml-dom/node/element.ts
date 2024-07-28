@@ -4,7 +4,7 @@ import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
-import type { ElementNodeType, PretenderContext } from './types.js';
+import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
@@ -166,6 +166,28 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get ariaAutoComplete(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaAutoComplete" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaBrailleLabel(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaBrailleLabel" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaBrailleRoleDescription(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaBrailleRoleDescription" property');
 	}
 
 	/**
@@ -890,6 +912,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			return this.pretenderContext.as.localName;
 		}
 		if (this.isForeignElement || this.elementType !== 'html') {
+			return this.#localName;
+		}
+		if (this.ownerMLDocument.tagNameCaseSensitive) {
 			return this.#localName;
 		}
 		return this.#localName.toLowerCase();
@@ -3439,13 +3464,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: MLParentNode<T, O>,
 	): boolean {
-		return (
-			createSelector(selector, this.ownerMLDocument.specs).match(
-				// Prioritize the pretender
-				this.pretenderContext?.type === 'pretender' ? this.pretenderContext.as : this,
-				scope,
-			) !== false
-		);
+		let matched = false;
+		const selectorMatcher = createSelector(selector, this.ownerMLDocument.specs);
+		if (this.pretenderContext?.type === 'pretender') {
+			matched = selectorMatcher.match(this, scope) !== false;
+		}
+
+		if (matched) {
+			return true;
+		}
+
+		let _pretender: PretenderContextPretender<MLElement<T, O>, T, O> | null = null;
+		// don't expose pretenders temporarily
+		if (this.pretenderContext?.type === 'pretender') {
+			_pretender = this.pretenderContext;
+			this.pretenderContext = null;
+		}
+
+		matched = selectorMatcher.match(this, scope) !== false;
+
+		if (_pretender) {
+			this.pretenderContext = _pretender;
+		}
+
+		return matched;
 	}
 
 	/**
@@ -3487,7 +3529,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 								? ''
 								: typeof value === 'string'
 									? value
-									: this.getAttribute(value.fromAttr) ?? '';
+									: (this.getAttribute(value.fromAttr) ?? '');
 						return {
 							...this._astToken,
 							uuid: `${this.uuid}_attr_${i}`,
@@ -3755,6 +3797,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-element-sethtmlunsafe
+	 */
+	setHTMLUnsafe(html: string): void {
+		throw new UnexpectedCallError('Not supported "setHTMLUnsafe" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
 	 * @see https://www.w3.org/TR/pointerevents2/#idl-def-element-setpointercapture-pointerid
 	 */
 	setPointerCapture(pointerId: number): void {
@@ -3820,7 +3873,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		let raw = this.raw;
 		let offset = 0;
 
-		const overlayedCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
+		const overriddenCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
 			if (node.is(node.COMMENT_NODE)) {
 				return this.startOffset < node.startOffset && node.endOffset < this.endOffset;
 			}
@@ -3833,7 +3886,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				startOffset: this.startOffset,
 				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
 			},
-			...overlayedCommentNodes,
+			...overriddenCommentNodes,
 			...this.attributes,
 		];
 		for (const node of nodes) {

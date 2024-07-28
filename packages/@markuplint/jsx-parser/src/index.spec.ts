@@ -685,4 +685,13 @@ const C = () => {
 			'[15:5]>[15:11](311,317)div: </div>',
 		]);
 	});
+
+	test('#1876', () => {
+		const doc = parse("<input {...register('x', options)} />");
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			"[1:1]>[1:38](0,37)input: <input␣{...register('x',␣options)}␣/>",
+			"[1:8]>[1:35](7,34)#spread: {...register('x',␣options)}",
+			"  #spread: {...register('x',␣options)}",
+		]);
+	});
 });

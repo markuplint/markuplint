@@ -17,7 +17,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			}
 			const format = localeSet?.listFormat ?? defaultListFormat;
 			const useLastSeparator = keywords[0] == null || keywords[0] == false ? false : true;
-			const lastSeparator = useLastSeparator ? format.lastSeparator ?? format.separator : format.separator;
+			const lastSeparator = useLastSeparator ? (format.lastSeparator ?? format.separator) : format.separator;
 			const list = messageTmpl.map(
 				keyword => format.quoteStart + translateKeyword(keyword, '', localeSet) + format.quoteEnd,
 			);
@@ -59,7 +59,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 				if (Number.isNaN(num)) {
 					return $0;
 				}
-				const keyword = keywords[num] == null ? '' : toString(keywords[num]!, localeSet?.locale);
+				const keyword = keywords[num] == null ? '' : toString(keywords[num], localeSet?.locale);
 				// No translate
 				if (noTranslateIndex.has(number)) {
 					return keyword;

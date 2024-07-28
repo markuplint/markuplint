@@ -51,7 +51,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			for (const [i, rawLine] of rawLines.entries()) {
 				const currentLine = lines[startLine + i] ?? '';
 				const beforeChars =
-					i === 0 ? line.slice(0, Math.max(0, violation.col - 1)) : rawLine.match(/^\s+/)?.[0] ?? '';
+					i === 0 ? line.slice(0, Math.max(0, violation.col - 1)) : (rawLine.match(/^\s+/)?.[0] ?? '');
 				const codeChars = rawLine.trim();
 				const afterChars = currentLine.slice(Math.max(0, beforeChars.length + codeChars.length));
 				const lineNoChars = pad(violation.line + i, sizes.col, true);

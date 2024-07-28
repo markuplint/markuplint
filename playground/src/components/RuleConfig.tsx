@@ -263,7 +263,7 @@ const NestedArray = ({
 									onClick={handleRemove(i)}
 									className="flex items-center justify-center gap-1 rounded-full bg-slate-100 p-2 shadow-sm transition-colors hover:bg-red-100"
 								>
-									<span className="icon-heroicons-solid-minus  overflow-hidden ">Remove</span>
+									<span className="icon-heroicons-solid-minus overflow-hidden">Remove</span>
 								</button>
 							</li>
 						))}
@@ -273,9 +273,7 @@ const NestedArray = ({
 					<button
 						type="button"
 						onClick={handleAdd}
-						className="flex w-full items-center justify-center gap-1
-				bg-slate-100 px-2 py-1 text-sm shadow-sm
-				"
+						className="flex w-full items-center justify-center gap-1 bg-slate-100 px-2 py-1 text-sm shadow-sm"
 					>
 						<span className="icon-heroicons-solid-plus overflow-hidden"></span>
 						Add item
@@ -429,9 +427,7 @@ const NestedObject = ({
 					property.deprecated === true ? null : (
 						<li key={key}>
 							<details
-								className="flex flex-row flex-wrap items-baseline gap-y-1
-							[&>summary>span]:icon-majesticons-chevron-right [&>:nth-child(n+2)]:ml-6
-							[&>summary>span]:open:rotate-90 [&>summary>span]:open:text-opacity-40"
+								className="flex flex-row flex-wrap items-baseline gap-y-1 [&>summary>span]:icon-majesticons-chevron-right [&>:nth-child(n+2)]:ml-6 [&>summary>span]:open:rotate-90 [&>summary>span]:open:text-opacity-40"
 								open
 							>
 								<summary className="inline-flex w-fit items-baseline gap-2 py-2">
@@ -498,7 +494,7 @@ const NestedBoolean = ({
 	const defaultValue = schema.default;
 	return (
 		<select
-			className="select-arrow rounded-md border border-slate-300 "
+			className="select-arrow rounded-md border border-slate-300"
 			value={valueState}
 			onChange={e => {
 				const value = e.currentTarget.value;

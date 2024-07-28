@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.8.1...@markuplint/file-resolver@4.9.0) (2024-06-25)
+
+### Bug Fixes
+
+- **file-resolver:** catch errors on resolve plugins ([34f4775](https://github.com/markuplint/markuplint/commit/34f47754f2b470c31b9f1215f4072e72b2af6e2a))
+
+### Features
+
+- **file-resolver:** expose errors within resolving plugins ([35ac3d4](https://github.com/markuplint/markuplint/commit/35ac3d46d0aa8e3483defa66c1239e739c57e060))
+
+## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.8.0...@markuplint/file-resolver@4.8.1) (2024-06-09)
+
+### Bug Fixes
+
+- fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
+
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.7.2...@markuplint/file-resolver@4.8.0) (2024-05-28)
 
 ### Features

@@ -2,6 +2,8 @@ import leven from 'leven';
 
 type NullableString = string | null | undefined;
 
+const FLAT_DEPTH = 2;
+
 export function getCandidate(
 	value: NullableString,
 	...candidates: readonly (NullableString | readonly NullableString[])[]
@@ -9,7 +11,7 @@ export function getCandidate(
 	if (!value) {
 		return;
 	}
-	const list = candidates.flat(2).filter((s): s is string => !!s);
+	const list = candidates.flat(FLAT_DEPTH).filter((s): s is string => !!s);
 	let candidate: string | undefined;
 	let maxRatio = 0;
 	for (const word of list) {

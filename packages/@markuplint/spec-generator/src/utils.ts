@@ -3,8 +3,8 @@
 type HasName = { readonly name: string };
 
 export function nameCompare(a: HasName | string, b: HasName | string) {
-	const nameA = typeof a === 'string' ? a : a.name?.toUpperCase() ?? String(a);
-	const nameB = typeof b === 'string' ? b : b.name?.toUpperCase() ?? String(b);
+	const nameA = typeof a === 'string' ? a : (a.name?.toUpperCase() ?? String(a));
+	const nameB = typeof b === 'string' ? b : (b.name?.toUpperCase() ?? String(b));
 	if (nameA < nameB) {
 		return -1;
 	}

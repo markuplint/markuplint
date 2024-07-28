@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.5](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.4...@markuplint/parser-utils@4.6.5) (2024-06-25)
+
+### Bug Fixes
+
+- **parser-utils:** modify to treat attrs start with `script` type quotation marks as spread attr ([617b6d0](https://github.com/markuplint/markuplint/commit/617b6d0fbba1d245ca21360908b643f123818037))
+
+## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.3...@markuplint/parser-utils@4.6.4) (2024-06-09)
+
+### Bug Fixes
+
+- fix to export type files ([eff4bbf](https://github.com/markuplint/markuplint/commit/eff4bbfd127574809dc5e15d7cafe87699758ee0))
+
 ## [4.6.3](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.2...@markuplint/parser-utils@4.6.3) (2024-05-28)
 
 ### Bug Fixes

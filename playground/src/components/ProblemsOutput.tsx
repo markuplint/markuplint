@@ -1,5 +1,6 @@
-import { useId } from 'react';
 import type { Violations } from '../modules/violations';
+
+import { useId } from 'react';
 
 export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations | null }>) => {
 	const headingId = useId();
@@ -13,12 +14,12 @@ export const ProblemsOutput = ({ violations }: Readonly<{ violations: Violations
 					</span>
 				)}
 			</h3>
-			<div className="h-full overflow-y-auto ">
+			<div className="h-full overflow-y-auto">
 				{violations === null ? (
 					<p className="p-3 pb-6">Loading...</p>
 				) : violations.length === 0 ? (
 					<p className="p-3 pb-6">
-						<span className="mr-2 inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900 ">
+						<span className="mr-2 inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900">
 							Info
 						</span>
 						<span>No problems found.</span>
@@ -54,21 +55,21 @@ const icon = (severity: Violations[number]['severity']) => {
 	switch (severity) {
 		case 'info': {
 			return (
-				<span className="inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-sky-200 px-1 text-center font-bold text-sky-900">
 					Info
 				</span>
 			);
 		}
 		case 'warning': {
 			return (
-				<span className="inline-block min-w-[9ch] rounded bg-yellow-200 px-1 text-center font-bold text-yellow-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-yellow-200 px-1 text-center font-bold text-yellow-900">
 					Warning
 				</span>
 			);
 		}
 		case 'error': {
 			return (
-				<span className="inline-block min-w-[9ch] rounded bg-red-200 px-1 text-center font-bold text-red-900 ">
+				<span className="inline-block min-w-[9ch] rounded bg-red-200 px-1 text-center font-bold text-red-900">
 					Error
 				</span>
 			);

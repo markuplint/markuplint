@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.7.3",
+	"version": "4.7.5",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -117,31 +117,31 @@
 		"vscode:release": "vsce publish --no-yarn"
 	},
 	"devDependencies": {
-		"@markuplint-dev/tsconfig": "1.0.0-alpha.0",
-		"@markuplint/file-resolver": "4.8.0",
-		"@types/mocha": "10.0.6",
-		"@types/node": "20.14.2",
+		"@markuplint-dev/tsconfig": "1.0.1",
+		"@markuplint/file-resolver": "4.9.0",
+		"@types/mocha": "10.0.7",
+		"@types/node": "20.14.12",
 		"@types/semver": "7.5.8",
-		"@types/vscode": "1.90.0",
-		"@vscode/test-electron": "2.4.0",
-		"@vscode/vsce": "2.27.0",
-		"esbuild": "0.21.4",
-		"typescript": "5.4.5"
+		"@types/vscode": "1.91.0",
+		"@vscode/test-electron": "2.4.1",
+		"@vscode/vsce": "2.31.1",
+		"esbuild": "0.23.0",
+		"typescript": "5.5.4"
 	},
 	"dependencies": {
-		"@markuplint/esm-adapter": "4.4.0",
-		"@markuplint/i18n": "4.5.0",
-		"debug": "4.3.5",
-		"glob": "10.4.1",
-		"markuplint": "4.9.0",
-		"mocha": "10.4.0",
-		"semver": "7.6.2",
+		"@markuplint/esm-adapter": "4.5.1",
+		"@markuplint/i18n": "4.5.1",
+		"debug": "4.3.6",
+		"glob": "11.0.0",
+		"markuplint": "4.9.2",
+		"mocha": "10.7.0",
+		"semver": "7.6.3",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.11"
 	},
 	"volta": {
-		"node": "20.9.0",
+		"node": "20.16.0",
 		"yarn": "1.22.22"
 	}
 }

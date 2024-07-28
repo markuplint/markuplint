@@ -8,7 +8,7 @@ export function getDefaultRules() {
 
 	for (const [ruleName, rule] of Object.entries(builtinRules)) {
 		const defaultSeverity = rule.defaultSeverity;
-		const defaultValue = defaultSeverity === 'warning' ? false : rule.defaultValue ?? true;
+		const defaultValue = defaultSeverity === 'warning' ? false : (rule.defaultValue ?? true);
 		const category = rule.meta?.category;
 		if (category) {
 			rules[ruleName] = {

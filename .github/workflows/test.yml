@@ -25,13 +25,13 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -62,13 +62,13 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -118,13 +118,13 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -175,13 +175,13 @@ jobs:
                     - node: 22
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ matrix.node }}
 
@@ -224,13 +224,13 @@ jobs:
                       os: ubuntu-latest
                       shard: 1/1
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ matrix.node }}
 
@@ -285,13 +285,13 @@ jobs:
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
