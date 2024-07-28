@@ -322,12 +322,9 @@ export function App() {
 									{(['JSON', 'Visual'] as const).map((label, i) => (
 										<Tab
 											key={i}
-											className={`
-													flex items-center justify-center gap-1 overflow-hidden 
-													px-2 py-1 text-sm font-medium text-black text-opacity-60 
-													first:rounded-s-lg last:rounded-e-lg 
-													aria-selected:bg-slate-200 aria-selected:text-opacity-100
-												`}
+											className={
+												'flex items-center justify-center gap-1 overflow-hidden px-2 py-1 text-sm font-medium text-black text-opacity-60 first:rounded-s-lg last:rounded-e-lg aria-selected:bg-slate-200 aria-selected:text-opacity-100'
+											}
 										>
 											<span
 												className={`${
@@ -377,7 +374,7 @@ export function App() {
 							),
 							'deps-error': (
 								<>
-									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									<span className="icon-heroicons-solid-x-circle text-red-500"></span>
 									Install error!
 								</>
 							),
@@ -391,13 +388,13 @@ export function App() {
 							),
 							'config-error': (
 								<>
-									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									<span className="icon-heroicons-solid-x-circle text-red-500"></span>
 									Config file is invalid!
 								</>
 							),
 							'lint-skipped': (
 								<>
-									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									<span className="icon-heroicons-solid-x-circle text-red-500"></span>
 									Linting was skipped! Please check your parser settings.
 								</>
 							),
@@ -409,7 +406,7 @@ export function App() {
 							),
 							'lint-error': (
 								<>
-									<span className="icon-heroicons-solid-x-circle  text-red-500"></span>
+									<span className="icon-heroicons-solid-x-circle text-red-500"></span>
 									An error occurred while linting!
 								</>
 							),
@@ -417,13 +414,7 @@ export function App() {
 					}
 				</output>
 				<Popover>
-					<PopoverButton
-						className="
-						ml-2 flex items-center gap-1
-						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
-						hover:bg-slate-200 hover:text-slate-800
-					"
-					>
+					<PopoverButton className="ml-2 flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm hover:bg-slate-200 hover:text-slate-800">
 						<span className="icon-heroicons-solid-command-line"></span>
 						Console
 					</PopoverButton>
@@ -435,13 +426,7 @@ export function App() {
 					</PopoverPanel>
 				</Popover>
 				<Popover>
-					<PopoverButton
-						className="
-						ml-2 flex items-center gap-1
-						rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm
-						hover:bg-slate-200 hover:text-slate-800
-					"
-					>
+					<PopoverButton className="ml-2 flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-slate-900 shadow-sm hover:bg-slate-200 hover:text-slate-800">
 						<span className="icon-heroicons-solid-tag"></span>
 						{`v${version}`}
 					</PopoverButton>

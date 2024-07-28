@@ -32,23 +32,19 @@ export const ConsoleOutput = forwardRef<ConsoleOutputRef, Props>((_, ref) => {
 		}
 	}, []);
 
-	useImperativeHandle(
-		ref,
-		() => {
-			return {
-				appendLine: (line: string) => {
-					terminalRef.current?.writeln(line);
-				},
-				append: (string: string) => {
-					terminalRef.current?.write(string);
-				},
-				clear: () => {
-					terminalRef.current?.clear();
-				},
-			};
-		},
-		[],
-	);
+	useImperativeHandle(ref, () => {
+		return {
+			appendLine: (line: string) => {
+				terminalRef.current?.writeln(line);
+			},
+			append: (string: string) => {
+				terminalRef.current?.write(string);
+			},
+			clear: () => {
+				terminalRef.current?.clear();
+			},
+		};
+	}, []);
 
 	return <div className="bg-slate-900 p-4 text-white" style={{ colorScheme: 'dark' }} ref={wrapperRef}></div>;
 });
