@@ -21,7 +21,7 @@ export function pugParse(pug: string, useOffset = false) {
 		lexOrigin = newLexOrigin;
 	}
 
-	const lex: lexer.Token[] = JSON.parse(JSON.stringify(lexOrigin));
+	const lex: lexer.Token[] = structuredClone(lexOrigin);
 	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
 	const ast = optimizeAST(originAst, lex, pug);
 	return ast;
