@@ -18,7 +18,7 @@
 		"eslint": "8.57.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-import": "2.29.1",
-		"eslint-plugin-jsdoc": "48.9.2",
+		"eslint-plugin-jsdoc": "48.9.3",
 		"eslint-plugin-n": "17.10.1",
 		"eslint-plugin-regexp": "2.6.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
