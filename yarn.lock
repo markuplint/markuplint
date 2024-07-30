@@ -19,7 +19,12 @@
     "@types/json-schema" "^7.0.15"
     js-yaml "^4.1.0"
 
-"@astrojs/compiler@2.9.2", "@astrojs/compiler@^2.0.0":
+"@astrojs/compiler@2.10.0":
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.10.0.tgz#ecc39e59ae4c87521a11967c3c42cc68ef8e43d9"
+  integrity sha512-V8ym+4kYCKmMeSdfDvm/SrlmUlKLkKzfWV3cKyiStEKW/D+YsXaQiBZcSCtuKXq8aQhsDw9HtCTZilhEMBX+BA==
+
+"@astrojs/compiler@^2.0.0":
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.9.2.tgz#c01dcdb14dc938758e66f9856934b83b6cd986d1"
   integrity sha512-Vpu0Ffsj8SoV+N0DFHlxxOMKHwSC9059Xy/OlG1t6uFYSoJXxkBC2WyF6igO7x10V+8uJrhOxaXr3nA90kJXow==
