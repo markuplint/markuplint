@@ -4883,16 +4883,17 @@ eslint-plugin-import@2.29.1:
     semver "^6.3.1"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jsdoc@48.9.3:
-  version "48.9.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-48.9.3.tgz#a756fc83ee22bde27b1d42b444969bc582631c0c"
-  integrity sha512-9RUsTlW6ZlMgy+dd9uDreU9lZAh4Hxw2ZAV5T0hPtrWgbw0OnvuT3elF6ihnpAY+NCrJx8BUUmcBnKftc/F0qw==
+eslint-plugin-jsdoc@48.10.2:
+  version "48.10.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-48.10.2.tgz#dd3fb8b8d4c6a0add3191b7f00b32a1e1ca7880d"
+  integrity sha512-xTkf/MmEeVrTbezc6kDqCJmK9RcseIKo8X4oyoDCMvV4LY8dqrQi8kmfRrv9n0gNBkCclevaOh2Lkmu6Fs8SLg==
   dependencies:
     "@es-joy/jsdoccomment" "~0.46.0"
     are-docs-informative "^0.0.2"
     comment-parser "1.4.1"
     debug "^4.3.5"
     escape-string-regexp "^4.0.0"
+    espree "^10.1.0"
     esquery "^1.6.0"
     parse-imports "^2.1.1"
     semver "^7.6.3"
@@ -5033,7 +5034,7 @@ esniff@^2.0.1:
     event-emitter "^0.3.5"
     type "^2.7.2"
 
-espree@10.1.0, espree@^10.0.0:
+espree@10.1.0, espree@^10.0.0, espree@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/espree/-/espree-10.1.0.tgz#8788dae611574c0f070691f522e4116c5a11fc56"
   integrity sha512-M1M6CpiE6ffoigIOWYO9UDP8TMUw9kqb21tf+08IgDYjCsOvCuDt4jQcZmoYxx+w7zlKw9/N0KXfto+I8/FrXA==
