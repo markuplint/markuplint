@@ -138,7 +138,7 @@
 		"semver": "7.6.3",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
-		"vscode-languageserver-textdocument": "1.0.11"
+		"vscode-languageserver-textdocument": "1.0.12"
 	},
 	"volta": {
 		"node": "20.16.0",
