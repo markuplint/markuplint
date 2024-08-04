@@ -806,10 +806,10 @@
   dependencies:
     "@iconify/types" "*"
 
-"@iconify-json/majesticons@1.1.11":
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/@iconify-json/majesticons/-/majesticons-1.1.11.tgz#da957df5b3f91b16794229ac3914581fb4d35bfb"
-  integrity sha512-8iSktgGbIInt/4y3tvZ/Dyzvzeze/2cc//ZtHMx5zPuHSiENE/nORGZAlO7yGf29oC2oECwl5a7YYqCPChiYiA==
+"@iconify-json/majesticons@1.1.12":
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/@iconify-json/majesticons/-/majesticons-1.1.12.tgz#31a2b1900ae28680eaf09ec1ee3346fb2c9a3c69"
+  integrity sha512-TJiJXwfDhzrtj6tVZkPilqeQst6g0PdkiJRxfd3obByb9KQqFDwq4doyFBeZHJRPKWpiP1AbRK0YNuGLGRyrxQ==
   dependencies:
     "@iconify/types" "*"
 
