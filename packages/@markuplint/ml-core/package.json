@@ -41,6 +41,6 @@
 		"@types/debug": "4.1.12",
 		"debug": "4.3.6",
 		"is-plain-object": "5.0.0",
-		"type-fest": "4.23.0"
+		"type-fest": "4.24.0"
 	}
 }

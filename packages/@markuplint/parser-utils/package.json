@@ -34,7 +34,7 @@
 		"@types/uuid": "10.0.0",
 		"debug": "4.3.6",
 		"espree": "10.1.0",
-		"type-fest": "4.23.0",
+		"type-fest": "4.24.0",
 		"uuid": "10.0.0"
 	},
 	"devDependencies": {
