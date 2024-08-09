@@ -10650,15 +10650,15 @@ textlint-filter-rule-comments@1.2.2:
   resolved "https://registry.yarnpkg.com/textlint-filter-rule-comments/-/textlint-filter-rule-comments-1.2.2.tgz#3a72c494994e068e0e4aaad0f24ea7cfe338503a"
   integrity sha512-AtyxreCPb3Hq/bd6Qd6szY1OGgnW34LOjQXAHzE8NoXbTUudQqALPdRe+hvRsf81rnmGLxBiCUXZbnbpIseFyw==
 
-textlint-plugin-html@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/textlint-plugin-html/-/textlint-plugin-html-1.0.0.tgz#15ea39f3f9b99bf2d95d456160324b7d4f6b1d26"
-  integrity sha512-eOLyUWtt2OJhibqrW7lDdlYEWXcTyIbGTYjK/Zlxe7vNjiEsOKFBHRlrnIwGW0gQsMNOipdCak2xmGHNQWDs+w==
+textlint-plugin-html@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/textlint-plugin-html/-/textlint-plugin-html-1.0.1.tgz#bf5e82b68b033cc0f1b96520f37c04db0cec71e0"
+  integrity sha512-BsuRnb8G3viZPZsDCplGY0z2LKtV6W517JAJsoJemzAWfvHqg9O2Wz05QZaSFcBF2/KS/A36eeXzviLuarvduA==
   dependencies:
     "@textlint/ast-node-types" "^13.0.5"
+    neotraverse "^0.6.15"
     rehype-parse "^8.0.4"
     structured-source "^4.0.0"
-    traverse "^0.6.7"
     unified "^10.1.2"
 
 textlint-rule-helper@^2.0.0, textlint-rule-helper@^2.1.1, textlint-rule-helper@^2.2.1, textlint-rule-helper@^2.2.4, textlint-rule-helper@^2.3.0, textlint-rule-helper@^2.3.1:
