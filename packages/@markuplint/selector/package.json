@@ -28,7 +28,7 @@
 		"@markuplint/ml-spec": "4.6.3",
 		"@types/debug": "4.1.12",
 		"debug": "4.3.6",
-		"postcss-selector-parser": "6.1.1",
+		"postcss-selector-parser": "6.1.2",
 		"type-fest": "4.24.0"
 	},
 	"devDependencies": {
