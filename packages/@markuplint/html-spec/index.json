@@ -39150,46 +39150,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"checked": {
-					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"command": {
-					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"default": {
-					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input).",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"disabled": {
-					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"icon": {
-					"description": "Image URL, used to provide a picture to represent the command.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"label": {
-					"description": "The name of the command as shown to the user. Required when a command attribute is not present."
-				},
-				"radiogroup": {
-					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"type": {
-					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons.",
-					"deprecated": true,
-					"nonStandard": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "meta",
