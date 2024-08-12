@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { Bar, Presets } from 'cli-progress';
 
 const cache = new Map<string, string>();
