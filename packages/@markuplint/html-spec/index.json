@@ -37373,10 +37373,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"manifest": {
-					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true
-				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
 					"deprecated": true
