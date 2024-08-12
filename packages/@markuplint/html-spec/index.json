@@ -35766,9 +35766,6 @@
 				"onpopstate": {
 					"type": "FunctionBody"
 				},
-				"onredo": {
-					"description": "Function to call when the user has moved forward in undo transaction history."
-				},
 				"onrejectionhandled": {
 					"type": "FunctionBody"
 				},
@@ -35777,9 +35774,6 @@
 				},
 				"onstorage": {
 					"type": "FunctionBody"
-				},
-				"onundo": {
-					"description": "Function to call when the user has moved backward in undo transaction history."
 				},
 				"onunhandledrejection": {
 					"type": "FunctionBody"
