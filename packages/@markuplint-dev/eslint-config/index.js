@@ -18,7 +18,11 @@ module.exports = {
 			...mergeConfig(base, ts, parser),
 		},
 		{
-			files: ['{*,**/*}.spec.{js,mjs,cjs,ts}', 'vitest.config.ts'],
+			files: ['{*,**/*}.spec.{js,mjs,cjs}'],
+			...mergeConfig(base, test),
+		},
+		{
+			files: ['{*,**/*}.spec.ts', 'vitest.config.ts'],
 			...mergeConfig(base, ts, test),
 		},
 		{
