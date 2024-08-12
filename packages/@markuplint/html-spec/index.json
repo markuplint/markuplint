@@ -8386,7 +8386,7 @@
 					},
 					{
 						"name": "progressbar",
-						"description": "An element that displays the progress status for tasks that take a long time.\n\nA progressbar indicates that the user's request has been received and the application is making progress toward completing the requested action.\n\nAuthors MAY set aria-valuemin and aria-valuemax to indicate the minimum and maximum progress indicator values. Otherwise, their implicit values follow the same rules as <input type=\"range\"> in HTML:\n\n\n\nThe author SHOULD supply a value for aria-valuenow unless the value is indeterminate, in which case the author SHOULD omit the aria-valuenow attribute. Authors SHOULD update this value when the visual progress indicator is updated. If the progressbar is describing the loading progress of a particular region of a page, authors SHOULD both use aria-describedby to reference the progressbar status, and set the aria-busy attribute to true on the region until it is finished loading. It is not possible for the user to alter the value of a progressbar because it is always read-only.\n\nAssistive technologies generally will render the value of aria-valuenow as a percent of a range between the value of aria-valuemin and aria-valuemax, unless aria-valuetext is specified.",
+						"description": "An element that displays the progress status for tasks that take a long time.\n\nA progressbar indicates that the user's request has been received and the application is making progress toward completing the requested action.\n\nAuthors MAY set aria-valuemin and aria-valuemax to indicate the minimum and maximum progress indicator values. Otherwise, their implicit values follow the same rules as <input type=\"range\"> in HTML:\n\nThe author SHOULD supply a value for aria-valuenow unless the value is indeterminate, in which case the author SHOULD omit the aria-valuenow attribute. Authors SHOULD update this value when the visual progress indicator is updated. If the progressbar is describing the loading progress of a particular region of a page, authors SHOULD both use aria-describedby to reference the progressbar status, and set the aria-busy attribute to true on the region until it is finished loading. It is not possible for the user to alter the value of a progressbar because it is always read-only.\n\nAssistive technologies generally will render the value of aria-valuenow as a percent of a range between the value of aria-valuemin and aria-valuemax, unless aria-valuetext is specified.",
 						"generalization": ["range", "widget"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -36381,7 +36381,7 @@
 		{
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the full definition of the term.",
+			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the full definition of the term can be one of the following:",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37181,7 +37181,7 @@
 		{
 			"name": "head",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
-			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
+			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets. There can be only one <head> element in an HTML document.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -37351,7 +37351,7 @@
 		{
 			"name": "html",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
-			"description": "The <html> HTML element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element.",
+			"description": "The <html> HTML element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element. There can be only one <html> element in a document.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -39145,7 +39145,7 @@
 		{
 			"name": "menuitem",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <menuitem> HTML element represents a command that a user is able to invoke through a popup menu. This includes context menus, as well as menus that might be attached to a menu button.",
+			"description": "This page lists all the HTML elements, which are created using tags.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -41152,7 +41152,7 @@
 					"defaultValue": "20"
 				},
 				"dirname": {
-					"description": "This attribute is used to indicate the text directionality of the element contents similar to the dirname attribute of the <input> element. For more information, see the dirname attribute."
+					"description": "This attribute is used to indicate the text directionality of the element contents. For more information, see the dirname attribute."
 				},
 				"disabled": {
 					"description": "This Boolean attribute indicates that the user cannot interact with the control. If this attribute is not specified, the control inherits its setting from the containing element, for example <fieldset>; if there is no containing element when the disabled attribute is set, the control is enabled."
@@ -41497,7 +41497,7 @@
 		{
 			"name": "track",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
-			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. It lets you specify timed text tracks (or time-based data), for example to automatically handle subtitles. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
+			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks.",
 			"categories": [],
 			"contentModel": {
 				"contents": false
@@ -41727,7 +41727,7 @@
 			},
 			"attributes": {
 				"autoplay": {
-					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can do so without stopping to finish loading the data. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. In some browsers (e.g. Chrome 70.0) autoplay doesn't work if no muted attribute is present."
+					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can without stopping to finish loading the data. Note: Modern browsers block audio (or videos with an unmuted audio track) from autoplaying, as sites that automatically play audio can be an unpleasant experience for users. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether."
 				},
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control video playback, including volume, seeking, and pause/resume playback."
@@ -41759,7 +41759,7 @@
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates the default setting of the audio contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning that the audio will be played when the video is played."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be played when the video is played."
 				},
 				"playsinline": {
 					"type": "Boolean"
