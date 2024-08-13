@@ -16,7 +16,6 @@ type TransferOptions = {
 	readonly replacer?: Readonly<Record<string, string | void>>;
 };
 
-// eslint-disable-next-line import/no-named-as-default-member
 const { transpile, ScriptTarget } = tsc;
 
 export async function transfer(

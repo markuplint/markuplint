@@ -126,7 +126,6 @@ class StructuredSelector {
 			this.#selector.nodes[0]?.type === 'combinator' ? (this.#selector.nodes[0].value ?? null) : null;
 		const nodes = [...this.#selector.nodes];
 		if (0 < depth && this.headCombinator) {
-			// eslint-disable-next-line import/no-named-as-default-member
 			nodes.unshift(parser.pseudo({ value: ':scope' }));
 		}
 		for (const node of nodes) {
@@ -888,7 +887,7 @@ function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	scope: ParentNode | null,
 ) {
-	return el === scope ?? el.parentNode === null;
+	return el === scope || el.parentNode === null;
 }
 
 function getDescendants(

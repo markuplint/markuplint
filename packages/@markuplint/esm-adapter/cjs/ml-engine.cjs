@@ -62,7 +62,7 @@ class MLEngine extends Emitter {
 	 * @returns
 	 */
 	static #add(method, uid, once, ...data) {
-		return new Promise((resolve, reject) => {
+		return new Promise(resolve => {
 			const receiver = args => {
 				if (args.method === `${method}:return`) {
 					log('%s: %O', args.method, { method, data, args });
