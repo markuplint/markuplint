@@ -3,6 +3,6 @@ import { config } from '@markuplint-dev/eslint-config';
 export default [
 	...config,
 	{
-		ignores: ['**/*.d.ts', '**/lib/*', '**/esm/*', '**/cjs/*'],
+		ignores: ['**/*.d.ts', '**/lib/*', '**/esm/*', '**/cjs/*', 'vscode/test/suite/*.js'],
 	},
 ];

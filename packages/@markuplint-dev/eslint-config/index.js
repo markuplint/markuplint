@@ -38,6 +38,20 @@ export const config = [
 			},
 		}),
 	},
+	{
+		files: ['vscode/{src,test}/**/*.{ts,js}'],
+		rules: {
+			'no-restricted-globals': 0,
+			'unicorn/prefer-module': 0,
+			'unicorn/prefer-top-level-await': 0,
+		},
+	},
+	{
+		files: ['vscode/src/server/{v1,v2}.ts'],
+		rules: {
+			'no-console': 'off',
+		},
+	},
 ];
 
 /**
