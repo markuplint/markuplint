@@ -1,40 +1,58 @@
-const base = require('./base');
-const parser = require('./parser');
-const test = require('./test');
-const ts = require('./ts');
+import { base } from './base.js';
+import { commonjs } from './commonjs.js';
+import { parser } from './parser.js';
+import { test } from './test.js';
+import { ts } from './ts.js';
 
 /**
  * @type {import('eslint').Linter.Config}
  */
-module.exports = {
+export const config = [
 	...base,
-	overrides: [
-		{
-			files: ['{*,**/*}.{ts,tsx,cts,mts}'],
-			...mergeConfig(base, ts),
+	{
+		files: ['{*,**/*}.cjs'],
+		...mergeConfig(commonjs),
+	},
+	{
+		files: ['{*,**/*}.{ts,tsx,cts,mts}', 'packages/@markuplint/file-resolver/test/fixtures/008/.markuplintrc.ts'],
+		...mergeConfig(ts),
+		ignores: ['**/.*.ts'],
+	},
+	{
+		files: ['./packages/@markuplint/**/parser.ts'],
+		...mergeConfig(ts, parser),
+	},
+	{
+		files: ['{*,**/*}.spec.{js,mjs,cjs}'],
+		...mergeConfig(commonjs, test),
+	},
+	{
+		files: ['{*,**/*}.spec.ts', 'vitest.config.ts'],
+		...mergeConfig(commonjs, ts, test),
+	},
+	{
+		files: ['packages/@markuplint/create-rule/scaffold/**/*'],
+		...mergeConfig(ts, test, {
+			rules: {
+				'unicorn/filename-case': 0,
+			},
+		}),
+	},
+	{
+		files: ['vscode/{src,test}/**/*.{ts,js}'],
+		rules: {
+			'no-restricted-globals': 0,
+			'unicorn/prefer-module': 0,
+			'unicorn/prefer-top-level-await': 0,
 		},
-		{
-			files: ['./packages/@markuplint/**/parser.ts'],
-			...mergeConfig(base, ts, parser),
+	},
+	{
+		files: ['vscode/src/server/{v1,v2}.ts'],
+		rules: {
+			'no-console': 'off',
 		},
-		{
-			files: ['{*,**/*}.spec.{js,mjs,cjs}'],
-			...mergeConfig(base, test),
-		},
-		{
-			files: ['{*,**/*}.spec.ts', 'vitest.config.ts'],
-			...mergeConfig(base, ts, test),
-		},
-		{
-			files: ['packages/@markuplint/create-rule/scaffold/**/*'],
-			...mergeConfig(base, ts, test, {
-				rules: {
-					'unicorn/filename-case': 0,
-				},
-			}),
-		},
-	],
-};
+	},
+];
 
 /**
  *

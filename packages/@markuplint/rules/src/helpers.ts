@@ -83,7 +83,7 @@ export function isValidAttr(
 ) {
 	let invalid: ReturnType<typeof attrCheck> = false;
 	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
-	log && log('Spec of the %s attr: %o', name, spec);
+	log?.('Spec of the %s attr: %o', name, spec);
 	invalid = attrCheck(t, name, value, false, spec);
 	if (
 		invalid === false &&

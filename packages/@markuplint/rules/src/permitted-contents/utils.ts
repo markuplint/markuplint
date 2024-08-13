@@ -189,7 +189,7 @@ export function mergeHints(
 	});
 }
 
-export function cleanObject<T extends Object>(object: T): Partial<T> {
+export function cleanObject<T extends object>(object: T): Partial<T> {
 	const newObject: Partial<T> = {};
 	for (const [key, value] of Object.entries(object)) {
 		if (value !== undefined) {

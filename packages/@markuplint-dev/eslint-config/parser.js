@@ -1,7 +1,7 @@
 /**
  * @type {import('eslint').Linter.Config}
  */
-module.exports = {
+export const parser = {
 	rules: {
 		'sort-class-members/sort-class-members': [
 			1,
@@ -91,6 +91,5 @@ module.exports = {
 				accessorPairPositioning: 'getThenSet',
 			},
 		],
-		'@typescript-eslint/member-ordering': 0,
 	},
 };

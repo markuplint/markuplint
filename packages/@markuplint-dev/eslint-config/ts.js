@@ -1,11 +1,12 @@
 /**
  * @type {import('eslint').Linter.Config}
  */
-module.exports = {
-	parser: '@typescript-eslint/parser',
-	parserOptions: {
-		sourceType: 'module',
-		project: ['./tsconfig.json', './tsconfig.test.json'],
+export const ts = {
+	languageOptions: {
+		parserOptions: {
+			sourceType: 'module',
+			project: ['./tsconfig.json', './tsconfig.test.json'],
+		},
 	},
 	rules: {
 		'@typescript-eslint/no-unused-vars': [2, { args: 'none' }],
@@ -31,44 +32,6 @@ module.exports = {
 				allowAny: true,
 			},
 		],
-		'@typescript-eslint/member-ordering': [
-			'warn',
-			{
-				default: 'never',
-				classes: {
-					memberTypes: [
-						'public-static-field',
-						'protected-static-field',
-						'private-static-field',
-						'public-static-method',
-						'protected-static-method',
-						'public-static-get',
-						'protected-static-get',
-						'private-static-get',
-						'public-instance-field',
-						'protected-instance-field',
-						'private-instance-field',
-						'public-abstract-field',
-						'protected-abstract-field',
-						'public-constructor',
-						'protected-constructor',
-						'private-constructor',
-						['public-abstract-get', 'public-abstract-set'],
-						['protected-abstract-get', 'protected-abstract-set'],
-						['public-instance-get', 'public-instance-set'],
-						['protected-instance-get', 'protected-instance-set'],
-						['private-instance-get', 'private-instance-set'],
-						'public-abstract-method',
-						'protected-abstract-method',
-						'public-instance-method',
-						'protected-instance-method',
-						'private-instance-method',
-						'private-static-method',
-					],
-					order: 'alphabetically',
-				},
-			},
-		],
 		'@typescript-eslint/prefer-readonly-parameter-types': [
 			'warn',
 			{
@@ -77,5 +40,11 @@ module.exports = {
 				treatMethodsAsReadonly: false,
 			},
 		],
+
+		// Temporary disabled
+		'@typescript-eslint/ban-ts-comment': 0,
+		'@typescript-eslint/no-empty-object-type': 0,
+		'@typescript-eslint/no-explicit-any': 0,
+		'@typescript-eslint/no-unnecessary-type-constraint': 0,
 	},
 };

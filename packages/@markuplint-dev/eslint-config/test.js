@@ -1,7 +1,7 @@
 /**
  * @type {import('eslint').Linter.Config}
  */
-module.exports = {
+export const test = {
 	rules: {
 		'unicorn/error-message': 0,
 		'unicorn/no-await-expression-member': 0,

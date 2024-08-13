@@ -1,7 +1,0 @@
-{
-	"extends": "@markuplint-dev/eslint-config",
-	"rules": {
-		"no-restricted-globals": 0,
-		"unicorn/prefer-module": 0
-	}
-}

@@ -6,7 +6,7 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"type": "commonjs",
+	"type": "module",
 	"main": "index.js",
 	"publishConfig": {
 		"access": "public"
@@ -15,13 +15,14 @@
 		"@eslint-community/eslint-plugin-eslint-comments": "4.3.0",
 		"@typescript-eslint/eslint-plugin": "8.1.0",
 		"@typescript-eslint/parser": "8.1.0",
-		"eslint": "8.57.0",
+		"eslint": "9.9.0",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-import": "2.29.1",
 		"eslint-plugin-jsdoc": "50.0.1",
 		"eslint-plugin-n": "17.10.2",
 		"eslint-plugin-regexp": "2.6.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
-		"eslint-plugin-unicorn": "55.0.0"
+		"eslint-plugin-unicorn": "55.0.0",
+		"typescript-eslint": "8.1.0"
 	}
 }

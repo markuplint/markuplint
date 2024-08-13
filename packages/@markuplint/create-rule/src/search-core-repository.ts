@@ -5,7 +5,6 @@ import { readPackageJson } from './read-package-json.js';
 export async function searchCoreRepository() {
 	const paths = path.resolve(process.cwd()).split(path.sep);
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const currentDir = paths.join(path.sep);
 		const name = await readPackageJson(currentDir);

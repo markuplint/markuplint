@@ -10,10 +10,10 @@ import { Files } from 'vscode-languageserver/node.js';
 export async function getModule(baseDir: string, log: Log): Promise<OldModule | Module> {
 	try {
 		const modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 		const markuplint = require(modPath);
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 		const version: string = require(packageJsonPath).version;
 		return {
 			type: 'v1',
@@ -25,6 +25,7 @@ export async function getModule(baseDir: string, log: Log): Promise<OldModule | 
 		};
 	} catch {
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			require('markuplint');
 		} catch (error) {
 			if (error && typeof error === 'object' && 'code' in error) {

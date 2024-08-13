@@ -197,7 +197,6 @@ describe('selector matching', () => {
 
 	test('combinator start error', () => {
 		const el = createTestElement('<div><a></a><span></span></div>', 'a');
-		InvalidSelectorError;
 		expect(() => createSelector('> a').match(el)).toThrow(InvalidSelectorError);
 		expect(() => createSelector('+ a').match(el)).toThrow(InvalidSelectorError);
 		expect(() => createSelector('~ a').match(el)).toThrow(InvalidSelectorError);

@@ -24,7 +24,6 @@ import { finder } from './finder.js';
 import { getAttributes } from './get-attributes.js';
 import { getChildren } from './get-children.js';
 
-/* eslint-disable import/no-named-as-default-member */
 const {
 	createProgram,
 	forEachChild,
@@ -39,7 +38,6 @@ const {
 	isVariableDeclaration,
 	JsxEmit,
 } = ts;
-/* eslint-enable import/no-named-as-default-member */
 
 const defaultOptions: Required<PretenderScanJSXOptions> = {
 	cwd: process.cwd(),
