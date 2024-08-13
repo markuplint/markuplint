@@ -3050,7 +3050,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0
 	 */
 	closest(selectors: string): MLElement<T, O> | null {
-		// eslint-disable-next-line unicorn/no-this-assignment
+		// eslint-disable-next-line unicorn/no-this-assignment, @typescript-eslint/no-this-alias
 		let el: MLElement<T, O> | null = this;
 
 		do {
