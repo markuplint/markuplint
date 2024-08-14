@@ -6,7 +6,7 @@ I appreciate your use. First, you must be having trouble with the current markup
 
 **What you can do immediately is [disable the rule](/docs/guides/ignoring-code#disable-by-selector)**. If it is a partial problem, I would recommend disabling it partially while using selectors. That way, other areas where the bug is not occurring will remain enabled, and Markuplint itself can continue to be used.
 
-We don't care if you report the bug after that. It's best to you to [create an issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix). Otherwise, it's ok you send a DM to [the author's Twitter account](https://twitter.com/cloud10designs) or send a tweet with "Markuplint" in it, and we will pick it up. Please help us fix bugs and improve features.
+We don't care if you report the bug after that. It's best to you to [create an issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix). Otherwise, it's ok you send a DM to [the author's X account](https://x.com/cloud10designs) or send a tweet with "Markuplint" in it, and we will pick it up. Please help us fix bugs and improve features.
 
 ## It's not incorrect, but I get a warning
 
