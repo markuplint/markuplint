@@ -1,6 +1,5 @@
 import type { Props } from '@theme/DocItem';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useDocsSidebar } from '@docusaurus/theme-common/internal';
 import OgImg from '@site/src/components/OgImg';
 import DocItem from '@theme-original/DocItem';
