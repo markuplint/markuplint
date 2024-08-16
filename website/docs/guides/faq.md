@@ -104,7 +104,7 @@ We do not have official support for Angular, but a volunteer has created [`marku
 
 ## Is VS Code the only editor that is supported?
 
-Sorry, **only VS Code** is officially supported. Atom used to be supported, but now only VS Code is supported. [The source code for the VS Code extension](https://github.com/markuplint/vscode-markuplint) is available to the public, so we expect volunteers will develop it.
+Sorry, **only VS Code** is officially supported. Atom used to be supported, but now only VS Code is supported. [The source code for the VS Code extension](https://github.com/markuplint/markuplint/tree/dev/vscode) is available to the public, so we expect volunteers will develop it.
 
 ## Is JSON output supported?
 
