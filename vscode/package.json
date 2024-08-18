@@ -125,7 +125,7 @@
 		"@types/vscode": "1.92.0",
 		"@vscode/test-electron": "2.4.1",
 		"@vscode/vsce": "3.0.0",
-		"esbuild": "0.23.0",
+		"esbuild": "0.23.1",
 		"typescript": "5.5.4"
 	},
 	"dependencies": {
