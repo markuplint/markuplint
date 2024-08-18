@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dir = path.resolve(__dirname, 'website');
+const websiteDir = path.resolve(__dirname, 'website');
 
 export default [
 	...config,
@@ -37,7 +37,7 @@ export default [
 			'react/prop-types': 0,
 			'unicorn/filename-case': 0,
 		},
-		ignores: [`${dir}/build/**/*`, `${dir}/.docusaurus/**/*`],
+		ignores: [`${websiteDir}/build/**/*`, `${websiteDir}/.docusaurus/**/*`],
 	},
 	{
 		files: ['**/*.tsx'],
