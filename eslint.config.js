@@ -19,6 +19,7 @@ export default [
 			'**/cjs/*',
 			'packages/@markuplint/pretenders/test/**/*.tsx',
 			'vscode/test/suite/*.js',
+			'vscode/.vscode-test',
 		],
 	},
 
