@@ -2,6 +2,8 @@ import { config } from '@markuplint-dev/eslint-config';
 import reactPlugin from 'eslint-plugin-react';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import { fixupPluginRules } from '@eslint/compat';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,7 +12,14 @@ const websiteDir = path.resolve(__dirname, 'website');
 export default [
 	...config,
 	{
-		ignores: ['**/*.d.ts', '**/lib/*', '**/esm/*', '**/cjs/*', 'vscode/test/suite/*.js'],
+		ignores: [
+			'**/*.d.ts',
+			'**/lib/*',
+			'**/esm/*',
+			'**/cjs/*',
+			'packages/@markuplint/pretenders/test/**/*.tsx',
+			'vscode/test/suite/*.js',
+		],
 	},
 
 	// Website
@@ -41,7 +50,11 @@ export default [
 	},
 	{
 		files: ['**/*.tsx'],
+		plugins: {
+			'react-hooks': fixupPluginRules(reactHooksPlugin),
+		},
 		rules: {
+			...reactHooksPlugin.configs.recommended.rules,
 			'@typescript-eslint/prefer-readonly-parameter-types': 0,
 			'unicorn/filename-case': [
 				0,
