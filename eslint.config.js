@@ -114,7 +114,7 @@ export default [
 		},
 	},
 	{
-		files: ['*.js', '**/*.js'],
+		files: [`${websiteDir}/*.js`, `${websiteDir}/**/*.js`],
 		rules: {
 			'@typescript-eslint/no-require-imports': 0,
 			'@typescript-eslint/no-var-requires': 0,
