@@ -81,7 +81,7 @@
 		"cspell": "8.13.3",
 		"cz-conventional-changelog": "3.3.0",
 		"heapdump": "0.3.15",
-		"husky": "9.1.4",
+		"husky": "9.1.5",
 		"lerna": "8.1.8",
 		"lint-staged": "15.2.9",
 		"npm-run-all2": "6.2.2",
