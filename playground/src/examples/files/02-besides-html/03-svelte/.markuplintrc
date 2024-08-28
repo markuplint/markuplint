@@ -1,9 +1,0 @@
-{
-	"extends": ["markuplint:recommended-svelte"],
-	"parser": {
-		"\\.svelte$": "@markuplint/svelte-parser"
-	},
-	"specs": {
-		"\\.svelte$": "@markuplint/svelte-spec"
-	}
-}

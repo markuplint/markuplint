@@ -7,12 +7,9 @@
 Dockerfile @conao3
 .github/workflows/ @tyankatsu0105
 website/ @kagankan
-playground/ @kagankan
 
 # Renovate
 package.json
 yarn.lock
 website/package.json
 website/yarn.lock
-playground/package.json
-playground/yarn.lock
