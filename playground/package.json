@@ -38,7 +38,7 @@
 		"@iconify-json/majesticons": "1.1.12",
 		"@markuplint/jsx-parser": "4.7.5",
 		"@markuplint/react-spec": "4.5.5",
-		"@playwright/test": "1.46.0",
+		"@playwright/test": "1.46.1",
 		"@testing-library/dom": "10.4.0",
 		"@testing-library/jest-dom": "6.4.8",
 		"@testing-library/react": "16.0.0",
