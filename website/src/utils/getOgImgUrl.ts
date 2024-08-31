@@ -12,7 +12,11 @@ const fonts: Record<string, [label: string, title: string]> = {
 const getTextWidth = (text: string): number => {
   let count = 0;
   for (const element of text) {
-    /[\u0020-\u007E]/.test(element) ? (count += 1) : (count += 2);
+    if (/[\u0020-\u007E]/.test(element)) {
+      count += 1;
+    } else {
+      count += 2;
+    }
   }
   return count;
 };
