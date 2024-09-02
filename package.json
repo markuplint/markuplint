@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"all": "run-s up lint clean build test site:up pg:up",
+		"all": "run-s up lint clean build test site:up",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
@@ -35,10 +35,6 @@
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
 		"site:up": "cd website; yarn; yarn site:up",
-		"pg:dev": "cd playground; yarn pg:dev",
-		"pg:build": "cd playground; yarn; yarn pg:build",
-		"pg:lint": "cd playground; yarn; yarn pg:lint",
-		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"prepare": "husky",
 		"cli": "npx markuplint",
@@ -47,10 +43,10 @@
 		"co": "cz"
 	},
 	"lint-staged": {
-		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
+		"./{packages,website}/**/*.{ts,tsx,js,cjs,mjs,json}": [
 			"prettier --write"
 		],
-		"./{packages,website,playground}/**/*.{ts,mjs,cjs,spec.js}": [
+		"./{packages,website}/**/*.{ts,mjs,cjs,spec.js}": [
 			"eslint --fix"
 		],
 		"./test/**/*.{pug,html}": [

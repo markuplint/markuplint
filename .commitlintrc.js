@@ -18,7 +18,6 @@ export default {
 					'github',
 					'lint',
 					'website',
-					'playground',
 				],
 			];
 		},
