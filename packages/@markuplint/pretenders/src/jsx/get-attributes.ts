@@ -5,9 +5,7 @@ import ts from 'typescript';
 
 import { finder } from './finder.js';
 
-/* eslint-disable import/no-named-as-default-member */
 const { isJsxAttribute, isJsxExpression, isJsxSpreadAttribute, isStringLiteral } = ts;
-/* eslint-enable import/no-named-as-default-member */
 
 export function getAttributes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -44,7 +44,6 @@ const schemas = {
 };
 
 test('structure', () => {
-	// eslint-disable-next-line import/no-named-as-default-member
 	for (const el of htmlSpec.specs) {
 		const { localName, namespaceURI } = resolveNamespace(el.name);
 		try {

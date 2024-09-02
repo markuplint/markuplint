@@ -172,7 +172,6 @@ function getAttributes(
 		const $dt = $(dt);
 		const name = $dt.find('code').text().trim();
 		if (!name) {
-			null;
 			continue;
 		}
 

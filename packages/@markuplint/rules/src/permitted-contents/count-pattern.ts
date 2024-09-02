@@ -46,7 +46,6 @@ export function countPattern(
 	let barelyResult: Result | null = null;
 	let loopCount = 0;
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		loopCount++;
 		ptLog('Check#%s: %s', loopCount, collection);

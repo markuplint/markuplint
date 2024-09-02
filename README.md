@@ -60,6 +60,7 @@
 [<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
 [<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91047157" alt="shamokit" />](https://github.com/shamokit)
+[<img width="36" src="https://avatars.githubusercontent.com/u/18516475" alt="takanorip" />](https://github.com/takanorip)
 
 Need [Sponsors❤️‍🔥](https://github.com/sponsors/markuplint)
 

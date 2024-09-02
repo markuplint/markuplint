@@ -1,6 +1,0 @@
-# https://webcontainers.io/guides/configuring-headers#netlify
-[[headers]]
-    for = "/*"
-    [headers.values]
-        Cross-Origin-Embedder-Policy = "require-corp"
-        Cross-Origin-Opener-Policy = "same-origin"

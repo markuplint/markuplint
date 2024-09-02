@@ -30,7 +30,6 @@ export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender
 		let elName = getElName(identity);
 		const via: string[] = [];
 
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const mappedPretender = map.get(elName);
 			if (!mappedPretender) {

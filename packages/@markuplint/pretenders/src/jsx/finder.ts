@@ -2,9 +2,7 @@ import type { Node, SourceFile } from 'typescript';
 
 import ts from 'typescript';
 
-/* eslint-disable import/no-named-as-default-member */
 const { forEachChild } = ts;
-/* eslint-enable import/no-named-as-default-member */
 
 export function finder(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

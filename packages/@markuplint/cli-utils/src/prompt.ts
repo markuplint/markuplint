@@ -41,7 +41,6 @@ export async function multiSelect<T>(question: SelectQuestion<T>) {
 }
 
 export async function input<T extends string = string>(question: string, validation?: Readonly<RegExp>) {
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const _res = await Enquirer.prompt({
 			message: question,

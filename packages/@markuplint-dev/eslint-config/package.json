@@ -6,22 +6,23 @@
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
 	"private": false,
-	"type": "commonjs",
+	"type": "module",
 	"main": "index.js",
 	"publishConfig": {
 		"access": "public"
 	},
 	"dependencies": {
-		"@eslint-community/eslint-plugin-eslint-comments": "4.3.0",
-		"@typescript-eslint/eslint-plugin": "7.17.0",
-		"@typescript-eslint/parser": "7.17.0",
-		"eslint": "8.57.0",
+		"@eslint-community/eslint-plugin-eslint-comments": "4.4.0",
+		"@typescript-eslint/eslint-plugin": "8.2.0",
+		"@typescript-eslint/parser": "8.2.0",
+		"eslint": "9.9.1",
 		"eslint-import-resolver-typescript": "3.6.1",
 		"eslint-plugin-import": "2.29.1",
-		"eslint-plugin-jsdoc": "48.8.3",
-		"eslint-plugin-n": "17.10.1",
+		"eslint-plugin-jsdoc": "50.2.2",
+		"eslint-plugin-n": "17.10.2",
 		"eslint-plugin-regexp": "2.6.0",
 		"eslint-plugin-sort-class-members": "1.20.0",
-		"eslint-plugin-unicorn": "55.0.0"
+		"eslint-plugin-unicorn": "55.0.0",
+		"typescript-eslint": "8.2.0"
 	}
 }

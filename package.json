@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"all": "run-s up lint clean build test site:up pg:up",
+		"all": "run-s up lint clean build test site:up",
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
@@ -11,13 +11,13 @@
 		"test:coverage": "vitest run --coverage",
 		"test:heapdump": "node --expose-gc ./heaptest/index.js",
 		"lint": "run-p lint:*",
-		"lint:eslint": "eslint --fix \"./packages/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint:prettier": "prettier --write \"./packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint:eslint": "eslint --fix \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint:prettier": "prettier --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
 		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
 		"lint:github-actions": "actionlint .github/workflows/*.yml",
 		"lint-check": "run-p lint-check:* lint:spellcheck",
-		"lint-check:eslint": "eslint \"./packages/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint-check:prettier": "prettier --check \"./packages/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint-check:eslint": "eslint \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint-check:prettier": "prettier --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
 		"up": "run-s up:deps up:gen up:schema",
 		"up:deps": "yarn upgrade-interactive --latest",
 		"up:gen": "cd packages/\\@markuplint/html-spec/; yarn gen;",
@@ -28,7 +28,6 @@
 		"prerelease": "run-s build test",
 		"check:build": "find . -type f -name \"*.d.ts\" -print | xargs grep \"packages/@markuplint\"",
 		"vscode:dev": "cd vscode; yarn --ignore-engines; yarn --ignore-engines vscode:dev",
-		"vscode:lint": "eslint --fix './vscode/**/*.ts'; yarn lint:spellcheck; prettier --write './vscode/**/*{ts,tsx,js,cjs,mjs,json,rc,md}';",
 		"vscode:login": "cd vscode; yarn --ignore-engines vscode:login",
 		"vscode:package": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:package; rm package-lock.json; cd ..; mv package.json.bak package.json;",
 		"vscode:release": "cp package.json package.json.bak; jq '.workspaces |= map(select(. != \"vscode\"))' package.json > package.json.tmp && mv package.json.tmp package.json; cd vscode; rm -rf node_modules; npm install; npm run vscode:release; rm package-lock.json; cd ..; mv package.json.bak package.json;",
@@ -36,10 +35,6 @@
 		"site:lint": "cd website; yarn; yarn site:lint",
 		"site:build": "cd website; yarn; yarn site:build",
 		"site:up": "cd website; yarn; yarn site:up",
-		"pg:dev": "cd playground; yarn pg:dev",
-		"pg:build": "cd playground; yarn; yarn pg:build",
-		"pg:lint": "cd playground; yarn; yarn pg:lint",
-		"pg:up": "cd playground; yarn; yarn pg:up",
 		"apidoc": "typedoc --options ./typedoc.json",
 		"prepare": "husky",
 		"cli": "npx markuplint",
@@ -48,10 +43,10 @@
 		"co": "cz"
 	},
 	"lint-staged": {
-		"./{packages,website,playground}/**/*.{ts,tsx,js,cjs,mjs,json}": [
+		"./{packages,website}/**/*.{ts,tsx,js,cjs,mjs,json}": [
 			"prettier --write"
 		],
-		"./{packages,website,playground}/**/*.{ts,mjs,cjs,spec.js}": [
+		"./{packages,website}/**/*.{ts,mjs,cjs,spec.js}": [
 			"eslint --fix"
 		],
 		"./test/**/*.{pug,html}": [
@@ -72,30 +67,30 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@commitlint/cli": "19.3.0",
-		"@commitlint/config-conventional": "19.2.2",
+		"@commitlint/cli": "19.4.1",
+		"@commitlint/config-conventional": "19.4.1",
 		"@commitlint/config-lerna-scopes": "19.0.0",
 		"@markuplint-dev/eslint-config": "1.0.1",
 		"@markuplint-dev/prettier-config": "1.0.1",
 		"@markuplint-dev/tsconfig": "1.0.1",
 		"commitizen": "4.3.0",
-		"cspell": "8.12.1",
+		"cspell": "8.14.2",
 		"cz-conventional-changelog": "3.3.0",
 		"heapdump": "0.3.15",
-		"husky": "9.1.3",
-		"lerna": "8.1.7",
-		"lint-staged": "15.2.7",
+		"husky": "9.1.5",
+		"lerna": "8.1.8",
+		"lint-staged": "15.2.9",
 		"npm-run-all2": "6.2.2",
-		"textlint": "14.0.4",
+		"textlint": "14.2.0",
 		"textlint-filter-rule-comments": "1.2.2",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "10.0.1",
 		"textlint-rule-preset-japanese": "10.0.3",
 		"textlint-rule-preset-jtf-style": "2.3.14",
 		"ts-node": "10.9.2",
-		"tsx": "4.16.2",
-		"typedoc": "0.26.5",
-		"typedoc-plugin-mdn-links": "3.2.6",
+		"tsx": "4.17.0",
+		"typedoc": "0.26.6",
+		"typedoc-plugin-mdn-links": "3.2.9",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.5.4"
 	},
@@ -110,7 +105,7 @@
 		}
 	},
 	"volta": {
-		"node": "22.5.1",
+		"node": "22.6.0",
 		"yarn": "1.22.22"
 	}
 }
