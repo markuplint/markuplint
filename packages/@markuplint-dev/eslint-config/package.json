@@ -16,7 +16,7 @@
 		"@typescript-eslint/eslint-plugin": "8.2.0",
 		"@typescript-eslint/parser": "8.2.0",
 		"eslint": "9.9.1",
-		"eslint-import-resolver-typescript": "3.6.1",
+		"eslint-import-resolver-typescript": "3.6.3",
 		"eslint-plugin-import": "2.29.1",
 		"eslint-plugin-jsdoc": "50.2.2",
 		"eslint-plugin-n": "17.10.2",
