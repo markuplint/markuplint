@@ -22,7 +22,7 @@
     "clsx": "2.1.1",
     "dotenv": "16.4.5",
     "gray-matter": "4.0.3",
-    "prism-react-renderer": "2.3.1",
+    "prism-react-renderer": "2.4.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "unist-util-visit": "5.0.0"
