@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.3](https://github.com/markuplint/markuplint/compare/markuplint@4.9.2...markuplint@4.9.3) (2024-09-02)
+
+**Note:** Version bump only for package markuplint
+
+
+
+
+
 ## [4.9.2](https://github.com/markuplint/markuplint/compare/markuplint@4.9.1...markuplint@4.9.2) (2024-06-25)
 
 ### Bug Fixes
