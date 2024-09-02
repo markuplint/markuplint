@@ -34,10 +34,10 @@
 		"@types/uuid": "10.0.0",
 		"debug": "4.3.6",
 		"espree": "10.1.0",
-		"type-fest": "4.25.0",
+		"type-fest": "4.26.0",
 		"uuid": "10.0.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.2.0"
+		"@typescript-eslint/typescript-estree": "8.3.0"
 	}
 }
