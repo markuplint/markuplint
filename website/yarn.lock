@@ -8860,10 +8860,10 @@ stylehacks@^6.1.1:
     browserslist "^4.23.0"
     postcss-selector-parser "^6.0.16"
 
-stylelint-config-recess-order@5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-5.0.1.tgz#d4c9469936de20737c0ecd5815b85c5dc7923c49"
-  integrity sha512-rKbGkoa3h0rINrGln9TFVowvSCLgPJC5O0EuPiqlqWcJMb1lImEtXktcjFCVz+hwtSUiHD3ijJc3vP9muFOgJg==
+stylelint-config-recess-order@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-recess-order/-/stylelint-config-recess-order-5.1.0.tgz#683fccb78eb882daa132f5e06ac1a056e4863625"
+  integrity sha512-ddapCF6B/kEtQYIFhQFReQ0dvK1ZdgJDM/SGFtIyeooYDbqaJqcOlGkRRGaVErCQYJY/bPSPsLRS2LdQtLJUVQ==
   dependencies:
     stylelint-order "^6.0.4"
 
