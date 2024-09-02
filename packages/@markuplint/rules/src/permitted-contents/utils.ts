@@ -52,7 +52,7 @@ export function matches(
 	}
 
 	const not = selectorResult
-		.flatMap(r => (r.matched ? [] : r.not ?? []))
+		.flatMap(r => (r.matched ? [] : (r.not ?? [])))
 		.flatMap(descendants)
 		.shift();
 
@@ -189,7 +189,7 @@ export function mergeHints(
 	});
 }
 
-export function cleanObject<T extends Object>(object: T): Partial<T> {
+export function cleanObject<T extends object>(object: T): Partial<T> {
 	const newObject: Partial<T> = {};
 	for (const [key, value] of Object.entries(object)) {
 		if (value !== undefined) {

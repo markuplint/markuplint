@@ -65,7 +65,17 @@ export function activate(
 
 	const langConfigs: LangConfigs = {};
 	for (const languageId of languageList) {
-		langConfigs[languageId] = JSON.parse(JSON.stringify(workspace.getConfiguration('', { languageId }).get(ID)));
+		langConfigs[languageId] = structuredClone(workspace.getConfiguration('', { languageId }).get(ID)) ?? {
+			enable: true,
+			debug: false,
+			defaultConfig: {},
+			hover: {
+				accessibility: {
+					enable: true,
+					ariaVersion: '1.2',
+				},
+			},
+		};
 	}
 
 	const clientOptions: LanguageClientOptions = {

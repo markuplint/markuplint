@@ -66,6 +66,19 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	state: State;
 
+	constructor(options?: ParserOptions, defaultState?: State) {
+		this.#booleanish = options?.booleanish ?? this.#booleanish;
+		this.#endTagType = options?.endTagType ?? this.#endTagType;
+		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
+		this.#maskChar = options?.maskChar ?? this.#maskChar;
+		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
+		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
+		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
+		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
+		this.#defaultState = defaultState ?? (null as State);
+		this.state = structuredClone(this.#defaultState);
+	}
+
 	get authoredElementName() {
 		return this.#authoredElementName;
 	}
@@ -101,19 +114,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	get tagNameCaseSensitive() {
 		return this.#tagNameCaseSensitive;
-	}
-
-	constructor(options?: ParserOptions, defaultState?: State) {
-		this.#booleanish = options?.booleanish ?? this.#booleanish;
-		this.#endTagType = options?.endTagType ?? this.#endTagType;
-		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
-		this.#maskChar = options?.maskChar ?? this.#maskChar;
-		this.#tagNameCaseSensitive = options?.tagNameCaseSensitive ?? this.#tagNameCaseSensitive;
-		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
-		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
-		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
-		this.#defaultState = defaultState ?? (null as State);
-		this.state = structuredClone(this.#defaultState);
 	}
 
 	tokenize(options?: ParseOptions): Tokenized<Node, State> {

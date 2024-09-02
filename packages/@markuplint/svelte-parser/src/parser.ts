@@ -98,7 +98,7 @@ class SvelteParser extends Parser<SvelteNode> {
 				const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
 				const startTagEndOffset =
 					children.length > 0
-						? children[0]?.start ?? 0
+						? (children[0]?.start ?? 0)
 						: token.raw.replace(reEndTag, '').length + token.startOffset;
 				const startTagLocation = this.sliceFragment(token.startOffset, startTagEndOffset);
 

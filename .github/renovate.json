@@ -44,6 +44,11 @@
 		{
 			"matchFileNames": ["package.json"],
 			"ignoreDeps": ["string-width", "strip-ansi", "wrap-ansi"]
+		},
+		{
+			"matchPackageNames": ["node"],
+			"matchManagers": ["dockerfile"],
+			"enabled": false
 		}
 	]
 }

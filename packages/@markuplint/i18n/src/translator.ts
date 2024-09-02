@@ -17,7 +17,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 			}
 			const format = localeSet?.listFormat ?? defaultListFormat;
 			const useLastSeparator = keywords[0] == null || keywords[0] == false ? false : true;
-			const lastSeparator = useLastSeparator ? format.lastSeparator ?? format.separator : format.separator;
+			const lastSeparator = useLastSeparator ? (format.lastSeparator ?? format.separator) : format.separator;
 			const list = messageTmpl.map(
 				keyword => format.quoteStart + translateKeyword(keyword, '', localeSet) + format.quoteEnd,
 			);

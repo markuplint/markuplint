@@ -28,18 +28,18 @@
 		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts",
 		"schema:attributes": "json2ts ./schemas/attributes.schema.json --cwd ./schemas > ./src/types/attributes.ts",
 		"schema:aria": "json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts",
-		"schema:eslint": "eslint --fix --config ../../../.eslintrc \"./src/types/*.ts\"",
+		"schema:eslint": "eslint --fix \"./src/types/*.ts\"",
 		"schema:prettier": "prettier --write \"./schemas/*.json\" \"./src/types/*.ts\" --log-level warn"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.2",
 		"@markuplint/types": "4.5.3",
-		"dom-accessibility-api": "0.6.3",
+		"dom-accessibility-api": "0.7.0",
 		"is-plain-object": "5.0.0",
-		"type-fest": "4.20.1"
+		"type-fest": "4.26.0"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "4.5.5",
-		"json-schema-to-typescript": "14.0.5"
+		"json-schema-to-typescript": "15.0.2"
 	}
 }

@@ -324,8 +324,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
 
 		const configFilePathsFromTarget = this.#options?.noSearchConfig
-			? defaultConfigKey ?? null
-			: targetConfig ?? defaultConfigKey;
+			? (defaultConfigKey ?? null)
+			: (targetConfig ?? defaultConfigKey);
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 

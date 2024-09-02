@@ -120,28 +120,28 @@
 		"@markuplint-dev/tsconfig": "1.0.1",
 		"@markuplint/file-resolver": "4.9.0",
 		"@types/mocha": "10.0.7",
-		"@types/node": "20.14.2",
+		"@types/node": "20.14.12",
 		"@types/semver": "7.5.8",
-		"@types/vscode": "1.90.0",
-		"@vscode/test-electron": "2.4.0",
-		"@vscode/vsce": "2.29.0",
-		"esbuild": "0.21.5",
-		"typescript": "5.5.2"
+		"@types/vscode": "1.92.0",
+		"@vscode/test-electron": "2.4.1",
+		"@vscode/vsce": "3.0.0",
+		"esbuild": "0.23.1",
+		"typescript": "5.5.4"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.5.1",
 		"@markuplint/i18n": "4.5.1",
-		"debug": "4.3.5",
-		"glob": "10.4.2",
+		"debug": "4.3.6",
+		"glob": "11.0.0",
 		"markuplint": "4.9.2",
-		"mocha": "10.5.1",
-		"semver": "7.6.2",
+		"mocha": "10.7.3",
+		"semver": "7.6.3",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
-		"vscode-languageserver-textdocument": "1.0.11"
+		"vscode-languageserver-textdocument": "1.0.12"
 	},
 	"volta": {
-		"node": "20.15.0",
+		"node": "20.16.0",
 		"yarn": "1.22.22"
 	}
 }

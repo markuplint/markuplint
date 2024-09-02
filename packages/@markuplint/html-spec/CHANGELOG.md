@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.8.1...@markuplint/html-spec@4.8.2) (2024-06-25)
 
-
 ### Bug Fixes
 
-* **html-spec:** update content model for div element within dl element ([9d5ba90](https://github.com/markuplint/markuplint/commit/9d5ba90f0704748513bd257aab74584ff3cdaef3))
-
-
-
-
+- **html-spec:** update content model for div element within dl element ([9d5ba90](https://github.com/markuplint/markuplint/commit/9d5ba90f0704748513bd257aab74584ff3cdaef3))
 
 ## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.8.0...@markuplint/html-spec@4.8.1) (2024-06-09)
 

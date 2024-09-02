@@ -1,6 +1,0 @@
-{
-	"extends": ["../.eslintrc"],
-	"rules": {
-		"unicorn/prefer-module": 0
-	}
-}

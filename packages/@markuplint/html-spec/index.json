@@ -8386,7 +8386,7 @@
 					},
 					{
 						"name": "progressbar",
-						"description": "An element that displays the progress status for tasks that take a long time.\n\nA progressbar indicates that the user's request has been received and the application is making progress toward completing the requested action.\n\nAuthors MAY set aria-valuemin and aria-valuemax to indicate the minimum and maximum progress indicator values. Otherwise, their implicit values follow the same rules as <input type=\"range\"> in HTML:\n\n\n\nThe author SHOULD supply a value for aria-valuenow unless the value is indeterminate, in which case the author SHOULD omit the aria-valuenow attribute. Authors SHOULD update this value when the visual progress indicator is updated. If the progressbar is describing the loading progress of a particular region of a page, authors SHOULD both use aria-describedby to reference the progressbar status, and set the aria-busy attribute to true on the region until it is finished loading. It is not possible for the user to alter the value of a progressbar because it is always read-only.\n\nAssistive technologies generally will render the value of aria-valuenow as a percent of a range between the value of aria-valuemin and aria-valuemax, unless aria-valuetext is specified.",
+						"description": "An element that displays the progress status for tasks that take a long time.\n\nA progressbar indicates that the user's request has been received and the application is making progress toward completing the requested action.\n\nAuthors MAY set aria-valuemin and aria-valuemax to indicate the minimum and maximum progress indicator values. Otherwise, their implicit values follow the same rules as <input type=\"range\"> in HTML:\n\nThe author SHOULD supply a value for aria-valuenow unless the value is indeterminate, in which case the author SHOULD omit the aria-valuenow attribute. Authors SHOULD update this value when the visual progress indicator is updated. If the progressbar is describing the loading progress of a particular region of a page, authors SHOULD both use aria-describedby to reference the progressbar status, and set the aria-busy attribute to true on the region until it is finished loading. It is not possible for the user to alter the value of a progressbar because it is always read-only.\n\nAssistive technologies generally will render the value of aria-valuenow as a percent of a range between the value of aria-valuemin and aria-valuemax, unless aria-valuetext is specified.",
 						"generalization": ["range", "widget"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -35053,6 +35053,10 @@
 				]
 			},
 			"attributes": {
+				"attributionsrc": {
+					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source header in the response, to register a navigation-based attribution source. The browser stores the source data associated with the navigation-based attribution source (as provided in the Attribution-Reporting-Register-Source response header) when the user clicks the link. See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e. just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the href attribute points to. This is fine when you are handling the attribution source registration on the same server. Value containing one or more URLs, for example: htmlattributionsrc=\"https://a.example/register-source https://b.example/register-source\" This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs, the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionsrc in addition to the resource origin. These URLs can then respond with the Attribution-Reporting-Register-Source to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. <a> elements cannot be used as attribution triggers, only sources.",
+					"experimental": true
+				},
 				"charset": {
 					"description": "Hinted at the character encoding of the linked URL. Note: This attribute is deprecated and should not be used by authors. Use the HTTP Content-Type header on the linked URL.",
 					"deprecated": true
@@ -35762,9 +35766,6 @@
 				"onpopstate": {
 					"type": "FunctionBody"
 				},
-				"onredo": {
-					"description": "Function to call when the user has moved forward in undo transaction history."
-				},
 				"onrejectionhandled": {
 					"type": "FunctionBody"
 				},
@@ -35773,9 +35774,6 @@
 				},
 				"onstorage": {
 					"type": "FunctionBody"
-				},
-				"onundo": {
-					"description": "Function to call when the user has moved backward in undo transaction history."
 				},
 				"onunhandledrejection": {
 					"type": "FunctionBody"
@@ -36381,7 +36379,7 @@
 		{
 			"name": "dfn",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the ancestor <p> element, the <dt>/<dd> pairing, or the nearest <section> ancestor of the <dfn> element, is considered to be the full definition of the term.",
+			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the full definition of the term can be one of the following:",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -37181,7 +37179,7 @@
 		{
 			"name": "head",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
-			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets.",
+			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets. There can be only one <head> element in an HTML document.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -37351,7 +37349,7 @@
 		{
 			"name": "html",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
-			"description": "The <html> HTML element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element.",
+			"description": "The <html> HTML element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element. There can be only one <html> element in a document.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -37375,10 +37373,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"manifest": {
-					"description": "Specifies the URI of a resource manifest indicating resources that should be cached locally.",
-					"deprecated": true
-				},
 				"version": {
 					"description": "Specifies the version of the HTML Document Type Definition that governs the current document. This attribute is not needed, because it is redundant with the version information in the document type declaration.",
 					"deprecated": true
@@ -37621,6 +37615,10 @@
 				},
 				"alt": {
 					"type": "Any"
+				},
+				"attributionsrc": {
+					"description": "specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e. just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with a Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
+					"experimental": true
 				},
 				"border": {
 					"description": "The width of a border around the image. Use the border CSS property instead.",
@@ -38831,11 +38829,6 @@
 				"media": {
 					"description": "This attribute specifies the media that the linked resource applies to. Its value must be a media type / media query. This attribute is mainly useful when linking to external stylesheets — it allows the user agent to pick the best adapted one for the device it runs on."
 				},
-				"methods": {
-					"description": "The value of this attribute provides information about the functions that might be performed on an object. The values generally are given by the HTTP protocol when it is used, but it might (for similar reasons as for the title attribute) be useful to include advisory information in advance in the link. For example, the browser might choose a different rendering of a link as a function of the methods specified; something that is searchable might get a different icon, or an outside link might render with an indication of leaving the current site. This attribute is not well understood nor supported, even by the defining browser, Internet Explorer 4.",
-					"deprecated": true,
-					"nonStandard": true
-				},
 				"referrerpolicy": {
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins."
 				},
@@ -39145,7 +39138,7 @@
 		{
 			"name": "menuitem",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <menuitem> HTML element represents a command that a user is able to invoke through a popup menu. This includes context menus, as well as menus that might be attached to a menu button.",
+			"description": "This page lists all the HTML elements, which are created using tags.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39157,46 +39150,7 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"checked": {
-					"description": "Boolean attribute which indicates whether the command is selected. May only be used when the type attribute is checkbox or radio.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"command": {
-					"description": "Specifies the ID of a separate element, indicating a command to be invoked indirectly. May not be used within a menu item that also includes the attributes checked, disabled, icon, label, radiogroup or type.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"default": {
-					"description": "This Boolean attribute indicates use of the same command as the menu's subject element (such as a button or input).",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"disabled": {
-					"description": "Boolean attribute which indicates that the command is not available in the current state. Note that disabled is distinct from hidden; the disabled attribute is appropriate in any context where a change in circumstances might render the command relevant.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"icon": {
-					"description": "Image URL, used to provide a picture to represent the command.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"label": {
-					"description": "The name of the command as shown to the user. Required when a command attribute is not present."
-				},
-				"radiogroup": {
-					"description": "This attribute specifies the name of a group of commands to be toggled as radio buttons when selected. May only be used where the type attribute is radio.",
-					"deprecated": true,
-					"nonStandard": true
-				},
-				"type": {
-					"description": "This attribute indicates the kind of command, and can be one of three values. command: A regular command with an associated action. This is the missing value default. checkbox: Represents a command that can be toggled between two different states. radio: Represent one selection from a group of commands that can be toggled as radio buttons.",
-					"deprecated": true,
-					"nonStandard": true
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "meta",
@@ -39944,11 +39898,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"cols": {
-					"description": "Contains the preferred count of characters that a line should have. It was a non-standard synonym of width. To achieve such an effect, use CSS width instead.",
-					"deprecated": true,
-					"nonStandard": true
-				},
 				"width": {
 					"description": "Contains the preferred count of characters that a line should have. Though technically still implemented, this attribute has no visual effect; to achieve such an effect, use CSS width instead.",
 					"deprecated": true,
@@ -40254,6 +40203,10 @@
 					"type": "Boolean",
 					"condition": ["[src]", "[type='module' i]"],
 					"ineffective": ":not([src]):not([type='module' i])"
+				},
+				"attributionsrc": {
+					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the script resource request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register a JavaScript-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. Note: Alternatively, JavaScript-based attribution sources or triggers can be registered by sending a fetch() request containing the attributionReporting option (either set directly on the fetch() call or on a Request object passed into the fetch() call), or by sending an XMLHttpRequest with setAttributionReporting() invoked on the request object. There are two versions of this attribute that you can set: Boolean, i.e. just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and an empty string value will be used if it is omitted. Value containing one or more URLs, for example: html<script src=\"myscript.js\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\"></script> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with a Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data. See the Attribution Reporting API for more details.",
+					"experimental": true
 				},
 				"blocking": {
 					"type": {
@@ -41152,7 +41105,7 @@
 					"defaultValue": "20"
 				},
 				"dirname": {
-					"description": "This attribute is used to indicate the text directionality of the element contents similar to the dirname attribute of the <input> element. For more information, see the dirname attribute."
+					"description": "This attribute is used to indicate the text directionality of the element contents. For more information, see the dirname attribute."
 				},
 				"disabled": {
 					"description": "This Boolean attribute indicates that the user cannot interact with the control. If this attribute is not specified, the control inherits its setting from the containing element, for example <fieldset>; if there is no containing element when the disabled attribute is set, the control is enabled."
@@ -41497,7 +41450,7 @@
 		{
 			"name": "track",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
-			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. It lets you specify timed text tracks (or time-based data), for example to automatically handle subtitles. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
+			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks.",
 			"categories": [],
 			"contentModel": {
 				"contents": false
@@ -41727,7 +41680,7 @@
 			},
 			"attributes": {
 				"autoplay": {
-					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can do so without stopping to finish loading the data. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. In some browsers (e.g. Chrome 70.0) autoplay doesn't work if no muted attribute is present."
+					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can without stopping to finish loading the data. Note: Modern browsers block audio (or videos with an unmuted audio track) from autoplaying, as sites that automatically play audio can be an unpleasant experience for users. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether."
 				},
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control video playback, including volume, seeking, and pause/resume playback."
@@ -41759,7 +41712,7 @@
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
 				},
 				"muted": {
-					"description": "A Boolean attribute that indicates the default setting of the audio contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning that the audio will be played when the video is played."
+					"description": "A Boolean attribute that indicates the default audio mute setting contained in the video. If set, the audio will be initially silenced. Its default value is false, meaning the audio will be played when the video is played."
 				},
 				"playsinline": {
 					"type": "Boolean"

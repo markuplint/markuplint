@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/shared
 
-
-
-
-
 ## [4.4.2](https://github.com/markuplint/markuplint/compare/@markuplint/shared@4.4.1...@markuplint/shared@4.4.2) (2024-06-09)
 
 ### Bug Fixes

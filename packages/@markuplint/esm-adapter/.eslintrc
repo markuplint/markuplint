@@ -1,9 +1,0 @@
-{
-	"extends": ["../../../.eslintrc"],
-	"globals": {
-		"NodeJS": true
-	},
-	"rules": {
-		"no-restricted-globals": 0
-	}
-}
