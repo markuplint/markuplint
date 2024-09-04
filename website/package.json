@@ -6,9 +6,9 @@
   "scripts": {
     "site:start": "yarn site:prebuild && docusaurus start",
     "site:build": "yarn site:prebuild && docusaurus build",
-    "site:prebuild": "tsx scripts/prebuild/index.mts && npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}'",
+    "site:prebuild": "tsx scripts/prebuild/index.mts && npx prettier --write \"./src/**/*{ts,tsx,json,rc,md,mdx,css,scss}\"",
     "presite:lint": "npx @markuplint/pretenders \"./src/**/*.tsx\" --out \"./pretenders.json\"",
-    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*' && eslint --fix './{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}' './*.{js,ts}' && stylelint './src/**/*.css' && textlint --fix './website/i18n/ja' && cd ../ && yarn cli './website/**/*.tsx'",
+    "site:lint": "prettier --write \"./**/*{js,ts,tsx,mdx}\" \"./*{json,rc,js}\" \"!./build/**/*\" \"!./.docusaurus/**/*\" && eslint --fix \"./{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}\" \"./*.{js,ts}\" && stylelint \"./src/**/*.css\" && textlint --fix \"./website/i18n/ja\" && cd ../ && yarn cli \"./website/**/*.tsx\"",
     "site:up": "yarn upgrade-interactive --latest"
   },
   "author": "Yusuke Hirao",
