@@ -14,7 +14,7 @@
 		"lint:eslint": "eslint --fix \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
 		"lint:prettier": "prettier --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
 		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
-		"lint:github-actions": "actionlint .github/workflows/*.yml",
+		"lint:github-actions": "actionlint",
 		"lint-check": "run-p lint-check:* lint:spellcheck",
 		"lint-check:eslint": "eslint \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
 		"lint-check:prettier": "prettier --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
