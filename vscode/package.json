@@ -131,7 +131,7 @@
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.5.1",
 		"@markuplint/i18n": "4.5.1",
-		"debug": "4.3.6",
+		"debug": "4.3.7",
 		"glob": "11.0.0",
 		"markuplint": "4.9.2",
 		"mocha": "10.7.3",
