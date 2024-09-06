@@ -32,7 +32,7 @@
 		"@markuplint/ml-spec": "4.6.3",
 		"@markuplint/types": "4.5.3",
 		"@types/uuid": "10.0.0",
-		"debug": "4.3.6",
+		"debug": "4.3.7",
 		"espree": "10.1.0",
 		"type-fest": "4.26.0",
 		"uuid": "10.0.0"
