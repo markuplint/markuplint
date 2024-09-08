@@ -11407,10 +11407,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typedoc-plugin-mdn-links@3.2.11:
-  version "3.2.11"
-  resolved "https://registry.yarnpkg.com/typedoc-plugin-mdn-links/-/typedoc-plugin-mdn-links-3.2.11.tgz#837ab7138535a91d9e1803bf69b6e357b6d0c354"
-  integrity sha512-0VlF21O3S1L373UTkUFleoQDrgkh5quAqjCVusBaa3czLahK6LsUxQj6PRqbT5xN0emUVYnT7UTwe8haU2MFrw==
+typedoc-plugin-mdn-links@3.2.12:
+  version "3.2.12"
+  resolved "https://registry.yarnpkg.com/typedoc-plugin-mdn-links/-/typedoc-plugin-mdn-links-3.2.12.tgz#b8f4c7a94c113eacfb16757e9fbf0900e384f91b"
+  integrity sha512-UT7JinqYE7IQSrpRPkUkHrXXEJw5qbHIZhVq8igutYDA/4fsrYZhYffVo8Uh70K2iXFdAyvt6foQG5ci1VERAw==
 
 typedoc-plugin-resolve-crossmodule-references@0.3.3:
   version "0.3.3"
