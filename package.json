@@ -67,9 +67,9 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@commitlint/cli": "19.4.1",
-		"@commitlint/config-conventional": "19.4.1",
-		"@commitlint/config-lerna-scopes": "19.0.0",
+		"@commitlint/cli": "19.5.0",
+		"@commitlint/config-conventional": "19.5.0",
+		"@commitlint/config-lerna-scopes": "19.5.0",
 		"@markuplint-dev/eslint-config": "1.0.1",
 		"@markuplint-dev/prettier-config": "1.0.1",
 		"@markuplint-dev/tsconfig": "1.0.1",
