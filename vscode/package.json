@@ -119,7 +119,7 @@
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "1.0.1",
 		"@markuplint/file-resolver": "4.9.0",
-		"@types/mocha": "10.0.7",
+		"@types/mocha": "10.0.8",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.5.8",
 		"@types/vscode": "1.93.0",
