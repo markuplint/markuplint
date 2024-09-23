@@ -1,4 +1,4 @@
-import type { LangConfigs } from './types.js';
+import type { Config, LangConfigs } from './types.js';
 import type { ExtensionContext } from 'vscode';
 import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
 
@@ -65,7 +65,11 @@ export function activate(
 
 	const langConfigs: LangConfigs = {};
 	for (const languageId of languageList) {
-		langConfigs[languageId] = structuredClone(workspace.getConfiguration('', { languageId }).get(ID)) ?? {
+		const workspaceConfig = workspace.getConfiguration('', { languageId }).get(ID);
+		// eslint-disable-next-line unicorn/prefer-structured-clone
+		const config: Config = JSON.parse(JSON.stringify(workspaceConfig));
+
+		langConfigs[languageId] = config ?? {
 			enable: true,
 			debug: false,
 			defaultConfig: {},
