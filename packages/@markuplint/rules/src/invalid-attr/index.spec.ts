@@ -1553,6 +1553,10 @@ describe('Deprecated options', () => {
 	});
 });
 
+test('CSS Functions', async () => {
+	expect((await mlRuleTest(rule, '<div style="prop: var(--x)"></div>')).violations).toStrictEqual([]);
+});
+
 describe('Issues', () => {
 	test('#553', async () => {
 		expect(
