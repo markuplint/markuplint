@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.3](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.2...@markuplint/i18n@4.5.3) (2024-09-23)
+
+
+### Bug Fixes
+
+* **rules:** fix the message of the `heading-levels` rule and add to translate in Japanese ([ec57e1e](https://github.com/markuplint/markuplint/commit/ec57e1e5ff4549ee5574928ad20fd461d87974a5))
+
+
+
+
+
 ## [4.5.2](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.1...@markuplint/i18n@4.5.2) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/i18n

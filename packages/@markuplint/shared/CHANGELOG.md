@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.5](https://github.com/markuplint/markuplint/compare/@markuplint/shared@4.4.4...@markuplint/shared@4.4.5) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint/shared
+
+
+
+
+
 ## [4.4.4](https://github.com/markuplint/markuplint/compare/@markuplint/shared@4.4.3...@markuplint/shared@4.4.4) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/shared

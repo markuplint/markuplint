@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.8.3...@markuplint/ml-core@4.9.0) (2024-09-23)
+
+
+### Features
+
+* **ml-core:** update DOM API according to TypeScript DOM Libs ([b95b689](https://github.com/markuplint/markuplint/commit/b95b689a84f0a176175943edf5d4163de8b1522f))
+
+
+
+
+
 ## [4.8.3](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.8.2...@markuplint/ml-core@4.8.3) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/ml-core

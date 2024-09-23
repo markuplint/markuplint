@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/cli-utils",
-	"version": "4.4.4",
+	"version": "4.4.5",
 	"description": "Utilities for CLI of Markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

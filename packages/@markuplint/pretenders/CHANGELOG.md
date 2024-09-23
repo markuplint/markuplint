@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.9](https://github.com/markuplint/markuplint/compare/@markuplint/pretenders@0.0.8...@markuplint/pretenders@0.0.9) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint/pretenders
+
+
+
+
+
 ## [0.0.8](https://github.com/markuplint/markuplint/compare/@markuplint/pretenders@0.0.7...@markuplint/pretenders@0.0.8) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/pretenders

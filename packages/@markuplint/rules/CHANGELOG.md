@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.4...@markuplint/rules@4.10.0) (2024-09-23)
+
+
+### Bug Fixes
+
+* **rules:** excluded cases where the element is palpable from the `no-empty-palpable-content` rule ([6071c51](https://github.com/markuplint/markuplint/commit/6071c5133b7c5d52d8e052ac9f39fb5b10c38b8e))
+* **rules:** fix the message of the `heading-levels` rule and add to translate in Japanese ([ec57e1e](https://github.com/markuplint/markuplint/commit/ec57e1e5ff4549ee5574928ad20fd461d87974a5))
+
+
+### Features
+
+* **types:** avoid parsing and simply accept any value when the CSS includes `var()` ([5817693](https://github.com/markuplint/markuplint/commit/5817693cfcd1a253c627db323505e4b515f69395))
+
+
+
+
+
 ## [4.9.4](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.9.3...@markuplint/rules@4.9.4) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/rules

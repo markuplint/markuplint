@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/vue-spec@4.5.6...@markuplint/vue-spec@4.5.7) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint/vue-spec
+
+
+
+
+
 ## [4.5.6](https://github.com/markuplint/markuplint/compare/@markuplint/vue-spec@4.5.5...@markuplint/vue-spec@4.5.6) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/vue-spec
