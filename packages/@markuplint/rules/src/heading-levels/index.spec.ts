@@ -47,14 +47,14 @@ test('Skipped', async () => {
 			severity: 'error',
 			line: 6,
 			col: 1,
-			message: 'Heading levels should not be skipped',
+			message: 'Heading levels must not be skipped',
 			raw: '<h4>',
 		},
 		{
 			severity: 'error',
 			line: 10,
 			col: 1,
-			message: 'Heading levels should not be skipped',
+			message: 'Heading levels must not be skipped',
 			raw: '<h5>',
 		},
 	]);
