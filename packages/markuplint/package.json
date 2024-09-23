@@ -37,7 +37,7 @@
 		"@markuplint/rules": "4.9.3",
 		"@markuplint/shared": "4.4.3",
 		"@types/debug": "4.1.12",
-		"chokidar": "3.6.0",
+		"chokidar": "4.0.1",
 		"debug": "4.3.7",
 		"get-stdin": "9.0.0",
 		"meow": "13.2.0",
