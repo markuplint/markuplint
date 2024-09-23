@@ -1292,6 +1292,23 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextlost():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Element`
@@ -1305,6 +1322,23 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextrestored():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
 	}
 
 	/**
@@ -3282,6 +3316,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-element-gethtml
+	 */
+	getHTML(options?: any): string {
+		throw new UnexpectedCallError('Does not implement "getHTML" method yet');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getNameLocation() {
@@ -3691,7 +3736,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://w3c.github.io/pointerlock/#dom-element-requestpointerlock
 	 */
-	requestPointerLock(): void {
+	requestPointerLock(options?: any): Promise<void> {
 		throw new UnexpectedCallError('Not supported "requestPointerLock" method');
 	}
 
