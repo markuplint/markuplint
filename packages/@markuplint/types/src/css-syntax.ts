@@ -104,6 +104,13 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	}
 
 	if (!('css' in result.error)) {
+		if (result.error.message === 'Matching for a tree with var() is not supported') {
+			// `var()` is not supported
+			// So, return matched
+			// @see https://github.com/csstree/csstree/issues/62
+			return matched();
+		}
+
 		throw result.error;
 	}
 
