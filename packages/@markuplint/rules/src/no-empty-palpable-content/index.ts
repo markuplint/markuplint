@@ -8,6 +8,18 @@ type Options = {
 	ignoreIfAriaBusy?: boolean;
 };
 
+const allowedElements = new Set([
+	// These elements are possibly empty because it to be filled by user interaction.
+	'textarea',
+	'output',
+
+	// Since the element itself is palpable, there is no need to determine whether its content is empty.
+	'audio',
+	'canvas',
+	'video',
+	'img',
+]);
+
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -17,12 +29,7 @@ export default createRule<boolean, Options>({
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			/**
-			 * Exception
-			 *
-			 * - The `textarea` element is possibly empty because a user inputs it.
-			 */
-			if (el.localName === 'textarea') {
+			if (allowedElements.has(el.localName)) {
 				return;
 			}
 
