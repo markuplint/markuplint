@@ -94,11 +94,6 @@
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.6.2"
 	},
-	"resolutions": {
-		"lerna/**/string-width": "4",
-		"lerna/**/strip-ansi": "6",
-		"lerna/**/wrap-ansi": "7"
-	},
 	"config": {
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
