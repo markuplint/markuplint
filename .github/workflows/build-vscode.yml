@@ -4,7 +4,7 @@ on:
     pull_request:
         branches:
             - dev
-            - v3
+            - v5
         paths:
             - 'vscode/**'
 

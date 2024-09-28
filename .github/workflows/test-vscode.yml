@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - v5
         paths:
             - '.github/workflows/test-vscode.yml'
             - 'vscode/**'
