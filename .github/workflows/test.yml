@@ -319,6 +319,9 @@ jobs:
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   ls -la ${{ github.workspace }}/../sandbox/test
 
+            - name: Delete package manager settings
+              run: jq 'del(.packageManager, .volta)' package.json > tmp.json && mv tmp.json package.json
+
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
               uses: pnpm/action-setup@v2
