@@ -197,9 +197,12 @@ jobs:
               if: runner.os == 'Windows'
               run: npm config set fetch-timeout 600000
 
+            - name: Skip a prepare script
+              run: npm config set ignore-scripts true
+
             - name: Install prodcution dependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: npm_config_ignore_scripts=true npm ci --legacy-peer-deps --omit=dev
+              run: npm ci --legacy-peer-deps --omit=dev
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
