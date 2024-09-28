@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/config-presets
 
-
-
-
-
 ## [4.5.5](https://github.com/markuplint/markuplint/compare/@markuplint/config-presets@4.5.4...@markuplint/config-presets@4.5.5) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/config-presets
-
-
-
-
 
 ## [4.5.4](https://github.com/markuplint/markuplint/compare/@markuplint/config-presets@4.5.3...@markuplint/config-presets@4.5.4) (2024-06-25)
 

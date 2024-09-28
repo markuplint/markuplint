@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/file-resolver
 
-
-
-
-
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.0...@markuplint/file-resolver@4.9.1) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/file-resolver
-
-
-
-
 
 # [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.8.1...@markuplint/file-resolver@4.9.0) (2024-06-25)
 

@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/pretenders
 
-
-
-
-
 ## [0.0.8](https://github.com/markuplint/markuplint/compare/@markuplint/pretenders@0.0.7...@markuplint/pretenders@0.0.8) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/pretenders
-
-
-
-
 
 ## [0.0.7](https://github.com/markuplint/markuplint/compare/@markuplint/pretenders@0.0.6...@markuplint/pretenders@0.0.7) (2024-06-25)
 

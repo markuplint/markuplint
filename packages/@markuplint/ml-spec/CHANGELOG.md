@@ -5,22 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.4...@markuplint/ml-spec@4.7.0) (2024-09-23)
 
-
 ### Features
 
-* **types:** update types according to CSSTree ([c4d97f9](https://github.com/markuplint/markuplint/commit/c4d97f9571dd2b93462e9dd51c01ecf4f95caf08))
-
-
-
-
+- **types:** update types according to CSSTree ([c4d97f9](https://github.com/markuplint/markuplint/commit/c4d97f9571dd2b93462e9dd51c01ecf4f95caf08))
 
 ## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.3...@markuplint/ml-spec@4.6.4) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/ml-spec
-
-
-
-
 
 ## [4.6.3](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.2...@markuplint/ml-spec@4.6.3) (2024-06-25)
 

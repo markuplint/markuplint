@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/test-tools
 
-
-
-
-
 ## [4.5.6](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.5...@markuplint/test-tools@4.5.6) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/test-tools
-
-
-
-
 
 ## [4.5.5](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.4...@markuplint/test-tools@4.5.5) (2024-06-25)
 

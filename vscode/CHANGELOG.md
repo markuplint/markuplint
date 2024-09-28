@@ -5,22 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.7.7](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.6...vscode-markuplint@4.7.7) (2024-09-23)
 
-
 ### Bug Fixes
 
-* **vscode:** replaced failing `structuredClone` with JSON serialization ([eed10e8](https://github.com/markuplint/markuplint/commit/eed10e8ec828c867d9101ffffe0449a08cfad64d))
-
-
-
-
+- **vscode:** replaced failing `structuredClone` with JSON serialization ([eed10e8](https://github.com/markuplint/markuplint/commit/eed10e8ec828c867d9101ffffe0449a08cfad64d))
 
 ## [4.7.6](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.5...vscode-markuplint@4.7.6) (2024-09-02)
 
 **Note:** Version bump only for package vscode-markuplint
-
-
-
-
 
 ## [4.7.5](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.4...vscode-markuplint@4.7.5) (2024-06-25)
 

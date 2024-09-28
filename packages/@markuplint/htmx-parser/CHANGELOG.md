@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/htmx-parser
 
-
-
-
-
 ## [4.0.4](https://github.com/markuplint/markuplint/compare/@markuplint/htmx-parser@4.0.3...@markuplint/htmx-parser@4.0.4) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/htmx-parser
-
-
-
-
 
 ## [4.0.3](https://github.com/markuplint/markuplint/compare/@markuplint/htmx-parser@4.0.2...@markuplint/htmx-parser@4.0.3) (2024-06-25)
 

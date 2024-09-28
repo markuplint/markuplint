@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/create-rule
 
-
-
-
-
 ## [4.7.6](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.5...@markuplint/create-rule@4.7.6) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint/create-rule
-
-
-
-
 
 ## [4.7.5](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.4...@markuplint/create-rule@4.7.5) (2024-06-25)
 

@@ -7,17 +7,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint-dev/prettier-config
 
-
-
-
-
 ## [1.0.2](https://github.com/markuplint/markuplint/compare/@markuplint-dev/prettier-config@1.0.1...@markuplint-dev/prettier-config@1.0.2) (2024-09-02)
 
 **Note:** Version bump only for package @markuplint-dev/prettier-config
-
-
-
-
 
 ## [1.0.1](https://github.com/markuplint/markuplint/compare/@markuplint-dev/prettier-config@1.0.0...@markuplint-dev/prettier-config@1.0.1) (2024-06-25)
 
