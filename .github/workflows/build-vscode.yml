@@ -4,7 +4,7 @@ on:
     pull_request:
         branches:
             - dev
-            - v3
+            - v5
         paths:
             - 'vscode/**'
 
@@ -20,7 +20,7 @@ jobs:
             - name: Install Node.js
               uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4
               with:
-                  node-version: 18
+                  node-version: 20.15
 
             - name: Install dependencies
               run: npm run vscode:package
