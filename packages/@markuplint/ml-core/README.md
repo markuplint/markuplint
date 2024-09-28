@@ -15,8 +15,6 @@
 
 ```shell
 $ npm install @markuplint/ml-core
-
-$ yarn add @markuplint/ml-core
 ```
 
 </details>

@@ -20,16 +20,17 @@ Its purpose is all developers are able to better markup and fit each of diverse 
 
 You need:
 
-- Node.js v18 or later.
-- Yarn
+- Node.js v22 or later.
+- NPM
+- (Optional) Volta
 
 After cloning this repository, you can also install them through [Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile).
 
 When you wrote code then:
 
-- Format and lint code through `yarn lint`.
-- Check to build successfully through `yarn build`.
-- Test your code through `yarn test`.
+- Format and lint code through `npm run lint`.
+- Check to build successfully through `npm run build`.
+- Test your code through `npm run test`.
 - Push to the topic branch and open a pull request.
 - Assign reviewer:
   - For the improved code: @yusukehirao

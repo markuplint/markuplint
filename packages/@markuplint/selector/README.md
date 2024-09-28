@@ -120,8 +120,6 @@ For example, `:role(interactive)` matches `<a>`(with `href` attr), `<button>`, a
 
 ```shell
 $ npm install @markuplint/selector
-
-$ yarn add @markuplint/selector
 ```
 
 </details>

@@ -9,8 +9,6 @@ Add Vue specific elements and attributes to the schema.
 
 ```shell
 $ npm install -D @markuplint/vue-spec
-
-$ yarn add -D @markuplint/vue-spec
 ```
 
 ## Usage

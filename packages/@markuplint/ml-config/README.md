@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/ml-config
-
-$ yarn add @markuplint/ml-config
 ```
 
 </details>

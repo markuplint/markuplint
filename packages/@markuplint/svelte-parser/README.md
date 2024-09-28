@@ -8,8 +8,6 @@ Use **markuplint** with [**Svelte**](https://svelte.dev/).
 
 ```shell
 $ npm install @markuplint/svelte-parser
-
-$ yarn add @markuplint/svelte-parser
 ```
 
 ## Usage

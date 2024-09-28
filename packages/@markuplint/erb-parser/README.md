@@ -8,8 +8,6 @@ Use **markuplint** with [**ERB**](https://docs.ruby-lang.org/en/master/ERB.html)
 
 ```shell
 $ npm install -D @markuplint/erb-parser
-
-$ yarn add -D @markuplint/erb-parser
 ```
 
 ## Usage

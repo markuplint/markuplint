@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/ml-spec
-
-$ yarn add @markuplint/ml-spec
 ```
 
 </details>

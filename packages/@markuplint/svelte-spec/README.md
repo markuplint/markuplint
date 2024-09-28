@@ -9,8 +9,6 @@ Add Svelte specific elements and attributes to the schema.
 
 ```shell
 $ npm install -D @markuplint/svelte-spec
-
-$ yarn add -D @markuplint/svelte-spec
 ```
 
 ## Usage

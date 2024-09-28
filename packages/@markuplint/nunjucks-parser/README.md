@@ -8,8 +8,6 @@ Use **markuplint** with [**Nunjucks**](https://mozilla.github.io/nunjucks/).
 
 ```shell
 $ npm install -D @markuplint/nunjucks-parser
-
-$ yarn add -D @markuplint/nunjucks-parser
 ```
 
 ## Usage

@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/shared
-
-$ yarn add @markuplint/shared
 ```
 
 </details>

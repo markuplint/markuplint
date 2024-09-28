@@ -33,8 +33,6 @@ You can choose some presets appropriately for your preference.
 
 ```shell
 $ npm install @markuplint/config-presets
-
-$ yarn add @markuplint/config-presets
 ```
 
 </details>

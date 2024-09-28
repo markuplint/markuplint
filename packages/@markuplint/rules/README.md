@@ -17,8 +17,6 @@
 
 ```shell
 $ npm install -D @markuplint/rules
-
-$ yarn add -D @markuplint/rules
 ```
 
 </details>

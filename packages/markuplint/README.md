@@ -35,8 +35,6 @@ Create a [configuration](https://markuplint.dev/configuration) file and install 
 
 ```
 $ npx markuplint --init
-# or
-$ yarn run markuplint --init
 ```
 
 Answer questions interactively.
@@ -58,8 +56,6 @@ Execute the script:
 
 ```
 $ npm run lint:html
-# or
-$ yarn lint:html
 ```
 
 ### Command line options

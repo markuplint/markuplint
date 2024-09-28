@@ -9,8 +9,6 @@ Add HTMX specific elements and attributes to the schema.
 
 ```shell
 $ npm install -D @markuplint/htmx-parser
-
-$ yarn add -D @markuplint/htmx-parser
 ```
 
 ## Usage

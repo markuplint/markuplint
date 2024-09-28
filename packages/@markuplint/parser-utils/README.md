@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/parser-utils
-
-$ yarn add @markuplint/parser-utils
 ```
 
 </details>

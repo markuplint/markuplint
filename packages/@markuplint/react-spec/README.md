@@ -9,8 +9,6 @@ Add React specific elements and attributes to the schema.
 
 ```shell
 $ npm install -D @markuplint/react-spec
-
-$ yarn add -D @markuplint/react-spec
 ```
 
 ## Usage

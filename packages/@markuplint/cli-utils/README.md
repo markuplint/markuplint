@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/cli-utils
-
-$ yarn add @markuplint/cli-utils
 ```
 
 </details>

@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/file-resolver
-
-$ yarn add @markuplint/file-resolver
 ```
 
 </details>

@@ -104,6 +104,4 @@ In addition, you can use types **[CSSTree](https://github.com/csstree/csstree)**
 
 ```shell
 $ npm install @markuplint/types
-
-$ yarn add @markuplint/types
 ```

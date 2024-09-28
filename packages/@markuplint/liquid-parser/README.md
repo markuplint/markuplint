@@ -8,8 +8,6 @@ Use **markuplint** with [**Liquid**](https://liquidjs.com/).
 
 ```shell
 $ npm install -D @markuplint/liquid-parser
-
-$ yarn add -D @markuplint/liquid-parser
 ```
 
 ## Usage

@@ -8,8 +8,6 @@ Use **markuplint** with [**Pug**](https://pugjs.org/).
 
 ```shell
 $ npm install -D @markuplint/pug-parser
-
-$ yarn add -D @markuplint/pug-parser
 ```
 
 ## Usage

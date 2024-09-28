@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/html-spec
-
-$ yarn add @markuplint/html-spec
 ```
 
 </details>
