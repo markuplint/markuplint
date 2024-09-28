@@ -32,7 +32,7 @@ jobs:
                   node-version: 20.15
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile && yarn build
+              run: npm ci --legacy-peer-deps && npm run build
 
             - name: Run tests
-              run: cd vscode && yarn vscode:build && yarn vscode:test
+              run: cd vscode && npm run vscode:build && npm run vscode:test

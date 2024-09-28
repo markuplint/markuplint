@@ -8,8 +8,6 @@ Use **markuplint** with [**PHP**](https://www.php.net/).
 
 ```shell
 $ npm install -D @markuplint/php-parser
-
-$ yarn add -D @markuplint/php-parser
 ```
 
 ## Usage

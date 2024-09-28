@@ -8,8 +8,6 @@ Use **markuplint** with [**Smarty**](https://www.smarty.net/).
 
 ```shell
 $ npm install -D @markuplint/smarty-parser
-
-$ yarn add -D @markuplint/smarty-parser
 ```
 
 ## Usage

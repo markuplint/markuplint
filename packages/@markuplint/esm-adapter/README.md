@@ -12,6 +12,4 @@ This module is supported only on Node.js versions **below 22**.
 
 ```shell
 $ npm install @markuplint/esm-adapter
-
-$ yarn add @markuplint/esm-adapter
 ```

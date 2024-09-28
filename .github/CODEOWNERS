@@ -10,6 +10,6 @@ website/ @kagankan
 
 # Renovate
 package.json
-yarn.lock
+package-lock.json
 website/package.json
-website/yarn.lock
+website/package-lock.json

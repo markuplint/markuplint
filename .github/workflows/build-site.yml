@@ -24,4 +24,4 @@ jobs:
                   node-version: 20
 
             - name: Install dependencies
-              run: yarn site:build
+              run: npm run site:build

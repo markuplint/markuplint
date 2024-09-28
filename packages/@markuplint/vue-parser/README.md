@@ -8,8 +8,6 @@ Use **markuplint** with [**Vue**](https://vuejs.org/).
 
 ```shell
 $ npm install -D @markuplint/vue-parser
-
-$ yarn add -D @markuplint/vue-parser
 ```
 
 ## Usage

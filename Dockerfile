@@ -4,9 +4,9 @@ COPY . /markuplint
 
 WORKDIR /markuplint
 
-# The Node image comes with Yarn preinstalled now.
-RUN yarn
-RUN yarn run build
+# The Node image comes with NPM preinstalled now.
+RUN npm ci --legacy-peer-deps
+RUN npm run build
 
 RUN cd /usr/bin && ln -s /markuplint/packages/markuplint/bin/markuplint.mjs
 

@@ -8,8 +8,6 @@ Use **markuplint** with [**Mustache**](https://mustache.github.io/) or [**Handle
 
 ```shell
 $ npm install -D @markuplint/mustache-parser
-
-$ yarn add -D @markuplint/mustache-parser
 ```
 
 ## Usage

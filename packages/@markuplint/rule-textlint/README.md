@@ -8,8 +8,6 @@ The rule plugin that adapts [**textlint**](https://github.com/textlint/textlint)
 
 ```shell
 $ npm install -D @markuplint/rule-textlint
-
-$ yarn add -D @markuplint/rule-textlint
 ```
 
 ## Usage
@@ -17,7 +15,7 @@ $ yarn add -D @markuplint/rule-textlint
 ### Example
 
 ```shell
-$ yarn add -D textlint-rule-prh
+$ npm install -D textlint-rule-prh
 ```
 
 #### Load `.textlintrc.*` config automatically

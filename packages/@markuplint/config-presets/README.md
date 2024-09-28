@@ -80,8 +80,6 @@ No omit **end-tag**|Recommend to write an end-tag always because it is too diffi
 
 ```shell
 $ npm install @markuplint/config-presets
-
-$ yarn add @markuplint/config-presets
 ```
 
 </details>

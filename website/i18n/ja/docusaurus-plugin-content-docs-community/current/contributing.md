@@ -20,16 +20,17 @@
 
 以下が必要です。
 
-- Node.js v18以降
-- Yarn
+- Node.js v22以降
+- NPM
+- (任意) Volta
 
 リポジトリをクローンした後、[Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile)からのインストールも可能です。
 
 コードを書いた際は、次のことをお願いしています。
 
-- `yarn lint`でコードの整形とリントチェックをしてください
-- `yarn build`でビルドが正常に行われることを確認してください
-- `yarn test`でテストが成功することを確認してください
+- `npm run lint`でコードの整形とリントチェックをしてください
+- `npm run build`でビルドが正常に行われることを確認してください
+- `npm run test`でテストが成功することを確認してください
 - トピックブランチにプッシュし、プルリクエストを作成してください
 - 以下のレビュアーをアサインします。
   - コード全般、コードの改善の場合: @yusukehirao

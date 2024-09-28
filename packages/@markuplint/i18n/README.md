@@ -11,9 +11,6 @@
 
 ```shell
 $ npm install @markuplint/i18n
-
-$ yarn add @markuplint/i18n
-
 ```
 
 </details>

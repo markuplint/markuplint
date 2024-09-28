@@ -8,8 +8,6 @@ Use **markuplint** with [**Alpine.js**](https://alpinejs.dev).
 
 ```shell
 $ npm install -D @markuplint/alpine-parser
-
-$ yarn add -D @markuplint/alpine-parser
 ```
 
 ## Usage

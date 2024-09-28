@@ -13,7 +13,7 @@ on:
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
-            - 'yarn.lock'
+            - 'package-lock.json'
 
 env:
     NODE_BUILD_VERSION: 22
@@ -41,11 +41,11 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Install dependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              run: yarn install --frozen-lockfile --check-files
+              run: npm ci --legacy-peer-deps
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
@@ -53,7 +53,7 @@ jobs:
               uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
     build:
         needs: dev-setup
@@ -78,7 +78,7 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
@@ -95,7 +95,7 @@ jobs:
 
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              run: yarn build
+              run: npm run build
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
@@ -134,7 +134,7 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
@@ -150,7 +150,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Lint
-              run: yarn lint-check
+              run: npm run lint-check
 
     os-setup:
         runs-on: ${{ matrix.os }}
@@ -169,10 +169,8 @@ jobs:
                     - ubuntu-latest
                     - macos-latest
                     - windows-latest
-                node: [18]
+                node: [20]
                 include:
-                    - node: 21
-                      os: ubuntu-latest
                     - node: 22
                       os: ubuntu-latest
         steps:
@@ -191,22 +189,25 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
 
-            - name: Create .yarnrc for Windows
+            - name: Set NPM Timeout for Windows
               if: runner.os == 'Windows'
-              run: echo "network-timeout 600000" > .yarnrc
+              run: npm config set fetch-timeout 600000
+
+            - name: Skip a prepare script
+              run: npm config set ignore-scripts true
 
             - name: Install prodcution dependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: yarn install --production --frozen-lockfile --check-files --ignore-engines
+              run: npm ci --legacy-peer-deps --omit=dev
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
               uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
 
     test:
         needs: [os-setup, build]
@@ -219,9 +220,6 @@ jobs:
                 shard: [1/4, 2/4, 3/4, 4/4]
                 include:
                     - node: 22
-                      os: ubuntu-latest
-                      shard: 1/1
-                    - node: 24
                       os: ubuntu-latest
                       shard: 1/1
         steps:
@@ -239,7 +237,7 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
@@ -272,7 +270,7 @@ jobs:
                   timeout_minutes: 20
                   max_attempts: 3
                   shell: bash
-                  command: yarn vitest run --shard=${{ matrix.shard }}
+                  command: npx vitest run --shard=${{ matrix.shard }}
 
     isolated-env:
         needs: [os-setup, build]
@@ -300,7 +298,7 @@ jobs:
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
               with:
                   path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
@@ -320,6 +318,9 @@ jobs:
                   mkdir -p ${{ github.workspace }}/../sandbox
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   ls -la ${{ github.workspace }}/../sandbox/test
+
+            - name: Delete package manager settings
+              run: jq 'del(.packageManager, .volta)' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'

@@ -1,7 +1,7 @@
 {
 	"lerna": "7.0.1",
 	"version": "independent",
-	"npmClient": "yarn",
+	"npmClient": "npm",
 	"packages": [
 		"packages/*",
 		"packages/@markuplint/*",

@@ -23,4 +23,4 @@ jobs:
                   node-version: 20.15
 
             - name: Install dependencies
-              run: yarn vscode:package
+              run: npm run vscode:package

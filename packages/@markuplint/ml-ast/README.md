@@ -11,8 +11,6 @@
 
 ```shell
 $ npm install @markuplint/ml-ast
-
-$ yarn add @markuplint/ml-ast
 ```
 
 </details>
