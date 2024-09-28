@@ -104,8 +104,9 @@
 			"path": "./node_modules/cz-conventional-changelog"
 		}
 	},
+	"packageManager": "npm@10.8.3",
 	"volta": {
 		"node": "22.9.0",
-		"yarn": "1.22.22"
+		"npm": "10.8.3"
 	}
 }

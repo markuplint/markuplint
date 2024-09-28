@@ -140,8 +140,9 @@
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.12"
 	},
+	"packageManager": "npm@10.8.3",
 	"volta": {
 		"node": "20.17.0",
-		"yarn": "1.22.22"
+		"npm": "10.8.3"
 	}
 }
