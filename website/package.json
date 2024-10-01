@@ -33,7 +33,7 @@
     "@imgix/js-core": "3.8.0",
     "@tsconfig/strictest": "2.0.5",
     "@types/glob": "8.1.0",
-    "eslint-plugin-react": "7.37.0",
+    "eslint-plugin-react": "7.37.1",
     "eslint-plugin-react-hooks": "4.6.2",
     "stylelint": "16.9.0",
     "stylelint-config-recess-order": "5.1.1",
