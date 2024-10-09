@@ -25,7 +25,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -62,7 +62,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -118,7 +118,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -175,7 +175,7 @@ jobs:
                     - node: 22
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -224,7 +224,7 @@ jobs:
                       os: ubuntu-latest
                       shard: 1/1
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -285,7 +285,7 @@ jobs:
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
