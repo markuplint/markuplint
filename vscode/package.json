@@ -126,7 +126,7 @@
 		"@vscode/test-electron": "2.4.1",
 		"@vscode/vsce": "3.1.1",
 		"esbuild": "0.24.0",
-		"typescript": "5.6.2"
+		"typescript": "5.6.3"
 	},
 	"dependencies": {
 		"@markuplint/esm-adapter": "4.5.3",
