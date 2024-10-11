@@ -74,7 +74,7 @@
 		"@markuplint-dev/prettier-config": "1.0.3",
 		"@markuplint-dev/tsconfig": "1.0.3",
 		"commitizen": "4.3.1",
-		"cspell": "8.14.4",
+		"cspell": "8.15.0",
 		"cz-conventional-changelog": "3.3.0",
 		"heapdump": "0.3.15",
 		"husky": "9.1.6",
