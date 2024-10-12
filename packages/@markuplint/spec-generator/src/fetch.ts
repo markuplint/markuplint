@@ -32,7 +32,7 @@ export async function fetchText(url: string) {
 		text = cache.get(url)!;
 	} else {
 		try {
-			const res = await global.fetch(url);
+			const res = await globalThis.fetch(url);
 			text = await res.text();
 			cache.set(url, text);
 		} catch {
