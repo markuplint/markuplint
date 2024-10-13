@@ -267,6 +267,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
+		const severity = {
+			...configSet.config.severity,
+			...this.#options?.severity,
+		};
+
 		const pretenders = await this.resolvePretenders(configSet);
 		fileLog('Resolved pretenders: %O', pretenders);
 
@@ -302,6 +307,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return {
 			parser,
 			parserOptions,
+			severity,
 			pretenders,
 			ruleset,
 			schemas,
