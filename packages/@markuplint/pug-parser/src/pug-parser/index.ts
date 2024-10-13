@@ -177,6 +177,23 @@ function optimizeAST(
 				nodes.push(includeNode);
 				continue;
 			}
+			case 'RawInclude': {
+				const includeNode: ASTRawIncludeNode = {
+					type: node.type,
+					file: node.file,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+					filters: node.filters,
+				};
+
+				nodes.push(includeNode);
+				continue;
+			}
 			case 'Mixin': {
 				// TODO: Attributes when call mixin
 				// const attrs = getAttrs(node.attrs, tokens, offsets, pug);
@@ -725,6 +742,7 @@ export type ASTNode =
 	| ASTComment
 	| ASTDoctype
 	| ASTIncludeNode
+	| ASTRawIncludeNode
 	| ASTMixinNode
 	| ASTMixinSlotNode
 	| ASTNamedBlockNode
@@ -747,6 +765,8 @@ export type ASTComment = PugASTCommentNode & AdditionalASTData;
 export type ASTDoctype = PugASTDoctypeNode & AdditionalASTData;
 
 export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AdditionalASTData;
+
+export type ASTRawIncludeNode = PugASTRawIncludeNode & AdditionalASTData;
 
 export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AdditionalASTData;
 
@@ -789,6 +809,7 @@ type PugASTNode =
 	| PugASTCommentNode
 	| PugASTDoctypeNode
 	| PugASTIncludeNode<PugAST<PugASTNode>>
+	| PugASTRawIncludeNode
 	| PugASTMixinNode<PugASTAttr, PugAST<PugASTNode>>
 	| PugASTMixinSlotNode
 	| PugASTNamedBlockNode<PugASTNode>
@@ -857,13 +878,23 @@ type PugASTDoctypeNode = {
 
 type PugASTIncludeNode<B> = {
 	type: 'Include';
-	file: {
-		type: 'FileReference';
-		path: string;
-		line: number;
-		column: number;
-	};
+	file: RugASTIncludeFile;
 	block: B;
+	line: number;
+	column: number;
+};
+
+type PugASTRawIncludeNode = {
+	type: 'RawInclude';
+	file: RugASTIncludeFile;
+	line: number;
+	column: number;
+	filters: unknown[];
+};
+
+type RugASTIncludeFile = {
+	type: 'FileReference';
+	path: string;
 	line: number;
 	column: number;
 };
