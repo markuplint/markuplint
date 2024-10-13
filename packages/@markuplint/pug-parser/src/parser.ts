@@ -186,9 +186,18 @@ class PugParser extends Parser<ASTNode> {
 				);
 			}
 			default: {
+				let tokenIncludesFile = token;
+
+				if ('file' in originNode) {
+					const interval = originNode.file.column - originNode.endColumn;
+					const fileOffset = originNode.endOffset + interval;
+					const fileEndOffset = fileOffset + originNode.file.path.length;
+					tokenIncludesFile = this.sliceFragment(originNode.offset, fileEndOffset);
+				}
+
 				return this.visitPsBlock(
 					{
-						...token,
+						...tokenIncludesFile,
 						depth,
 						parentNode,
 						nodeName: originNode.type,
