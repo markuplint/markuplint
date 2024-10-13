@@ -280,6 +280,25 @@ function optimizeAST(
 				nodes.push(commentNode);
 				continue;
 			}
+			case 'BlockComment': {
+				const block = optimizeAST(node.block, tokens, pug);
+
+				const commentNode: ASTBlockComment = {
+					type: node.type,
+					val: node.val,
+					buffer: node.buffer,
+					block,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+				nodes.push(commentNode);
+				continue;
+			}
 			case 'Code': {
 				const newNode: ASTCodeNode = {
 					type: node.type,
@@ -740,6 +759,7 @@ export type ASTNode =
 	| ASTEmptyPipeNode
 	| ASTCodeNode
 	| ASTComment
+	| ASTBlockComment
 	| ASTDoctype
 	| ASTIncludeNode
 	| ASTRawIncludeNode
@@ -761,6 +781,8 @@ export type ASTEmptyPipeNode = PugASTEmptyPipeNode & AdditionalASTData;
 export type ASTCodeNode = PugASTCodeNode & AdditionalASTData;
 
 export type ASTComment = PugASTCommentNode & AdditionalASTData;
+
+export type ASTBlockComment = PugASTBlockCommentNode<ASTBlock> & AdditionalASTData;
 
 export type ASTDoctype = PugASTDoctypeNode & AdditionalASTData;
 
@@ -807,6 +829,7 @@ type PugASTNode =
 	| PugASTTextNode
 	| PugASTCodeNode
 	| PugASTCommentNode
+	| PugASTBlockCommentNode<PugAST<PugASTNode>>
 	| PugASTDoctypeNode
 	| PugASTIncludeNode<PugAST<PugASTNode>>
 	| PugASTRawIncludeNode
@@ -864,6 +887,15 @@ type PugASTCodeNode = {
 type PugASTCommentNode = {
 	type: 'Comment';
 	val: string;
+	buffer: boolean;
+	line: number;
+	column: number;
+};
+
+type PugASTBlockCommentNode<B> = {
+	type: 'BlockComment';
+	val: string;
+	block: B;
 	buffer: boolean;
 	line: number;
 	column: number;
