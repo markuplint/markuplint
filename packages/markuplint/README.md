@@ -84,6 +84,7 @@ Options
 	--problem-only,          -p            Output only problems, without passeds.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
+	--severity-parse-error,                Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 
 	--init                                 Initialize settings interactively.
 
