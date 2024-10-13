@@ -117,6 +117,38 @@ describe('STDOUT Test', () => {
 		});
 		expect(exitCode).toBe(1);
 	});
+
+	test('--severity-parse-error (no specified)', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
+		const { exitCode } = await execa(entryFilePath, [escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(1);
+	});
+
+	test('--severity-parse-error error', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
+		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'error', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(1);
+	});
+
+	test('--severity-parse-error warning', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
+		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'warning', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(1);
+	});
+
+	test('--severity-parse-error off', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
+		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'off', escape(targetFilePath)], {
+			reject: false,
+		});
+		expect(exitCode).toBe(0);
+	});
 });
 
 describe('Issues', () => {

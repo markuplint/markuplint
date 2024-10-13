@@ -29,6 +29,7 @@ CLIはターゲットとなるHTMLファイルを可変長引数として受け�
 | `--no-allow-empty-input`   | なし             | なし                                         | false        | ファイルが見つからなかった場合にステータスコード`1`を返します |
 | `--verbose`                | なし             | なし                                         | false        | 詳細な情報も同時に出力します                                  |
 | `--include-node-modules`   | なし             | なし                                         | false        | `node_module`ディレクトリ内のファイルを含めて評価します       |
+| `--severity-parse-error`   | なし             | `error`、`warning`もしくは`off`              | `error`      | パースエラーの深刻度レベルを指定します                        |
 
 ## Particular run
 

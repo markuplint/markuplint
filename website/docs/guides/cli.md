@@ -31,6 +31,7 @@ And returns `1` if the result has problems one or more.
 | `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.              |
 | `--verbose`                | none         | none                                     | false      | Output with detailed information.                                   |
 | `--include-node-modules`   | none         | none                                     | false      | Include files in node_modules directory.                            |
+| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                       |
 
 ## Particular run
 

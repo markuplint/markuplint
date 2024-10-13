@@ -21,6 +21,7 @@ Options
 	--allow-empty-input                    Return status code 1 even if there are no input files.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
+	--severity-parse-error,                Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
@@ -99,6 +100,10 @@ export const cli = meow(help, {
 		includeNodeModules: {
 			type: 'boolean',
 			default: false,
+		},
+		severityParseError: {
+			type: 'string',
+			default: 'error',
 		},
 	},
 });
