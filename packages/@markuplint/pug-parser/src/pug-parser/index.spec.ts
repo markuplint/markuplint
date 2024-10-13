@@ -1812,4 +1812,51 @@ mixin link(href, name)
 			line: 0,
 		});
 	});
+
+	test('RawInclude', () => {
+		const ast = pugParse(`div
+	include ./path/to/image.svg`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'div',
+					raw: 'div',
+					offset: 0,
+					endOffset: 3,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 4,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'RawInclude',
+								column: 2,
+								endColumn: 9,
+								endLine: 2,
+								endOffset: 12,
+								line: 2,
+								offset: 5,
+								raw: 'include',
+								file: {
+									type: 'FileReference',
+									path: './path/to/image.svg',
+									line: 2,
+									column: 10,
+								},
+								filters: [],
+							},
+						],
+						line: 1,
+					},
+					attrs: [],
+					attributeBlocks: [],
+				},
+			],
+			line: 0,
+		});
+	});
 });

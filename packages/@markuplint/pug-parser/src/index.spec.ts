@@ -1540,4 +1540,15 @@ html
 			'[7:5]>[8:1](44,58)#text: Hello,␣World!⏎',
 		]);
 	});
+
+	test('#2108', () => {
+		const doc = parse(`div
+	include ./path/to/image.svg`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
+		]);
+	});
 });
