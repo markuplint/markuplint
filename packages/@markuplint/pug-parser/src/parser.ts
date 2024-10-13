@@ -118,6 +118,21 @@ class PugParser extends Parser<ASTNode> {
 					},
 				);
 			}
+			case 'BlockComment': {
+				const lastBlock = originNode.block.nodes.at(-1);
+				const endOffset = lastBlock ? lastBlock.endOffset : originNode.endOffset;
+				const token = this.sliceFragment(originNode.offset, endOffset);
+				return this.visitComment(
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					{
+						isBogus: false,
+					},
+				);
+			}
 			case 'Tag': {
 				const namespace = getNamespace(originNode.name, parentNamespace);
 
