@@ -1900,3 +1900,108 @@ mixin link(href, name)
 		});
 	});
 });
+
+describe('Issues', () => {
+	test('#2110', () => {
+		const ast = pugParse(`mixin foo
+	if bar
+		<n1>
+	else
+		<n2>
+	<n3>
+	<n4>
+	<n5>
+	<n5>
+	<n6>`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			line: 0,
+			nodes: [
+				{
+					type: 'Mixin',
+					raw: 'mixin foo',
+					args: null,
+					attrs: [],
+					call: false,
+					column: 1,
+					endColumn: 10,
+					endLine: 1,
+					endOffset: 9,
+					line: 1,
+					name: 'foo',
+					offset: 0,
+					block: {
+						type: 'Block',
+						line: 2,
+						nodes: [
+							{
+								type: 'Conditional',
+								column: 2,
+								endColumn: 8,
+								endLine: 2,
+								endOffset: 17,
+								line: 2,
+								offset: 11,
+								raw: 'if bar',
+								test: 'bar',
+								block: {
+									type: 'Block',
+									line: 3,
+									nodes: [
+										{
+											type: 'Text',
+											column: 3,
+											endColumn: 7,
+											endLine: 3,
+											endOffset: 24,
+											line: 3,
+											offset: 20,
+											raw: '<n1>',
+										},
+									],
+								},
+							},
+							{
+								type: 'Conditional',
+								column: 2,
+								endColumn: 6,
+								endLine: 4,
+								endOffset: 30,
+								line: 4,
+								offset: 26,
+								raw: 'else',
+								test: 'bar',
+								block: {
+									type: 'Block',
+									line: 5,
+									nodes: [
+										{
+											type: 'Text',
+											column: 3,
+											endColumn: 7,
+											endLine: 5,
+											endOffset: 37,
+											line: 5,
+											offset: 33,
+											raw: '<n2>',
+										},
+									],
+								},
+							},
+							{
+								type: 'Text',
+								column: 2,
+								endColumn: 6,
+								endLine: 10,
+								endOffset: 67,
+								line: 6,
+								offset: 39,
+								raw: '<n3>\n\t<n4>\n\t<n5>\n\t<n5>\n\t<n6>',
+							},
+						],
+					},
+				},
+			],
+		});
+	});
+});

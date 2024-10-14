@@ -1559,4 +1559,36 @@ html
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual(['[1:1]>[3:6](0,19)#comment: //-␣div⏎→span⏎→span']);
 	});
+
+	test('#2110', () => {
+		const doc = parse(`div
+	include ./path/to/image.svg`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
+		]);
+	});
+
+	test('#2110', () => {
+		const doc = parse(`mixin foo
+	if bar
+		<meta>
+	else
+		<meta>
+	<meta>
+	<meta>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:10](0,9)#ps:Mixin: mixin␣foo',
+			'[2:2]>[2:8](11,17)#ps:Conditional: if␣bar',
+			'[3:3]>[3:9](20,26)meta: <meta>',
+			'[4:2]>[4:6](28,32)#ps:Conditional: else',
+			'[5:3]>[5:9](35,41)meta: <meta>',
+			'[6:2]>[6:8](43,49)meta: <meta>',
+			'[6:8]>[7:2](49,51)#text: ⏎→',
+			'[7:2]>[7:8](51,57)meta: <meta>',
+		]);
+	});
 });
