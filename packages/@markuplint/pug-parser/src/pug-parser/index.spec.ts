@@ -1859,4 +1859,44 @@ mixin link(href, name)
 			line: 0,
 		});
 	});
+
+	test('BlockComment', () => {
+		const ast = pugParse(`//- div
+	span
+	span`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'BlockComment',
+					val: ' div',
+					raw: '//- div',
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: '\n\tspan\n\tspan',
+								column: 8,
+								endColumn: 6,
+								endLine: 3,
+								endOffset: 19,
+								line: 1,
+								offset: 7,
+							},
+						],
+						line: 1,
+					},
+					buffer: false,
+					column: 1,
+					endColumn: 8,
+					endLine: 1,
+					endOffset: 7,
+					line: 1,
+					offset: 0,
+				},
+			],
+			line: 0,
+		});
+	});
 });

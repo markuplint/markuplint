@@ -1551,4 +1551,12 @@ html
 			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
 		]);
 	});
+
+	test('#2109', () => {
+		const doc = parse(`//- div
+	span
+	span`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual(['[1:1]>[3:6](0,19)#comment: //-␣div⏎→span⏎→span']);
+	});
 });
