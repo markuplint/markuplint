@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.7...@markuplint/pug-parser@4.6.8) (2024-10-14)
 
-
 ### Bug Fixes
 
-* **pug-parser:** fix to support `BlockComment` node ([afa721c](https://github.com/markuplint/markuplint/commit/afa721cd29cab8a47fa27cefe808d3fb7066b42e))
-
-
-
-
+- **pug-parser:** fix to support `BlockComment` node ([afa721c](https://github.com/markuplint/markuplint/commit/afa721cd29cab8a47fa27cefe808d3fb7066b42e))
 
 ## [4.6.7](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.6...@markuplint/pug-parser@4.6.7) (2024-09-23)
 

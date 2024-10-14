@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/ml-spec
 
-
-
-
-
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.4...@markuplint/ml-spec@4.7.0) (2024-09-23)
 
 ### Features

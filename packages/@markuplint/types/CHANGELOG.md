@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/types
 
-
-
-
-
 # [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.4...@markuplint/types@4.6.0) (2024-09-23)
 
 ### Features

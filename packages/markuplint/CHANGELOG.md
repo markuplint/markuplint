@@ -5,15 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0](https://github.com/markuplint/markuplint/compare/markuplint@4.9.4...markuplint@4.10.0) (2024-10-14)
 
-
 ### Features
 
-* **markuplint:** add `--severity-parse-error` option to CLI ([5b9b32f](https://github.com/markuplint/markuplint/commit/5b9b32f99049259cccea41036c4caca92be06805))
-* **markuplint:** modified the API to accept `severity.parseError` ([f64a0a1](https://github.com/markuplint/markuplint/commit/f64a0a1d6b03a3731c6d5e83ea27423f96cde49d))
-
-
-
-
+- **markuplint:** add `--severity-parse-error` option to CLI ([5b9b32f](https://github.com/markuplint/markuplint/commit/5b9b32f99049259cccea41036c4caca92be06805))
+- **markuplint:** modified the API to accept `severity.parseError` ([f64a0a1](https://github.com/markuplint/markuplint/commit/f64a0a1d6b03a3731c6d5e83ea27423f96cde49d))
 
 ## [4.9.4](https://github.com/markuplint/markuplint/compare/markuplint@4.9.3...markuplint@4.9.4) (2024-09-23)
 

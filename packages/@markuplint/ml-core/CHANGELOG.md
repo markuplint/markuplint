@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.9.0...@markuplint/ml-core@4.10.0) (2024-10-14)
 
-
 ### Features
 
-* **ml-core:** enabled control over parse-error output using `severity.parseError` ([7ef6d6a](https://github.com/markuplint/markuplint/commit/7ef6d6ad58845c81367d5a2944c254a12eeaa17e))
-
-
-
-
+- **ml-core:** enabled control over parse-error output using `severity.parseError` ([7ef6d6a](https://github.com/markuplint/markuplint/commit/7ef6d6ad58845c81367d5a2944c254a12eeaa17e))
 
 # [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.8.3...@markuplint/ml-core@4.9.0) (2024-09-23)
 

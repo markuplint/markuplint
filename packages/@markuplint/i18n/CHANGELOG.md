@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/i18n
 
-
-
-
-
 ## [4.5.3](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.2...@markuplint/i18n@4.5.3) (2024-09-23)
 
 ### Bug Fixes

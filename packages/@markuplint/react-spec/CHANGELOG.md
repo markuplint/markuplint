@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/react-spec
 
-
-
-
-
 ## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.6...@markuplint/react-spec@4.5.7) (2024-09-23)
 
 **Note:** Version bump only for package @markuplint/react-spec
