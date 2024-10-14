@@ -3,6 +3,7 @@ import lexer from 'pug-lexer';
 import parser from 'pug-parser';
 
 import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.js';
+import { getOffsetsFromCode } from '@markuplint/parser-utils/location';
 
 export function pugParse(pug: string, useOffset = false) {
 	let lexOrigin = lexer(pug);
@@ -329,52 +330,9 @@ function optimizeAST(
 					break;
 				}
 
-				const { endOffset, endLine, endColumn } = getRawTextAndLocationEnd(
-					node.val,
-					offset,
-					line,
-					column,
-					tokens,
-					offsets,
-					pug,
-				);
-				const raw = pug.slice(offset, endOffset);
-				// console.log({ v: node.val, r: raw });
+				const textNodes = getRawTextAndLocationEnd(node.val, offset, line, column, tokens, pug);
 
-				/**
-				 *
-				 * Empty piped line
-				 *
-				 * @see https://pugjs.org/language/plain-text.html#recommended-solutions
-				 */
-				if (raw === '|') {
-					const newNode: ASTEmptyPipeNode = {
-						type: 'EmptyPipe',
-						raw,
-						val: node.val,
-						offset,
-						endOffset,
-						line,
-						endLine,
-						column,
-						endColumn,
-					};
-
-					nodes.push(newNode);
-					continue;
-				}
-
-				const textNode: ASTTextNode = {
-					type: node.type,
-					raw,
-					offset,
-					endOffset,
-					line,
-					endLine,
-					column,
-					endColumn,
-				};
-				nodes.push(textNode);
+				nodes.push(...textNodes);
 				continue;
 			}
 			case 'Doctype': {
@@ -720,35 +678,78 @@ function getRawTextAndLocationEnd(
 	column: number,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
-	offsets: readonly number[],
 	pug: string,
-) {
-	let beforeNewlineToken: lexer.Token | null = null;
-	for (const token of tokens) {
-		// Searching token after the text.
-		if (
-			beforeNewlineToken &&
-			token.loc.start.line > line &&
-			token.type !== 'text' &&
-			token.type !== 'text-html' &&
-			token.type !== 'indent' &&
-			token.type !== 'outdent'
-		) {
-			const endAttrLineOffset = Math.max(offsets[beforeNewlineToken.loc.end.line - 2] ?? 0, 0);
-			const endAttrOffset = endAttrLineOffset + beforeNewlineToken.loc.end.column - 1;
-			return {
-				endOffset: endAttrOffset,
-				endLine: beforeNewlineToken.loc.end.line,
-				endColumn: beforeNewlineToken.loc.end.column,
-			};
-		}
-		beforeNewlineToken = token;
+): ASTTextNode[] {
+	if (val.trim() === '') {
+		return [];
 	}
-	return {
-		endOffset: offset + val.length,
-		endLine: line,
-		endColumn: column + val.length,
-	};
+
+	let depth = 0;
+	let endLine = line;
+	let endColumn = column;
+
+	const result: ASTTextNode[] = [];
+
+	for (const token of tokens) {
+		if (token.loc.start.line < line || (token.loc.start.line === line && token.loc.start.column < column)) {
+			continue;
+		}
+
+		switch (token.type) {
+			case 'text':
+			case 'text-html': {
+				endLine = token.loc.end.line;
+				endColumn = token.loc.end.column;
+				break;
+			}
+			case 'indent': {
+				depth++;
+				break;
+			}
+			case 'outdent': {
+				depth--;
+				break;
+			}
+			case 'newline': {
+				break;
+			}
+			default: {
+				depth = -1;
+				break;
+			}
+		}
+
+		const rawLoc = getOffsetsFromCode(pug, line, column, endLine, endColumn);
+		const raw = pug.slice(offset, rawLoc.endOffset);
+
+		if (raw.trim().startsWith('|')) {
+			// It is a piped text
+			break;
+		}
+
+		if (raw !== '') {
+			result.push({
+				type: 'Text',
+				raw,
+				offset,
+				endOffset: rawLoc.endOffset,
+				line,
+				endLine,
+				column,
+				endColumn,
+			});
+		}
+
+		offset = rawLoc.endOffset;
+		line = endLine;
+		column = endColumn;
+
+		if (depth <= -1) {
+			break;
+		}
+	}
+
+	return result;
 }
 
 export type ASTBlock = PugAST<ASTNode>;
@@ -756,7 +757,6 @@ export type ASTBlock = PugAST<ASTNode>;
 export type ASTNode =
 	| ASTTagNode
 	| ASTTextNode
-	| ASTEmptyPipeNode
 	| ASTCodeNode
 	| ASTComment
 	| ASTBlockComment
@@ -775,8 +775,6 @@ export type ASTNode =
 export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'selfClosing' | 'isInline'> & AdditionalASTData;
 
 export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AdditionalASTData;
-
-export type ASTEmptyPipeNode = PugASTEmptyPipeNode & AdditionalASTData;
 
 export type ASTCodeNode = PugASTCodeNode & AdditionalASTData;
 
@@ -863,13 +861,6 @@ type PugASTTextNode = {
 	type: 'Text';
 	val: string;
 	isHtml?: true;
-	line: number;
-	column: number;
-};
-
-type PugASTEmptyPipeNode = {
-	type: 'EmptyPipe';
-	val: string;
 	line: number;
 	column: number;
 };
