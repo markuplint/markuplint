@@ -87,25 +87,25 @@ html
 			'[5:3]>[5:72](50,119)meta: meta(name="viewport"␣content=\'width=device-width,␣initial-scale=1.0\')',
 			"[6:3]>[6:55](122,174)meta: meta(http-equiv='X-UA-Compatible'␣content='ie=edge')",
 			'[7:3]>[7:8](177,182)title: title',
-			'[7:9]>[8:2](183,193)#text: Document⏎→',
+			'[7:9]>[7:17](183,191)#text: Document',
 			'[8:2]>[8:6](193,197)body: body',
 			'[9:3]>[9:9](200,206)script: script',
 			'[11:3]>[11:18](226,241)#comment: //␣html-comment',
 			'[12:3]>[12:6](244,247)div: div',
-			'[13:6]>[14:3](253,268)#text: text&amp;div⏎→→',
+			'[13:6]>[13:18](253,265)#text: text&amp;div',
 			'[14:3]>[14:8](268,273)table: table',
 			'[15:4]>[15:6](277,279)tr: tr',
 			'[16:4]>[16:6](283,285)th: th',
 			'[16:7]>[16:13](286,292)#text: header',
 			'[17:4]>[17:6](296,298)td: td',
-			'[17:7]>[18:3](299,306)#text: cell⏎→→',
+			'[17:7]>[17:11](299,303)#text: cell',
 			'[18:3]>[18:8](306,311)table: table',
 			'[19:4]>[19:9](315,320)tbody: tbody',
 			'[20:4]>[20:6](324,326)tr: tr',
 			'[21:5]>[21:7](331,333)th: th',
 			'[21:8]>[21:14](334,340)#text: header',
 			'[22:5]>[22:7](345,347)td: td',
-			'[22:8]>[23:3](348,355)#text: cell⏎→→',
+			'[22:8]>[22:12](348,352)#text: cell',
 			'[23:3]>[23:19](355,371)img: img(src=path/to)',
 		]);
 	});
@@ -124,10 +124,10 @@ html
 			'[1:1]>[1:5](0,4)html: html',
 			'[2:2]>[2:6](6,10)head: head',
 			'[3:3]>[3:8](13,18)title: title',
-			'[3:9]>[4:2](19,26)#text: Title⏎→',
+			'[3:9]>[3:14](19,24)#text: Title',
 			'[4:2]>[4:6](26,30)body: body',
 			'[5:3]>[5:5](33,35)h1: h1',
-			'[5:6]>[6:1](36,42)#text: Title⏎',
+			'[5:6]>[5:11](36,41)#text: Title',
 		]);
 	});
 
@@ -145,10 +145,10 @@ html
 			'[1:1]>[1:5](0,4)html: html',
 			'[2:2]>[2:6](7,11)head: head',
 			'[3:3]>[3:8](15,20)title: title',
-			'[3:9]>[4:2](21,29)#text: Title␣⏎→',
+			'[3:9]>[3:14](21,26)#text: Title',
 			'[4:2]>[4:6](29,33)body: body',
 			'[5:3]>[5:5](37,39)h1: h1',
-			'[5:6]>[6:1](40,47)#text: Title␣⏎',
+			'[5:6]>[5:11](40,45)#text: Title',
 		]);
 	});
 
@@ -230,11 +230,11 @@ else
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:8](0,7)#ps:Conditional: if␣bool',
-			'[2:4]>[3:1](11,13)#text: 1⏎',
+			'[2:4]>[2:5](11,12)#text: 1',
 			'[3:1]>[3:14](13,26)#ps:Conditional: else␣if␣bool2',
-			'[4:4]>[5:1](30,32)#text: 2⏎',
+			'[4:4]>[4:5](30,31)#text: 2',
 			'[5:1]>[5:5](32,36)#ps:Conditional: else',
-			'[6:4]>[7:1](40,42)#text: 3⏎',
+			'[6:4]>[6:5](40,41)#text: 3',
 		]);
 	});
 
@@ -258,7 +258,6 @@ else
 			'[4:4]>[4:23](25,44)img: <img␣src="path/to">',
 			'[4:23]>[5:3](44,47)#text: ⏎→→',
 			'[5:3]>[5:10](47,54)span: </span>',
-			'[5:10]>[6:4](54,58)#text: ⏎→→→',
 		]);
 	});
 
@@ -416,10 +415,10 @@ else
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
-			'[6:9]>[7:2](39,46)#text: Title⏎→',
+			'[6:9]>[6:14](39,44)#text: Title',
 			'[7:2]>[7:6](46,50)body: body',
 			'[8:3]>[8:5](53,55)h1: h1',
-			'[8:6]>[9:1](56,62)#text: Title⏎',
+			'[8:6]>[8:11](56,61)#text: Title',
 		]);
 	});
 
@@ -444,10 +443,10 @@ html
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
-			'[6:9]>[7:2](39,46)#text: Title⏎→',
+			'[6:9]>[6:14](39,44)#text: Title',
 			'[7:2]>[7:6](46,50)body: body',
 			'[8:3]>[8:5](53,55)h1: h1',
-			'[8:6]>[9:1](56,62)#text: Title⏎',
+			'[8:6]>[8:11](56,61)#text: Title',
 		]);
 	});
 
@@ -534,7 +533,7 @@ a(class='button', href='//google.com') Google
 			"  [4:37]>[4:38](112,113)eQ: '",
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'[4:40]>[5:4](115,125)#text: Google⏎→→→',
+			'[4:40]>[4:46](115,121)#text: Google',
 		]);
 	});
 
@@ -756,7 +755,7 @@ a(href=url) Another link
 			'  isDirective: false',
 			'  isDynamicValue: true',
 			'  valueType: code',
-			'[5:13]>[6:4](96,112)#text: Another␣link⏎→→→',
+			'[5:13]>[5:25](96,108)#text: Another␣link',
 		]);
 	});
 
@@ -1117,7 +1116,7 @@ a(class={active: currentUrl === '/about'} href='/about') About
 			"  [8:55]>[8:56](288,289)eQ: '",
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'[8:58]>[9:4](291,300)#text: About⏎→→→',
+			'[8:58]>[8:63](291,296)#text: About',
 		]);
 	});
 
@@ -1348,7 +1347,7 @@ p.
 			'[2:3]>[3:23](5,95)#text: This␣is␣a␣very␣long␣and␣boring␣paragraph␣that␣spans␣multiple␣lines.⏎␣␣Suddenly␣there␣is␣a␣',
 			'[3:25]>[3:31](97,103)strong: strong',
 			'[3:32]>[3:54](104,126)#text: strongly␣worded␣phrase',
-			'[3:55]>[3:70](127,142)#text: ␣that␣cannot␣be',
+			'[3:55]>[4:3](127,145)#text: ␣that␣cannot␣be⏎␣␣',
 			'[4:5]>[4:7](147,149)em: em',
 			'[4:8]>[4:15](150,157)#text: ignored',
 			'[4:16]>[4:17](158,159)#text: .',
@@ -1391,7 +1390,7 @@ p.
 			'[4:5]>[4:8](91,94)#text: and',
 			'[5:3]>[5:5](97,99)em: em',
 			'[5:6]>[5:8](100,102)#text: em',
-			'[6:5]>[7:1](107,141)#text: might␣produce␣unexpected␣results.⏎',
+			'[6:5]>[6:38](107,140)#text: might␣produce␣unexpected␣results.',
 			'[7:1]>[7:2](141,142)p: p',
 			'[8:3]>[8:26](146,169)#text: If␣I␣do,␣whitespace␣is␣',
 			'[8:28]>[8:34](171,177)strong: strong',
@@ -1451,10 +1450,8 @@ button#self-destruct touch
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			"[1:3]>[1:8](2,7)#text: Don't",
-			'[2:1]>[2:2](8,9)#ps:EmptyPipe: |',
 			'[3:1]>[3:21](10,30)button: button#self-destruct',
 			'[3:22]>[3:27](31,36)#text: touch',
-			'[5:1]>[5:2](39,40)#ps:EmptyPipe: |',
 			'[5:3]>[5:6](41,44)#text: me!',
 		]);
 	});
@@ -1537,7 +1534,7 @@ html
 			'[5:4]>[5:9](28,33)#ps:Mixin: +meta',
 			'[6:2]>[6:6](35,39)body: body',
 			'[7:3]>[7:4](42,43)p: p',
-			'[7:5]>[8:1](44,58)#text: Hello,␣World!⏎',
+			'[7:5]>[7:18](44,57)#text: Hello,␣World!',
 		]);
 	});
 
@@ -1558,5 +1555,37 @@ html
 	span`);
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual(['[1:1]>[3:6](0,19)#comment: //-␣div⏎→span⏎→span']);
+	});
+
+	test('#2110', () => {
+		const doc = parse(`div
+	include ./path/to/image.svg`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
+		]);
+	});
+
+	test('#2110', () => {
+		const doc = parse(`mixin foo
+	if bar
+		<meta>
+	else
+		<meta>
+	<meta>
+	<meta>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:10](0,9)#ps:Mixin: mixin␣foo',
+			'[2:2]>[2:8](11,17)#ps:Conditional: if␣bar',
+			'[3:3]>[3:9](20,26)meta: <meta>',
+			'[4:2]>[4:6](28,32)#ps:Conditional: else',
+			'[5:3]>[5:9](35,41)meta: <meta>',
+			'[6:2]>[6:8](43,49)meta: <meta>',
+			'[6:8]>[7:2](49,51)#text: ⏎→',
+			'[7:2]>[7:8](51,57)meta: <meta>',
+		]);
 	});
 });
