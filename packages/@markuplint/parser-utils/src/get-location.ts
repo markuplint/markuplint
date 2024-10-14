@@ -32,3 +32,37 @@ export function getEndCol(rawCodeFragment: string, startCol: number) {
 	const lastLine = lines.pop()!;
 	return lineCount > 1 ? lastLine.length + 1 : startCol + rawCodeFragment.length;
 }
+
+export function getOffsetsFromCode(
+	rawCode: string,
+	startLine: number,
+	startCol: number,
+	endLine: number,
+	endCol: number,
+) {
+	const lines = rawCode.split('\n');
+	let offset = 0;
+	let endOffset = 0;
+
+	for (let i = 0; i < startLine - 1; i++) {
+		const line = lines[i];
+		if (line == null) {
+			continue;
+		}
+		offset += line.length + 1;
+	}
+
+	offset += startCol - 1;
+
+	for (let i = 0; i < endLine - 1; i++) {
+		const line = lines[i];
+		if (line == null) {
+			continue;
+		}
+		endOffset += line.length + 1;
+	}
+
+	endOffset += endCol - 1;
+
+	return { offset, endOffset };
+}
