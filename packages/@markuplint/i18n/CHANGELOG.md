@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.4](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.3...@markuplint/i18n@4.5.4) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/i18n
+
+
+
+
+
 ## [4.5.3](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.2...@markuplint/i18n@4.5.3) (2024-09-23)
 
 ### Bug Fixes
