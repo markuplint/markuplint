@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.9](https://github.com/markuplint/markuplint/compare/@markuplint/liquid-parser@4.6.8...@markuplint/liquid-parser@4.6.9) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/liquid-parser
+
+
+
+
+
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/liquid-parser@4.6.7...@markuplint/liquid-parser@4.6.8) (2024-10-14)
 
 **Note:** Version bump only for package @markuplint/liquid-parser

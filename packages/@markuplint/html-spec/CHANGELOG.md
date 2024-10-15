@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.3](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.2...@markuplint/html-spec@4.9.3) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
+
+
+
+
 ## [4.9.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.1...@markuplint/html-spec@4.9.2) (2024-10-14)
 
 **Note:** Version bump only for package @markuplint/html-spec
