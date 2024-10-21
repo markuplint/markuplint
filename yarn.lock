@@ -170,7 +170,7 @@
     js-tokens "^4.0.0"
     picocolors "^1.0.0"
 
-"@babel/parser@^7.25.4", "@babel/parser@^7.7.5":
+"@babel/parser@^7.23.9", "@babel/parser@^7.25.4", "@babel/parser@^7.7.5":
   version "7.25.8"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.25.8.tgz#f6aaf38e80c36129460c1657c0762db584c9d5e2"
   integrity sha512-HcttkxzdPucv3nNFmfOOMfFf64KgdJVqm1KaCm25dPGMLElo9nsLvXeJECQg8UzPuBGLyTSA0ZzqCtDSzKTEoQ==
@@ -11448,7 +11448,16 @@ textlint-rule-preset-jtf-style@2.3.14, textlint-rule-preset-jtf-style@^2.3.13:
     textlint-rule-helper "^2.2.1"
     textlint-rule-prh "^5.2.1"
 
-textlint-rule-prh@5.3.0, textlint-rule-prh@^5.2.0, textlint-rule-prh@^5.2.1, textlint-rule-prh@^5.3.0:
+textlint-rule-prh@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/textlint-rule-prh/-/textlint-rule-prh-6.0.0.tgz#2b917bcb80ed3f9c981abd0dc19e461951c55934"
+  integrity sha512-byU7eUyhabX2FKx3ShOktKkmKLG5dhR0ru+PGllKgafKKWXtzOIAhAaDlqMC5qU6b3Jaz5rKQcnroGVCEjcP1Q==
+  dependencies:
+    "@babel/parser" "^7.23.9"
+    prh "^5.4.4"
+    textlint-rule-helper "^2.3.1"
+
+textlint-rule-prh@^5.2.0, textlint-rule-prh@^5.2.1, textlint-rule-prh@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/textlint-rule-prh/-/textlint-rule-prh-5.3.0.tgz#c3a002e3e1b59751eb6b93dff81810caeb764a9f"
   integrity sha512-gdod+lL1SWUDyXs1ICEwvQawaSshT3mvPGufBIjF2R5WFPdKQDMsiuzsjkLm+aF+9d97dA6pFsiyC8gSW7mSgg==
