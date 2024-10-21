@@ -131,7 +131,7 @@ class MLEngine extends Emitter {
 	 * @returns {Promise<import("markuplint").MLResultInfo | null>}
 	 */
 	async exec() {
-		const result = await MLEngine.#add('exec', this.#uid, true);
+		const [result] = await MLEngine.#add('exec', this.#uid, true);
 		return result;
 	}
 
