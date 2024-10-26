@@ -247,6 +247,17 @@
 						}
 					}
 				},
+				"autocorrect": {
+					"type": {
+						"enum": ["", "on", "off"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "on",
+						"missingValueDefault": "on",
+						"sameStates": {
+							"on": [""]
+						}
+					}
+				},
 				"autofocus": {
 					"type": "Boolean"
 				},

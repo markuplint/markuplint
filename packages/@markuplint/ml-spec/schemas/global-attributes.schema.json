@@ -29,6 +29,7 @@
 			"enum": [
 				"accesskey",
 				"autocapitalize",
+				"autocorrect",
 				"autofocus",
 				"contenteditable",
 				"dir",
@@ -376,6 +377,7 @@
 			"required": [
 				"accesskey",
 				"autocapitalize",
+				"autocorrect",
 				"autofocus",
 				"contenteditable",
 				"dir",
