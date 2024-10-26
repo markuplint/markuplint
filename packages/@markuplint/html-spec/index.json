@@ -38196,6 +38196,10 @@
 					},
 					"condition": "[type='file' i]"
 				},
+				"alpha": {
+					"type": "Boolean",
+					"condition": "[type='color' i]"
+				},
 				"alt": {
 					"type": "Any",
 					"condition": "[type='image' i]"
