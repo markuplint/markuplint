@@ -67,6 +67,30 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			severity,
 			...apiOptions,
 		});
+
+		if (options.showConfig != null) {
+			const isDetails = options.showConfig === 'details';
+			const configSet = await engine.resolveConfig(false);
+			let data: any;
+			if (isDetails) {
+				const files = [...configSet.files].toReversed();
+				const [configurationFile, ...dependencies] = files;
+				data = {
+					target: file.path,
+					computedConfig: configSet.config,
+					configurationFile: configurationFile,
+					dependencies,
+					plugins: configSet.plugins,
+					errors: configSet.errs,
+				};
+			} else {
+				data = configSet.config;
+			}
+
+			process.stdout.write(JSON.stringify(data, null, 2) + '\n');
+			return false;
+		}
+
 		const result = await engine.exec();
 		if (!result) {
 			continue;

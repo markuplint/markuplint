@@ -19,6 +19,7 @@ Options
 	--problem-only,          -p            Output only problems, without passeds.
 	--allow-warnings                       Return status code 0 even if there are warnings.
 	--allow-empty-input                    Return status code 1 even if there are no input files.
+	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
@@ -81,6 +82,9 @@ export const cli = meow(help, {
 		allowEmptyInput: {
 			type: 'boolean',
 			default: true,
+		},
+		showConfig: {
+			type: 'string',
 		},
 		verbose: {
 			type: 'boolean',
