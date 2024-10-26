@@ -1131,10 +1131,10 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.24.0.tgz#168ab1c7e1c318b922637fad8f339d48b01e1244"
   integrity sha512-7IAFPrjSQIJrGsK6flwg7NFmwBoSTyF3rl7If0hNUFQU4ilTsEPL6GuMuU9BfIWVVGuRnuIidkSMC+c0Otu8IA==
 
-"@eslint-community/eslint-plugin-eslint-comments@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@eslint-community/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-4.4.0.tgz#1fedd85e7c11dcea5764ec3dee5829a2cc117821"
-  integrity sha512-yljsWl5Qv3IkIRmJ38h3NrHXFCm4EUl55M8doGTF6hvzvFF8kRpextgSrg2dwHev9lzBZyafCr9RelGIyQm6fw==
+"@eslint-community/eslint-plugin-eslint-comments@4.4.1":
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@eslint-community/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-4.4.1.tgz#dbfab6f2447c22be8758a0a9a9c80e56d2e2b93f"
+  integrity sha512-lb/Z/MzbTf7CaVYM9WCFNQZ4L1yi3ev2fsFPF99h31ljhSEyUoyEsKsNWiU+qD1glbYTDJdqgyaLKtyTkkqtuQ==
   dependencies:
     escape-string-regexp "^4.0.0"
     ignore "^5.2.4"
