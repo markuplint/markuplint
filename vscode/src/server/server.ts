@@ -51,7 +51,7 @@ export function bootServer() {
 				verbosely();
 			}
 
-			const mod = await getModule(params.rootPath ?? process.cwd(), log);
+			const mod = await getModule(log);
 
 			log(`Found version: ${mod.version} (isLocalModule: ${mod.isLocalModule})`, 'info');
 			log(`Locale: ${locale}`, 'info');

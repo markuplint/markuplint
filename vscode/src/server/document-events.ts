@@ -1,9 +1,9 @@
-import type { Module, OldModule } from './get-module.js';
+import type { Module } from './get-module.js';
 import type { LangConfigs, Log } from '../types.js';
 import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { satisfies } from 'semver';
+import { satisfies, lt } from 'semver';
 import { MarkupKind } from 'vscode-languageserver/node.js';
 
 import { t } from '../i18n.js';
@@ -19,7 +19,7 @@ export type SendDiagnostics = (
 ) => void;
 
 export type EventHandlerOptions = {
-	mod: OldModule | Module;
+	mod: Module;
 	locale: string;
 	langConfigs: LangConfigs;
 	log: Log;
@@ -55,34 +55,23 @@ export function createEventHandlers(
 				uiInitialized = true;
 			}
 
-			if (options.mod.type === 'v4') {
-				void v4.onDidOpen(
+			if (satisfies(options.mod.version, '1.x')) {
+				return;
+			}
+
+			if (satisfies(options.mod.version, '2.x')) {
+				void v2.onDidOpen(
 					document,
-					options.mod.fromCode,
+					options.mod.markuplint.MLEngine,
 					langConfig,
 					options.locale,
-					options.log,
-					options.diagnosticsLog,
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
 				);
-			} else {
-				if (satisfies(options.mod.version, '1.x')) {
-					return;
-				}
+				return;
+			}
 
-				if (satisfies(options.mod.version, '2.x')) {
-					void v2.onDidOpen(
-						document,
-						options.mod.markuplint.MLEngine,
-						langConfig,
-						options.locale,
-						options.sendDiagnostics,
-						notFoundParserError(languageId, options.errorLog),
-					);
-					return;
-				}
-
+			if (satisfies(options.mod.version, '3.x')) {
 				void v3.onDidOpen(
 					document,
 					options.mod.markuplint.MLEngine,
@@ -93,7 +82,19 @@ export function createEventHandlers(
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
 				);
+				return;
 			}
+
+			void v4.onDidOpen(
+				document,
+				options.mod.markuplint.MLEngine,
+				langConfig,
+				options.locale,
+				options.log,
+				options.diagnosticsLog,
+				options.sendDiagnostics,
+				notFoundParserError(languageId, options.errorLog),
+			);
 		},
 
 		onDidChangeContent(
@@ -107,21 +108,22 @@ export function createEventHandlers(
 				return;
 			}
 
-			if (options.mod.type === 'v4') {
-				v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
-			} else {
-				if (satisfies(options.mod.version, '1.x')) {
-					void v1.onDidChangeContent(document, options.mod.markuplint, langConfig, options.sendDiagnostics);
-					return;
-				}
-
-				if (satisfies(options.mod.version, '2.x')) {
-					v2.onDidChangeContent(document, notFoundParserError(languageId, options.errorLog));
-					return;
-				}
-
-				v3.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+			if (satisfies(options.mod.version, '1.x')) {
+				void v1.onDidChangeContent(document, options.mod.markuplint, langConfig, options.sendDiagnostics);
+				return;
 			}
+
+			if (satisfies(options.mod.version, '2.x')) {
+				v2.onDidChangeContent(document, notFoundParserError(languageId, options.errorLog));
+				return;
+			}
+
+			if (satisfies(options.mod.version, '3.x')) {
+				v3.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+				return;
+			}
+
+			v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
 		},
 
 		async onHover(
@@ -137,30 +139,7 @@ export function createEventHandlers(
 			const ariaVersion =
 				options.langConfigs['html']?.hover.accessibility.ariaVersion ?? options.mod.ariaRecommendedVersion;
 
-			if (options.mod.type === 'v4') {
-				const aria = await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
-				if (!aria) {
-					return;
-				}
-
-				const heading = `\`<${aria.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
-
-				const body =
-					'unknown' in aria
-						? `\n**${t('Unknown')}**`
-						: aria.exposed
-							? `${Object.entries(aria.labels)
-									.map(([key, value]) => `- ${key}: ${value}`)
-									.join('\n')}`
-							: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
-
-				return {
-					contents: {
-						kind: MarkupKind.Markdown,
-						value: heading + body,
-					},
-				};
-			} else {
+			if (lt(options.mod.version, '4.0.0')) {
 				const node = v3.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
 
 				if (!node) {
@@ -182,6 +161,29 @@ export function createEventHandlers(
 					},
 				};
 			}
+
+			const aria = await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
+			if (!aria) {
+				return;
+			}
+
+			const heading = `\`<${aria.nodeName}>\` **${t('Computed Accessibility Properties')}**:\n`;
+
+			const body =
+				'unknown' in aria
+					? `\n**${t('Unknown')}**`
+					: aria.exposed
+						? `${Object.entries(aria.labels)
+								.map(([key, value]) => `- ${key}: ${value}`)
+								.join('\n')}`
+						: `\n**${t('No exposed to accessibility tree')}** (${t('hidden element')})`;
+
+			return {
+				contents: {
+					kind: MarkupKind.Markdown,
+					value: heading + body,
+				},
+			};
 		},
 	};
 }
