@@ -38241,6 +38241,14 @@
 					"type": "Boolean",
 					"condition": ["[type='checkbox' i]", "[type='radio' i]"]
 				},
+				"colorspace": {
+					"type": {
+						"enum": ["limited-srgb", "display-p3"],
+						"invalidValueDefault": "limited-srgb",
+						"missingValueDefault": "limited-srgb"
+					},
+					"condition": "[type='color' i]"
+				},
 				"dirname": {
 					"condition": [
 						":not([type])",

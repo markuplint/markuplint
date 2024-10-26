@@ -74,6 +74,15 @@
 			"type": "Boolean",
 			"condition": ["[type='checkbox' i]", "[type='radio' i]"]
 		},
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-colorspace
+		"colorspace": {
+			"type": {
+				"enum": ["limited-srgb", "display-p3"],
+				"invalidValueDefault": "limited-srgb",
+				"missingValueDefault": "limited-srgb"
+			},
+			"condition": "[type='color' i]"
+		},
 		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-dirname
 		"dirname": {
 			"condition": [
