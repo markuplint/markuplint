@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package vscode-markuplint
 
-
-
-
-
 ## [4.7.8](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.7...vscode-markuplint@4.7.8) (2024-10-14)
 
 **Note:** Version bump only for package vscode-markuplint

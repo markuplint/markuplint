@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/smarty-parser
 
-
-
-
-
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/smarty-parser@4.6.7...@markuplint/smarty-parser@4.6.8) (2024-10-14)
 
 **Note:** Version bump only for package @markuplint/smarty-parser

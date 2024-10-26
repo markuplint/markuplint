@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/ejs-parser
 
-
-
-
-
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/ejs-parser@4.6.7...@markuplint/ejs-parser@4.6.8) (2024-10-14)
 
 **Note:** Version bump only for package @markuplint/ejs-parser

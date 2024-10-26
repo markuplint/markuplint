@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.8...@markuplint/parser-utils@4.7.0) (2024-10-15)
 
-
 ### Features
 
-* **parser-utils:** expose `getOffsetsFromCode` function ([8ef7aec](https://github.com/markuplint/markuplint/commit/8ef7aec26d3198328c86ebeffaa0bd9c879a1f0e))
-
-
-
-
+- **parser-utils:** expose `getOffsetsFromCode` function ([8ef7aec](https://github.com/markuplint/markuplint/commit/8ef7aec26d3198328c86ebeffaa0bd9c879a1f0e))
 
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.7...@markuplint/parser-utils@4.6.8) (2024-10-14)
 

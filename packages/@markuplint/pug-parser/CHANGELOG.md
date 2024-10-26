@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.6.9](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.8...@markuplint/pug-parser@4.6.9) (2024-10-15)
 
-
 ### Bug Fixes
 
-* **pug-parser:** fix parsing outdent code ([dd50bb4](https://github.com/markuplint/markuplint/commit/dd50bb423bbd1c466fe10c59a1778b5572d60457))
-
-
-
-
+- **pug-parser:** fix parsing outdent code ([dd50bb4](https://github.com/markuplint/markuplint/commit/dd50bb423bbd1c466fe10c59a1778b5572d60457))
 
 ## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.7...@markuplint/pug-parser@4.6.8) (2024-10-14)
 
