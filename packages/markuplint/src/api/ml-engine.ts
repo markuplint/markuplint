@@ -317,7 +317,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 	}
 
-	private async resolveConfig(cache: boolean) {
+	async resolveConfig(cache: boolean) {
 		this.emit('log', 'resolveConfig', JSON.stringify(this.#configProvider, null, 2));
 		configLog('configProvider: %s', this.#configProvider);
 

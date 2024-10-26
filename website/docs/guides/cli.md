@@ -29,6 +29,7 @@ And returns `1` if the result has problems one or more.
 | `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                               |
 | `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                    |
 | `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.              |
+| `--show-config`            | none         | empty, `details`                         | none       | Output computed configuration of the target file.                   |
 | `--verbose`                | none         | none                                     | false      | Output with detailed information.                                   |
 | `--include-node-modules`   | none         | none                                     | false      | Include files in node_modules directory.                            |
 | `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                       |
