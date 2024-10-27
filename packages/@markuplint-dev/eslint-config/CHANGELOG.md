@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.4...@markuplint-dev/eslint-config@1.0.5) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint-dev/eslint-config
+
+## [1.0.4](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.3...@markuplint-dev/eslint-config@1.0.4) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint-dev/eslint-config
+
+## [1.0.3](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.2...@markuplint-dev/eslint-config@1.0.3) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint-dev/eslint-config
+
+## [1.0.2](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.1...@markuplint-dev/eslint-config@1.0.2) (2024-09-02)
+
+### Bug Fixes
+
+- **eslint-config:** fix setting for test file extension ([d5c1022](https://github.com/markuplint/markuplint/commit/d5c1022e320383aad8cc5d36bc9659869e644831))
+
 ## [1.0.1](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.0...@markuplint-dev/eslint-config@1.0.1) (2024-06-25)
 
 **Note:** Version bump only for package @markuplint-dev/eslint-config

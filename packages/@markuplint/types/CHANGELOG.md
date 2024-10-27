@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.2](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.1...@markuplint/types@4.6.2) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/types
+
+## [4.6.1](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.0...@markuplint/types@4.6.1) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/types
+
+# [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.4...@markuplint/types@4.6.0) (2024-09-23)
+
+### Features
+
+- **types:** avoid parsing and simply accept any value when the CSS includes `var()` ([5817693](https://github.com/markuplint/markuplint/commit/5817693cfcd1a253c627db323505e4b515f69395))
+- **types:** update types according to CSSTree ([c4d97f9](https://github.com/markuplint/markuplint/commit/c4d97f9571dd2b93462e9dd51c01ecf4f95caf08))
+
+## [4.5.4](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.3...@markuplint/types@4.5.4) (2024-09-02)
+
+**Note:** Version bump only for package @markuplint/types
+
 ## [4.5.3](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.2...@markuplint/types@4.5.3) (2024-06-25)
 
 **Note:** Version bump only for package @markuplint/types

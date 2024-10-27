@@ -206,3 +206,84 @@ describe('Config Priority', () => {
 		]);
 	});
 });
+
+describe('Parse Error Severity', () => {
+	it('from config', async () => {
+		const file = await MLEngine.toMLFile({
+			sourceCode: '#.(lang"en"\tspan=',
+			name: 'test.pug',
+		});
+
+		const options = {
+			config: {
+				parser: {
+					'.*': '@markuplint/pug-parser',
+				},
+			},
+		};
+
+		const defaults = await new MLEngine(file!, options).exec();
+		expect(defaults?.violations?.[0]?.severity).toBe('error');
+
+		const error = await new MLEngine(file!, {
+			config: { ...options.config, severity: { parseError: 'error' } },
+		}).exec();
+		expect(error?.violations?.[0]?.severity).toBe('error');
+
+		const warning = await new MLEngine(file!, {
+			config: { ...options.config, severity: { parseError: 'warning' } },
+		}).exec();
+		expect(warning?.violations?.[0]?.severity).toBe('warning');
+
+		const off = await new MLEngine(file!, {
+			config: { ...options.config, severity: { parseError: 'off' } },
+		}).exec();
+		expect(off?.violations?.[0]?.severity).toBeUndefined();
+
+		const boolTrue = await new MLEngine(file!, {
+			config: { ...options.config, severity: { parseError: true } },
+		}).exec();
+		expect(boolTrue?.violations?.[0]?.severity).toBe('error');
+
+		const boolFalse = await new MLEngine(file!, {
+			config: { ...options.config, severity: { parseError: false } },
+		}).exec();
+		expect(boolFalse?.violations?.[0]?.severity).toBeUndefined();
+	});
+
+	it('from API option', async () => {
+		const file = await MLEngine.toMLFile({
+			sourceCode: '#.(lang"en"\tspan=',
+			name: 'test.pug',
+		});
+
+		const options = {
+			config: {
+				parser: {
+					'.*': '@markuplint/pug-parser',
+				},
+			},
+		};
+
+		const defaults = await new MLEngine(file!, options).exec();
+		expect(defaults?.violations?.[0]?.severity).toBe('error');
+
+		const error = await new MLEngine(file!, { config: options.config, severity: { parseError: 'error' } }).exec();
+		expect(error?.violations?.[0]?.severity).toBe('error');
+
+		const warning = await new MLEngine(file!, {
+			config: options.config,
+			severity: { parseError: 'warning' },
+		}).exec();
+		expect(warning?.violations?.[0]?.severity).toBe('warning');
+
+		const off = await new MLEngine(file!, { config: options.config, severity: { parseError: 'off' } }).exec();
+		expect(off?.violations?.[0]?.severity).toBeUndefined();
+
+		const boolTrue = await new MLEngine(file!, { config: options.config, severity: { parseError: true } }).exec();
+		expect(boolTrue?.violations?.[0]?.severity).toBe('error');
+
+		const boolFalse = await new MLEngine(file!, { config: options.config, severity: { parseError: false } }).exec();
+		expect(boolFalse?.violations?.[0]?.severity).toBeUndefined();
+	});
+});

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/shared",
-	"version": "4.4.3",
+	"version": "4.4.7",
 	"description": "Shared functions for Markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

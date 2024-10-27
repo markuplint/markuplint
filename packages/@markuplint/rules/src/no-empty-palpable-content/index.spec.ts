@@ -113,4 +113,12 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
 	});
+
+	test('#1948', async () => {
+		expect((await mlRuleTest(rule, '<audio></audio>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<canvas></canvas>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<video></video>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<output></output>')).violations).toStrictEqual([]);
+	});
 });

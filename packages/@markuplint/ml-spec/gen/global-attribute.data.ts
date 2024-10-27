@@ -10,6 +10,7 @@ export const globalAttrs: Record<
 		attrs: [
 			'accesskey',
 			'autocapitalize',
+			'autocorrect',
 			'autofocus',
 			'contenteditable',
 			'dir',

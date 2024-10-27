@@ -97,13 +97,13 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														raw: 'Title\n\t',
+														raw: 'Title',
 														offset: 28,
-														endOffset: 35,
+														endOffset: 33,
 														line: 3,
-														endLine: 4,
+														endLine: 3,
 														column: 9,
-														endColumn: 2,
+														endColumn: 14,
 													},
 												],
 												line: 3,
@@ -241,13 +241,13 @@ describe('parser', () => {
 												nodes: [
 													{
 														type: 'Text',
-														raw: 'lorem\n\t\t',
+														raw: 'lorem',
 														offset: 167,
-														endOffset: 175,
+														endOffset: 172,
 														line: 11,
-														endLine: 12,
+														endLine: 11,
 														column: 6,
-														endColumn: 3,
+														endColumn: 11,
 													},
 												],
 												line: 10,
@@ -535,13 +535,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	raw: 'True\n\t\t',
+																	raw: 'True',
 																	offset: 414,
-																	endOffset: 421,
+																	endOffset: 418,
 																	line: 27,
-																	endLine: 28,
+																	endLine: 27,
 																	column: 8,
-																	endColumn: 3,
+																	endColumn: 12,
 																},
 															],
 															line: 27,
@@ -581,13 +581,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	raw: 'Any\n\t\t',
+																	raw: 'Any',
 																	offset: 442,
-																	endOffset: 448,
+																	endOffset: 445,
 																	line: 29,
-																	endLine: 30,
+																	endLine: 29,
 																	column: 8,
-																	endColumn: 3,
+																	endColumn: 11,
 																},
 															],
 															line: 29,
@@ -627,13 +627,13 @@ describe('parser', () => {
 															nodes: [
 																{
 																	type: 'Text',
-																	raw: 'False\n\t\t',
+																	raw: 'False',
 																	offset: 460,
-																	endOffset: 468,
+																	endOffset: 465,
 																	line: 31,
-																	endLine: 32,
+																	endLine: 31,
 																	column: 8,
-																	endColumn: 3,
+																	endColumn: 13,
 																},
 															],
 															line: 31,
@@ -717,13 +717,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				raw: 'Condition 2\n\t\t\t',
+																				raw: 'Condition 2',
 																				offset: 531,
-																				endOffset: 546,
+																				endOffset: 542,
 																				line: 36,
-																				endLine: 37,
+																				endLine: 36,
 																				column: 7,
-																				endColumn: 4,
+																				endColumn: 18,
 																			},
 																		],
 																		line: 36,
@@ -763,13 +763,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				raw: 'Condition 3\n\t\t\t',
+																				raw: 'Condition 3',
 																				offset: 565,
-																				endOffset: 580,
+																				endOffset: 576,
 																				line: 38,
-																				endLine: 39,
+																				endLine: 38,
 																				column: 7,
-																				endColumn: 4,
+																				endColumn: 18,
 																			},
 																		],
 																		line: 38,
@@ -809,13 +809,13 @@ describe('parser', () => {
 																		nodes: [
 																			{
 																				type: 'Text',
-																				raw: 'Default\n\t\t',
+																				raw: 'Default',
 																				offset: 594,
-																				endOffset: 604,
+																				endOffset: 601,
 																				line: 40,
-																				endLine: 41,
+																				endLine: 40,
 																				column: 7,
-																				endColumn: 3,
+																				endColumn: 14,
 																			},
 																		],
 																		line: 40,
@@ -1142,13 +1142,13 @@ mixin link(href, name)
 												nodes: [
 													{
 														type: 'Text',
-														raw: 'baz\n',
+														raw: 'baz',
 														offset: 54,
-														endOffset: 58,
+														endOffset: 57,
 														line: 6,
-														endLine: 7,
+														endLine: 6,
 														column: 6,
-														endColumn: 1,
+														endColumn: 9,
 													},
 												],
 												line: 6,
@@ -1338,13 +1338,13 @@ mixin link(href, name)
 																		nodes: [
 																			{
 																				type: 'Text',
-																				raw: 'No content provided\n\n',
+																				raw: 'No content provided',
 																				offset: 178,
-																				endOffset: 199,
+																				endOffset: 197,
 																				line: 18,
-																				endLine: 20,
+																				endLine: 18,
 																				column: 7,
-																				endColumn: 1,
+																				endColumn: 26,
 																			},
 																		],
 																		line: 18,
@@ -1473,13 +1473,13 @@ mixin link(href, name)
 									nodes: [
 										{
 											type: 'Text',
-											raw: 'Amazing article\n\n',
+											raw: 'Amazing article',
 											offset: 265,
-											endOffset: 282,
+											endOffset: 280,
 											line: 24,
-											endLine: 26,
+											endLine: 24,
 											column: 4,
-											endColumn: 1,
+											endColumn: 19,
 										},
 									],
 									line: 24,
@@ -1627,13 +1627,13 @@ mixin link(href, name)
 						nodes: [
 							{
 								type: 'Text',
-								raw: '<span>\n\t\t<img src="path/to">\n\t</span>\n',
+								raw: '<span>\n\t\t<img src="path/to">\n\t</span>',
 								offset: 5,
-								endOffset: 43,
+								endOffset: 42,
 								line: 2,
-								endLine: 5,
+								endLine: 4,
 								column: 2,
-								endColumn: 1,
+								endColumn: 9,
 							},
 						],
 						line: 1,
@@ -1703,17 +1703,6 @@ mixin link(href, name)
 								},
 								attrs: [],
 								attributeBlocks: [],
-							},
-							// A cause of issue #58
-							{
-								type: 'Text',
-								raw: '',
-								offset: 24,
-								endOffset: 24,
-								line: 2,
-								endLine: 2,
-								column: 23,
-								endColumn: 23,
 							},
 						],
 						line: 1,
@@ -1810,6 +1799,198 @@ mixin link(href, name)
 				},
 			],
 			line: 0,
+		});
+	});
+
+	test('RawInclude', () => {
+		const ast = pugParse(`div
+	include ./path/to/image.svg`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'Tag',
+					name: 'div',
+					raw: 'div',
+					offset: 0,
+					endOffset: 3,
+					line: 1,
+					endLine: 1,
+					column: 1,
+					endColumn: 4,
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'RawInclude',
+								column: 2,
+								endColumn: 9,
+								endLine: 2,
+								endOffset: 12,
+								line: 2,
+								offset: 5,
+								raw: 'include',
+								file: {
+									type: 'FileReference',
+									path: './path/to/image.svg',
+									line: 2,
+									column: 10,
+								},
+								filters: [],
+							},
+						],
+						line: 1,
+					},
+					attrs: [],
+					attributeBlocks: [],
+				},
+			],
+			line: 0,
+		});
+	});
+
+	test('BlockComment', () => {
+		const ast = pugParse(`//- div
+	span
+	span`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			nodes: [
+				{
+					type: 'BlockComment',
+					val: ' div',
+					raw: '//- div',
+					block: {
+						type: 'Block',
+						nodes: [
+							{
+								type: 'Text',
+								raw: '\n\tspan\n\tspan',
+								column: 8,
+								endColumn: 6,
+								endLine: 3,
+								endOffset: 19,
+								line: 1,
+								offset: 7,
+							},
+						],
+						line: 1,
+					},
+					buffer: false,
+					column: 1,
+					endColumn: 8,
+					endLine: 1,
+					endOffset: 7,
+					line: 1,
+					offset: 0,
+				},
+			],
+			line: 0,
+		});
+	});
+});
+
+describe('Issues', () => {
+	test('#2110', () => {
+		const ast = pugParse(`mixin foo
+	if bar
+		<n1>
+	else
+		<n2>
+	<n3>
+	<n4>
+	<n5>
+	<n5>
+	<n6>`);
+		expect(ast).toStrictEqual({
+			type: 'Block',
+			line: 0,
+			nodes: [
+				{
+					type: 'Mixin',
+					raw: 'mixin foo',
+					args: null,
+					attrs: [],
+					call: false,
+					column: 1,
+					endColumn: 10,
+					endLine: 1,
+					endOffset: 9,
+					line: 1,
+					name: 'foo',
+					offset: 0,
+					block: {
+						type: 'Block',
+						line: 2,
+						nodes: [
+							{
+								type: 'Conditional',
+								column: 2,
+								endColumn: 8,
+								endLine: 2,
+								endOffset: 17,
+								line: 2,
+								offset: 11,
+								raw: 'if bar',
+								test: 'bar',
+								block: {
+									type: 'Block',
+									line: 3,
+									nodes: [
+										{
+											type: 'Text',
+											column: 3,
+											endColumn: 7,
+											endLine: 3,
+											endOffset: 24,
+											line: 3,
+											offset: 20,
+											raw: '<n1>',
+										},
+									],
+								},
+							},
+							{
+								type: 'Conditional',
+								column: 2,
+								endColumn: 6,
+								endLine: 4,
+								endOffset: 30,
+								line: 4,
+								offset: 26,
+								raw: 'else',
+								test: 'bar',
+								block: {
+									type: 'Block',
+									line: 5,
+									nodes: [
+										{
+											type: 'Text',
+											column: 3,
+											endColumn: 7,
+											endLine: 5,
+											endOffset: 37,
+											line: 5,
+											offset: 33,
+											raw: '<n2>',
+										},
+									],
+								},
+							},
+							{
+								type: 'Text',
+								column: 2,
+								endColumn: 6,
+								endLine: 10,
+								endOffset: 67,
+								line: 6,
+								offset: 39,
+								raw: '<n3>\n\t<n4>\n\t<n5>\n\t<n5>\n\t<n6>',
+							},
+						],
+					},
+				},
+			],
 		});
 	});
 });

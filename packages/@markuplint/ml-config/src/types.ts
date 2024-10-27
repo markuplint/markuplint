@@ -12,6 +12,7 @@ export type Config = {
 	readonly parserOptions?: ParserOptions;
 	readonly specs?: SpecConfig;
 	readonly excludeFiles?: readonly string[];
+	readonly severity?: SeverityOptions;
 	readonly pretenders?: readonly Pretender[] | PretenderDetails;
 	readonly rules?: Rules;
 	readonly nodeRules?: readonly NodeRule[];
@@ -60,6 +61,10 @@ export type ParserConfig = {
 
 export type SpecConfig = {
 	readonly [extensionPattern: string]: string /* module name or path */;
+};
+
+export type SeverityOptions = {
+	readonly parseError?: Severity | 'off' | boolean;
 };
 
 export type PretenderDetails = {

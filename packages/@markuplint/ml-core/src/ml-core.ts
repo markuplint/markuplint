@@ -3,7 +3,7 @@ import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, RuleConfigValue, Violation } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleConfigValue, SeverityOptions, Violation } from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -25,6 +25,7 @@ export class MLCore {
 	#locale: LocaleSet;
 	#parser: MLParser;
 	#parserOptions: ParserOptions;
+	#severity: SeverityOptions;
 	#pretenders: Pretender[];
 	#rules: Readonly<MLRule<RuleConfigValue, PlainData>>[];
 	#ruleset: Ruleset;
@@ -40,6 +41,7 @@ export class MLCore {
 		locale,
 		schemas,
 		parserOptions,
+		severity,
 		pretenders,
 		filename,
 		debug,
@@ -61,6 +63,7 @@ export class MLCore {
 		this.#schemas = schemas;
 		this.#filename = filename;
 		this.#rules = [...rules];
+		this.#severity = severity;
 		this.#pretenders = [...pretenders];
 		this.#configErrors = [...(configErrors ?? [])];
 
@@ -104,14 +107,18 @@ export class MLCore {
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
-			violations.push({
-				ruleId: 'parse-error',
-				severity: 'error',
-				message: this.#document.message,
-				col: this.#document.col,
-				line: this.#document.line,
-				raw: this.#document.raw,
-			});
+			const parseError = this._createParseError(
+				this.#document.message,
+				this.#document.line,
+				this.#document.col,
+				this.#document.raw,
+			);
+
+			if (!parseError) {
+				return [];
+			}
+
+			violations.push(parseError);
 			log('verify: error %o', this.#document.message);
 			return violations;
 		}
@@ -142,15 +149,11 @@ export class MLCore {
 			});
 
 			if (results instanceof ParserError) {
-				log('%s Rule: verify error %o', rule.name, results.message);
-				violations.push({
-					ruleId: 'parse-error',
-					severity: 'error',
-					message: results.message,
-					col: results.col,
-					line: results.line,
-					raw: results.raw,
-				});
+				const parseError = this._createParseError(results.message, results.line, results.col, results.raw);
+				if (parseError) {
+					log('%s Rule: verify error %o', rule.name, results.message);
+					violations.push(parseError);
+				}
 			} else {
 				violations.push(...results);
 			}
@@ -194,6 +197,27 @@ export class MLCore {
 				throw error;
 			}
 		}
+	}
+
+	private _createParseError(message: string, line: number, col: number, raw: string): Violation | null {
+		if (this.#severity.parseError === false || this.#severity.parseError === 'off') {
+			return null;
+		}
+
+		// Default severity is 'error'
+		const severity =
+			this.#severity.parseError === true || this.#severity.parseError == null
+				? 'error'
+				: this.#severity.parseError;
+
+		return {
+			ruleId: 'parse-error',
+			severity,
+			message,
+			line,
+			col,
+			raw,
+		};
 	}
 
 	private _parse() {

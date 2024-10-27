@@ -1,75 +1,64 @@
 import type { Log } from '../types.js';
-import type { FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import path from 'node:path';
 
-import { MLEngine } from '@markuplint/esm-adapter';
 import { Files } from 'vscode-languageserver/node.js';
 
-export async function getModule(baseDir: string, log: Log): Promise<OldModule | Module> {
+export async function getModule(log: Log): Promise<Module> {
+	let markuplint: any;
+	let isLocalModule = false;
+	let pkg: any;
 	try {
 		const modPath = await Files.resolve('markuplint', process.cwd(), process.cwd(), message => log(message));
-		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-		const markuplint = require(modPath);
+		markuplint = await import(modPath);
+		log(`Found package: ${modPath}`, 'debug');
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
-		// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-		const version: string = require(packageJsonPath).version;
-		return {
-			type: 'v1',
-			isLocalModule: true,
-			version,
-			markuplint,
-			modPath,
-			ariaRecommendedVersion: '1.2',
-		};
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		pkg = require(packageJsonPath);
+		pkg = pkg.default ?? pkg;
+		isLocalModule = true;
 	} catch {
+		log('Failed to resolve local package', 'debug');
+
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-require-imports
-			require('markuplint');
+			markuplint = await import('markuplint');
+			log('Found package: markuplint', 'debug');
+			pkg = await import('markuplint/package.json', { with: { type: 'json' } }).catch(() => {
+				log('Failed to resolve package: markuplint/package.json (ERR_PACKAGE_PATH_NOT_EXPORTED)', 'debug');
+				// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+				const vscodePkg = require(path.resolve(__dirname, '..', 'package.json'));
+				return {
+					version: vscodePkg.dependencies.markuplint,
+					type: 'module',
+				};
+			});
+			pkg = pkg.default ?? pkg;
+			log('Found package: markuplint/package.json', 'debug');
 		} catch (error) {
-			if (error && typeof error === 'object' && 'code' in error) {
-				switch (error.code) {
-					case 'ERR_PACKAGE_PATH_NOT_EXPORTED': {
-						if ('message' in error && typeof error.message === 'string') {
-							const matched = /^no "exports" main defined in (.+)\/package\.json$/i.exec(error.message);
-							log(`Found package as ESM: ${matched?.[1]}`, 'debug');
-						}
-					}
-				}
-			} else {
-				throw error;
-			}
+			log('Failed to resolve package: markuplint in VS Code', 'debug');
+			throw error;
 		}
-
-		await MLEngine.setModule('markuplint');
-		const { modulePath, isLocalModule, version } = await MLEngine.getCurrentModuleInfo();
-
-		log(`Markuplint path: ${modulePath} (${version})`, 'debug');
-
-		return {
-			type: 'v4',
-			isLocalModule,
-			version,
-			fromCode: MLEngine.fromCode,
-			ariaRecommendedVersion: '1.2',
-		};
 	}
+
+	const version: string = pkg.version;
+	const moduleType = pkg.type ?? 'commonjs';
+
+	log(`Loaded package: markuplint@${version}(type:${moduleType})`, 'debug');
+
+	return {
+		isLocalModule,
+		version,
+		moduleType,
+		markuplint,
+		ariaRecommendedVersion: '1.2',
+	};
 }
 
-export type OldModule = {
-	type: 'v1';
-	isLocalModule: true;
-	version: string;
-	markuplint: any;
-	modPath: string;
-	ariaRecommendedVersion: '1.2';
-};
-
 export type Module = {
-	type: 'v4';
 	isLocalModule: boolean;
 	version: string;
-	fromCode: FromCodeFunction;
+	moduleType: 'commonjs' | 'module';
+	markuplint: any;
 	ariaRecommendedVersion: ARIAVersion;
 };

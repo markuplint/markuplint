@@ -891,6 +891,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextlost():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Document`
@@ -904,6 +921,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextrestored():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
 	}
 
 	/**
@@ -3121,6 +3155,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	setRule(rule: Readonly<MLRule<T, O>> | null) {
 		this.currentRule = rule;
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	startViewTransition(callbackOptions?: UpdateCallback): ViewTransition {
+		throw new UnexpectedCallError('Not supported "startViewTransition" method');
 	}
 
 	/**

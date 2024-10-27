@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 # Get the current branch name
 branch_name=$(git symbolic-ref --short HEAD)
 
@@ -11,4 +8,4 @@ if [ "$branch_name" = "dev" ]; then
   exit 1
 fi
 
-yarn lint-staged
+lint-staged

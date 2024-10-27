@@ -1,6 +1,6 @@
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { LocaleSet } from '@markuplint/i18n';
-import type { Config, Violation } from '@markuplint/ml-config';
+import type { Config, SeverityOptions, Violation } from '@markuplint/ml-config';
 import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
 
 export type APIOptions = {
@@ -13,6 +13,7 @@ export type APIOptions = {
 	readonly ignoreExt?: boolean;
 	readonly rules?: readonly Readonly<AnyMLRule>[];
 	readonly importPresetRules?: boolean;
+	readonly severity?: SeverityOptions;
 	/**
 	 * @deprecated
 	 */

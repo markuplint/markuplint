@@ -42,7 +42,7 @@ import { defaultSpaces } from './const.js';
 import { domLog } from './debug.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
-import { getEndCol, getEndLine, getPosition } from './get-location.js';
+import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-location.js';
 import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
@@ -830,31 +830,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
-		const lines = this.#rawCode.split('\n');
-		let offset = 0;
-		let endOffset = 0;
-
-		for (let i = 0; i < startLine - 1; i++) {
-			const line = lines[i];
-			if (line == null) {
-				continue;
-			}
-			offset += line.length + 1;
-		}
-
-		offset += startCol - 1;
-
-		for (let i = 0; i < endLine - 1; i++) {
-			const line = lines[i];
-			if (line == null) {
-				continue;
-			}
-			endOffset += line.length + 1;
-		}
-
-		endOffset += endCol - 1;
-
-		return { offset, endOffset };
+		return getOffsetsFromCode(this.rawCode, startLine, startCol, endLine, endCol);
 	}
 
 	walk<Node extends MLASTNodeTreeItem>(nodeList: readonly Node[], walker: Walker<Node>, depth = 0) {
