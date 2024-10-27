@@ -7,7 +7,8 @@
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
 		"packages/@markuplint/html-spec/src/*.json",
-		"packages/@markuplint/html-spec/index.json"
+		"packages/@markuplint/html-spec/index.json",
+		"CHANGELOG.md"
 	],
 	"dictionaries": [
 		"css",
