@@ -60,7 +60,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	nodeize(
-		 
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: SvelteNode,
 		parentNode: MLASTParentNode | null,
 		depth: number,
@@ -283,7 +283,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	visitChildren(
-		 
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		children: readonly SvelteNode[],
 		parentNode: MLASTParentNode | null,
 	): never[] {
@@ -368,7 +368,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 	#parseAwaitBlock(
 		token: ChildToken,
-		 
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originBlockNode: SvelteAwaitBlock,
 	) {
 		const { closeToken } = parseBlock(this, token, originBlockNode);
@@ -535,7 +535,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 	#parseEachBlock(
 		token: ChildToken,
-		 
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originBlockNode: SvelteEachBlock,
 	) {
 		const expressions: MLASTPreprocessorSpecificBlock[] = [];
@@ -624,7 +624,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	}
 
 	#traverseIfBlock(
-		 
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originBlockNode: SvelteIfBlock,
 		start: number,
 		type: 'if' | 'elseif' | 'else' = 'if',

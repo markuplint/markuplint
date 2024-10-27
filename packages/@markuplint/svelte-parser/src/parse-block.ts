@@ -6,6 +6,7 @@ export function parseBlock(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parser: SvelteParser,
 	token: ChildToken,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originBlockNode: SvelteBlock,
 ) {
 	const range = token.raw;
