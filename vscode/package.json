@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.7.9",
+	"version": "4.8.0",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -117,8 +117,8 @@
 		"vscode:release": "vsce publish --no-yarn"
 	},
 	"devDependencies": {
-		"@markuplint-dev/tsconfig": "1.0.5",
-		"@markuplint/file-resolver": "4.9.4",
+		"@markuplint-dev/tsconfig": "1.0.6",
+		"@markuplint/file-resolver": "4.9.5",
 		"@types/mocha": "10.0.9",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.5.8",
@@ -129,10 +129,10 @@
 		"typescript": "5.6.3"
 	},
 	"dependencies": {
-		"@markuplint/i18n": "4.5.5",
+		"@markuplint/i18n": "4.5.6",
 		"debug": "4.3.7",
 		"glob": "11.0.0",
-		"markuplint": "4.10.1",
+		"markuplint": "4.11.0",
 		"mocha": "10.7.3",
 		"semver": "7.6.3",
 		"vscode-languageclient": "9.0.1",

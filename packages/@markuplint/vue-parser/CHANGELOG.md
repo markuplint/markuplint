@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.10](https://github.com/markuplint/markuplint/compare/@markuplint/vue-parser@4.6.9...@markuplint/vue-parser@4.6.10) (2024-10-27)
+
+**Note:** Version bump only for package @markuplint/vue-parser
+
+
+
+
+
 ## [4.6.9](https://github.com/markuplint/markuplint/compare/@markuplint/vue-parser@4.6.8...@markuplint/vue-parser@4.6.9) (2024-10-15)
 
 **Note:** Version bump only for package @markuplint/vue-parser
