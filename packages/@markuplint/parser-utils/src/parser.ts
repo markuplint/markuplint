@@ -39,7 +39,7 @@ import { v4 as uuid } from 'uuid';
 
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
-import { domLog } from './debug.js';
+import { domLog, PerformanceTimer } from './debug.js';
 import { detectElementType } from './detect-element-type.js';
 import { AttrState, TagState } from './enums.js';
 import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-location.js';
@@ -47,6 +47,8 @@ import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
 import { sortNodes } from './sort-nodes.js';
+
+const timer = new PerformanceTimer();
 
 export abstract class Parser<Node extends {} = {}, State extends unknown = null> implements MLParser {
 	readonly #booleanish: boolean = false;
@@ -133,35 +135,53 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			// Initialize raw code
 			this.#setRawCode(rawCode, rawCode);
 
+			timer.push('beforeParse');
+			const beforeParsedCode = this.beforeParse(this.rawCode, options);
+
 			// Override raw code
-			this.#setRawCode(this.beforeParse(this.rawCode, options));
+			this.#setRawCode(beforeParsedCode);
 
 			this.#authoredElementName = options?.authoredElementName;
 
 			let frontMatter: string | null = null;
 			if (options?.ignoreFrontMatter) {
+				timer.push('ignoreFrontMatter');
 				const fm = ignoreFrontMatter(this.rawCode);
 				this.#setRawCode(fm.code);
 				frontMatter = fm.frontMatter;
 			}
 
+			timer.push('ignoreBlock');
 			const blocks = ignoreBlock(this.rawCode, this.#ignoreTags, this.#maskChar);
 			this.#setRawCode(blocks.replaced);
 
+			timer.push('tokenize');
 			const tokenized = this.tokenize(options);
 			const ast = tokenized.ast;
 			const isFragment = tokenized.isFragment;
 
 			this.#defaultDepth = options?.depth ?? this.#defaultDepth;
+
+			timer.push('traverse');
 			const traversed = this.traverse(ast, null, this.#defaultDepth);
+
+			timer.push('afterTraverse');
 			const nodeTree = this.afterTraverse([...traversed.childNodes, ...traversed.siblings]);
 
+			timer.push('flattenNodes');
 			let nodeList = this.flattenNodes(nodeTree);
+
+			timer.push('afterFlattenNodes');
 			nodeList = this.afterFlattenNodes(nodeList);
+
+			timer.push('restoreNode');
 			nodeList = restoreNode(this, nodeList, blocks, false);
+
+			timer.push('afterParse');
 			nodeList = this.afterParse(nodeList, options);
 
 			if (frontMatter) {
+				timer.push('frontMatter');
 				const newNodeList = [...nodeList];
 				let firstText = '';
 				const firstTextNode = newNodeList.shift();
@@ -186,6 +206,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				nodeList = [fmNode, ...newNodeList];
 			}
 
+			timer.log();
 			domLog(nodeList);
 
 			this.#reset();
@@ -231,9 +252,25 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const childNodes: MLASTChildNode[] = [];
 		const siblings: MLASTNodeTreeItem[] = [];
 
+		const existence = new Set<string>();
+
 		for (const originNode of originNodes) {
+			timer.push('nodeize');
 			const nodes = this.nodeize(originNode, parentNode, depth);
-			const after = this.afterNodeize(nodes, parentNode, depth);
+
+			const filteredNodes: MLASTNodeTreeItem[] = [];
+			for (const node of nodes) {
+				// Remove duplicated nodes
+				const id = `${node.startOffset}:${node.endOffset}:${node.nodeName}:${node.type}:${node.raw}`;
+				if (existence.has(id)) {
+					continue;
+				}
+				existence.add(id);
+				filteredNodes.push(node);
+			}
+
+			timer.push('afterNodeize');
+			const after = this.afterNodeize(filteredNodes, parentNode, depth);
 
 			childNodes.push(...after.siblings);
 			siblings.push(...after.ancestors);
@@ -246,7 +283,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return this.#siblingsCorrection(nodeTree);
+		return Array.prototype.toSorted == null
+			? // TODO: Use sort instead of toSorted until we end support for Node 18
+				[...nodeTree].sort(sortNodes)
+			: nodeTree.toSorted(sortNodes);
 	}
 
 	nodeize(originNode: Node, parentNode: MLASTParentNode | null, depth: number): readonly MLASTNodeTreeItem[] {
@@ -322,6 +362,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly systemId: string;
 		},
 	): readonly MLASTNodeTreeItem[] {
+		timer.push('visitDoctype');
 		const node: MLASTDoctype = {
 			...token,
 			...this.createToken(token),
@@ -337,6 +378,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly isBogus?: boolean;
 		},
 	): readonly MLASTNodeTreeItem[] {
+		timer.push('visitComment');
 		const isBogus = options?.isBogus ?? !token.raw.startsWith('<!--');
 		const node: MLASTComment = {
 			...token,
@@ -355,6 +397,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly invalidTagAsText?: boolean;
 		},
 	): readonly MLASTNodeTreeItem[] {
+		timer.push('visitText');
 		const node: MLASTText = {
 			...token,
 			...this.createToken(token),
@@ -389,6 +432,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly overwriteProps?: Partial<MLASTElement>;
 		},
 	): readonly MLASTNodeTreeItem[] {
+		timer.push('visitElement');
 		const createEndTagToken = options?.createEndTagToken;
 		const namelessFragment = options?.namelessFragment ?? false;
 		const overwriteProps = options?.overwriteProps;
@@ -453,6 +497,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
+		timer.push('visitPsBlock');
 		const block: MLASTPreprocessorSpecificBlock = {
 			...token,
 			...this.createToken(token),
@@ -484,6 +529,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	visitSpreadAttr(token: Token): MLASTSpreadAttr | null {
+		timer.push('visitSpreadAttr');
 		const raw = token.raw.trim();
 
 		if (raw === '') {
@@ -518,6 +564,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly startState?: AttrState;
 		},
 	): MLASTAttr & { __rightText?: string } {
+		timer.push('visitAttr');
 		const raw = token.raw;
 
 		const quoteSet = options?.quoteSet;
@@ -867,7 +914,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes: this.#siblingsCorrection(newChildNodes),
+			childNodes:
+				Array.prototype.toSorted == null
+					? // TODO: Use sort instead of toSorted until we end support for Node 18
+						[...newChildNodes].sort(sortNodes)
+					: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -1100,12 +1151,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return newNodeList;
 	}
 
-	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag, appendChild = true) {
+	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag) {
 		Object.assign(startTag, { pairNode: endTag });
 		Object.assign(endTag, { pairNode: startTag });
-		if (!appendChild) {
-			return;
-		}
 		this.appendChild(startTag.parentNode, endTag);
 	}
 
@@ -1461,40 +1509,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#setRawCode(rawCode: string, originalRawCode?: string) {
 		this.#rawCode = rawCode;
 		this.#originalRawCode = originalRawCode ?? this.#originalRawCode;
-	}
-
-	#siblingsCorrection(nodes: readonly MLASTNodeTreeItem[]) {
-		const stack = new Set<string>();
-
-		const newNodes: MLASTNodeTreeItem[] = [];
-		const oldNodes =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodes].sort(sortNodes)
-				: nodes.toSorted(sortNodes);
-		const nameToLastOpenTag: Record<string, MLASTElement> = {};
-
-		for (const node of oldNodes) {
-			const id = `${node.startOffset}::${node.nodeName}`;
-			if (stack.has(id)) {
-				continue;
-			}
-			stack.add(id);
-
-			if (node.type === 'endtag') {
-				const openTag = nameToLastOpenTag[node.nodeName];
-				if (openTag && !openTag.pairNode) {
-					this.#pairing(openTag, node, false);
-					newNodes.push(node);
-					continue;
-				}
-			} else if (node.type === 'starttag') {
-				nameToLastOpenTag[node.nodeName] = node;
-			}
-			newNodes.push(node);
-		}
-
-		return newNodes;
 	}
 
 	/**
