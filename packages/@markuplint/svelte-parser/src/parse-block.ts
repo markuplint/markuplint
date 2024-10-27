@@ -1,13 +1,12 @@
 import type { SvelteParser } from './parser.js';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
-import type { Block } from 'svelte/compiler';
+import type { SvelteBlock } from './svelte-parser/index.js';
 
 export function parseBlock(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parser: SvelteParser,
 	token: ChildToken,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	originBlockNode: Block,
+	originBlockNode: SvelteBlock,
 ) {
 	const range = token.raw;
 
