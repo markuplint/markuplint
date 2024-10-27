@@ -1,4 +1,4 @@
-import type { SvelteNode } from './svelte-parser/index.js';
+import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
 import type {
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
@@ -9,9 +9,10 @@ import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 import { getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
+import { parseBlock } from './parse-block.js';
 import { svelteParse } from './svelte-parser/index.js';
 
-class SvelteParser extends Parser<SvelteNode> {
+export class SvelteParser extends Parser<SvelteNode> {
 	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
 
 	constructor() {
@@ -83,18 +84,18 @@ class SvelteParser extends Parser<SvelteNode> {
 					parentNode,
 				});
 			}
-			case 'MustacheTag': {
+			case 'ExpressionTag': {
 				return this.visitPsBlock({
 					...token,
 					depth,
 					parentNode,
-					nodeName: 'MustacheTag',
+					nodeName: 'ExpressionTag',
 					isFragment: false,
 				});
 			}
-			case 'InlineComponent':
-			case 'Element': {
-				const children = originNode.children ?? [];
+			case 'Component':
+			case 'RegularElement': {
+				const children = originNode.fragment.nodes ?? [];
 				const reEndTag = new RegExp(`</${originNode.name}\\s*>$`, 'i');
 				const startTagEndOffset =
 					children.length > 0
@@ -110,7 +111,7 @@ class SvelteParser extends Parser<SvelteNode> {
 						nodeName: originNode.name,
 						namespace: getNamespace(originNode.name, parentNamespace),
 					},
-					originNode.children,
+					originNode.fragment.nodes,
 					{
 						createEndTagToken: () => {
 							if (!reEndTag.test(token.raw)) {
@@ -134,14 +135,126 @@ class SvelteParser extends Parser<SvelteNode> {
 					},
 				);
 			}
-			default: {
-				return this.visitExpression(
+			case 'IfBlock': {
+				const expressions: MLASTPreprocessorSpecificBlock[] = [];
+				const ifElseBlocks = this.#traverseIfBlock(originNode, token.startOffset);
+				for (const ifElseBlock of ifElseBlocks) {
+					const expression = this.visitPsBlock(
+						{
+							...ifElseBlock,
+							depth,
+							parentNode,
+							nodeName: ifElseBlock.type,
+							isFragment: false,
+						},
+						ifElseBlock.children,
+						(
+							{
+								if: 'if',
+								elseif: 'if:elseif',
+								else: 'if:else',
+								'/if': 'end',
+							} as const
+						)[ifElseBlock.type],
+					)[0];
+					expressions.push(expression);
+				}
+				return expressions;
+			}
+			case 'EachBlock': {
+				return this.#parseEachBlock(
 					{
 						...token,
 						depth,
 						parentNode,
 					},
 					originNode,
+				);
+			}
+			case 'AwaitBlock': {
+				return this.#parseAwaitBlock(
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+			}
+			case 'KeyBlock': {
+				const { openToken, closeToken } = parseBlock(
+					this,
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+
+				return [
+					this.visitPsBlock(
+						{
+							...openToken,
+							depth,
+							parentNode,
+							nodeName: 'key',
+							isFragment: true,
+						},
+						originNode.fragment.nodes,
+					)[0],
+					this.visitPsBlock({
+						...closeToken,
+						depth,
+						parentNode,
+						nodeName: '/key',
+						isFragment: true,
+					})[0],
+				];
+			}
+			case 'SnippetBlock': {
+				const { openToken, closeToken } = parseBlock(
+					this,
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					originNode,
+				);
+
+				return [
+					this.visitPsBlock(
+						{
+							...openToken,
+							depth,
+							parentNode,
+							nodeName: 'snippet',
+							isFragment: false,
+						},
+						originNode.body.nodes,
+					)[0],
+					this.visitPsBlock({
+						...closeToken,
+						depth,
+						parentNode,
+						nodeName: '/snippet',
+						isFragment: false,
+					})[0],
+				];
+			}
+			default: {
+				const childNodes = 'fragment' in originNode ? originNode.fragment.nodes : [];
+
+				return this.visitPsBlock(
+					{
+						...token,
+						depth,
+						parentNode,
+						nodeName: originNode.type,
+						isFragment: true,
+					},
+					childNodes,
 				);
 			}
 		}
@@ -253,33 +366,293 @@ class SvelteParser extends Parser<SvelteNode> {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 
+	#parseAwaitBlock(
+		token: ChildToken,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originBlockNode: SvelteAwaitBlock,
+	) {
+		const { closeToken } = parseBlock(this, token, originBlockNode);
+
+		const pendingNodes = originBlockNode.pending?.nodes ?? [];
+		const thenNodes = originBlockNode.then?.nodes ?? [];
+
+		const pendingEnd = pendingNodes.at(-1)?.end;
+		const thenEnd = thenNodes.at(-1)?.end;
+
+		// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+		const awaitConditionEnd: number = originBlockNode.expression.end;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *            find___^ and cut
+		 *
+		 * `}...{:then name}...{:catch name}...{/await}`
+		 */
+		const rawAwaitConditionBelow = this.rawCode.slice(awaitConditionEnd, originBlockNode.end);
+
+		/**
+		 * `}...{:then name}...{:catch name}...{/await}`
+		 *  ^___find
+		 */
+		const awaitExpEnd = awaitConditionEnd + rawAwaitConditionBelow.indexOf('}') + 1;
+
+		/**
+		 * `{#await expression}`
+		 */
+		const awaitExpToken = this.sliceFragment(token.startOffset, awaitExpEnd);
+
+		let thenToken: Token | null = null;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *                 find___^
+		 */
+		const thenExpStart = pendingEnd ?? awaitExpEnd;
+
+		/**
+		 * `{:then name}...{:catch name}...{/await}`
+		 */
+		const rawPendingNodesBelow = this.rawCode.slice(thenExpStart, originBlockNode.end);
+		if (
+			// eslint-disable-next-line regexp/strict
+			/^{\s*:then[\s|}]/.test(rawPendingNodesBelow)
+		) {
+			let thenExpEndCharOffset: number;
+			if (originBlockNode.value) {
+				const thenIdentifierEnd =
+					// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+					originBlockNode.value.end;
+				const rawThenExpCloseCharAndBelow = this.rawCode.slice(thenIdentifierEnd, originBlockNode.end);
+				const thenExpEndCharIndex = rawThenExpCloseCharAndBelow.indexOf('}') + 1;
+				thenExpEndCharOffset = thenIdentifierEnd + thenExpEndCharIndex;
+			} else {
+				thenExpEndCharOffset = thenExpStart + rawPendingNodesBelow.indexOf('}') + 1;
+			}
+			thenToken = this.sliceFragment(token.startOffset + thenExpStart, thenExpEndCharOffset);
+		}
+
+		let catchToken: Token | null = null;
+
+		/**
+		 * `{#await expression}...{:then name}...{:catch name}...{/await}`
+		 *                                find___^
+		 *
+		 * If `then` block is not found:
+		 *
+		 * `{#await expression}...{:catch name}...{/await}`
+		 *                 find___^
+		 */
+		const catchExpStart = thenToken
+			? (thenEnd ?? thenToken.startOffset + thenToken.raw.length)
+			: (pendingEnd ?? awaitExpEnd);
+
+		/**
+		 * `{:catch name}...{/await}`
+		 */
+		const rawThenNodesBelow = this.rawCode.slice(catchExpStart, originBlockNode.end);
+		if (
+			// eslint-disable-next-line regexp/strict
+			/^{\s*:catch[\s|}]/.test(rawThenNodesBelow)
+		) {
+			let catchExpEndCharOffset: number;
+			if (originBlockNode.error) {
+				const catchIdentifierEnd =
+					// @ts-ignore - new Svelte Compiler Type doesn't support `start` and `end` yet.
+					originBlockNode.error.end;
+				const rawCatchExpCloseCharAndBelow = this.rawCode.slice(catchIdentifierEnd, originBlockNode.end);
+				const catchExpEndCharIndex = rawCatchExpCloseCharAndBelow.indexOf('}') + 1;
+				catchExpEndCharOffset = catchIdentifierEnd + catchExpEndCharIndex;
+			} else {
+				catchExpEndCharOffset = catchExpStart + rawThenNodesBelow.indexOf('}') + 1;
+			}
+			catchToken = this.sliceFragment(token.startOffset + catchExpStart, catchExpEndCharOffset);
+		}
+
+		const expressions: MLASTPreprocessorSpecificBlock[] = [];
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...awaitExpToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: 'await',
+					isFragment: false,
+				},
+				originBlockNode.pending?.nodes,
+				'await',
+			)[0],
+		);
+
+		if (thenToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...thenToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'await:then',
+						isFragment: false,
+					},
+					originBlockNode.then?.nodes,
+					'await:then',
+				)[0],
+			);
+		}
+
+		if (catchToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...catchToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'await:catch',
+						isFragment: false,
+					},
+					originBlockNode.catch?.nodes,
+					'await:catch',
+				)[0],
+			);
+		}
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...closeToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: '/await',
+					isFragment: false,
+				},
+				undefined,
+				'end',
+			)[0],
+		);
+
+		return expressions;
+	}
+
+	#parseEachBlock(
+		token: ChildToken,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originBlockNode: SvelteEachBlock,
+	) {
+		const expressions: MLASTPreprocessorSpecificBlock[] = [];
+
+		/**
+		 * `{/each}`
+		 */
+		const { closeToken } = parseBlock(this, token, originBlockNode);
+
+		/**
+		 * `{#each expression as name}...{:else}...{/each}`
+		 *                     find___^
+		 */
+		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.startOffset;
+
+		/**
+		 * `{#each expression as name}...{:else}...{/each}`
+		 *                               find___^
+		 */
+		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.startOffset;
+
+		/**
+		 * `{#each expression as name}...{:else}`
+		 */
+		const rawUntilFallbackScope = this.rawCode.slice(token.startOffset, fallbackScopeStart);
+
+		let elseToken: Token | null = null;
+
+		/**
+		 * `{#each expression as name}...{:else}`
+		 *                        find___^
+		 */
+		// eslint-disable-next-line regexp/strict
+		const elseTokenStart = rawUntilFallbackScope.match(/{\s*:else\s*}$/)?.index;
+		if (elseTokenStart != null) {
+			elseToken = this.sliceFragment(token.startOffset + elseTokenStart, fallbackScopeStart);
+		}
+
+		const eachToken = this.sliceFragment(token.startOffset, bodyStart);
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...eachToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: 'each',
+					isFragment: false,
+				},
+				originBlockNode.body.nodes,
+				'each',
+			)[0],
+		);
+
+		if (elseToken) {
+			expressions.push(
+				this.visitPsBlock(
+					{
+						...elseToken,
+						depth: token.depth,
+						parentNode: token.parentNode,
+						nodeName: 'each:empty',
+						isFragment: false,
+					},
+					originBlockNode.fallback?.nodes,
+					'each:empty',
+				)[0],
+			);
+		}
+
+		expressions.push(
+			this.visitPsBlock(
+				{
+					...closeToken,
+					depth: token.depth,
+					parentNode: token.parentNode,
+					nodeName: '/each',
+					isFragment: false,
+				},
+				undefined,
+				'end',
+			)[0],
+		);
+
+		return expressions;
+	}
+
 	#traverseIfBlock(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		originBlockNode: SvelteNode,
-		start?: number,
-		nodeName: 'if' | 'elseif' | 'else' = 'if',
+		originBlockNode: SvelteIfBlock,
+		start: number,
+		type: 'if' | 'elseif' | 'else' = 'if',
 	) {
-		const result: (Token & { children: SvelteNode[]; nodeName: 'if' | 'elseif' | 'else' | '/if' })[] = [];
+		const result: (Token & { children: SvelteNode[]; type: 'if' | 'elseif' | 'else' | '/if' })[] = [];
 
-		start = start ?? originBlockNode.start;
-		const end = originBlockNode.children?.[0]?.start ?? originBlockNode.end;
+		const end = originBlockNode.consequent.nodes?.[0]?.start ?? originBlockNode.end;
 		const tag = this.sliceFragment(start, end);
-		const children = originBlockNode.children ?? [];
+		const children = originBlockNode.consequent.nodes;
 
-		result.push({ ...tag, children, nodeName });
+		result.push({ ...tag, children, type });
 
-		if (originBlockNode.else) {
-			if (originBlockNode.else.children[0].type === 'IfBlock') {
-				const elseif = this.#traverseIfBlock(originBlockNode.else.children[0], children.at(-1)?.end, 'elseif');
+		if (originBlockNode.alternate) {
+			if (originBlockNode.alternate.nodes?.[0]?.type === 'IfBlock') {
+				const elseif = this.#traverseIfBlock(
+					originBlockNode.alternate.nodes[0],
+					children.at(-1)?.end ?? start,
+					'elseif',
+				);
 				result.push(...elseif);
 			} else {
 				const start = children.at(-1)?.end ?? originBlockNode.end;
-				const end = originBlockNode.else.children[0].start;
+				const end = originBlockNode.alternate.nodes?.[0]?.start;
 				const tag = this.sliceFragment(start, end);
 				result.push({
 					...tag,
-					children: originBlockNode.else.children,
-					nodeName: 'else',
+					children: originBlockNode.alternate.nodes,
+					type: 'else',
 				});
 			}
 		}
@@ -289,164 +662,11 @@ class SvelteParser extends Parser<SvelteNode> {
 			const end = originBlockNode.end;
 			const tag = this.sliceFragment(start, end);
 			if (tag.raw) {
-				result.push({ ...tag, children: [], nodeName: '/if' });
+				result.push({ ...tag, children: [], type: '/if' });
 			}
 		}
 
 		return result;
-	}
-
-	visitExpression(
-		token: ChildToken,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		originBlockNode: SvelteNode,
-	) {
-		const props = ['', 'else', 'pending', 'then', 'catch'];
-		const expressions: MLASTPreprocessorSpecificBlock[] = [];
-
-		if (originBlockNode.type === 'IfBlock') {
-			const ifElseBlocks = this.#traverseIfBlock(originBlockNode);
-			for (const ifElseBlock of ifElseBlocks) {
-				const expression = this.visitPsBlock(
-					{
-						...ifElseBlock,
-						depth: token.depth,
-						parentNode: token.parentNode,
-						nodeName: ifElseBlock.nodeName,
-						isFragment: false,
-					},
-					ifElseBlock.children,
-					(
-						{
-							if: 'if',
-							elseif: 'if:elseif',
-							else: 'if:else',
-							'/if': 'end',
-						} as const
-					)[ifElseBlock.nodeName],
-				)[0];
-				expressions.push(expression);
-			}
-			return expressions;
-		}
-
-		const blockType = originBlockNode.type.toLowerCase().replace('block', '');
-
-		const nodeList = new Map<SvelteNode, MLASTPreprocessorSpecificBlockConditionalType>();
-
-		for (const prop of props) {
-			let node: SvelteNode | null = (originBlockNode[prop] ?? originBlockNode) as SvelteNode;
-
-			if (nodeList.has(node)) {
-				continue;
-			}
-
-			if (node.type === 'ElseBlock' && node.children?.[0]?.elseif) {
-				node = node.children[0];
-
-				while (node != null) {
-					if (!['IfBlock', 'ElseBlock'].includes(node.type)) {
-						break;
-					}
-					const type: MLASTPreprocessorSpecificBlockConditionalType = node.elseif ? 'if:elseif' : 'if:else';
-					nodeList.set(node, type);
-
-					node = node.else ?? node.children?.[0] ?? null;
-				}
-				continue;
-			}
-
-			const typeMap: Record<string, MLASTPreprocessorSpecificBlockConditionalType> = {
-				if: 'if',
-				else: 'if:else',
-				each: 'each',
-				pending: 'await',
-				then: 'await:then', // eslint-disable-line unicorn/no-thenable
-				catch: 'await:catch',
-			};
-
-			const type: MLASTPreprocessorSpecificBlockConditionalType = typeMap[prop || blockType] ?? null;
-
-			nodeList.set(node, type);
-		}
-
-		let lastChild: SvelteNode | null = null;
-		for (const [node, _type] of nodeList.entries()) {
-			let type: MLASTPreprocessorSpecificBlockConditionalType = _type;
-			let start = node.start;
-			let end = node.end;
-
-			if (type === 'await') {
-				start = originBlockNode.start;
-			}
-
-			end = node.children?.[0]?.start ?? end;
-
-			if (type === 'if:else' && originBlockNode.type === 'EachBlock') {
-				type = 'each:empty';
-				start = lastChild?.end ?? start;
-			}
-
-			if (
-				(['if:else', 'if:elseif'] as MLASTPreprocessorSpecificBlockConditionalType[]).includes(type) &&
-				originBlockNode.type === 'IfBlock'
-			) {
-				start = lastChild?.end ?? start;
-			}
-
-			const tag = this.sliceFragment(start, end);
-
-			if (type === 'if:else' && node.type === 'ElseBlock' && node.children?.[0]?.type === 'IfBlock') {
-				type = 'if:elseif';
-			}
-
-			if (node.children && Array.isArray(node.children)) {
-				lastChild = node.children.at(-1) ?? null;
-			}
-
-			if (tag.raw === '') {
-				continue;
-			}
-
-			const expression = this.visitPsBlock(
-				{
-					...tag,
-					depth: token.depth,
-					parentNode: token.parentNode,
-					nodeName: type ?? blockType,
-					isFragment: false,
-				},
-				node.children,
-				type,
-			)[0];
-			expressions.push(expression);
-		}
-
-		const lastText = this.sliceFragment(lastChild?.end ?? originBlockNode.end, originBlockNode.end);
-
-		if (lastText.raw) {
-			// Cut before whitespace
-			const index = lastText.raw.search(/\S/);
-			const lastToken = this.sliceFragment(lastText.startOffset + index, originBlockNode.end);
-
-			if (lastToken.raw) {
-				const expression = this.visitPsBlock(
-					{
-						...lastToken,
-						depth: token.depth,
-						parentNode: token.parentNode,
-						nodeName: '/' + blockType,
-						isFragment: false,
-					},
-					[],
-					'end',
-				)[0];
-
-				expressions.push(expression);
-			}
-		}
-
-		return expressions;
 	}
 }
 
