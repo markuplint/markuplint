@@ -252,11 +252,25 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const childNodes: MLASTChildNode[] = [];
 		const siblings: MLASTNodeTreeItem[] = [];
 
+		const existence = new Set<string>();
+
 		for (const originNode of originNodes) {
 			timer.push('nodeize');
 			const nodes = this.nodeize(originNode, parentNode, depth);
+
+			const filteredNodes: MLASTNodeTreeItem[] = [];
+			for (const node of nodes) {
+				// Remove duplicated nodes
+				const id = `${node.startOffset}:${node.endOffset}:${node.nodeName}:${node.type}:${node.raw}`;
+				if (existence.has(id)) {
+					continue;
+				}
+				existence.add(id);
+				filteredNodes.push(node);
+			}
+
 			timer.push('afterNodeize');
-			const after = this.afterNodeize(nodes, parentNode, depth);
+			const after = this.afterNodeize(filteredNodes, parentNode, depth);
 
 			childNodes.push(...after.siblings);
 			siblings.push(...after.ancestors);
@@ -269,7 +283,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return this.#siblingsCorrection(nodeTree);
+		return Array.prototype.toSorted == null
+			? // TODO: Use sort instead of toSorted until we end support for Node 18
+				[...nodeTree].sort(sortNodes)
+			: nodeTree.toSorted(sortNodes);
 	}
 
 	nodeize(originNode: Node, parentNode: MLASTParentNode | null, depth: number): readonly MLASTNodeTreeItem[] {
@@ -897,7 +914,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes: this.#siblingsCorrection(newChildNodes),
+			childNodes:
+				Array.prototype.toSorted == null
+					? // TODO: Use sort instead of toSorted until we end support for Node 18
+						[...newChildNodes].sort(sortNodes)
+					: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -1488,40 +1509,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#setRawCode(rawCode: string, originalRawCode?: string) {
 		this.#rawCode = rawCode;
 		this.#originalRawCode = originalRawCode ?? this.#originalRawCode;
-	}
-
-	#siblingsCorrection(nodes: readonly MLASTNodeTreeItem[]) {
-		const stack = new Set<string>();
-
-		const newNodes: MLASTNodeTreeItem[] = [];
-		const oldNodes =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodes].sort(sortNodes)
-				: nodes.toSorted(sortNodes);
-		const nameToLastOpenTag: Record<string, MLASTElement> = {};
-
-		for (const node of oldNodes) {
-			const id = `${node.startOffset}::${node.nodeName}`;
-			if (stack.has(id)) {
-				continue;
-			}
-			stack.add(id);
-
-			if (node.type === 'endtag') {
-				const openTag = nameToLastOpenTag[node.nodeName];
-				if (openTag && !openTag.pairNode) {
-					this.#pairing(openTag, node, false);
-					newNodes.push(node);
-					continue;
-				}
-			} else if (node.type === 'starttag') {
-				nameToLastOpenTag[node.nodeName] = node;
-			}
-			newNodes.push(node);
-		}
-
-		return newNodes;
 	}
 
 	/**
