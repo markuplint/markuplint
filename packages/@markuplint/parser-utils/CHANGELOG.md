@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.0...@markuplint/parser-utils@4.7.1) (2024-10-27)
 
-
 ### Performance Improvements
 
-* **parser-utils:** adjusted siblings correction timing to reduce exponential complexity ([676357c](https://github.com/markuplint/markuplint/commit/676357c438df7545f472787c9032463f9fdba515))
-
-
-
-
+- **parser-utils:** adjusted siblings correction timing to reduce exponential complexity ([676357c](https://github.com/markuplint/markuplint/commit/676357c438df7545f472787c9032463f9fdba515))
 
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.8...@markuplint/parser-utils@4.7.0) (2024-10-15)
 

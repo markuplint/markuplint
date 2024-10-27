@@ -5,16 +5,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.3...@markuplint/html-spec@4.10.0) (2024-10-27)
 
-
 ### Features
 
-* **html-spec:** add the `alpha` attr to `<input type=color>` ([fd877fc](https://github.com/markuplint/markuplint/commit/fd877fc5213212e266068488bdf6d18d6d356574))
-* **html-spec:** add the `autocorrect` global attribute ([8035fbd](https://github.com/markuplint/markuplint/commit/8035fbd183c3eb1ab722eb7093a8e5916cf4ba25))
-* **html-spec:** add the `colorspace` attr to `<input type=color>` ([93b8c2b](https://github.com/markuplint/markuplint/commit/93b8c2b53d59f27bb608e31e49ae3c4b315579ae))
-
-
-
-
+- **html-spec:** add the `alpha` attr to `<input type=color>` ([fd877fc](https://github.com/markuplint/markuplint/commit/fd877fc5213212e266068488bdf6d18d6d356574))
+- **html-spec:** add the `autocorrect` global attribute ([8035fbd](https://github.com/markuplint/markuplint/commit/8035fbd183c3eb1ab722eb7093a8e5916cf4ba25))
+- **html-spec:** add the `colorspace` attr to `<input type=color>` ([93b8c2b](https://github.com/markuplint/markuplint/commit/93b8c2b53d59f27bb608e31e49ae3c4b315579ae))
 
 ## [4.9.3](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.2...@markuplint/html-spec@4.9.3) (2024-10-15)
 

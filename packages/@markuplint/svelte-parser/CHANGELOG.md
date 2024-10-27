@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.6.9...@markuplint/svelte-parser@4.7.0) (2024-10-27)
 
-
 ### Features
 
-* **svelte-parser:** use new modern parser of Svelte ([3967060](https://github.com/markuplint/markuplint/commit/3967060a437af78515d5cfb8ec54905e9680ac7e))
-
-
-
-
+- **svelte-parser:** use new modern parser of Svelte ([3967060](https://github.com/markuplint/markuplint/commit/3967060a437af78515d5cfb8ec54905e9680ac7e))
 
 ## [4.6.9](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.6.8...@markuplint/svelte-parser@4.6.9) (2024-10-15)
 

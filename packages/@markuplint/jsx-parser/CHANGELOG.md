@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/jsx-parser
 
-
-
-
-
 ## [4.7.9](https://github.com/markuplint/markuplint/compare/@markuplint/jsx-parser@4.7.8...@markuplint/jsx-parser@4.7.9) (2024-10-15)
 
 **Note:** Version bump only for package @markuplint/jsx-parser

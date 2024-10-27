@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint-dev/eslint-config
 
-
-
-
-
 ## [1.0.5](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.4...@markuplint-dev/eslint-config@1.0.5) (2024-10-15)
 
 **Note:** Version bump only for package @markuplint-dev/eslint-config

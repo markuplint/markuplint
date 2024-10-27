@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/ml-ast
 
-
-
-
-
 ## [4.4.6](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.5...@markuplint/ml-ast@4.4.6) (2024-10-15)
 
 **Note:** Version bump only for package @markuplint/ml-ast

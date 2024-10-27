@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/vue-spec
 
-
-
-
-
 ## [4.5.9](https://github.com/markuplint/markuplint/compare/@markuplint/vue-spec@4.5.8...@markuplint/vue-spec@4.5.9) (2024-10-15)
 
 **Note:** Version bump only for package @markuplint/vue-spec
