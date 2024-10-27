@@ -1130,12 +1130,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return newNodeList;
 	}
 
-	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag, appendChild = true) {
+	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag) {
 		Object.assign(startTag, { pairNode: endTag });
 		Object.assign(endTag, { pairNode: startTag });
-		if (!appendChild) {
-			return;
-		}
 		this.appendChild(startTag.parentNode, endTag);
 	}
 
