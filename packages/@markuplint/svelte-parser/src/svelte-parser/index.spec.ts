@@ -22,7 +22,6 @@ describe('parser', () => {
 				},
 				consequent: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'Text',
@@ -57,7 +56,6 @@ describe('parser', () => {
 				},
 				consequent: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'Text',
@@ -70,7 +68,6 @@ describe('parser', () => {
 				},
 				alternate: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'Text',
@@ -104,7 +101,6 @@ describe('parser', () => {
 				},
 				consequent: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'Text',
@@ -117,7 +113,6 @@ describe('parser', () => {
 				},
 				alternate: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'IfBlock',
@@ -136,7 +131,6 @@ describe('parser', () => {
 							},
 							consequent: {
 								type: 'Fragment',
-								transparent: false,
 								nodes: [
 									{
 										type: 'Text',
@@ -181,7 +175,6 @@ describe('parser', () => {
 				},
 				consequent: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [
 						{
 							type: 'Text',
@@ -252,7 +245,6 @@ describe('Issues', () => {
 				attributes: [],
 				fragment: {
 					type: 'Fragment',
-					transparent: true,
 					nodes: [
 						{
 							type: 'RegularElement',
@@ -262,7 +254,6 @@ describe('Issues', () => {
 							attributes: [],
 							fragment: {
 								type: 'Fragment',
-								transparent: true,
 								nodes: [
 									{
 										type: 'Text',
@@ -289,7 +280,6 @@ describe('Issues', () => {
 				end: 44,
 				body: {
 					type: 'Fragment',
-					transparent: false,
 					nodes: [],
 				},
 				context: {

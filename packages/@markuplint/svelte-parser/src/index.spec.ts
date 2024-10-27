@@ -11,7 +11,8 @@ describe('parser', () => {
 	test('syntax error', () => {
 		expect(() => {
 			parse('<div></div\nattr>');
-		}).toThrowError(`Expected token >
+		}).toThrowError(`expected_token: Expected token >
+(unknown):2:0
 1: <div></div
 2: attr>
    ^`);
