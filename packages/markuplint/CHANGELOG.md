@@ -12,7 +12,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 - **markuplint:** add `--show-config` option to CLI ([a836ddb](https://github.com/markuplint/markuplint/commit/a836ddb50159ec45ac4fc0ced9ca1c66a10c90c1))
-- **markuplint:** change `resolveConfig` memthod to public from private ([f3cadb6](https://github.com/markuplint/markuplint/commit/f3cadb630eca4a4a9b754a3cb904ca0e05665110))
+- **markuplint:** change `resolveConfig` method to public from private ([f3cadb6](https://github.com/markuplint/markuplint/commit/f3cadb630eca4a4a9b754a3cb904ca0e05665110))
 - **markuplint:** export `package.json` ([c52a5b9](https://github.com/markuplint/markuplint/commit/c52a5b9afd6c5a2a32e9c46af929c28d9673f501))
 
 ## [4.10.1](https://github.com/markuplint/markuplint/compare/markuplint@4.10.0...markuplint@4.10.1) (2024-10-15)
