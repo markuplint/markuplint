@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.11](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.10...@markuplint/react-spec@4.5.11) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
 ## [4.5.10](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.9...@markuplint/react-spec@4.5.10) (2024-10-27)
 
 **Note:** Version bump only for package @markuplint/react-spec

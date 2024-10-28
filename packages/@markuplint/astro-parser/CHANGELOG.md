@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.11](https://github.com/markuplint/markuplint/compare/@markuplint/astro-parser@4.6.10...@markuplint/astro-parser@4.6.11) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/astro-parser
+
 ## [4.6.10](https://github.com/markuplint/markuplint/compare/@markuplint/astro-parser@4.6.9...@markuplint/astro-parser@4.6.10) (2024-10-27)
 
 **Note:** Version bump only for package @markuplint/astro-parser

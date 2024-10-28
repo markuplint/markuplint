@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.11](https://github.com/markuplint/markuplint/compare/@markuplint/rule-textlint@4.7.10...@markuplint/rule-textlint@4.7.11) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/rule-textlint
+
 ## [4.7.10](https://github.com/markuplint/markuplint/compare/@markuplint/rule-textlint@4.7.9...@markuplint/rule-textlint@4.7.10) (2024-10-27)
 
 **Note:** Version bump only for package @markuplint/rule-textlint

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.6...@markuplint/esm-adapter@4.5.7) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
 ## [4.5.6](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.5...@markuplint/esm-adapter@4.5.6) (2024-10-27)
 
 **Note:** Version bump only for package @markuplint/esm-adapter
