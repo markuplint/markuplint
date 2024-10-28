@@ -79,6 +79,14 @@ class PugParser extends Parser<ASTNode> {
 					return [];
 				}
 
+				if (!originNode.raw.includes('<') && !originNode.raw.includes('#[')) {
+					return this.visitText({
+						...token,
+						depth,
+						parentNode,
+					});
+				}
+
 				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line,
