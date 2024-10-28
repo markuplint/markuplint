@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.9...vscode-markuplint@4.8.0) (2024-10-27)
 
-
 ### Features
 
-* **vscode:** dropped `esm-adaptor` due to VS Code's support for ESM ([2dd2f0e](https://github.com/markuplint/markuplint/commit/2dd2f0e3d589f8eeeeeee42270c98682be7aa5a8))
-
-
-
-
+- **vscode:** dropped `esm-adaptor` due to VS Code's support for ESM ([2dd2f0e](https://github.com/markuplint/markuplint/commit/2dd2f0e3d589f8eeeeeee42270c98682be7aa5a8))
 
 ## [4.7.9](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.8...vscode-markuplint@4.7.9) (2024-10-15)
 
