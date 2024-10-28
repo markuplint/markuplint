@@ -51,7 +51,8 @@ export function attributesToDebugMaps(attributes: readonly MLASTAttr[]) {
 	});
 }
 
-export function nodeTreeDebugView(nodeTree: readonly MLASTNode[]) {
+export function nodeTreeDebugView(nodeTree: readonly MLASTNode[], idFilter = false) {
+	const filter = idFilter ? uuidFilter : (id: string) => id;
 	return nodeTree
 		.map((n, i) => {
 			const lines: string[] = [];
@@ -59,11 +60,11 @@ export function nodeTreeDebugView(nodeTree: readonly MLASTNode[]) {
 				return;
 			}
 			lines.push(
-				`${i.toString().padStart(3, '0')}: [${n.uuid.slice(0, 8)}] ${'  '.repeat(Math.max(n.depth, 0))}${
+				`${i.toString().padStart(3, '0')}: [${filter(n.uuid)}] ${'  '.repeat(Math.max(n.depth, 0))}${
 					n.type === 'endtag' ? '/' : ''
-				}${n.nodeName}(${n.uuid.slice(0, 8)})${n.type === 'starttag' && n.isGhost ? '[👻]' : ''}${
+				}${n.nodeName}(${filter(n.uuid)})${n.type === 'starttag' && n.isGhost ? '[👻]' : ''}${
 					n.type === 'starttag'
-						? ` => ${n.pairNode ? `/${n.pairNode.nodeName}(${n.pairNode.uuid.slice(0, 8)})` : '💀'}`
+						? ` => ${n.pairNode ? `/${n.pairNode.nodeName}(${filter(n.pairNode.uuid)})` : '💀'}`
 						: ''
 				}`,
 			);
@@ -72,7 +73,7 @@ export function nodeTreeDebugView(nodeTree: readonly MLASTNode[]) {
 					lines.push(
 						`${' '.repeat(15)}   ${'  '.repeat(Math.max(n.depth, 0))}┗━ ${c.type === 'endtag' ? '/' : ''}${
 							c.nodeName
-						}(${c.uuid.slice(0, 8)})`,
+						}(${filter(c.uuid)})`,
 					);
 				}
 			}
@@ -96,4 +97,15 @@ function tokenDebug<N extends MLASTToken>(n: N | null, type = '') {
 
 function visibleWhiteSpace(chars: string) {
 	return chars.replaceAll('\n', '⏎').replaceAll('\t', '→').replaceAll(/\s/g, '␣');
+}
+
+const uuidFilterMap = new Map<string, string>();
+let increment = 0;
+function uuidFilter(uuid: string) {
+	if (!uuidFilterMap.has(uuid)) {
+		const filteredId = increment.toString(16).padStart(4, '0');
+		increment++;
+		uuidFilterMap.set(uuid, filteredId);
+	}
+	return uuidFilterMap.get(uuid);
 }
