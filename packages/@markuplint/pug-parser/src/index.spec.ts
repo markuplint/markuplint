@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { nodeListToDebugMaps, nodeTreeDebugView } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
 import { parser } from './parser.js';
@@ -1485,6 +1485,86 @@ a(href="http://example.biz/kitteh.png") this picture
 			'[2:1]>[2:40](17,56)a: a(href="http://example.biz/kitteh.png")',
 			'[2:41]>[2:53](57,69)#text: this␣picture',
 			'[3:3]>[3:14](72,83)#text: ␣of␣my␣cat!',
+		]);
+	});
+
+	test("Complex code (Doesn't support it)", () => {
+		// https://github.com/markuplint/markuplint/issues/2184
+		const doc = parse(
+			`
+div.
+  span 1#[em 2 #[s 3 <span>4</span>]]
+<div>
+  span 5#[em 6]
+  <strong>no-tag 7</strong>
+  <strong>
+  this-is-tag 8</strong>
+</div>
+`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		const tree = nodeTreeDebugView(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[2:1]>[2:4](1,4)div: div',
+			'[3:3]>[3:9](8,14)#text: span␣1',
+			'[3:11]>[3:13](16,18)em: em',
+			'[3:14]>[3:16](19,21)#text: 2␣',
+			'[3:18]>[3:19](23,24)s: s',
+			'[3:20]>[3:22](25,27)#text: 3␣',
+			'[3:22]>[3:28](27,33)span: <span>',
+			'[3:28]>[3:29](33,34)#text: 4',
+			'[3:29]>[3:36](34,41)span: </span>',
+			'[4:1]>[4:6](44,49)div: <div>',
+			'[5:3]>[5:7](52,56)span: span',
+			'[5:8]>[5:9](57,58)#text: 5',
+			'[5:11]>[5:13](60,62)em: em',
+			'[5:14]>[5:15](63,64)#text: 6',
+			'[6:3]>[6:11](68,76)strong: <strong>',
+			'[6:11]>[6:19](76,84)#text: no-tag␣7',
+			'[6:19]>[6:28](84,93)strong: </strong>',
+			'[6:28]>[7:3](93,96)#text: ⏎␣␣',
+			'[7:3]>[7:11](96,104)strong: <strong>',
+			'[8:3]>[8:14](107,118)this-is-tag: this-is-tag',
+			'[8:15]>[8:16](119,120)#text: 8',
+			'[8:16]>[8:25](120,129)#invalid(👿): </strong>',
+		]);
+		expect(tree).toStrictEqual([
+			'000: [0000] div(0000) => 💀',
+			'                  ┗━ #text(0001)',
+			'                  ┗━ em(0002)',
+			'001: [0001]   #text(0001)',
+			'002: [0002]   em(0002) => 💀',
+			'                    ┗━ #text(0003)',
+			'                    ┗━ s(0004)',
+			'003: [0003]     #text(0003)',
+			'004: [0004]     s(0004) => 💀',
+			'                      ┗━ #text(0005)',
+			'                      ┗━ span(0006)',
+			'                      ┗━ /span(0007)',
+			'005: [0005]       #text(0005)',
+			'006: [0006]       span(0006) => /span(0007)',
+			'                        ┗━ #text(0008)',
+			'007: [0008]         #text(0008)',
+			'008: [0007]       /span(0007)',
+			'009: [0009] div(0009) => 💀',
+			'010: [000a] span(000a) => 💀',
+			'                  ┗━ #text(000b)',
+			'                  ┗━ em(000c)',
+			'011: [000b]   #text(000b)',
+			'012: [000c]   em(000c) => 💀',
+			'                    ┗━ #text(000d)',
+			'013: [000d]     #text(000d)',
+			'014: [000e] strong(000e) => /strong(000f)',
+			'                  ┗━ #text(0010)',
+			'015: [0010]   #text(0010)',
+			'016: [000f] /strong(000f)',
+			'017: [0011] #text(0011)',
+			'018: [0012] strong(0012) => 💀',
+			'019: [0013] this-is-tag(0013) => 💀',
+			'                  ┗━ #text(0014)',
+			'                  ┗━ #invalid(0015)',
+			'020: [0014]   #text(0014)',
+			'021: [0015]   #invalid(0015)',
 		]);
 	});
 });
