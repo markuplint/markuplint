@@ -43,7 +43,7 @@
 		"co": "cz"
 	},
 	"lint-staged": {
-		"./{packages,website}/**/*.{ts,tsx,js,cjs,mjs,json}": [
+		"./{{packages,website}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
 			"prettier --write"
 		],
 		"./{packages,website}/**/*.{ts,mjs,cjs,spec.js}": [
