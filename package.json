@@ -43,10 +43,10 @@
 		"co": "cz"
 	},
 	"lint-staged": {
-		"./{{packages,website}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
+		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
 			"prettier --write"
 		],
-		"./{packages,website}/**/*.{ts,mjs,cjs,spec.js}": [
+		"./{packages,website,vscode}/**/*.{ts,mjs,cjs,spec.js}": [
 			"eslint --fix"
 		],
 		"./test/**/*.{pug,html}": [

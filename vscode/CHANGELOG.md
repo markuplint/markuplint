@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.8.1](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.0...vscode-markuplint@4.8.1) (2024-10-28)
 
-
 ### Bug Fixes
 
-* **vscode:** fix to importing the local module ([f45d5c3](https://github.com/markuplint/markuplint/commit/f45d5c30ddf3c9928b0f54b9347a0394aa98de6f))
-
-
-
-
+- **vscode:** fix to importing the local module ([f45d5c3](https://github.com/markuplint/markuplint/commit/f45d5c30ddf3c9928b0f54b9347a0394aa98de6f))
 
 # [4.8.0](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.9...vscode-markuplint@4.8.0) (2024-10-27)
 
