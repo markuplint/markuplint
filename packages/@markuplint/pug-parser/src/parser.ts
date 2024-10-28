@@ -275,6 +275,10 @@ class PugParser extends Parser<ASTNode> {
 		return [startTag, ...siblings];
 	}
 
+	visitSpreadAttr(): null {
+		return null;
+	}
+
 	visitAttr(token: Token): MLASTAttr {
 		if (token.raw[0] === '#' || token.raw[0] === '.') {
 			const attr = super.visitAttr(token, {
