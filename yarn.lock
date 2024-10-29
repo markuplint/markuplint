@@ -2535,10 +2535,10 @@
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-10.0.0.tgz#e9c07fe50da0f53dc24970cca94d619ff03f6f6d"
   integrity sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==
 
-"@types/vscode@1.94.0":
-  version "1.94.0"
-  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.94.0.tgz#ccd2111b6ecaba6ad4da19c2d524828fa73ae250"
-  integrity sha512-UyQOIUT0pb14XSqJskYnRwD2aG0QrPVefIfrW1djR+/J4KeFQ0i1+hjZoaAmeNf3Z2jleK+R2hv+EboG/m8ruw==
+"@types/vscode@1.95.0":
+  version "1.95.0"
+  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.95.0.tgz#484aee82c69fa2d73e29d4bf2a91191e570dbc70"
+  integrity sha512-0LBD8TEiNbet3NvWsmn59zLzOFu/txSlGxnv5yAFHCrhG9WvAnR3IvfHzMOs2aeWqgvNjq9pO99IUw8d3n+unw==
 
 "@types/whatwg-mimetype@3.0.2":
   version "3.0.2"
