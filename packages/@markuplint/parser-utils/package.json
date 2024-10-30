@@ -33,7 +33,7 @@
 		"@markuplint/types": "4.6.4",
 		"@types/uuid": "10.0.0",
 		"debug": "4.3.7",
-		"espree": "10.2.0",
+		"espree": "10.3.0",
 		"type-fest": "4.26.1",
 		"uuid": "11.0.2"
 	},
