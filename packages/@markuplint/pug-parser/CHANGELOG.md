@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.12](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.11...@markuplint/pug-parser@4.6.12) (2024-10-31)
+
+### Performance Improvements
+
+- **pug-parser:** prevent redundant recursive parsing ([d883826](https://github.com/markuplint/markuplint/commit/d883826d25745a31f45e5ba7cde1dfa8f32a358c))
+- **pug-parser:** return null in `visitSpreadAttr` for Pug, as the method is unnecessary ([56e0d61](https://github.com/markuplint/markuplint/commit/56e0d61e370872a4328ff3e70a89947bc6fbcf7a))
+
 ## [4.6.11](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.10...@markuplint/pug-parser@4.6.11) (2024-10-28)
 
 **Note:** Version bump only for package @markuplint/pug-parser

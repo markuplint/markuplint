@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/parser-utils",
-	"version": "4.7.2",
+	"version": "4.8.0",
 	"description": "Utility module for markuplint parser plugin",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.8",
-		"@markuplint/ml-spec": "4.8.1",
+		"@markuplint/ml-spec": "4.8.2",
 		"@markuplint/types": "4.6.4",
 		"@types/uuid": "10.0.0",
 		"debug": "4.3.7",

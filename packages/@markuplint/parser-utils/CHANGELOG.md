@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.2...@markuplint/parser-utils@4.8.0) (2024-10-31)
+
+### Features
+
+- **parser-utils:** add filter option to `nodeTreeDebugView` ([8c3d618](https://github.com/markuplint/markuplint/commit/8c3d618ef50902b379c50c7b43b13d242dfe3b2b))
+
 ## [4.7.2](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.1...@markuplint/parser-utils@4.7.2) (2024-10-28)
 
 **Note:** Version bump only for package @markuplint/parser-utils
