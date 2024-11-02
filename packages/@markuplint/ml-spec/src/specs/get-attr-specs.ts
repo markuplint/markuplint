@@ -75,12 +75,12 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		};
 	}
 
-	const attrList = Object.keys(attrs).map<Attribute>(name => {
-		const attr = attrs[name];
-		return { name, type: 'Any', ...attr };
-	});
-
-	attrList.sort(nameCompare);
+	const attrList = Object.keys(attrs)
+		.map<Attribute>(name => {
+			const attr = attrs[name];
+			return { name, type: 'Any', ...attr };
+		})
+		.toSorted(nameCompare);
 
 	cacheMap.set(localNameWithNS, attrList);
 	return attrList;

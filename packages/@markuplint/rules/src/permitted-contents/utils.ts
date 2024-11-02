@@ -179,7 +179,7 @@ export function mergeHints(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	b: Readonly<Hints>,
 ) {
-	const missing = [a.missing, b.missing].sort(
+	const missing = [a.missing, b.missing].toSorted(
 		(a, b) => (b?.barelyMatchedElements ?? 0) - (a?.barelyMatchedElements ?? 0),
 	)[0];
 	return cleanObject({

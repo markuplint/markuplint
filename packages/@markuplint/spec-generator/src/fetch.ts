@@ -49,5 +49,5 @@ export function getReferences() {
 	current += 1;
 	bar.update(current, { process: '🎉 Finished.' });
 	bar.stop();
-	return [...cache.keys()].sort();
+	return [...cache.keys()].toSorted();
 }

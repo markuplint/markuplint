@@ -283,10 +283,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return Array.prototype.toSorted == null
-			? // TODO: Use sort instead of toSorted until we end support for Node 18
-				[...nodeTree].sort(sortNodes)
-			: nodeTree.toSorted(sortNodes);
+		return nodeTree.toSorted(sortNodes);
 	}
 
 	nodeize(originNode: Node, parentNode: MLASTParentNode | null, depth: number): readonly MLASTNodeTreeItem[] {
@@ -914,11 +911,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes:
-				Array.prototype.toSorted == null
-					? // TODO: Use sort instead of toSorted until we end support for Node 18
-						[...newChildNodes].sort(sortNodes)
-					: newChildNodes.toSorted(sortNodes),
+			childNodes: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -1435,11 +1428,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		/**
 		 * sorting
 		 */
-		const sorted =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodeOrders].sort(sortNodes)
-				: nodeOrders.toSorted(sortNodes);
+		const sorted = nodeOrders.toSorted(sortNodes);
 
 		/**
 		 * remove duplicated node

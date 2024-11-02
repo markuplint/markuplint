@@ -56,7 +56,7 @@ export function order(
 				continue;
 			}
 
-			const barelyMatchedResult = unmatchedResults.sort((a, b) => b.matched.length - a.matched.length)[0];
+			const barelyMatchedResult = unmatchedResults.toSorted((a, b) => b.matched.length - a.matched.length)[0];
 
 			if (!barelyMatchedResult) {
 				throw new Error('Unreachable code');

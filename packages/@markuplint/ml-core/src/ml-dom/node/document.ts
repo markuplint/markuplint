@@ -3017,8 +3017,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				tokens.push(node.closeTag);
 			}
 		}
-		tokens.sort((a, b) => a.startOffset - b.startOffset);
-		this.#tokenList = Object.freeze(tokens);
+		this.#tokenList = Object.freeze(tokens.toSorted((a, b) => a.startOffset - b.startOffset));
 		return this.#tokenList;
 	}
 

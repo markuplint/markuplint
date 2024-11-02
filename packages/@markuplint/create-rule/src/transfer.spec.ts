@@ -39,7 +39,7 @@ test('transfer', async () => {
 		},
 	});
 	const fileList = await glob(path.resolve(TEST_SANDBOX, '**', '*'));
-	expect(fileList.sort().map(file => path.relative(TEST_SANDBOX, file).split(path.sep).join('/'))).toEqual([
+	expect(fileList.toSorted().map(file => path.relative(TEST_SANDBOX, file).split(path.sep).join('/'))).toEqual([
 		'core',
 		'core/README.ja.md',
 		'core/README.md',

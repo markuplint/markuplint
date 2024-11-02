@@ -21,12 +21,11 @@ export function ignoreBlock(source: string, tags: readonly IgnoreTag[], maskChar
 		replaced = text.replaced;
 		stack.push(...text.stack.map(res => ({ ...res, type: tag.type })));
 	}
-	stack.sort((a, b) => a.index - b.index);
 
 	return {
 		source,
 		replaced,
-		stack,
+		stack: stack.toSorted((a, b) => a.index - b.index),
 		maskChar,
 	};
 }

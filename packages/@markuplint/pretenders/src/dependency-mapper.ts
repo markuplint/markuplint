@@ -64,7 +64,7 @@ export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender
 		linkedPretenders.push(pretender);
 	}
 
-	return linkedPretenders.sort(propSort('selector'));
+	return linkedPretenders.toSorted(propSort('selector'));
 }
 
 function getElName(identity: Identity) {
