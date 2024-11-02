@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.4](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.3...@markuplint/types@4.6.4) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/types
+
+## [4.6.3](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.2...@markuplint/types@4.6.3) (2024-10-27)
+
+**Note:** Version bump only for package @markuplint/types
+
+## [4.6.2](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.1...@markuplint/types@4.6.2) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/types
+
+## [4.6.1](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.6.0...@markuplint/types@4.6.1) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/types
+
 # [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.5.4...@markuplint/types@4.6.0) (2024-09-23)
 
 ### Features

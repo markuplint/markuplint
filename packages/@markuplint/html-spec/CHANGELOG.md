@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.10.1...@markuplint/html-spec@4.10.2) (2024-10-31)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
+## [4.10.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.10.0...@markuplint/html-spec@4.10.1) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
+# [4.10.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.3...@markuplint/html-spec@4.10.0) (2024-10-27)
+
+### Features
+
+- **html-spec:** add the `alpha` attr to `<input type=color>` ([fd877fc](https://github.com/markuplint/markuplint/commit/fd877fc5213212e266068488bdf6d18d6d356574))
+- **html-spec:** add the `autocorrect` global attribute ([8035fbd](https://github.com/markuplint/markuplint/commit/8035fbd183c3eb1ab722eb7093a8e5916cf4ba25))
+- **html-spec:** add the `colorspace` attr to `<input type=color>` ([93b8c2b](https://github.com/markuplint/markuplint/commit/93b8c2b53d59f27bb608e31e49ae3c4b315579ae))
+
+## [4.9.3](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.2...@markuplint/html-spec@4.9.3) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
+## [4.9.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.1...@markuplint/html-spec@4.9.2) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
 ## [4.9.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.9.0...@markuplint/html-spec@4.9.1) (2024-09-23)
 
 **Note:** Version bump only for package @markuplint/html-spec

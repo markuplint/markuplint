@@ -247,6 +247,17 @@
 						}
 					}
 				},
+				"autocorrect": {
+					"type": {
+						"enum": ["", "on", "off"],
+						"disallowToSurroundBySpaces": true,
+						"invalidValueDefault": "on",
+						"missingValueDefault": "on",
+						"sameStates": {
+							"on": [""]
+						}
+					}
+				},
 				"autofocus": {
 					"type": "Boolean"
 				},
@@ -36108,7 +36119,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each column cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each column cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -36173,7 +36184,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each column group cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each column group cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -37652,7 +37663,7 @@
 					"condition": "a[href] img"
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when. Note: Images with loading set to lazy will never be loaded if they do not intersect a visible part of an element, even if loading them would change that as unloaded images have a width and height of 0. Putting width and height on lazyloaded images fixes this issue and is a best practice, recommended by the specification. Doing so also helps prevent layout shifts."
+					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when. Note: Images with loading set to lazy will never be loaded if they do not intersect a visible part of an element, even if loading them would change that as unloaded images have a width and height of 0. Putting width and height on lazy-loaded images fixes this issue and is a best practice, recommended by the specification. Doing so also helps prevent layout shifts."
 				},
 				"longdesc": {
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG's HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
@@ -38196,6 +38207,10 @@
 					},
 					"condition": "[type='file' i]"
 				},
+				"alpha": {
+					"type": "Boolean",
+					"condition": "[type='color' i]"
+				},
 				"alt": {
 					"type": "Any",
 					"condition": "[type='image' i]"
@@ -38236,6 +38251,14 @@
 				"checked": {
 					"type": "Boolean",
 					"condition": ["[type='checkbox' i]", "[type='radio' i]"]
+				},
+				"colorspace": {
+					"type": {
+						"enum": ["limited-srgb", "display-p3"],
+						"invalidValueDefault": "limited-srgb",
+						"missingValueDefault": "limited-srgb"
+					},
+					"condition": "[type='color' i]"
 				},
 				"dirname": {
 					"condition": [
@@ -40218,7 +40241,7 @@
 					}
 				},
 				"charset": {
-					"description": "If present, its value must be an ASCII case-insensitive match for \"utf-8\". It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
+					"description": "If present, its value must be an ASCII case-insensitive match for utf-8. It's unnecessary to specify the charset attribute, because documents must use UTF-8, and the script element inherits its character encoding from the document.",
 					"deprecated": true
 				},
 				"crossorigin": {
@@ -40844,7 +40867,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of the table. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of the table. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"border": {
@@ -40905,7 +40928,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each body cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each body cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -40970,7 +40993,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of the data cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of the data cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -41178,7 +41201,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each foot cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each foot cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -41254,7 +41277,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of the header cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of the header cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -41323,7 +41346,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each head cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each head cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {
@@ -41430,7 +41453,7 @@
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Defines the background color of each row cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a '#', or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
+					"description": "Defines the background color of each row cell. The value is an HTML color; either a 6-digit hexadecimal RGB code, prefixed by a #, or a color keyword. Other CSS <color> values are not supported. Use the background-color CSS property instead, as this attribute is deprecated.",
 					"deprecated": true
 				},
 				"char": {

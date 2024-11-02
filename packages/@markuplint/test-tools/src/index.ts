@@ -14,9 +14,9 @@ export function createJSDOMElement(
 	if (/^<html>/i.test(html)) {
 		const dom = new JSDOM(html);
 		// @ts-ignore
-		global.window = dom.window;
-		global.Element = dom.window.Element;
-		global.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
+		globalThis.window = dom.window;
+		globalThis.Element = dom.window.Element;
+		globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 		if (matches) {
 			dom.window.Element.prototype.matches = function (selector: string) {
 				return matches.call(this, selector);
@@ -26,9 +26,9 @@ export function createJSDOMElement(
 	}
 	const dom = new JSDOM();
 	// @ts-ignore
-	global.window = dom.window;
-	global.Element = dom.window.Element;
-	global.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
+	globalThis.window = dom.window;
+	globalThis.Element = dom.window.Element;
+	globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 	if (matches) {
 		dom.window.Element.prototype.matches = function (selector: string) {
 			return matches.call(this, selector);

@@ -8,7 +8,7 @@ import { Selector } from './selector.js';
 
 beforeEach(() => {
 	const dom = new JSDOM();
-	global.Element = dom.window.Element;
+	globalThis.Element = dom.window.Element;
 });
 
 function createTestElement(html: string, selector?: string) {

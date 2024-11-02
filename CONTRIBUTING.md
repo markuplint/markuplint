@@ -36,5 +36,3 @@ When you wrote code then:
   - For the improved code: @yusukehirao
   - For plugins: @yusukehirao
   - For documents/website: @yusukehirao, @kagankan
-  - For [dockerfile](https://github.com/markuplint/markuplint/blob/main/Dockerfile): @conao3
-  - For [GitHub Actions](https://github.com/markuplint/markuplint/tree/main/.github/workflows): @tyankatsu0105

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.4](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.3...@markuplint/ml-config@4.8.4) (2024-10-31)
+
+**Note:** Version bump only for package @markuplint/ml-config
+
+## [4.8.3](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.2...@markuplint/ml-config@4.8.3) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/ml-config
+
+## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.1...@markuplint/ml-config@4.8.2) (2024-10-27)
+
+**Note:** Version bump only for package @markuplint/ml-config
+
+## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.0...@markuplint/ml-config@4.8.1) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/ml-config
+
+# [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.7.4...@markuplint/ml-config@4.8.0) (2024-10-14)
+
+### Features
+
+- **ml-config:** add `severity` option includes `parseError` prop ([8970fb8](https://github.com/markuplint/markuplint/commit/8970fb85aebb0491261c931b66bddc8f3e76cc0f))
+
 ## [4.7.4](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.7.3...@markuplint/ml-config@4.7.4) (2024-09-23)
 
 **Note:** Version bump only for package @markuplint/ml-config

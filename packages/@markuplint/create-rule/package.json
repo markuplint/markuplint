@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/create-rule",
-	"version": "4.7.7",
+	"version": "4.7.12",
 	"description": "Rule generator for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -25,12 +25,12 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "4.4.5",
-		"@markuplint/ml-core": "4.9.0",
+		"@markuplint/cli-utils": "4.4.9",
+		"@markuplint/ml-core": "4.10.4",
 		"glob": "11.0.0",
 		"prettier": "3.3.3",
 		"ts-node": "10.9.2",
-		"typescript": "5.6.2"
+		"typescript": "5.6.3"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",

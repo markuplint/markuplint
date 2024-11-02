@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.8.1...@markuplint/ml-spec@4.8.2) (2024-10-31)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
+## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.8.0...@markuplint/ml-spec@4.8.1) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
+# [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.7.2...@markuplint/ml-spec@4.8.0) (2024-10-27)
+
+### Features
+
+- **html-spec:** add the `autocorrect` global attribute ([8035fbd](https://github.com/markuplint/markuplint/commit/8035fbd183c3eb1ab722eb7093a8e5916cf4ba25))
+
+## [4.7.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.7.1...@markuplint/ml-spec@4.7.2) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
+## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.7.0...@markuplint/ml-spec@4.7.1) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.6.4...@markuplint/ml-spec@4.7.0) (2024-09-23)
 
 ### Features

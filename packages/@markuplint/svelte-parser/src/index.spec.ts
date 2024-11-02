@@ -11,7 +11,10 @@ describe('parser', () => {
 	test('syntax error', () => {
 		expect(() => {
 			parse('<div></div\nattr>');
-		}).toThrow('Expected >\n1: <div></div\n2: attr>\n   ^');
+		}).toThrowError(`Expected token >
+1: <div></div
+2: attr>
+   ^`);
 	});
 
 	test('standard', () => {
@@ -34,7 +37,7 @@ describe('parser', () => {
 			'[1:1]>[1:28](0,27)#ps:Script: <script>let␣i␣=␣1;</script>',
 			'[1:28]>[3:1](27,29)#text: ⏎⏎',
 			'[3:1]>[3:20](29,48)div: <div␣data-attr={i}>',
-			'[3:20]>[3:23](48,51)#ps:MustacheTag: {i}',
+			'[3:20]>[3:23](48,51)#ps:ExpressionTag: {i}',
 			'[3:23]>[3:29](51,57)div: </div>',
 			'[3:29]>[4:2](57,59)#text: ⏎→',
 			'[4:2]>[4:8](59,65)span: <span>',
@@ -77,7 +80,7 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(r.nodeList);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
-			'[1:6]>[1:16](5,15)#ps:MustacheTag: {variable}',
+			'[1:6]>[1:16](5,15)#ps:ExpressionTag: {variable}',
 			'[1:16]>[1:22](15,21)div: </div>',
 		]);
 	});
@@ -110,19 +113,25 @@ describe('parser', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:6](0,5)div: <div>',
 			'[1:6]>[2:2](5,7)#text: ⏎→',
-			'[2:2]>[3:3](7,42)#ps:if (if): {#if␣porridge.temperature␣>␣100}⏎→→',
+			'[2:2]>[2:34](7,39)#ps:if (if): {#if␣porridge.temperature␣>␣100}',
+			'[2:34]>[3:3](39,42)#text: ⏎→→',
 			'[3:3]>[3:6](42,45)p: <p>',
 			'[3:6]>[3:14](45,53)#text: too␣hot!',
 			'[3:14]>[3:18](53,57)p: </p>',
-			'[3:18]>[5:3](57,98)#ps:elseif (if:elseif): ⏎→{:else␣if␣80␣>␣porridge.temperature}⏎→→',
+			'[3:18]>[4:2](57,59)#text: ⏎→',
+			'[4:2]>[4:38](59,95)#ps:elseif (if:elseif): {:else␣if␣80␣>␣porridge.temperature}',
+			'[4:38]>[5:3](95,98)#text: ⏎→→',
 			'[5:3]>[5:6](98,101)p: <p>',
 			'[5:6]>[5:15](101,110)#text: too␣cold!',
 			'[5:15]>[5:19](110,114)p: </p>',
-			'[5:19]>[7:3](114,126)#ps:else (if:else): ⏎→{:else}⏎→→',
+			'[5:19]>[6:2](114,116)#text: ⏎→',
+			'[6:2]>[6:9](116,123)#ps:else (if:else): {:else}',
+			'[6:9]>[7:3](123,126)#text: ⏎→→',
 			'[7:3]>[7:6](126,129)p: <p>',
 			'[7:6]>[7:17](129,140)#text: just␣right!',
 			'[7:17]>[7:21](140,144)p: </p>',
-			'[7:21]>[8:7](144,151)#ps:/if (end): ⏎→{/if}',
+			'[7:21]>[8:2](144,146)#text: ⏎→',
+			'[8:2]>[8:7](146,151)#ps:/if (end): {/if}',
 			'[8:7]>[9:1](151,152)#text: ⏎',
 			'[9:1]>[9:7](152,158)div: </div>',
 		]);
@@ -141,7 +150,10 @@ describe('parser', () => {
 	test('each statement (empty)', () => {
 		const r = parse('{#each expression as name}{/each}');
 		const map = nodeListToDebugMaps(r.nodeList);
-		expect(map).toStrictEqual(['[1:1]>[1:34](0,33)#ps:each (each): {#each␣expression␣as␣name}{/each}']);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:27](0,26)#ps:each (each): {#each␣expression␣as␣name}',
+			'[1:27]>[1:34](26,33)#ps:/each (end): {/each}',
+		]);
 	});
 
 	test('each else statement', () => {
@@ -156,6 +168,20 @@ describe('parser', () => {
 		]);
 	});
 
+	test('each list', () => {
+		const r = parse('<ul>{#each a as b}<li>item</li>{/each}</ul>');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:5](0,4)ul: <ul>',
+			'[1:5]>[1:19](4,18)#ps:each (each): {#each␣a␣as␣b}',
+			'[1:19]>[1:23](18,22)li: <li>',
+			'[1:23]>[1:27](22,26)#text: item',
+			'[1:27]>[1:32](26,31)li: </li>',
+			'[1:32]>[1:39](31,38)#ps:/each (end): {/each}',
+			'[1:39]>[1:44](38,43)ul: </ul>',
+		]);
+	});
+
 	test('deep each statement', () => {
 		const r = parse('<ul>{#each a as b}<li>{#each c as d}{/each}</li>{/each}</ul>');
 		const map = nodeListToDebugMaps(r.nodeList);
@@ -163,7 +189,8 @@ describe('parser', () => {
 			'[1:1]>[1:5](0,4)ul: <ul>',
 			'[1:5]>[1:19](4,18)#ps:each (each): {#each␣a␣as␣b}',
 			'[1:19]>[1:23](18,22)li: <li>',
-			'[1:23]>[1:44](22,43)#ps:each (each): {#each␣c␣as␣d}{/each}',
+			'[1:23]>[1:37](22,36)#ps:each (each): {#each␣c␣as␣d}',
+			'[1:37]>[1:44](36,43)#ps:/each (end): {/each}',
 			'[1:44]>[1:49](43,48)li: </li>',
 			'[1:49]>[1:56](48,55)#ps:/each (end): {/each}',
 			'[1:56]>[1:61](55,60)ul: </ul>',
@@ -181,6 +208,187 @@ describe('parser', () => {
 			'[1:38]>[1:51](37,50)#ps:await:catch (await:catch): {:catch␣name}',
 			'[1:51]>[1:54](50,53)#text: ...',
 			'[1:54]>[1:62](53,61)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (2)', () => {
+		const r = parse('{#await expression}...{:then}...{:catch}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:await:catch (await:catch): {:catch}',
+			'[1:41]>[1:44](40,43)#text: ...',
+			'[1:44]>[1:52](43,51)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (3)', () => {
+		const r = parse('{#await expression}{:then name}{:catch name}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:32](19,31)#ps:await:then (await:then): {:then␣name}',
+			'[1:32]>[1:45](31,44)#ps:await:catch (await:catch): {:catch␣name}',
+			'[1:45]>[1:53](44,52)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (4)', () => {
+		const r = parse('{#await expression}{:then}{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:27](19,26)#ps:await:then (await:then): {:then}',
+			'[1:27]>[1:35](26,34)#ps:await:catch (await:catch): {:catch}',
+			'[1:35]>[1:43](34,42)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (5)', () => {
+		const r = parse('{#await expression}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:28](19,27)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (6)', () => {
+		const r = parse('{#await expression}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:31](22,30)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (7)', () => {
+		const r = parse('{#await expression}...{:then}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:38](29,37)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (8)', () => {
+		const r = parse('{#await expression}...{:then}...{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (9)', () => {
+		const r = parse('{#await expression}...{:then}...{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:30](22,29)#ps:await:then (await:then): {:then}',
+			'[1:30]>[1:33](29,32)#text: ...',
+			'[1:33]>[1:41](32,40)#ps:await:catch (await:catch): {:catch}',
+			'[1:41]>[1:49](40,48)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (10)', () => {
+		const r = parse('{#await expression}...{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:23](19,22)#text: ...',
+			'[1:23]>[1:31](22,30)#ps:await:catch (await:catch): {:catch}',
+			'[1:31]>[1:39](30,38)#ps:/await (end): {/await}',
+		]);
+	});
+
+	test('await then catch statement (11)', () => {
+		const r = parse('{#await expression}{:catch}{/await}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:20](0,19)#ps:await (await): {#await␣expression}',
+			'[1:20]>[1:28](19,27)#ps:await:catch (await:catch): {:catch}',
+			'[1:28]>[1:36](27,35)#ps:/await (end): {/await}',
+		]);
+	});
+
+	// https://svelte-5-preview.vercel.app/docs/snippets
+	test('snippet', () => {
+		const r = parse('{#snippet name(param)}<div />{/snippet}');
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:23](0,22)#ps:snippet: {#snippet␣name(param)}',
+			'[1:23]>[1:30](22,29)div: <div␣/>',
+			'[1:30]>[1:40](29,39)#ps:/snippet: {/snippet}',
+		]);
+	});
+
+	test('Snippets API', () => {
+		const r = parse(`{#snippet figure(image)}
+	<figure>
+		<img
+			src={image.src}
+			alt={image.caption}
+			width={image.width}
+			height={image.height}
+		/>
+		<figcaption>{image.caption}</figcaption>
+	</figure>
+{/snippet}
+
+{#each images as image}
+	{#if image.href}
+		<a href={image.href}>
+			{@render figure(image)}
+		</a>
+	{:else}
+		{@render figure(image)}
+	{/if}
+{/each}`);
+		const map = nodeListToDebugMaps(r.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:25](0,24)#ps:snippet: {#snippet␣figure(image)}',
+			'[1:25]>[2:2](24,26)#text: ⏎→',
+			'[2:2]>[2:10](26,34)figure: <figure>',
+			'[2:10]>[3:3](34,37)#text: ⏎→→',
+			'[3:3]>[8:5](37,136)img: <img⏎→→→src={image.src}⏎→→→alt={image.caption}⏎→→→width={image.width}⏎→→→height={image.height}⏎→→/>',
+			'[8:5]>[9:3](136,139)#text: ⏎→→',
+			'[9:3]>[9:15](139,151)figcaption: <figcaption>',
+			'[9:15]>[9:30](151,166)#ps:ExpressionTag: {image.caption}',
+			'[9:30]>[9:43](166,179)figcaption: </figcaption>',
+			'[9:43]>[10:2](179,181)#text: ⏎→',
+			'[10:2]>[10:11](181,190)figure: </figure>',
+			'[10:11]>[11:1](190,191)#text: ⏎',
+			'[11:1]>[11:11](191,201)#ps:/snippet: {/snippet}',
+			'[11:11]>[13:1](201,203)#text: ⏎⏎',
+			'[13:1]>[13:24](203,226)#ps:each (each): {#each␣images␣as␣image}',
+			'[13:24]>[14:2](226,228)#text: ⏎→',
+			'[14:2]>[14:18](228,244)#ps:if (if): {#if␣image.href}',
+			'[14:18]>[15:3](244,247)#text: ⏎→→',
+			'[15:3]>[15:24](247,268)a: <a␣href={image.href}>',
+			'[15:24]>[16:4](268,272)#text: ⏎→→→',
+			'[16:4]>[16:27](272,295)#ps:RenderTag: {@render␣figure(image)}',
+			'[16:27]>[17:3](295,298)#text: ⏎→→',
+			'[17:3]>[17:7](298,302)a: </a>',
+			'[17:7]>[18:2](302,304)#text: ⏎→',
+			'[18:2]>[18:9](304,311)#ps:else (if:else): {:else}',
+			'[18:9]>[19:3](311,314)#text: ⏎→→',
+			'[19:3]>[19:26](314,337)#ps:RenderTag: {@render␣figure(image)}',
+			'[19:26]>[20:2](337,339)#text: ⏎→',
+			'[20:2]>[20:7](339,344)#ps:/if (end): {/if}',
+			'[20:7]>[21:1](344,345)#text: ⏎',
+			'[21:1]>[21:8](345,352)#ps:/each (end): {/each}',
 		]);
 	});
 
@@ -517,23 +725,27 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[1:1]>[1:5](0,4)ul: <ul>',
 			'[1:5]>[2:2](4,6)#text: ⏎→',
-			'[2:2]>[3:3](6,30)#ps:if (if): {#if␣cond␣===␣valueA}⏎→→',
+			'[2:2]>[2:23](6,27)#ps:if (if): {#if␣cond␣===␣valueA}',
+			'[2:23]>[3:3](27,30)#text: ⏎→→',
 			'[3:3]>[3:7](30,34)li: <li>',
 			'[3:7]>[3:8](34,35)#text: A',
 			'[3:8]>[3:13](35,40)li: </li>',
-			'[3:13]>[5:3](40,71)#ps:elseif (if:elseif): ⏎→{:else␣if␣cond␣===␣valueB}⏎→→',
+			'[3:13]>[4:2](40,42)#text: ⏎→',
+			'[4:2]>[4:28](42,68)#ps:elseif (if:elseif): {:else␣if␣cond␣===␣valueB}',
+			'[4:28]>[5:3](68,71)#text: ⏎→→',
 			'[5:3]>[5:7](71,75)li: <li>',
 			'[5:7]>[5:8](75,76)#text: B',
 			'[5:8]>[5:13](76,81)li: </li>',
-			'[5:13]>[6:7](81,88)#ps:/if (end): ⏎→{/if}',
+			'[5:13]>[6:2](81,83)#text: ⏎→',
+			'[6:2]>[6:7](83,88)#ps:/if (end): {/if}',
 			'[6:7]>[7:1](88,89)#text: ⏎',
 			'[7:1]>[7:6](89,94)ul: </ul>',
 		]);
 
-		expect(r.nodeList[0].childNodes[3].raw).toBe('\n\t{/if}');
-		expect(r.nodeList[10].raw).toBe('\n\t{/if}');
-		expect(r.nodeList[0].childNodes[3].raw).toBe(r.nodeList[10].raw);
-		expect(r.nodeList[0].childNodes[3].uuid).toBe(r.nodeList[10].uuid);
+		expect(r.nodeList[0].childNodes[3].raw).toBe('{/if}');
+		expect(r.nodeList[14].raw).toBe('{/if}');
+		expect(r.nodeList[0].childNodes[3].raw).toBe(r.nodeList[14].raw);
+		expect(r.nodeList[0].childNodes[3].uuid).toBe(r.nodeList[14].uuid);
 	});
 
 	test('#991', () => {
@@ -624,7 +836,7 @@ describe('Issues', () => {
 			expect(map).toStrictEqual([
 				'[1:1]>[3:2](0,20)#ps:key: {⏎→#key␣expression⏎}',
 				'[3:2]>[3:5](20,23)#text: ...',
-				'[3:5]>[5:2](23,32)#ps:/key (end): {⏎→/key⏎}',
+				'[3:5]>[5:2](23,32)#ps:/key: {⏎→/key⏎}',
 			]);
 		});
 	});
@@ -635,9 +847,10 @@ describe('Issues', () => {
 {/each}`);
 		const map = nodeListToDebugMaps(ast.nodeList, true);
 		expect(map).toEqual([
-			'[1:1]>[2:2](0,39)#ps:each (each): {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}⏎→',
+			'[1:1]>[1:38](0,37)#ps:each (each): {#each␣list␣as␣item,␣i␣(`${i}-${i}`)}',
+			'[1:38]>[2:2](37,39)#text: ⏎→',
 			'[2:2]>[2:7](39,44)div: <div>',
-			'[2:7]>[2:13](44,50)#ps:MustacheTag: {item}',
+			'[2:7]>[2:13](44,50)#ps:ExpressionTag: {item}',
 			'[2:13]>[2:19](50,56)div: </div>',
 			'[2:19]>[3:1](56,57)#text: ⏎',
 			'[3:1]>[3:8](57,64)#ps:/each (end): {/each}',
@@ -711,110 +924,158 @@ describe('Issues', () => {
 		expect(map).toEqual([
 			"[1:1]>[3:10](0,37)#ps:Script: <script>⏎→const␣type␣=␣'c';⏎</script>",
 			'[3:10]>[5:1](37,39)#text: ⏎⏎',
-			"[5:1]>[6:2](39,59)#ps:if (if): {#if␣type␣===␣'a'}⏎→",
+			"[5:1]>[5:19](39,57)#ps:if (if): {#if␣type␣===␣'a'}",
+			'[5:19]>[6:2](57,59)#text: ⏎→',
 			'[6:2]>[6:5](59,62)a: <a>',
 			'[6:5]>[6:6](62,63)#text: a',
 			'[6:6]>[6:10](63,67)a: </a>',
-			"[6:10]>[8:2](67,93)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'b'}⏎→",
+			'[6:10]>[7:1](67,68)#text: ⏎',
+			"[7:1]>[7:24](68,91)#ps:elseif (if:elseif): {:else␣if␣type␣===␣'b'}",
+			'[7:24]>[8:2](91,93)#text: ⏎→',
 			'[8:2]>[8:5](93,96)b: <b>',
 			'[8:5]>[8:6](96,97)#text: b',
 			'[8:6]>[8:10](97,101)b: </b>',
-			"[8:10]>[10:2](101,127)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'c'}⏎→",
+			'[8:10]>[9:1](101,102)#text: ⏎',
+			"[9:1]>[9:24](102,125)#ps:elseif (if:elseif): {:else␣if␣type␣===␣'c'}",
+			'[9:24]>[10:2](125,127)#text: ⏎→',
 			'[10:2]>[10:5](127,130)c: <c>',
 			'[10:5]>[11:3](130,133)#text: ⏎→→',
-			"[11:3]>[12:4](133,155)#ps:if (if): {#if␣type␣===␣'a'}⏎→→→",
+			"[11:3]>[11:21](133,151)#ps:if (if): {#if␣type␣===␣'a'}",
+			'[11:21]>[12:4](151,155)#text: ⏎→→→',
 			'[12:4]>[12:7](155,158)a: <a>',
 			'[12:7]>[12:8](158,159)#text: a',
 			'[12:8]>[12:12](159,163)a: </a>',
-			"[12:12]>[14:4](163,193)#ps:elseif (if:elseif): ⏎→→{:else␣if␣type␣===␣'b'}⏎→→→",
+			'[12:12]>[13:3](163,166)#text: ⏎→→',
+			"[13:3]>[13:26](166,189)#ps:elseif (if:elseif): {:else␣if␣type␣===␣'b'}",
+			'[13:26]>[14:4](189,193)#text: ⏎→→→',
 			'[14:4]>[14:7](193,196)b: <b>',
 			'[14:7]>[14:8](196,197)#text: b',
 			'[14:8]>[14:12](197,201)b: </b>',
-			'[14:12]>[16:4](201,215)#ps:else (if:else): ⏎→→{:else}⏎→→→',
+			'[14:12]>[15:3](201,204)#text: ⏎→→',
+			'[15:3]>[15:10](204,211)#ps:else (if:else): {:else}',
+			'[15:10]>[16:4](211,215)#text: ⏎→→→',
 			'[16:4]>[16:7](215,218)e: <e>',
 			'[16:7]>[16:8](218,219)#text: e',
 			'[16:8]>[16:12](219,223)e: </e>',
-			'[16:12]>[17:8](223,231)#ps:/if (end): ⏎→→{/if}',
+			'[16:12]>[17:3](223,226)#text: ⏎→→',
+			'[17:3]>[17:8](226,231)#ps:/if (end): {/if}',
 			'[17:8]>[18:2](231,233)#text: ⏎→',
 			'[18:2]>[18:6](233,237)c: </c>',
-			"[18:6]>[20:2](237,263)#ps:elseif (if:elseif): ⏎{:else␣if␣type␣===␣'d'}⏎→",
+			'[18:6]>[19:1](237,238)#text: ⏎',
+			"[19:1]>[19:24](238,261)#ps:elseif (if:elseif): {:else␣if␣type␣===␣'d'}",
+			'[19:24]>[20:2](261,263)#text: ⏎→',
 			'[20:2]>[20:5](263,266)d: <d>',
 			'[20:5]>[20:6](266,267)#text: d',
 			'[20:6]>[20:10](267,271)d: </d>',
-			'[20:10]>[22:2](271,281)#ps:else (if:else): ⏎{:else}⏎→',
+			'[20:10]>[21:1](271,272)#text: ⏎',
+			'[21:1]>[21:8](272,279)#ps:else (if:else): {:else}',
+			'[21:8]>[22:2](279,281)#text: ⏎→',
 			'[22:2]>[22:5](281,284)e: <e>',
 			'[22:5]>[22:6](284,285)#text: e',
 			'[22:6]>[22:10](285,289)e: </e>',
-			'[22:10]>[23:6](289,295)#ps:/if (end): ⏎{/if}',
+			'[22:10]>[23:1](289,290)#text: ⏎',
+			'[23:1]>[23:6](290,295)#ps:/if (end): {/if}',
 		]);
 		const tree = nodeTreeDebugView(ast.nodeList);
 		expect(tree.map(n => n?.replaceAll(/[\da-z]{8}/g, '▓'.repeat(8)))).toEqual([
 			'000: [▓▓▓▓▓▓▓▓] #ps:Script(▓▓▓▓▓▓▓▓)',
 			'001: [▓▓▓▓▓▓▓▓] #text(▓▓▓▓▓▓▓▓)',
 			'002: [▓▓▓▓▓▓▓▓] #ps:if(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ a(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ /a(▓▓▓▓▓▓▓▓)',
-			'003: [▓▓▓▓▓▓▓▓]   a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'003: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'004: [▓▓▓▓▓▓▓▓]   a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'004: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'005: [▓▓▓▓▓▓▓▓]   /a(▓▓▓▓▓▓▓▓)',
-			'006: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'005: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'006: [▓▓▓▓▓▓▓▓]   /a(▓▓▓▓▓▓▓▓)',
+			'007: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'008: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ b(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ /b(▓▓▓▓▓▓▓▓)',
-			'007: [▓▓▓▓▓▓▓▓]   b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'009: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'010: [▓▓▓▓▓▓▓▓]   b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'008: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'009: [▓▓▓▓▓▓▓▓]   /b(▓▓▓▓▓▓▓▓)',
-			'010: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'011: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'012: [▓▓▓▓▓▓▓▓]   /b(▓▓▓▓▓▓▓▓)',
+			'013: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'014: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ c(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ /c(▓▓▓▓▓▓▓▓)',
-			'011: [▓▓▓▓▓▓▓▓]   c(▓▓▓▓▓▓▓▓) => /c(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'015: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'016: [▓▓▓▓▓▓▓▓]   c(▓▓▓▓▓▓▓▓) => /c(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #ps:if(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #ps:elseif(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #ps:else(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #ps:/if(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'012: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'013: [▓▓▓▓▓▓▓▓]     #ps:if(▓▓▓▓▓▓▓▓)',
+			'017: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'018: [▓▓▓▓▓▓▓▓]     #ps:if(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ a(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ /a(▓▓▓▓▓▓▓▓)',
-			'014: [▓▓▓▓▓▓▓▓]       a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'019: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'020: [▓▓▓▓▓▓▓▓]       a(▓▓▓▓▓▓▓▓) => /a(▓▓▓▓▓▓▓▓)',
 			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'015: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
-			'016: [▓▓▓▓▓▓▓▓]       /a(▓▓▓▓▓▓▓▓)',
-			'017: [▓▓▓▓▓▓▓▓]     #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'021: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'022: [▓▓▓▓▓▓▓▓]       /a(▓▓▓▓▓▓▓▓)',
+			'023: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'024: [▓▓▓▓▓▓▓▓]     #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ b(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ /b(▓▓▓▓▓▓▓▓)',
-			'018: [▓▓▓▓▓▓▓▓]       b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'025: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'026: [▓▓▓▓▓▓▓▓]       b(▓▓▓▓▓▓▓▓) => /b(▓▓▓▓▓▓▓▓)',
 			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'019: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
-			'020: [▓▓▓▓▓▓▓▓]       /b(▓▓▓▓▓▓▓▓)',
-			'021: [▓▓▓▓▓▓▓▓]     #ps:else(▓▓▓▓▓▓▓▓)',
+			'027: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'028: [▓▓▓▓▓▓▓▓]       /b(▓▓▓▓▓▓▓▓)',
+			'029: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'030: [▓▓▓▓▓▓▓▓]     #ps:else(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ e(▓▓▓▓▓▓▓▓)',
 			'                      ┗━ /e(▓▓▓▓▓▓▓▓)',
-			'022: [▓▓▓▓▓▓▓▓]       e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
+			'                      ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'031: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'032: [▓▓▓▓▓▓▓▓]       e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
 			'                        ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'023: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
-			'024: [▓▓▓▓▓▓▓▓]       /e(▓▓▓▓▓▓▓▓)',
-			'025: [▓▓▓▓▓▓▓▓]     #ps:/if(▓▓▓▓▓▓▓▓)',
-			'026: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'027: [▓▓▓▓▓▓▓▓]   /c(▓▓▓▓▓▓▓▓)',
-			'028: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'033: [▓▓▓▓▓▓▓▓]         #text(▓▓▓▓▓▓▓▓)',
+			'034: [▓▓▓▓▓▓▓▓]       /e(▓▓▓▓▓▓▓▓)',
+			'035: [▓▓▓▓▓▓▓▓]       #text(▓▓▓▓▓▓▓▓)',
+			'036: [▓▓▓▓▓▓▓▓]     #ps:/if(▓▓▓▓▓▓▓▓)',
+			'037: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'038: [▓▓▓▓▓▓▓▓]   /c(▓▓▓▓▓▓▓▓)',
+			'039: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'040: [▓▓▓▓▓▓▓▓] #ps:elseif(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ d(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ /d(▓▓▓▓▓▓▓▓)',
-			'029: [▓▓▓▓▓▓▓▓]   d(▓▓▓▓▓▓▓▓) => /d(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'041: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'042: [▓▓▓▓▓▓▓▓]   d(▓▓▓▓▓▓▓▓) => /d(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'030: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'031: [▓▓▓▓▓▓▓▓]   /d(▓▓▓▓▓▓▓▓)',
-			'032: [▓▓▓▓▓▓▓▓] #ps:else(▓▓▓▓▓▓▓▓)',
+			'043: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'044: [▓▓▓▓▓▓▓▓]   /d(▓▓▓▓▓▓▓▓)',
+			'045: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'046: [▓▓▓▓▓▓▓▓] #ps:else(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ e(▓▓▓▓▓▓▓▓)',
 			'                  ┗━ /e(▓▓▓▓▓▓▓▓)',
-			'033: [▓▓▓▓▓▓▓▓]   e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
+			'                  ┗━ #text(▓▓▓▓▓▓▓▓)',
+			'047: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'048: [▓▓▓▓▓▓▓▓]   e(▓▓▓▓▓▓▓▓) => /e(▓▓▓▓▓▓▓▓)',
 			'                    ┗━ #text(▓▓▓▓▓▓▓▓)',
-			'034: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
-			'035: [▓▓▓▓▓▓▓▓]   /e(▓▓▓▓▓▓▓▓)',
-			'036: [▓▓▓▓▓▓▓▓] #ps:/if(▓▓▓▓▓▓▓▓)',
+			'049: [▓▓▓▓▓▓▓▓]     #text(▓▓▓▓▓▓▓▓)',
+			'050: [▓▓▓▓▓▓▓▓]   /e(▓▓▓▓▓▓▓▓)',
+			'051: [▓▓▓▓▓▓▓▓]   #text(▓▓▓▓▓▓▓▓)',
+			'052: [▓▓▓▓▓▓▓▓] #ps:/if(▓▓▓▓▓▓▓▓)',
 		]);
 	});
 

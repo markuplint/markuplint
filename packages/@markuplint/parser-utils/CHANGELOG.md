@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.2...@markuplint/parser-utils@4.8.0) (2024-10-31)
+
+### Features
+
+- **parser-utils:** add filter option to `nodeTreeDebugView` ([8c3d618](https://github.com/markuplint/markuplint/commit/8c3d618ef50902b379c50c7b43b13d242dfe3b2b))
+
+## [4.7.2](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.1...@markuplint/parser-utils@4.7.2) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
+## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.0...@markuplint/parser-utils@4.7.1) (2024-10-27)
+
+### Performance Improvements
+
+- **parser-utils:** adjusted siblings correction timing to reduce exponential complexity ([676357c](https://github.com/markuplint/markuplint/commit/676357c438df7545f472787c9032463f9fdba515))
+
+# [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.8...@markuplint/parser-utils@4.7.0) (2024-10-15)
+
+### Features
+
+- **parser-utils:** expose `getOffsetsFromCode` function ([8ef7aec](https://github.com/markuplint/markuplint/commit/8ef7aec26d3198328c86ebeffaa0bd9c879a1f0e))
+
+## [4.6.8](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.7...@markuplint/parser-utils@4.6.8) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
 ## [4.6.7](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.6.6...@markuplint/parser-utils@4.6.7) (2024-09-23)
 
 **Note:** Version bump only for package @markuplint/parser-utils

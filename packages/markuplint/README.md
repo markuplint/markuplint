@@ -73,15 +73,19 @@ Options
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
-	--allow-warnings                       Return status code 0 even if there are warnings.
 	--no-import-preset-rules               No import preset rules.
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
+	--allow-warnings                       Return status code 0 even if there are warnings.
+	--allow-empty-input                    Return status code 1 even if there are no input files.
+	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
+	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 
 	--init                                 Initialize settings interactively.
+	--search                               Search lines of codes that include the target element by selectors.
 
 	--help,                  -h            Show help.
 	--version,               -v            Show version.
@@ -122,7 +126,6 @@ Examples
 [<img width="36" src="https://avatars.githubusercontent.com/u/1996642" alt="Okuto Oyama" />](https://github.com/yamanoku)
 [<img width="36" src="https://avatars.githubusercontent.com/u/6581173" alt="miita" />](https://github.com/mikimhk)
 [<img width="36" src="https://avatars.githubusercontent.com/u/111797" alt="Yasuo Fukuda" />](https://github.com/sigwyg)
-[<img width="36" src="https://avatars.githubusercontent.com/u/802921" alt="Hideyuki Saito" />](https://github.com/hideyukisaito)
 [<img width="36" src="https://avatars.githubusercontent.com/u/91047157" alt="shamokit" />](https://github.com/shamokit)
 [<img width="36" src="https://avatars.githubusercontent.com/u/18516475" alt="takanorip" />](https://github.com/takanorip)
 

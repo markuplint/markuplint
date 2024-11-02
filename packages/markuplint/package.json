@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "4.9.4",
+	"version": "4.11.2",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -11,7 +11,8 @@
 		".": {
 			"import": "./lib/index.js",
 			"types": "./lib/index.d.ts"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"typedoc": {
 		"entryPoint": "./src/index.ts"
@@ -25,17 +26,17 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "4.4.5",
-		"@markuplint/file-resolver": "4.9.2",
-		"@markuplint/html-parser": "4.6.7",
-		"@markuplint/html-spec": "4.9.1",
-		"@markuplint/i18n": "4.5.3",
-		"@markuplint/ml-ast": "4.4.4",
-		"@markuplint/ml-config": "4.7.4",
-		"@markuplint/ml-core": "4.9.0",
-		"@markuplint/ml-spec": "4.7.0",
-		"@markuplint/rules": "4.10.0",
-		"@markuplint/shared": "4.4.5",
+		"@markuplint/cli-utils": "4.4.9",
+		"@markuplint/file-resolver": "4.9.7",
+		"@markuplint/html-parser": "4.6.12",
+		"@markuplint/html-spec": "4.10.2",
+		"@markuplint/i18n": "4.5.7",
+		"@markuplint/ml-ast": "4.4.8",
+		"@markuplint/ml-config": "4.8.4",
+		"@markuplint/ml-core": "4.10.4",
+		"@markuplint/ml-spec": "4.8.2",
+		"@markuplint/rules": "4.10.5",
+		"@markuplint/shared": "4.4.9",
 		"@types/debug": "4.1.12",
 		"chokidar": "4.0.1",
 		"debug": "4.3.7",

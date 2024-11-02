@@ -37,7 +37,7 @@ export class HtmlParser extends Parser<Node, State> {
 		});
 	}
 
-	tokenize() {
+	tokenize(): { ast: Node[]; isFragment: boolean } {
 		const isFragment = isDocumentFragment(this.rawCode);
 		const parseFn = isFragment ? parseFragment : parse;
 		const doc = parseFn(this.rawCode, {
