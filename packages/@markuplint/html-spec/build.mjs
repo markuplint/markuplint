@@ -1,8 +1,9 @@
 import path from 'node:path';
 
 import { main } from '@markuplint/spec-generator';
+import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 await main({
 	outputFilePath: path.resolve(__dirname, 'index.json'),
