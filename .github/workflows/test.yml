@@ -17,6 +17,7 @@ on:
 
 env:
     NODE_BUILD_VERSION: 22
+    NX_DISABLE_DB: true
 
 jobs:
     dev-setup:
