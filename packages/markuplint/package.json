@@ -21,7 +21,7 @@
 		"markuplint": "./bin/markuplint.mjs"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --build --watch",
 		"clean": "tsc --build --clean"
 	},

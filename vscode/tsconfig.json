@@ -1,7 +1,6 @@
 {
 	"extends": ["@markuplint-dev/tsconfig"],
 	"compilerOptions": {
-		"rootDir": "./src",
 		"noEmit": true,
 		"resolveJsonModule": true
 	},
@@ -9,7 +8,5 @@
 		{
 			"path": "../packages/markuplint"
 		}
-	],
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "out", "test"]
+	]
 }
