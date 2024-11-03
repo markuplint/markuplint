@@ -924,13 +924,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (index === -1) {
 			return;
 		}
-		if (Array.prototype.toSpliced == null) {
-			const newChildNodes = [...parentNode.childNodes];
-			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, ...replacementChildNodes);
-			Object.assign(parentNode, { childNodes: newChildNodes });
-			return;
-		}
 		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
 		Object.assign(parentNode, { childNodes: newChildNodes });
 	}
@@ -1470,12 +1463,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const raw = firstNode.raw.slice(offsetOffset);
 
 		if (!raw) {
-			if (Array.prototype.toSpliced == null) {
-				const newNodeList = [...nodeList];
-				// TODO: Use splice instead of toSpliced until we end support for Node 18
-				newNodeList.splice(0, 1);
-				return newNodeList;
-			}
 			return nodeList.toSpliced(0, 1);
 		}
 
