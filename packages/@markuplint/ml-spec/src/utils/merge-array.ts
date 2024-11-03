@@ -15,7 +15,8 @@ export function mergeArray<T extends NamedDefinition>(
 			result.push(bItem);
 			continue;
 		}
-		const aItem = result.splice(aIndex, 1)[0];
+		const removedItems = result.splice(aIndex, 1);
+		const aItem = removedItems[0];
 		if (typeof bItem === 'string') {
 			continue;
 		}
