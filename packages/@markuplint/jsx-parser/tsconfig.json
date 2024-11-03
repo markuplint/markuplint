@@ -1,9 +1,7 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
-		"composite": true,
-		"outDir": "./lib",
-		"rootDir": "./src"
+		"composite": true
 	},
 	"references": [
 		{
@@ -15,7 +13,5 @@
 		{
 			"path": "../parser-utils"
 		}
-	],
-	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	]
 }

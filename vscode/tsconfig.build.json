@@ -1,0 +1,13 @@
+{
+	"extends": ["./tsconfig.json"],
+	"compilerOptions": {
+		"rootDir": "./src"
+	},
+	"references": [
+		{
+			"path": "../packages/markuplint"
+		}
+	],
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "out", "test/*.js"]
+}

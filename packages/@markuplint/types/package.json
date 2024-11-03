@@ -20,7 +20,7 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --project tsconfig.build.json",
 		"clean": "tsc --build --clean",
 		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
 		"schema:types": "tsx \"./gen/types.ts\"",
@@ -34,7 +34,7 @@
 		"@types/debug": "4.1.12",
 		"@types/whatwg-mimetype": "3.0.2",
 		"bcp-47": "2.1.0",
-		"css-tree": "3.0.0",
+		"css-tree": "3.0.1",
 		"debug": "4.3.7",
 		"leven": "4.0.0",
 		"type-fest": "4.26.1",
