@@ -20,9 +20,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --build --watch",
-		"clean": "tsc --build --clean"
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
+		"clean": "tsc --build --clean --project tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.9",

@@ -20,7 +20,7 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {

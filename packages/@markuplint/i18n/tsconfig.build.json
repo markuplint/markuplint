@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./esm",
+		"rootDir": "./src"
+	},
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "esm", "cjs", "./src/**/*.spec.ts"]
+}
