@@ -35,5 +35,10 @@
 		"textlint-rule-prh": "5.3.0",
 		"type-fest": "4.26.1",
 		"vitest": "2.1.4"
+	},
+	"optionalDependencies": {
+		"@esbuild/linux-x64": "0.24.0",
+		"@esbuild/win32-x64": "0.24.0",
+		"@rollup/rollup-linux-x64-gnu": "4.24.3"
 	}
 }
