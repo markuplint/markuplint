@@ -165,43 +165,6 @@ export interface MLASTDocument {
 	readonly unknownParseError?: string;
 }
 
-/**
- * @deprecated Use `MLParser` instead. This will be dropped in v5.
- */
-export interface MLMarkupLanguageParser {
-	/**
-	 * @deprecated
-	 */
-	parse(
-		sourceCode: string,
-		options?: ParserOptions & {
-			readonly offsetOffset?: number;
-			readonly offsetLine?: number;
-			readonly offsetColumn?: number;
-		},
-	): MLASTDocument;
-
-	/**
-	 * @default "omittable"
-	 * @deprecated
-	 */
-	endTag?: EndTagType;
-
-	/**
-	 * Detect value as a true if its attribute is booleanish value and omitted.
-	 *
-	 * Ex:
-	 * ```jsx
-	 * <Component aria-hidden />
-	 * ```
-	 *
-	 * In the above, the `aria-hidden` is `true`.
-	 *
-	 * @deprecated
-	 */
-	booleanish?: boolean;
-}
-
 export interface MLParser {
 	parse(
 		sourceCode: string,
@@ -257,11 +220,6 @@ export type ParserAuthoredElementNameDistinguishing =
 	| readonly (string | Readonly<RegExp> | ParserAuthoredElementNameDistinguishingFunction)[];
 
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
-
-/**
- * @deprecated
- */
-export type Parse = MLMarkupLanguageParser['parse'];
 
 export type Walker<Node extends MLASTNodeTreeItem> = (
 	node: Node,

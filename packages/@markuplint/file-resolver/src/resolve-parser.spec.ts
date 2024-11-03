@@ -2,11 +2,12 @@ import { test, expect, vi } from 'vitest';
 
 import { getFile } from './ml-file/index.js';
 import { resolveParser } from './resolve-parser.js';
+import { Parser } from '@markuplint/parser-utils';
 
 vi.mock('markuplint-angular-parser', () => {
 	return {
 		default: {
-			parse: vi.fn(),
+			parser: new (class extends Parser {})(),
 		},
 	};
 });
@@ -17,7 +18,7 @@ test('resolveParser', async () => {
 	const { parser, parserModName, matched } = await resolveParser(getFile('angular.html'), {
 		'.html$': 'markuplint-angular-parser',
 	});
-	expect(parser.parse).toStrictEqual(mod.default.parse);
+	expect(parser.parse).toStrictEqual(mod.default.parser.parse);
 	expect(parserModName).toBe('markuplint-angular-parser');
 	expect(matched).toBe(true);
 });
