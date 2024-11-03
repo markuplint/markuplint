@@ -1,3 +1,5 @@
+.tmp
+.vscode-test
 out/**/*.map
 src/**/*
 .eslintrc
