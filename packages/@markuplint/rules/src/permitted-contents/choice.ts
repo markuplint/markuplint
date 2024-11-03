@@ -50,7 +50,7 @@ export function choice(
 		i++;
 	}
 
-	const barelyMatchedResult = unmatchedResults.sort((a, b) => {
+	const barelyMatchedResult = unmatchedResults.toSorted((a, b) => {
 		if (a.type !== b.type) {
 			if (a.type === 'UNEXPECTED_EXTRA_NODE') {
 				return -1;

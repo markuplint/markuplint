@@ -9,7 +9,7 @@ export function contentModelCategoryToTagNames(contentModel: Category, def: MLML
 		return cached;
 	}
 	const tags: readonly string[] | undefined = def['#contentModels'][contentModel];
-	const sortedTag = Object.freeze(tags && Array.isArray(tags) ? tags.sort() : []);
+	const sortedTag = Object.freeze(tags && Array.isArray(tags) ? tags.toSorted() : []);
 	cache.set(contentModel, sortedTag);
 	return sortedTag;
 }

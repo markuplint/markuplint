@@ -27,11 +27,11 @@ fs.writeFileSync(
 		definitions: {
 			'css-syntax': {
 				type: 'string',
-				enum: [...new Set([...props, ...types]), ...Object.keys(tokenizers).map(t => `<${t}>`)].sort(),
+				enum: [...new Set([...props, ...types]), ...Object.keys(tokenizers).map(t => `<${t}>`)].toSorted(),
 			},
 			'extended-type': {
 				type: 'string',
-				enum: Object.keys(extendedTypes).sort(),
+				enum: Object.keys(extendedTypes).toSorted(),
 			},
 			'html-attr-requirement': {
 				type: 'string',
@@ -70,6 +70,6 @@ function oneOf(...keys: readonly string[]) {
 				$ref: `#/definitions/${key}`,
 			}))
 			// @ts-ignore Charactor sorting
-			.sort((a, b) => b.$ref - a.$ref),
+			.toSorted((a, b) => b.$ref - a.$ref),
 	};
 }

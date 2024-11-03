@@ -83,5 +83,5 @@ function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
 		unique.add('presentation');
 	}
 
-	return [...unique].sort();
+	return [...unique].toSorted();
 }

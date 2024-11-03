@@ -79,7 +79,8 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 					specs.push(elSpec);
 					continue;
 				}
-				const exSpec = exSpecs.splice(index, 1)[0];
+				const removedSpecs = exSpecs.splice(index, 1);
+				const exSpec = removedSpecs[0];
 				specs.push({
 					...elSpec,
 					...exSpec,

@@ -235,7 +235,7 @@ function compereResult(
 	}
 
 	const result =
-		[a, b].sort(
+		[a, b].toSorted(
 			(a, b) => (b.hint.missing?.barelyMatchedElements ?? 0) - (a.hint.missing?.barelyMatchedElements ?? 0),
 		)[0] ?? a;
 

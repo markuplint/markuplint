@@ -118,7 +118,7 @@ export async function getElements(filePattern: string) {
 	);
 
 	return specs
-		.sort(nameCompare)
-		.sort((a, b) => (a.namespace == b.namespace ? 0 : a.namespace === 'http://www.w3.org/2000/svg' ? 1 : -1))
+		.toSorted(nameCompare)
+		.toSorted((a, b) => (a.namespace == b.namespace ? 0 : a.namespace === 'http://www.w3.org/2000/svg' ? 1 : -1))
 		.filter(spec => spec.name !== 'h1-h6');
 }

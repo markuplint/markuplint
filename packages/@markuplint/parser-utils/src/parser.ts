@@ -283,10 +283,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return Array.prototype.toSorted == null
-			? // TODO: Use sort instead of toSorted until we end support for Node 18
-				[...nodeTree].sort(sortNodes)
-			: nodeTree.toSorted(sortNodes);
+		return nodeTree.toSorted(sortNodes);
 	}
 
 	nodeize(originNode: Node, parentNode: MLASTParentNode | null, depth: number): readonly MLASTNodeTreeItem[] {
@@ -914,11 +911,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes:
-				Array.prototype.toSorted == null
-					? // TODO: Use sort instead of toSorted until we end support for Node 18
-						[...newChildNodes].sort(sortNodes)
-					: newChildNodes.toSorted(sortNodes),
+			childNodes: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -929,13 +922,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	) {
 		const index = parentNode.childNodes.findIndex(childNode => childNode.uuid === oldChildNode.uuid);
 		if (index === -1) {
-			return;
-		}
-		if (Array.prototype.toSpliced == null) {
-			const newChildNodes = [...parentNode.childNodes];
-			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, ...replacementChildNodes);
-			Object.assign(parentNode, { childNodes: newChildNodes });
 			return;
 		}
 		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
@@ -1435,11 +1421,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		/**
 		 * sorting
 		 */
-		const sorted =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodeOrders].sort(sortNodes)
-				: nodeOrders.toSorted(sortNodes);
+		const sorted = nodeOrders.toSorted(sortNodes);
 
 		/**
 		 * remove duplicated node
@@ -1481,12 +1463,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const raw = firstNode.raw.slice(offsetOffset);
 
 		if (!raw) {
-			if (Array.prototype.toSpliced == null) {
-				const newNodeList = [...nodeList];
-				// TODO: Use splice instead of toSpliced until we end support for Node 18
-				newNodeList.splice(0, 1);
-				return newNodeList;
-			}
 			return nodeList.toSpliced(0, 1);
 		}
 
