@@ -722,7 +722,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			startCol = endPos.endCol;
 			startOffset = endPos.endOffset;
 
-			let isSelfClose = tag.type === 'starttag' && tag.selfClosingSolidus?.raw === '/';
+			let isSelfClose = tag.type === 'starttag' && tag.raw.trimEnd().endsWith('/>');
 			const isVoidElement = detectVoidElement({ localName: tag.nodeName.toLowerCase() });
 
 			switch (this.#selfCloseType) {
@@ -1365,7 +1365,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					pairNode: null,
 					tagOpenChar: '<',
 					tagCloseChar: selfClosingSolidusChar + '>',
-					selfClosingSolidus,
 					isGhost: false,
 					isFragment,
 				}
