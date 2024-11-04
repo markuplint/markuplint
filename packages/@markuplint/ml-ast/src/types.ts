@@ -41,9 +41,9 @@ export type MLASTAttr = MLASTHTMLAttr | MLASTSpreadAttr;
 export interface MLASTToken {
 	readonly uuid: string;
 	readonly raw: string;
-	readonly startOffset: number;
-	readonly startLine: number;
-	readonly startCol: number;
+	readonly offset: number;
+	readonly line: number;
+	readonly col: number;
 }
 
 interface MLASTAbstractNode extends MLASTToken {
