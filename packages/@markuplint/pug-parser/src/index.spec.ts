@@ -357,16 +357,16 @@ else
 		]);
 		const input1 = doc.nodeList[2];
 		const input2 = doc.nodeList[4];
-		expect(input1.startOffset).toBe(6);
-		expect(input1.startLine).toBe(2);
-		expect(input1.startCol).toBe(2);
-		expect(input1.attributes[0].startLine).toBe(2);
-		expect(input1.attributes[0].startCol).toBe(9);
-		expect(input2.startOffset).toBe(29);
-		expect(input2.startLine).toBe(3);
-		expect(input2.startCol).toBe(2);
-		expect(input2.attributes[0].startLine).toBe(3);
-		expect(input2.attributes[0].startCol).toBe(9);
+		expect(input1.offset).toBe(6);
+		expect(input1.line).toBe(2);
+		expect(input1.col).toBe(2);
+		expect(input1.attributes[0].line).toBe(2);
+		expect(input1.attributes[0].col).toBe(9);
+		expect(input2.offset).toBe(29);
+		expect(input2.line).toBe(3);
+		expect(input2.col).toBe(2);
+		expect(input2.attributes[0].line).toBe(3);
+		expect(input2.attributes[0].col).toBe(9);
 	});
 
 	test('block-in-tag attr2', () => {
@@ -387,18 +387,18 @@ else
 		const attr1 = input1.attributes[0];
 		const attr2 = input2.attributes[0];
 		const attr3 = input2.attributes[1];
-		expect(attr1.startLine).toBe(22);
-		expect(attr1.startCol).toBe(9);
-		expect(attr1.name.startLine).toBe(22);
-		expect(attr1.name.startCol).toBe(9);
-		expect(attr2.startLine).toBe(23);
-		expect(attr2.startCol).toBe(9);
-		expect(attr2.name.startLine).toBe(23);
-		expect(attr2.name.startCol).toBe(9);
-		expect(attr3.startLine).toBe(23);
-		expect(attr3.startCol).toBe(22);
-		expect(attr3.name.startLine).toBe(23);
-		expect(attr3.name.startCol).toBe(22);
+		expect(attr1.line).toBe(22);
+		expect(attr1.col).toBe(9);
+		expect(attr1.name.line).toBe(22);
+		expect(attr1.name.col).toBe(9);
+		expect(attr2.line).toBe(23);
+		expect(attr2.col).toBe(9);
+		expect(attr2.name.line).toBe(23);
+		expect(attr2.name.col).toBe(9);
+		expect(attr3.line).toBe(23);
+		expect(attr3.col).toBe(22);
+		expect(attr3.name.line).toBe(23);
+		expect(attr3.name.col).toBe(22);
 	});
 
 	test('add space to below', () => {
