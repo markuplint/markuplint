@@ -107,10 +107,14 @@ class VueParser extends Parser<ASTNode, State> {
 
 		let prevNode: MLASTNodeTreeItem | null = null;
 		for (const node of nodeList) {
-			const lastOffset = prevNode?.endOffset ?? node.parentNode?.endOffset ?? 0;
+			const lastOffset = prevNode
+				? prevNode.offset + prevNode.raw.length
+				: node.parentNode
+					? node.parentNode.offset + node.parentNode.raw.length
+					: 0;
 
 			const betweenComment = this.state.comments.find(comment => {
-				return lastOffset <= comment.range[0] && comment.range[1] <= node.startOffset;
+				return lastOffset <= comment.range[0] && comment.range[1] <= node.offset;
 			});
 
 			if (betweenComment) {

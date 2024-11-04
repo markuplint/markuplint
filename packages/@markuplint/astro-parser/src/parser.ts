@@ -41,9 +41,9 @@ class AstroParser extends Parser<Node, State> {
 			throw new TypeError("Node doesn't have position");
 		}
 
-		const startOffset = originNode.position.start.offset;
+		const offset = originNode.position.start.offset;
 		const endOffset = originNode.position.end?.offset;
-		const token = this.sliceFragment(startOffset, endOffset);
+		const token = this.sliceFragment(offset, endOffset);
 
 		this.#updateScopeNS(originNode, parentNode);
 
@@ -103,21 +103,21 @@ class AstroParser extends Parser<Node, State> {
 				const lastChild = originNode.children.at(-1);
 
 				let startExpressionRaw = token.raw;
-				let startExpressionStartLine = token.startLine;
-				let startExpressionStartCol = token.startCol;
+				let startExpressionStartLine = token.line;
+				let startExpressionStartCol = token.col;
 
 				const nodes: MLASTNodeTreeItem[] = [];
 
 				if (firstChild && lastChild && firstChild !== lastChild) {
-					const startExpressionEndOffset = firstChild.position?.end?.offset ?? endOffset ?? startOffset;
-					const startExpressionLocation = this.sliceFragment(startOffset, startExpressionEndOffset);
+					const startExpressionEndOffset = firstChild.position?.end?.offset ?? endOffset ?? offset;
+					const startExpressionLocation = this.sliceFragment(offset, startExpressionEndOffset);
 
 					startExpressionRaw = startExpressionLocation.raw;
-					startExpressionStartLine = startExpressionLocation.startLine;
-					startExpressionStartCol = startExpressionLocation.startCol;
+					startExpressionStartLine = startExpressionLocation.line;
+					startExpressionStartCol = startExpressionLocation.col;
 
 					const closeExpressionLocation = this.sliceFragment(
-						lastChild.position?.start.offset ?? startOffset,
+						lastChild.position?.start.offset ?? offset,
 						endOffset,
 					);
 
@@ -136,9 +136,9 @@ class AstroParser extends Parser<Node, State> {
 					...this.visitPsBlock(
 						{
 							raw: startExpressionRaw,
-							startOffset,
-							startLine: startExpressionStartLine,
-							startCol: startExpressionStartCol,
+							offset,
+							line: startExpressionStartLine,
+							col: startExpressionStartCol,
 							depth,
 							parentNode,
 							nodeName: 'MustacheTag',

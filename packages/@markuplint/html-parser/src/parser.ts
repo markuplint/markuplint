@@ -11,6 +11,7 @@ import {
 	optimizeStartsHeadTagOrBodyTagResume,
 	optimizeStartsHeadTagOrBodyTagSetup,
 } from './optimize-starts-head-or-body.js';
+import { getEndPosition } from '@markuplint/parser-utils/location';
 
 type State = {
 	startsHeadTagOrBodyTag: Replacements | null;
@@ -87,19 +88,24 @@ export class HtmlParser extends Parser<Node, State> {
 
 		if (!location) {
 			// Ghost element
-			const afterNode = this.state.afterPosition.depth === depth ? this.state.afterPosition : parentNode;
-			const startOffset = afterNode?.endOffset ?? 0;
-			const startLine = afterNode?.endLine ?? 0;
-			const startCol = afterNode?.endCol ?? 0;
+			const afterNode =
+				this.state.afterPosition.depth === depth
+					? this.state.afterPosition
+					: parentNode
+						? getEndPosition(parentNode.raw, parentNode.offset, parentNode.line, parentNode.col)
+						: null;
+			const offset = afterNode?.endOffset ?? 0;
+			const line = afterNode?.endLine ?? 0;
+			const col = afterNode?.endCol ?? 0;
 
 			const childNodes = 'childNodes' in originNode ? originNode.childNodes : [];
 
 			return this.visitElement(
 				{
 					raw: '',
-					startOffset,
-					startLine,
-					startCol,
+					offset,
+					line,
+					col,
 					depth,
 					parentNode,
 					nodeName: originNode.nodeName,
@@ -190,10 +196,9 @@ export class HtmlParser extends Parser<Node, State> {
 
 		const prevNode = after.siblings.at(-1) ?? after.ancestors.findLast(n => n.depth === depth);
 		if (prevNode) {
+			const endPos = getEndPosition(prevNode.raw, prevNode.offset, prevNode.line, prevNode.col);
 			this.state.afterPosition = {
-				endOffset: prevNode.endOffset,
-				endLine: prevNode.endLine,
-				endCol: prevNode.endCol,
+				...endPos,
 				depth,
 			};
 		}

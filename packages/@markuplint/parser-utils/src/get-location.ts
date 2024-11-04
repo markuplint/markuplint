@@ -33,6 +33,14 @@ export function getEndCol(rawCodeFragment: string, startCol: number) {
 	return lineCount > 1 ? lastLine.length + 1 : startCol + rawCodeFragment.length;
 }
 
+export function getEndPosition(rawCodeFragment: string, startOffset: number, startLine: number, startCol: number) {
+	return {
+		endOffset: startOffset + rawCodeFragment.length,
+		endLine: getEndLine(rawCodeFragment, startLine),
+		endCol: getEndCol(rawCodeFragment, startCol),
+	};
+}
+
 export function getOffsetsFromCode(
 	rawCode: string,
 	startLine: number,

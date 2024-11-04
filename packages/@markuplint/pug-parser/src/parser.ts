@@ -100,9 +100,9 @@ class PugParser extends Parser<ASTNode> {
 						// Remove `#[` and `]`
 						const raw = node.raw.slice(2, -1);
 						const innerNodes = new PugParser().parse(raw, {
-							offsetOffset: node.startOffset + 2,
-							offsetLine: node.startLine,
-							offsetColumn: node.startCol + 2,
+							offsetOffset: node.offset + 2,
+							offsetLine: node.line,
+							offsetColumn: node.col + 2,
 							depth: node.depth,
 						});
 						newNodeList.push(...innerNodes.nodeList);
@@ -183,7 +183,7 @@ class PugParser extends Parser<ASTNode> {
 						block.column + blockLength + block.val.length,
 					);
 					const token = this.sliceFragment(offset, endOffset);
-					const node = this.createToken(token.raw, token.startOffset, token.startLine, token.startCol);
+					const node = this.createToken(token.raw, token.offset, token.line, token.col);
 					return {
 						...node,
 						type: 'spread',

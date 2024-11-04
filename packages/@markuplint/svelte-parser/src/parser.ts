@@ -100,8 +100,8 @@ export class SvelteParser extends Parser<SvelteNode> {
 				const startTagEndOffset =
 					children.length > 0
 						? (children[0]?.start ?? 0)
-						: token.raw.replace(reEndTag, '').length + token.startOffset;
-				const startTagLocation = this.sliceFragment(token.startOffset, startTagEndOffset);
+						: token.raw.replace(reEndTag, '').length + token.offset;
+				const startTagLocation = this.sliceFragment(token.offset, startTagEndOffset);
 
 				return this.visitElement(
 					{
@@ -122,7 +122,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 								throw new Error('Parse error');
 							}
 							const endTagRaw = endTagRawMatched[0];
-							const endTagStartOffset = token.startOffset + token.raw.lastIndexOf(endTagRaw);
+							const endTagStartOffset = token.offset + token.raw.lastIndexOf(endTagRaw);
 							const endTagEndOffset = endTagStartOffset + endTagRaw.length;
 							const endTagLocation = this.sliceFragment(endTagStartOffset, endTagEndOffset);
 
@@ -137,7 +137,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			}
 			case 'IfBlock': {
 				const expressions: MLASTPreprocessorSpecificBlock[] = [];
-				const ifElseBlocks = this.#traverseIfBlock(originNode, token.startOffset);
+				const ifElseBlocks = this.#traverseIfBlock(originNode, token.offset);
 				for (const ifElseBlock of ifElseBlocks) {
 					const expression = this.visitPsBlock(
 						{
@@ -399,7 +399,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 		/**
 		 * `{#await expression}`
 		 */
-		const awaitExpToken = this.sliceFragment(token.startOffset, awaitExpEnd);
+		const awaitExpToken = this.sliceFragment(token.offset, awaitExpEnd);
 
 		let thenToken: Token | null = null;
 
@@ -428,7 +428,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				thenExpEndCharOffset = thenExpStart + rawPendingNodesBelow.indexOf('}') + 1;
 			}
-			thenToken = this.sliceFragment(token.startOffset + thenExpStart, thenExpEndCharOffset);
+			thenToken = this.sliceFragment(token.offset + thenExpStart, thenExpEndCharOffset);
 		}
 
 		let catchToken: Token | null = null;
@@ -443,7 +443,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 *                 find___^
 		 */
 		const catchExpStart = thenToken
-			? (thenEnd ?? thenToken.startOffset + thenToken.raw.length)
+			? (thenEnd ?? thenToken.offset + thenToken.raw.length)
 			: (pendingEnd ?? awaitExpEnd);
 
 		/**
@@ -465,7 +465,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				catchExpEndCharOffset = catchExpStart + rawThenNodesBelow.indexOf('}') + 1;
 			}
-			catchToken = this.sliceFragment(token.startOffset + catchExpStart, catchExpEndCharOffset);
+			catchToken = this.sliceFragment(token.offset + catchExpStart, catchExpEndCharOffset);
 		}
 
 		const expressions: MLASTPreprocessorSpecificBlock[] = [];
@@ -549,18 +549,18 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 * `{#each expression as name}...{:else}...{/each}`
 		 *                     find___^
 		 */
-		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.startOffset;
+		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.offset;
 
 		/**
 		 * `{#each expression as name}...{:else}...{/each}`
 		 *                               find___^
 		 */
-		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.startOffset;
+		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.offset;
 
 		/**
 		 * `{#each expression as name}...{:else}`
 		 */
-		const rawUntilFallbackScope = this.rawCode.slice(token.startOffset, fallbackScopeStart);
+		const rawUntilFallbackScope = this.rawCode.slice(token.offset, fallbackScopeStart);
 
 		let elseToken: Token | null = null;
 
@@ -571,10 +571,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 		// eslint-disable-next-line regexp/strict
 		const elseTokenStart = rawUntilFallbackScope.match(/{\s*:else\s*}$/)?.index;
 		if (elseTokenStart != null) {
-			elseToken = this.sliceFragment(token.startOffset + elseTokenStart, fallbackScopeStart);
+			elseToken = this.sliceFragment(token.offset + elseTokenStart, fallbackScopeStart);
 		}
 
-		const eachToken = this.sliceFragment(token.startOffset, bodyStart);
+		const eachToken = this.sliceFragment(token.offset, bodyStart);
 
 		expressions.push(
 			this.visitPsBlock(
