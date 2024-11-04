@@ -1,4 +1,4 @@
-import type { EndTagType, MLASTParentNode, ParserOptions as ConfigParserOptions } from '@markuplint/ml-ast';
+import type { EndTagType, MLASTParentNode, ParserOptions as ConfigParserOptions, MLASTToken } from '@markuplint/ml-ast';
 
 export type ParserOptions = {
 	readonly booleanish?: boolean;
@@ -10,6 +10,12 @@ export type ParserOptions = {
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];
 };
+
+export interface MLASTTokenWithEndPosition extends MLASTToken {
+	readonly endOffset: number;
+	readonly endLine: number;
+	readonly endCol: number;
+}
 
 export type ParseOptions = ConfigParserOptions & {
 	readonly offsetOffset?: number;

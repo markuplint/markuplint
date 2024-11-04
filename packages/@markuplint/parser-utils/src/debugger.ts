@@ -1,4 +1,5 @@
 import type { MLASTAttr, MLASTNode, MLASTToken } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine } from './get-location.js';
 
 export function nodeListToDebugMaps(nodeList: readonly (MLASTNode | null)[], withAttr = false) {
 	return nodeList.flatMap(n => {
@@ -87,7 +88,10 @@ function tokenDebug<N extends MLASTToken>(n: N | null, type = '') {
 	if (!n) {
 		return 'NULL';
 	}
-	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
+	const endOffset = n.startOffset + n.raw.length;
+	const endLine = getEndLine(n.raw, n.startLine);
+	const endCol = getEndCol(n.raw, n.startCol);
+	return `[${n.startLine}:${n.startCol}]>[${endLine}:${endCol}](${n.startOffset},${endOffset})${
 		// @ts-ignore
 		n.potentialName ?? n.nodeName ?? n.name ?? n.type ?? type
 	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}${'conditionalType' in n && n.conditionalType ? ` (${n.conditionalType})` : ''}: ${visibleWhiteSpace(

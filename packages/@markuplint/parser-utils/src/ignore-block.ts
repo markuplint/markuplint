@@ -82,7 +82,9 @@ export function restoreNode(
 		const raw = `${tag.startTag}${tag.taggedCode}${tag.endTag ?? ''}`;
 		const tagIndexEnd = tag.index + raw.length;
 
-		const node = newNodeList.find(node => node.startOffset <= tag.index && node.endOffset >= tagIndexEnd);
+		const node = newNodeList.find(
+			node => node.startOffset <= tag.index && node.startOffset + node.raw.length >= tagIndexEnd,
+		);
 
 		if (!node) {
 			continue;
@@ -90,7 +92,7 @@ export function restoreNode(
 
 		const replacementChildNodes: (MLASTText | MLASTPreprocessorSpecificBlock)[] = [];
 
-		if (node.startOffset === tag.index && node.endOffset === tagIndexEnd) {
+		if (node.startOffset === tag.index && node.startOffset + node.raw.length === tagIndexEnd) {
 			const token = parser.createToken(raw, node.startOffset, node.startLine, node.startCol);
 
 			const psNode: MLASTPreprocessorSpecificBlock = {
@@ -195,7 +197,10 @@ export function restoreNode(
 					const raw = tag.startTag + tag.taggedCode + tag.endTag;
 					const length = raw.length;
 
-					if (attr.value.startOffset <= tag.index && tag.index + length <= attr.value.endOffset) {
+					if (
+						attr.value.startOffset <= tag.index &&
+						tag.index + length <= attr.value.startOffset + attr.value.raw.length
+					) {
 						const offset = tag.index - attr.value.startOffset;
 						const above = attr.value.raw.slice(0, offset);
 						const below = attr.value.raw.slice(offset + length);
