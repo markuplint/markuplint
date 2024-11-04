@@ -68,17 +68,21 @@ describe('STDOUT Test', () => {
 		});
 		expect(stdout).toBe('');
 		expect(stderr.split('\n').length).toBe(30);
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 	});
 
 	test('allow warnings', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--allow-warnings', escape(targetFilePath)], {
-			reject: false,
-		});
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			['--no-allow-warnings', escape(targetFilePath)],
+			{
+				reject: false,
+			},
+		);
 		expect(stdout).toBe('');
 		expect(stderr.split('\n').length).toBe(24);
-		expect(exitCode).toBe(0);
+		expect(exitCode).toBe(1);
 	});
 
 	test('format', async () => {
@@ -139,7 +143,7 @@ describe('STDOUT Test', () => {
 		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'warning', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 	});
 
 	test('--severity-parse-error off', async () => {

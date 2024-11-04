@@ -17,7 +17,7 @@ Options
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
-	--allow-warnings                       Return status code 0 even if there are warnings.
+	--no-allow-warnings                    Return status code 1 even if there are warnings.
 	--allow-empty-input                    Return status code 1 even if there are no input files.
 	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
@@ -76,8 +76,7 @@ export const cli = meow(help, {
 		},
 		allowWarnings: {
 			type: 'boolean',
-			// TODO: It will be changed to `true` in the next major version.
-			default: false,
+			default: true,
 		},
 		allowEmptyInput: {
 			type: 'boolean',
