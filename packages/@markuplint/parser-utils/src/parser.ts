@@ -262,7 +262,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const filteredNodes: MLASTNodeTreeItem[] = [];
 			for (const node of nodes) {
 				// Remove duplicated nodes
-				const id = `${node.startOffset}:${node.nodeName}:${node.type}:${node.raw}`;
+				const id = `${node.offset}:${node.nodeName}:${node.type}:${node.raw}`;
 				if (existence.has(id)) {
 					continue;
 				}
@@ -543,7 +543,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			return null;
 		}
 
-		const node = this.createToken(raw, token.startOffset, token.startLine, token.startCol);
+		const node = this.createToken(raw, token.offset, token.line, token.col);
 
 		return {
 			...node,
@@ -570,9 +570,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const noQuoteValueType = options?.noQuoteValueType;
 		const endOfUnquotedValueChars = options?.endOfUnquotedValueChars;
 
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let startOffset = token.offset;
+		let startLine = token.line;
+		let startCol = token.col;
 
 		let tokens: ReturnType<typeof attrTokenizer>;
 		try {
@@ -629,9 +629,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tokens.quoteStart +
 				tokens.attrValue +
 				tokens.quoteEnd,
-			name.startOffset,
-			name.startLine,
-			name.startCol,
+			name.offset,
+			name.line,
+			name.col,
 		);
 
 		const htmlAttr: MLASTAttr = {
@@ -670,9 +670,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const nodes: (MLASTTag | MLASTText)[] = [];
 
 		let raw = token.raw;
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let startOffset = token.offset;
+		let startLine = token.line;
+		let startCol = token.col;
 		let depth = token.depth;
 
 		const depthStack = new Map<
@@ -686,9 +686,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const parsed = this.#parseTag(
 				{
 					raw,
-					startOffset,
-					startLine,
-					startCol,
+					offset: startOffset,
+					line: startLine,
+					col: startCol,
 					depth,
 					parentNode: null,
 				},
@@ -717,7 +717,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			const tag = parsed.token;
 
-			const endPos = getEndPosition(tag.raw, tag.startOffset, tag.startLine, tag.startCol);
+			const endPos = getEndPosition(tag.raw, tag.offset, tag.line, tag.col);
 			startLine = endPos.endLine;
 			startCol = endPos.endCol;
 			startOffset = endPos.endOffset;
@@ -776,12 +776,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	updateLocation(
 		node: MLASTNodeTreeItem,
-		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
+		props: Partial<Pick<MLASTNodeTreeItem, 'offset' | 'line' | 'col' | 'depth'>>,
 	) {
 		Object.assign(node, {
-			startOffset: props.startOffset ?? node.startOffset,
-			startLine: props.startLine ?? node.startLine,
-			startCol: props.startCol ?? node.startCol,
+			offset: props.offset ?? node.offset,
+			line: props.line ?? node.line,
+			col: props.col ?? node.col,
 			depth: props.depth ?? node.depth,
 		});
 	}
@@ -827,20 +827,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	createToken(token: Token): MLASTTokenWithEndPosition;
-	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTTokenWithEndPosition;
-	createToken(
-		token: string | Token,
-		startOffset?: number,
-		startLine?: number,
-		startCol?: number,
-	): MLASTTokenWithEndPosition {
+	createToken(token: string, offset: number, line: number, col: number): MLASTTokenWithEndPosition;
+	createToken(token: string | Token, offset?: number, line?: number, col?: number): MLASTTokenWithEndPosition {
 		const props =
 			typeof token === 'string'
 				? {
 						raw: token,
-						startOffset: startOffset ?? 0,
-						startLine: startLine ?? 1,
-						startCol: startCol ?? 1,
+						offset: offset ?? 0,
+						line: line ?? 1,
+						col: col ?? 1,
 					}
 				: token;
 
@@ -856,9 +851,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const { line, column } = getPosition(this.rawCode, start);
 		return {
 			raw,
-			startOffset: start,
-			startLine: line,
-			startCol: column,
+			offset: start,
+			line: line,
+			col: column,
 		};
 	}
 
@@ -933,13 +928,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const newNodeList: MLASTNodeTreeItem[] = [];
 		for (const node of nodeList) {
 			const prevNode = newNodeList.at(-1) ?? null;
-			const prevNodeEndOffset = prevNode ? prevNode.startOffset + prevNode.raw.length : 0;
+			const prevNodeEndOffset = prevNode ? prevNode.offset + prevNode.raw.length : 0;
 			if (
 				prevNode?.type === 'text' &&
 				prevNode?.nodeName === '#text' &&
 				node.type === 'text' &&
 				node.nodeName === '#text' &&
-				prevNodeEndOffset === node.startOffset
+				prevNodeEndOffset === node.offset
 			) {
 				const newNode = this.#concatTextNodes(prevNode, node);
 				newNodeList.pop();
@@ -1058,12 +1053,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			if (!this.#rawTextElements.includes(node.nodeName.toLowerCase())) {
 				const endOffset = Math.max(
-					sequentailPrevNode ? sequentailPrevNode?.startOffset + sequentailPrevNode?.raw.length : 0,
+					sequentailPrevNode ? sequentailPrevNode?.offset + sequentailPrevNode?.raw.length : 0,
 					0,
 				);
 				const remnantNodes = this.#createRemnantNode(
 					endOffset,
-					node.startOffset,
+					node.offset,
 					node.depth,
 					node.parentNode,
 					invalidNode,
@@ -1084,7 +1079,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		const remnantNodes = this.#createRemnantNode(
-			lastNode.startOffset + lastNode.raw.length,
+			lastNode.offset + lastNode.raw.length,
 			undefined,
 			lastNode.depth,
 			lastNode.parentNode,
@@ -1102,7 +1097,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#getEndLocation(token: Token) {
-		return getEndPosition(token.raw, token.startOffset, token.startLine, token.startCol);
+		return getEndPosition(token.raw, token.offset, token.line, token.col);
 	}
 
 	#orphanEndTagToBogusMark(nodeList: readonly MLASTNodeTreeItem[]) {
@@ -1157,9 +1152,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#parseTag(token: ChildToken, praseAttr: boolean, failSafe: boolean, namelessFragment: boolean) {
 		const raw = token.raw;
 		const depth = token.depth;
-		const initialOffset = token.startOffset;
-		const initialLine = token.startLine;
-		const initialCol = token.startCol;
+		const initialOffset = token.offset;
+		const initialLine = token.line;
+		const initialCol = token.col;
 
 		let offset = initialOffset;
 		let line = initialLine;
@@ -1271,12 +1266,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 						const attr = this.visitAttr({
 							raw: leftover,
-							startOffset: offset,
-							startLine: line,
-							startCol: col,
+							offset: offset,
+							line: line,
+							col: col,
 						});
 
-						const endPos = getEndPosition(attr.raw, attr.startOffset, attr.startLine, attr.startCol);
+						const endPos = getEndPosition(attr.raw, attr.offset, attr.line, attr.col);
 						line = endPos.endLine;
 						col = endPos.endCol;
 						offset = endPos.endOffset;
@@ -1415,7 +1410,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const stack: { [pos: string]: number } = {};
 		const removeIndexes: number[] = [];
 		for (const [i, node] of sorted.entries()) {
-			const id = `${node.startOffset}::${node.nodeName}`;
+			const id = `${node.offset}::${node.nodeName}`;
 			if (stack[id] != null) {
 				removeIndexes.push(i);
 			}
@@ -1454,9 +1449,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		this.updateRaw(firstNode, raw);
 		this.updateLocation(firstNode, {
-			startOffset: offsetOffset,
-			startLine: offsetLine,
-			startCol: offsetColumn,
+			offset: offsetOffset,
+			line: offsetLine,
+			col: offsetColumn,
 		});
 
 		return nodeList;
@@ -1488,11 +1483,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				// Empty node
 				node.raw.length === 0
 			) {
-				const prevNodeEndOffset = prevNode.startOffset + prevNode.raw.length;
-				const nodeStartOffset = node.startOffset;
+				const prevNodeEndOffset = prevNode.offset + prevNode.raw.length;
+				const nodeStartOffset = node.offset;
 				if (prevNodeEndOffset > nodeStartOffset) {
 					const prevNodeRaw = prevNode.raw;
-					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.startOffset);
+					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.offset);
 					this.updateRaw(prevNode, prevNodeTrimmedRaw);
 				}
 			}

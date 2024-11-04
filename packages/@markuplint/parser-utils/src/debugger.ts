@@ -88,10 +88,10 @@ function tokenDebug<N extends MLASTToken>(n: N | null, type = '') {
 	if (!n) {
 		return 'NULL';
 	}
-	const endOffset = n.startOffset + n.raw.length;
-	const endLine = getEndLine(n.raw, n.startLine);
-	const endCol = getEndCol(n.raw, n.startCol);
-	return `[${n.startLine}:${n.startCol}]>[${endLine}:${endCol}](${n.startOffset},${endOffset})${
+	const endOffset = n.offset + n.raw.length;
+	const endLine = getEndLine(n.raw, n.line);
+	const endCol = getEndCol(n.raw, n.col);
+	return `[${n.line}:${n.col}]>[${endLine}:${endCol}](${n.offset},${endOffset})${
 		// @ts-ignore
 		n.potentialName ?? n.nodeName ?? n.name ?? n.type ?? type
 	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}${'conditionalType' in n && n.conditionalType ? ` (${n.conditionalType})` : ''}: ${visibleWhiteSpace(
