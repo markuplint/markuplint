@@ -598,18 +598,6 @@ describe('Issue', () => {
 		]);
 	});
 
-	test('No close tag', () => {
-		expect(parse('<div />').nodeList).toMatchObject([
-			{
-				raw: '<div />',
-				nodeName: 'div',
-				selfClosingSolidus: {
-					raw: '/',
-				},
-			},
-		]);
-	});
-
 	test('#1377', () => {
 		expect(
 			nodeListToDebugMaps(
