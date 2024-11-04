@@ -1,14 +1,9 @@
 import type { MLASTToken } from '@markuplint/ml-ast';
+import { getEndCol, getEndLine } from '@markuplint/parser-utils/location';
 
 export class MLToken<A extends MLASTToken = MLASTToken> {
-	readonly #endCol: number;
-	readonly #endLine: number;
-	readonly #endOffset: number;
 	#fixed: string;
 	readonly #raw: string;
-	readonly #startCol: number;
-	readonly #startLine: number;
-	readonly #startOffset: number;
 
 	readonly uuid: string;
 
@@ -19,33 +14,27 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 		this.#raw = astToken.raw;
 		this.#fixed = astToken.raw;
 		this.uuid = astToken.uuid;
-		this.#startLine = astToken.startLine;
-		this.#endLine = astToken.endLine;
-		this.#startCol = astToken.startCol;
-		this.#endCol = astToken.endCol;
-		this.#startOffset = astToken.startOffset;
-		this.#endOffset = astToken.endOffset;
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endCol() {
-		return this.#endCol;
+		return getEndCol(this.fixed, this.startCol);
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endLine() {
-		return this.#endLine;
+		return getEndLine(this.fixed, this.startLine);
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endOffset() {
-		return this.#endOffset;
+		return this.startOffset + this.fixed.length;
 	}
 
 	/**
@@ -66,21 +55,21 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startCol() {
-		return this.#startCol;
+		return this._astToken.col;
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startLine() {
-		return this.#startLine;
+		return this._astToken.line;
 	}
 
 	/**
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get startOffset() {
-		return this.#startOffset;
+		return this._astToken.offset;
 	}
 
 	/**
