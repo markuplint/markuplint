@@ -42,11 +42,8 @@ export interface MLASTToken {
 	readonly uuid: string;
 	readonly raw: string;
 	readonly startOffset: number;
-	readonly endOffset: number;
 	readonly startLine: number;
-	readonly endLine: number;
 	readonly startCol: number;
-	readonly endCol: number;
 }
 
 interface MLASTAbstractNode extends MLASTToken {
