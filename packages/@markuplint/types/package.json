@@ -21,6 +21,7 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean",
 		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
 		"schema:types": "tsx \"./gen/types.ts\"",
