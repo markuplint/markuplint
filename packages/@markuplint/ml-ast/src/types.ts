@@ -70,7 +70,6 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly hasSpreadAttr?: boolean;
 	readonly childNodes: readonly MLASTChildNode[];
 	readonly pairNode: MLASTElementCloseTag | null;
-	readonly selfClosingSolidus?: MLASTToken;
 	readonly tagOpenChar: string;
 	readonly tagCloseChar: string;
 	readonly isGhost: boolean;

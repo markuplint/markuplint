@@ -185,7 +185,7 @@ class AstroParser extends Parser<Node, State> {
 				namespace: this.state.scopeNS,
 			},
 			createEndTagToken: () => {
-				if (startTagNode.selfClosingSolidus?.raw === '/') {
+				if (startTagNode.raw.trimEnd().endsWith('/>')) {
 					return null;
 				}
 

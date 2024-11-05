@@ -21,7 +21,6 @@ import {
 	remove,
 	replaceWith,
 } from '../manipulations/child-node-methods.js';
-import { MLToken } from '../token/token.js';
 
 import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
@@ -98,7 +97,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		| undefined;
 
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
-	readonly selfClosingSolidus: MLToken | null;
 	readonly tagCloseChar: string;
 	readonly tagOpenChar: string;
 
@@ -109,7 +107,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	) {
 		super(astNode, document, astNode.isFragment);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
 		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
