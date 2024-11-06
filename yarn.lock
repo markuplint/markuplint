@@ -1141,7 +1141,7 @@
     escape-string-regexp "^4.0.0"
     ignore "^5.2.4"
 
-"@eslint-community/eslint-utils@^4.1.2", "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
+"@eslint-community/eslint-utils@^4.1.2", "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0", "@eslint-community/eslint-utils@^4.4.1":
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.4.1.tgz#d1145bf2c20132d6400495d6df4bf59362fd9d56"
   integrity sha512-s3O3waFUrMV8P/XaF/+ZTp1X9XBZW1a4B97ZnjQF2KYWaFD2A8KyFBsrsfSjEmjn3RGWAIuvlneuZm3CUK3jbA==
@@ -5156,12 +5156,12 @@ eslint-plugin-jsdoc@50.4.3:
     spdx-expression-parse "^4.0.0"
     synckit "^0.9.1"
 
-eslint-plugin-n@17.12.0:
-  version "17.12.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-17.12.0.tgz#a6518a2806a21801ac4d532d23c1ac7f8d49ee49"
-  integrity sha512-zNAtz/erDn0v78bIY3MASSQlyaarV4IOTvP5ldHsqblRFrXriikB6ghkDTkHjUad+nMRrIbOy9euod2azjRfBg==
+eslint-plugin-n@17.13.0:
+  version "17.13.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-17.13.0.tgz#63d95c98866fafc67ad90143d43d3abd87f9219d"
+  integrity sha512-7xEJgZPKe2FNtyWA1aWtHzG0Etnd8jzA2NjurITPs7yhNkxFjaruJFHE3n0ac/U5ataZ24rlbVoSAXfN7770XA==
   dependencies:
-    "@eslint-community/eslint-utils" "^4.4.0"
+    "@eslint-community/eslint-utils" "^4.4.1"
     enhanced-resolve "^5.17.1"
     eslint-plugin-es-x "^7.8.0"
     get-tsconfig "^4.8.1"
