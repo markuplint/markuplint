@@ -32,6 +32,6 @@
 		"deepmerge": "4.3.1",
 		"is-plain-object": "5.0.0",
 		"mustache": "4.2.0",
-		"type-fest": "4.26.1"
+		"type-fest": "4.27.0"
 	}
 }
