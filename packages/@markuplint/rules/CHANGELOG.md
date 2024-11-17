@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.6](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.5...@markuplint/rules@4.10.6) (2024-11-17)
+
+### Bug Fixes
+
+- **rules:** change to spread syntax ([6f2688b](https://github.com/markuplint/markuplint/commit/6f2688bfd4a7f10d63f653d90bbb19463c1066fb))
+
 ## [4.10.5](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.4...@markuplint/rules@4.10.5) (2024-10-31)
 
 **Note:** Version bump only for package @markuplint/rules

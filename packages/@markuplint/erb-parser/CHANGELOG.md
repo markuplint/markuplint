@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.13](https://github.com/markuplint/markuplint/compare/@markuplint/erb-parser@4.6.12...@markuplint/erb-parser@4.6.13) (2024-11-17)
+
+**Note:** Version bump only for package @markuplint/erb-parser
+
 ## [4.6.12](https://github.com/markuplint/markuplint/compare/@markuplint/erb-parser@4.6.11...@markuplint/erb-parser@4.6.12) (2024-10-31)
 
 **Note:** Version bump only for package @markuplint/erb-parser

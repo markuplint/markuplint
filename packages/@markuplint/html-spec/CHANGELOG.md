@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.10.2...@markuplint/html-spec@4.11.0) (2024-11-17)
+
+### Features
+
+- **html-spec:** add `command` and `commandfor` attributes with the `command` event ([19142ab](https://github.com/markuplint/markuplint/commit/19142abe2dbefdf9b333ea43001f7492793cf93e))
+- **html-spec:** remove `nonStandard` flag from the deprecated `type` attr of the `li` element ([a28cd02](https://github.com/markuplint/markuplint/commit/a28cd02fc870f155eaad6240a310aeb410b55e30))
+
 ## [4.10.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.10.1...@markuplint/html-spec@4.10.2) (2024-10-31)
 
 **Note:** Version bump only for package @markuplint/html-spec

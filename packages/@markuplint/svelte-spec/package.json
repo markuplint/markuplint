@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/svelte-spec",
-	"version": "4.5.12",
+	"version": "4.5.13",
 	"description": "Extended specification for tags and attributes in Svelte",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -22,6 +22,6 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "4.8.2"
+		"@markuplint/ml-spec": "4.9.0"
 	}
 }

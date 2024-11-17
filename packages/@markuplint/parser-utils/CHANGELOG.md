@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.0...@markuplint/parser-utils@4.8.1) (2024-11-17)
+
+### Bug Fixes
+
+- **parser-utils:** correct content attribute name for `httpEquiv` ([ddfbeb3](https://github.com/markuplint/markuplint/commit/ddfbeb32ff530b14c7ddceb56558d88624218b0b))
+
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.7.2...@markuplint/parser-utils@4.8.0) (2024-10-31)
 
 ### Features
