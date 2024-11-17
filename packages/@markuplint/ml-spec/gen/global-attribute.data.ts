@@ -64,6 +64,7 @@ export const globalAttrs: Record<
 			'onchange',
 			'onclick',
 			'onclose',
+			'oncommand',
 			'oncompositionend', // UI Events
 			'oncompositionstart', // UI Events
 			'oncompositionupdate', // UI Events

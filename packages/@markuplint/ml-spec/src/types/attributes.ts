@@ -1213,6 +1213,7 @@ export interface GlobalAttributes {
 				| 'onchange'
 				| 'onclick'
 				| 'onclose'
+				| 'oncommand'
 				| 'oncompositionend'
 				| 'oncompositionstart'
 				| 'oncompositionupdate'
