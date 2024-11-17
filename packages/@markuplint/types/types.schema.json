@@ -1181,6 +1181,7 @@
 				"TabIndex",
 				"URL",
 				"Uint",
+				"ValidCustomCommand",
 				"XMLName",
 				"Zero"
 			]

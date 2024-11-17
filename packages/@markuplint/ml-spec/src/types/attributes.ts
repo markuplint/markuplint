@@ -1179,6 +1179,7 @@ export type AttributeType =
 					| 'TabIndex'
 					| 'URL'
 					| 'Uint'
+					| 'ValidCustomCommand'
 					| 'XMLName'
 					| 'Zero'
 			  )
@@ -1615,6 +1616,7 @@ export interface List {
 				| 'TabIndex'
 				| 'URL'
 				| 'Uint'
+				| 'ValidCustomCommand'
 				| 'XMLName'
 				| 'Zero'
 		  )
