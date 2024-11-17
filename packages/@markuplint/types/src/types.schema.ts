@@ -378,13 +378,13 @@ export type CssSyntax =
 	| "<'inline-size'>"
 	| "<'input-security'>"
 	| "<'inset'>"
-	| "<'inset-area'>"
 	| "<'inset-block'>"
 	| "<'inset-block-end'>"
 	| "<'inset-block-start'>"
 	| "<'inset-inline'>"
 	| "<'inset-inline-end'>"
 	| "<'inset-inline-start'>"
+	| "<'interpolate-size'>"
 	| "<'isolation'>"
 	| "<'justify-content'>"
 	| "<'justify-items'>"
@@ -700,6 +700,7 @@ export type CssSyntax =
 	| '<an-plus-b>'
 	| '<anchor()>'
 	| '<anchor-element>'
+	| '<anchor-name>'
 	| '<anchor-side>'
 	| '<anchor-size()>'
 	| '<anchor-size>'
@@ -988,6 +989,7 @@ export type CssSyntax =
 	| '<ratio>'
 	| '<ray()>'
 	| '<ray-size>'
+	| '<rect()>'
 	| '<rectangular-color-space>'
 	| '<relative-real-selector-list>'
 	| '<relative-real-selector>'
@@ -1106,6 +1108,7 @@ export type CssSyntax =
 	| '<whitespace-token>'
 	| '<wq-name>'
 	| '<x>'
+	| '<xywh()>'
 	| '<xyz-params>'
 	| '<xyz-space>'
 	| '<y>'
