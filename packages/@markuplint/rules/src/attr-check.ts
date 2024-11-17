@@ -105,7 +105,7 @@ export function attrCheck(
 		});
 	}
 
-	return invalidMap.values().toArray() ?? false;
+	return [...invalidMap.values()];
 }
 
 export function valueCheck(
