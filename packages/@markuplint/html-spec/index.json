@@ -35735,23 +35735,11 @@
 				"onbeforeunload": {
 					"type": "FunctionBody"
 				},
-				"onblur": {
-					"description": "Function to call when the document loses focus."
-				},
-				"onerror": {
-					"description": "Function to call when the document fails to load properly."
-				},
-				"onfocus": {
-					"description": "Function to call when the document receives focus."
-				},
 				"onhashchange": {
 					"type": "FunctionBody"
 				},
 				"onlanguagechange": {
 					"type": "FunctionBody"
-				},
-				"onload": {
-					"description": "Function to call when the document has finished loading."
 				},
 				"onmessage": {
 					"type": "FunctionBody"
@@ -35782,9 +35770,6 @@
 				},
 				"onrejectionhandled": {
 					"type": "FunctionBody"
-				},
-				"onresize": {
-					"description": "Function to call when the document has been resized."
 				},
 				"onstorage": {
 					"type": "FunctionBody"
