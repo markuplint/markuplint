@@ -123,6 +123,7 @@
 				"one code point character": { "type": "string" },
 				"one or more elements": { "type": "string" },
 				"one": { "type": "string" },
+				"or, ": { "type": "string" },
 				"origin": { "type": "string" },
 				"orphaned end tag": { "type": "string" },
 				"password": { "type": "string" },
