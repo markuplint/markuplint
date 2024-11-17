@@ -694,4 +694,83 @@ const C = () => {
 			"  #spread: {...register('x',␣options)}",
 		]);
 	});
+
+	test('#2223', () => {
+		const doc = parse(`<html lang="en">
+	<head>
+		<title>Test</title>
+		<meta charSet="UTF-8" />
+		<meta httpEquiv="x-ua-compatible" content="ie=edge" />
+	</head>
+	<body></body>
+</html>`);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[1:1]>[1:17](0,16)html: <html␣lang="en">',
+			'[1:7]>[1:16](6,15)lang: lang="en"',
+			'  [1:6]>[1:7](5,6)bN: ␣',
+			'  [1:7]>[1:11](6,10)name: lang',
+			'  [1:11]>[1:11](10,10)bE: ',
+			'  [1:11]>[1:12](10,11)equal: =',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:13](11,12)sQ: "',
+			'  [1:13]>[1:15](12,14)value: en',
+			'  [1:15]>[1:16](14,15)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'  potentialName: lang',
+			'[1:17]>[2:2](16,18)#text: ⏎→',
+			'[2:2]>[2:8](18,24)head: <head>',
+			'[2:8]>[3:3](24,27)#text: ⏎→→',
+			'[3:3]>[3:10](27,34)title: <title>',
+			'[3:10]>[3:14](34,38)#text: Test',
+			'[3:14]>[3:22](38,46)title: </title>',
+			'[3:22]>[4:3](46,49)#text: ⏎→→',
+			'[4:3]>[4:27](49,73)meta: <meta␣charSet="UTF-8"␣/>',
+			'[4:9]>[4:24](55,70)charset: charSet="UTF-8"',
+			'  [4:8]>[4:9](54,55)bN: ␣',
+			'  [4:9]>[4:16](55,62)name: charSet',
+			'  [4:16]>[4:16](62,62)bE: ',
+			'  [4:16]>[4:17](62,63)equal: =',
+			'  [4:17]>[4:17](63,63)aE: ',
+			'  [4:17]>[4:18](63,64)sQ: "',
+			'  [4:18]>[4:23](64,69)value: UTF-8',
+			'  [4:23]>[4:24](69,70)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'  potentialName: charset',
+			'[4:27]>[5:3](73,76)#text: ⏎→→',
+			'[5:3]>[5:57](76,130)meta: <meta␣httpEquiv="x-ua-compatible"␣content="ie=edge"␣/>',
+			'[5:9]>[5:36](82,109)http-equiv: httpEquiv="x-ua-compatible"',
+			'  [5:8]>[5:9](81,82)bN: ␣',
+			'  [5:9]>[5:18](82,91)name: httpEquiv',
+			'  [5:18]>[5:18](91,91)bE: ',
+			'  [5:18]>[5:19](91,92)equal: =',
+			'  [5:19]>[5:19](92,92)aE: ',
+			'  [5:19]>[5:20](92,93)sQ: "',
+			'  [5:20]>[5:35](93,108)value: x-ua-compatible',
+			'  [5:35]>[5:36](108,109)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'  potentialName: http-equiv',
+			'[5:37]>[5:54](110,127)content: content="ie=edge"',
+			'  [5:36]>[5:37](109,110)bN: ␣',
+			'  [5:37]>[5:44](110,117)name: content',
+			'  [5:44]>[5:44](117,117)bE: ',
+			'  [5:44]>[5:45](117,118)equal: =',
+			'  [5:45]>[5:45](118,118)aE: ',
+			'  [5:45]>[5:46](118,119)sQ: "',
+			'  [5:46]>[5:53](119,126)value: ie=edge',
+			'  [5:53]>[5:54](126,127)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'  potentialName: content',
+			'[5:57]>[6:2](130,132)#text: ⏎→',
+			'[6:2]>[6:9](132,139)head: </head>',
+			'[6:9]>[7:2](139,141)#text: ⏎→',
+			'[7:2]>[7:8](141,147)body: <body>',
+			'[7:8]>[7:15](147,154)body: </body>',
+			'[7:15]>[8:1](154,155)#text: ⏎',
+			'[8:1]>[8:8](155,162)html: </html>',
+		]);
+	});
 });

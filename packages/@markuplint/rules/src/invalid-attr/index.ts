@@ -239,48 +239,55 @@ export default createRule<boolean, Option>({
 				invalid = isValidAttr(t, name, value, attr.isDynamicValue || false, attr.ownerElement, attrSpecs, log);
 			}
 
-			if (invalid !== false) {
-				switch (invalid.invalidType) {
-					case 'disallowed-attr': {
-						report({
-							scope: attr,
-							message: invalid.message,
-						});
-						break;
-					}
-					case 'invalid-value': {
-						if (attr.isDynamicValue) {
+			const invalidList = Array.isArray(invalid) ? invalid : [invalid];
+
+			for (const invalid of invalidList) {
+				if (invalid !== false) {
+					switch (invalid.invalidType) {
+						case 'disallowed-attr': {
+							report({
+								scope: attr,
+								message: invalid.message,
+							});
 							break;
 						}
-						report({
-							scope: attr,
-							message: invalid.message,
-							line: (valueNode?.startLine ?? 0) + (invalid.loc?.line ?? 0),
-							col:
-								invalid.loc && invalid.loc.line > 0
-									? invalid.loc?.col + 1
-									: (valueNode?.startCol ?? 0) + (invalid.loc?.col ?? 0),
-							raw: invalid.loc?.raw ?? value,
-						});
-						break;
-					}
-					case 'non-existent': {
-						if (allowToAddPropertiesForPretender && attr.ownerElement.pretenderContext?.type === 'origin') {
-							return;
+						case 'invalid-value': {
+							if (attr.isDynamicValue) {
+								break;
+							}
+							report({
+								scope: attr,
+								message: invalid.message,
+								line: (valueNode?.startLine ?? 0) + (invalid.loc?.line ?? 0),
+								col:
+									invalid.loc && invalid.loc.line > 0
+										? invalid.loc?.col + 1
+										: (valueNode?.startCol ?? 0) + (invalid.loc?.col ?? 0),
+								raw: invalid.loc?.raw ?? value,
+							});
+							break;
 						}
+						case 'non-existent': {
+							if (
+								allowToAddPropertiesForPretender &&
+								attr.ownerElement.pretenderContext?.type === 'origin'
+							) {
+								return;
+							}
 
-						const spec = getSpec(attr.ownerElement, document.specs.specs);
-						if (spec?.possibleToAddProperties) {
-							return;
+							const spec = getSpec(attr.ownerElement, document.specs.specs);
+							if (spec?.possibleToAddProperties) {
+								return;
+							}
+
+							report({
+								scope: attr,
+								message: invalid.message,
+								line: attrName?.startLine,
+								col: attrName?.startCol,
+								raw: attrName?.raw,
+							});
 						}
-
-						report({
-							scope: attr,
-							message: invalid.message,
-							line: attrName?.startLine,
-							col: attrName?.startCol,
-							raw: attrName?.raw,
-						});
 					}
 				}
 			}

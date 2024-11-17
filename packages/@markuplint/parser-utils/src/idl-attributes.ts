@@ -63,7 +63,7 @@ const idlContentMap = {
 	href: 'href',
 	hrefLang: 'hreflang',
 	htmlFor: 'for',
-	httpEquiv: 'httpequiv',
+	httpEquiv: 'http-equiv',
 	icon: 'icon',
 	id: 'id',
 	imageSizes: 'imagesizes',

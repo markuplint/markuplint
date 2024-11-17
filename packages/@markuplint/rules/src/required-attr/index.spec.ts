@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
@@ -440,4 +440,15 @@ test('The `as` attribute', async () => {
 	]);
 
 	expect((await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>')).violations).toStrictEqual([]);
+});
+
+describe('Issues', () => {
+	test('#2223', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta httpEquiv="x-ua-compatible" content="ie=edge" />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
 });

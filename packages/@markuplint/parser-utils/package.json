@@ -25,6 +25,7 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
@@ -34,10 +35,10 @@
 		"@types/uuid": "10.0.0",
 		"debug": "4.3.7",
 		"espree": "10.3.0",
-		"type-fest": "4.26.1",
-		"uuid": "11.0.2"
+		"type-fest": "4.27.0",
+		"uuid": "11.0.3"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.12.2"
+		"@typescript-eslint/typescript-estree": "8.14.0"
 	}
 }

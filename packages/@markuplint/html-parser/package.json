@@ -21,13 +21,13 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
-		"dev": "tsc --build --watch",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.8",
 		"@markuplint/parser-utils": "4.8.0",
 		"parse5": "7.2.1",
-		"type-fest": "4.26.1"
+		"type-fest": "4.27.0"
 	}
 }

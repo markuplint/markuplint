@@ -459,6 +459,9 @@
 				"onclose": {
 					"type": "FunctionBody"
 				},
+				"oncommand": {
+					"type": "FunctionBody"
+				},
 				"oncontextlost": {
 					"type": "FunctionBody"
 				},
@@ -35263,7 +35266,7 @@
 					}
 				},
 				"download": {
-					"description": "This attribute, if present, indicates that the author intends the hyperlink to be used for downloading a resource. See <a> for a full description of the download attribute."
+					"description": "This attribute, if present, indicates that the linked resource is intended to be downloaded rather than displayed in the browser. See <a> for a full description of the download attribute."
 				},
 				"href": {
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
@@ -35700,27 +35703,27 @@
 			},
 			"attributes": {
 				"alink": {
-					"description": "Color of text for hyperlinks when selected. Do not use this attribute! Use the CSS color property in conjunction with the :active pseudo-class instead.",
+					"description": "Color of text for hyperlinks when selected. Use the CSS color property in conjunction with the :active and :focus pseudo-classes instead.",
 					"deprecated": true
 				},
 				"background": {
-					"description": "URI of an image to use as a background. Do not use this attribute! Use the CSS background property on the element instead.",
+					"description": "URI of an image to use as a background. Use the CSS background-image property instead.",
 					"deprecated": true
 				},
 				"bgcolor": {
-					"description": "Background color for the document. Do not use this attribute! Use the CSS background-color property on the element instead.",
+					"description": "Background color for the document. Use the CSS background-color property instead.",
 					"deprecated": true
 				},
 				"bottommargin": {
-					"description": "The margin of the bottom of the body. Do not use this attribute! Use the CSS margin-bottom property on the element instead.",
+					"description": "The margin of the bottom of the body. Use the CSS margin-bottom property (or the logical margin-block-end property) instead.",
 					"deprecated": true
 				},
 				"leftmargin": {
-					"description": "The margin of the left of the body. Do not use this attribute! Use the CSS margin-left property on the element instead.",
+					"description": "The margin of the left of the body. Use the CSS margin-left property (or the logical margin-inline-start property) instead.",
 					"deprecated": true
 				},
 				"link": {
-					"description": "Color of text for unvisited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :link pseudo-class instead.",
+					"description": "Color of text for unvisited hypertext links. Use the CSS color property in conjunction with the :link pseudo-class instead.",
 					"deprecated": true
 				},
 				"onafterprint": {
@@ -35732,23 +35735,11 @@
 				"onbeforeunload": {
 					"type": "FunctionBody"
 				},
-				"onblur": {
-					"description": "Function to call when the document loses focus."
-				},
-				"onerror": {
-					"description": "Function to call when the document fails to load properly."
-				},
-				"onfocus": {
-					"description": "Function to call when the document receives focus."
-				},
 				"onhashchange": {
 					"type": "FunctionBody"
 				},
 				"onlanguagechange": {
 					"type": "FunctionBody"
-				},
-				"onload": {
-					"description": "Function to call when the document has finished loading."
 				},
 				"onmessage": {
 					"type": "FunctionBody"
@@ -35780,9 +35771,6 @@
 				"onrejectionhandled": {
 					"type": "FunctionBody"
 				},
-				"onresize": {
-					"description": "Function to call when the document has been resized."
-				},
 				"onstorage": {
 					"type": "FunctionBody"
 				},
@@ -35793,19 +35781,19 @@
 					"type": "FunctionBody"
 				},
 				"rightmargin": {
-					"description": "The margin of the right of the body. Do not use this attribute! Use the CSS margin-right property on the element instead.",
+					"description": "The margin of the right of the body. Use the CSS margin-right property or the logical margin-inline-end property) instead.",
 					"deprecated": true
 				},
 				"text": {
-					"description": "Foreground color of text. Do not use this attribute! Use CSS color property on the element instead.",
+					"description": "Foreground color of text. Use the CSS color property instead.",
 					"deprecated": true
 				},
 				"topmargin": {
-					"description": "The margin of the top of the body. Do not use this attribute! Use the CSS margin-top property on the element instead.",
+					"description": "The margin of the top of the body. Use the CSS margin-top property (or the logical margin-block-start property) instead.",
 					"deprecated": true
 				},
 				"vlink": {
-					"description": "Color of text for visited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :visited pseudo-class instead.",
+					"description": "Color of text for visited hypertext links. Use the CSS color property in conjunction with the :visited pseudo-class instead.",
 					"deprecated": true
 				}
 			}
@@ -35903,6 +35891,21 @@
 			"attributes": {
 				"autofocus": {
 					"description": "This Boolean attribute specifies that the button should have input focus when the page loads. Only one element in a document can have this attribute."
+				},
+				"command": {
+					"type": [
+						{
+							"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "show-modal"],
+							"invalidValueDefault": "unknown",
+							"missingValueDefault": "unknown"
+						},
+						"ValidCustomCommand"
+					],
+					"experimental": true
+				},
+				"commandfor": {
+					"type": "DOMID",
+					"experimental": true
 				},
 				"disabled": {
 					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused."
@@ -37649,7 +37652,7 @@
 					"description": "Marks the image for observation by the PerformanceElementTiming API. The value given becomes an identifier for the observed image element. See also the elementtiming attribute page."
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Signals a high-priority fetch relative to other images. low Signals a low-priority fetch relative to other images. auto Default: Signals automatic determination of fetch priority relative to other images."
+					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Fetch the image at a high priority relative to other images. low Fetch the image at a low priority relative to other images. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLImageElement.fetchPriority for more information."
 				},
 				"height": {
 					"description": "The intrinsic height of the image, in pixels. Must be an integer without a unit. Note: Including height and width enables the aspect ratio of the image to be calculated by the browser prior to the image being loaded. This aspect ratio is used to reserve the space needed to display the image, reducing or even preventing a layout shift when the image is downloaded and painted to the screen. Reducing layout shift is a major component of good user experience and web performance."
@@ -38238,10 +38241,6 @@
 						"[type='color' i]"
 					]
 				},
-				"autocorrect": {
-					"description": "(Safari only). A string which indicates whether to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
-					"nonStandard": true
-				},
 				"autofocus": {
 					"description": "A Boolean attribute which, if present, indicates that the input should automatically have focus when the page has finished loading (or when the <dialog> containing the element has been displayed). Note: An element with the autofocus attribute may gain focus before the DOMContentLoaded event is fired. No more than one element in the document may have the autofocus attribute. If put on more than one element, the first one with the attribute receives focus. The autofocus attribute cannot be used on inputs of type hidden, since hidden inputs cannot be focused. Warning: Automatically focusing a form control can confuse visually-impaired people using screen-reading technology and people with cognitive impairments. When autofocus is assigned, screen-readers \"teleport\" their user to the form control without warning them beforehand. Use careful consideration for accessibility when applying the autofocus attribute. Automatically focusing on a control can cause the page to scroll on load. The focus can also cause dynamic keyboards to display on some touch devices. While a screen reader will announce the label of the form control receiving focus, the screen reader will not announce anything before the label, and the sighted user on a small device will equally miss the context created by the preceding content."
 				},
@@ -38732,8 +38731,7 @@
 			"attributes": {
 				"type": {
 					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"value": {
 					"type": "Int",
@@ -38825,7 +38823,7 @@
 					"type": "Boolean"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching a preloaded resource. Allowed values: high Signals a high-priority fetch relative to other resources of the same type. low Signals a low-priority fetch relative to other resources of the same type. auto Default: Signals automatic determination of fetch priority relative to other resources of the same type."
+					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLLinkElement.fetchPriority for more information."
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -40253,7 +40251,7 @@
 					"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Signals a high-priority fetch relative to other external scripts. low Signals a low-priority fetch relative to other external scripts. auto Default: Signals automatic determination of fetch priority relative to other external scripts."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLScriptElement.fetchPriority for more information."
 				},
 				"integrity": {
 					"condition": "[src]"
@@ -41108,14 +41106,13 @@
 			},
 			"attributes": {
 				"autocapitalize": {
-					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner. See the autocapitalize global attribute page for more information."
+					"description": "Controls whether inputted text is automatically capitalized and, if so, in what manner."
 				},
 				"autocomplete": {
-					"description": "This attribute indicates whether the value of the control can be automatically completed by the browser. Possible values are: off: The user must explicitly enter a value into this field for every use, or the document provides its own auto-completion method; the browser does not automatically complete the entry. on: The browser can automatically complete the value based on values that the user has entered during previous uses. <token-list>: An ordered set of space-separated autofill detail tokens, optionally preceded by a sectioning token, a billing or shipping grouping token, and/or a token identifying the type of recipient. <textarea> elements that don't specify the autocomplete attribute inherit the autocomplete on or off status set on the <textarea>'s form owner. The form owner is either the <form> element that this <textarea> element is a descendant of or the form element whose id is specified by the form attribute of the input element. For more information, see the autocomplete attribute in <form>."
+					"description": "Controls whether entered text can be automatically completed by the browser. Possible values are: off: The user must explicitly enter a value into this field for every use, or the document provides its own auto-completion method; the browser does not automatically complete the entry. on: The browser can automatically complete the value based on values that the user has entered during previous uses. <token-list>: An ordered set of space-separated autofill detail tokens, optionally preceded by a sectioning token, a billing or shipping grouping token, and/or a token identifying the type of recipient. <textarea> elements that don't specify the autocomplete attribute inherit the autocomplete on or off status set on the <textarea>'s form owner. The form owner is either the <form> element that this <textarea> element is a descendant of or the form element whose id is specified by the form attribute of the input element. For more information, see the autocomplete attribute in <form>."
 				},
 				"autocorrect": {
-					"description": "A string which indicates whether to activate automatic spelling correction and processing of text substitutions (if any are configured) while the user is editing this textarea. Permitted values are: on Enable automatic spelling correction and text substitutions. off Disable automatic spelling correction and text substitutions.",
-					"nonStandard": true
+					"description": "Controls whether automatic spelling correction and processing of text is enabled while the user is editing this textarea. Permitted values are: on Enable automatic spelling correction and text substitutions. off Disable automatic spelling correction and text substitutions."
 				},
 				"autofocus": {
 					"description": "This Boolean attribute lets you specify that a form control should have input focus when the page loads. Only one form-associated element in a document can have this attribute specified."
@@ -47192,7 +47189,7 @@
 			"name": "svg:set",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/set",
-			"description": "The SVG <set> element provides a simple means of just setting the value of an attribute for a specified duration.",
+			"description": "The SVG <set> element provides a method of setting the value of an attribute for a specified duration.",
 			"categories": [],
 			"contentModel": {
 				"contents": [

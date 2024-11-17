@@ -97,7 +97,7 @@ export function isValidAttr(
 			message: t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
 		};
 	}
-	if (invalid !== false && invalid.invalidType === 'invalid-value' && isDynamicValue) {
+	if (invalid !== false && (Array.isArray(invalid) || invalid.invalidType === 'invalid-value') && isDynamicValue) {
 		invalid = false;
 	}
 	return invalid;

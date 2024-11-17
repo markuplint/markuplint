@@ -378,13 +378,13 @@ export type AttributeType =
 					| "<'inline-size'>"
 					| "<'input-security'>"
 					| "<'inset'>"
-					| "<'inset-area'>"
 					| "<'inset-block'>"
 					| "<'inset-block-end'>"
 					| "<'inset-block-start'>"
 					| "<'inset-inline'>"
 					| "<'inset-inline-end'>"
 					| "<'inset-inline-start'>"
+					| "<'interpolate-size'>"
 					| "<'isolation'>"
 					| "<'justify-content'>"
 					| "<'justify-items'>"
@@ -700,6 +700,7 @@ export type AttributeType =
 					| '<an-plus-b>'
 					| '<anchor()>'
 					| '<anchor-element>'
+					| '<anchor-name>'
 					| '<anchor-side>'
 					| '<anchor-size()>'
 					| '<anchor-size>'
@@ -988,6 +989,7 @@ export type AttributeType =
 					| '<ratio>'
 					| '<ray()>'
 					| '<ray-size>'
+					| '<rect()>'
 					| '<rectangular-color-space>'
 					| '<relative-real-selector-list>'
 					| '<relative-real-selector>'
@@ -1106,6 +1108,7 @@ export type AttributeType =
 					| '<whitespace-token>'
 					| '<wq-name>'
 					| '<x>'
+					| '<xywh()>'
 					| '<xyz-params>'
 					| '<xyz-space>'
 					| '<y>'
@@ -1176,6 +1179,7 @@ export type AttributeType =
 					| 'TabIndex'
 					| 'URL'
 					| 'Uint'
+					| 'ValidCustomCommand'
 					| 'XMLName'
 					| 'Zero'
 			  )
@@ -1209,6 +1213,7 @@ export interface GlobalAttributes {
 				| 'onchange'
 				| 'onclick'
 				| 'onclose'
+				| 'oncommand'
 				| 'oncompositionend'
 				| 'oncompositionstart'
 				| 'oncompositionupdate'
@@ -1612,6 +1617,7 @@ export interface List {
 				| 'TabIndex'
 				| 'URL'
 				| 'Uint'
+				| 'ValidCustomCommand'
 				| 'XMLName'
 				| 'Zero'
 		  )

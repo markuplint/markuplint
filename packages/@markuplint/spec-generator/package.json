@@ -18,6 +18,7 @@
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
@@ -33,6 +34,6 @@
 		"@markuplint/ml-spec": "4.8.2",
 		"@markuplint/test-tools": "4.5.12",
 		"@types/cli-progress": "3.11.6",
-		"type-fest": "4.26.1"
+		"type-fest": "4.27.0"
 	}
 }

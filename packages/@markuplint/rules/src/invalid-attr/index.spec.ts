@@ -1317,6 +1317,21 @@ test('WAI-Adapt', async () => {
 	).toStrictEqual([]);
 });
 
+test('Multiple Type', async () => {
+	expect((await mlRuleTest(rule, '<button command="toggle-popover"></button>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<button command="--custom"></button>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<button command="invalid"></button>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			col: 18,
+			line: 1,
+			message:
+				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+			raw: 'invalid',
+		},
+	]);
+});
+
 describe('Deprecated options', () => {
 	test('custom rule', async () => {
 		const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
