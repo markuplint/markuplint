@@ -38750,8 +38750,7 @@
 			"attributes": {
 				"type": {
 					"description": "This character attribute indicates the numbering type: a: lowercase letters A: uppercase letters i: lowercase Roman numerals I: uppercase Roman numerals 1: numbers This type overrides the one used by its parent <ol> element, if any. Note: This attribute has been deprecated; use the CSS list-style-type property instead.",
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"value": {
 					"type": "Int",
