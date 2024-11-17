@@ -38256,10 +38256,6 @@
 						"[type='color' i]"
 					]
 				},
-				"autocorrect": {
-					"description": "(Safari only). A string which indicates whether to activate automatic correction while the user is editing this field. Permitted values are: on Enable automatic correction of typos, as well as processing of text substitutions if any are configured. off Disable automatic correction and text substitutions.",
-					"nonStandard": true
-				},
 				"autofocus": {
 					"description": "A Boolean attribute which, if present, indicates that the input should automatically have focus when the page has finished loading (or when the <dialog> containing the element has been displayed). Note: An element with the autofocus attribute may gain focus before the DOMContentLoaded event is fired. No more than one element in the document may have the autofocus attribute. If put on more than one element, the first one with the attribute receives focus. The autofocus attribute cannot be used on inputs of type hidden, since hidden inputs cannot be focused. Warning: Automatically focusing a form control can confuse visually-impaired people using screen-reading technology and people with cognitive impairments. When autofocus is assigned, screen-readers \"teleport\" their user to the form control without warning them beforehand. Use careful consideration for accessibility when applying the autofocus attribute. Automatically focusing on a control can cause the page to scroll on load. The focus can also cause dynamic keyboards to display on some touch devices. While a screen reader will announce the label of the form control receiving focus, the screen reader will not announce anything before the label, and the sighted user on a small device will equally miss the context created by the preceding content."
 				},
@@ -41131,8 +41127,7 @@
 					"description": "Controls whether entered text can be automatically completed by the browser. Possible values are: off: The user must explicitly enter a value into this field for every use, or the document provides its own auto-completion method; the browser does not automatically complete the entry. on: The browser can automatically complete the value based on values that the user has entered during previous uses. <token-list>: An ordered set of space-separated autofill detail tokens, optionally preceded by a sectioning token, a billing or shipping grouping token, and/or a token identifying the type of recipient. <textarea> elements that don't specify the autocomplete attribute inherit the autocomplete on or off status set on the <textarea>'s form owner. The form owner is either the <form> element that this <textarea> element is a descendant of or the form element whose id is specified by the form attribute of the input element. For more information, see the autocomplete attribute in <form>."
 				},
 				"autocorrect": {
-					"description": "A string which indicates whether to activate automatic spelling correction and processing of text substitutions (if any are configured) while the user is editing this textarea. Permitted values are: on Enable automatic spelling correction and text substitutions. off Disable automatic spelling correction and text substitutions.",
-					"nonStandard": true
+					"description": "Controls whether automatic spelling correction and processing of text is enabled while the user is editing this textarea. Permitted values are: on Enable automatic spelling correction and text substitutions. off Disable automatic spelling correction and text substitutions."
 				},
 				"autofocus": {
 					"description": "This Boolean attribute lets you specify that a form control should have input focus when the page loads. Only one form-associated element in a document can have this attribute specified."
