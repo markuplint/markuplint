@@ -25,6 +25,23 @@
 		]
 	},
 	"attributes": {
+		// https://developer.mozilla.org/ja/docs/Web/HTML/Element/button#command
+		"command": {
+			"type": [
+				{
+					"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "show-modal"],
+					"invalidValueDefault": "unknown",
+					"missingValueDefault": "unknown"
+				},
+				"ValidCustomCommand"
+			],
+			"experimental": true
+		},
+		// https://developer.mozilla.org/ja/docs/Web/HTML/Element/button#commandfor
+		"commandfor": {
+			"type": "DOMID",
+			"experimental": true
+		},
 		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
 		"popovertarget": {
 			"type": "DOMID"

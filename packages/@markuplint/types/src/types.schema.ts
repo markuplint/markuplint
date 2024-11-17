@@ -1178,6 +1178,7 @@ export type ExtendedType =
 	| 'TabIndex'
 	| 'URL'
 	| 'Uint'
+	| 'ValidCustomCommand'
 	| 'XMLName'
 	| 'Zero';
 export type HtmlAttrRequirement = 'Boolean';

@@ -1179,6 +1179,7 @@ export type AttributeType =
 					| 'TabIndex'
 					| 'URL'
 					| 'Uint'
+					| 'ValidCustomCommand'
 					| 'XMLName'
 					| 'Zero'
 			  )
@@ -1212,6 +1213,7 @@ export interface GlobalAttributes {
 				| 'onchange'
 				| 'onclick'
 				| 'onclose'
+				| 'oncommand'
 				| 'oncompositionend'
 				| 'oncompositionstart'
 				| 'oncompositionupdate'
@@ -1615,6 +1617,7 @@ export interface List {
 				| 'TabIndex'
 				| 'URL'
 				| 'Uint'
+				| 'ValidCustomCommand'
 				| 'XMLName'
 				| 'Zero'
 		  )

@@ -278,6 +278,10 @@
 		"onclose": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncommand
+		"oncommand": {
+			"type": "FunctionBody"
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextlost
 		"oncontextlost": {
 			"type": "FunctionBody"

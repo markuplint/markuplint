@@ -459,6 +459,9 @@
 				"onclose": {
 					"type": "FunctionBody"
 				},
+				"oncommand": {
+					"type": "FunctionBody"
+				},
 				"oncontextlost": {
 					"type": "FunctionBody"
 				},
@@ -35903,6 +35906,21 @@
 			"attributes": {
 				"autofocus": {
 					"description": "This Boolean attribute specifies that the button should have input focus when the page loads. Only one element in a document can have this attribute."
+				},
+				"command": {
+					"type": [
+						{
+							"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "show-modal"],
+							"invalidValueDefault": "unknown",
+							"missingValueDefault": "unknown"
+						},
+						"ValidCustomCommand"
+					],
+					"experimental": true
+				},
+				"commandfor": {
+					"type": "DOMID",
+					"experimental": true
 				},
 				"disabled": {
 					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused."
