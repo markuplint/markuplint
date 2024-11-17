@@ -8,8 +8,10 @@ import { check } from '@markuplint/types';
 import { createMessageValueExpected } from './create-message.js';
 import { log } from './debug.js';
 
-type Invalid = {
-	invalidType: 'non-existent' | 'invalid-value' | 'disallowed-attr';
+type InvalidTYpe = 'non-existent' | 'invalid-value' | 'disallowed-attr';
+
+type Invalid<T extends InvalidTYpe = InvalidTYpe> = {
+	invalidType: T;
 	message: string;
 	loc?: Loc;
 };
@@ -34,7 +36,7 @@ export function attrCheck(
 	value: string,
 	isCustomRule: boolean,
 	spec?: AttrSpec,
-): Invalid | false {
+): Invalid | Invalid<'invalid-value'>[] | false {
 	if (!isCustomRule) {
 		if (/^data-.+$/.test(name)) {
 			// Ignore checking because "data-*" attribute is any type
@@ -83,32 +85,27 @@ export function attrCheck(
 	}
 
 	const types = toNonNullableArrayFromItemOrArray(spec.type);
-	const invalidList = types.map(type => {
+
+	const invalidMap = new Map<string, Invalid<'invalid-value'>>();
+
+	for (const type of types) {
 		const invalid = valueCheck(t, name, value, type);
 		if (invalid === false) {
 			return false;
 		}
-		if (typeof invalid === 'string') {
-			return {
-				invalidType: 'invalid-value' as const,
-				message: invalid,
-			};
-		} else {
-			return {
-				invalidType: 'invalid-value' as const,
-				message: invalid[0],
-				loc: invalid[1],
-			};
-		}
-	});
 
-	if (invalidList.includes(false)) {
-		return false;
+		const key = `${invalid[1].line}:${invalid[1].col}`;
+
+		const current = invalidMap.get(key);
+
+		invalidMap.set(key, {
+			invalidType: 'invalid-value',
+			message: current?.message ? [current.message, invalid[0]].join(t('. ') + t('Or, ')) : invalid[0],
+			loc: invalid[1],
+		});
 	}
 
-	const invalid = invalidList.find(Boolean);
-
-	return invalid ?? false;
+	return invalidMap.values().toArray() ?? false;
 }
 
 export function valueCheck(
