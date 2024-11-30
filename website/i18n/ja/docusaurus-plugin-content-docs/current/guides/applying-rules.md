@@ -25,7 +25,7 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 
 ## 部分的な適用 {#applying-to-some}
 
-構造の一部にのみにルールを適用したい場合は、[**セレクタ**](./selectors)を`nodeRules`または`childNodeRules`プロパティに設定します。また、`childNodeRules`は対象要素の子要素（`inheritance`を設定すれば子孫も含む）に対して適用されます。
+構造の一部のみにルールを適用したい場合は、[**セレクタ**](./selectors)を`nodeRules`または`childNodeRules`プロパティに設定します。また、`childNodeRules`は対象要素の子要素（`inheritance`を設定すれば子孫も含む）に対して適用されます。
 
 ```json class=config
 {
