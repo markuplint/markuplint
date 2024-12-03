@@ -14,7 +14,13 @@ export function svelteParse(template: string): SvelteNode[] {
 
 export type SvelteDirective = Directive | AST.Attribute | AST.SpreadAttribute;
 
-export type SvelteBlock = AST.EachBlock | AST.IfBlock | AST.AwaitBlock | AST.KeyBlock | AST.SnippetBlock;
+export type SvelteBlock =
+	| AST.EachBlock
+	| AST.IfBlock
+	| AST.AwaitBlock
+	| AST.KeyBlock
+	| AST.SnippetBlock
+	| AST.SvelteBoundary;
 
 type Tag = AST.ExpressionTag | AST.HtmlTag | AST.ConstTag | AST.DebugTag | AST.RenderTag;
 
