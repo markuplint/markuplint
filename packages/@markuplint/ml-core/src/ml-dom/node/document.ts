@@ -2597,6 +2597,21 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
+	caretPositionFromPoint(
+		x: number,
+		y: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: CaretPositionFromPointOptions,
+	): CaretPosition | null {
+		throw new UnexpectedCallError('Not supported "caretPositionFromPoint" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
 	caretRangeFromPoint(x: number, y: number): Range | null {
 		throw new UnexpectedCallError('Not supported "caretRangeFromPoint" method');
 	}
