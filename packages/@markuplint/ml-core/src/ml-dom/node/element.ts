@@ -2983,6 +2983,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get writingSuggestions(): string {
+		throw new UnexpectedCallError('Not supported "writingSuggestions" property');
+	}
+
+	/**
 	 * @implements DOM API: `Element`
 	 */
 	after(
