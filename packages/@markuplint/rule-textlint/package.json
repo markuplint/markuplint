@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-core": "4.10.5",
-		"@textlint/kernel": "14.3.0",
+		"@textlint/kernel": "14.4.0",
 		"textlint-plugin-html": "1.0.1"
 	}
 }
