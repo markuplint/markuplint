@@ -3188,7 +3188,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
-	startViewTransition(callbackOptions?: UpdateCallback): ViewTransition {
+	startViewTransition(callbackOptions?: ViewTransitionUpdateCallback): ViewTransition {
 		throw new UnexpectedCallError('Not supported "startViewTransition" method');
 	}
 
