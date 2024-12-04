@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.9.0...@markuplint/ml-spec@4.9.1) (2024-12-04)
+
+**Note:** Version bump only for package @markuplint/ml-spec
+
+# [4.9.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.8.2...@markuplint/ml-spec@4.9.0) (2024-11-17)
+
+### Features
+
+- **html-spec:** add `command` and `commandfor` attributes with the `command` event ([19142ab](https://github.com/markuplint/markuplint/commit/19142abe2dbefdf9b333ea43001f7492793cf93e))
+- **types:** add `ValidCustomCommand` type for Invoker Command API ([4015eb4](https://github.com/markuplint/markuplint/commit/4015eb404c8a538ea966af114f0676777b7c1eb6))
+- **types:** update CSS types ([54864fe](https://github.com/markuplint/markuplint/commit/54864fef43e753e9549f391de19fdf8f3f1d0c86))
+
 ## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.8.1...@markuplint/ml-spec@4.8.2) (2024-10-31)
 
 **Note:** Version bump only for package @markuplint/ml-spec

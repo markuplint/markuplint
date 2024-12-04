@@ -33,7 +33,9 @@ export function parseBlock(
 				? originBlockNode.pending?.nodes
 				: originBlockNode.type === 'KeyBlock'
 					? originBlockNode.fragment.nodes
-					: originBlockNode.body.nodes;
+					: originBlockNode.type === 'SvelteBoundary'
+						? originBlockNode.fragment.nodes
+						: originBlockNode.body.nodes;
 
 	const fragStart = fragment?.at(0)?.start;
 	const fragEnd = fragment?.at(-1)?.end;

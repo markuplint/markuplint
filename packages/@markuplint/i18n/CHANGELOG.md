@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.7...@markuplint/i18n@4.6.0) (2024-11-17)
+
+### Features
+
+- **i18n:** add `Or, ` keyword ([986018b](https://github.com/markuplint/markuplint/commit/986018b0ceedc2e9e02ecf3f7d87763929f4df28))
+
 ## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.6...@markuplint/i18n@4.5.7) (2024-10-28)
 
 **Note:** Version bump only for package @markuplint/i18n

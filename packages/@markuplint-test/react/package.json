@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint-test/react",
-	"version": "0.0.10",
+	"version": "0.0.12",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -10,6 +10,6 @@
 		"pretenders": "npx --yes @markuplint/pretenders \"*.jsx\" --out \"./pretenders.json\""
 	},
 	"devDependencies": {
-		"@markuplint/pretenders": "0.0.14"
+		"@markuplint/pretenders": "0.0.16"
 	}
 }
