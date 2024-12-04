@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.10.5...@markuplint/ml-core@4.11.0) (2024-12-04)
+
+### Features
+
+- **ml-core:** add `caretPositionFromPoint` prop to MLDocument ([8f7e822](https://github.com/markuplint/markuplint/commit/8f7e822d29f6ec287b9470eae0f4630cc2627eb7))
+- **ml-core:** add `currentCSSZoom` prop to MLElement ([8b12e07](https://github.com/markuplint/markuplint/commit/8b12e07481ee1bbe2d54c9b4179e06ed01250662))
+- **ml-core:** add `fragmentDirective` prop to MLDocument ([a62b6b1](https://github.com/markuplint/markuplint/commit/a62b6b10612601fd49bcd35f23723f0466d1b988))
+- **ml-core:** add `writingSuggestions` prop to MLElement ([59c1d66](https://github.com/markuplint/markuplint/commit/59c1d6682cff93a17d0da8da3cd3c4dd1c63482b))
+
 ## [4.10.5](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.10.4...@markuplint/ml-core@4.10.5) (2024-11-17)
 
 **Note:** Version bump only for package @markuplint/ml-core

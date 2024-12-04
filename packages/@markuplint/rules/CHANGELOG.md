@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.7](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.6...@markuplint/rules@4.10.7) (2024-12-04)
+
+**Note:** Version bump only for package @markuplint/rules
+
 ## [4.10.6](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.5...@markuplint/rules@4.10.6) (2024-11-17)
 
 ### Bug Fixes

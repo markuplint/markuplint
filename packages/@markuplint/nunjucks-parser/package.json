@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/nunjucks-parser",
-	"version": "4.6.13",
+	"version": "4.6.14",
 	"description": "Nunjucks template parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -22,9 +22,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.13"
+		"@markuplint/html-parser": "4.6.14"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "4.8.1"
+		"@markuplint/parser-utils": "4.8.2"
 	}
 }

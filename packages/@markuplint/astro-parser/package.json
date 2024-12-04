@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/astro-parser",
-	"version": "4.6.13",
+	"version": "4.6.14",
 	"description": "astro parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.9",
-		"@markuplint/parser-utils": "4.8.1",
+		"@markuplint/parser-utils": "4.8.2",
 		"astro-eslint-parser": "1.1.0"
 	},
 	"devDependencies": {
