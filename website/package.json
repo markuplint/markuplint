@@ -20,7 +20,7 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
     "@octokit/rest": "21.0.2",
     "clsx": "2.1.1",
-    "dotenv": "16.4.5",
+    "dotenv": "16.4.7",
     "gray-matter": "4.0.3",
     "prism-react-renderer": "2.4.0",
     "react": "18.3.1",
