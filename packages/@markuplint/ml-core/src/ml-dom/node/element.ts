@@ -758,6 +758,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get currentCSSZoom(): number {
+		throw new UnexpectedCallError('Not supported "currentCSSZoom" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get dataset(): DOMStringMap {
 		throw new UnexpectedCallError('Not supported "dataset" property');
 	}
@@ -2969,6 +2980,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get translate(): boolean {
 		throw new UnexpectedCallError('Not supported "translate" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get writingSuggestions(): string {
+		throw new UnexpectedCallError('Not supported "writingSuggestions" property');
 	}
 
 	/**

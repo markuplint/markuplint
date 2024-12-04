@@ -16,6 +16,6 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"prettier": "3.3.3"
+		"prettier": "3.4.1"
 	}
 }
