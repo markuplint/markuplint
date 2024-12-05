@@ -34,7 +34,7 @@
     "@tsconfig/strictest": "2.0.5",
     "@types/glob": "8.1.0",
     "eslint-plugin-react": "7.37.2",
-    "eslint-plugin-react-hooks": "5.0.0",
+    "eslint-plugin-react-hooks": "5.1.0",
     "stylelint": "16.11.0",
     "stylelint-config-recess-order": "5.1.1",
     "stylelint-config-standard": "36.0.1",
