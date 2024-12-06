@@ -36,7 +36,7 @@
 		"@types/whatwg-mimetype": "3.0.2",
 		"bcp-47": "2.1.0",
 		"css-tree": "3.0.1",
-		"debug": "4.3.7",
+		"debug": "4.4.0",
 		"leven": "4.0.0",
 		"type-fest": "4.30.0",
 		"whatwg-mimetype": "4.0.0"
