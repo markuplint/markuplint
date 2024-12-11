@@ -14,10 +14,10 @@
   "author": "Yusuke Hirao",
   "license": "MIT",
   "dependencies": {
-    "@docusaurus/core": "3.4.0",
-    "@docusaurus/plugin-client-redirects": "3.4.0",
-    "@docusaurus/preset-classic": "3.4.0",
-    "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
+    "@docusaurus/core": "3.6.3",
+    "@docusaurus/plugin-client-redirects": "3.6.3",
+    "@docusaurus/preset-classic": "3.6.3",
+    "@docusaurus/remark-plugin-npm2yarn": "3.6.3",
     "@octokit/rest": "21.0.2",
     "clsx": "2.1.1",
     "dotenv": "16.4.7",
@@ -28,8 +28,8 @@
     "unist-util-visit": "5.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.4.0",
-    "@docusaurus/tsconfig": "3.4.0",
+    "@docusaurus/module-type-aliases": "3.6.3",
+    "@docusaurus/tsconfig": "3.6.3",
     "@imgix/js-core": "3.8.0",
     "@tsconfig/strictest": "2.0.5",
     "@types/glob": "8.1.0",
