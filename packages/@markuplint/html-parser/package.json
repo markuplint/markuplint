@@ -28,6 +28,6 @@
 		"@markuplint/ml-ast": "4.4.9",
 		"@markuplint/parser-utils": "4.8.2",
 		"parse5": "7.2.1",
-		"type-fest": "4.30.1"
+		"type-fest": "4.30.2"
 	}
 }
