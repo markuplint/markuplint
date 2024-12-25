@@ -38,7 +38,7 @@
 		"css-tree": "3.1.0",
 		"debug": "4.4.0",
 		"leven": "4.0.0",
-		"type-fest": "4.30.2",
+		"type-fest": "4.31.0",
 		"whatwg-mimetype": "4.0.0"
 	}
 }
