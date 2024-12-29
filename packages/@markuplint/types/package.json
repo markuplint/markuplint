@@ -31,7 +31,7 @@
 	},
 	"dependencies": {
 		"@markuplint/shared": "4.4.10",
-		"@types/css-tree": "2.3.9",
+		"@types/css-tree": "2.3.10",
 		"@types/debug": "4.1.12",
 		"@types/whatwg-mimetype": "3.0.2",
 		"bcp-47": "2.1.0",
