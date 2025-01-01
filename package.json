@@ -78,7 +78,7 @@
 		"lerna": "8.1.9",
 		"lint-staged": "15.3.0",
 		"npm-run-all2": "7.0.2",
-		"textlint": "14.4.0",
+		"textlint": "14.4.2",
 		"textlint-filter-rule-comments": "1.2.2",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "10.0.1",
