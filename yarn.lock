@@ -202,10 +202,10 @@
     "@commitlint/types" "^19.5.0"
     conventional-changelog-conventionalcommits "^7.0.2"
 
-"@commitlint/config-lerna-scopes@19.5.0":
-  version "19.5.0"
-  resolved "https://registry.yarnpkg.com/@commitlint/config-lerna-scopes/-/config-lerna-scopes-19.5.0.tgz#83762dce983274b89443c93fab742c5f430cdc7b"
-  integrity sha512-h89BuwLVinacPOu2hzBKJ4t/L/HOA7rUuzbS10k26Lzq2/OKpi/KEhNfphJJLizfeqOzjqh1/V3ILbePtaBUtg==
+"@commitlint/config-lerna-scopes@19.7.0":
+  version "19.7.0"
+  resolved "https://registry.yarnpkg.com/@commitlint/config-lerna-scopes/-/config-lerna-scopes-19.7.0.tgz#b5e464b0c6cdd16a77f5ca30909241f6d07e79df"
+  integrity sha512-KsmMvb/DncTHid27lj5/45HObuoM3OKWGBs9sPw8dIMORqs70MWBk5iq+SoUjKqQAgZ8Gv4kO9Sol/laqva+hw==
   dependencies:
     "@lerna/project" "^6.0.0"
     glob "^10.3.10"
