@@ -729,7 +729,7 @@ const MyPicture = () => {
 
 #### `as.attrs[].name`
 
-属性名を受け取ります。必須であす。
+属性名を受け取ります。必須です。
 
 #### `as.attrs[].value`
 
