@@ -131,7 +131,7 @@
 	"dependencies": {
 		"@markuplint/i18n": "4.6.0",
 		"debug": "4.4.0",
-		"glob": "11.0.0",
+		"glob": "11.0.1",
 		"markuplint": "4.11.4",
 		"mocha": "11.0.1",
 		"semver": "7.6.3",

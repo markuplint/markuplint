@@ -30,7 +30,7 @@
 		"coveralls": "3.1.1",
 		"default-markuplint": "npm:markuplint@latest",
 		"execa": "9.5.2",
-		"glob": "11.0.0",
+		"glob": "11.0.1",
 		"jsdom": "25.0.1",
 		"strip-json-comments": "5.0.1",
 		"textlint-rule-prh": "5.3.0",
