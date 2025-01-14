@@ -33,6 +33,6 @@
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.7",
-		"jsdom": "25.0.1"
+		"jsdom": "26.0.0"
 	}
 }
