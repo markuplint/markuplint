@@ -140,7 +140,7 @@
 		"vscode-languageserver-textdocument": "1.0.12"
 	},
 	"volta": {
-		"node": "22.13.0",
+		"node": "22.13.1",
 		"yarn": "1.22.22"
 	}
 }
