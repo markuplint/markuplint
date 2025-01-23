@@ -133,7 +133,7 @@
 		"debug": "4.4.0",
 		"glob": "11.0.1",
 		"markuplint": "4.11.4",
-		"mocha": "11.0.1",
+		"mocha": "11.1.0",
 		"semver": "7.6.3",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
