@@ -39,6 +39,14 @@ test('basic', () => {
 		idlPropName: 'y',
 		contentAttrName: 'y',
 	});
+	expect(searchIDLAttribute('y1')).toStrictEqual({
+		idlPropName: 'y1',
+		contentAttrName: 'y1',
+	});
+	expect(searchIDLAttribute('y2')).toStrictEqual({
+		idlPropName: 'y2',
+		contentAttrName: 'y2',
+	});
 	expect(searchIDLAttribute('attribute-name')).toStrictEqual({
 		idlPropName: 'attributeName',
 		contentAttrName: 'attributeName',
