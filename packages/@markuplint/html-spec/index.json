@@ -36441,6 +36441,13 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"closedby": {
+					"type": {
+						"enum": ["any", "closerequest", "none"],
+						"invalidValueDefault": "auto",
+						"missingValueDefault": "auto"
+					}
+				},
 				"open": {
 					"type": "Boolean"
 				},

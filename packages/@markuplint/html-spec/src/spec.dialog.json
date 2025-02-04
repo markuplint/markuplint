@@ -22,6 +22,14 @@
 		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-dialog-open
 		"open": {
 			"type": "Boolean"
+		},
+		// https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-dialog-closedby
+		"closedby": {
+			"type": {
+				"enum": ["any", "closerequest", "none"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			}
 		}
 	},
 	"aria": {
