@@ -1,9 +1,10 @@
 import type { Specificity, RegexSelector, RegexSelectorCombinator, RegexSelectorWithoutCombination } from './types.js';
 import type { Writable } from 'type-fest';
+import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
 import { regexSelectorMatches } from './regex-selector-matches.js';
-import { Selector } from './selector.js';
+import { createSelector } from './create-selector.js';
 
 export type SelectorMatches = SelectorMatched | SelectorUnmatched;
 
@@ -22,6 +23,9 @@ export function matchSelector(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Node,
 	selector: string | RegexSelector | undefined,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	scope?: ParentNode | null,
+	specs?: MLMLSpec,
 ): SelectorMatches {
 	if (selector == null || selector === '') {
 		return {
@@ -30,8 +34,8 @@ export function matchSelector(
 	}
 
 	if (typeof selector === 'string') {
-		const sel = new Selector(selector);
-		const specificity = sel.match(el);
+		const sel = createSelector(selector, specs);
+		const specificity = sel.match(el, scope);
 		if (specificity !== false) {
 			return {
 				matched: true,
