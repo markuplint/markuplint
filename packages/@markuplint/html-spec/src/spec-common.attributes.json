@@ -136,7 +136,7 @@
 		// https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute
 		"popover": {
 			"type": {
-				"enum": ["", "auto", "manual"],
+				"enum": ["", "auto", "manual", "hint"],
 				"disallowToSurroundBySpaces": true,
 				"invalidValueDefault": "manual",
 				"missingValueDefault": "no popover",
