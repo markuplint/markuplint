@@ -44,6 +44,9 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 	fix = false,
 	locale = 'en',
 ) {
+	if (config.rule === undefined && (config.nodeRule || config.childNodeRule)) {
+		config.rule = true;
+	}
 	const _config: Config = {
 		...config,
 		rules:

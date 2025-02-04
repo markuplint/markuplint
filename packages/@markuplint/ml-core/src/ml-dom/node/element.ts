@@ -6,11 +6,19 @@ import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type {
+	PlainData,
+	Pretender,
+	PretenderARIA,
+	RegexSelector,
+	RuleConfigValue,
+	RuleInfo,
+} from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { createSelector } from '@markuplint/selector';
+import type { SelectorMatches } from '@markuplint/selector';
+import { matchSelector } from '@markuplint/selector';
 
 import { getAccname } from '../helper/accname.js';
 import {
@@ -3531,14 +3539,20 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: MLParentNode<T, O>,
 	): boolean {
-		let matched = false;
-		const selectorMatcher = createSelector(selector, this.ownerMLDocument.specs);
-		if (this.pretenderContext?.type === 'pretender') {
-			matched = selectorMatcher.match(this, scope) !== false;
-		}
+		return this.matchMLSelector(selector, scope).matched;
+	}
 
-		if (matched) {
-			return true;
+	matchMLSelector(
+		selector: string | RegexSelector | undefined,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: MLParentNode<T, O>,
+	): SelectorMatches {
+		if (this.pretenderContext?.type === 'pretender') {
+			// matched = selectorMatcher.match(this, scope) !== false;
+			const matched = matchSelector(this, selector, scope, this.ownerMLDocument.specs);
+			if (matched.matched) {
+				return matched;
+			}
 		}
 
 		let _pretender: PretenderContextPretender<MLElement<T, O>, T, O> | null = null;
@@ -3548,7 +3562,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			this.pretenderContext = null;
 		}
 
-		matched = selectorMatcher.match(this, scope) !== false;
+		const matched = matchSelector(this, selector, scope, this.ownerMLDocument.specs);
 
 		if (_pretender) {
 			this.pretenderContext = _pretender;

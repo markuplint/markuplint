@@ -488,4 +488,116 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#2394', async () => {
+		expect(
+			(
+				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+								inheritAttrs: true,
+							},
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<MyComponent href="https://markuplint.dev/" />',
+			},
+		]);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+								inheritAttrs: true,
+							},
+						},
+					],
+					nodeRule: [
+						{
+							selector: 'a',
+							rule: false,
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+								inheritAttrs: true,
+							},
+						},
+					],
+					nodeRule: [
+						{
+							selector: 'MyComponent',
+							rule: true,
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<MyComponent href="https://markuplint.dev/" />',
+			},
+		]);
+
+		expect(
+			(
+				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+					pretenders: [
+						{
+							selector: 'MyComponent',
+							as: {
+								element: 'a',
+								inheritAttrs: true,
+							},
+						},
+					],
+					nodeRule: [
+						{
+							selector: 'MyComponent',
+							rule: false,
+						},
+					],
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
 });
