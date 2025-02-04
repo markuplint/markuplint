@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.11.1...@markuplint/html-spec@4.12.0) (2025-02-04)
+
+### Features
+
+- **html-spec:** add the `closedby` attr to the `dialog` element ([6f4812f](https://github.com/markuplint/markuplint/commit/6f4812f50829d21d6c1ffdcebdd2595b74180728))
+- **html-spec:** add the `hint` enum value to the `popover` attribute ([1de0000](https://github.com/markuplint/markuplint/commit/1de00003160c9271ab9805bb4c6d0253b3d1f515))
+
 ## [4.11.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.11.0...@markuplint/html-spec@4.11.1) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/html-spec
