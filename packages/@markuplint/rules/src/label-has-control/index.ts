@@ -13,6 +13,13 @@ export default createRule({
 				return;
 			}
 
+			// If the label is a pretender, the descendants are unknown, so end the verification.
+			// However, if the `as` attribute is explicitly specified, the descendant relationship is clear,
+			// so verify it as a normal element.
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) {
+				return;
+			}
+
 			if (el.children.length === 0 && !el.hasAttribute('for')) {
 				report({
 					scope: el,
