@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.8](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.7...@markuplint/rules@4.10.8) (2025-02-04)
+
+### Bug Fixes
+
+- **rules:** fix verifing pretendered label element ([9b3266a](https://github.com/markuplint/markuplint/commit/9b3266a4f08ca725586672054f1353b1c663babc)), closes [#2392](https://github.com/markuplint/markuplint/issues/2392)
+
 ## [4.10.7](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.6...@markuplint/rules@4.10.7) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/rules

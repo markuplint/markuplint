@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.8.4",
+	"version": "4.8.5",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -13,7 +13,7 @@
 		"theme": "dark"
 	},
 	"engines": {
-		"vscode": "^1.94.0"
+		"vscode": "^1.96.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -118,7 +118,7 @@
 	},
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "1.0.8",
-		"@markuplint/file-resolver": "4.9.9",
+		"@markuplint/file-resolver": "4.9.10",
 		"@types/mocha": "10.0.10",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.5.8",
@@ -132,7 +132,7 @@
 		"@markuplint/i18n": "4.6.0",
 		"debug": "4.4.0",
 		"glob": "11.0.1",
-		"markuplint": "4.11.4",
+		"markuplint": "4.11.5",
 		"mocha": "11.1.0",
 		"semver": "7.7.1",
 		"vscode-languageclient": "9.0.1",

@@ -167,7 +167,13 @@
 		"Yasuo",
 		"yearless",
 		"Yusuke",
-		"xywh"
+		"xywh",
+
+		// Specs
+		"closedby",
+
+		// Typo
+		"verifing"
 	],
 	"overrides": [
 		{
