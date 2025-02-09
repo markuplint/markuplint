@@ -98,7 +98,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/plaintext",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
@@ -40090,39 +40089,6 @@
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
-		},
-		{
-			"name": "portal",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/portal",
-			"description": "The <portal> HTML element enables the embedding of another HTML page into the current one for the purposes of allowing smoother navigation into new pages.",
-			"categories": [],
-			"contentModel": {
-				"contents": [
-					{
-						"transparent": "*"
-					}
-				]
-			},
-			"aria": {
-				"implicitRole": false,
-				"permittedRoles": true
-			},
-			"omission": false,
-			"globalAttrs": {
-				"#ARIAAttrs": true,
-				"#GlobalEventAttrs": true,
-				"#HTMLEmbededAndMediaContentAttrs": ["src"],
-				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy"]
-			},
-			"attributes": {
-				"referrerpolicy": {
-					"description": "Sets the referrer policy to use when requesting the page at the URL given as the value of the src attribute."
-				},
-				"src": {
-					"description": "The URL of the page to embed."
-				}
-			}
 		},
 		{
 			"name": "pre",
