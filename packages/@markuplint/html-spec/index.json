@@ -181,11 +181,8 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTile",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/font",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/glyph",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/glyphRef",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hkern",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
@@ -45144,114 +45141,6 @@
 			}
 		},
 		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:font",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> SVG element defines a font to be used for text layout.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
 			"name": "svg:foreignObject",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
@@ -45480,42 +45369,6 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:glyph",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "A <glyph> defines a single glyph in an SVG font.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
-			"name": "svg:glyphRef",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The glyphRef element provides a single possible glyph to the referencing <altGlyph> substitution.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
