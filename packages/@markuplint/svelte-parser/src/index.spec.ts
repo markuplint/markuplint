@@ -12,6 +12,7 @@ describe('parser', () => {
 		expect(() => {
 			parse('<div></div\nattr>');
 		}).toThrowError(`Expected token >
+https://svelte.dev/e/expected_token
 1: <div></div
 2: attr>
    ^`);
