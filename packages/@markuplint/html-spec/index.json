@@ -10006,6 +10006,120 @@
 						"prohibitedProperties": []
 					},
 					{
+						"name": "sectionfooter",
+						"description": "A set of user interface objects and information representing information about its closest ancestral content group. For instance, a sectionfooter can include information about who wrote the specific section of content, such as an article. It can contain links to related documents, copyright information or other indices and colophon specific to the current section of the page.\n\nA sectionfooter does not represent information about the parent document, or globally repeating content found across multiple pages related to the website. For such content, the contentinfo role would be more appropriate.",
+						"generalization": ["section"],
+						"requiredContextRole": [],
+						"requiredOwnedElements": [],
+						"accessibleNameRequired": false,
+						"accessibleNameFromAuthor": true,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
 						"name": "sectionhead",
 						"description": "A structure that labels or summarizes the topic of its related section.\n\nsectionhead is an abstract role used for the ontology. Authors MUST NOT use sectionhead role in content.",
 						"isAbstract": true,
@@ -10014,6 +10128,120 @@
 						"requiredOwnedElements": [],
 						"accessibleNameRequired": false,
 						"accessibleNameFromAuthor": false,
+						"accessibleNameFromContent": false,
+						"accessibleNameProhibited": false,
+						"ownedProperties": [
+							{
+								"name": "aria-atomic",
+								"inherited": true
+							},
+							{
+								"name": "aria-braillelabel",
+								"inherited": true
+							},
+							{
+								"name": "aria-brailleroledescription",
+								"inherited": true
+							},
+							{
+								"name": "aria-busy",
+								"inherited": true
+							},
+							{
+								"name": "aria-controls",
+								"inherited": true
+							},
+							{
+								"name": "aria-current",
+								"inherited": true
+							},
+							{
+								"name": "aria-describedby",
+								"inherited": true
+							},
+							{
+								"name": "aria-description",
+								"inherited": true
+							},
+							{
+								"name": "aria-details",
+								"inherited": true
+							},
+							{
+								"name": "aria-disabled",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-dropeffect",
+								"inherited": true
+							},
+							{
+								"name": "aria-errormessage",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-flowto",
+								"inherited": true
+							},
+							{
+								"name": "aria-grabbed",
+								"inherited": true
+							},
+							{
+								"name": "aria-haspopup",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-hidden",
+								"inherited": true
+							},
+							{
+								"name": "aria-invalid",
+								"deprecated": true,
+								"inherited": true
+							},
+							{
+								"name": "aria-keyshortcuts",
+								"inherited": true
+							},
+							{
+								"name": "aria-label",
+								"inherited": true
+							},
+							{
+								"name": "aria-labelledby",
+								"inherited": true
+							},
+							{
+								"name": "aria-live",
+								"inherited": true
+							},
+							{
+								"name": "aria-owns",
+								"inherited": true
+							},
+							{
+								"name": "aria-relevant",
+								"inherited": true
+							},
+							{
+								"name": "aria-roledescription",
+								"inherited": true
+							}
+						],
+						"prohibitedProperties": []
+					},
+					{
+						"name": "sectionheader",
+						"description": "A set of user interface objects and information that represents a collection of introductory items for the element's closest ancestral content group. For instance, a sectionheader can include the heading, introductory statement and related meta data for a section of content, for instance a region or article, within a web page.\n\nA sectionheader does not represent site-oriented or globally repeating content found across multiple pages of a website. For such content, the banner role would be more appropriate.",
+						"generalization": ["section"],
+						"requiredContextRole": [],
+						"requiredOwnedElements": [],
+						"accessibleNameRequired": false,
+						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
 						"accessibleNameProhibited": false,
 						"ownedProperties": [
