@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint-dev/eslint-config",
-	"version": "1.0.11",
+	"version": "1.0.12",
 	"description": "ESLint and config for Markuplint projects",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
