@@ -14,8 +14,12 @@ import type {
 	ASTConditional,
 	ASTDoctype,
 	ASTEach,
+	ASTExtends,
+	ASTFileReference,
 	ASTFilter,
 	ASTInclude,
+	ASTIncludeFilter,
+	ASTInterpolatedTag,
 	ASTMixin,
 	ASTMixinBlock,
 	ASTNamedBlock,
@@ -24,6 +28,8 @@ import type {
 	ASTTag,
 	ASTText,
 	ASTWhen,
+	ASTWhile,
+	ASTYieldBlock,
 	PugAST,
 } from '../types.js';
 
@@ -451,6 +457,99 @@ function optimizeAST(
 					filename: node.filename ?? null,
 				};
 				nodes.push(filterNode);
+				continue;
+			}
+			case 'Extends': {
+				const optimizedNode: ASTExtends = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'FileReference': {
+				const optimizedNode: ASTFileReference = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'IncludeFilter': {
+				const optimizedNode: ASTIncludeFilter = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'InterpolatedTag': {
+				const block = optimizeAST(node.block, tokens, pug);
+
+				const optimizedNode: ASTInterpolatedTag = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+					block,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'While': {
+				const optimizedNode: ASTWhile = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'YieldBlock': {
+				const optimizedNode: ASTYieldBlock = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
 				continue;
 			}
 			default: {
