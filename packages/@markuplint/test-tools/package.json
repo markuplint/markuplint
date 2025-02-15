@@ -38,8 +38,8 @@
 		"vitest": "3.0.5"
 	},
 	"optionalDependencies": {
-		"@esbuild/linux-x64": "0.24.0",
-		"@esbuild/win32-x64": "0.24.0",
-		"@rollup/rollup-linux-x64-gnu": "4.24.3"
+		"@esbuild/linux-x64": "0.25.0",
+		"@esbuild/win32-x64": "0.25.0",
+		"@rollup/rollup-linux-x64-gnu": "4.34.7"
 	}
 }
