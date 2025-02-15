@@ -91,7 +91,7 @@ class PugParser extends Parser<ASTNode> {
 				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line,
-					offsetColumn: originNode.column ?? parentNode?.endCol,
+					offsetColumn: originNode.column ?? parentNode?.col,
 					depth,
 				});
 
