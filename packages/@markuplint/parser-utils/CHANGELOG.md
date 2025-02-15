@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.4](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.3...@markuplint/parser-utils@4.8.4) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
+## [4.8.3](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.2...@markuplint/parser-utils@4.8.3) (2025-02-04)
+
+### Bug Fixes
+
+- y2 idl-attributes ([a8b325b](https://github.com/markuplint/markuplint/commit/a8b325bf9af1cdb4b6f982bf5833f90a0e9eb26c))
+
 ## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.1...@markuplint/parser-utils@4.8.2) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/parser-utils

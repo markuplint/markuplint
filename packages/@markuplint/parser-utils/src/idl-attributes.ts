@@ -395,7 +395,7 @@ const idlContentMap = {
 	xmlSpace: 'xml:space',
 	y: 'y',
 	y1: 'y1',
-	y2: 'y1',
+	y2: 'y2',
 	yChannelSelector: 'yChannelSelector',
 	z: 'z',
 	zoomAndPan: 'zoomAndPan',

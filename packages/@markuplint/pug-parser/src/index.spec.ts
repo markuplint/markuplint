@@ -1668,4 +1668,43 @@ html
 			'[7:2]>[7:8](51,57)meta: <meta>',
 		]);
 	});
+
+	test('#2440', () => {
+		const doc = parse(`div
+	div
+		#{_variable_}= _value_
+	div
+		#{_variable_}
+			span child text content`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:5](5,8)div: div',
+			'[3:3]>[3:16](11,24)#ps:InterpolatedTag: #{_variable_}',
+			'[3:16]>[3:25](24,33)#ps:Code: =␣_value_',
+			'[4:2]>[4:5](35,38)div: div',
+			'[5:3]>[5:16](41,54)#ps:InterpolatedTag: #{_variable_}',
+			'[6:4]>[6:8](58,62)span: span',
+			'[6:9]>[6:27](63,81)#text: child␣text␣content',
+		]);
+
+		const tree = nodeTreeDebugView(doc.nodeList, true);
+		expect(tree).toStrictEqual([
+			'000: [0016] div(0016) => 💀',
+			'                  ┗━ div(0017)',
+			'                  ┗━ div(0018)',
+			'001: [0017]   div(0017) => 💀',
+			'                    ┗━ #ps:InterpolatedTag(0019)',
+			'002: [0019]     #ps:InterpolatedTag(0019)',
+			'                      ┗━ #ps:Code(001a)',
+			'003: [001a]       #ps:Code(001a)',
+			'004: [0018]   div(0018) => 💀',
+			'                    ┗━ #ps:InterpolatedTag(001b)',
+			'005: [001b]     #ps:InterpolatedTag(001b)',
+			'                      ┗━ span(001c)',
+			'006: [001c]       span(001c) => 💀',
+			'                        ┗━ #text(001d)',
+			'007: [001d]         #text(001d)',
+		]);
+	});
 });

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.0...@markuplint/selector@4.7.1) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/selector
+
+# [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.6.14...@markuplint/selector@4.7.0) (2025-02-04)
+
+### Features
+
+- **selector:** `matchSelector` use `createSelector` ([ba8795a](https://github.com/markuplint/markuplint/commit/ba8795a7fb03e46546415e29c73d3b460780d7c9))
+- **selector:** expose the `SelectorMatches` type ([64b3731](https://github.com/markuplint/markuplint/commit/64b373118da33f81cc4e043eeec3f2eea889677c))
+
 ## [4.6.14](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.6.13...@markuplint/selector@4.6.14) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/selector

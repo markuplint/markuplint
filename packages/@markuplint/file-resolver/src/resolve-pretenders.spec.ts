@@ -21,15 +21,16 @@ test('files', async () => {
 	]);
 });
 
-test('imports', async () => {
-	const pretenders = await resolvePretenders({
-		imports: ['@markuplint-test/react'],
-	});
-	expect(pretenders).toStrictEqual([
-		{
-			selector: 'Sample',
-			as: 'div',
-			filePath: 'sample.jsx:1:16',
-		},
-	]);
-});
+// Skip #2423
+// test('imports', async () => {
+// 	const pretenders = await resolvePretenders({
+// 		imports: ['@markuplint-test/react'],
+// 	});
+// 	expect(pretenders).toStrictEqual([
+// 		{
+// 			selector: 'Sample',
+// 			as: 'div',
+// 			filePath: 'sample.jsx:1:16',
+// 		},
+// 	]);
+// });

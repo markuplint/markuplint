@@ -4,6 +4,34 @@ import parser from 'pug-parser';
 
 import { getOffsetFromLineAndCol } from '../utils/get-offset-from-line-and-col.js';
 import { getOffsetsFromCode } from '@markuplint/parser-utils/location';
+import type {
+	ASTAttr,
+	ASTBlock,
+	ASTBlockComment,
+	ASTCase,
+	ASTCode,
+	ASTComment,
+	ASTConditional,
+	ASTDoctype,
+	ASTEach,
+	ASTExtends,
+	ASTFileReference,
+	ASTFilter,
+	ASTInclude,
+	ASTIncludeFilter,
+	ASTInterpolatedTag,
+	ASTMixin,
+	ASTMixinBlock,
+	ASTNamedBlock,
+	ASTNode,
+	ASTRawInclude,
+	ASTTag,
+	ASTText,
+	ASTWhen,
+	ASTWhile,
+	ASTYieldBlock,
+	PugAST,
+} from '../types.js';
 
 export function pugParse(pug: string, useOffset = false) {
 	let lexOrigin = lexer(pug);
@@ -23,7 +51,7 @@ export function pugParse(pug: string, useOffset = false) {
 	}
 
 	const lex: lexer.Token[] = structuredClone(lexOrigin);
-	const originAst: PugAST<PugASTNode> = parser(lexOrigin);
+	const originAst = parser(lexOrigin);
 	const ast = optimizeAST(originAst, lex, pug);
 	return ast;
 }
@@ -42,7 +70,7 @@ function mergeTextNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: readonly ASTNode[],
 	pug: string,
-) {
+): readonly ASTNode[] {
 	const baseNodes: ASTNode[] = [];
 	for (const node of nodes) {
 		const prevNode: ASTNode | null = baseNodes.at(-1) ?? null;
@@ -66,16 +94,24 @@ function mergeTextNode(
  */
 function optimizeAST(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	originalAST: PugAST<PugASTNode>,
+	originalAST: PugAST.Block | null,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
 	pug: string,
 ): ASTBlock {
 	const nodes: ASTNode[] = [];
 
+	if (!originalAST) {
+		return {
+			type: 'Block',
+			nodes: [],
+			line: 0,
+		};
+	}
+
 	for (const node of originalAST.nodes) {
 		const line = node.line;
-		const column = node.column;
+		const column = node.column ?? 0;
 		const offsets = getOffsetsFromLines(pug);
 		const lineOffset = Math.max(offsets[line - 2] ?? 0, 0);
 		const offset = lineOffset + column - 1;
@@ -84,6 +120,11 @@ function optimizeAST(
 		const raw = pug.slice(offset, endOffset);
 
 		switch (node.type) {
+			case 'Block': {
+				const block = optimizeAST(node, tokens, pug);
+				nodes.push(...block.nodes);
+				continue;
+			}
 			case 'Tag': {
 				const attrs = getAttrs(node.attrs, tokens, offsets, pug);
 
@@ -99,7 +140,7 @@ function optimizeAST(
 				const raw = pug.slice(offset, endOffset);
 				const block = optimizeAST(node.block, tokens, pug);
 
-				const tagNode: ASTTagNode = {
+				const tagNode: ASTTag = {
 					type: 'Tag',
 					name: node.name,
 					raw,
@@ -111,7 +152,10 @@ function optimizeAST(
 					endColumn,
 					block,
 					attrs,
-					attributeBlocks: node.attributeBlocks,
+					attributeBlocks: node.attributeBlocks ?? [],
+					selfClosing: node.selfClosing,
+					isInline: node.isInline,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(tagNode);
@@ -120,7 +164,7 @@ function optimizeAST(
 			case 'Conditional': {
 				const block = optimizeAST(node.consequent, tokens, pug);
 
-				const condNode: ASTConditionalNode = {
+				const condNode: ASTConditional = {
 					type: node.type,
 					raw,
 					test: node.test,
@@ -131,6 +175,7 @@ function optimizeAST(
 					column,
 					endColumn,
 					block,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(condNode);
@@ -142,7 +187,7 @@ function optimizeAST(
 			case 'Each': {
 				const block = optimizeAST(node.block, tokens, pug);
 
-				const eachNode: ASTEachNode = {
+				const eachNode: ASTEach = {
 					type: node.type,
 					val: node.val,
 					obj: node.obj,
@@ -155,6 +200,7 @@ function optimizeAST(
 					column,
 					endColumn,
 					block,
+					filename: node.filename ?? null,
 				};
 				nodes.push(eachNode);
 				continue;
@@ -162,7 +208,7 @@ function optimizeAST(
 			case 'Include': {
 				const block = optimizeAST(node.block, tokens, pug);
 
-				const includeNode: ASTIncludeNode = {
+				const includeNode: ASTInclude = {
 					type: node.type,
 					file: node.file,
 					raw,
@@ -173,13 +219,14 @@ function optimizeAST(
 					column,
 					endColumn,
 					block,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(includeNode);
 				continue;
 			}
 			case 'RawInclude': {
-				const includeNode: ASTRawIncludeNode = {
+				const includeNode: ASTRawInclude = {
 					type: node.type,
 					file: node.file,
 					raw,
@@ -190,6 +237,7 @@ function optimizeAST(
 					column,
 					endColumn,
 					filters: node.filters,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(includeNode);
@@ -208,7 +256,7 @@ function optimizeAST(
 
 				const block = node.block && optimizeAST(node.block, tokens, pug);
 
-				const mixinNode: ASTMixinNode = {
+				const mixinNode: ASTMixin = {
 					type: 'Mixin',
 					name: node.name,
 					args: node.args,
@@ -222,13 +270,15 @@ function optimizeAST(
 					endColumn,
 					block,
 					attrs,
+					attributeBlocks: node.attributeBlocks ?? [],
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(mixinNode);
 				continue;
 			}
 			case 'MixinBlock': {
-				const mixinNode: ASTMixinSlotNode = {
+				const mixinNode: ASTMixinBlock = {
 					type: 'MixinBlock',
 					raw,
 					offset,
@@ -237,13 +287,14 @@ function optimizeAST(
 					endLine,
 					column,
 					endColumn,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(mixinNode);
 				continue;
 			}
 			case 'NamedBlock': {
-				const namedBlockNode: ASTNamedBlockNode = {
+				const namedBlockNode: ASTNamedBlock = {
 					...node,
 					nodes: optimizeAST(
 						{
@@ -277,6 +328,7 @@ function optimizeAST(
 					endLine,
 					column,
 					endColumn,
+					filename: node.filename ?? null,
 				};
 				nodes.push(commentNode);
 				continue;
@@ -296,12 +348,15 @@ function optimizeAST(
 					endLine,
 					column,
 					endColumn,
+					filename: node.filename ?? null,
 				};
 				nodes.push(commentNode);
 				continue;
 			}
 			case 'Code': {
-				const newNode: ASTCodeNode = {
+				const block = optimizeAST(node.block, tokens, pug);
+
+				const newNode: ASTCode = {
 					type: node.type,
 					raw,
 					val: node.val,
@@ -314,6 +369,8 @@ function optimizeAST(
 					endLine,
 					column,
 					endColumn,
+					block,
+					filename: node.filename ?? null,
 				};
 
 				nodes.push(newNode);
@@ -322,8 +379,8 @@ function optimizeAST(
 			case 'Text': {
 				const pipelessText = getPipelessText(node, pug, tokens);
 				if (pipelessText) {
-					const textNode: ASTTextNode = {
-						type: node.type,
+					const textNode: ASTText = {
+						...node,
 						...pipelessText,
 					};
 					nodes.push(textNode);
@@ -338,7 +395,6 @@ function optimizeAST(
 			case 'Doctype': {
 				const commentNode: ASTDoctype = {
 					type: node.type,
-					val: node.val,
 					raw,
 					offset,
 					endOffset,
@@ -346,6 +402,7 @@ function optimizeAST(
 					endLine,
 					column,
 					endColumn,
+					filename: node.filename ?? null,
 				};
 				nodes.push(commentNode);
 				continue;
@@ -354,7 +411,7 @@ function optimizeAST(
 			case 'When': {
 				const block = optimizeAST(node.block, tokens, pug);
 
-				const caseNode: ASTCaseNode | ASTCaseWhenNode = {
+				const caseNode: ASTCase | ASTWhen = {
 					type: node.type,
 					expr: node.expr,
 					raw,
@@ -365,6 +422,7 @@ function optimizeAST(
 					column,
 					endColumn,
 					block,
+					filename: node.filename ?? null,
 				};
 				nodes.push(caseNode);
 				continue;
@@ -384,7 +442,7 @@ function optimizeAST(
 				const raw = pug.slice(offset, endOffset);
 				const block = optimizeAST(node.block, tokens, pug);
 
-				const filterNode: ASTFilterNode = {
+				const filterNode: ASTFilter = {
 					type: node.type,
 					name: node.name,
 					raw,
@@ -396,17 +454,107 @@ function optimizeAST(
 					endColumn,
 					block,
 					attrs,
+					filename: node.filename ?? null,
 				};
 				nodes.push(filterNode);
 				continue;
 			}
+			case 'Extends': {
+				const optimizedNode: ASTExtends = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'FileReference': {
+				const optimizedNode: ASTFileReference = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'IncludeFilter': {
+				const optimizedNode: ASTIncludeFilter = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'InterpolatedTag': {
+				const block = optimizeAST(node.block, tokens, pug);
+
+				const optimizedNode: ASTInterpolatedTag = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+					block,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'While': {
+				const optimizedNode: ASTWhile = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
+			case 'YieldBlock': {
+				const optimizedNode: ASTYieldBlock = {
+					...node,
+					raw,
+					offset,
+					endOffset,
+					line,
+					endLine,
+					column,
+					endColumn,
+				};
+
+				nodes.push(optimizedNode);
+				continue;
+			}
 			default: {
-				throw new Error(
-					`Unsupported syntax: The "${
-						// @ts-ignore
-						node.type
-					}" node\n${JSON.stringify(node, null, 2)}`,
-				);
+				// @ts-expect-error
+				throw new Error(`Unsupported syntax: The "${node.type}" node\n${JSON.stringify(node, null, 2)}`);
 			}
 		}
 	}
@@ -422,7 +570,7 @@ function optimizeAST(
 
 function optimizeASTOfConditionalNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: PugASTConditionalNode<PugAST<PugASTNode>>,
+	node: PugAST.CodeHelpers.Conditional,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
 	pug: string,
@@ -442,7 +590,7 @@ function optimizeASTOfConditionalNode(
 	if (tokenOfCurrentNode) {
 		// console.log(JSON.stringify(node, null, 2));
 		const lineOffset = Math.max(offsets[node.line - 2] ?? 0, 0);
-		const offset = lineOffset + node.column - 1;
+		const offset = lineOffset + (node.column ?? 0) - 1;
 
 		const length = tokenOfCurrentNode.loc.end.column - tokenOfCurrentNode.loc.start.column;
 		const endOffset = offset + length;
@@ -460,6 +608,7 @@ function optimizeASTOfConditionalNode(
 			column: tokenOfCurrentNode.loc.start.column,
 			endColumn: tokenOfCurrentNode.loc.end.column,
 			block,
+			filename: node.filename ?? null,
 		});
 	}
 
@@ -496,6 +645,7 @@ function optimizeASTOfConditionalNode(
 					column: tokenOfCurrentNode.loc.start.column,
 					endColumn: tokenOfCurrentNode.loc.end.column,
 					block,
+					filename: node.filename ?? null,
 				});
 				break;
 			}
@@ -546,7 +696,7 @@ function getLocationFromToken(
 
 function getAttrs(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	originalAttrs: readonly PugASTAttr[],
+	originalAttrs: readonly PugAST.AbstractNodeTypes.Attribute[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
 	offsets: readonly number[],
@@ -631,7 +781,7 @@ function getEndAttributeLocation(
 
 function getPipelessText(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: PugASTTextNode,
+	node: PugAST.Text,
 	pug: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
@@ -679,7 +829,7 @@ function getRawTextAndLocationEnd(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tokens: readonly lexer.Token[],
 	pug: string,
-): ASTTextNode[] {
+): ASTText[] {
 	if (val.trim() === '') {
 		return [];
 	}
@@ -688,7 +838,7 @@ function getRawTextAndLocationEnd(
 	let endLine = line;
 	let endColumn = column;
 
-	const result: ASTTextNode[] = [];
+	const result: ASTText[] = [];
 
 	for (const token of tokens) {
 		if (token.loc.start.line < line || (token.loc.start.line === line && token.loc.start.column < column)) {
@@ -731,12 +881,14 @@ function getRawTextAndLocationEnd(
 			result.push({
 				type: 'Text',
 				raw,
+				val: raw,
 				offset,
 				endOffset: rawLoc.endOffset,
 				line,
 				endLine,
 				column,
 				endColumn,
+				filename: null,
 			});
 		}
 
@@ -751,252 +903,3 @@ function getRawTextAndLocationEnd(
 
 	return result;
 }
-
-export type ASTBlock = PugAST<ASTNode>;
-
-export type ASTNode =
-	| ASTTagNode
-	| ASTTextNode
-	| ASTCodeNode
-	| ASTComment
-	| ASTBlockComment
-	| ASTDoctype
-	| ASTIncludeNode
-	| ASTRawIncludeNode
-	| ASTMixinNode
-	| ASTMixinSlotNode
-	| ASTNamedBlockNode
-	| ASTFilterNode
-	| ASTEachNode
-	| ASTConditionalNode
-	| ASTCaseNode
-	| ASTCaseWhenNode;
-
-export type ASTTagNode = Omit<PugASTTagNode<ASTAttr, ASTBlock>, 'selfClosing' | 'isInline'> & AdditionalASTData;
-
-export type ASTTextNode = Omit<PugASTTextNode, 'val'> & AdditionalASTData;
-
-export type ASTCodeNode = PugASTCodeNode & AdditionalASTData;
-
-export type ASTComment = PugASTCommentNode & AdditionalASTData;
-
-export type ASTBlockComment = PugASTBlockCommentNode<ASTBlock> & AdditionalASTData;
-
-export type ASTDoctype = PugASTDoctypeNode & AdditionalASTData;
-
-export type ASTIncludeNode = PugASTIncludeNode<ASTBlock> & AdditionalASTData;
-
-export type ASTRawIncludeNode = PugASTRawIncludeNode & AdditionalASTData;
-
-export type ASTMixinNode = Omit<PugASTMixinNode<ASTAttr, ASTBlock>, 'attributeBlocks'> & AdditionalASTData;
-
-export type ASTMixinSlotNode = PugASTMixinSlotNode & AdditionalASTData;
-
-export type ASTNamedBlockNode = PugASTNamedBlockNode<ASTNode> & AdditionalASTData;
-
-export type ASTFilterNode = PugASTFilterNode<ASTAttr, ASTBlock> & AdditionalASTData;
-
-export type ASTEachNode = PugASTEachNode<ASTBlock> & AdditionalASTData;
-
-export type ASTConditionalNode = Omit<PugASTConditionalNode<ASTBlock>, 'consequent' | 'alternate'> & {
-	block: ASTBlock;
-} & AdditionalASTData;
-
-export type ASTCaseNode = PugASTCaseNode<ASTBlock> & AdditionalASTData;
-
-export type ASTCaseWhenNode = PugASTCaseWhenNode<ASTBlock> & AdditionalASTData;
-
-export type ASTAttr = PugASTAttr & AdditionalASTData;
-
-type AdditionalASTData = {
-	raw: string;
-	offset: number;
-	endOffset: number;
-	endLine: number;
-	endColumn: number;
-};
-
-interface PugAST<N> {
-	type: 'Block';
-	nodes: N[];
-	line: number;
-}
-
-type PugASTNode =
-	| PugASTTagNode<PugASTAttr, PugAST<PugASTNode>>
-	| PugASTTextNode
-	| PugASTCodeNode
-	| PugASTCommentNode
-	| PugASTBlockCommentNode<PugAST<PugASTNode>>
-	| PugASTDoctypeNode
-	| PugASTIncludeNode<PugAST<PugASTNode>>
-	| PugASTRawIncludeNode
-	| PugASTMixinNode<PugASTAttr, PugAST<PugASTNode>>
-	| PugASTMixinSlotNode
-	| PugASTNamedBlockNode<PugASTNode>
-	| PugASTFilterNode<PugASTAttr, PugAST<PugASTTextNode>>
-	| PugASTEachNode<PugAST<PugASTNode>>
-	| PugASTConditionalNode<PugAST<PugASTNode>>
-	| PugASTCaseNode<PugAST<PugASTNode>>
-	| PugASTCaseWhenNode<PugAST<PugASTNode>>;
-
-type PugASTTagNode<A, B> = {
-	type: 'Tag';
-	name: string;
-	selfClosing: boolean;
-	attrs: A[];
-	attributeBlocks: {
-		type: 'AttributeBlock';
-		val: string;
-		line: number;
-		column: number;
-	}[];
-	isInline: boolean;
-	line: number;
-	column: number;
-	block: B;
-};
-
-type PugASTTextNode = {
-	type: 'Text';
-	val: string;
-	isHtml?: true;
-	line: number;
-	column: number;
-};
-
-type PugASTCodeNode = {
-	type: 'Code';
-	val: string;
-	buffer: boolean;
-	mustEscape: boolean;
-	isInline: boolean;
-	line: number;
-	column: number;
-};
-
-type PugASTCommentNode = {
-	type: 'Comment';
-	val: string;
-	buffer: boolean;
-	line: number;
-	column: number;
-};
-
-type PugASTBlockCommentNode<B> = {
-	type: 'BlockComment';
-	val: string;
-	block: B;
-	buffer: boolean;
-	line: number;
-	column: number;
-};
-
-type PugASTDoctypeNode = {
-	type: 'Doctype';
-	val: string;
-	line: number;
-	column: number;
-};
-
-type PugASTIncludeNode<B> = {
-	type: 'Include';
-	file: RugASTIncludeFile;
-	block: B;
-	line: number;
-	column: number;
-};
-
-type PugASTRawIncludeNode = {
-	type: 'RawInclude';
-	file: RugASTIncludeFile;
-	line: number;
-	column: number;
-	filters: unknown[];
-};
-
-type RugASTIncludeFile = {
-	type: 'FileReference';
-	path: string;
-	line: number;
-	column: number;
-};
-
-type PugASTEachNode<B> = {
-	type: 'Each';
-	obj: string;
-	val: string;
-	key: string | null;
-	block: B;
-	line: number;
-	column: number;
-};
-
-type PugASTMixinNode<A, B> = {
-	type: 'Mixin';
-	name: string;
-	args: string;
-	call: boolean;
-	block: B | null;
-	attrs?: A[];
-	attributeBlocks: never[];
-	line: number;
-	column: number;
-};
-
-type PugASTMixinSlotNode = {
-	type: 'MixinBlock';
-	line: number;
-	column: number;
-};
-
-interface PugASTNamedBlockNode<N> {
-	type: 'NamedBlock';
-	name: string;
-	mode: 'replace' | 'append' | 'prepend';
-	nodes: N[];
-	line: number;
-	column: number;
-}
-
-type PugASTFilterNode<A, B> = {
-	type: 'Filter';
-	name: string;
-	block: B;
-	attrs: A[];
-	line: number;
-	column: number;
-};
-
-type PugASTConditionalNode<B> = {
-	type: 'Conditional';
-	test: string;
-	consequent: B;
-	alternate?: B | PugASTConditionalNode<B>;
-	line: number;
-	column: number;
-};
-
-type PugASTCaseNode<B> = {
-	type: 'Case';
-	expr: string;
-	block: B;
-	line: number;
-	column: number;
-};
-
-type PugASTCaseWhenNode<B> = {
-	type: 'When';
-	expr: string;
-	block: B;
-	line: number;
-	column: number;
-};
-
-type PugASTAttr = {
-	name: string;
-	val: string | true;
-	mustEscape: boolean;
-	line: number;
-	column: number;
-};

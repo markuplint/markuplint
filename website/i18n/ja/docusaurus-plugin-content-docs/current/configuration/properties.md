@@ -685,7 +685,7 @@ const MyComponent = props => {
 <div>
   {/* レンダリングされたdiv要素がaria-live="polite"を持つものとして評価します。  */}
   <MyComponent aria-live="polite">Lorem Ipsam</MyComponent>
-</div>;
+</div>
 ```
 
 #### `as.attrs`
@@ -724,12 +724,12 @@ const MyPicture = () => {
 <div>
   {/* レンダリングされたimg要素がsrc属性とalt="Lorem ipsam"を持つものとして評価されます。*/}
   <MyComponent />
-</div>;
+</div>
 ```
 
 #### `as.attrs[].name`
 
-属性名を受け取ります。必須であす。
+属性名を受け取ります。必須です。
 
 #### `as.attrs[].value`
 
@@ -775,7 +775,7 @@ const MyIcon = ({ label }) => {
 <div>
   {/* アクセシブルな名前が「my icon name」であるとして評価します。 */}
   <MyIcon label="my icon name" />
-</div>;
+</div>
 ```
 
 #### インターフェイス {#pretenders/interface}

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "4.7.1",
+	"version": "4.7.3",
 	"description": "Type declaration and value checker",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -31,14 +31,14 @@
 	},
 	"dependencies": {
 		"@markuplint/shared": "4.4.10",
-		"@types/css-tree": "2.3.9",
+		"@types/css-tree": "2.3.10",
 		"@types/debug": "4.1.12",
 		"@types/whatwg-mimetype": "3.0.2",
 		"bcp-47": "2.1.0",
-		"css-tree": "3.0.1",
-		"debug": "4.3.7",
+		"css-tree": "3.1.0",
+		"debug": "4.4.0",
 		"leven": "4.0.0",
-		"type-fest": "4.30.0",
+		"type-fest": "4.34.1",
 		"whatwg-mimetype": "4.0.0"
 	}
 }

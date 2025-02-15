@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.11](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.10...@markuplint/file-resolver@4.9.11) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/file-resolver
+
+## [4.9.10](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.9...@markuplint/file-resolver@4.9.10) (2025-02-04)
+
+**Note:** Version bump only for package @markuplint/file-resolver
+
 ## [4.9.9](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.8...@markuplint/file-resolver@4.9.9) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/file-resolver

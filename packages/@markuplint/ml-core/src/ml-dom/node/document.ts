@@ -25,7 +25,7 @@ import {
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 import { ConfigParserError } from '@markuplint/parser-utils';
-import { InvalidSelectorError, matchSelector } from '@markuplint/selector';
+import { InvalidSelectorError } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug.js';
 import { createNode } from '../helper/create-node.js';
@@ -3336,7 +3336,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 				const selector = nodeRule.selector ?? nodeRule.regexSelector;
 
-				const matches = matchSelector(selectorTarget, selector);
+				const matches = selectorTarget.matchMLSelector(selector);
 
 				if (!matches.matched) {
 					continue;
@@ -3391,7 +3391,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
-					const matches = matchSelector(selectorTarget, selector);
+					const matches = selectorTarget.matchMLSelector(selector);
 					if (!matches.matched) {
 						continue;
 					}

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.12.0...@markuplint/html-spec@4.13.0) (2025-02-11)
+
+### Features
+
+- **html-spec:** add the ARIA roles `sectionheader` and `sectionfooter` ([53bdf8e](https://github.com/markuplint/markuplint/commit/53bdf8e77642b352af5d05a476c9a32e7d2fcce0))
+- **html-spec:** remove the `portal` HTML element https://github.com/mdn/content/pull/37880 ([0711113](https://github.com/markuplint/markuplint/commit/0711113d5ec5dc0a66374c364ed071c53a212150))
+- **html-spec:** remove the SVG elements `font`, `glyph`, and `glyphRef` ([d6e69bd](https://github.com/markuplint/markuplint/commit/d6e69bd9755d195a008b0ccd34d3c28f59b17f69))
+
+# [4.12.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.11.1...@markuplint/html-spec@4.12.0) (2025-02-04)
+
+### Features
+
+- **html-spec:** add the `closedby` attr to the `dialog` element ([6f4812f](https://github.com/markuplint/markuplint/commit/6f4812f50829d21d6c1ffdcebdd2595b74180728))
+- **html-spec:** add the `hint` enum value to the `popover` attribute ([1de0000](https://github.com/markuplint/markuplint/commit/1de00003160c9271ab9805bb4c6d0253b3d1f515))
+
 ## [4.11.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.11.0...@markuplint/html-spec@4.11.1) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/html-spec

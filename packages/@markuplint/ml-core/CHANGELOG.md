@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.12.0...@markuplint/ml-core@4.12.1) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/ml-core
+
+# [4.12.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.11.0...@markuplint/ml-core@4.12.0) (2025-02-04)
+
+### Bug Fixes
+
+- **ml-core:** fix to match pretended element type selectors ([3f6d139](https://github.com/markuplint/markuplint/commit/3f6d1395ca6aab3698bfde771e8ba7086acb83c7))
+
+### Features
+
+- **ml-core:** add `matchMLSelector` method to Element ([cd822d6](https://github.com/markuplint/markuplint/commit/cd822d6f3f7b899ffbc03646337cb018d72ce5e7))
+
 # [4.11.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.10.5...@markuplint/ml-core@4.11.0) (2024-12-04)
 
 ### Features

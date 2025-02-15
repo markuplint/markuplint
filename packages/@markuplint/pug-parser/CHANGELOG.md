@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.16](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.15...@markuplint/pug-parser@4.6.16) (2025-02-11)
+
+### Bug Fixes
+
+- **pug-parser:** implemented previously unsupported nodes, including `InterpolatedTag` ([a89e39a](https://github.com/markuplint/markuplint/commit/a89e39ab5bc09bfef2c7bc7fdcba65f6b672eb34)), closes [#2440](https://github.com/markuplint/markuplint/issues/2440)
+
+## [4.6.15](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.14...@markuplint/pug-parser@4.6.15) (2025-02-04)
+
+**Note:** Version bump only for package @markuplint/pug-parser
+
 ## [4.6.14](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.13...@markuplint/pug-parser@4.6.14) (2024-12-04)
 
 **Note:** Version bump only for package @markuplint/pug-parser
