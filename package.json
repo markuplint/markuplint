@@ -85,7 +85,7 @@
 		"textlint-rule-preset-japanese": "10.0.4",
 		"textlint-rule-preset-jtf-style": "3.0.1",
 		"ts-node": "10.9.2",
-		"tsx": "4.19.2",
+		"tsx": "4.19.3",
 		"typedoc": "0.27.7",
 		"typedoc-plugin-mdn-links": "4.0.13",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
