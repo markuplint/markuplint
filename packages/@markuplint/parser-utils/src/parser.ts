@@ -32,7 +32,7 @@ import type {
 	MLASTInvalid,
 	Walker,
 	MLASTHTMLAttr,
-	MLASTPreprocessorSpecificBlockConditionalType,
+	MLASTBlockBehaviorType,
 } from '@markuplint/ml-ast';
 
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
@@ -492,7 +492,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly Node[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		conditionalType: MLASTBlockBehaviorType = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
 		timer.push('visitPsBlock');

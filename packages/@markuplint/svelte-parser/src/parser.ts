@@ -1,9 +1,5 @@
 import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
-import type {
-	MLASTParentNode,
-	MLASTPreprocessorSpecificBlock,
-	MLASTPreprocessorSpecificBlockConditionalType,
-} from '@markuplint/ml-ast';
+import type { MLASTParentNode, MLASTPreprocessorSpecificBlock, MLASTBlockBehaviorType } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { getNamespace } from '@markuplint/html-parser';
@@ -266,7 +262,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly SvelteNode[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		conditionalType: MLASTBlockBehaviorType = null,
 	): readonly [MLASTPreprocessorSpecificBlock] {
 		const nodes = super.visitPsBlock(token, childNodes, conditionalType);
 		const block = nodes.at(0);

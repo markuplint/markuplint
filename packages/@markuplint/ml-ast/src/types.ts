@@ -86,7 +86,7 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
 
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
-	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
+	readonly conditionalType: MLASTBlockBehaviorType;
 	readonly depth: number;
 	readonly nodeName: string;
 	readonly isFragment: boolean;
@@ -94,7 +94,7 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly isBogus: boolean;
 }
 
-export type MLASTPreprocessorSpecificBlockConditionalType =
+export type MLASTBlockBehaviorType =
 	| 'if'
 	| 'if:elseif'
 	| 'if:else'

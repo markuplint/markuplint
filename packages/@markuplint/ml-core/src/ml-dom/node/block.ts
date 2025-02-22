@@ -1,7 +1,7 @@
 import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType } from './types.js';
-import type { MLASTPreprocessorSpecificBlock, MLASTPreprocessorSpecificBlockConditionalType } from '@markuplint/ml-ast';
+import type { MLASTPreprocessorSpecificBlock, MLASTBlockBehaviorType } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
@@ -13,7 +13,7 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	O,
 	MLASTPreprocessorSpecificBlock
 > {
-	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
+	readonly conditionalType: MLASTBlockBehaviorType;
 	readonly isTransparent: boolean;
 
 	constructor(
