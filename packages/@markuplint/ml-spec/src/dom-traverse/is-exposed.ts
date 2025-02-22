@@ -184,7 +184,7 @@ function isIncluding(
 	 * additional guidance on aria-hidden.)
 	 */
 	if (el.getAttribute('aria-hidden') !== 'true') {
-		const globalAria = ariaSpecs(specs, version).props.filter(prop => prop.isGlobal);
+		const globalAria = ariaSpecs(specs, version).props.filter(prop => !!prop.isGlobal);
 		const { role } = getComputedRole(specs, el, version);
 		// Has an explicit role
 		if (role && !role.isImplicit) {

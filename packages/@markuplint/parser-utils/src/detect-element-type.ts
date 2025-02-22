@@ -34,10 +34,10 @@ function _distinguishAuthoredName(name: string, patterns: ParserAuthoredElementN
 
 	return patternList.some(pattern => {
 		if (typeof pattern === 'function') {
-			return pattern(name);
+			return !!pattern(name);
 		}
 		const regex = typeof pattern === 'string' ? toRegexp(pattern) : pattern;
-		return regex.test(name);
+		return !!regex.test(name);
 	});
 }
 

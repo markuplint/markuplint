@@ -16,7 +16,7 @@ export const checkingRequiredProp: ElementChecker<
 		if (role.isImplicit) {
 			return;
 		}
-		const requiredProps = role.ownedProperties.filter(s => s.required).map(s => s.name);
+		const requiredProps = role.ownedProperties.filter(s => !!s.required).map(s => s.name);
 		for (const requiredProp of requiredProps) {
 			const has = el.attributes.some(attr => {
 				const attrName = attr.name.toLowerCase();
