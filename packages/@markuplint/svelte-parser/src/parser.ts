@@ -1,5 +1,5 @@
 import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
-import type { MLASTParentNode, MLASTPreprocessorSpecificBlock, MLASTBlockBehaviorType } from '@markuplint/ml-ast';
+import type { MLASTParentNode, MLASTPreprocessorSpecificBlock, MLASTBlockBehavior } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { getNamespace } from '@markuplint/html-parser';
@@ -144,14 +144,17 @@ export class SvelteParser extends Parser<SvelteNode> {
 							isFragment: false,
 						},
 						ifElseBlock.children,
-						(
-							{
-								if: 'if',
-								elseif: 'if:elseif',
-								else: 'if:else',
-								'/if': 'end',
-							} as const
-						)[ifElseBlock.type],
+						{
+							type: (
+								{
+									if: 'if',
+									elseif: 'if:elseif',
+									else: 'if:else',
+									'/if': 'end',
+								} as const
+							)[ifElseBlock.type],
+							expression: ifElseBlock.raw,
+						},
 					)[0];
 					expressions.push(expression);
 				}
@@ -262,9 +265,9 @@ export class SvelteParser extends Parser<SvelteNode> {
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly SvelteNode[] = [],
-		conditionalType: MLASTBlockBehaviorType = null,
+		blockBehavior: MLASTBlockBehavior | null = null,
 	): readonly [MLASTPreprocessorSpecificBlock] {
-		const nodes = super.visitPsBlock(token, childNodes, conditionalType);
+		const nodes = super.visitPsBlock(token, childNodes, blockBehavior);
 		const block = nodes.at(0);
 
 		if (!block || block.type !== 'psblock') {
@@ -476,7 +479,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				originBlockNode.pending?.nodes,
-				'await',
+				{
+					type: 'await',
+					expression: awaitExpToken.raw,
+				},
 			)[0],
 		);
 
@@ -491,7 +497,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.then?.nodes,
-					'await:then',
+					{
+						type: 'await:then',
+						expression: thenToken.raw,
+					},
 				)[0],
 			);
 		}
@@ -507,7 +516,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.catch?.nodes,
-					'await:catch',
+					{
+						type: 'await:catch',
+						expression: catchToken.raw,
+					},
 				)[0],
 			);
 		}
@@ -522,7 +534,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				undefined,
-				'end',
+				{
+					type: 'end',
+					expression: closeToken.raw,
+				},
 			)[0],
 		);
 
@@ -582,7 +597,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				originBlockNode.body.nodes,
-				'each',
+				{
+					type: 'each',
+					expression: eachToken.raw,
+				},
 			)[0],
 		);
 
@@ -597,7 +615,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.fallback?.nodes,
-					'each:empty',
+					{
+						type: 'each:empty',
+						expression: elseToken.raw,
+					},
 				)[0],
 			);
 		}
@@ -612,7 +633,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				undefined,
-				'end',
+				{
+					type: 'end',
+					expression: closeToken.raw,
+				},
 			)[0],
 		);
 

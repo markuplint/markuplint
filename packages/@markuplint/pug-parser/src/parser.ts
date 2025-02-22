@@ -265,6 +265,7 @@ class PugParser extends Parser<ASTNode> {
 			type: 'starttag',
 			elementType: this.detectElementType(token.nodeName),
 			childNodes: [],
+			blockBehavior: null,
 			pairNode: null,
 			tagOpenChar: '',
 			tagCloseChar: '',
