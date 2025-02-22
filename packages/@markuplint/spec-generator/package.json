@@ -26,7 +26,7 @@
 		"ajv": "8.17.1",
 		"cheerio": "1.0.0",
 		"cli-progress": "3.12.0",
-		"fast-xml-parser": "4.5.1",
+		"fast-xml-parser": "4.5.3",
 		"glob": "11.0.1",
 		"strip-json-comments": "5.0.1"
 	},
@@ -34,6 +34,6 @@
 		"@markuplint/ml-spec": "4.9.3",
 		"@markuplint/test-tools": "4.5.16",
 		"@types/cli-progress": "3.11.6",
-		"type-fest": "4.34.1"
+		"type-fest": "4.35.0"
 	}
 }

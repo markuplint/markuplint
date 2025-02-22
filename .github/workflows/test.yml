@@ -39,7 +39,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
@@ -51,7 +51,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
@@ -76,14 +76,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: |
                       packages/**/lib
@@ -100,7 +100,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -132,14 +132,14 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: |
                       packages/**/lib
@@ -187,7 +187,7 @@ jobs:
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
@@ -205,7 +205,7 @@ jobs:
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
@@ -235,13 +235,13 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -296,13 +296,13 @@ jobs:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+              uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
               with:
                   enableCrossOsArchive: true
                   path: |

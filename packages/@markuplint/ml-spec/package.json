@@ -36,7 +36,7 @@
 		"@markuplint/types": "4.7.3",
 		"dom-accessibility-api": "0.7.0",
 		"is-plain-object": "5.0.0",
-		"type-fest": "4.34.1"
+		"type-fest": "4.35.0"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "4.5.16",
