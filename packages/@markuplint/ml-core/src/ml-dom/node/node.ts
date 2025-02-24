@@ -217,7 +217,11 @@ export abstract class MLNode<
 		const pureChildNodes = [...this.getPureChildNodes()];
 
 		const childNodes = pureChildNodes.flatMap(node => {
-			if (node.isFragment) {
+			if (
+				node.isFragment ||
+				(node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK) &&
+					['each', 'end'].includes(node.blockBehavior?.type ?? ''))
+			) {
 				return [...node.childNodes];
 			}
 			return [node];
