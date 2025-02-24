@@ -1123,4 +1123,28 @@ describe('Directives', () => {
 			'[20:8]>[21:1](604,605)#text: ⏎',
 		]);
 	});
+
+	test('x-for', () => {
+		const doc = parse(`
+<ul x-data="{ colors: ['Red', 'Orange', 'Yellow'] }">
+	<template x-for="color in colors">
+		<li x-text="color"></li>
+	</template>
+</ul>
+`);
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[2:1](0,1)#text: ⏎',
+			"[2:1]>[2:54](1,54)ul: <ul␣x-data=\"{␣colors:␣['Red',␣'Orange',␣'Yellow']␣}\">",
+			'[2:54]>[3:2](54,56)#text: ⏎→',
+			'[3:2]>[3:36](56,90)template (each): <template␣x-for="color␣in␣colors">',
+			'[3:36]>[4:3](90,93)#text: ⏎→→',
+			'[4:3]>[4:22](93,112)li: <li␣x-text="color">',
+			'[4:22]>[4:27](112,117)li: </li>',
+			'[4:27]>[5:2](117,119)#text: ⏎→',
+			'[5:2]>[5:13](119,130)template (end): </template>',
+			'[5:13]>[6:1](130,131)#text: ⏎',
+			'[6:1]>[6:6](131,136)ul: </ul>',
+			'[6:6]>[7:1](136,137)#text: ⏎',
+		]);
+	});
 });
