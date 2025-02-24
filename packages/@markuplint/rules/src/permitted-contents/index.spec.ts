@@ -1897,4 +1897,23 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#2302', async () => {
+		const sourceCode = `
+<svg>
+	{list.map(item => (
+		<path />
+	))}
+</svg>
+`;
+		expect(
+			(
+				await mlRuleTest(rule, sourceCode, {
+					parser: {
+						'.*': '@markuplint/jsx-parser',
+					},
+				})
+			).violations,
+		).toStrictEqual([]);
+	});
 });
