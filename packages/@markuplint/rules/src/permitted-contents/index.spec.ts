@@ -1324,6 +1324,242 @@ body
 	});
 });
 
+describe('Loop blocks', () => {
+	test('Svelte', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<dl>
+	{#each items as item}
+		<dt>{item.key}</dt>
+	{/each}
+</dl>
+<dl>
+	{#each items as item}
+		<dt>{item.key}</dt>
+		<dd>{item.value}</dd>
+	{/each}
+</dl>
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/svelte-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('Vue', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<template>
+	<dl v-for="item in items">
+		<dt>{item.key}</dt>
+	</dl>
+	<dl v-for="item in items">
+		<dt>{item.key}</dt>
+		<dd>{item.value}</dd>
+	</dl>
+</template>
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/vue-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 3,
+				col: 2,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl v-for="item in items">',
+			},
+		]);
+	});
+
+	test('Pug', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+dl
+	each item in items
+		dt= item.key
+dl
+	each item in items
+		dt= item.key
+		dd= item.value
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/pug-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: 'dl',
+			},
+		]);
+	});
+
+	test('Alpine', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<dl>
+	<template x-for="color in items" :key="color.id">
+		<dt>{item.key}</dt>
+	</template>
+</dl>
+<dl>
+	<template x-for="color in items" :key="color.id">
+		<dt>{item.key}</dt>
+		<dd>{item.value}</dd>
+	</template>
+</dl>
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/alpine-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('JSX', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<>
+	<dl>
+		{items.map(item => (
+			<dt>{item}</dt>
+		))}
+	</dl>
+	<dl>
+		{items.map(item => (
+			<>
+				<dt>{item.key}</dt>
+				<dd>{item.value}</dd>
+			</>
+		))}
+	</dl>
+	<dl>
+		{/* No rendering loop */}
+		{items.forEach(item => (
+			<>
+				<dt>{item.key}</dt>
+			</>
+		))}
+	</dl>
+</>
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/jsx-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 3,
+				col: 2,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('Astro', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					`
+<>
+	<dl>
+		{items.map(item => (
+			<dt>{item}</dt>
+		))}
+	</dl>
+	<dl>
+		{items.map(item => (
+			<>
+				<dt>{item.key}</dt>
+				<dd>{item.value}</dd>
+			</>
+		))}
+	</dl>
+	<dl>
+		{/* No rendering loop */}
+		{items.forEach(item => (
+			<>
+				<dt>{item.key}</dt>
+			</>
+		))}
+	</dl>
+</>
+		`,
+					{
+						parser: {
+							'.*': '@markuplint/astro-parser',
+						},
+					},
+				)
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 3,
+				col: 2,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+});
+
 describe('Issues', () => {
 	test('#396', async () => {
 		expect(
