@@ -96,7 +96,7 @@ export function restoreNode(
 			const psNode: MLASTPreprocessorSpecificBlock = {
 				...token,
 				type: 'psblock',
-				conditionalType: null,
+				blockBehavior: null, // TODO: Compose from tag
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
 				parentNode: node.parentNode,
@@ -132,7 +132,7 @@ export function restoreNode(
 			const psNode: MLASTPreprocessorSpecificBlock = {
 				...token,
 				type: 'psblock',
-				conditionalType: null,
+				blockBehavior: null,
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
 				parentNode: node.parentNode,

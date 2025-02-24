@@ -1,8 +1,45 @@
 import type { Token } from '@markuplint/parser-utils';
 
 import { HtmlParser } from '@markuplint/html-parser';
+import type { MLASTNodeTreeItem, MLASTPreprocessorSpecificBlock } from '@markuplint/ml-ast';
 
 class AlpineParser extends HtmlParser {
+	visitElement(
+		token: Parameters<HtmlParser['visitElement']>[0],
+		childNodes: Parameters<HtmlParser['visitElement']>[1] = [],
+		options: Parameters<HtmlParser['visitElement']>[2],
+	): readonly MLASTNodeTreeItem[] {
+		return super.visitElement(token, childNodes, options).map(node => {
+			if (node.type !== 'starttag' && node.type !== 'endtag') {
+				return node;
+			}
+
+			if (node.nodeName.toLowerCase() !== 'template') {
+				return node;
+			}
+
+			const attrs = node.type === 'starttag' ? node.attributes : node.pairNode.attributes;
+
+			if (!attrs.some(attr => attr.nodeName.toLowerCase() === 'x-for')) {
+				return node;
+			}
+
+			const forBlock: MLASTPreprocessorSpecificBlock = {
+				isFragment: false,
+				childNodes: [],
+				...node,
+				type: 'psblock',
+				blockBehavior: {
+					type: node.type === 'starttag' ? 'each' : 'end',
+					expression: node.raw,
+				},
+				isBogus: false,
+			};
+
+			return forBlock;
+		});
+	}
+
 	visitAttr(token: Token, options: Parameters<HtmlParser['visitAttr']>[1]) {
 		const attr = super.visitAttr(token, options);
 

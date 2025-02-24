@@ -94,9 +94,10 @@ function tokenDebug<N extends MLASTToken>(n: N | null, type = '') {
 	return `[${n.line}:${n.col}]>[${endLine}:${endCol}](${n.offset},${endOffset})${
 		// @ts-ignore
 		n.potentialName ?? n.nodeName ?? n.name ?? n.type ?? type
-	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}${'conditionalType' in n && n.conditionalType ? ` (${n.conditionalType})` : ''}: ${visibleWhiteSpace(
-		n.raw,
-	)}`;
+	}${'isGhost' in n && n.isGhost ? '(👻)' : ''}${'isBogus' in n && n.isBogus ? '(👿)' : ''}${
+		// @ts-ignore
+		n.blockBehavior?.type ? ` (${n.blockBehavior.type})` : ''
+	}: ${visibleWhiteSpace(n.raw)}`;
 }
 
 function visibleWhiteSpace(chars: string) {

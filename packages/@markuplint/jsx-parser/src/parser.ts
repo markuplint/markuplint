@@ -1,11 +1,12 @@
 import type { JSXComment, JSXNode } from './jsx.js';
-import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type { MLASTBlockBehavior, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
 import { getNamespace } from '@markuplint/html-parser';
 import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { jsxParser, attrParser, getName } from './jsx.js';
+import { extractJSXFromCall } from './extract-jsx-from-call.js';
 
 type State = {
 	comments: readonly JSXComment[];
@@ -198,6 +199,20 @@ class JSXParser extends Parser<JSXNode, State> {
 			}
 			default: {
 				const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
+
+				const childNodes: JSXNode[] = [];
+				let blockBehavior: MLASTBlockBehavior | null = null;
+
+				const mapReturn = extractJSXFromCall(originNode, 'map');
+
+				if (mapReturn) {
+					childNodes.push(mapReturn);
+					blockBehavior = {
+						type: 'each',
+						expression: token.raw,
+					};
+				}
+
 				const nodes = this.visitPsBlock(
 					{
 						...token,
@@ -206,8 +221,8 @@ class JSXParser extends Parser<JSXNode, State> {
 						nodeName: originNode.type,
 						isFragment: true,
 					},
-					[],
-					null, // TODO: Infer conditionalType
+					childNodes,
+					blockBehavior,
 					originNode,
 				);
 

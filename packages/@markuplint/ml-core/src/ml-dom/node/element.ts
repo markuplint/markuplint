@@ -5,7 +5,7 @@ import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
-import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type { ElementType, MLASTAttr, MLASTBlockBehavior, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type {
 	PlainData,
 	Pretender,
@@ -107,6 +107,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 	readonly tagCloseChar: string;
 	readonly tagOpenChar: string;
+	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	constructor(
 		astNode: MLASTElement,
@@ -127,6 +128,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		this.tagOpenChar = astNode.tagOpenChar;
 		this.tagCloseChar = astNode.tagCloseChar;
+
+		this.blockBehavior = astNode.blockBehavior;
 	}
 
 	/**
@@ -3414,7 +3417,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	hasMutableChildren(attr = false) {
 		for (const child of this.getPureChildNodes()) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				if (child.conditionalType) {
+				if (child.blockBehavior) {
 					continue;
 				}
 				return true;

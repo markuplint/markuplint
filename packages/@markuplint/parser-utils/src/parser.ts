@@ -32,7 +32,7 @@ import type {
 	MLASTInvalid,
 	Walker,
 	MLASTHTMLAttr,
-	MLASTPreprocessorSpecificBlockConditionalType,
+	MLASTBlockBehavior,
 } from '@markuplint/ml-ast';
 
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
@@ -428,12 +428,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly createEndTagToken?: (startTag: MLASTElement) => ChildToken | null;
 			readonly namelessFragment?: boolean;
 			readonly overwriteProps?: Partial<MLASTElement>;
+			readonly blockBehavior?: MLASTBlockBehavior;
 		},
 	): readonly MLASTNodeTreeItem[] {
 		timer.push('visitElement');
 		const createEndTagToken = options?.createEndTagToken;
 		const namelessFragment = options?.namelessFragment ?? false;
 		const overwriteProps = options?.overwriteProps;
+		const blockBehavior = options?.blockBehavior ?? null;
 
 		// Handle omitted empty tag as ghost element node
 		if (token.raw === '') {
@@ -448,6 +450,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				pairNode: null,
 				tagCloseChar: '',
 				tagOpenChar: '',
+				blockBehavior,
 				isGhost: true,
 				isFragment: false,
 				...overwriteProps,
@@ -492,7 +495,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly Node[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		blockBehavior: MLASTBlockBehavior | null = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
 		timer.push('visitPsBlock');
@@ -500,7 +503,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...token,
 			...this.createToken(token),
 			type: 'psblock',
-			conditionalType,
+			blockBehavior,
 			nodeName: `#ps:${token.nodeName}`,
 			childNodes: [],
 			isBogus: false,
@@ -1362,6 +1365,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					namespace: '',
 					attributes: attrs,
 					childNodes: [],
+					blockBehavior: null,
 					pairNode: null,
 					tagOpenChar: '<',
 					tagCloseChar: selfClosingSolidusChar + '>',

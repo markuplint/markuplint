@@ -217,7 +217,11 @@ export abstract class MLNode<
 		const pureChildNodes = [...this.getPureChildNodes()];
 
 		const childNodes = pureChildNodes.flatMap(node => {
-			if (node.isFragment) {
+			if (
+				node.isFragment ||
+				(node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK) &&
+					['each', 'end'].includes(node.blockBehavior?.type ?? ''))
+			) {
 				return [...node.childNodes];
 			}
 			return [node];
@@ -646,20 +650,16 @@ export abstract class MLNode<
 		}
 
 		const branches: (MLChildNode<T, O> | (MLChildNode<T, O> | null)[])[] = [];
-		let mode: 'if' | 'each' | 'switch' | null = null;
+		let mode: 'if' | 'switch' | null = null;
 		let openConditional = false;
 		let subBranches: (MLChildNode<T, O> | null)[] = [];
 
 		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				switch (child.conditionalType) {
+				switch (child.blockBehavior?.type) {
 					case 'if':
 					case 'if:elseif': {
 						mode = 'if';
-						break;
-					}
-					case 'each': {
-						mode = 'each';
 						break;
 					}
 					case 'switch:case': {
@@ -669,6 +669,7 @@ export abstract class MLNode<
 
 					/* No default mode */
 					case 'if:else':
+					case 'each':
 					case 'each:empty':
 					case 'switch:default':
 					case 'await':
@@ -690,7 +691,7 @@ export abstract class MLNode<
 			}
 
 			if (openConditional) {
-				if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+				if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 					subBranches.push(null);
 				}
 				branches.push(subBranches);
@@ -708,7 +709,7 @@ export abstract class MLNode<
 		}
 
 		if (subBranches.length > 0) {
-			if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+			if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 				subBranches.push(null);
 			}
 			branches.push(subBranches);
