@@ -8,8 +8,8 @@ import type {
 } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { HtmlParser, getNamespace } from '@markuplint/html-parser';
-import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser-utils';
+import { HtmlParser } from '@markuplint/html-parser';
+import { ParserError, Parser, AttrState, scriptParser, getNamespace } from '@markuplint/parser-utils';
 
 import { pugParse } from './pug-parser/index.js';
 
@@ -65,9 +65,6 @@ class PugParser extends Parser<ASTNode> {
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		const parentNamespace =
-			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
-
 		const token = this.sliceFragment(originNode.offset, originNode.endOffset);
 
 		switch (originNode.type) {
@@ -149,8 +146,6 @@ class PugParser extends Parser<ASTNode> {
 				);
 			}
 			case 'Tag': {
-				const namespace = getNamespace(originNode.name, parentNamespace);
-
 				const attrs = originNode.attrs.map(attr => {
 					// eslint-disable-next-line prefer-const
 					let { offset, endOffset } = this.getOffsetsFromCode(
@@ -204,7 +199,6 @@ class PugParser extends Parser<ASTNode> {
 						depth,
 						parentNode,
 						nodeName: originNode.name,
-						namespace,
 						isFragment: false,
 					},
 					originNode.block?.nodes ?? [],
@@ -266,7 +260,6 @@ class PugParser extends Parser<ASTNode> {
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
-			readonly namespace: string;
 			readonly isFragment: false;
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -283,6 +276,7 @@ class PugParser extends Parser<ASTNode> {
 			...options.overwriteProps,
 			type: 'starttag',
 			elementType: this.detectElementType(token.nodeName),
+			namespace: getNamespace(token.nodeName, token.parentNode),
 			childNodes: [],
 			blockBehavior: null,
 			pairNode: null,

@@ -118,7 +118,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
 		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
-		this.namespaceURI = ns.namespaceURI;
+		this.namespaceURI = astNode.namespace;
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
@@ -3591,14 +3591,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		}
 
 		let nodeName: string;
-		let namespace = 'html';
+		let namespace: NamespaceURI = 'http://www.w3.org/1999/xhtml';
 		const attributes: MLASTAttr[] = [];
 		let aria: PretenderARIA | undefined;
 		if (typeof pretenderElement === 'string') {
 			nodeName = pretenderElement;
 		} else {
 			nodeName = pretenderElement.element;
-			namespace = pretenderElement.namespace ?? namespace;
+			namespace = pretenderElement.namespace === 'svg' ? 'http://www.w3.org/2000/svg' : namespace;
 			if (pretenderElement.inheritAttrs) {
 				attributes.push(...this._astToken.attributes);
 			}

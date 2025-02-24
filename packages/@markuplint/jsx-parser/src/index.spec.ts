@@ -522,6 +522,18 @@ key
 	});
 
 	test('namespace', () => {
+		const doc = parse('<svg><path /><foreignObject><a></a></foreignObject></svg>');
+		expect(doc.nodeList[0].nodeName).toBe('svg');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].nodeName).toBe('path');
+		expect(doc.nodeList[1].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[2].nodeName).toBe('foreignObject');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[3].nodeName).toBe('a');
+		expect(doc.nodeList[3].namespace).toBe('http://www.w3.org/1999/xhtml');
+	});
+
+	test('namespace', () => {
 		const doc = parse('<div><svg><feBlend /></svg></div>');
 		expect(doc.nodeList[0].nodeName).toBe('div');
 		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/1999/xhtml');
@@ -530,6 +542,15 @@ key
 		expect(doc.nodeList[2].nodeName).toBe('feBlend');
 		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 		expect(doc.nodeList[2].elementType).toBe('html');
+	});
+
+	test('namespace', () => {
+		const doc = parse('<svg>{list.map(item => <path />)}</svg>');
+		expect(doc.nodeList[0].nodeName).toBe('svg');
+		expect(doc.nodeList[0].namespace).toBe('http://www.w3.org/2000/svg');
+		expect(doc.nodeList[1].nodeName).toBe('#ps:JSXExpressionContainer');
+		expect(doc.nodeList[2].nodeName).toBe('path');
+		expect(doc.nodeList[2].namespace).toBe('http://www.w3.org/2000/svg');
 	});
 
 	test('isCustomElement', () => {

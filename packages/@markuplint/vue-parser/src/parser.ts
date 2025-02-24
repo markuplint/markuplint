@@ -80,7 +80,6 @@ class VueParser extends Parser<ASTNode, State> {
 						depth,
 						parentNode,
 						nodeName: originNode.name,
-						namespace: originNode.namespace,
 					},
 					originNode.children,
 					{

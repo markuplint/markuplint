@@ -2,7 +2,6 @@ import type { JSXComment, JSXNode } from './jsx.js';
 import type { MLASTBlockBehavior, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
-import { getNamespace } from '@markuplint/html-parser';
 import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { jsxParser, attrParser, getName } from './jsx.js';
@@ -93,9 +92,6 @@ class JSXParser extends Parser<JSXNode, State> {
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		const parentNamespace =
-			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
-
 		if (originNode.__alreadyNodeized) {
 			return [];
 		}
@@ -133,7 +129,6 @@ class JSXParser extends Parser<JSXNode, State> {
 				const nodeName = isFragment ? '#jsx-fragment' : getName(originNode.openingElement.name);
 
 				let token = this.sliceFragment(openTag.range[0], openTag.range[1]);
-				const namespace = getNamespace(nodeName, parentNamespace);
 
 				for (const comment of this.state.comments) {
 					if (comment.range[0] < openTag.range[0]) {
@@ -169,7 +164,6 @@ class JSXParser extends Parser<JSXNode, State> {
 						depth,
 						parentNode,
 						nodeName,
-						namespace,
 					},
 					originNode.children,
 					{
