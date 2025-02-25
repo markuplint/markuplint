@@ -7,40 +7,34 @@ import { accnameMayBeMutable } from '../helpers.js';
 
 import meta from './meta.js';
 
-type Option = {
-	ariaVersion: ARIAVersion;
-};
-
-export default createRule<boolean, Option>({
+export default createRule({
 	meta: meta,
 	defaultOptions: {
-		ariaVersion: ARIA_RECOMMENDED_VERSION,
+		ariaVersion: undefined as ARIAVersion | undefined,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
+			const ariaVersion =
+				el.rule.options?.ariaVersion ?? document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+
 			if (accnameMayBeMutable(el, document)) {
 				return;
 			}
 
-			if (!isExposed(el, document.specs, el.rule.options.ariaVersion)) {
+			if (!isExposed(el, document.specs, ariaVersion)) {
 				return;
 			}
 
-			const computed = getComputedRole(document.specs, el, el.rule.options.ariaVersion);
+			const computed = getComputedRole(document.specs, el, ariaVersion);
 			if (!computed.role) {
 				return;
 			}
-			const roleSpec = getRoleSpec(
-				document.specs,
-				computed.role.name,
-				el.namespaceURI,
-				el.rule.options.ariaVersion,
-			);
+			const roleSpec = getRoleSpec(document.specs, computed.role.name, el.namespaceURI, ariaVersion);
 			if (!roleSpec || !roleSpec.accessibleNameRequired) {
 				return;
 			}
 
-			const hasAccessibleName = !!el.getAccessibleName(el.rule.options.ariaVersion).trim();
+			const hasAccessibleName = !!el.getAccessibleName(ariaVersion).trim();
 
 			if (!hasAccessibleName) {
 				report({ scope: el, message: t('Require {0}', 'accessible name') });

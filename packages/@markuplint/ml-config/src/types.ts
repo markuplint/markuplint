@@ -1,11 +1,13 @@
 import type { ParserOptions } from '@markuplint/ml-ast';
 import type { RegexSelector } from '@markuplint/selector';
 import type { Nullable } from '@markuplint/shared';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 export type { RegexSelector } from '@markuplint/selector';
 
 export type Config = {
 	readonly $schema?: string;
+	readonly ruleCommonSettings?: RuleCommonSettings;
 	readonly extends?: string | readonly string[];
 	readonly plugins?: readonly (PluginConfig | string)[];
 	readonly parser?: ParserConfig;
@@ -19,6 +21,10 @@ export type Config = {
 	readonly childNodeRules?: readonly ChildNodeRule[];
 	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
+};
+
+export type RuleCommonSettings = {
+	readonly ariaVersion?: ARIAVersion;
 };
 
 export type PrimitiveScalar = string | number | boolean;

@@ -1,13 +1,17 @@
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
-import { getPermittedRoles } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getPermittedRoles } from '@markuplint/ml-spec';
 
 export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 	({ attr }) =>
 	t => {
+		const ariaVersion =
+			attr.rule.options?.version ??
+			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			ARIA_RECOMMENDED_VERSION;
 		const el = attr.ownerElement;
-		const permittedRoles = getPermittedRoles(el, el.rule.options.version, attr.ownerMLDocument.specs);
+		const permittedRoles = getPermittedRoles(el, ariaVersion, attr.ownerMLDocument.specs);
 		if (permittedRoles.length === 0) {
 			return {
 				scope: attr,

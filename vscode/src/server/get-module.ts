@@ -1,5 +1,5 @@
 import type { Log } from '../types.js';
-import type { ARIAVersion } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, type ARIAVersion } from '@markuplint/ml-spec';
 
 import path from 'node:path';
 
@@ -53,7 +53,7 @@ export async function getModule(log: Log): Promise<Module> {
 		version,
 		moduleType,
 		markuplint,
-		ariaRecommendedVersion: '1.2',
+		ariaRecommendedVersion: ARIA_RECOMMENDED_VERSION,
 	};
 }
 

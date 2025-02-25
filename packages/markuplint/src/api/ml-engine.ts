@@ -296,6 +296,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		const locale = await i18n(this.#options?.locale);
 
+		const ruleCommonSettings = configSet.config.ruleCommonSettings ?? {};
+
 		if (fileLog.enabled) {
 			fileLog(
 				'Loaded %d rules: %O',
@@ -313,6 +315,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			schemas,
 			rules,
 			locale,
+			ruleCommonSettings,
 			configErrors: configSet.errs,
 		};
 	}

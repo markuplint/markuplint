@@ -1,7 +1,7 @@
 import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 
-import { getARIA, type ARIAProperty, type ARIARole } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getARIA, type ARIAProperty, type ARIARole } from '@markuplint/ml-spec';
 
 export const checkingRequiredProp: ElementChecker<
 	boolean,
@@ -25,11 +25,16 @@ export const checkingRequiredProp: ElementChecker<
 			if (!has) {
 				const propSpec = propSpecs.find(p => p.name === requiredProp);
 
+				const ariaVersion =
+					el.rule.options?.version ??
+					el.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+					ARIA_RECOMMENDED_VERSION;
+
 				const elAriaSpec = getARIA(
 					el.ownerMLDocument.specs,
 					el.localName,
 					el.namespaceURI,
-					el.rule.options.version,
+					ariaVersion,
 					el.matches.bind(el),
 				);
 

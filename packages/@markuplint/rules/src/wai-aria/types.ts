@@ -11,5 +11,5 @@ export type Options = {
 	disallowSetImplicitRole: boolean;
 	disallowSetImplicitProps: boolean;
 	disallowDefaultValue: boolean;
-	version: ARIAVersion;
+	version?: ARIAVersion;
 };

@@ -22,6 +22,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	const config: OptimizedConfig = {
 		...a,
 		...b,
+		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
 		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
 			if (typeof plugin === 'string') {
 				return {

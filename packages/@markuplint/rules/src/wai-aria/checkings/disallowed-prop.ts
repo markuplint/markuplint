@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
-import { getARIA } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getARIA } from '@markuplint/ml-spec';
 
 export const checkingDisallowedProp: AttrChecker<
 	boolean,
@@ -21,13 +21,18 @@ export const checkingDisallowedProp: AttrChecker<
 		if (!/^aria-/i.test(attr.name)) {
 			return;
 		}
+
+		const ariaVersion =
+			attr.rule.options?.version ??
+			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			ARIA_RECOMMENDED_VERSION;
 		const statesAndProp = role.ownedProperties.find(p => p.name === attr.name);
 		const propSpec = propSpecs.find(p => p.name === attr.name);
 		const elAriaSpec = getARIA(
 			attr.ownerMLDocument.specs,
 			attr.ownerElement.localName,
 			attr.ownerElement.namespaceURI,
-			attr.rule.options.version,
+			ariaVersion,
 			attr.ownerElement.matches.bind(attr.ownerElement),
 		);
 
