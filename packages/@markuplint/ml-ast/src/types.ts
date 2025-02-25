@@ -63,7 +63,7 @@ export interface MLASTDoctype extends MLASTAbstractNode {
 export interface MLASTElement extends MLASTAbstractNode {
 	readonly type: 'starttag';
 	readonly depth: number;
-	readonly namespace: string;
+	readonly namespace: NamespaceURI;
 	readonly elementType: ElementType;
 	readonly isFragment: boolean;
 	readonly attributes: readonly MLASTAttr[];

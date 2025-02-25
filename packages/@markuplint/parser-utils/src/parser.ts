@@ -33,6 +33,7 @@ import type {
 	Walker,
 	MLASTHTMLAttr,
 	MLASTBlockBehavior,
+	NamespaceURI,
 } from '@markuplint/ml-ast';
 
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
@@ -48,6 +49,7 @@ import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
 import { sortNodes } from './sort-nodes.js';
+import { getNamespace } from './get-namespace.js';
 
 const timer = new PerformanceTimer();
 
@@ -421,7 +423,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
-			readonly namespace: string;
 		},
 		childNodes: readonly Node[] = [],
 		options?: {
@@ -453,6 +454,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				blockBehavior,
 				isGhost: true,
 				isFragment: false,
+				namespace: getNamespace(null, token.parentNode),
 				...overwriteProps,
 			};
 
@@ -465,7 +467,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.#parseStartTag(
 				token,
 				{
-					namespace: token.namespace,
 					...overwriteProps,
 				},
 				namelessFragment,
@@ -693,7 +694,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					line: startLine,
 					col: startCol,
 					depth,
-					parentNode: null,
+					parentNode: token.parentNode,
 				},
 				true,
 				true,
@@ -1362,7 +1363,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					...commons,
 					type: 'starttag',
 					elementType: this.detectElementType(tagName),
-					namespace: '',
+					namespace:
+						'namespace' in token
+							? (token.namespace as NamespaceURI)
+							: getNamespace(tagName, token.parentNode),
 					attributes: attrs,
 					childNodes: [],
 					blockBehavior: null,

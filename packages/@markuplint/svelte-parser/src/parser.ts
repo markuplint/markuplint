@@ -2,7 +2,6 @@ import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } fro
 import type { MLASTParentNode, MLASTPreprocessorSpecificBlock, MLASTBlockBehavior } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { getNamespace } from '@markuplint/html-parser';
 import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
@@ -62,8 +61,6 @@ export class SvelteParser extends Parser<SvelteNode> {
 		depth: number,
 	) {
 		const token = this.sliceFragment(originNode.start, originNode.end);
-		const parentNamespace =
-			parentNode && 'namespace' in parentNode ? parentNode.namespace : 'http://www.w3.org/1999/xhtml';
 
 		switch (originNode.type) {
 			case 'Text': {
@@ -105,7 +102,6 @@ export class SvelteParser extends Parser<SvelteNode> {
 						depth,
 						parentNode,
 						nodeName: originNode.name,
-						namespace: getNamespace(originNode.name, parentNamespace),
 					},
 					originNode.fragment.nodes,
 					{
