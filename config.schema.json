@@ -1,6 +1,15 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"definitions": {
+		"ruleCommonSettings": {
+			"additionalProperties": false,
+			"properties": {
+				"ariaVersion": {
+					"type": "string",
+					"enum": ["1.1", "1.2", "1.3"]
+				}
+			}
+		},
 		"rules": {
 			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
 			"additionalProperties": false,
@@ -344,6 +353,7 @@
 				"type": "string"
 			}
 		},
+		"ruleCommonSettings": { "$ref": "#/definitions/ruleCommonSettings" },
 		"plugins": { "$ref": "#/definitions/plugins" },
 		"parser": { "$ref": "#/definitions/parser" },
 		"parserOptions": { "$ref": "#/definitions/parserOptions" },

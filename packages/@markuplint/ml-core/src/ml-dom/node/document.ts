@@ -11,7 +11,7 @@ import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
 import type { EndTagType, MLASTDocument, MLASTNodeTreeItem } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
+import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
@@ -133,6 +133,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 	readonly tagNameCaseSensitive: boolean;
 
+	readonly ruleCommonSettings: RuleCommonSettings;
+
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 
 	/**
@@ -144,6 +146,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		ast: MLASTDocument,
 		ruleset: Ruleset,
 		schemas: MLSchema,
+		ruleCommonSettings: RuleCommonSettings,
 		options?: {
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
@@ -161,6 +164,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
+		this.ruleCommonSettings = ruleCommonSettings;
 
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(

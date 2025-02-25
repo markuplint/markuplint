@@ -3,7 +3,14 @@ import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, RuleConfigValue, SeverityOptions, Violation } from '@markuplint/ml-config';
+import type {
+	PlainData,
+	Pretender,
+	RuleCommonSettings,
+	RuleConfigValue,
+	SeverityOptions,
+	Violation,
+} from '@markuplint/ml-config';
 
 import { ParserError } from '@markuplint/parser-utils';
 
@@ -30,6 +37,7 @@ export class MLCore {
 	#rules: Readonly<MLRule<RuleConfigValue, PlainData>>[];
 	#ruleset: Ruleset;
 	#schemas: MLSchema;
+	#ruleCommonSettings: RuleCommonSettings;
 	#sourceCode: string;
 	#configErrors: Readonly<Error>[];
 
@@ -40,6 +48,7 @@ export class MLCore {
 		rules,
 		locale,
 		schemas,
+		ruleCommonSettings,
 		parserOptions,
 		severity,
 		pretenders,
@@ -61,6 +70,7 @@ export class MLCore {
 		};
 		this.#locale = locale;
 		this.#schemas = schemas;
+		this.#ruleCommonSettings = ruleCommonSettings;
 		this.#filename = filename;
 		this.#rules = [...rules];
 		this.#severity = severity;
@@ -183,7 +193,7 @@ export class MLCore {
 			return;
 		}
 		try {
-			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, {
+			this.#document = new Document(this.#ast, this.#ruleset, this.#schemas, this.#ruleCommonSettings, {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,

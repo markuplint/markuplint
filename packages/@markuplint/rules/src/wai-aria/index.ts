@@ -1,6 +1,7 @@
 import type { Options } from './types.js';
 
 import { createRule, getAttrSpecs, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { Collection } from '../helpers.js';
@@ -35,7 +36,7 @@ export default createRule<boolean, Options>({
 		disallowSetImplicitRole: true,
 		disallowSetImplicitProps: true,
 		disallowDefaultValue: false,
-		version: ARIA_RECOMMENDED_VERSION,
+		version: undefined as ARIAVersion | undefined,
 	},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
@@ -59,8 +60,11 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const computed = getComputedRole(document.specs, el, el.rule.options.version);
-			const { props: propSpecs } = ariaSpecs(document.specs, el.rule.options.version);
+			const ariaVersion =
+				el.rule.options?.version ?? document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+
+			const computed = getComputedRole(document.specs, el, ariaVersion);
+			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
 
 			if (roleAttr) {
 				if (report(checkingNonExistentRole({ attr: roleAttr }))) {

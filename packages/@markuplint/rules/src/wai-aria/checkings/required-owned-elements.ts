@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
-import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
 
 type OwnedElement =
 	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER']
@@ -50,7 +50,12 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				if (child.matches('[aria-busy="true" i]')) {
 					return [child, 'BUSY'];
 				}
-				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
+
+				const ariaVersion =
+					child.rule.options?.version ??
+					child.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+					ARIA_RECOMMENDED_VERSION;
+				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, ariaVersion);
 				if (
 					role.requiredOwnedElements.some(ownedRole =>
 						isRequiredOwnedElement(
@@ -58,7 +63,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 							computedChild.role,
 							ownedRole,
 							child.ownerMLDocument.specs,
-							child.rule.options.version,
+							ariaVersion,
 						),
 					)
 				) {

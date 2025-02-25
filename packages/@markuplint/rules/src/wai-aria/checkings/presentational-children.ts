@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { Element, ElementChecker } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
-import { getComputedRole } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
 
 /**
  * Presentational Children
@@ -60,9 +60,11 @@ function getAncestorHasPresentationalChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,
 ): ComputedRole | null {
+	const ariaVersion =
+		el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 	let current: Element<boolean, Options> | null = el.parentElement;
 	while (current) {
-		const computed = getComputedRole(el.ownerMLDocument.specs, current, el.rule.options.version);
+		const computed = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion);
 		if (computed.role?.childrenPresentational) {
 			return computed;
 		}

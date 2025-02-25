@@ -5,6 +5,8 @@ import type { MLASTNode, MLASTToken, MLParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
+
 import { parser } from '@markuplint/html-parser';
 import spec from '@markuplint/html-spec';
 
@@ -28,7 +30,9 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			: options.parser.parse(sourceCode, options.config?.parserOptions)
 		: parser.parse(sourceCode, options?.config?.parserOptions);
 	const ruleset = convertRuleset(options?.config);
-	const document = new MLDocument<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}]);
+	const document = new MLDocument<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}], {
+		ariaVersion: ARIA_RECOMMENDED_VERSION,
+	});
 	return document;
 }
 

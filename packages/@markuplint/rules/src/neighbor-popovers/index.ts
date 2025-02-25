@@ -1,14 +1,13 @@
 import { createRule } from '@markuplint/ml-core';
-import { mayBeFocusable } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, mayBeFocusable } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
-
-// TODO: It will be received from config
-const ARIA_VERSION = '1.2';
 
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {
+		const ariaVersion = document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+
 		const triggers = document.querySelectorAll('[popovertarget]');
 		Triggers: for (const trigger of triggers) {
 			const targetId = trigger.getAttribute('popovertarget');
@@ -32,7 +31,7 @@ export default createRule({
 				if (
 					(node.is(node.ELEMENT_NODE) &&
 						// Element has accessible name
-						(node.getAccessibleName(ARIA_VERSION) ||
+						(node.getAccessibleName(ariaVersion) ||
 							// Element is focusable
 							mayBeFocusable(node, node.ownerMLDocument.specs))) ||
 					(node.is(node.TEXT_NODE) &&
