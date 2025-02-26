@@ -11823,10 +11823,10 @@ typedoc-plugin-resolve-crossmodule-references@0.3.3:
   resolved "https://registry.yarnpkg.com/typedoc-plugin-resolve-crossmodule-references/-/typedoc-plugin-resolve-crossmodule-references-0.3.3.tgz#812a6e7083f46031c69fe0021bb3913b10bd68cb"
   integrity sha512-ZWWBy2WR8z9a6iXYGlyB3KrpV+JDdZv1mndYU6Eh6mInrfMCrQJi3Y5K9ihMBfuaBGB//le1nEmQLgzU3IO+dw==
 
-typedoc@0.27.8:
-  version "0.27.8"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.27.8.tgz#9d4c4aa3c6889090d8fa4776367e353697d3e706"
-  integrity sha512-q0/2TUunNEDmWkn23ULKGXieK8cgGuAmBUXC/HcZ/rgzMI9Yr4Nq3in1K1vT1NZ9zx6M78yTk3kmIPbwJgK5KA==
+typedoc@0.27.9:
+  version "0.27.9"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.27.9.tgz#5e0a7bc32bfc7bd0b70a353f4f1d5cba3d667c46"
+  integrity sha512-/z585740YHURLl9DN2jCWe6OW7zKYm6VoQ93H0sxZ1cwHQEQrUn5BJrEnkWhfzUdyO+BLGjnKUZ9iz9hKloFDw==
   dependencies:
     "@gerrit0/mini-shiki" "^1.24.0"
     lunr "^2.3.9"
