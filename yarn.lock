@@ -5464,12 +5464,12 @@ fast-uri@^3.0.1:
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-3.0.6.tgz#88f130b77cfaea2378d56bf970dea21257a68748"
   integrity sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==
 
-fast-xml-parser@5.0.7:
-  version "5.0.7"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.0.7.tgz#6213d077fada51c3b75f79f8c37aa372f4f63bad"
-  integrity sha512-hRgQW2Az3ASwFo7wqBM2Uq9LcLoOVhGhE/yhjsIfd4gdDk0pqwKTHOSQYO1Zf7Nl/7Th2ykdmkPNntCfq3gBFg==
+fast-xml-parser@5.0.8:
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.0.8.tgz#cb84ca077c0c5c45906051c13c4075ed44d3f271"
+  integrity sha512-qY8NiI5L8ff00F2giyICiJxSSKHO52tC36LJqx2JtvGyAd5ZfehC/l4iUVVHpmpIa6sM9N5mneSLHQG2INGoHA==
   dependencies:
-    strnum "^2.0.4"
+    strnum "^2.0.5"
 
 fastq@^1.6.0:
   version "1.19.0"
@@ -10870,10 +10870,10 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==
 
-strnum@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.0.4.tgz#7b2ace8a55d8c92a41c2d339ddb1bc306f337820"
-  integrity sha512-qrXhLMohxtEPKMlajtNaOp5zvAQUo6L3fNcdiJKzWH98kGfklqGwmxhFjM7DzxsuoVM7rJeiYr+lEcu4Jlu9UQ==
+strnum@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.0.5.tgz#40700b1b5bf956acdc755e98e90005d7657aaaea"
+  integrity sha512-YAT3K/sgpCUxhxNMrrdhtod3jckkpYwH6JAuwmUdXZsmzH1wUyzTMrrK2wYCEEqlKwrWDd35NeuUkbBy/1iK+Q==
 
 strong-log-transformer@2.1.0:
   version "2.1.0"
