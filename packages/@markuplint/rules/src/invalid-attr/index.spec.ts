@@ -1667,4 +1667,46 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 			(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
 		).toStrictEqual([]);
 	});
+
+	test('#2455', async () => {
+		const sourceCode = `<picture>
+  <source src="path/to" media="(query: value)">
+  <source srcset="path/to" media="(query: value)">
+  <source media="(query: value)">
+  <img src="fallback" alt="text">
+</picture>
+<video>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</video>
+<audio>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</audio>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 11,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+			{
+				severity: 'error',
+				line: 9,
+				col: 11,
+				message: 'The "srcset" attribute is disallowed',
+				raw: 'srcset',
+			},
+			{
+				severity: 'error',
+				line: 14,
+				col: 11,
+				message: 'The "srcset" attribute is disallowed',
+				raw: 'srcset',
+			},
+		]);
+	});
 });
