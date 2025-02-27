@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.2](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.1...@markuplint/selector@4.7.2) (2025-02-27)
+
+**Note:** Version bump only for package @markuplint/selector
+
 ## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.0...@markuplint/selector@4.7.1) (2025-02-11)
 
 **Note:** Version bump only for package @markuplint/selector

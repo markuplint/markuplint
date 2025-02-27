@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.17](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.16...@markuplint/create-rule@4.7.17) (2025-02-27)
+
+**Note:** Version bump only for package @markuplint/create-rule
+
 ## [4.7.16](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.15...@markuplint/create-rule@4.7.16) (2025-02-11)
 
 **Note:** Version bump only for package @markuplint/create-rule

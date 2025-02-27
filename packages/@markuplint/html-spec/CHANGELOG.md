@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.13.0...@markuplint/html-spec@4.14.0) (2025-02-27)
+
+### Bug Fixes
+
+- **html-spec:** apply missing flag removal for Invoker Commands API ([98a196d](https://github.com/markuplint/markuplint/commit/98a196d99b6b9e84f46716c760523040b657e98b))
+- **html-spec:** fix required attrs and conditional attrs of the `picture` element ([60f9089](https://github.com/markuplint/markuplint/commit/60f908979238d98950a7141cf74b6925f829283e))
+
+### Features
+
+- **html-spec:** remove experimental flag for Invoker Commands API ([8df79ab](https://github.com/markuplint/markuplint/commit/8df79ab42d2c0a6eb6708ac8a50786aad6f630b6))
+
 # [4.13.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.12.0...@markuplint/html-spec@4.13.0) (2025-02-11)
 
 ### Features
