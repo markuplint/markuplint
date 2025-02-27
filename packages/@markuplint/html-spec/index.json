@@ -40748,9 +40748,11 @@
 				},
 				"src": {
 					"type": "URL",
-					"required": ":is(video, audio) > source"
+					"required": ":is(video, audio) > source",
+					"condition": ":is(video, audio) > source"
 				},
 				"srcset": {
+					"required": "picture > source",
 					"condition": "picture > source"
 				},
 				"type": {
