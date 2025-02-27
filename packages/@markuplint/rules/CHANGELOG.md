@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.10](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.9...@markuplint/rules@4.10.10) (2025-02-27)
+
+### Bug Fixes
+
+- **html-spec:** fix required attrs and conditional attrs of the `picture` element ([60f9089](https://github.com/markuplint/markuplint/commit/60f908979238d98950a7141cf74b6925f829283e))
+
 ## [4.10.9](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.8...@markuplint/rules@4.10.9) (2025-02-11)
 
 **Note:** Version bump only for package @markuplint/rules

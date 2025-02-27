@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.17](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.16...@markuplint/test-tools@4.5.17) (2025-02-27)
+
+**Note:** Version bump only for package @markuplint/test-tools
+
 ## [4.5.16](https://github.com/markuplint/markuplint/compare/@markuplint/test-tools@4.5.15...@markuplint/test-tools@4.5.16) (2025-02-11)
 
 **Note:** Version bump only for package @markuplint/test-tools

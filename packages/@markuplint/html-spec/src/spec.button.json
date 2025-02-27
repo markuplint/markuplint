@@ -34,13 +34,11 @@
 					"missingValueDefault": "unknown"
 				},
 				"ValidCustomCommand"
-			],
-			"experimental": true
+			]
 		},
 		// https://developer.mozilla.org/ja/docs/Web/HTML/Element/button#commandfor
 		"commandfor": {
-			"type": "DOMID",
-			"experimental": true
+			"type": "DOMID"
 		},
 		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
 		"popovertarget": {

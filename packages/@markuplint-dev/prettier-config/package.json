@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint-dev/prettier-config",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"description": "Prettier and config for Markuplint projects",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

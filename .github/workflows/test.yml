@@ -266,7 +266,7 @@ jobs:
               shell: bash
 
             - name: Test
-              uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3
+              uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
               with:
                   timeout_minutes: 20
                   max_attempts: 3
