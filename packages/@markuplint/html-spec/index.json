@@ -36124,12 +36124,10 @@
 							"missingValueDefault": "unknown"
 						},
 						"ValidCustomCommand"
-					],
-					"experimental": true
+					]
 				},
 				"commandfor": {
-					"type": "DOMID",
-					"experimental": true
+					"type": "DOMID"
 				},
 				"disabled": {
 					"description": "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused."
