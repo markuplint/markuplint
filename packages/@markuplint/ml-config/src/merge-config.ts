@@ -8,6 +8,7 @@ import type {
 	OptimizedOverrideConfig,
 	PretenderDetails,
 	Pretender,
+	PluginConfig,
 } from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
@@ -23,30 +24,27 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		...a,
 		...b,
 		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
-		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
+		plugins: overrideOrMergeArray(a.plugins, b.plugins)?.map(plugin => {
 			if (typeof plugin === 'string') {
-				return {
-					name: plugin,
-				};
+				return { name: plugin };
 			}
 			return plugin;
-		}),
+		}) as readonly PluginConfig[] | undefined,
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
-		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
+		excludeFiles: overrideOrMergeArray(a.excludeFiles, b.excludeFiles),
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
-		rules: mergeRules(
-			// TODO: Deep merge
-			a.rules,
-			b.rules,
-		),
-		nodeRules: concatArray(a.nodeRules, b.nodeRules),
-		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
+		rules: mergeRules(a.rules, b.rules),
+		nodeRules: overrideOrMergeArray(a.nodeRules, b.nodeRules),
+		childNodeRules: overrideOrMergeArray(a.childNodeRules, b.childNodeRules),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
-		extends: concatArray(toReadonlyArray(a.extends), toReadonlyArray(b.extends)),
+		extends: overrideOrMergeArray(
+			a.extends == null ? undefined : Array.isArray(a.extends) ? a.extends : [a.extends],
+			b.extends == null ? undefined : Array.isArray(b.extends) ? b.extends : [b.extends],
+		),
 	};
 	if (deleteExtendsProp) {
 		// @ts-ignore
@@ -166,22 +164,21 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	return res;
 }
 
-function concatArray<T extends any>(
+function overrideOrMergeArray<T extends any>(
 	a: Nullable<readonly T[]>,
 	b: Nullable<readonly T[]>,
-	uniquely = false,
+	shouldMerge = false,
 	comparePropName?: string,
 ): readonly T[] | undefined {
-	const newArray: T[] = [];
-	function concat(item: T) {
-		if (!uniquely) {
-			newArray.push(item);
-			return;
-		}
-		if (newArray.includes(item)) {
-			return;
-		}
+	if (!b) {
+		return a ?? undefined;
+	}
+	if (!shouldMerge) {
+		return b;
+	}
 
+	const newArray: T[] = [];
+	function merge(item: T) {
 		if (!comparePropName) {
 			newArray.push(item);
 			return;
@@ -214,9 +211,9 @@ function concatArray<T extends any>(
 	}
 
 	// eslint-disable-next-line unicorn/no-array-for-each
-	a?.forEach(concat);
+	a?.forEach(merge);
 	// eslint-disable-next-line unicorn/no-array-for-each
-	b?.forEach(concat);
+	b?.forEach(merge);
 
 	return newArray.length === 0 ? undefined : newArray;
 }
@@ -273,25 +270,6 @@ function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined 
 	return cleanOptions(rule);
 }
 
-function toReadonlyArray<T>(value: NonNullable<T> | readonly NonNullable<T>[] | undefined): readonly T[] {
-	if (value == null) {
-		return [];
-	}
-
-	return isReadonlyArray(value) ? value : ([value] as const);
-}
-
-/**
- * Checks if a value is a readonly array.
- *
- * If the array is readonly, it passes the type check.
- * However, it saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
- *
- * @param value - The value to check.
- * @returns `true` if the value is a readonly array, `false` otherwise.
- * @template T - The type of elements in the array.
- * @template X - The type of the value if it's not an array.
- */
 function isReadonlyArray<T, X = unknown>(value: readonly T[] | X): value is ReadonlyArray<T> {
 	return Array.isArray(value);
 }
