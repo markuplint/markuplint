@@ -4712,7 +4712,7 @@ feed@^4.2.2:
   dependencies:
     xml-js "^1.6.11"
 
-file-entry-cache@^10.0.5:
+file-entry-cache@^10.0.6:
   version "10.0.6"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-10.0.6.tgz#1fc49c38231b56e792c65222c0aa519d40b5db55"
   integrity sha512-0wvv16mVo9nN0Md3k7DMjgAPKG/TY4F/gYMBVb/wMThFRJvzrpaqBFqF6km9wf8QfYTN+mNg5aeaBLfy8k35uA==
@@ -7771,7 +7771,7 @@ postcss-selector-parser@^6.0.11, postcss-selector-parser@^6.0.16:
     cssesc "^3.0.0"
     util-deprecate "^1.0.2"
 
-postcss-selector-parser@^7.0.0:
+postcss-selector-parser@^7.0.0, postcss-selector-parser@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-7.1.0.tgz#4d6af97eba65d73bc4d84bcb343e865d7dd16262"
   integrity sha512-8sLjZwK0R+JlxlYcTuVnyT2v+htpdrjDOKuMcOVdYjt52Lh8hWRYpxBPoKx/Zg+bcjc3wx6fmQevMmUztS/ccA==
@@ -7816,7 +7816,7 @@ postcss-zindex@^6.0.2:
   resolved "https://registry.yarnpkg.com/postcss-zindex/-/postcss-zindex-6.0.2.tgz#e498304b83a8b165755f53db40e2ea65a99b56e1"
   integrity sha512-5BxW9l1evPB/4ZIc+2GobEBoKC+h8gPGCMi+jxsYvd2x0mjq7wazk6DrP71pStqxE9Foxh5TVnonbWpFZzXaYg==
 
-postcss@^8.4.21, postcss@^8.4.24, postcss@^8.4.26, postcss@^8.4.32, postcss@^8.4.33, postcss@^8.4.38, postcss@^8.5.1:
+postcss@^8.4.21, postcss@^8.4.24, postcss@^8.4.26, postcss@^8.4.32, postcss@^8.4.33, postcss@^8.4.38, postcss@^8.5.3:
   version "8.5.3"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.5.3.tgz#1463b6f1c7fb16fe258736cba29a2de35237eafb"
   integrity sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==
@@ -9142,10 +9142,10 @@ stylelint-order@6.0.4, stylelint-order@^6.0.4:
     postcss "^8.4.32"
     postcss-sorting "^8.0.2"
 
-stylelint@16.14.1:
-  version "16.14.1"
-  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-16.14.1.tgz#32d3df8c5ce7ba0275ce6a4a966b6099d7a828e3"
-  integrity sha512-oqCL7AC3786oTax35T/nuLL8p2C3k/8rHKAooezrPGRvUX0wX+qqs5kMWh5YYT4PHQgVDobHT4tw55WgpYG6Sw==
+stylelint@16.15.0:
+  version "16.15.0"
+  resolved "https://registry.yarnpkg.com/stylelint/-/stylelint-16.15.0.tgz#a561cd50ad468cc4898f5c57cc1f223287fdea59"
+  integrity sha512-OK6Rs7EPdcdmjqiDycadZY4fw3f5/TC1X6/tGjnF3OosbwCeNs7nG+79MCAtjEg7ckwqTJTsku08e0Rmaz5nUw==
   dependencies:
     "@csstools/css-parser-algorithms" "^3.0.4"
     "@csstools/css-tokenizer" "^3.0.3"
@@ -9160,7 +9160,7 @@ stylelint@16.14.1:
     debug "^4.3.7"
     fast-glob "^3.3.3"
     fastest-levenshtein "^1.0.16"
-    file-entry-cache "^10.0.5"
+    file-entry-cache "^10.0.6"
     global-modules "^2.0.0"
     globby "^11.1.0"
     globjoin "^0.1.4"
@@ -9174,14 +9174,14 @@ stylelint@16.14.1:
     micromatch "^4.0.8"
     normalize-path "^3.0.0"
     picocolors "^1.1.1"
-    postcss "^8.5.1"
+    postcss "^8.5.3"
     postcss-resolve-nested-selector "^0.1.6"
     postcss-safe-parser "^7.0.1"
-    postcss-selector-parser "^7.0.0"
+    postcss-selector-parser "^7.1.0"
     postcss-value-parser "^4.2.0"
     resolve-from "^5.0.0"
     string-width "^4.2.3"
-    supports-hyperlinks "^3.1.0"
+    supports-hyperlinks "^3.2.0"
     svg-tags "^1.0.0"
     table "^6.9.0"
     write-file-atomic "^5.0.1"
@@ -9200,7 +9200,7 @@ supports-color@^8.0.0:
   dependencies:
     has-flag "^4.0.0"
 
-supports-hyperlinks@^3.1.0:
+supports-hyperlinks@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/supports-hyperlinks/-/supports-hyperlinks-3.2.0.tgz#b8e485b179681dea496a1e7abdf8985bd3145461"
   integrity sha512-zFObLMyZeEwzAoKCyu1B91U79K2t7ApXuQfo8OuxwXLDgcKxuwM+YvcbIhm6QWqz7mHUH1TVytR1PwVVjEuMig==
