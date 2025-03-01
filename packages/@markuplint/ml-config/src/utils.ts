@@ -1,12 +1,4 @@
-import type {
-	AnyRule,
-	AnyRuleV2,
-	PlainData,
-	PrimitiveScalar,
-	RuleConfig,
-	RuleConfigV2,
-	RuleConfigValue,
-} from './types.js';
+import type { AnyRule, PlainData, PrimitiveScalar, RuleConfig, RuleConfigValue } from './types.js';
 
 // @ts-ignore
 import { isPlainObject } from 'is-plain-object';
@@ -34,10 +26,7 @@ export function provideValue(template: string, data: Readonly<Record<string, str
 	return result;
 }
 
-export function exchangeValueOnRule(
-	rule: AnyRule | AnyRuleV2,
-	data: Readonly<Record<string, string>>,
-): AnyRule | undefined {
+export function exchangeValueOnRule(rule: AnyRule, data: Readonly<Record<string, string>>): AnyRule | undefined {
 	if (isRuleConfigValue(rule)) {
 		return exchangeValue(rule, data);
 	}
@@ -71,9 +60,7 @@ export function exchangeValueOnRule(
 	return result;
 }
 
-export function cleanOptions(
-	rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>,
-): RuleConfig<RuleConfigValue, PlainData> {
+export function cleanOptions(rule: RuleConfig<RuleConfigValue, PlainData>): RuleConfig<RuleConfigValue, PlainData> {
 	const res = {
 		severity: rule.severity,
 		value: rule.value,
@@ -120,7 +107,7 @@ export function deleteUndefProp(obj: any) {
  * @param rule
  * @returns
  */
-function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>) {
+function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData>) {
 	if ('options' in rule && rule.options != null) {
 		return rule.options;
 	}

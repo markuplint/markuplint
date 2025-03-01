@@ -1,7 +1,6 @@
 import type {
 	Config,
 	AnyRule,
-	AnyRuleV2,
 	Rules,
 	OptimizedConfig,
 	OverrideConfig,
@@ -52,7 +51,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	return config;
 }
 
-export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRuleV2): AnyRule {
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const oA = optimizeRule(a);
 	const oB = optimizeRule(b);
 
@@ -269,7 +268,7 @@ function optimizeRules(rules: Rules) {
 	return res;
 }
 
-function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined {
+function optimizeRule(rule: Nullable<AnyRule>): AnyRule | undefined {
 	if (rule === undefined) {
 		return;
 	}
