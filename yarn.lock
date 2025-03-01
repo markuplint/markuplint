@@ -11500,7 +11500,21 @@ textlint-rule-preset-japanese@10.0.4:
     textlint-rule-no-zero-width-spaces "^1.0.1"
     textlint-rule-sentence-length "^5.0.0"
 
-textlint-rule-preset-jtf-style@3.0.1, textlint-rule-preset-jtf-style@^3.0.1:
+textlint-rule-preset-jtf-style@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/textlint-rule-preset-jtf-style/-/textlint-rule-preset-jtf-style-3.0.2.tgz#52bb9365d342140c61109907d92f53f106654744"
+  integrity sha512-rpB1OCIK4KZqZOnM+vVxDCBkgzDH3XINCRiHQ+gV8SRydtfppPWx9WAoxCvq8lm7YuRdGiFU6XartIix2Fc2kA==
+  dependencies:
+    analyze-desumasu-dearu "^2.1.2"
+    japanese-numerals-to-number "^1.0.2"
+    match-index "^1.0.3"
+    moji "^0.5.1"
+    regexp.prototype.flags "^1.5.3"
+    regx "^1.0.4"
+    textlint-rule-helper "^2.3.1"
+    textlint-rule-prh "^6.0.0"
+
+textlint-rule-preset-jtf-style@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/textlint-rule-preset-jtf-style/-/textlint-rule-preset-jtf-style-3.0.1.tgz#c388f0efff4d2fd83ecfbe3cf43afe47663e5fb6"
   integrity sha512-61lRomNUWeOmL2dt+sTdqPUx2FRxXK+8sgVGC6OJrifj3taJZx1QoJucIeVrcPRNRxD1sqXFXM0s+o5W3Nb8lg==
