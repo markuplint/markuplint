@@ -12,6 +12,7 @@
 | [rules](https://markuplint.dev/configuration#rules)                           | Object                 | †1                       | -               |
 | [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array                  | Override                 | -               |
 | [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array                  | Override                 | -               |
+| [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object                 | †3                       | -               |
 
 ## †1 Merge Rules
 
@@ -29,3 +30,10 @@
 | severity | Enum   | Merge(Overwrite)                               |
 | option   | Object | Deep Merge(**An array is replaced, no added**) |
 | reason   | String | Merge(Overwrite)                               |
+
+## †3 Merge Pretenders
+
+| options | Type  | Merging  |
+| ------- | ----- | -------- |
+| files   | Array | Override |
+| data    | Array | Add      |

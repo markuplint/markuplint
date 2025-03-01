@@ -13,8 +13,6 @@ import type {
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import deepmerge from 'deepmerge';
-
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
 export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
@@ -109,9 +107,20 @@ function mergePretenders(
 	}
 	const aDetails = a ? convertPretenersToDetails(a) : undefined;
 	const bDetails = b ? convertPretenersToDetails(b) : undefined;
-	const details = mergeObject(aDetails, bDetails) ?? {};
-	deleteUndefProp(details);
-	return details;
+	if (!aDetails) {
+		return bDetails;
+	}
+	if (!bDetails) {
+		return aDetails;
+	}
+	const result = {} as Writable<PretenderDetails>;
+	if (bDetails.files || aDetails.files) {
+		result.files = bDetails.files ?? aDetails.files;
+	}
+	if (bDetails.data || aDetails.data) {
+		result.data = [...(aDetails.data ?? []), ...(bDetails.data ?? [])];
+	}
+	return result;
 }
 
 function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
@@ -159,7 +168,7 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (b == null) {
 		return a ?? undefined;
 	}
-	const res = deepmerge<T>(a, b);
+	const res = { ...a, ...b };
 	deleteUndefProp(res);
 	return res;
 }
