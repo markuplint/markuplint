@@ -167,7 +167,6 @@ function overrideOrMergeArray<T extends any>(
 	a: Nullable<readonly T[]>,
 	b: Nullable<readonly T[]>,
 	shouldMerge = false,
-	comparePropName?: string,
 ): readonly T[] | undefined {
 	if (!b) {
 		return a ?? undefined;
@@ -175,59 +174,7 @@ function overrideOrMergeArray<T extends any>(
 	if (!shouldMerge) {
 		return b;
 	}
-
-	const newArray: T[] = [];
-	function merge(item: T) {
-		if (!comparePropName) {
-			newArray.push(item);
-			return;
-		}
-
-		const name = getName(item, comparePropName);
-		if (!name) {
-			newArray.push(item);
-			return;
-		}
-
-		const existedIndex = newArray.findIndex(e => getName(e, comparePropName) === name);
-		if (existedIndex === -1) {
-			newArray.push(item);
-			return;
-		}
-
-		if (typeof item === 'string') {
-			return;
-		}
-
-		const existed = newArray[existedIndex];
-		const merged = mergeObject(existed, item);
-		if (!merged) {
-			newArray.push(item);
-			return;
-		}
-
-		newArray.splice(existedIndex, 1, merged);
-	}
-
-	// eslint-disable-next-line unicorn/no-array-for-each
-	a?.forEach(merge);
-	// eslint-disable-next-line unicorn/no-array-for-each
-	b?.forEach(merge);
-
-	return newArray.length === 0 ? undefined : newArray;
-}
-
-function getName(item: any, comparePropName: string) {
-	if (item == null) {
-		return null;
-	}
-	if (typeof item === 'string') {
-		return item;
-	}
-	if (typeof item === 'object' && item && comparePropName in item && typeof item[comparePropName] === 'string') {
-		return item[comparePropName];
-	}
-	return null;
+	return [...(a ?? []), ...(b ?? [])];
 }
 
 function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
