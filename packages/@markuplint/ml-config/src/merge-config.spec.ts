@@ -381,6 +381,44 @@ describe('mergeRule', () => {
 			options: {},
 		});
 	});
+
+	test('array + array should override', () => {
+		expect(mergeRule(['a', 'b'], ['c', 'd'])).toStrictEqual({
+			value: ['c', 'd'],
+		});
+	});
+
+	test('array + object should override', () => {
+		expect(
+			mergeRule(['a', 'b'], {
+				value: ['c', 'd'],
+				options: {
+					foo: 'bar',
+				},
+			}),
+		).toStrictEqual({
+			value: ['c', 'd'],
+			options: {
+				foo: 'bar',
+			},
+		});
+	});
+
+	test('object + array should override', () => {
+		expect(
+			mergeRule(
+				{
+					value: ['a', 'b'],
+					options: {
+						foo: 'bar',
+					},
+				},
+				['c', 'd'],
+			),
+		).toStrictEqual({
+			value: ['c', 'd'],
+		});
+	});
 });
 
 describe('Preteners', () => {

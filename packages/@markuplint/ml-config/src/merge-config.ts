@@ -63,7 +63,7 @@ export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	}
 
 	if (oA === undefined) {
-		return oB ?? {};
+		return isRuleConfigValue(oB) ? { value: oB } : (oB ?? {});
 	}
 
 	if (oB === undefined) {
@@ -71,16 +71,7 @@ export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	}
 
 	if (isRuleConfigValue(oB)) {
-		if (isRuleConfigValue(oA)) {
-			if (Array.isArray(oA) && Array.isArray(oB)) {
-				return [...oA, ...oB];
-			}
-			return oB;
-		}
-		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
-		const res = cleanOptions({ ...oA, value });
-		deleteUndefProp(res);
-		return res;
+		return { value: oB };
 	}
 
 	const severity = oB.severity ?? (isRuleConfigValue(oA) ? undefined : oA.severity);
