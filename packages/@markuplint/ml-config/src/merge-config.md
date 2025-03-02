@@ -12,26 +12,9 @@
 | [rules](https://markuplint.dev/configuration#rules)                           | Object | Shallow Merge      | -               |
 | [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array  | Append             | -               |
 | [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array  | Append             | -               |
-| [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object | †3                 | -               |
+| [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object | †1                 | -               |
 
-## †1 Rule Details Merge Behavior
-
-| Property | Type   | Behavior      |
-| -------- | ------ | ------------- |
-| value    | †2     | †2            |
-| severity | Enum   | Override      |
-| options  | Object | Shallow Merge |
-| reason   | String | Override      |
-
-## †2 Rule Value Merge Behavior
-
-| Value Type                | Behavior |
-| ------------------------- | -------- |
-| String / Number / Boolean | Override |
-| Array                     | Append   |
-| null                      | Override |
-
-## †3 Pretenders Merge Behavior
+## †1 Pretenders Merge Behavior
 
 | Property | Type  | Behavior |
 | -------- | ----- | -------- |
