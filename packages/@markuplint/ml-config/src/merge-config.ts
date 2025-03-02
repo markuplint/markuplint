@@ -33,9 +33,9 @@ import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	const deleteExtendsProp = !!b;
 	b = b ?? {};
-	const config: OptimizedConfig = {
-		...a,
-		...b,
+
+	// Object to store merged configuration
+	const config: Writable<Partial<OptimizedConfig>> = {
 		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
 		plugins: overrideOrMergeArray(a.plugins, b.plugins)?.map(plugin => {
 			if (typeof plugin === 'string') {
@@ -54,17 +54,16 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		childNodeRules: overrideOrMergeArray(a.childNodeRules, b.childNodeRules, true),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
-		extends: overrideOrMergeArray(
-			a.extends == null ? undefined : Array.isArray(a.extends) ? a.extends : [a.extends],
-			b.extends == null ? undefined : Array.isArray(b.extends) ? b.extends : [b.extends],
-		),
+		extends: deleteExtendsProp
+			? undefined
+			: overrideOrMergeArray(
+					a.extends == null ? undefined : Array.isArray(a.extends) ? a.extends : [a.extends],
+					b.extends == null ? undefined : Array.isArray(b.extends) ? b.extends : [b.extends],
+				),
 	};
-	if (deleteExtendsProp) {
-		// @ts-ignore
-		delete config.extends;
-	}
+
 	deleteUndefProp(config);
-	return config;
+	return Object.freeze(config) as OptimizedConfig;
 }
 
 /**
@@ -136,14 +135,18 @@ function mergePretenders(
 	if (!a && !b) {
 		return;
 	}
-	const aDetails = a ? convertPretenersToDetails(a) : undefined;
-	const bDetails = b ? convertPretenersToDetails(b) : undefined;
+
+	// Convert array format to object format
+	const aDetails = a && (isReadonlyArray(a) ? { data: a } : a);
+	const bDetails = b && (isReadonlyArray(b) ? { data: b } : b);
+
 	if (!aDetails) {
 		return bDetails;
 	}
 	if (!bDetails) {
 		return aDetails;
 	}
+
 	const result = {} as Writable<PretenderDetails>;
 	if (bDetails.files || aDetails.files) {
 		result.files = bDetails.files ?? aDetails.files;
@@ -152,22 +155,6 @@ function mergePretenders(
 		result.data = [...(aDetails.data ?? []), ...(bDetails.data ?? [])];
 	}
 	return result;
-}
-
-/**
- * Converts a pretender configuration to PretenderDetails format.
- * Ensures consistent object structure regardless of input format.
- *
- * @param pretenders - The pretender configuration in array or object format
- * @returns The standardized PretenderDetails format
- */
-function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
-	if (isReadonlyArray(pretenders)) {
-		return {
-			data: pretenders,
-		};
-	}
-	return pretenders;
 }
 
 /**
@@ -211,6 +198,26 @@ function mergeOverrides(
 }
 
 /**
+ * Handles null/undefined values in merge operations.
+ * Returns undefined if both values are null/undefined,
+ * otherwise returns the non-null value or the result of the merge function.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @param merge - Function to merge non-null values
+ * @returns Merged result or undefined
+ */
+function mergeNullable<T>(a: Nullable<T>, b: Nullable<T>, merge: (a: T, b: T) => T): T | undefined {
+	if (a == null) {
+		return b ?? undefined;
+	}
+	if (b == null) {
+		return a;
+	}
+	return merge(a, b);
+}
+
+/**
  * Simple object merge function with null/undefined handling:
  * - Returns undefined if both inputs are null/undefined
  * - Uses right-side (b) with fallback to left-side (a)
@@ -223,15 +230,11 @@ function mergeOverrides(
  * @returns The merged object or undefined
  */
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
-	if (a == null) {
-		return b ?? undefined;
-	}
-	if (b == null) {
-		return a ?? undefined;
-	}
-	const res = { ...a, ...b };
-	deleteUndefProp(res);
-	return res;
+	return mergeNullable(a, b, (a, b) => {
+		const res = { ...a, ...b };
+		deleteUndefProp(res);
+		return res;
+	});
 }
 
 /**
@@ -255,13 +258,18 @@ function overrideOrMergeArray<T extends any>(
 	b: Nullable<readonly T[]>,
 	shouldMerge = false,
 ): readonly T[] | undefined {
-	if (!b) {
-		return a ?? undefined;
-	}
+	// Skip mergeNullable for override mode (special behavior)
 	if (!shouldMerge) {
-		return b;
+		if (!b) {
+			const result = a ?? undefined;
+			return result && result.length > 0 ? result : undefined;
+		}
+		return b.length > 0 ? b : undefined;
 	}
-	return [...(a ?? []), ...(b ?? [])];
+
+	// Use mergeNullable for merge mode
+	const result = mergeNullable(a ?? [], b ?? [], (a, b) => [...a, ...b]);
+	return result && result.length > 0 ? result : undefined;
 }
 
 /**
