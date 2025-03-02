@@ -1,62 +1,87 @@
 import type {
 	Config,
 	AnyRule,
-	AnyRuleV2,
 	Rules,
 	OptimizedConfig,
 	OverrideConfig,
 	OptimizedOverrideConfig,
 	PretenderDetails,
 	Pretender,
+	PluginConfig,
 } from './types.js';
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import deepmerge from 'deepmerge';
-
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
+/**
+ * Merges two configurations, applying specific merge strategies for each property:
+ * - Objects (parser, specs, etc.): Merged using mergeObject
+ * - Arrays (plugins, excludeFiles): Override or merge based on context
+ * - Rules: Special handling through mergeRules
+ * - Overrides: Recursive merging through mergeOverrides
+ *
+ * Special behaviors:
+ * - Removes extends property when b is provided
+ * - Converts string plugin names to {name} objects
+ * - nodeRules and childNodeRules always merge (not override)
+ *
+ * @param a - The base configuration
+ * @param b - The overriding configuration
+ * @returns The optimized merged configuration
+ */
 export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	const deleteExtendsProp = !!b;
 	b = b ?? {};
-	const config: OptimizedConfig = {
-		...a,
-		...b,
+
+	// Object to store merged configuration
+	const config: Writable<Partial<OptimizedConfig>> = {
 		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
-		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
+		plugins: overrideArray(a.plugins, b.plugins)?.map(plugin => {
 			if (typeof plugin === 'string') {
-				return {
-					name: plugin,
-				};
+				return { name: plugin };
 			}
 			return plugin;
-		}),
+		}) as readonly PluginConfig[] | undefined,
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
-		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
+		excludeFiles: overrideArray(a.excludeFiles, b.excludeFiles),
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
-		rules: mergeRules(
-			// TODO: Deep merge
-			a.rules,
-			b.rules,
-		),
-		nodeRules: concatArray(a.nodeRules, b.nodeRules),
-		childNodeRules: concatArray(a.childNodeRules, b.childNodeRules),
+		rules: mergeRules(a.rules, b.rules),
+		nodeRules: mergeArrays(a.nodeRules, b.nodeRules),
+		childNodeRules: mergeArrays(a.childNodeRules, b.childNodeRules),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
-		extends: concatArray(toReadonlyArray(a.extends), toReadonlyArray(b.extends)),
+		extends: deleteExtendsProp
+			? undefined
+			: overrideArray(
+					a.extends == null ? undefined : Array.isArray(a.extends) ? a.extends : [a.extends],
+					b.extends == null ? undefined : Array.isArray(b.extends) ? b.extends : [b.extends],
+				),
 	};
-	if (deleteExtendsProp) {
-		// @ts-ignore
-		delete config.extends;
-	}
+
 	deleteUndefProp(config);
-	return config;
+	return Object.freeze(config) as OptimizedConfig;
 }
 
-export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRuleV2): AnyRule {
+/**
+ * Merges two rule configurations with specific merging behavior:
+ * 1. If right-side (b) is false or has value:false, returns false (rule disabled)
+ * 2. Handles undefined cases:
+ *    - If left-side (a) is undefined, wraps primitive right-side in {value}
+ *    - If right-side (b) is undefined, returns left-side as is
+ * 3. For object configurations:
+ *    - Merges severity, value, options, and reason
+ *    - Right-side values take precedence
+ *    - Removes undefined properties
+ *
+ * @param a - The base rule configuration
+ * @param b - The overriding rule configuration
+ * @returns The merged rule configuration
+ */
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const oA = optimizeRule(a);
 	const oB = optimizeRule(b);
 
@@ -68,7 +93,7 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	}
 
 	if (oA === undefined) {
-		return oB ?? {};
+		return isRuleConfigValue(oB) ? { value: oB } : (oB ?? {});
 	}
 
 	if (oB === undefined) {
@@ -76,16 +101,7 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	}
 
 	if (isRuleConfigValue(oB)) {
-		if (isRuleConfigValue(oA)) {
-			if (Array.isArray(oA) && Array.isArray(oB)) {
-				return [...oA, ...oB];
-			}
-			return oB;
-		}
-		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
-		const res = cleanOptions({ ...oA, value });
-		deleteUndefProp(res);
-		return res;
+		return { value: oB };
 	}
 
 	const severity = oB.severity ?? (isRuleConfigValue(oA) ? undefined : oA.severity);
@@ -102,6 +118,16 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 	return res;
 }
 
+/**
+ * Merges pretender configurations with special handling for array and object formats:
+ * - Converts array format to {data: array} format
+ * - Files property: Uses right-side value with fallback to left-side
+ * - Data arrays: Concatenates both sides' data arrays
+ *
+ * @param a - The base pretender configuration
+ * @param b - The overriding pretender configuration
+ * @returns The merged pretender details
+ */
 function mergePretenders(
 	a?: readonly Pretender[] | PretenderDetails,
 	b?: readonly Pretender[] | PretenderDetails,
@@ -109,22 +135,39 @@ function mergePretenders(
 	if (!a && !b) {
 		return;
 	}
-	const aDetails = a ? convertPretenersToDetails(a) : undefined;
-	const bDetails = b ? convertPretenersToDetails(b) : undefined;
-	const details = mergeObject(aDetails, bDetails) ?? {};
-	deleteUndefProp(details);
-	return details;
-}
 
-function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
-	if (isReadonlyArray(pretenders)) {
-		return {
-			data: pretenders,
-		};
+	// Convert array format to object format
+	const aDetails = a && (isReadonlyArray(a) ? { data: a } : a);
+	const bDetails = b && (isReadonlyArray(b) ? { data: b } : b);
+
+	if (!aDetails) {
+		return bDetails;
 	}
-	return pretenders;
+	if (!bDetails) {
+		return aDetails;
+	}
+
+	const result = {} as Writable<PretenderDetails>;
+	if (bDetails.files || aDetails.files) {
+		result.files = bDetails.files ?? aDetails.files;
+	}
+	if (bDetails.data || aDetails.data) {
+		result.data = [...(aDetails.data ?? []), ...(bDetails.data ?? [])];
+	}
+	return result;
 }
 
+/**
+ * Merges override configurations by key, with special cleanup:
+ * 1. Collects all keys from both configurations
+ * 2. Merges each key's config using mergeConfig
+ * 3. Removes special properties ($schema, extends, overrides)
+ * 4. Returns undefined if no overrides exist
+ *
+ * @param a - The base override configurations
+ * @param b - The overriding override configurations
+ * @returns The merged override configurations or undefined if empty
+ */
 function mergeOverrides(
 	a: Record<string, OverrideConfig> = {},
 	b: Record<string, OverrideConfig> = {},
@@ -154,86 +197,90 @@ function mergeOverrides(
 	return result;
 }
 
-function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
+/**
+ * Handles null/undefined values in merge operations.
+ * Returns undefined if both values are null/undefined,
+ * otherwise returns the non-null value or the result of the merge function.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @param merge - Function to merge non-null values
+ * @returns Merged result or undefined
+ */
+function mergeNullable<T>(a: Nullable<T>, b: Nullable<T>, merge: (a: T, b: T) => T): T | undefined {
 	if (a == null) {
 		return b ?? undefined;
 	}
 	if (b == null) {
-		return a ?? undefined;
+		return a;
 	}
-	const res = deepmerge<T>(a, b);
-	deleteUndefProp(res);
-	return res;
+	return merge(a, b);
 }
 
-function concatArray<T extends any>(
-	a: Nullable<readonly T[]>,
-	b: Nullable<readonly T[]>,
-	uniquely = false,
-	comparePropName?: string,
-): readonly T[] | undefined {
-	const newArray: T[] = [];
-	function concat(item: T) {
-		if (!uniquely) {
-			newArray.push(item);
-			return;
-		}
-		if (newArray.includes(item)) {
-			return;
-		}
-
-		if (!comparePropName) {
-			newArray.push(item);
-			return;
-		}
-
-		const name = getName(item, comparePropName);
-		if (!name) {
-			newArray.push(item);
-			return;
-		}
-
-		const existedIndex = newArray.findIndex(e => getName(e, comparePropName) === name);
-		if (existedIndex === -1) {
-			newArray.push(item);
-			return;
-		}
-
-		if (typeof item === 'string') {
-			return;
-		}
-
-		const existed = newArray[existedIndex];
-		const merged = mergeObject(existed, item);
-		if (!merged) {
-			newArray.push(item);
-			return;
-		}
-
-		newArray.splice(existedIndex, 1, merged);
-	}
-
-	// eslint-disable-next-line unicorn/no-array-for-each
-	a?.forEach(concat);
-	// eslint-disable-next-line unicorn/no-array-for-each
-	b?.forEach(concat);
-
-	return newArray.length === 0 ? undefined : newArray;
+/**
+ * Simple object merge function with null/undefined handling:
+ * - Returns undefined if both inputs are null/undefined
+ * - Uses right-side (b) with fallback to left-side (a)
+ * - Removes undefined properties from result
+ *
+ * Used for simple object properties like parser, specs, severity, etc.
+ *
+ * @param a - The base object
+ * @param b - The overriding object
+ * @returns The merged object or undefined
+ */
+function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
+	return mergeNullable(a, b, (a, b) => {
+		const res = { ...a, ...b };
+		deleteUndefProp(res);
+		return res;
+	});
 }
 
-function getName(item: any, comparePropName: string) {
-	if (item == null) {
-		return null;
+/**
+ * Handles array overriding with null/undefined handling:
+ * - If right-side exists, it completely replaces left-side
+ * - If right-side is null/undefined, returns left-side
+ * - Empty arrays are converted to undefined
+ *
+ * @param a - The base array
+ * @param b - The overriding array
+ * @returns The resulting array or undefined if empty
+ */
+function overrideArray<T extends any>(a: Nullable<readonly T[]>, b: Nullable<readonly T[]>): readonly T[] | undefined {
+	if (!b) {
+		const result = a ?? undefined;
+		return result && result.length > 0 ? result : undefined;
 	}
-	if (typeof item === 'string') {
-		return item;
-	}
-	if (typeof item === 'object' && item && comparePropName in item && typeof item[comparePropName] === 'string') {
-		return item[comparePropName];
-	}
-	return null;
+	return b.length > 0 ? b : undefined;
 }
 
+/**
+ * Merges two arrays by concatenation:
+ * - Concatenates both arrays, preserving order
+ * - Handles null/undefined by treating them as empty arrays
+ * - Empty arrays are converted to undefined
+ *
+ * @param a - The base array
+ * @param b - The array to append
+ * @returns The merged array or undefined if empty
+ */
+function mergeArrays<T extends any>(a: Nullable<readonly T[]>, b: Nullable<readonly T[]>): readonly T[] | undefined {
+	const result = mergeNullable(a ?? [], b ?? [], (a, b) => [...a, ...b]);
+	return result && result.length > 0 ? result : undefined;
+}
+
+/**
+ * Merges two rule sets with optimization:
+ * 1. Handles null cases by optimizing the non-null set
+ * 2. Merges rules by key using mergeRule
+ * 3. Removes undefined results
+ * 4. Freezes the final result for immutability
+ *
+ * @param a - The base rules
+ * @param b - The overriding rules
+ * @returns The merged and frozen rules object
+ */
 function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	if (a == null) {
 		return b && optimizeRules(b);
@@ -252,6 +299,16 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	return Object.freeze(res);
 }
 
+/**
+ * Processes and optimizes a collection of rules by applying optimizeRule to each rule.
+ * This function is essential for maintaining rule configuration consistency by:
+ * 1. Handling each rule individually through optimizeRule
+ * 2. Removing null/undefined rules from the final output
+ * 3. Preserving only valid and properly formatted rule configurations
+ *
+ * @param rules - The rules object to be optimized
+ * @returns A new rules object with all rules properly optimized
+ */
 function optimizeRules(rules: Rules) {
 	const res: Writable<Rules> = {};
 	for (const [key, rule] of Object.entries(rules)) {
@@ -263,7 +320,17 @@ function optimizeRules(rules: Rules) {
 	return res;
 }
 
-function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined {
+/**
+ * Optimizes a rule configuration by applying specific type handling:
+ * 1. Returns undefined for undefined values
+ * 2. Preserves primitive values (string, number, boolean) and arrays as is
+ * 3. Applies cleanOptions only to object-type configurations
+ *
+ * This order of operations is crucial for proper type handling and
+ * ensures that primitive rule values are not incorrectly processed
+ * through cleanOptions.
+ */
+function optimizeRule(rule: Nullable<AnyRule>): AnyRule | undefined {
 	if (rule === undefined) {
 		return;
 	}
@@ -273,24 +340,14 @@ function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined 
 	return cleanOptions(rule);
 }
 
-function toReadonlyArray<T>(value: NonNullable<T> | readonly NonNullable<T>[] | undefined): readonly T[] {
-	if (value == null) {
-		return [];
-	}
-
-	return isReadonlyArray(value) ? value : ([value] as const);
-}
-
 /**
- * Checks if a value is a readonly array.
+ * Type guard function that checks if a value is a readonly array.
+ * This function is crucial for type safety when handling configuration arrays,
+ * particularly in pretender configurations where we need to distinguish
+ * between array-based and object-based configurations.
  *
- * If the array is readonly, it passes the type check.
- * However, it saves the type because using ESLint warns `@typescript-eslint/prefer-readonly-parameter-types`.
- *
- * @param value - The value to check.
- * @returns `true` if the value is a readonly array, `false` otherwise.
- * @template T - The type of elements in the array.
- * @template X - The type of the value if it's not an array.
+ * @param value - The value to check
+ * @returns True if the value is a readonly array, false otherwise
  */
 function isReadonlyArray<T, X = unknown>(value: readonly T[] | X): value is ReadonlyArray<T> {
 	return Array.isArray(value);
