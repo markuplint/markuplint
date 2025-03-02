@@ -10,8 +10,8 @@
 | [extends](https://markuplint.dev/configuration#extends)                       | Array  | Remove After Merge | ✓               |
 | [excludeFiles](https://markuplint.dev/configuration#excludeFiles)             | Array  | Override           | ✓               |
 | [rules](https://markuplint.dev/configuration#rules)                           | Object | †1                 | -               |
-| [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array  | Override           | -               |
-| [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array  | Override           | -               |
+| [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array  | Append             | -               |
+| [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array  | Append             | -               |
 | [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object | †3                 | -               |
 
 ## †1 Rules Merge Behavior

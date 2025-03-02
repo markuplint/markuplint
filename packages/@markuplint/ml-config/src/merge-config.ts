@@ -34,8 +34,8 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(a.rules, b.rules),
-		nodeRules: overrideOrMergeArray(a.nodeRules, b.nodeRules),
-		childNodeRules: overrideOrMergeArray(a.childNodeRules, b.childNodeRules),
+		nodeRules: overrideOrMergeArray(a.nodeRules, b.nodeRules, true),
+		childNodeRules: overrideOrMergeArray(a.childNodeRules, b.childNodeRules, true),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
 		extends: overrideOrMergeArray(

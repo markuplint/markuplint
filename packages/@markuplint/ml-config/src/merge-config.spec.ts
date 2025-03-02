@@ -220,6 +220,78 @@ describe('mergeConfig', () => {
 			},
 		});
 	});
+
+	test('nodeRules + nodeRules should append', () => {
+		expect(
+			mergeConfig(
+				{
+					nodeRules: [
+						{
+							selector: 'div',
+							rules: { rule1: true },
+						},
+					],
+				},
+				{
+					nodeRules: [
+						{
+							selector: 'span',
+							rules: { rule2: true },
+						},
+					],
+				},
+			),
+		).toStrictEqual({
+			nodeRules: [
+				{
+					selector: 'div',
+					rules: { rule1: true },
+				},
+				{
+					selector: 'span',
+					rules: { rule2: true },
+				},
+			],
+		});
+	});
+
+	test('childNodeRules + childNodeRules should append', () => {
+		expect(
+			mergeConfig(
+				{
+					childNodeRules: [
+						{
+							selector: 'div',
+							inheritance: true,
+							rules: { rule1: true },
+						},
+					],
+				},
+				{
+					childNodeRules: [
+						{
+							selector: 'span',
+							inheritance: false,
+							rules: { rule2: true },
+						},
+					],
+				},
+			),
+		).toStrictEqual({
+			childNodeRules: [
+				{
+					selector: 'div',
+					inheritance: true,
+					rules: { rule1: true },
+				},
+				{
+					selector: 'span',
+					inheritance: false,
+					rules: { rule2: true },
+				},
+			],
+		});
+	});
 });
 
 describe('mergeRule', () => {
