@@ -37,7 +37,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 	// Object to store merged configuration
 	const config: Writable<Partial<OptimizedConfig>> = {
 		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
-		plugins: overrideOrMergeArray(a.plugins, b.plugins)?.map(plugin => {
+		plugins: overrideArray(a.plugins, b.plugins)?.map(plugin => {
 			if (typeof plugin === 'string') {
 				return { name: plugin };
 			}
@@ -46,17 +46,17 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
-		excludeFiles: overrideOrMergeArray(a.excludeFiles, b.excludeFiles),
+		excludeFiles: overrideArray(a.excludeFiles, b.excludeFiles),
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(a.rules, b.rules),
-		nodeRules: overrideOrMergeArray(a.nodeRules, b.nodeRules, true),
-		childNodeRules: overrideOrMergeArray(a.childNodeRules, b.childNodeRules, true),
+		nodeRules: mergeArrays(a.nodeRules, b.nodeRules),
+		childNodeRules: mergeArrays(a.childNodeRules, b.childNodeRules),
 		overrideMode: b.overrideMode ?? a.overrideMode,
 		overrides: mergeOverrides(a.overrides, b.overrides),
 		extends: deleteExtendsProp
 			? undefined
-			: overrideOrMergeArray(
+			: overrideArray(
 					a.extends == null ? undefined : Array.isArray(a.extends) ? a.extends : [a.extends],
 					b.extends == null ? undefined : Array.isArray(b.extends) ? b.extends : [b.extends],
 				),
@@ -238,36 +238,34 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 }
 
 /**
- * Handles array merging with two distinct behaviors based on shouldMerge flag:
- * 1. Override mode (default, shouldMerge=false):
- *    - If right-side exists, it completely replaces left-side
- *    - If right-side is null/undefined, returns left-side
- * 2. Merge mode (shouldMerge=true):
- *    - Concatenates both arrays, preserving order
- *    - Handles null/undefined by treating them as empty arrays
- *
- * Used for various config arrays like plugins, excludeFiles, nodeRules, etc.
+ * Handles array overriding with null/undefined handling:
+ * - If right-side exists, it completely replaces left-side
+ * - If right-side is null/undefined, returns left-side
+ * - Empty arrays are converted to undefined
  *
  * @param a - The base array
  * @param b - The overriding array
- * @param shouldMerge - Whether to merge arrays instead of overriding
- * @returns The resulting array or undefined if both inputs are null/undefined
+ * @returns The resulting array or undefined if empty
  */
-function overrideOrMergeArray<T extends any>(
-	a: Nullable<readonly T[]>,
-	b: Nullable<readonly T[]>,
-	shouldMerge = false,
-): readonly T[] | undefined {
-	// Skip mergeNullable for override mode (special behavior)
-	if (!shouldMerge) {
-		if (!b) {
-			const result = a ?? undefined;
-			return result && result.length > 0 ? result : undefined;
-		}
-		return b.length > 0 ? b : undefined;
+function overrideArray<T extends any>(a: Nullable<readonly T[]>, b: Nullable<readonly T[]>): readonly T[] | undefined {
+	if (!b) {
+		const result = a ?? undefined;
+		return result && result.length > 0 ? result : undefined;
 	}
+	return b.length > 0 ? b : undefined;
+}
 
-	// Use mergeNullable for merge mode
+/**
+ * Merges two arrays by concatenation:
+ * - Concatenates both arrays, preserving order
+ * - Handles null/undefined by treating them as empty arrays
+ * - Empty arrays are converted to undefined
+ *
+ * @param a - The base array
+ * @param b - The array to append
+ * @returns The merged array or undefined if empty
+ */
+function mergeArrays<T extends any>(a: Nullable<readonly T[]>, b: Nullable<readonly T[]>): readonly T[] | undefined {
 	const result = mergeNullable(a ?? [], b ?? [], (a, b) => [...a, ...b]);
 	return result && result.length > 0 ? result : undefined;
 }
