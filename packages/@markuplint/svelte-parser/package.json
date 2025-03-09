@@ -33,6 +33,6 @@
 		"@markuplint/html-parser": "4.6.17",
 		"@markuplint/ml-ast": "4.4.9",
 		"@markuplint/parser-utils": "4.8.5",
-		"svelte": "5.20.5"
+		"svelte": "5.22.6"
 	}
 }
