@@ -14,7 +14,7 @@ export default createRule<Value>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			const classPatterns = toNoEmptyStringArrayFromStringOrArray(el.rule.value).filter(
-				className => className && typeof className === 'string',
+				className => !!className && typeof className === 'string',
 			);
 			const attrs = el.getAttributeToken('class');
 			for (const attr of attrs) {
