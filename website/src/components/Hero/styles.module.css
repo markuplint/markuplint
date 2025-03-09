@@ -45,14 +45,14 @@
   z-index: -1;
   width: calc(100% + var(--line-width) * 2);
   height: 100%;
+  outline: var(--ml-blue-lightest) solid var(--line-width);
+  outline-offset: calc(var(--line-width) * -1);
   content: '';
   background:
     url('/img/obj-hero-bg-left.svg') no-repeat bottom left var(--line-width),
     url('/img/obj-hero-bg-right.svg#r') no-repeat top right var(--line-width);
   background-color: var(--ifm-color-content-inverse);
   border-radius: min(50%, 30em) 0;
-  outline: var(--ml-blue-lightest) solid var(--line-width);
-  outline-offset: calc(var(--line-width) * -1);
 }
 
 [data-theme='dark'] .hero::after {
