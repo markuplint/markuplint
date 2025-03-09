@@ -32,6 +32,6 @@
 		"@markuplint/parser-utils": "4.8.5",
 		"glob": "11.0.1",
 		"meow": "13.2.0",
-		"typescript": "5.7.3"
+		"typescript": "5.8.2"
 	}
 }
