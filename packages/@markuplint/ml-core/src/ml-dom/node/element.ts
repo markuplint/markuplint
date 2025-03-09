@@ -491,6 +491,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaRelevant(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaRelevant" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaRoleDescription(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaRoleDescription" property');
 	}
