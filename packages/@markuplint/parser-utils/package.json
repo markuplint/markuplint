@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/parser-utils",
-	"version": "4.8.5",
+	"version": "4.8.6",
 	"description": "Utility module for markuplint parser plugin",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -30,15 +30,15 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.9",
-		"@markuplint/ml-spec": "4.9.4",
-		"@markuplint/types": "4.7.4",
+		"@markuplint/ml-spec": "4.9.5",
+		"@markuplint/types": "4.7.5",
 		"@types/uuid": "10.0.0",
 		"debug": "4.4.0",
 		"espree": "10.3.0",
-		"type-fest": "4.35.0",
+		"type-fest": "4.37.0",
 		"uuid": "11.1.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.24.0"
+		"@typescript-eslint/typescript-estree": "8.26.0"
 	}
 }

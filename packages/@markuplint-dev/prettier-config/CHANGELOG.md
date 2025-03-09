@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.12](https://github.com/markuplint/markuplint/compare/@markuplint-dev/prettier-config@1.0.11...@markuplint-dev/prettier-config@1.0.12) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint-dev/prettier-config
+
 ## [1.0.11](https://github.com/markuplint/markuplint/compare/@markuplint-dev/prettier-config@1.0.10...@markuplint-dev/prettier-config@1.0.11) (2025-02-27)
 
 **Note:** Version bump only for package @markuplint-dev/prettier-config

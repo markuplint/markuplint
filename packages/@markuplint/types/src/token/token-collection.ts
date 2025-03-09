@@ -354,7 +354,6 @@ export class TokenCollection extends Array<Token> {
 	}
 
 	filter(callback: Parameters<Array<Token>['filter']>[0]): TokenCollection {
-		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		return TokenCollection._new(super.filter(callback), this);
 	}
 

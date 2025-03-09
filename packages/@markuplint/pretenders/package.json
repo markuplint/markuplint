@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pretenders",
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"description": "It loads components and then creates the pretenders data from them.",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -28,10 +28,10 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/ml-config": "4.8.9",
-		"@markuplint/parser-utils": "4.8.5",
+		"@markuplint/ml-config": "4.8.10",
+		"@markuplint/parser-utils": "4.8.6",
 		"glob": "11.0.1",
 		"meow": "13.2.0",
-		"typescript": "5.7.3"
+		"typescript": "5.8.2"
 	}
 }

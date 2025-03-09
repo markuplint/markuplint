@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.8](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.7...@markuplint/svelte-parser@4.7.8) (2025-03-09)
+
+### Bug Fixes
+
+- **svelte-parser:** handle script tag with lang attribute in svelte parser ([c4986a4](https://github.com/markuplint/markuplint/commit/c4986a4f961816826fc0cae6278d046fa92ef86c)), closes [#2505](https://github.com/markuplint/markuplint/issues/2505)
+
 ## [4.7.7](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.6...@markuplint/svelte-parser@4.7.7) (2025-02-27)
 
 **Note:** Version bump only for package @markuplint/svelte-parser

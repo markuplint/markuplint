@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.8](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.7...vscode-markuplint@4.8.8) (2025-03-09)
+
+**Note:** Version bump only for package vscode-markuplint
+
 ## [4.8.7](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.6...vscode-markuplint@4.8.7) (2025-02-27)
 
 **Note:** Version bump only for package vscode-markuplint

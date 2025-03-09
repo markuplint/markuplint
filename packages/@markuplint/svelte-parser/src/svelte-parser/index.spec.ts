@@ -431,7 +431,259 @@ describe('Issues', () => {
 				index: 'i',
 			},
 		]);
+
+		expect(() => svelteParse('{#each list as item, i `${i}-${i}`)}{/each}')).toThrowError();
 	});
 
-	expect(() => svelteParse('{#each list as item, i `${i}-${i}`)}{/each}')).toThrowError();
+	test('#2505', () => {
+		expect(
+			svelteParse(`<script lang="ts">
+  export let list: string[];
+</script>
+
+{#snippet func(items: string[])}
+  {#each items as item}
+    <div></div>
+  {/each}
+{/snippet}
+
+{@render func(list)}
+`),
+		).toEqual([
+			{
+				type: 'Text',
+				data: '\n\n',
+				raw: '\n\n',
+				start: 57,
+				end: 59,
+			},
+			{
+				type: 'SnippetBlock',
+				start: 59,
+				end: 152,
+				expression: {
+					type: 'Identifier',
+					name: 'func',
+					start: 69,
+					end: 73,
+				},
+				parameters: [
+					{
+						type: 'Identifier',
+						name: 'items',
+						start: 74,
+						end: 89,
+						loc: {
+							start: {
+								line: 5,
+								column: 15,
+							},
+							end: {
+								line: 5,
+								column: 30,
+							},
+						},
+						typeAnnotation: {
+							type: 'TSTypeAnnotation',
+							start: 79,
+							end: 89,
+							loc: {
+								start: {
+									line: 5,
+									column: 20,
+								},
+								end: {
+									line: 5,
+									column: 30,
+								},
+							},
+							typeAnnotation: {
+								type: 'TSArrayType',
+								start: 81,
+								end: 89,
+								loc: {
+									start: {
+										line: 5,
+										column: 22,
+									},
+									end: {
+										line: 5,
+										column: 30,
+									},
+								},
+								elementType: {
+									type: 'TSStringKeyword',
+									start: 81,
+									end: 87,
+									loc: {
+										start: {
+											line: 5,
+											column: 22,
+										},
+										end: {
+											line: 5,
+											column: 28,
+										},
+									},
+								},
+							},
+						},
+					},
+				],
+				body: {
+					type: 'Fragment',
+					nodes: [
+						{
+							type: 'Text',
+							data: '\n  ',
+							raw: '\n  ',
+							start: 91,
+							end: 94,
+						},
+						{
+							type: 'EachBlock',
+							start: 94,
+							end: 141,
+							expression: {
+								type: 'Identifier',
+								name: 'items',
+								start: 101,
+								end: 106,
+								loc: {
+									start: {
+										line: 6,
+										column: 9,
+									},
+									end: {
+										line: 6,
+										column: 14,
+									},
+								},
+							},
+							context: {
+								type: 'Identifier',
+								name: 'item',
+								start: 110,
+								end: 114,
+								loc: {
+									start: {
+										character: 110,
+										column: 18,
+										line: 6,
+									},
+									end: {
+										character: 114,
+										column: 22,
+										line: 6,
+									},
+								},
+								typeAnnotation: undefined,
+							},
+							index: undefined,
+							key: undefined,
+							body: {
+								type: 'Fragment',
+								nodes: [
+									{
+										type: 'Text',
+										data: '\n    ',
+										raw: '\n    ',
+										start: 115,
+										end: 120,
+									},
+									{
+										type: 'RegularElement',
+										name: 'div',
+										start: 120,
+										end: 131,
+										attributes: [],
+										fragment: {
+											type: 'Fragment',
+											nodes: [],
+										},
+									},
+									{
+										type: 'Text',
+										data: '\n  ',
+										raw: '\n  ',
+										start: 131,
+										end: 134,
+									},
+								],
+							},
+						},
+						{
+							type: 'Text',
+							data: '\n',
+							raw: '\n',
+							start: 141,
+							end: 142,
+						},
+					],
+				},
+			},
+			{
+				type: 'Text',
+				data: '\n\n',
+				raw: '\n\n',
+				start: 152,
+				end: 154,
+			},
+			{
+				type: 'RenderTag',
+				start: 154,
+				end: 174,
+				expression: {
+					type: 'CallExpression',
+					start: 163,
+					end: 173,
+					loc: {
+						start: {
+							line: 11,
+							column: 9,
+						},
+						end: {
+							line: 11,
+							column: 19,
+						},
+					},
+					optional: false,
+					callee: {
+						type: 'Identifier',
+						name: 'func',
+						start: 163,
+						end: 167,
+						loc: {
+							start: {
+								line: 11,
+								column: 9,
+							},
+							end: {
+								line: 11,
+								column: 13,
+							},
+						},
+					},
+					arguments: [
+						{
+							type: 'Identifier',
+							name: 'list',
+							start: 168,
+							end: 172,
+							loc: {
+								start: {
+									line: 11,
+									column: 14,
+								},
+								end: {
+									line: 11,
+									column: 18,
+								},
+							},
+						},
+					],
+				},
+			},
+		]);
+	});
 });

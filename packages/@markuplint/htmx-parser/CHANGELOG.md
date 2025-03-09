@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.16](https://github.com/markuplint/markuplint/compare/@markuplint/htmx-parser@4.0.15...@markuplint/htmx-parser@4.0.16) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint/htmx-parser
+
 ## [4.0.15](https://github.com/markuplint/markuplint/compare/@markuplint/htmx-parser@4.0.14...@markuplint/htmx-parser@4.0.15) (2025-02-27)
 
 **Note:** Version bump only for package @markuplint/htmx-parser
