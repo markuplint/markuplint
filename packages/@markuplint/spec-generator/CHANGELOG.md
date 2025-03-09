@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.18](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.17...@markuplint/spec-generator@4.6.18) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint/spec-generator
+
 ## [4.6.17](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.16...@markuplint/spec-generator@4.6.17) (2025-02-27)
 
 **Note:** Version bump only for package @markuplint/spec-generator

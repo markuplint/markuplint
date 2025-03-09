@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/smarty-parser",
-	"version": "4.6.17",
+	"version": "4.6.18",
 	"description": "Smarty parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -22,9 +22,9 @@
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.17"
+		"@markuplint/html-parser": "4.6.18"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "4.8.5"
+		"@markuplint/parser-utils": "4.8.6"
 	}
 }

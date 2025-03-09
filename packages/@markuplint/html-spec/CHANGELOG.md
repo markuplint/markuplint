@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.14.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.14.0...@markuplint/html-spec@4.14.1) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint/html-spec
+
 # [4.14.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.13.0...@markuplint/html-spec@4.14.0) (2025-02-27)
 
 ### Bug Fixes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.10](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.9...@markuplint/ml-config@4.8.10) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint/ml-config
+
 ## [4.8.9](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.8...@markuplint/ml-config@4.8.9) (2025-02-27)
 
 **Note:** Version bump only for package @markuplint/ml-config
