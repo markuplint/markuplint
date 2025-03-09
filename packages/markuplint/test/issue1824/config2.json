@@ -1,0 +1,6 @@
+{
+	"plugins": ["plugin.js"],
+	"rules": {
+		"no-exist-namespace/my-rule": true
+	}
+}
