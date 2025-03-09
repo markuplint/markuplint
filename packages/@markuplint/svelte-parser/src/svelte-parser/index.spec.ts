@@ -431,7 +431,7 @@ describe('Issues', () => {
 				index: 'i',
 			},
 		]);
-	});
 
-	expect(() => svelteParse('{#each list as item, i `${i}-${i}`)}{/each}')).toThrowError();
+		expect(() => svelteParse('{#each list as item, i `${i}-${i}`)}{/each}')).toThrowError();
+	});
 });
