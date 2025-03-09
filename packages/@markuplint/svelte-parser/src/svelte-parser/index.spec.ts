@@ -472,7 +472,7 @@ describe('Issues', () => {
 						type: 'Identifier',
 						name: 'items',
 						start: 74,
-						end: 79,
+						end: 89,
 						loc: {
 							start: {
 								line: 5,
