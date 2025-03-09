@@ -1,5 +1,6 @@
 import type { SvelteAwaitBlock, SvelteEachBlock, SvelteIfBlock, SvelteNode } from './svelte-parser/index.js';
 import type {
+	MLASTNodeTreeItem,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
 	MLASTPreprocessorSpecificBlockConditionalType,
@@ -20,11 +21,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 			endTagType: 'xml',
 			tagNameCaseSensitive: true,
 			ignoreTags: [
-				{
-					type: 'Script',
-					start: '<script',
-					end: '</script>',
-				},
+				// Fixed(Resolved) #2505
+				// The script tag needs to be passed with the lang attribute to the parser,
+				// so instead of excluding it, we convert it to PSBlock in visitText.
+				// Keep the style tag as is for now.
 				{
 					type: 'Style',
 					start: '<style',
@@ -57,6 +57,24 @@ export class SvelteParser extends Parser<SvelteNode> {
 		}
 
 		return super.parseError(error);
+	}
+
+	visitText(token: ChildToken): readonly MLASTNodeTreeItem[] {
+		const nodes = super.visitText(token, {
+			researchTags: false,
+			invalidTagAsText: false,
+		});
+
+		return nodes.flatMap(node => {
+			if (node.nodeName === '#text' && /^<script[\s>]/i.test(node.raw)) {
+				return this.visitPsBlock({
+					...node,
+					nodeName: 'Script',
+					isFragment: false,
+				});
+			}
+			return node;
+		});
 	}
 
 	nodeize(

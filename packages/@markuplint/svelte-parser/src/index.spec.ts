@@ -1085,4 +1085,38 @@ describe('Issues', () => {
 		expect(parse('<x-div></x-div>').nodeList[0].elementType).toBe('web-component');
 		expect(parse('<Div></Div>').nodeList[0].elementType).toBe('authored');
 	});
+
+	test('#2505', () => {
+		const ast = parse(`<script lang="ts">
+  export let list: string[];
+</script>
+
+{#snippet func(items: string[])}
+  {#each items as item}
+    <div></div>
+  {/each}
+{/snippet}
+
+{@render func(list)}
+`);
+
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[3:10](0,57)#ps:Script: <script␣lang="ts">⏎␣␣export␣let␣list:␣string[];⏎</script>',
+			'[3:10]>[5:1](57,59)#text: ⏎⏎',
+			'[5:1]>[5:33](59,91)#ps:snippet: {#snippet␣func(items:␣string[])}',
+			'[5:33]>[6:3](91,94)#text: ⏎␣␣',
+			'[6:3]>[6:24](94,115)#ps:each (each): {#each␣items␣as␣item}',
+			'[6:24]>[7:5](115,120)#text: ⏎␣␣␣␣',
+			'[7:5]>[7:10](120,125)div: <div>',
+			'[7:10]>[7:16](125,131)div: </div>',
+			'[7:16]>[8:3](131,134)#text: ⏎␣␣',
+			'[8:3]>[8:10](134,141)#ps:/each (end): {/each}',
+			'[8:10]>[9:1](141,142)#text: ⏎',
+			'[9:1]>[9:11](142,152)#ps:/snippet: {/snippet}',
+			'[9:11]>[11:1](152,154)#text: ⏎⏎',
+			'[11:1]>[11:21](154,174)#ps:RenderTag: {@render␣func(list)}',
+			'[11:21]>[12:1](174,175)#text: ⏎',
+		]);
+	});
 });
