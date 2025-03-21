@@ -3187,10 +3187,10 @@ astral-regex@^2.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
-astro-eslint-parser@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/astro-eslint-parser/-/astro-eslint-parser-1.2.1.tgz#01c331ff1c9b3a23ea203a8dfd429c26d8f9eec8"
-  integrity sha512-3oqANMjrvJ+IE5pwlUWsH/4UztmYf/GTL0HPUkWnYBNAHiGVGrOh2EbegxS5niAwlO0w9dRYk0CkCPlJcu8c3Q==
+astro-eslint-parser@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/astro-eslint-parser/-/astro-eslint-parser-1.2.2.tgz#e622776c7ec6819cb248e69aa6291504be92c8c4"
+  integrity sha512-JepyLROIad6f44uyqMF6HKE2QbunNzp3mYKRcPoDGt0QkxXmH222FAFC64WTyQu2Kg8NNEXHTN/sWuUId9sSxw==
   dependencies:
     "@astrojs/compiler" "^2.0.0"
     "@typescript-eslint/scope-manager" "^7.0.0 || ^8.0.0"
