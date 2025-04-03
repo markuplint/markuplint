@@ -24,10 +24,10 @@ Create a [configuration file](/docs/configuration) and install dependencies.
 
 ```shell
 npx markuplint --init
+npm add -D markuplint
 ```
 
-Answer questions interactively.
-By doing this, needed modules are installed includes `markuplint`.
+Answer questions interactively, then install `markuplint`.
 
 Add a command to the `scripts` option on `package.json`:
 
