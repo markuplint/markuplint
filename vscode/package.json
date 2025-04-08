@@ -122,7 +122,7 @@
 		"@types/mocha": "10.0.10",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.7.0",
-		"@types/vscode": "1.99.0",
+		"@types/vscode": "1.99.1",
 		"@vscode/test-electron": "2.5.1",
 		"@vscode/vsce": "3.3.2",
 		"esbuild": "0.25.1",
