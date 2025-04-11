@@ -88,7 +88,7 @@
 		"textlint-rule-preset-jtf-style": "3.0.2",
 		"ts-node": "10.9.2",
 		"tsx": "4.19.3",
-		"typedoc": "0.28.0",
+		"typedoc": "0.28.2",
 		"typedoc-plugin-mdn-links": "5.0.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.8.3"
