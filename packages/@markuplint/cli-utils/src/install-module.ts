@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
-import c from 'cli-color';
+import c from 'picocolors';
 // @ts-ignore
 import detectInstalled from 'detect-installed';
 import hasYarn from 'has-yarn';

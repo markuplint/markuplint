@@ -1,11 +1,11 @@
 import type { CLIOptions } from '../cli/bootstrap.js';
 import type { MLResultInfo } from '../types.js';
 
-import { messageToString, font, name, invisibleSpace, space, pad, getWidth } from '@markuplint/cli-utils';
+import { messageToString, font, name, invisibleSpace, space, pad, getWidth, xterm } from '@markuplint/cli-utils';
 
 const commandName = name.toLowerCase();
 const loggerError = font.red;
-const loggerWarning = font.xterm(208);
+const loggerWarning = xterm(208);
 
 export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 	const sizes = {

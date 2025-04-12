@@ -1,5 +1,4 @@
-import c from 'cli-color';
-
+import { xterm } from './color.js';
 import { PRIMARY_COLOR } from './const.js';
 
-export const logo = `/${c.xterm(PRIMARY_COLOR)('✔')}\\`;
+export const logo = `/${xterm(PRIMARY_COLOR)('✔')}\\`;
