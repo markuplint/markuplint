@@ -334,7 +334,7 @@ jobs:
               if: matrix.pm == 'pnpm'
               uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
               with:
-                  version: 8
+                  version: latest # Use latest pnpm version
                   run_install: false
 
             - name: Package paths (npm)
