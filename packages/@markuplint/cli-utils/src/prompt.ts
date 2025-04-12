@@ -1,4 +1,4 @@
-import c from 'cli-color';
+import c from 'picocolors';
 import Enquirer from 'enquirer';
 
 type SelectQuestion<T> = {

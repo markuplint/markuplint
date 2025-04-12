@@ -1,5 +1,6 @@
-export { default as font } from 'cli-color';
+export { default as font } from 'picocolors';
 
+export { xterm } from './color.js';
 export { input, confirm, confirmSequence, select, multiSelect } from './prompt.js';
 export { installModule, InstallModuleResult } from './install-module.js';
 export { getWidth } from './get-width.js';

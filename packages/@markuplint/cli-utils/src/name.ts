@@ -1,5 +1,4 @@
-import c from 'cli-color';
-
+import { xterm } from './color.js';
 import { PRIMARY_COLOR } from './const.js';
 
-export const name = `Markup${c.xterm(PRIMARY_COLOR)('lint')}`;
+export const name = `Markup${xterm(PRIMARY_COLOR)('lint')}`;

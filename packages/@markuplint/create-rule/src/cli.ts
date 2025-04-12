@@ -2,7 +2,7 @@ import type { CreateRuleCreatorCoreParams, CreateRuleLanguage, CreateRulePurpose
 
 import path from 'node:path';
 
-import { input, installModule, select, confirm, font, header } from '@markuplint/cli-utils';
+import { input, installModule, select, confirm, font, header, xterm } from '@markuplint/cli-utils';
 
 import { createRuleHelper } from './create-rule-helper.js';
 import { isMarkuplintRepo } from './is-markuplint-repo.js';
@@ -100,7 +100,7 @@ export async function createRule() {
 }
 
 function output(name: string, icon: string, title: string, path: string) {
-	const _marker = font.xterm(39)('✔') + ' ';
+	const _marker = xterm(39)('✔') + ' ';
 	const _title = (icon: string, title: string) => `${icon} ` + font.bold(`${name}/${title}`);
 	const _file = (path: string) => ' ' + font.cyanBright(path);
 	process.stdout.write(_marker + _title(icon, title) + _file(path));
