@@ -376,10 +376,12 @@ jobs:
                       echo "Linking $package..."
                       pnpm link "../../../../markuplint/packages/$package"
                     else
-                      echo "Skipping link for markuplint package."
+                      echo "Skipping initial link for markuplint package."
                     fi
                   done
-                  ${{ matrix.pm }} install
+                  # Explicitly add the local markuplint package and install other deps
+                  echo "Adding local markuplint package and installing dependencies..."
+                  pnpm add "../../../../markuplint/packages/markuplint"
               shell: bash
 
             - name: Test
