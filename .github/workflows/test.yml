@@ -295,6 +295,16 @@ jobs:
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
+            # Add step to remove packageManager field using jq for pnpm tests
+            - name: Remove packageManager field from package.json
+              if: matrix.pm == 'pnpm'
+              run: |
+                  echo 'Removing packageManager field...'
+                  jq 'del(.packageManager)' package.json > package.json.tmp && mv package.json.tmp package.json
+                  echo 'package.json content after removal:'
+                  cat package.json
+              shell: bash
+
             - name: Cache Restore productionDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
