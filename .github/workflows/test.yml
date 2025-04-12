@@ -371,10 +371,15 @@ jobs:
                   IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
                   for package in "${packages[@]}"
                   do
+                    # Go to package dir and link globally
+                    echo "Linking $package globally..."
                     (cd "../../../../markuplint/packages/$package" && pnpm link --global)
+                    # Link from global to current dir
+                    echo "Linking $package from global..."
                     pnpm link --global $package
                   done
                   ${{ matrix.pm }} install
+              shell: bash
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
