@@ -371,12 +371,13 @@ jobs:
                   IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
                   for package in "${packages[@]}"
                   do
-                    # Go to package dir and link globally
-                    echo "Linking $package globally..."
-                    (cd "../../../../markuplint/packages/$package" && pnpm link --global)
-                    # Link from global to current dir
-                    echo "Linking $package from global..."
-                    pnpm link --global $package
+                    # Skip linking the main 'markuplint' package itself
+                    if [ "$package" != "markuplint" ]; then
+                      echo "Linking $package..."
+                      pnpm link "../../../../markuplint/packages/$package"
+                    else
+                      echo "Skipping link for markuplint package."
+                    fi
                   done
                   ${{ matrix.pm }} install
               shell: bash
