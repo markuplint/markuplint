@@ -1,0 +1,34 @@
+---
+description: Git manipulation rules
+globs: *,**/*
+alwaysApply: true
+---
+# Commit creation
+
+- When asked to "commit":
+  1. Check staged files using `git diff --staged` and create a commit message using *only* the staged files.
+     - Once the message is ready, directly propose the commit command to the user.
+  2. If no files are staged, check the differences using `git status`, then stage files sequentially based on the following commit granularity before committing:
+     - Separate commits by package.
+     - Commit dependencies first (if dependency order is unclear, check using `npx lerna list --graph`).
+- If the OS, application settings, or context suggest a language other than English is being used, provide a translation and explanation of the commit message in that language immediately before proposing the commit command to the user.
+
+# Commit message format
+
+- You must write in English
+- You must use the imperative mood
+- You must use conventional commits
+  - You must use the following types:
+    - `feat`
+    - `fix`
+    - `docs`
+    - `refactor`
+    - `test`
+    - `chore`
+  - You must use the following scopes:
+    - Each package name (without namespace)
+    - `repo`
+    - `deps`
+    - `github`
+- The message body's lines must not be longer than 100 characters
+- The subject must not be sentence-case, start-case, pascal-case, upper-case
