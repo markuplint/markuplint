@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.6](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.7.5...@markuplint/types@4.7.6) (2025-04-13)
+
+**Note:** Version bump only for package @markuplint/types
+
 ## [4.7.5](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.7.4...@markuplint/types@4.7.5) (2025-03-09)
 
 **Note:** Version bump only for package @markuplint/types

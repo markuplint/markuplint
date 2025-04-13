@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.9](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.8...vscode-markuplint@4.8.9) (2025-04-13)
+
+### Bug Fixes
+
+- **vscode:** lower vscode engine requirement to 1.90 ([8aba6ed](https://github.com/markuplint/markuplint/commit/8aba6ed4dae753f5ba147342a16041eae131f58c))
+
 ## [4.8.8](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.7...vscode-markuplint@4.8.8) (2025-03-09)
 
 **Note:** Version bump only for package vscode-markuplint
