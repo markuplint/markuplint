@@ -51,8 +51,8 @@
 			"enabled": false
 		},
 		{
-			"matchPackagePatterns": ["@types/vscode"],
-			"automerge": false
+			"automerge": false,
+			"matchPackageNames": ["/@types/vscode/"]
 		}
 	]
 }
