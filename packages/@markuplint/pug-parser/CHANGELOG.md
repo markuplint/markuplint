@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.19](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.18...@markuplint/pug-parser@4.6.19) (2025-04-13)
+
+**Note:** Version bump only for package @markuplint/pug-parser
+
 ## [4.6.18](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.17...@markuplint/pug-parser@4.6.18) (2025-03-09)
 
 **Note:** Version bump only for package @markuplint/pug-parser
