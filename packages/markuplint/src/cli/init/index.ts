@@ -42,7 +42,7 @@ export async function initialize() {
 		choices: Object.entries(langs).map(([key, name]) => ({ name, value: key as Langs })),
 	});
 
-	const autoInstall = await confirm('May I install them automatically?');
+	const autoInstall = await confirm('Install npm dependencies?');
 	const customize = await confirm('Do you customize rules?');
 
 	let ruleSettingMode: RuleSettingMode = 'none';
@@ -78,7 +78,7 @@ export async function initialize() {
 	process.stdout.write(`✨Created: ${filePath}\n`);
 
 	if (autoInstall) {
-		process.stdout.write('Install automatically\n');
+		process.stdout.write('Install the dependencies automatically\n');
 
 		const modules = selectModules(selectedLangs);
 
