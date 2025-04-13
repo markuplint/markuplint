@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.9](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.8...@markuplint/svelte-parser@4.7.9) (2025-04-13)
+
+**Note:** Version bump only for package @markuplint/svelte-parser
+
 ## [4.7.8](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.7...@markuplint/svelte-parser@4.7.8) (2025-03-09)
 
 ### Bug Fixes

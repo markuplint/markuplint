@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0](https://github.com/markuplint/markuplint/compare/markuplint@4.11.8...markuplint@4.12.0) (2025-04-13)
+
+### Features
+
+- clarify CLI messages in `markuplint --init` ([d2f1dce](https://github.com/markuplint/markuplint/commit/d2f1dce1575d33e736ba550f0bc3a999665e95dc))
+
 ## [4.11.8](https://github.com/markuplint/markuplint/compare/markuplint@4.11.7...markuplint@4.11.8) (2025-03-09)
 
 **Note:** Version bump only for package markuplint

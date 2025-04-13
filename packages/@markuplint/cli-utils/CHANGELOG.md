@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.11](https://github.com/markuplint/markuplint/compare/@markuplint/cli-utils@4.4.10...@markuplint/cli-utils@4.4.11) (2025-04-13)
+
+**Note:** Version bump only for package @markuplint/cli-utils
+
 ## [4.4.10](https://github.com/markuplint/markuplint/compare/@markuplint/cli-utils@4.4.9...@markuplint/cli-utils@4.4.10) (2024-11-17)
 
 **Note:** Version bump only for package @markuplint/cli-utils
