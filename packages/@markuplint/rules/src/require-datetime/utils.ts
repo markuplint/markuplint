@@ -125,7 +125,9 @@ function toDatetimeString(date: Readonly<DateTimeData>) {
 
 function parseTryMultipleLangs(content: string, langs: readonly Lang[], base?: Readonly<Date>) {
 	for (const lang of langs) {
-		const results = chrono[lang].casual.parse(content, base);
+		const results =
+			// eslint-disable-next-line import-x/namespace
+			chrono[lang].casual.parse(content, base);
 
 		// Is not multiple datetime contents
 		if (results.length === 0) {

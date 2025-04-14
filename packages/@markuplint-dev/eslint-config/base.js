@@ -1,10 +1,12 @@
 import js from '@eslint/js';
-import unicorn from 'eslint-plugin-unicorn';
-import tsESLint from 'typescript-eslint';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import importX from 'eslint-plugin-import-x';
 import jsdoc from 'eslint-plugin-jsdoc';
-import sortClassMembers from 'eslint-plugin-sort-class-members';
-import globals from 'globals';
 import * as regexp from 'eslint-plugin-regexp';
+import sortClassMembers from 'eslint-plugin-sort-class-members';
+import unicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
+import tsESLint from 'typescript-eslint';
 
 /**
  * @type {import('eslint').Linter.Config}
@@ -12,6 +14,7 @@ import * as regexp from 'eslint-plugin-regexp';
 export const base = [
 	js.configs.recommended,
 	...tsESLint.configs.recommended,
+	importX.flatConfigs.recommended,
 	unicorn.configs['flat/recommended'],
 	regexp.configs['flat/recommended'],
 	sortClassMembers.configs['flat/recommended'],
@@ -39,6 +42,7 @@ export const base = [
 			'no-console': [1],
 			'no-mixed-spaces-and-tabs': 0,
 			'require-await': 2,
+			'import-x/no-named-as-default-member': 0,
 			'lines-between-class-members': [1, 'always', { exceptAfterSingleLine: true }],
 			'no-restricted-globals': [2, '__dirname', 'require'],
 
@@ -77,6 +81,7 @@ export const base = [
 					returns: 'return',
 				},
 			},
+			'import-x/resolver-next': [createTypeScriptImportResolver()],
 		},
 	},
 ];
