@@ -100,7 +100,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			) === -1
 				? undefined
 				: true;
-		const $features = $el.find('.role-features tr');
+		const $features = $el.find('.role-features tr, table.def');
 		const generalization = $features
 			.find('.role-parent a')
 			.toArray()
@@ -239,9 +239,11 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 		const className = $section.attr('class');
 		const type = className && /property/i.test(className) ? 'property' : 'state';
 		const deprecated = (className && /deprecated/i.test(className)) || undefined;
-		const $value = $section.find(`table.${type}-features .${type}-value, .state-features .property-value`);
+		const $value = $section.find(`table .${type}-value, table .property-value, .state-features .property-value`);
 		const value = $value.text().trim() as ARIAAttributeValue;
-		const $valueDescriptions = $section.find('table.value-descriptions tbody tr');
+		const $valueDescriptions = $section.find(
+			'table:is(.value-descriptions, .def:has(.value-description)) tbody tr',
+		);
 		const valueDescriptions: Record<string, string> = {};
 		$valueDescriptions.each((_, $tr) => {
 			const name = $($tr)
@@ -249,7 +251,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 				.text()
 				.replaceAll(/\(default\)\s*:?/gi, '')
 				.trim();
-			const desc = $($tr).find('.value-description').text().trim();
+			const desc = $($tr).find('.value-description').text().trim().replaceAll(/\s+/g, ' ');
 			valueDescriptions[name] = desc;
 		});
 		const enumValues: string[] = [];
@@ -265,7 +267,9 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 				);
 			enumValues.push(...values);
 		}
-		const $defaultValue = $section.find('table.value-descriptions .value-name .default');
+		const $defaultValue = $section.find(
+			'table:is(.value-descriptions, .def:has(.value-description)) .value-name .default',
+		);
 		const defaultValue =
 			$defaultValue
 				.text()
