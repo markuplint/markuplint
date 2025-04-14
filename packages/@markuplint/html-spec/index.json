@@ -42770,7 +42770,7 @@
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-			"description": "",
+			"description": "The <discard> SVG element may be used to specify the time at which a particular element should be removed from the DOM. This allows an SVG viewer to conserve memory by discarding elements that are no longer needed, such as animated elements that have completed.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
