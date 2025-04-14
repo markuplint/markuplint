@@ -12,7 +12,8 @@ vi.mock('markuplint-angular-parser', () => {
 });
 
 test('resolveParser', async () => {
-	// @ts-ignore
+	// @ts-expect-error
+	// eslint-disable-next-line import-x/no-unresolved
 	const mod = await import('markuplint-angular-parser');
 	const { parser, parserModName, matched } = await resolveParser(getFile('angular.html'), {
 		'.html$': 'markuplint-angular-parser',
