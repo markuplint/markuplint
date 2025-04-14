@@ -6224,9 +6224,6 @@
 								"name": "aria-errormessage"
 							},
 							{
-								"name": "aria-expanded"
-							},
-							{
 								"name": "aria-flowto",
 								"inherited": true
 							},
@@ -12783,7 +12780,7 @@
 						"description": "A widget that allows the user to select one or more items from a hierarchically organized collection.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nElements with the role tree have an implicit aria-orientation value of vertical.",
 						"generalization": ["select"],
 						"requiredContextRole": [],
-						"requiredOwnedElements": ["group > treeitem", "treeitem"],
+						"requiredOwnedElements": ["treeitem"],
 						"accessibleNameRequired": true,
 						"accessibleNameFromAuthor": true,
 						"accessibleNameFromContent": false,
