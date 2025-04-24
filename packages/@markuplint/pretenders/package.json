@@ -30,7 +30,7 @@
 	"dependencies": {
 		"@markuplint/ml-config": "4.8.11",
 		"@markuplint/parser-utils": "4.8.7",
-		"glob": "11.0.1",
+		"glob": "11.0.2",
 		"meow": "13.2.0",
 		"typescript": "5.8.3"
 	}
