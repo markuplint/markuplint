@@ -1,8 +1,8 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { Config, Log } from '../types.js';
-import type { MLEngine as ESMAdapterMLEngine, FromCodeFunction } from '@markuplint/esm-adapter';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
+import type { MLEngine as _MLEngine } from 'markuplint';
 import type { Position, TextDocumentIdentifier } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
@@ -10,13 +10,15 @@ import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';
 
 import { convertDiagnostics } from './convert-diagnostics.js';
+import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
 
-const engines = new Map<string, ESMAdapterMLEngine>();
+const engines = new Map<string, _MLEngine>();
 
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	document: TextDocument,
-	fromCode: FromCodeFunction,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	MLEngine: typeof _MLEngine,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	config: Config,
 	locale: string,
@@ -36,17 +38,20 @@ export async function onDidOpen(
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
 	const sourceCode = document.getText();
+	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
 
-	const engine = await fromCode(sourceCode, {
-		name: filePath.basename,
-		dirname: filePath.dirname,
+	if (!file) {
+		log(`File not found: ${filePath.basename}`, 'warn');
+		return;
+	}
+
+	const engine = new MLEngine(file, {
 		locale,
 		debug: config.debug,
 		defaultConfig: config.defaultConfig,
 		watch: true,
 	});
 	log(`Engine created: ${key}`);
-	log(`Markuplint engine server instance count: ${engine.getWorkerListenerCount()}`);
 
 	let configSet: ConfigSet | null = null;
 
@@ -88,16 +93,7 @@ export async function onDidOpen(
 			log(`Warnings: ${warns.length}`, 'debug');
 
 			if (debug) {
-				diagnosticsLog(
-					'  Tracing AST Mapping:\n' +
-						debug
-							.map(
-								// @ts-ignore
-								line => `  ${line}`,
-							)
-							.join('\n'),
-					'trace',
-				);
+				diagnosticsLog('  Tracing AST Mapping:\n' + debug.map(line => `  ${line}`).join('\n'), 'trace');
 			}
 			if (configSet) {
 				if (configSet.files.size > 0) {
@@ -203,13 +199,17 @@ export async function getNodeWithAccessibilityProps(
 		return null;
 	}
 
-	const a11y = await engine.getAccessibilityByLocation(position.line + 1, position.character, ariaVersion);
+	const a11y = await getAccessibilityByLocation(engine, position.line + 1, position.character, ariaVersion);
 
 	if (!a11y) {
 		return null;
 	}
 
 	const { node, aria } = a11y;
+
+	if (!aria) {
+		return null;
+	}
 
 	if (aria.unknown) {
 		return {

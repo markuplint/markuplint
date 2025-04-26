@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
@@ -100,7 +100,15 @@ test('The ancestors of the <source> element.', async () => {
 		},
 	]);
 
-	expect((await mlRuleTest(rule, '<picture><source></picture>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<picture><source></picture>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 10,
+			message: 'The "source" element expects the "srcset" attribute',
+			raw: '<source>',
+		},
+	]);
 });
 
 test('with value requirement', async () => {
@@ -440,4 +448,78 @@ test('The `as` attribute', async () => {
 	]);
 
 	expect((await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>')).violations).toStrictEqual([]);
+});
+
+describe('Issues', () => {
+	test('#2223', async () => {
+		const { violations } = await mlRuleTest(rule, '<meta httpEquiv="x-ua-compatible" content="ie=edge" />', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('#2455', async () => {
+		const sourceCode = `<picture>
+  <source src="path/to" media="(query: value)">
+  <source srcset="path/to" media="(query: value)">
+  <source media="(query: value)">
+  <img src="fallback" alt="text">
+</picture>
+<video>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</video>
+<audio>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</audio>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 3,
+				message: 'The "source" element expects the "srcset" attribute',
+				raw: '<source src="path/to" media="(query: value)">',
+			},
+			{
+				severity: 'error',
+				line: 4,
+				col: 3,
+				message: 'The "source" element expects the "srcset" attribute',
+				raw: '<source media="(query: value)">',
+			},
+			{
+				severity: 'error',
+				line: 9,
+				col: 3,
+				message: 'The "source" element expects the "src" attribute',
+				raw: '<source srcset="path/to">',
+			},
+			{
+				severity: 'error',
+				line: 10,
+				col: 3,
+				message: 'The "source" element expects the "src" attribute',
+				raw: '<source>',
+			},
+			{
+				severity: 'error',
+				line: 14,
+				col: 3,
+				message: 'The "source" element expects the "src" attribute',
+				raw: '<source srcset="path/to">',
+			},
+			{
+				severity: 'error',
+				line: 15,
+				col: 3,
+				message: 'The "source" element expects the "src" attribute',
+				raw: '<source>',
+			},
+		]);
+	});
 });

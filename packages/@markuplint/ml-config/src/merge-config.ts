@@ -34,6 +34,7 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
 		excludeFiles: concatArray(a.excludeFiles, b.excludeFiles, true),
+		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(
 			// TODO: Deep merge

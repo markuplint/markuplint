@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -42,4 +42,24 @@ test('The `as` attribute', async () => {
 		],
 	);
 	expect((await mlRuleTest(rule, '<x-label as="label"><input></x-label>')).violations).toStrictEqual([]);
+});
+
+describe('issues', () => {
+	test('#2392', async () => {
+		const { violations } = await mlRuleTest(rule, '<Component></Component>', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			pretenders: [
+				{
+					selector: 'Component',
+					as: {
+						element: 'label',
+						inheritAttrs: true,
+					},
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
 });

@@ -15,7 +15,7 @@ export default createRule<boolean, null>({
 			if (prevLevel + 1 < level) {
 				report({
 					scope: heading,
-					message: t('Heading levels should not be skipped'),
+					message: t('{0} must not be skipped', t('Heading levels')),
 				});
 			}
 			prevLevel = level;

@@ -25,7 +25,7 @@ import {
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 import { ConfigParserError } from '@markuplint/parser-utils';
-import { InvalidSelectorError, matchSelector } from '@markuplint/selector';
+import { InvalidSelectorError } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug.js';
 import { createNode } from '../helper/create-node.js';
@@ -482,6 +482,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get fragmentDirective(): FragmentDirective {
+		throw new UnexpectedCallError('Not supported "fragmentDirective" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Document`
@@ -891,6 +901,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextlost():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Document`
@@ -904,6 +931,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextrestored():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
 	}
 
 	/**
@@ -2553,6 +2597,21 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
+	caretPositionFromPoint(
+		x: number,
+		y: number,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		options?: CaretPositionFromPointOptions,
+	): CaretPosition | null {
+		throw new UnexpectedCallError('Not supported "caretPositionFromPoint" method');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
 	caretRangeFromPoint(x: number, y: number): Range | null {
 		throw new UnexpectedCallError('Not supported "caretRangeFromPoint" method');
 	}
@@ -3124,6 +3183,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	startViewTransition(callbackOptions?: ViewTransitionUpdateCallback): ViewTransition {
+		throw new UnexpectedCallError('Not supported "startViewTransition" method');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 */
 	toString(fixed = false) {
@@ -3268,7 +3337,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 
 				const selector = nodeRule.selector ?? nodeRule.regexSelector;
 
-				const matches = matchSelector(selectorTarget, selector);
+				const matches = selectorTarget.matchMLSelector(selector);
 
 				if (!matches.matched) {
 					continue;
@@ -3323,7 +3392,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
-					const matches = matchSelector(selectorTarget, selector);
+					const matches = selectorTarget.matchMLSelector(selector);
 					if (!matches.matched) {
 						continue;
 					}

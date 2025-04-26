@@ -1,6 +1,6 @@
 import module from 'node:module';
 
-import c from 'cli-color';
+import c from 'picocolors';
 import stripAnsi from 'strip-ansi';
 
 import { logo } from './logo.js';

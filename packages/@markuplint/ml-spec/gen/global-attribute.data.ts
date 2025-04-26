@@ -10,6 +10,7 @@ export const globalAttrs: Record<
 		attrs: [
 			'accesskey',
 			'autocapitalize',
+			'autocorrect',
 			'autofocus',
 			'contenteditable',
 			'dir',
@@ -63,6 +64,7 @@ export const globalAttrs: Record<
 			'onchange',
 			'onclick',
 			'onclose',
+			'oncommand',
 			'oncompositionend', // UI Events
 			'oncompositionstart', // UI Events
 			'oncompositionupdate', // UI Events

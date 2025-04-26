@@ -1,9 +1,7 @@
 {
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
-		"composite": true,
-		"outDir": "./lib",
-		"rootDir": "./src"
+		"composite": true
 	},
 	"references": [
 		{
@@ -33,7 +31,5 @@
 		{
 			"path": "../shared"
 		}
-	],
-	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "lib", "./src/**/*.spec.ts"]
+	]
 }

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { describe, test, expect } from 'vitest';
 
 import { createRule } from '../ml-rule/create-test-rule.js';
@@ -23,7 +21,7 @@ describe('createRule', () => {
 			},
 		});
 
-		void rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' }, false);
 	});
 
 	test('Change value from config', () => {
@@ -51,7 +49,7 @@ describe('createRule', () => {
 			},
 		});
 
-		void rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' }, false);
 	});
 
 	test('Change value to true from config', () => {
@@ -79,7 +77,7 @@ describe('createRule', () => {
 			},
 		});
 
-		void rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' }, false);
 	});
 
 	test('Change severity', () => {
@@ -107,6 +105,6 @@ describe('createRule', () => {
 			},
 		});
 
-		void rule.verify(document, { locale: 'en' });
+		void rule.verify(document, { locale: 'en' }, false);
 	});
 });

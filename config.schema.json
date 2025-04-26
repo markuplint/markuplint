@@ -212,6 +212,27 @@
 				]
 			}
 		},
+		"severity": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"parseError": {
+					"oneOf": [
+						{
+							"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+						},
+						{
+							"type": "string",
+							"enum": ["off"]
+						},
+						{
+							"type": "boolean"
+						}
+					],
+					"default": "error"
+				}
+			}
+		},
 		"pretender": {
 			"type": "object",
 			"additionalProperties": false,
@@ -331,6 +352,7 @@
 		"rules": { "$ref": "#/definitions/rules" },
 		"nodeRules": { "$ref": "#/definitions/nodeRules" },
 		"childNodeRules": { "$ref": "#/definitions/childNodeRules" },
+		"severity": { "$ref": "#/definitions/severity" },
 		"pretenders": {
 			"oneOf": [
 				{
@@ -358,6 +380,7 @@
 					"parserOptions": { "$ref": "#/definitions/parserOptions" },
 					"excludeFiles": { "$ref": "#/definitions/excludeFiles" },
 					"specs": { "$ref": "#/definitions/specs" },
+					"severity": { "$ref": "#/definitions/severity" },
 					"rules": { "$ref": "#/definitions/rules" },
 					"nodeRules": { "$ref": "#/definitions/nodeRules" },
 					"childNodeRules": { "$ref": "#/definitions/childNodeRules" }

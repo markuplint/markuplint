@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/config-presets",
-	"version": "4.5.4",
+	"version": "4.5.12",
 	"description": "markuplint config presets",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -13,7 +13,7 @@
 		"build": "node build.mjs"
 	},
 	"devDependencies": {
-		"glob": "11.0.0",
+		"glob": "11.0.2",
 		"jsonc-parser": "3.3.1",
 		"mustache": "4.2.0"
 	}

@@ -23,6 +23,18 @@
 				}
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/interaction.html#attr-autocorrect
+		"autocorrect": {
+			"type": {
+				"enum": ["", "on", "off"],
+				"disallowToSurroundBySpaces": true,
+				"invalidValueDefault": "on",
+				"missingValueDefault": "on",
+				"sameStates": {
+					"on": [""]
+				}
+			}
+		},
 		// https://html.spec.whatwg.org/multipage/interaction.html#attr-fe-autofocus
 		"autofocus": {
 			"type": "Boolean"
@@ -124,7 +136,7 @@
 		// https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute
 		"popover": {
 			"type": {
-				"enum": ["", "auto", "manual"],
+				"enum": ["", "auto", "manual", "hint"],
 				"disallowToSurroundBySpaces": true,
 				"invalidValueDefault": "manual",
 				"missingValueDefault": "no popover",
@@ -264,6 +276,10 @@
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onclose
 		"onclose": {
+			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncommand
+		"oncommand": {
 			"type": "FunctionBody"
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-oncontextlost

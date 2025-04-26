@@ -657,6 +657,24 @@ export const types: Defs = {
 		is: checkSerializedPermissionsPolicy(),
 	},
 
+	ValidCustomCommand: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command',
+		is(value) {
+			const isValid = /^--.+/.test(value);
+			return isValid
+				? matched()
+				: unmatched(value, 'typo', {
+						candidate: `--${value}`,
+						expects: [
+							{
+								type: 'format',
+								value: 'custom command',
+							},
+						],
+					});
+		},
+	},
+
 	'<css-declaration-list>': {
 		ref: 'https://drafts.csswg.org/css-style-attr/#syntax',
 		syntax: {

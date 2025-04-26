@@ -144,6 +144,8 @@ export type AttributeType =
 					| "<'align-tracks'>"
 					| "<'alignment-baseline'>"
 					| "<'all'>"
+					| "<'anchor-name'>"
+					| "<'anchor-scope'>"
 					| "<'animation'>"
 					| "<'animation-composition'>"
 					| "<'animation-delay'>"
@@ -153,6 +155,9 @@ export type AttributeType =
 					| "<'animation-iteration-count'>"
 					| "<'animation-name'>"
 					| "<'animation-play-state'>"
+					| "<'animation-range'>"
+					| "<'animation-range-end'>"
+					| "<'animation-range-start'>"
 					| "<'animation-timeline'>"
 					| "<'animation-timing-function'>"
 					| "<'appearance'>"
@@ -174,7 +179,6 @@ export type AttributeType =
 					| "<'background-size'>"
 					| "<'baseline-shift'>"
 					| "<'behavior'>"
-					| "<'block-overflow'>"
 					| "<'block-size'>"
 					| "<'border'>"
 					| "<'border-block'>"
@@ -261,6 +265,7 @@ export type AttributeType =
 					| "<'clip-path'>"
 					| "<'clip-rule'>"
 					| "<'color'>"
+					| "<'color-interpolation-filters'>"
 					| "<'color-scheme'>"
 					| "<'column-count'>"
 					| "<'column-fill'>"
@@ -278,6 +283,9 @@ export type AttributeType =
 					| "<'contain-intrinsic-inline-size'>"
 					| "<'contain-intrinsic-size'>"
 					| "<'contain-intrinsic-width'>"
+					| "<'container'>"
+					| "<'container-name'>"
+					| "<'container-type'>"
 					| "<'content'>"
 					| "<'content-visibility'>"
 					| "<'counter-increment'>"
@@ -287,10 +295,14 @@ export type AttributeType =
 					| "<'cue-after'>"
 					| "<'cue-before'>"
 					| "<'cursor'>"
+					| "<'cx'>"
+					| "<'cy'>"
+					| "<'d'>"
 					| "<'direction'>"
 					| "<'display'>"
 					| "<'dominant-baseline'>"
 					| "<'empty-cells'>"
+					| "<'field-sizing'>"
 					| "<'fill'>"
 					| "<'fill-opacity'>"
 					| "<'fill-rule'>"
@@ -309,16 +321,22 @@ export type AttributeType =
 					| "<'font-kerning'>"
 					| "<'font-language-override'>"
 					| "<'font-optical-sizing'>"
+					| "<'font-palette'>"
 					| "<'font-size'>"
 					| "<'font-size-adjust'>"
 					| "<'font-smooth'>"
 					| "<'font-stretch'>"
 					| "<'font-style'>"
 					| "<'font-synthesis'>"
+					| "<'font-synthesis-position'>"
+					| "<'font-synthesis-small-caps'>"
+					| "<'font-synthesis-style'>"
+					| "<'font-synthesis-weight'>"
 					| "<'font-variant'>"
 					| "<'font-variant-alternates'>"
 					| "<'font-variant-caps'>"
 					| "<'font-variant-east-asian'>"
+					| "<'font-variant-emoji'>"
 					| "<'font-variant-ligatures'>"
 					| "<'font-variant-numeric'>"
 					| "<'font-variant-position'>"
@@ -349,6 +367,7 @@ export type AttributeType =
 					| "<'hanging-punctuation'>"
 					| "<'height'>"
 					| "<'hyphenate-character'>"
+					| "<'hyphenate-limit-chars'>"
 					| "<'hyphens'>"
 					| "<'image-orientation'>"
 					| "<'image-rendering'>"
@@ -365,6 +384,7 @@ export type AttributeType =
 					| "<'inset-inline'>"
 					| "<'inset-inline-end'>"
 					| "<'inset-inline-start'>"
+					| "<'interpolate-size'>"
 					| "<'isolation'>"
 					| "<'justify-content'>"
 					| "<'justify-items'>"
@@ -453,6 +473,7 @@ export type AttributeType =
 					| "<'overflow-wrap'>"
 					| "<'overflow-x'>"
 					| "<'overflow-y'>"
+					| "<'overlay'>"
 					| "<'overscroll-behavior'>"
 					| "<'overscroll-behavior-block'>"
 					| "<'overscroll-behavior-inline'>"
@@ -469,6 +490,7 @@ export type AttributeType =
 					| "<'padding-left'>"
 					| "<'padding-right'>"
 					| "<'padding-top'>"
+					| "<'page'>"
 					| "<'page-break-after'>"
 					| "<'page-break-before'>"
 					| "<'page-break-inside'>"
@@ -483,8 +505,15 @@ export type AttributeType =
 					| "<'place-self'>"
 					| "<'pointer-events'>"
 					| "<'position'>"
+					| "<'position-anchor'>"
+					| "<'position-area'>"
+					| "<'position-try'>"
+					| "<'position-try-fallbacks'>"
+					| "<'position-try-order'>"
+					| "<'position-visibility'>"
 					| "<'print-color-adjust'>"
 					| "<'quotes'>"
+					| "<'r'>"
 					| "<'resize'>"
 					| "<'rest'>"
 					| "<'rest-after'>"
@@ -495,6 +524,8 @@ export type AttributeType =
 					| "<'ruby-align'>"
 					| "<'ruby-merge'>"
 					| "<'ruby-position'>"
+					| "<'rx'>"
+					| "<'ry'>"
 					| "<'scale'>"
 					| "<'scroll-behavior'>"
 					| "<'scroll-margin'>"
@@ -573,9 +604,14 @@ export type AttributeType =
 					| "<'text-rendering'>"
 					| "<'text-shadow'>"
 					| "<'text-size-adjust'>"
+					| "<'text-spacing-trim'>"
 					| "<'text-transform'>"
 					| "<'text-underline-offset'>"
 					| "<'text-underline-position'>"
+					| "<'text-wrap'>"
+					| "<'text-wrap-mode'>"
+					| "<'text-wrap-style'>"
+					| "<'timeline-scope'>"
 					| "<'top'>"
 					| "<'touch-action'>"
 					| "<'transform'>"
@@ -583,6 +619,7 @@ export type AttributeType =
 					| "<'transform-origin'>"
 					| "<'transform-style'>"
 					| "<'transition'>"
+					| "<'transition-behavior'>"
 					| "<'transition-delay'>"
 					| "<'transition-duration'>"
 					| "<'transition-property'>"
@@ -591,7 +628,13 @@ export type AttributeType =
 					| "<'unicode-bidi'>"
 					| "<'unicode-range'>"
 					| "<'user-select'>"
+					| "<'vector-effect'>"
 					| "<'vertical-align'>"
+					| "<'view-timeline'>"
+					| "<'view-timeline-axis'>"
+					| "<'view-timeline-inset'>"
+					| "<'view-timeline-name'>"
+					| "<'view-transition-name'>"
 					| "<'visibility'>"
 					| "<'voice-balance'>"
 					| "<'voice-duration'>"
@@ -602,6 +645,8 @@ export type AttributeType =
 					| "<'voice-stress'>"
 					| "<'voice-volume'>"
 					| "<'white-space'>"
+					| "<'white-space-collapse'>"
+					| "<'white-space-trim'>"
 					| "<'widows'>"
 					| "<'width'>"
 					| "<'will-change'>"
@@ -609,6 +654,8 @@ export type AttributeType =
 					| "<'word-spacing'>"
 					| "<'word-wrap'>"
 					| "<'writing-mode'>"
+					| "<'x'>"
+					| "<'y'>"
 					| "<'z-index'>"
 					| "<'zoom'>"
 					| '<(-token>'
@@ -626,30 +673,37 @@ export type AttributeType =
 					| '<-ms-filter-function-list>'
 					| '<-ms-filter-function-progid>'
 					| '<-ms-filter-function>'
-					| '<-ms-filter>'
 					| '<-non-standard-color>'
 					| '<-non-standard-display>'
 					| '<-non-standard-font>'
+					| '<-non-standard-generic-family>'
 					| '<-non-standard-image-rendering>'
 					| '<-non-standard-overflow>'
-					| '<-non-standard-width>'
+					| '<-non-standard-size>'
 					| '<-webkit-gradient()>'
 					| '<-webkit-gradient-color-stop>'
 					| '<-webkit-gradient-point>'
 					| '<-webkit-gradient-radius>'
 					| '<-webkit-gradient-type>'
 					| '<-webkit-mask-box-repeat>'
-					| '<-webkit-mask-clip-style>'
 					| '<CDC-token>'
 					| '<CDO-token>'
 					| '<[-token>'
 					| '<]-token>'
 					| '<abs()>'
+					| '<absolute-color-base>'
+					| '<absolute-color-function>'
 					| '<absolute-size>'
 					| '<acos()>'
 					| '<age>'
 					| '<alpha-value>'
 					| '<an-plus-b>'
+					| '<anchor()>'
+					| '<anchor-element>'
+					| '<anchor-name>'
+					| '<anchor-side>'
+					| '<anchor-size()>'
+					| '<anchor-size>'
 					| '<angle-percentage>'
 					| '<angle>'
 					| '<angular-color-hint>'
@@ -697,29 +751,43 @@ export type AttributeType =
 					| '<clamp()>'
 					| '<class-selector>'
 					| '<clip-source>'
+					| '<cmyk-component>'
 					| '<colon-token>'
+					| '<color()>'
+					| '<color-base>'
+					| '<color-function>'
+					| '<color-interpolation-method>'
+					| '<color-mix()>'
+					| '<color-space>'
 					| '<color-stop-angle>'
 					| '<color-stop-length>'
 					| '<color-stop-list>'
 					| '<color-stop>'
 					| '<color>'
+					| '<colorspace-params>'
 					| '<combinator>'
 					| '<comma-token>'
 					| '<common-lig-values>'
 					| '<compat-auto>'
+					| '<complex-real-selector-list>'
+					| '<complex-real-selector>'
 					| '<complex-selector-list>'
+					| '<complex-selector-unit>'
 					| '<complex-selector>'
 					| '<composite-style>'
 					| '<compositing-operator>'
 					| '<compound-selector-list>'
 					| '<compound-selector>'
 					| '<conic-gradient()>'
+					| '<container-condition>'
+					| '<container-name>'
 					| '<content-distribution>'
 					| '<content-list>'
 					| '<content-position>'
 					| '<content-replacement>'
 					| '<contextual-alt-values>'
 					| '<contrast()>'
+					| '<coord-box>'
 					| '<cos()>'
 					| '<counter()>'
 					| '<counter-name>'
@@ -729,14 +797,17 @@ export type AttributeType =
 					| '<counters()>'
 					| '<cross-fade()>'
 					| '<cubic-bezier-timing-function>'
+					| '<custom-color-space>'
 					| '<custom-ident>'
 					| '<custom-property-name>'
+					| '<dashed-ident>'
 					| '<decibel>'
 					| '<declaration-list>'
 					| '<declaration-value>'
 					| '<declaration>'
 					| '<delim-token>'
 					| '<deprecated-system-color>'
+					| '<device-cmyk()>'
 					| '<dimension-token>'
 					| '<dimension>'
 					| '<discretionary-lig-values>'
@@ -774,14 +845,21 @@ export type AttributeType =
 					| '<flex>'
 					| '<font-stretch-absolute>'
 					| '<font-variant-css21>'
+					| '<font-variant-css2>'
 					| '<font-weight-absolute>'
+					| '<font-width-css3>'
+					| '<forgiving-relative-selector-list>'
+					| '<forgiving-selector-list>'
 					| '<frequency-percentage>'
 					| '<frequency>'
 					| '<function-token>'
 					| '<gender>'
 					| '<general-enclosed>'
+					| '<generic-complete>'
 					| '<generic-family>'
+					| '<generic-incomplete>'
 					| '<generic-name>'
+					| '<generic-script-specific>'
 					| '<generic-voice>'
 					| '<geometry-box>'
 					| '<gradient>'
@@ -792,6 +870,7 @@ export type AttributeType =
 					| '<historical-lig-values>'
 					| '<hsl()>'
 					| '<hsla()>'
+					| '<hue-interpolation-method>'
 					| '<hue-rotate()>'
 					| '<hue>'
 					| '<hwb()>'
@@ -807,6 +886,7 @@ export type AttributeType =
 					| '<image>'
 					| '<inflexible-breadth>'
 					| '<inset()>'
+					| '<inset-area>'
 					| '<integer>'
 					| '<invert()>'
 					| '<keyframe-block-list>'
@@ -820,8 +900,11 @@ export type AttributeType =
 					| '<leader()>'
 					| '<leader-type>'
 					| '<left>'
+					| '<legacy-device-cmyk-syntax>'
+					| '<legacy-pseudo-element-selector>'
 					| '<length-percentage>'
 					| '<length>'
+					| '<light-dark()>'
 					| '<line-name-list>'
 					| '<line-names>'
 					| '<line-style>'
@@ -830,7 +913,6 @@ export type AttributeType =
 					| '<linear-color-stop>'
 					| '<linear-gradient()>'
 					| '<log()>'
-					| '<mask-image>'
 					| '<mask-layer>'
 					| '<mask-position>'
 					| '<mask-reference>'
@@ -857,6 +939,7 @@ export type AttributeType =
 					| '<min()>'
 					| '<minmax()>'
 					| '<mod()>'
+					| '<modern-device-cmyk-syntax>'
 					| '<name-repeat>'
 					| '<named-color>'
 					| '<namespace-prefix>'
@@ -870,6 +953,9 @@ export type AttributeType =
 					| '<numeric-figure-values>'
 					| '<numeric-fraction-values>'
 					| '<numeric-spacing-values>'
+					| '<offset-path>'
+					| '<oklab()>'
+					| '<oklch()>'
 					| '<opacity()>'
 					| '<outline-radius>'
 					| '<overflow-position>'
@@ -881,19 +967,32 @@ export type AttributeType =
 					| '<page-size>'
 					| '<paint()>'
 					| '<paint>'
+					| '<palette-identifier>'
 					| '<path()>'
 					| '<percentage-token>'
 					| '<percentage>'
 					| '<perspective()>'
+					| '<polar-color-space>'
 					| '<polygon()>'
+					| '<position-area>'
 					| '<position>'
 					| '<pow()>'
+					| '<predefined-rgb-params>'
+					| '<predefined-rgb>'
 					| '<pseudo-class-selector>'
+					| '<pseudo-compound-selector>'
 					| '<pseudo-element-selector>'
 					| '<pseudo-page>'
+					| '<query-in-parens>'
 					| '<quote>'
 					| '<radial-gradient()>'
 					| '<ratio>'
+					| '<ray()>'
+					| '<ray-size>'
+					| '<rect()>'
+					| '<rectangular-color-space>'
+					| '<relative-real-selector-list>'
+					| '<relative-real-selector>'
 					| '<relative-selector-list>'
 					| '<relative-selector>'
 					| '<relative-size>'
@@ -920,9 +1019,11 @@ export type AttributeType =
 					| '<scaleX()>'
 					| '<scaleY()>'
 					| '<scaleZ()>'
-					| '<scroll-timeline-axis>'
-					| '<scroll-timeline-name>'
+					| '<scope-end>'
+					| '<scope-start>'
+					| '<scroll()>'
 					| '<scroller>'
+					| '<selector-list>'
 					| '<self-position>'
 					| '<semicolon-token>'
 					| '<semitones>'
@@ -934,6 +1035,8 @@ export type AttributeType =
 					| '<shape>'
 					| '<side-or-corner>'
 					| '<sign()>'
+					| '<simple-selector-list>'
+					| '<simple-selector>'
 					| '<sin()>'
 					| '<single-animation-composition>'
 					| '<single-animation-direction>'
@@ -944,6 +1047,7 @@ export type AttributeType =
 					| '<single-animation>'
 					| '<single-transition-property>'
 					| '<single-transition>'
+					| '<size-feature>'
 					| '<size>'
 					| '<skew()>'
 					| '<skewX()>'
@@ -953,6 +1057,10 @@ export type AttributeType =
 					| '<step-timing-function>'
 					| '<string-token>'
 					| '<string>'
+					| '<style-condition>'
+					| '<style-feature>'
+					| '<style-in-parens>'
+					| '<style-query>'
 					| '<subclass-selector>'
 					| '<supports-condition>'
 					| '<supports-decl>'
@@ -962,6 +1070,8 @@ export type AttributeType =
 					| '<svg-length>'
 					| '<svg-writing-mode>'
 					| '<symbol>'
+					| '<system-color>'
+					| '<system-family-name>'
 					| '<tan()>'
 					| '<target-counter()>'
 					| '<target-counters()>'
@@ -969,7 +1079,7 @@ export type AttributeType =
 					| '<target>'
 					| '<time-percentage>'
 					| '<time>'
-					| '<timeline-name>'
+					| '<timeline-range-name>'
 					| '<top>'
 					| '<track-breadth>'
 					| '<track-list>'
@@ -977,11 +1087,14 @@ export type AttributeType =
 					| '<track-size>'
 					| '<transform-function>'
 					| '<transform-list>'
+					| '<transition-behavior-value>'
 					| '<translate()>'
 					| '<translate3d()>'
 					| '<translateX()>'
 					| '<translateY()>'
 					| '<translateZ()>'
+					| '<try-size>'
+					| '<try-tactic>'
 					| '<type-or-unit>'
 					| '<type-selector>'
 					| '<urange>'
@@ -989,11 +1102,15 @@ export type AttributeType =
 					| '<url-token>'
 					| '<url>'
 					| '<var()>'
+					| '<view()>'
 					| '<viewport-length>'
 					| '<visual-box>'
 					| '<whitespace-token>'
 					| '<wq-name>'
 					| '<x>'
+					| '<xywh()>'
+					| '<xyz-params>'
+					| '<xyz-space>'
 					| '<y>'
 					| '<zero>'
 					| '<{-token>'
@@ -1062,6 +1179,7 @@ export type AttributeType =
 					| 'TabIndex'
 					| 'URL'
 					| 'Uint'
+					| 'ValidCustomCommand'
 					| 'XMLName'
 					| 'Zero'
 			  )
@@ -1095,6 +1213,7 @@ export interface GlobalAttributes {
 				| 'onchange'
 				| 'onclick'
 				| 'onclose'
+				| 'oncommand'
 				| 'oncompositionend'
 				| 'oncompositionstart'
 				| 'oncompositionupdate'
@@ -1498,6 +1617,7 @@ export interface List {
 				| 'TabIndex'
 				| 'URL'
 				| 'Uint'
+				| 'ValidCustomCommand'
 				| 'XMLName'
 				| 'Zero'
 		  )

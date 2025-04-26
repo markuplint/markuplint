@@ -205,7 +205,7 @@ describe('1.3', () => {
 	test('landmark', () => {
 		expect(c('<div role="region"></div>', '1.3').role?.name).toBe('generic');
 		expect(c('<div role="region" aria-label="foo"></div>', '1.3').role?.name).toBe('region');
-		expect(c('<div role="form"></div>', '1.3').role?.name).toBe('generic');
+		expect(c('<div role="form"></div>', '1.3').role?.name).toBe('form');
 		expect(c('<div role="form" aria-label="foo"></div>', '1.3').role?.name).toBe('form');
 		expect(c('<div role="navigation"></div>', '1.3').role?.name).toBe('navigation');
 		expect(c('<div role="navigation" aria-label="foo"></div>', '1.3').role?.name).toBe('navigation');

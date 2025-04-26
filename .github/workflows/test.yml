@@ -25,19 +25,19 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -49,7 +49,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
@@ -62,26 +62,26 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       packages/**/lib
@@ -98,7 +98,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -118,26 +118,26 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       packages/**/lib
@@ -175,19 +175,19 @@ jobs:
                     - node: 22
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -202,7 +202,7 @@ jobs:
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -224,24 +224,24 @@ jobs:
                       os: ubuntu-latest
                       shard: 1/1
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -266,7 +266,7 @@ jobs:
               shell: bash
 
             - name: Test
-              uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3
+              uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
               with:
                   timeout_minutes: 20
                   max_attempts: 3
@@ -285,24 +285,34 @@ jobs:
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
+            # Add step to remove packageManager field using jq for pnpm tests
+            - name: Remove packageManager field from package.json
+              if: matrix.pm == 'pnpm'
+              run: |
+                  echo 'Removing packageManager field...'
+                  jq 'del(.packageManager)' package.json > package.json.tmp && mv package.json.tmp package.json
+                  echo 'package.json content after removal:'
+                  cat package.json
+              shell: bash
+
             - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: '**/node_modules'
                   key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -322,9 +332,9 @@ jobs:
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@v2
+              uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
               with:
-                  version: 8
+                  version: latest # Use latest pnpm version
                   run_install: false
 
             - name: Package paths (npm)
@@ -361,10 +371,18 @@ jobs:
                   IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
                   for package in "${packages[@]}"
                   do
-                    (cd "../../../../markuplint/packages/$package" && pnpm link --global)
-                    pnpm link --global $package
+                    # Skip linking the main 'markuplint' package itself
+                    if [ "$package" != "markuplint" ]; then
+                      echo "Linking $package..."
+                      pnpm link "../../../../markuplint/packages/$package"
+                    else
+                      echo "Skipping initial link for markuplint package."
+                    fi
                   done
-                  ${{ matrix.pm }} install
+                  # Explicitly add the local markuplint package and install other deps
+                  echo "Adding local markuplint package and installing dependencies..."
+                  pnpm add "../../../../markuplint/packages/markuplint"
+              shell: bash
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}

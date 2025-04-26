@@ -1,7 +1,7 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
 import type { Target } from '@markuplint/file-resolver';
-import type { Violation } from '@markuplint/ml-config';
+import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -48,6 +48,13 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 
 	const jsonOutput: (Violation & { filePath: string })[] = [];
 
+	const severityParseError = options.severityParseError.toLowerCase();
+	const severity: SeverityOptions = {
+		parseError: ['error', 'warning', 'off'].includes(severityParseError)
+			? (severityParseError as Severity | 'off')
+			: true,
+	};
+
 	for (const file of fileList) {
 		const engine = new MLEngine(file, {
 			configFile,
@@ -57,8 +64,33 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			ignoreExt,
 			importPresetRules,
 			debug: verbose,
+			severity,
 			...apiOptions,
 		});
+
+		if (options.showConfig != null) {
+			const isDetails = options.showConfig === 'details';
+			const configSet = await engine.resolveConfig(false);
+			let data: any;
+			if (isDetails) {
+				const files = [...configSet.files].toReversed();
+				const [configurationFile, ...dependencies] = files;
+				data = {
+					target: file.path,
+					computedConfig: configSet.config,
+					configurationFile: configurationFile,
+					dependencies,
+					plugins: configSet.plugins,
+					errors: configSet.errs,
+				};
+			} else {
+				data = configSet.config;
+			}
+
+			process.stdout.write(JSON.stringify(data, null, 2) + '\n');
+			return false;
+		}
+
 		const result = await engine.exec();
 		if (!result) {
 			continue;

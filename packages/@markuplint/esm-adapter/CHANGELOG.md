@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.11](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.10...@markuplint/esm-adapter@4.5.11) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.10](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.9...@markuplint/esm-adapter@4.5.10) (2025-02-04)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.9](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.8...@markuplint/esm-adapter@4.5.9) (2024-11-17)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.8](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.7...@markuplint/esm-adapter@4.5.8) (2024-10-31)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.6...@markuplint/esm-adapter@4.5.7) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.6](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.5...@markuplint/esm-adapter@4.5.6) (2024-10-27)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.5](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.4...@markuplint/esm-adapter@4.5.5) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.4](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.3...@markuplint/esm-adapter@4.5.4) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.3](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.2...@markuplint/esm-adapter@4.5.3) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
+## [4.5.2](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.1...@markuplint/esm-adapter@4.5.2) (2024-09-02)
+
+**Note:** Version bump only for package @markuplint/esm-adapter
+
 ## [4.5.1](https://github.com/markuplint/markuplint/compare/@markuplint/esm-adapter@4.5.0...@markuplint/esm-adapter@4.5.1) (2024-06-25)
 
 **Note:** Version bump only for package @markuplint/esm-adapter

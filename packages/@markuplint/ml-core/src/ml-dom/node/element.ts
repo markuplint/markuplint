@@ -6,11 +6,19 @@ import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
 import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
-import type { PlainData, Pretender, PretenderARIA, RuleConfigValue, RuleInfo } from '@markuplint/ml-config';
+import type {
+	PlainData,
+	Pretender,
+	PretenderARIA,
+	RegexSelector,
+	RuleConfigValue,
+	RuleInfo,
+} from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { createSelector } from '@markuplint/selector';
+import type { SelectorMatches } from '@markuplint/selector';
+import { matchSelector } from '@markuplint/selector';
 
 import { getAccname } from '../helper/accname.js';
 import {
@@ -483,6 +491,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaRelevant(): string | null {
+		throw new UnexpectedCallError('Not supported "ariaRelevant" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaRoleDescription(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaRoleDescription" property');
 	}
@@ -749,6 +768,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get contentEditable(): string {
 		throw new UnexpectedCallError('Not supported "contentEditable" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get currentCSSZoom(): number {
+		throw new UnexpectedCallError('Not supported "currentCSSZoom" property');
 	}
 
 	/**
@@ -1292,6 +1322,23 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextlost():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Element`
@@ -1305,6 +1352,23 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "oncontextmenu" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get oncontextrestored():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncontextlost" property');
 	}
 
 	/**
@@ -2938,6 +3002,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get writingSuggestions(): string {
+		throw new UnexpectedCallError('Not supported "writingSuggestions" property');
+	}
+
+	/**
 	 * @implements DOM API: `Element`
 	 */
 	after(
@@ -3282,6 +3357,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 * @see https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#dom-element-gethtml
+	 */
+	getHTML(options?: any): string {
+		throw new UnexpectedCallError('Does not implement "getHTML" method yet');
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	getNameLocation() {
@@ -3464,14 +3550,20 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		scope?: MLParentNode<T, O>,
 	): boolean {
-		let matched = false;
-		const selectorMatcher = createSelector(selector, this.ownerMLDocument.specs);
-		if (this.pretenderContext?.type === 'pretender') {
-			matched = selectorMatcher.match(this, scope) !== false;
-		}
+		return this.matchMLSelector(selector, scope).matched;
+	}
 
-		if (matched) {
-			return true;
+	matchMLSelector(
+		selector: string | RegexSelector | undefined,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		scope?: MLParentNode<T, O>,
+	): SelectorMatches {
+		if (this.pretenderContext?.type === 'pretender') {
+			// matched = selectorMatcher.match(this, scope) !== false;
+			const matched = matchSelector(this, selector, scope, this.ownerMLDocument.specs);
+			if (matched.matched) {
+				return matched;
+			}
 		}
 
 		let _pretender: PretenderContextPretender<MLElement<T, O>, T, O> | null = null;
@@ -3481,7 +3573,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			this.pretenderContext = null;
 		}
 
-		matched = selectorMatcher.match(this, scope) !== false;
+		const matched = matchSelector(this, selector, scope, this.ownerMLDocument.specs);
 
 		if (_pretender) {
 			this.pretenderContext = _pretender;
@@ -3691,7 +3783,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @implements DOM API: `Element`
 	 * @see https://w3c.github.io/pointerlock/#dom-element-requestpointerlock
 	 */
-	requestPointerLock(): void {
+	requestPointerLock(options?: any): Promise<void> {
 		throw new UnexpectedCallError('Not supported "requestPointerLock" method');
 	}
 

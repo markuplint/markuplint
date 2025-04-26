@@ -1,11 +1,11 @@
 import type { CLIOptions } from '../cli/bootstrap.js';
 import type { MLResultInfo } from '../types.js';
 
-import { name, font, pad, getWidth, messageToString } from '@markuplint/cli-utils';
+import { name, font, pad, getWidth, messageToString, xterm } from '@markuplint/cli-utils';
 
 const commandName = name.toLowerCase();
 const loggerError = font.red;
-const loggerWarning = font.xterm(208);
+const loggerWarning = xterm(208);
 
 export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	const sizes = {
@@ -31,7 +31,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 			out.push(
 				`  ${font.cyan(
 					`${pad(violation.line, sizes.line, true)}:${pad(violation.col, sizes.col)}`,
-				)} ${s}  ${pad(meg, sizes.meg)} ${font.xterm(8)(violation.ruleId)} `,
+				)} ${s}  ${pad(meg, sizes.meg)} ${xterm(8)(violation.ruleId)} `,
 			);
 		}
 	} else if (!options.problemOnly) {

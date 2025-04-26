@@ -1,4 +1,4 @@
-import c from 'cli-color';
+import { xterm } from './color.js';
 
 /**
  * Replace space to visible characters.
@@ -8,9 +8,7 @@ import c from 'cli-color';
  */
 export function space(str: string) {
 	return str
-		.replaceAll(/\s+/g, $0 => {
-			return c.xterm(8)($0);
-		})
+		.replaceAll(/\s+/g, $0 => xterm(8)($0))
 		.replaceAll(' ', $0 => '•')
 		.replaceAll('\t', $0 => '→   ');
 }

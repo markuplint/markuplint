@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { nodeListToDebugMaps } from '@markuplint/parser-utils';
+import { nodeListToDebugMaps, nodeTreeDebugView } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
 
 import { parser } from './parser.js';
@@ -87,25 +87,25 @@ html
 			'[5:3]>[5:72](50,119)meta: meta(name="viewport"␣content=\'width=device-width,␣initial-scale=1.0\')',
 			"[6:3]>[6:55](122,174)meta: meta(http-equiv='X-UA-Compatible'␣content='ie=edge')",
 			'[7:3]>[7:8](177,182)title: title',
-			'[7:9]>[8:2](183,193)#text: Document⏎→',
+			'[7:9]>[7:17](183,191)#text: Document',
 			'[8:2]>[8:6](193,197)body: body',
 			'[9:3]>[9:9](200,206)script: script',
 			'[11:3]>[11:18](226,241)#comment: //␣html-comment',
 			'[12:3]>[12:6](244,247)div: div',
-			'[13:6]>[14:3](253,268)#text: text&amp;div⏎→→',
+			'[13:6]>[13:18](253,265)#text: text&amp;div',
 			'[14:3]>[14:8](268,273)table: table',
 			'[15:4]>[15:6](277,279)tr: tr',
 			'[16:4]>[16:6](283,285)th: th',
 			'[16:7]>[16:13](286,292)#text: header',
 			'[17:4]>[17:6](296,298)td: td',
-			'[17:7]>[18:3](299,306)#text: cell⏎→→',
+			'[17:7]>[17:11](299,303)#text: cell',
 			'[18:3]>[18:8](306,311)table: table',
 			'[19:4]>[19:9](315,320)tbody: tbody',
 			'[20:4]>[20:6](324,326)tr: tr',
 			'[21:5]>[21:7](331,333)th: th',
 			'[21:8]>[21:14](334,340)#text: header',
 			'[22:5]>[22:7](345,347)td: td',
-			'[22:8]>[23:3](348,355)#text: cell⏎→→',
+			'[22:8]>[22:12](348,352)#text: cell',
 			'[23:3]>[23:19](355,371)img: img(src=path/to)',
 		]);
 	});
@@ -124,10 +124,10 @@ html
 			'[1:1]>[1:5](0,4)html: html',
 			'[2:2]>[2:6](6,10)head: head',
 			'[3:3]>[3:8](13,18)title: title',
-			'[3:9]>[4:2](19,26)#text: Title⏎→',
+			'[3:9]>[3:14](19,24)#text: Title',
 			'[4:2]>[4:6](26,30)body: body',
 			'[5:3]>[5:5](33,35)h1: h1',
-			'[5:6]>[6:1](36,42)#text: Title⏎',
+			'[5:6]>[5:11](36,41)#text: Title',
 		]);
 	});
 
@@ -145,10 +145,10 @@ html
 			'[1:1]>[1:5](0,4)html: html',
 			'[2:2]>[2:6](7,11)head: head',
 			'[3:3]>[3:8](15,20)title: title',
-			'[3:9]>[4:2](21,29)#text: Title␣⏎→',
+			'[3:9]>[3:14](21,26)#text: Title',
 			'[4:2]>[4:6](29,33)body: body',
 			'[5:3]>[5:5](37,39)h1: h1',
-			'[5:6]>[6:1](40,47)#text: Title␣⏎',
+			'[5:6]>[5:11](40,45)#text: Title',
 		]);
 	});
 
@@ -230,11 +230,11 @@ else
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:8](0,7)#ps:Conditional: if␣bool',
-			'[2:4]>[3:1](11,13)#text: 1⏎',
+			'[2:4]>[2:5](11,12)#text: 1',
 			'[3:1]>[3:14](13,26)#ps:Conditional: else␣if␣bool2',
-			'[4:4]>[5:1](30,32)#text: 2⏎',
+			'[4:4]>[4:5](30,31)#text: 2',
 			'[5:1]>[5:5](32,36)#ps:Conditional: else',
-			'[6:4]>[7:1](40,42)#text: 3⏎',
+			'[6:4]>[6:5](40,41)#text: 3',
 		]);
 	});
 
@@ -258,7 +258,6 @@ else
 			'[4:4]>[4:23](25,44)img: <img␣src="path/to">',
 			'[4:23]>[5:3](44,47)#text: ⏎→→',
 			'[5:3]>[5:10](47,54)span: </span>',
-			'[5:10]>[6:4](54,58)#text: ⏎→→→',
 		]);
 	});
 
@@ -416,10 +415,10 @@ else
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
-			'[6:9]>[7:2](39,46)#text: Title⏎→',
+			'[6:9]>[6:14](39,44)#text: Title',
 			'[7:2]>[7:6](46,50)body: body',
 			'[8:3]>[8:5](53,55)h1: h1',
-			'[8:6]>[9:1](56,62)#text: Title⏎',
+			'[8:6]>[8:11](56,61)#text: Title',
 		]);
 	});
 
@@ -444,10 +443,10 @@ html
 			'[4:1]>[4:5](20,24)html: html',
 			'[5:2]>[5:6](26,30)head: head',
 			'[6:3]>[6:8](33,38)title: title',
-			'[6:9]>[7:2](39,46)#text: Title⏎→',
+			'[6:9]>[6:14](39,44)#text: Title',
 			'[7:2]>[7:6](46,50)body: body',
 			'[8:3]>[8:5](53,55)h1: h1',
-			'[8:6]>[9:1](56,62)#text: Title⏎',
+			'[8:6]>[8:11](56,61)#text: Title',
 		]);
 	});
 
@@ -534,7 +533,7 @@ a(class='button', href='//google.com') Google
 			"  [4:37]>[4:38](112,113)eQ: '",
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'[4:40]>[5:4](115,125)#text: Google⏎→→→',
+			'[4:40]>[4:46](115,121)#text: Google',
 		]);
 	});
 
@@ -756,7 +755,7 @@ a(href=url) Another link
 			'  isDirective: false',
 			'  isDynamicValue: true',
 			'  valueType: code',
-			'[5:13]>[6:4](96,112)#text: Another␣link⏎→→→',
+			'[5:13]>[5:25](96,108)#text: Another␣link',
 		]);
 	});
 
@@ -1117,7 +1116,7 @@ a(class={active: currentUrl === '/about'} href='/about') About
 			"  [8:55]>[8:56](288,289)eQ: '",
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'[8:58]>[9:4](291,300)#text: About⏎→→→',
+			'[8:58]>[8:63](291,296)#text: About',
 		]);
 	});
 
@@ -1348,7 +1347,7 @@ p.
 			'[2:3]>[3:23](5,95)#text: This␣is␣a␣very␣long␣and␣boring␣paragraph␣that␣spans␣multiple␣lines.⏎␣␣Suddenly␣there␣is␣a␣',
 			'[3:25]>[3:31](97,103)strong: strong',
 			'[3:32]>[3:54](104,126)#text: strongly␣worded␣phrase',
-			'[3:55]>[3:70](127,142)#text: ␣that␣cannot␣be',
+			'[3:55]>[4:3](127,145)#text: ␣that␣cannot␣be⏎␣␣',
 			'[4:5]>[4:7](147,149)em: em',
 			'[4:8]>[4:15](150,157)#text: ignored',
 			'[4:16]>[4:17](158,159)#text: .',
@@ -1391,7 +1390,7 @@ p.
 			'[4:5]>[4:8](91,94)#text: and',
 			'[5:3]>[5:5](97,99)em: em',
 			'[5:6]>[5:8](100,102)#text: em',
-			'[6:5]>[7:1](107,141)#text: might␣produce␣unexpected␣results.⏎',
+			'[6:5]>[6:38](107,140)#text: might␣produce␣unexpected␣results.',
 			'[7:1]>[7:2](141,142)p: p',
 			'[8:3]>[8:26](146,169)#text: If␣I␣do,␣whitespace␣is␣',
 			'[8:28]>[8:34](171,177)strong: strong',
@@ -1451,10 +1450,8 @@ button#self-destruct touch
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			"[1:3]>[1:8](2,7)#text: Don't",
-			'[2:1]>[2:2](8,9)#ps:EmptyPipe: |',
 			'[3:1]>[3:21](10,30)button: button#self-destruct',
 			'[3:22]>[3:27](31,36)#text: touch',
-			'[5:1]>[5:2](39,40)#ps:EmptyPipe: |',
 			'[5:3]>[5:6](41,44)#text: me!',
 		]);
 	});
@@ -1488,6 +1485,86 @@ a(href="http://example.biz/kitteh.png") this picture
 			'[2:1]>[2:40](17,56)a: a(href="http://example.biz/kitteh.png")',
 			'[2:41]>[2:53](57,69)#text: this␣picture',
 			'[3:3]>[3:14](72,83)#text: ␣of␣my␣cat!',
+		]);
+	});
+
+	test("Complex code (Doesn't support it)", () => {
+		// https://github.com/markuplint/markuplint/issues/2184
+		const doc = parse(
+			`
+div.
+  span 1#[em 2 #[s 3 <span>4</span>]]
+<div>
+  span 5#[em 6]
+  <strong>no-tag 7</strong>
+  <strong>
+  this-is-tag 8</strong>
+</div>
+`,
+		);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		const tree = nodeTreeDebugView(doc.nodeList, true);
+		expect(map).toStrictEqual([
+			'[2:1]>[2:4](1,4)div: div',
+			'[3:3]>[3:9](8,14)#text: span␣1',
+			'[3:11]>[3:13](16,18)em: em',
+			'[3:14]>[3:16](19,21)#text: 2␣',
+			'[3:18]>[3:19](23,24)s: s',
+			'[3:20]>[3:22](25,27)#text: 3␣',
+			'[3:22]>[3:28](27,33)span: <span>',
+			'[3:28]>[3:29](33,34)#text: 4',
+			'[3:29]>[3:36](34,41)span: </span>',
+			'[4:1]>[4:6](44,49)div: <div>',
+			'[5:3]>[5:7](52,56)span: span',
+			'[5:8]>[5:9](57,58)#text: 5',
+			'[5:11]>[5:13](60,62)em: em',
+			'[5:14]>[5:15](63,64)#text: 6',
+			'[6:3]>[6:11](68,76)strong: <strong>',
+			'[6:11]>[6:19](76,84)#text: no-tag␣7',
+			'[6:19]>[6:28](84,93)strong: </strong>',
+			'[6:28]>[7:3](93,96)#text: ⏎␣␣',
+			'[7:3]>[7:11](96,104)strong: <strong>',
+			'[8:3]>[8:14](107,118)this-is-tag: this-is-tag',
+			'[8:15]>[8:16](119,120)#text: 8',
+			'[8:16]>[8:25](120,129)#invalid(👿): </strong>',
+		]);
+		expect(tree).toStrictEqual([
+			'000: [0000] div(0000) => 💀',
+			'                  ┗━ #text(0001)',
+			'                  ┗━ em(0002)',
+			'001: [0001]   #text(0001)',
+			'002: [0002]   em(0002) => 💀',
+			'                    ┗━ #text(0003)',
+			'                    ┗━ s(0004)',
+			'003: [0003]     #text(0003)',
+			'004: [0004]     s(0004) => 💀',
+			'                      ┗━ #text(0005)',
+			'                      ┗━ span(0006)',
+			'                      ┗━ /span(0007)',
+			'005: [0005]       #text(0005)',
+			'006: [0006]       span(0006) => /span(0007)',
+			'                        ┗━ #text(0008)',
+			'007: [0008]         #text(0008)',
+			'008: [0007]       /span(0007)',
+			'009: [0009] div(0009) => 💀',
+			'010: [000a] span(000a) => 💀',
+			'                  ┗━ #text(000b)',
+			'                  ┗━ em(000c)',
+			'011: [000b]   #text(000b)',
+			'012: [000c]   em(000c) => 💀',
+			'                    ┗━ #text(000d)',
+			'013: [000d]     #text(000d)',
+			'014: [000e] strong(000e) => /strong(000f)',
+			'                  ┗━ #text(0010)',
+			'015: [0010]   #text(0010)',
+			'016: [000f] /strong(000f)',
+			'017: [0011] #text(0011)',
+			'018: [0012] strong(0012) => 💀',
+			'019: [0013] this-is-tag(0013) => 💀',
+			'                  ┗━ #text(0014)',
+			'                  ┗━ #invalid(0015)',
+			'020: [0014]   #text(0014)',
+			'021: [0015]   #invalid(0015)',
 		]);
 	});
 });
@@ -1537,7 +1614,97 @@ html
 			'[5:4]>[5:9](28,33)#ps:Mixin: +meta',
 			'[6:2]>[6:6](35,39)body: body',
 			'[7:3]>[7:4](42,43)p: p',
-			'[7:5]>[8:1](44,58)#text: Hello,␣World!⏎',
+			'[7:5]>[7:18](44,57)#text: Hello,␣World!',
+		]);
+	});
+
+	test('#2108', () => {
+		const doc = parse(`div
+	include ./path/to/image.svg`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
+		]);
+	});
+
+	test('#2109', () => {
+		const doc = parse(`//- div
+	span
+	span`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual(['[1:1]>[3:6](0,19)#comment: //-␣div⏎→span⏎→span']);
+	});
+
+	test('#2110', () => {
+		const doc = parse(`div
+	include ./path/to/image.svg`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			//
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:29](5,32)#ps:RawInclude: include␣./path/to/image.svg',
+		]);
+	});
+
+	test('#2110', () => {
+		const doc = parse(`mixin foo
+	if bar
+		<meta>
+	else
+		<meta>
+	<meta>
+	<meta>`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:10](0,9)#ps:Mixin: mixin␣foo',
+			'[2:2]>[2:8](11,17)#ps:Conditional: if␣bar',
+			'[3:3]>[3:9](20,26)meta: <meta>',
+			'[4:2]>[4:6](28,32)#ps:Conditional: else',
+			'[5:3]>[5:9](35,41)meta: <meta>',
+			'[6:2]>[6:8](43,49)meta: <meta>',
+			'[6:8]>[7:2](49,51)#text: ⏎→',
+			'[7:2]>[7:8](51,57)meta: <meta>',
+		]);
+	});
+
+	test('#2440', () => {
+		const doc = parse(`div
+	div
+		#{_variable_}= _value_
+	div
+		#{_variable_}
+			span child text content`);
+		const map = nodeListToDebugMaps(doc.nodeList);
+		expect(map).toStrictEqual([
+			'[1:1]>[1:4](0,3)div: div',
+			'[2:2]>[2:5](5,8)div: div',
+			'[3:3]>[3:16](11,24)#ps:InterpolatedTag: #{_variable_}',
+			'[3:16]>[3:25](24,33)#ps:Code: =␣_value_',
+			'[4:2]>[4:5](35,38)div: div',
+			'[5:3]>[5:16](41,54)#ps:InterpolatedTag: #{_variable_}',
+			'[6:4]>[6:8](58,62)span: span',
+			'[6:9]>[6:27](63,81)#text: child␣text␣content',
+		]);
+
+		const tree = nodeTreeDebugView(doc.nodeList, true);
+		expect(tree).toStrictEqual([
+			'000: [0016] div(0016) => 💀',
+			'                  ┗━ div(0017)',
+			'                  ┗━ div(0018)',
+			'001: [0017]   div(0017) => 💀',
+			'                    ┗━ #ps:InterpolatedTag(0019)',
+			'002: [0019]     #ps:InterpolatedTag(0019)',
+			'                      ┗━ #ps:Code(001a)',
+			'003: [001a]       #ps:Code(001a)',
+			'004: [0018]   div(0018) => 💀',
+			'                    ┗━ #ps:InterpolatedTag(001b)',
+			'005: [001b]     #ps:InterpolatedTag(001b)',
+			'                      ┗━ span(001c)',
+			'006: [001c]       span(001c) => 💀',
+			'                        ┗━ #text(001d)',
+			'007: [001d]         #text(001d)',
 		]);
 	});
 });

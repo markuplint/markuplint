@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "4.9.2",
+	"version": "4.12.0",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -11,7 +11,8 @@
 		".": {
 			"import": "./lib/index.js",
 			"types": "./lib/index.d.ts"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"typedoc": {
 		"entryPoint": "./src/index.ts"
@@ -20,30 +21,30 @@
 		"markuplint": "./bin/markuplint.mjs"
 	},
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --build --watch",
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"@markuplint/cli-utils": "4.4.3",
-		"@markuplint/file-resolver": "4.9.0",
-		"@markuplint/html-parser": "4.6.5",
-		"@markuplint/html-spec": "4.8.2",
-		"@markuplint/i18n": "4.5.1",
-		"@markuplint/ml-ast": "4.4.2",
-		"@markuplint/ml-config": "4.7.2",
-		"@markuplint/ml-core": "4.8.2",
-		"@markuplint/ml-spec": "4.6.3",
-		"@markuplint/rules": "4.9.3",
-		"@markuplint/shared": "4.4.3",
+		"@markuplint/cli-utils": "4.4.11",
+		"@markuplint/file-resolver": "4.9.14",
+		"@markuplint/html-parser": "4.6.19",
+		"@markuplint/html-spec": "4.14.2",
+		"@markuplint/i18n": "4.6.0",
+		"@markuplint/ml-ast": "4.4.9",
+		"@markuplint/ml-config": "4.8.11",
+		"@markuplint/ml-core": "4.12.4",
+		"@markuplint/ml-spec": "4.9.6",
+		"@markuplint/rules": "4.10.12",
+		"@markuplint/shared": "4.4.11",
 		"@types/debug": "4.1.12",
-		"chokidar": "3.6.0",
-		"debug": "4.3.7",
+		"chokidar": "4.0.3",
+		"debug": "4.4.0",
 		"get-stdin": "9.0.0",
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.1.0",
-		"type-fest": "4.26.1"
+		"type-fest": "4.40.0"
 	}
 }

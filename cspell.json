@@ -31,11 +31,12 @@
 		"astro",
 		"astrojs",
 		"atrule",
+		"attributionsrc",
 		"bday",
 		"checkings",
 		"clampable",
 		"clsx",
-		"conao3",
+		"cmyk",
 		"delim",
 		"didnt",
 		"disablepictureinpicture",
@@ -148,7 +149,6 @@
 		"TSES",
 		"Tsubasa",
 		"tyankatsu",
-		"tyankatsu0105",
 		"undsoft",
 		"unexist",
 		"ungap",
@@ -166,7 +166,14 @@
 		"yamanoku",
 		"Yasuo",
 		"yearless",
-		"Yusuke"
+		"Yusuke",
+		"xywh",
+
+		// Specs
+		"closedby",
+
+		// Typo
+		"verifing"
 	],
 	"overrides": [
 		{

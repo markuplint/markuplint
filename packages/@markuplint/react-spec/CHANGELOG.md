@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.19](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.18...@markuplint/react-spec@4.5.19) (2025-04-13)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.18](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.17...@markuplint/react-spec@4.5.18) (2025-03-09)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.17](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.16...@markuplint/react-spec@4.5.17) (2025-02-27)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.16](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.15...@markuplint/react-spec@4.5.16) (2025-02-11)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.15](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.14...@markuplint/react-spec@4.5.15) (2025-02-04)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.14](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.13...@markuplint/react-spec@4.5.14) (2024-12-04)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.13](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.12...@markuplint/react-spec@4.5.13) (2024-11-17)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.12](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.11...@markuplint/react-spec@4.5.12) (2024-10-31)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.11](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.10...@markuplint/react-spec@4.5.11) (2024-10-28)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.10](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.9...@markuplint/react-spec@4.5.10) (2024-10-27)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.9](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.8...@markuplint/react-spec@4.5.9) (2024-10-15)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.8](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.7...@markuplint/react-spec@4.5.8) (2024-10-14)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.7](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.6...@markuplint/react-spec@4.5.7) (2024-09-23)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
+## [4.5.6](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.5...@markuplint/react-spec@4.5.6) (2024-09-02)
+
+**Note:** Version bump only for package @markuplint/react-spec
+
 ## [4.5.5](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.4...@markuplint/react-spec@4.5.5) (2024-06-25)
 
 **Note:** Version bump only for package @markuplint/react-spec

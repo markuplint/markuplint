@@ -194,3 +194,7 @@ test('legacy-transform', () => {
 	expect(cssSyntaxMatch('translate(300,300)', custom).matched).toBeTruthy();
 	expect(cssSyntaxMatch('translate(300px,300px)', custom).matched).toBeTruthy();
 });
+
+test('var()', () => {
+	expect(cssSyntaxMatch('var(--x)', '<length>').matched).toBe(true);
+});

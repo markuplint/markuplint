@@ -35,5 +35,3 @@
   - コード全般、コードの改善の場合: @yusukehirao
   - プラグイン開発の場合: @yusukehirao
   - ドキュメントおよびウェブサイト関連の場合: @yusukehirao, @kagankan
-  - [dockerfile](https://github.com/markuplint/markuplint/blob/main/Dockerfile)に関すること: @conao3
-  - [GitHub Actions](https://github.com/markuplint/markuplint/tree/main/.github/workflows)に関すること: @tyankatsu0105

@@ -9,6 +9,8 @@ describe('getSpec', () => {
 		const x = specs?.find(spec => spec.name === 'x');
 		expect(x).toStrictEqual({
 			defaultValue: '0',
+			description:
+				'Positions the image horizontally from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes',
 			name: 'x',
 			type: ['<svg-length>', '<percentage>'],
 			animatable: true,

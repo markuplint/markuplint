@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-ast",
-	"version": "4.4.2",
+	"version": "4.4.9",
 	"description": "The markuplint AST types.",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,7 +20,8 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	}
 }

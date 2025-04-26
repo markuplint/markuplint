@@ -1317,6 +1317,21 @@ test('WAI-Adapt', async () => {
 	).toStrictEqual([]);
 });
 
+test('Multiple Type', async () => {
+	expect((await mlRuleTest(rule, '<button command="toggle-popover"></button>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<button command="--custom"></button>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<button command="invalid"></button>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			col: 18,
+			line: 1,
+			message:
+				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+			raw: 'invalid',
+		},
+	]);
+});
+
 describe('Deprecated options', () => {
 	test('custom rule', async () => {
 		const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
@@ -1553,6 +1568,10 @@ describe('Deprecated options', () => {
 	});
 });
 
+test('CSS Functions', async () => {
+	expect((await mlRuleTest(rule, '<div style="prop: var(--x)"></div>')).violations).toStrictEqual([]);
+});
+
 describe('Issues', () => {
 	test('#553', async () => {
 		expect(
@@ -1647,5 +1666,47 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 		expect(
 			(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
 		).toStrictEqual([]);
+	});
+
+	test('#2455', async () => {
+		const sourceCode = `<picture>
+  <source src="path/to" media="(query: value)">
+  <source srcset="path/to" media="(query: value)">
+  <source media="(query: value)">
+  <img src="fallback" alt="text">
+</picture>
+<video>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</video>
+<audio>
+  <source src="path/to">
+  <source srcset="path/to">
+  <source>
+</audio>`;
+		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 2,
+				col: 11,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+			{
+				severity: 'error',
+				line: 9,
+				col: 11,
+				message: 'The "srcset" attribute is disallowed',
+				raw: 'srcset',
+			},
+			{
+				severity: 'error',
+				line: 14,
+				col: 11,
+				message: 'The "srcset" attribute is disallowed',
+				raw: 'srcset',
+			},
+		]);
 	});
 });

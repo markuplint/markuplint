@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.9](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.8...vscode-markuplint@4.8.9) (2025-04-13)
+
+### Bug Fixes
+
+- **vscode:** lower vscode engine requirement to 1.90 ([8aba6ed](https://github.com/markuplint/markuplint/commit/8aba6ed4dae753f5ba147342a16041eae131f58c))
+
+## [4.8.8](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.7...vscode-markuplint@4.8.8) (2025-03-09)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.7](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.6...vscode-markuplint@4.8.7) (2025-02-27)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.6](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.5...vscode-markuplint@4.8.6) (2025-02-11)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.5](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.4...vscode-markuplint@4.8.5) (2025-02-04)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.4](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.3...vscode-markuplint@4.8.4) (2024-12-04)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.3](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.2...vscode-markuplint@4.8.3) (2024-11-17)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.2](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.1...vscode-markuplint@4.8.2) (2024-10-31)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.8.1](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.0...vscode-markuplint@4.8.1) (2024-10-28)
+
+### Bug Fixes
+
+- **vscode:** fix to importing the local module ([f45d5c3](https://github.com/markuplint/markuplint/commit/f45d5c30ddf3c9928b0f54b9347a0394aa98de6f))
+
+# [4.8.0](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.9...vscode-markuplint@4.8.0) (2024-10-27)
+
+### Features
+
+- **vscode:** dropped `esm-adaptor` due to VS Code's support for ESM ([2dd2f0e](https://github.com/markuplint/markuplint/commit/2dd2f0e3d589f8eeeeeee42270c98682be7aa5a8))
+
+## [4.7.9](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.8...vscode-markuplint@4.7.9) (2024-10-15)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.7.8](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.7...vscode-markuplint@4.7.8) (2024-10-14)
+
+**Note:** Version bump only for package vscode-markuplint
+
+## [4.7.7](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.6...vscode-markuplint@4.7.7) (2024-09-23)
+
+### Bug Fixes
+
+- **vscode:** replaced failing `structuredClone` with JSON serialization ([eed10e8](https://github.com/markuplint/markuplint/commit/eed10e8ec828c867d9101ffffe0449a08cfad64d))
+
+## [4.7.6](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.5...vscode-markuplint@4.7.6) (2024-09-02)
+
+**Note:** Version bump only for package vscode-markuplint
+
 ## [4.7.5](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.7.4...vscode-markuplint@4.7.5) (2024-06-25)
 
 **Note:** Version bump only for package vscode-markuplint

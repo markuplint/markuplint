@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/shared",
-	"version": "4.4.3",
+	"version": "4.4.11",
 	"description": "Shared functions for Markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -20,10 +20,11 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
 		"clean": "tsc --build --clean"
 	},
 	"dependencies": {
-		"html-entities": "2.5.2"
+		"html-entities": "2.6.0"
 	}
 }

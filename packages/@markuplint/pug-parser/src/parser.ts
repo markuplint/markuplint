@@ -1,4 +1,4 @@
-import type { ASTNode } from './pug-parser/index.js';
+import type { ASTNode } from './types.js';
 import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
@@ -35,8 +35,9 @@ class PugParser extends Parser<ASTNode> {
 
 	tokenize(options?: ParseOptions) {
 		const offsetOffset = options?.offsetOffset ?? 0;
+		const ast = pugParse(this.rawCode, offsetOffset >= 1).nodes;
 		return {
-			ast: pugParse(this.rawCode, offsetOffset >= 1).nodes,
+			ast: [...ast],
 			isFragment: true,
 		};
 	}
@@ -69,7 +70,7 @@ class PugParser extends Parser<ASTNode> {
 					...token,
 					depth,
 					parentNode,
-					name: originNode.val ?? '',
+					name: originNode.raw ?? '',
 					publicId: '',
 					systemId: '',
 				});
@@ -79,10 +80,18 @@ class PugParser extends Parser<ASTNode> {
 					return [];
 				}
 
+				if (!originNode.raw.includes('<') && !originNode.raw.includes('#[')) {
+					return this.visitText({
+						...token,
+						depth,
+						parentNode,
+					});
+				}
+
 				const htmlDoc = new HtmlInPugParser().parse(originNode.raw, {
 					offsetOffset: originNode.offset,
 					offsetLine: originNode.line,
-					offsetColumn: originNode.column,
+					offsetColumn: originNode.column ?? parentNode?.endCol,
 					depth,
 				});
 
@@ -107,6 +116,21 @@ class PugParser extends Parser<ASTNode> {
 				return newNodeList;
 			}
 			case 'Comment': {
+				return this.visitComment(
+					{
+						...token,
+						depth,
+						parentNode,
+					},
+					{
+						isBogus: false,
+					},
+				);
+			}
+			case 'BlockComment': {
+				const lastBlock = originNode.block?.nodes.at(-1);
+				const endOffset = lastBlock ? lastBlock.endOffset : originNode.endOffset;
+				const token = this.sliceFragment(originNode.offset, endOffset);
 				return this.visitComment(
 					{
 						...token,
@@ -177,7 +201,7 @@ class PugParser extends Parser<ASTNode> {
 						namespace,
 						isFragment: false,
 					},
-					originNode.block.nodes,
+					originNode.block?.nodes ?? [],
 					{
 						overwriteProps: {
 							attributes: [...attrs, ...andAttr],
@@ -186,9 +210,18 @@ class PugParser extends Parser<ASTNode> {
 				);
 			}
 			default: {
+				let tokenIncludesFile = token;
+
+				if ('file' in originNode && originNode.file.column != null) {
+					const interval = originNode.file.column - originNode.endColumn;
+					const fileOffset = originNode.endOffset + interval;
+					const fileEndOffset = fileOffset + originNode.file.path.length;
+					tokenIncludesFile = this.sliceFragment(originNode.offset, fileEndOffset);
+				}
+
 				return this.visitPsBlock(
 					{
-						...token,
+						...tokenIncludesFile,
 						depth,
 						parentNode,
 						nodeName: originNode.type,
@@ -241,6 +274,10 @@ class PugParser extends Parser<ASTNode> {
 		const siblings = this.visitChildren(childNodes, startTag);
 
 		return [startTag, ...siblings];
+	}
+
+	visitSpreadAttr(): null {
+		return null;
 	}
 
 	visitAttr(token: Token): MLASTAttr {
