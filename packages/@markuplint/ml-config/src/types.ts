@@ -269,20 +269,7 @@ export interface PretenderScanOptions {
 
 export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = RuleConfig<T, O> | Readonly<T> | boolean;
 
-/**
- * @deprecated
- */
-export type RuleV2<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| RuleConfigV2<T, O>
-	| Readonly<T>
-	| boolean;
-
 export type AnyRule = Rule<RuleConfigValue, PlainData>;
-
-/**
- * @deprecated
- */
-export type AnyRuleV2 = RuleV2<RuleConfigValue, PlainData>;
 
 export type Rules = {
 	readonly [ruleName: string]: AnyRule;
@@ -293,23 +280,6 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly value?: Readonly<T>;
 	readonly options?: Readonly<O>;
 	readonly reason?: string;
-};
-
-/**
- * @deprecated
- */
-export type RuleConfigV2<T extends RuleConfigValue, O extends PlainData = undefined> = {
-	readonly severity?: Severity;
-	readonly value?: Readonly<T>;
-	readonly reason?: string;
-
-	/**
-	 * Old property
-	 *
-	 * @deprecated
-	 * @see {this.options}
-	 */
-	readonly option?: Readonly<O>;
 };
 
 export type Severity = 'error' | 'warning' | 'info';
