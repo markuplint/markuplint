@@ -26,14 +26,14 @@
 		"ajv": "8.17.1",
 		"cheerio": "1.0.0",
 		"cli-progress": "3.12.0",
-		"fast-xml-parser": "5.2.0",
-		"glob": "11.0.1",
+		"fast-xml-parser": "5.2.1",
+		"glob": "11.0.2",
 		"strip-json-comments": "5.0.1"
 	},
 	"devDependencies": {
 		"@markuplint/ml-spec": "4.9.6",
 		"@markuplint/test-tools": "4.5.19",
 		"@types/cli-progress": "3.11.6",
-		"type-fest": "4.39.1"
+		"type-fest": "4.40.0"
 	}
 }

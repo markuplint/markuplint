@@ -58,24 +58,6 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return super.parseError(error);
 	}
 
-	visitText(token: ChildToken): readonly MLASTNodeTreeItem[] {
-		const nodes = super.visitText(token, {
-			researchTags: false,
-			invalidTagAsText: false,
-		});
-
-		return nodes.flatMap(node => {
-			if (node.nodeName === '#text' && /^<script[\s>]/i.test(node.raw)) {
-				return this.visitPsBlock({
-					...node,
-					nodeName: 'Script',
-					isFragment: false,
-				});
-			}
-			return node;
-		});
-	}
-
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: SvelteNode,
@@ -275,6 +257,24 @@ export class SvelteParser extends Parser<SvelteNode> {
 				);
 			}
 		}
+	}
+
+	visitText(token: ChildToken): readonly MLASTNodeTreeItem[] {
+		const nodes = super.visitText(token, {
+			researchTags: false,
+			invalidTagAsText: false,
+		});
+
+		return nodes.flatMap(node => {
+			if (node.nodeName === '#text' && /^<script[\s>]/i.test(node.raw)) {
+				return this.visitPsBlock({
+					...node,
+					nodeName: 'Script',
+					isFragment: false,
+				});
+			}
+			return node;
+		});
 	}
 
 	visitPsBlock(

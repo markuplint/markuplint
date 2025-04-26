@@ -33,7 +33,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -70,7 +70,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -126,7 +126,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
@@ -181,7 +181,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
@@ -230,7 +230,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
@@ -291,7 +291,7 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
