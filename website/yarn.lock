@@ -2103,6 +2103,13 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz#4fc56c15c580b9adb7dc3c333a134e540b44bfb1"
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
+"@markuplint-dev/prettier-config@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@markuplint-dev/prettier-config/-/prettier-config-1.0.12.tgz#93449ea3249695fcbd52686290639f10463c909d"
+  integrity sha512-AEj8gyxbRMUCiQgFDUx7sJTANVSuP5aa6QbzHSvnERwWRgHpQ2QBVkKcTpyuBKr0N1XjwNdsu+t9HX/M5dv2Pg==
+  dependencies:
+    prettier "3.5.3"
+
 "@mdx-js/mdx@^3.0.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@mdx-js/mdx/-/mdx-3.1.0.tgz#10235cab8ad7d356c262e8c21c68df5850a97dc3"
@@ -8314,6 +8321,11 @@ postcss@^8.4.21, postcss@^8.4.24, postcss@^8.4.26, postcss@^8.4.32, postcss@^8.4
     nanoid "^3.3.8"
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
+
+prettier@3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.5.3.tgz#4fc2ce0d657e7a02e602549f053b239cb7dfe1b5"
+  integrity sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==
 
 pretty-error@^4.0.0:
   version "4.0.0"
