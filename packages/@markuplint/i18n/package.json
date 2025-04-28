@@ -32,9 +32,11 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "yarn build:esm; yarn build:cjs; node ./esm.mjs",
+		"build": "yarn build:esm && yarn build:cjs && node ./esm.mjs",
 		"build:esm": "tsc --project tsconfig.build.json",
 		"build:cjs": "tsc --project tsconfig.build-cjs.json",
-		"clean": "tsc --build --clean"
+		"clean": "yarn clean:esm && yarn clean:cjs",
+		"clean:esm": "tsc --build --clean tsconfig.build.json",
+		"clean:cjs": "tsc --build --clean tsconfig.build-cjs.json"
 	}
 }
