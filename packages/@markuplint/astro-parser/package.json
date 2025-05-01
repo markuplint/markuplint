@@ -27,6 +27,6 @@
 		"astro-eslint-parser": "1.2.2"
 	},
 	"devDependencies": {
-		"@astrojs/compiler": "2.11.0"
+		"@astrojs/compiler": "2.12.0"
 	}
 }
