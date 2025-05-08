@@ -28,10 +28,10 @@
 		"@markuplint/ml-ast": "4.4.9",
 		"@markuplint/selector": "4.7.4",
 		"@markuplint/shared": "4.4.11",
-		"@types/mustache": "4.2.5",
+		"@types/mustache": "4.2.6",
 		"deepmerge": "4.3.1",
 		"is-plain-object": "5.0.0",
 		"mustache": "4.2.0",
-		"type-fest": "4.40.1"
+		"type-fest": "4.41.0"
 	}
 }
