@@ -1,7 +1,10 @@
+import importX from 'eslint-plugin-import-x';
+
 /**
  * @type {import('eslint').Linter.Config}
  */
 export const ts = {
+	...importX.flatConfigs.typescript,
 	languageOptions: {
 		parserOptions: {
 			sourceType: 'module',
@@ -9,6 +12,7 @@ export const ts = {
 		},
 	},
 	rules: {
+		...importX.flatConfigs.typescript.rules,
 		'@typescript-eslint/no-unused-vars': [2, { args: 'none' }],
 		'@typescript-eslint/no-array-constructor': 2,
 		'@typescript-eslint/adjacent-overload-signatures': 2,
