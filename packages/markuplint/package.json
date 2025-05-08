@@ -23,7 +23,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.11",

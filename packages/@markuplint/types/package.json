@@ -22,7 +22,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean",
+		"clean": "tsc --build --clean tsconfig.build.json",
 		"schema": "run-s schema:types schema:schema build schema:prettier schema:eslint schema:prettier",
 		"schema:types": "tsx \"./gen/types.ts\"",
 		"schema:schema": "json2ts \"./types.schema.json\" > \"./src/types.schema.ts\"",

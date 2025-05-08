@@ -22,7 +22,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"devDependencies": {
 		"@types/node": "22.15.15"
