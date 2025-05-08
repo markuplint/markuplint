@@ -29,7 +29,7 @@
 		"browser-resolve": "2.0.0",
 		"coveralls": "3.1.1",
 		"default-markuplint": "npm:markuplint@latest",
-		"execa": "9.5.2",
+		"execa": "9.5.3",
 		"glob": "11.0.2",
 		"jsdom": "26.1.0",
 		"strip-json-comments": "5.0.1",
