@@ -1,4 +1,4 @@
-import config from '../.prettierrc.mjs';
+import config from '@markuplint-dev/prettier-config';
 
 export default {
   ...config,
