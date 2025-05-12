@@ -27,6 +27,6 @@
 	},
 	"devDependencies": {
 		"@types/debug": "4.1.12",
-		"semver": "7.7.1"
+		"semver": "7.7.2"
 	}
 }
