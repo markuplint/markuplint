@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@markuplint/ml-spec": "4.9.6",
 		"@types/debug": "4.1.12",
-		"debug": "4.4.0",
+		"debug": "4.4.1",
 		"postcss-selector-parser": "7.1.0",
 		"type-fest": "4.41.0"
 	},

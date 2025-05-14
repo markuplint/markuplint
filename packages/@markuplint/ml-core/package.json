@@ -39,7 +39,7 @@
 		"@markuplint/selector": "4.7.4",
 		"@markuplint/shared": "4.4.11",
 		"@types/debug": "4.1.12",
-		"debug": "4.4.0",
+		"debug": "4.4.1",
 		"is-plain-object": "5.0.0",
 		"type-fest": "4.41.0"
 	}
