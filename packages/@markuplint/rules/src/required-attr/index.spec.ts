@@ -76,7 +76,7 @@ test('At least one of data and type must be defined to <object>.', async () => {
 
 	expect((await mlRuleTest(rule, '<object type="XXXX_YYYY_ZZZZ">')).violations.length).toBe(0);
 
-	expect((await mlRuleTest(rule, '<object>')).violations.length).toBe(2);
+	expect((await mlRuleTest(rule, '<object>')).violations.length).toBe(1);
 });
 
 test('The ancestors of the <source> element.', async () => {
@@ -111,6 +111,14 @@ test('The ancestors of the <source> element.', async () => {
 	]);
 });
 
+test('"srcset" attribute is required if "src" attribute is not used', async () => {
+	expect((await mlRuleTest(rule, '<img srcset="path/to" />')).violations).toStrictEqual([]);
+});
+
+test('"src" attribute is required if "srcset" attribute is not used', async () => {
+	expect((await mlRuleTest(rule, '<img src="path/to" />')).violations).toStrictEqual([]);
+});
+
 test('with value requirement', async () => {
 	expect(
 		(
@@ -128,7 +136,7 @@ test('with value requirement', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "img" element expects the "src" attribute',
+			message: 'The "img" element expects the "src" or the "srcset" attribute',
 			raw: '<img />',
 		},
 		{
@@ -156,7 +164,7 @@ test('with value requirement', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "img" element expects the "src" attribute',
+			message: 'The "img" element expects the "src" or the "srcset" attribute',
 			raw: '<img decoding="sync" />',
 		},
 		{
@@ -321,7 +329,7 @@ test('Pug', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "img" element expects the "src" attribute',
+			message: 'The "img" element expects the "src" or the "srcset" attribute',
 			raw: 'img',
 		},
 	]);
@@ -353,7 +361,7 @@ test('React', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "img" element expects the "src" attribute',
+			message: 'The "img" element expects the "src" or the "srcset" attribute',
 			raw: '<img alt={alt} />',
 		},
 	]);
@@ -409,14 +417,7 @@ test('custom element', async () => {
 			severity: 'error',
 			line: 1,
 			col: 1,
-			message: 'The "link" element expects the "itemprop" attribute',
-			raw: '<Link href="path/to">',
-		},
-		{
-			severity: 'error',
-			line: 1,
-			col: 1,
-			message: 'The "link" element expects the "rel" attribute',
+			message: 'The "link" element expects the "itemprop" or the "rel" attribute',
 			raw: '<Link href="path/to">',
 		},
 	]);
