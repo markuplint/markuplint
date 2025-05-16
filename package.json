@@ -79,7 +79,7 @@
 		"husky": "9.1.7",
 		"lerna": "8.2.2",
 		"lint-staged": "16.0.0",
-		"npm-run-all2": "8.0.1",
+		"npm-run-all2": "8.0.2",
 		"textlint": "14.7.1",
 		"textlint-filter-rule-comments": "1.2.2",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
