@@ -37910,10 +37910,11 @@
 				},
 				"src": {
 					"type": "URL",
-					"required": true
+					"requiredEither": ["srcset"]
 				},
 				"srcset": {
-					"description": "One or more strings separated by commas, indicating possible image sources for the user agent to use. Each string is composed of: A URL to an image Optionally, whitespace followed by one of: A width descriptor (a positive integer directly followed by w). The width descriptor is divided by the source size given in the sizes attribute to calculate the effective pixel density. A pixel density descriptor (a positive floating point number directly followed by x). If no descriptor is specified, the source is assigned the default descriptor of 1x. It is incorrect to mix width descriptors and pixel density descriptors in the same srcset attribute. Duplicate descriptors (for instance, two sources in the same srcset which are both described with 2x) are also invalid. If the srcset attribute uses width descriptors, the sizes attribute must also be present, or the srcset itself will be ignored. The user agent selects any of the available sources at its discretion. This provides them with significant leeway to tailor their selection based on things like user preferences or bandwidth conditions. See our Responsive images tutorial for an example."
+					"type": "Srcset",
+					"requiredEither": ["src"]
 				},
 				"usemap": {
 					"type": "HashName",
