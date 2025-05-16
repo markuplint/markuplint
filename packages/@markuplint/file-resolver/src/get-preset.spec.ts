@@ -18,8 +18,6 @@ describe('getPreset', () => {
 	});
 
 	test('Catch an error', async () => {
-		await expect(getPreset('no-exists')).rejects.toThrowError(
-			'Failed to load url @markuplint/config-presets/preset.no-exists.json (resolved id: @markuplint/config-presets/preset.no-exists.json). Does the file exist?',
-		);
+		await expect(getPreset('no-exists')).rejects.toThrowError('Preset markuplint:no-exists is not found');
 	});
 });

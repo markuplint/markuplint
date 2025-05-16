@@ -12,11 +12,11 @@ export async function forceImportJsonInModule(modPath: string) {
 		fLog('Error in forceImportJsonInModule: %O', error);
 
 		if (!('code' in error)) {
-			throw error;
+			return error;
 		}
 
 		if (error.code !== 'ERR_IMPORT_ASSERTION_TYPE_MISSING' && error.code !== 'ERR_IMPORT_ATTRIBUTE_MISSING') {
-			throw error;
+			return error;
 		}
 
 		const searchPath = /module\s"([^"]+)"\sneeds/i.exec(error.message);
@@ -25,7 +25,7 @@ export async function forceImportJsonInModule(modPath: string) {
 		fLog('Extract path: %s', absPath);
 
 		if (!absPath) {
-			throw error;
+			return error;
 		}
 
 		const normalizePath = absPath
