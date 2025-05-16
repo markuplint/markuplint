@@ -2309,12 +2309,12 @@
   dependencies:
     tslib "^2.4.0"
 
-"@types/cheerio@0.22.35":
-  version "0.22.35"
-  resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.35.tgz#0d16dc1f24d426231c181b9c31847f673867595f"
-  integrity sha512-yD57BchKRvTV+JD53UZ6PD8KWY5g5rvvMLRnZR3EQBCZXiDT/HR+pKpMzFGlWNhFrXlo7VPZXtKvIEwZkAWOIA==
+"@types/cheerio@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-1.0.0.tgz#7b0bc1451711a85291b30f0426e46d6d8bf2e0fd"
+  integrity sha512-zAaImHWoh5RY2CLgU2mvg3bl2k3F65B0N5yphuII3ythFLPmJhL7sj1RDu6gSxcgqHlETbr/lhA2OBY+WF1fXQ==
   dependencies:
-    "@types/node" "*"
+    cheerio "*"
 
 "@types/cli-progress@3.11.6":
   version "3.11.6"
@@ -3739,7 +3739,7 @@ cheerio-select@^2.1.0:
     domhandler "^5.0.3"
     domutils "^3.0.1"
 
-cheerio@1.0.0, cheerio@^1.0.0-rc.9:
+cheerio@*, cheerio@1.0.0, cheerio@^1.0.0-rc.9:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.0.0.tgz#1ede4895a82f26e8af71009f961a9b8cb60d6a81"
   integrity sha512-quS9HgjQpdaXOvsZz82Oz7uxtXiy6UIsIQcpBj7HRw2M63Skasm9qlDocAM7jNuaxdhpPU7c4kJN+gA5MCu4ww==
