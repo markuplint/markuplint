@@ -68,10 +68,12 @@ export default createRule<RequiredAttributes>({
 			for (const spec of Object.values(attributeSpecs)) {
 				const didntHave = !el.hasAttribute(spec.name);
 
+				const candidate: string[] = [spec.name];
+
 				let invalid = false;
 
 				if (spec.requiredEither) {
-					const candidate = [...spec.requiredEither, spec.name];
+					candidate.push(...spec.requiredEither);
 					invalid = !candidate.some(attrName => el.hasAttribute(attrName));
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
@@ -80,12 +82,22 @@ export default createRule<RequiredAttributes>({
 					invalid = el.matches(selector) && didntHave;
 				}
 
+				candidate.sort();
+
 				if (invalid) {
-					const message = t(
-						'{0} expects {1}',
-						t('the "{0*}" {1}', el.localName, 'element'),
-						t('the "{0*}" {1}', spec.name, 'attribute'),
-					);
+					const expects =
+						candidate.length === 1
+							? t('the "{0*}" {1}', spec.name, 'attribute')
+							: t(
+									'{0} {1}',
+									candidate
+										.map(attrName => t('the "{0*}"', attrName))
+										// eslint-disable-next-line unicorn/no-array-reduce
+										.reduce((a, b) => t('{0} or {1}', a, b)),
+									t('attribute'),
+								);
+
+					const message = t('{0} expects {1}', t('the "{0*}" {1}', el.localName, 'element'), expects);
 					report({
 						scope: el,
 						message,
