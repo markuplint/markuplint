@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { resolve } from 'import-meta-resolve';
 
@@ -20,9 +21,17 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 	}
 
 	try {
-		const imported = await import(name);
+		// Convert absolute paths to file:// URL format
+		let importPath = name;
+		if (path.isAbsolute(name)) {
+			// Use Node.js pathToFileURL function to convert to a proper URL
+			importPath = pathToFileURL(name).href;
+			gLog('Converted to file URL: %s', importPath);
+		}
+
+		const imported = await import(importPath);
 		const mod = imported?.default ?? imported ?? null;
-		gLogSuccess('Success by import("%s"): %O', name, mod);
+		gLogSuccess('Success by import("%s"): %O', importPath, mod);
 		cache.set(name, mod);
 		return mod;
 	} catch (error) {

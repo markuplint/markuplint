@@ -123,6 +123,27 @@ export class MLCore {
 			return violations;
 		}
 
+		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
+
+		const setRuleNames = new Set([
+			...Object.keys(this.#ruleset.rules),
+			...this.#ruleset.nodeRules.flatMap(nodeRule => Object.keys(nodeRule.rules ?? {})),
+			...this.#ruleset.childNodeRules.flatMap(childNodeRule => Object.keys(childNodeRule.rules ?? {})),
+		]);
+
+		for (const setRuleName of setRuleNames) {
+			if (!definedRuleName.has(setRuleName)) {
+				violations.push({
+					ruleId: 'config-error',
+					severity: 'warning',
+					message: `Rule not found: ${setRuleName}`,
+					col: 1,
+					line: 1,
+					raw: '',
+				});
+			}
+		}
+
 		for (const error of this.#configErrors) {
 			violations.push({
 				ruleId: 'config-error',
