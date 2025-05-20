@@ -8266,7 +8266,7 @@ min-indent@^1.0.0, min-indent@^1.0.1:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
-minimatch@10.0.1, minimatch@^10.0.0, "minimatch@^9.0.3 || ^10.0.1":
+minimatch@10.0.1, minimatch@^10.0.0, minimatch@^10.0.1, "minimatch@^9.0.3 || ^10.0.1":
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-10.0.1.tgz#ce0521856b453c86e25f2c4c0d03e6ff7ddc440b"
   integrity sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==
@@ -8725,15 +8725,15 @@ npm-registry-fetch@^17.0.0, npm-registry-fetch@^17.0.1, npm-registry-fetch@^17.1
     npm-package-arg "^11.0.0"
     proc-log "^4.0.0"
 
-npm-run-all2@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/npm-run-all2/-/npm-run-all2-8.0.2.tgz#637cc8162d58a588dac3596e4ec4bf85937c5158"
-  integrity sha512-yU70kTcohhAETxUjJQxTdQbaDJWCyv+DlKHEWdOifxZ0hZUKRh26mY2mfzlPxfGbsTRbgBuEHeakB6wx0CvVaQ==
+npm-run-all2@8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/npm-run-all2/-/npm-run-all2-8.0.3.tgz#7b836ae3b1ede7ab942aceb88f188aaaa528ddfc"
+  integrity sha512-0mAycidMUMThrLt8AT3LGtOMgfLaMg6/4oUKHTKMU0jDSIsdKBsKp98H8zBFcJylQC4CtOB140UUFbOlFyE9gA==
   dependencies:
     ansi-styles "^6.2.1"
     cross-spawn "^7.0.6"
     memorystream "^0.3.1"
-    picomatch "^4.0.2"
+    minimatch "^10.0.1"
     pidtree "^0.6.0"
     read-package-json-fast "^4.0.0"
     shell-quote "^1.7.3"
