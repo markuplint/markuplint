@@ -124,7 +124,7 @@
 		"@types/semver": "7.7.0",
 		"@types/vscode": "1.100.0",
 		"@vscode/test-electron": "2.5.2",
-		"@vscode/vsce": "3.4.1",
+		"@vscode/vsce": "3.4.2",
 		"esbuild": "0.25.4",
 		"typescript": "5.8.3"
 	},
