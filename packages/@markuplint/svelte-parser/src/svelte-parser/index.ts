@@ -2,7 +2,7 @@ import type { AST } from 'svelte/compiler';
 
 import { parse } from 'svelte/compiler';
 
-export type SvelteNode = AST.Text | Tag | ElementLike | AST.Comment | SvelteBlock;
+export type SvelteNode = AST.Text | AST.Comment | AST.Tag | AST.ElementLike | AST.Block;
 export type SvelteIfBlock = AST.IfBlock;
 export type SvelteEachBlock = AST.EachBlock;
 export type SvelteAwaitBlock = AST.AwaitBlock;
@@ -22,8 +22,6 @@ export type SvelteBlock =
 	| AST.SnippetBlock
 	| AST.SvelteBoundary;
 
-type Tag = AST.ExpressionTag | AST.HtmlTag | AST.ConstTag | AST.DebugTag | AST.RenderTag;
-
 type Directive =
 	| AST.AnimateDirective
 	| AST.BindDirective
@@ -33,18 +31,3 @@ type Directive =
 	| AST.StyleDirective
 	| AST.TransitionDirective
 	| AST.UseDirective;
-
-type ElementLike =
-	| AST.Component
-	| AST.TitleElement
-	| AST.SlotElement
-	| AST.RegularElement
-	| AST.SvelteBody
-	| AST.SvelteComponent
-	| AST.SvelteDocument
-	| AST.SvelteElement
-	| AST.SvelteFragment
-	| AST.SvelteHead
-	| AST.SvelteOptionsRaw
-	| AST.SvelteSelf
-	| AST.SvelteWindow;
