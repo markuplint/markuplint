@@ -4981,14 +4981,6 @@ eslint-compat-utils@^0.5.1:
   dependencies:
     semver "^7.5.4"
 
-eslint-import-context@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/eslint-import-context/-/eslint-import-context-0.1.4.tgz#38b2bdc6d57fcf357a8c61cf02f8b46652b02dde"
-  integrity sha512-x3+etvB5TPxjFIq2m4tTnpt/9Ekp5GZKzXNp5ExLaS7Qv9E5BVs/Td7jxSnRtSzrgTCExXZlc0MuOdSuDLURiQ==
-  dependencies:
-    get-tsconfig "^4.10.1"
-    stable-hash "^0.0.5"
-
 eslint-import-context@^0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/eslint-import-context/-/eslint-import-context-0.1.5.tgz#ef1facb0f940e6aa85c9066983469e9b7a994dc8"
@@ -5028,15 +5020,15 @@ eslint-plugin-es-x@^7.8.0:
     "@eslint-community/regexpp" "^4.11.0"
     eslint-compat-utils "^0.5.1"
 
-eslint-plugin-import-x@4.13.1:
-  version "4.13.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-import-x/-/eslint-plugin-import-x-4.13.1.tgz#64ff0e74ca51dadff490beeabee43fc768659aab"
-  integrity sha512-Ua4HZBmG5TNr18q3Is+nT6mKCzNNpycqtv/+TkIK7E3w4LBlPlZI6vLwmDjXdIZtJPP2Z1Oh5+wksWwlcCjMpA==
+eslint-plugin-import-x@4.13.3:
+  version "4.13.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-import-x/-/eslint-plugin-import-x-4.13.3.tgz#bcf172817eaa02b782cd0bcdb384091c40dbb747"
+  integrity sha512-CDewJDEeYQhm94KGCDYiuwU1SdaWc/vh+SziSKkF7kichAqAFnQYtSYUvSwSBbiBjYLxV5uUxocxxQobRI9YXA==
   dependencies:
     "@typescript-eslint/utils" "^8.32.1"
     comment-parser "^1.4.1"
     debug "^4.4.1"
-    eslint-import-context "^0.1.4"
+    eslint-import-context "^0.1.5"
     eslint-import-resolver-node "^0.3.9"
     is-glob "^4.0.3"
     minimatch "^9.0.3 || ^10.0.1"
