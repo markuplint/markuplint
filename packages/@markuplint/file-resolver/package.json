@@ -39,7 +39,7 @@
 		"cosmiconfig": "9.0.0",
 		"debug": "4.4.1",
 		"glob": "11.0.2",
-		"ignore": "7.0.4",
+		"ignore": "7.0.5",
 		"import-meta-resolve": "4.1.0",
 		"jsonc": "2.0.0",
 		"minimatch": "10.0.1"
