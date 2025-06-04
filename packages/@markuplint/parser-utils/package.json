@@ -39,6 +39,6 @@
 		"uuid": "11.1.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/typescript-estree": "8.33.0"
+		"@typescript-eslint/typescript-estree": "8.33.1"
 	}
 }
