@@ -2713,7 +2713,7 @@
     semver "^7.6.0"
     ts-api-utils "^2.1.0"
 
-"@typescript-eslint/utils@8.33.1":
+"@typescript-eslint/utils@8.33.1", "@typescript-eslint/utils@^8.26.1":
   version "8.33.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-8.33.1.tgz#ea22f40d3553da090f928cf17907e963643d4b96"
   integrity sha512-52HaBiEQUaRYqAXpfzWSR2U3gxk92Kw006+xZpElaPMg3C4PgM+A5LqwoQI1f9E5aZ/qlxAZxzm42WX+vn92SQ==
@@ -5330,12 +5330,13 @@ eslint-plugin-jsdoc@50.7.1:
     semver "^7.7.2"
     spdx-expression-parse "^4.0.0"
 
-eslint-plugin-n@17.18.0:
-  version "17.18.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-17.18.0.tgz#8515979b49ef8db7bb16e457b8ed22cc695d2a84"
-  integrity sha512-hvZ/HusueqTJ7VDLoCpjN0hx4N4+jHIWTXD4TMLHy9F23XkDagR9v+xQWRWR57yY55GPF8NnD4ox9iGTxirY8A==
+eslint-plugin-n@17.19.0:
+  version "17.19.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-17.19.0.tgz#3c198306c2eb9ea950c7458cff9c9a6426d02c58"
+  integrity sha512-qxn1NaDHtizbhVAPpbMT8wWFaLtPnwhfN/e+chdu2i6Vgzmo/tGM62tcJ1Hf7J5Ie4dhse3DOPMmDxduzfifzw==
   dependencies:
     "@eslint-community/eslint-utils" "^4.5.0"
+    "@typescript-eslint/utils" "^8.26.1"
     enhanced-resolve "^5.17.1"
     eslint-plugin-es-x "^7.8.0"
     get-tsconfig "^4.8.1"
@@ -5343,6 +5344,7 @@ eslint-plugin-n@17.18.0:
     ignore "^5.3.2"
     minimatch "^9.0.5"
     semver "^7.6.3"
+    ts-declaration-location "^1.0.6"
 
 eslint-plugin-react-hooks@5.2.0:
   version "5.2.0"
@@ -11794,6 +11796,13 @@ ts-api-utils@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-2.1.0.tgz#595f7094e46eed364c13fd23e75f9513d29baf91"
   integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
+
+ts-declaration-location@^1.0.6:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/ts-declaration-location/-/ts-declaration-location-1.0.7.tgz#d4068fe9975828b3b453b3ab112b4711d8267688"
+  integrity sha512-EDyGAwH1gO0Ausm9gV6T2nUvBgXT5kGoCMJPllOaooZ+4VvJiKBdZE7wK18N1deEowhcUptS+5GXZK8U/fvpwA==
+  dependencies:
+    picomatch "^4.0.2"
 
 ts-node@10.9.2:
   version "10.9.2"
