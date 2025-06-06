@@ -4,14 +4,10 @@ import eastasianwidth from 'eastasianwidth';
 const eaw: { characterLength: (char: string) => number } = eastasianwidth;
 
 export function getWidth(s: string): number {
-	return s.replaceAll(
-		// All characters
-		/./g,
-		// Wide characters to multi dots
-		char =>
-			'•'.repeat(
-				// Get the number of character width
-				eaw.characterLength(char),
-			),
-	).length;
+	let width = 0;
+	for (const char of s) {
+		// Get the number of character width per Unicode code point
+		width += eaw.characterLength(char);
+	}
+	return width;
 }
