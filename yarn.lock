@@ -30,7 +30,12 @@
     "@csstools/css-tokenizer" "^3.0.3"
     lru-cache "^10.4.3"
 
-"@astrojs/compiler@2.12.1", "@astrojs/compiler@^2.0.0":
+"@astrojs/compiler@2.12.2":
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.12.2.tgz#5913b6ec7efffebdfb37fae9a50122802ae08c64"
+  integrity sha512-w2zfvhjNCkNMmMMOn5b0J8+OmUaBL1o40ipMvqcG6NRpdC+lKxmTi48DT8Xw0SzJ3AfmeFLB45zXZXtmbsjcgw==
+
+"@astrojs/compiler@^2.0.0":
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-2.12.1.tgz#5939988a6961b222f89562863b6b3dff00fa9ae9"
   integrity sha512-WDSyVIiz7sNcJcCJxJFITu6XjfGhJ50Z0auyaWsrM+xb07IlhBLFtQuDkNy0caVHWNcKTM2LISAaHhgkRqGAVg==
