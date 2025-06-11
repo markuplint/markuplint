@@ -5283,10 +5283,10 @@ eslint-plugin-import-x@4.15.1:
     stable-hash-x "^0.1.1"
     unrs-resolver "^1.7.10"
 
-eslint-plugin-jsdoc@50.7.1:
-  version "50.7.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-50.7.1.tgz#f3475c5545473f1d3e5fb272ad2f3988283b42e5"
-  integrity sha512-XBnVA5g2kUVokTNUiE1McEPse5n9/mNUmuJcx52psT6zBs2eVcXSmQBvjfa7NZdfLVSy3u1pEDDUxoxpwy89WA==
+eslint-plugin-jsdoc@50.8.0:
+  version "50.8.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-50.8.0.tgz#a8d192ccca26df368a2fbaff17c9dddefacd773f"
+  integrity sha512-UyGb5755LMFWPrZTEqqvTJ3urLz1iqj+bYOHFNag+sw3NvaMWP9K2z+uIn37XfNALmQLQyrBlJ5mkiVPL7ADEg==
   dependencies:
     "@es-joy/jsdoccomment" "~0.50.2"
     are-docs-informative "^0.0.2"
