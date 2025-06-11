@@ -1,12 +1,21 @@
 FROM node:20
 
-COPY . /markuplint
+# Enable Corepack for Yarn v4 support
+RUN corepack enable
+
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
 
 WORKDIR /markuplint
 
-# The Node image comes with NPM preinstalled now.
-RUN npm ci --legacy-peer-deps
-RUN npm run build
+# Copy source files
+COPY . .
+
+# Install dependencies with Yarn v4
+RUN yarn install --immutable
+
+# Build the project
+RUN yarn run build
 
 RUN cd /usr/bin && ln -s /markuplint/packages/markuplint/bin/markuplint.mjs
 

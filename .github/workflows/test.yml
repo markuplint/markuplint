@@ -13,7 +13,8 @@ on:
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
-            - 'package-lock.json'
+            - 'yarn.lock'
+            - '.yarnrc.yml'
 
 env:
     NODE_BUILD_VERSION: 22
@@ -32,29 +33,37 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
+                  cache: 'yarn'
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Install dependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              run: npm ci --legacy-peer-deps
+              run: yarn install --immutable
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
               uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     build:
         needs: dev-setup
@@ -69,17 +78,23 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
+                  cache: 'yarn'
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
@@ -96,7 +111,7 @@ jobs:
 
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              run: npm run build
+              run: yarn run build
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
@@ -125,17 +140,23 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
+                  cache: 'yarn'
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
@@ -151,7 +172,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Lint
-              run: npm run lint-check
+              run: yarn run lint-check
 
     os-setup:
         runs-on: ${{ matrix.os }}
@@ -180,35 +201,36 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
+                  cache: 'yarn'
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
-            - name: Set NPM Timeout for Windows
-              if: runner.os == 'Windows'
-              run: npm config set fetch-timeout 600000
-
-            - name: Skip a prepare script
-              run: npm config set ignore-scripts true
-
-            - name: Install prodcution dependencies
+            - name: Install production dependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: npm ci --legacy-peer-deps --omit=dev
+              run: yarn install --immutable --production
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
               uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     test:
         needs: [os-setup, build]
@@ -229,16 +251,22 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
+                  cache: 'yarn'
 
             - name: Cache Restore productionDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
@@ -290,10 +318,14 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
+                  cache: 'yarn'
 
             # Add step to remove packageManager field using jq for pnpm tests
             - name: Remove packageManager field from package.json
@@ -308,8 +340,10 @@ jobs:
             - name: Cache Restore productionDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('package-lock.json') }}
+                  path: |
+                      '**/node_modules'
+                      .yarn/cache
+                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4

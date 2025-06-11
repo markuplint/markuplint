@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"exports": {
 		".": {
 			"require": "./cjs/index.cjs",
@@ -18,7 +17,6 @@
 	"engines": {
 		"node": "<23"
 	},
-	"scripts": {},
 	"dependencies": {
 		"debug": "4.4.0",
 		"default-markuplint": "npm:markuplint@latest",

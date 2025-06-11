@@ -102,13 +102,13 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run vscode:build",
+		"vscode:prepublish": "yarn run vscode:build",
 		"vscode:build": "run-p vscode:build:*",
 		"vscode:build:extension": "esbuild src/extension.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
 		"vscode:build:server": "esbuild src/server/index.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
 		"vscode:dev": "run-p vscode:dev:extension vscode:dev:server",
-		"vscode:dev:extension": "npm run vscode:build:extension --watch",
-		"vscode:dev:server": "npm run vscode:build:server --watch",
+		"vscode:dev:extension": "yarn run vscode:build:extension --watch",
+		"vscode:dev:server": "yarn run vscode:build:server --watch",
 		"vscode:typecheck": "tsc",
 		"vscode:test": "run-s vscode:test:pre vscode:test:suite",
 		"vscode:test:suite": "node ./test/suite/run-tests.js",
@@ -141,9 +141,8 @@
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.12"
 	},
-	"packageManager": "npm@11.1.0",
 	"volta": {
 		"node": "22.15.0",
-		"npm": "11.1.0"
+		"yarn": "4.9.2"
 	}
 }

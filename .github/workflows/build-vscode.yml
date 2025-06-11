@@ -17,10 +17,14 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
+            - name: Enable Corepack
+              run: corepack enable
+
             - name: Install Node.js
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: 20.15
+                  cache: 'yarn'
 
-            - name: Install dependencies
-              run: npm run vscode:package
+            - name: Install dependencies and package
+              run: yarn run vscode:package
