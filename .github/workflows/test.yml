@@ -338,8 +338,6 @@ jobs:
     isolated-env:
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
-        env:
-            PACKAGES: 'markuplint @markuplint/alpine-parser @markuplint/astro-parser @markuplint/config-presets @markuplint/cli-utils @markuplint/ejs-parser @markuplint/erb-parser @markuplint/file-resolver @markuplint/html-parser @markuplint/html-spec @markuplint/i18n @markuplint/jsx-parser @markuplint/liquid-parser @markuplint/ml-ast @markuplint/ml-config @markuplint/ml-core @markuplint/ml-spec @markuplint/mustache-parser @markuplint/nunjucks-parser @markuplint/parser-utils @markuplint/php-parser @markuplint/pug-parser @markuplint/react-spec @markuplint/rule-textlint @markuplint/rules @markuplint/selector @markuplint/shared @markuplint/smarty-parser @markuplint/svelte-parser @markuplint/types @markuplint/vue-parser @markuplint/vue-spec'
         strategy:
             fail-fast: false
             matrix:
@@ -397,6 +395,9 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Create sandbox directory
               run: |
                   mkdir -p ${{ github.workspace }}/../sandbox
@@ -413,52 +414,9 @@ jobs:
                   version: latest # Use latest pnpm version
                   run_install: false
 
-            - name: Package paths (npm)
-              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
-              id: package-paths
-              with:
-                  script: |
-                      const packages = process.env.PACKAGES.split(' ');
-                      return packages.map(p => `file:../../../../markuplint/packages/${p}`).join(' ');
-                  result-encoding: string
-
-            - name: Create the lock file (npm)
-              if: matrix.pm == 'npm'
+            - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  npm install -S ${{ steps.package-paths.outputs.result }}
-
-            - name: Create the lock file (yarn)
-              if: matrix.pm == 'yarn'
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
-                  for package in "${packages[@]}"
-                  do
-                    (cd "../../../../markuplint/packages/$package" && yarn link)
-                    yarn link $package
-                  done
-                  ${{ matrix.pm }} install
-
-            - name: Create the lock file (pnpm)
-              if: matrix.pm == 'pnpm'
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
-                  for package in "${packages[@]}"
-                  do
-                    # Skip linking the main 'markuplint' package itself
-                    if [ "$package" != "markuplint" ]; then
-                      echo "Linking $package..."
-                      pnpm link "../../../../markuplint/packages/$package"
-                    else
-                      echo "Skipping initial link for markuplint package."
-                    fi
-                  done
-                  # Explicitly add the local markuplint package and install other deps
-                  echo "Adding local markuplint package and installing dependencies..."
-                  pnpm add "../../../../markuplint/packages/markuplint"
-              shell: bash
+              run: ${{ matrix.pm }} install
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
