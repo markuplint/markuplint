@@ -456,5 +456,7 @@ jobs:
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
               run: |
                   ${{ matrix.pm }} test
