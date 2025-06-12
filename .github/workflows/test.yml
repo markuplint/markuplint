@@ -225,7 +225,7 @@ jobs:
 
             - name: Install production dependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: yarn install --immutable --production
+              run: yarn workspaces focus --production
 
             - name: Cache Save productionDependencies
               if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
