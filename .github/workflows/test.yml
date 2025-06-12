@@ -120,7 +120,6 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
-              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               run: yarn install --immutable
 
             - name: Build
