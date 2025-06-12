@@ -233,27 +233,27 @@ jobs:
               id: yarn-cache-dir-path
               run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-            - name: Cache Restore productionDependencies
-              id: cache-restore-prod-depends
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
-            - name: Install production dependencies
-              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: yarn workspaces focus --production
+            - name: Install dependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              run: yarn install --immutable
 
-            - name: Cache Save productionDependencies
-              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     test:
         needs: [os-setup, build]
@@ -288,13 +288,13 @@ jobs:
               id: yarn-cache-dir-path
               run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-            - name: Cache Restore productionDependencies
+            - name: Cache Restore devDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
@@ -370,13 +370,13 @@ jobs:
                   cat package.json
               shell: bash
 
-            - name: Cache Restore productionDependencies
+            - name: Cache Restore devDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
               with:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
