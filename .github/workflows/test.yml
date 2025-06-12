@@ -176,6 +176,9 @@ jobs:
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Cache Restore Production
               id: cache-restore-prod
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
