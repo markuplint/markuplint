@@ -404,6 +404,22 @@ jobs:
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   ls -la ${{ github.workspace }}/../sandbox/test
 
+            - name: Debug - Check directory structure
+              run: |
+                  echo "=== Current working directory ==="
+                  pwd
+                  echo "=== List current directory ==="
+                  ls -la
+                  echo "=== Check if packages directory exists ==="
+                  ls -la packages/ | head -10
+                  echo "=== Check sandbox structure ==="
+                  find ${{ github.workspace }}/../sandbox -type d -maxdepth 3
+                  echo "=== Check if markuplint package exists ==="
+                  ls -la packages/markuplint/ | head -5
+                  echo "=== Check workspace path ==="
+                  echo "workspace: ${{ github.workspace }}"
+                  echo "parent: ${{ github.workspace }}/.."
+
             - name: Delete package manager settings
               run: jq 'del(.packageManager, .volta)' package.json > tmp.json && mv tmp.json package.json
 
@@ -414,9 +430,29 @@ jobs:
                   version: latest # Use latest pnpm version
                   run_install: false
 
+            - name: Debug - Before install
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: |
+                  echo "=== Current working directory ==="
+                  pwd
+                  echo "=== Check package.json ==="
+                  head -20 package.json
+                  echo "=== Check if file: paths exist ==="
+                  ls -la ../../../../markuplint/packages/markuplint/ | head -5
+                  echo "=== Test relative path calculation ==="
+                  ls -la ../../../../markuplint/packages/@markuplint/ml-core/ | head -5
+
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: ${{ matrix.pm }} install
+
+            - name: Debug - After install
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: |
+                  echo "=== Check if packages were installed ==="
+                  ls -la node_modules/ | head -10
+                  echo "=== Check markuplint in node_modules ==="
+                  ls -la node_modules/markuplint/ 2>/dev/null || echo "markuplint not found in node_modules"
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
