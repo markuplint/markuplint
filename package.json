@@ -99,8 +99,11 @@
 			"path": "./node_modules/cz-conventional-changelog"
 		}
 	},
+	"packageManager": "yarn@4.9.2",
 	"volta": {
-		"node": "22.15.0",
-		"yarn": "4.9.2"
+		"node": "22.15.0"
+	},
+	"resolutions": {
+		"markuplint": "workspace:*"
 	}
 }

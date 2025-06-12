@@ -33,14 +33,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -78,14 +79,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -140,14 +142,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -201,14 +204,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             - name: Cache Restore productionDependencies
               id: cache-restore-prod-depends
@@ -251,14 +255,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             - name: Cache Restore productionDependencies
               uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
@@ -318,14 +323,15 @@ jobs:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Enable Corepack
-              run: corepack enable
-
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
-                  cache: 'yarn'
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
 
             # Add step to remove packageManager field using jq for pnpm tests
             - name: Remove packageManager field from package.json
