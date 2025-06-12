@@ -312,6 +312,9 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Show directories
               run: |
                   pwd
