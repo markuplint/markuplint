@@ -2382,7 +2382,6 @@ __metadata:
     execa: "npm:9.5.2"
     glob: "npm:11.0.2"
     jsdom: "npm:26.1.0"
-    markuplint: "workspace:*"
     strip-json-comments: "npm:5.0.1"
     textlint-rule-prh: "npm:5.3.0"
     type-fest: "npm:4.40.0"
