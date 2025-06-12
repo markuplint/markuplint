@@ -8,7 +8,7 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 	t => {
 		const ariaVersion =
 			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
 		const el = attr.ownerElement;
 		const permittedRoles = getPermittedRoles(el, ariaVersion, attr.ownerMLDocument.specs);

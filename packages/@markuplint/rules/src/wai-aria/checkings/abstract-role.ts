@@ -8,7 +8,7 @@ export const checkingAbstractRole: AttrChecker<boolean, Options> =
 	t => {
 		const ariaVersion =
 			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
 		const { roles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
 		const tokens = attr.tokenList?.allTokens();

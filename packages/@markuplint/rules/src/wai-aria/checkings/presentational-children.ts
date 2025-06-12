@@ -61,7 +61,7 @@ function getAncestorHasPresentationalChildren(
 	el: Element<boolean, Options>,
 ): ComputedRole | null {
 	const ariaVersion =
-		el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 	let current: Element<boolean, Options> | null = el.parentElement;
 	while (current) {
 		const computed = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion);

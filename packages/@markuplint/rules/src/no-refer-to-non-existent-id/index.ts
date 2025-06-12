@@ -115,7 +115,7 @@ export default createRule({
 
 			const { props } = ariaSpecs(
 				document.specs,
-				attr.rule.options.ariaVersion ?? document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION,
+				attr.rule.options.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION,
 			);
 
 			const aria = props.find(prop => prop.name === name);
