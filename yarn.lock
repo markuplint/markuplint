@@ -669,9 +669,9 @@ __metadata:
   linkType: hard
 
 "@cspell/dict-en-common-misspellings@npm:^2.0.10":
-  version: 2.0.12
-  resolution: "@cspell/dict-en-common-misspellings@npm:2.0.12"
-  checksum: 10c0/ae1195aaa5b24466dad98a375cbb28219436c3f6506c1485ad24eb0970333f3046dd57eb6be5783223f4d2e4a6243bcfab601ed94821988664b73f89c4c96fa5
+  version: 2.1.0
+  resolution: "@cspell/dict-en-common-misspellings@npm:2.1.0"
+  checksum: 10c0/6dbbeea16f37fbef1ceb0798c13eae4bb34636da6280e6b58b922f97f854f5185b88a99f35c8bca20ba925e529e98ef9177ba45afaca79b6e61c76eedc965823
   languageName: node
   linkType: hard
 
@@ -830,14 +830,14 @@ __metadata:
   linkType: hard
 
 "@cspell/dict-markdown@npm:^2.0.10":
-  version: 2.0.10
-  resolution: "@cspell/dict-markdown@npm:2.0.10"
+  version: 2.0.11
+  resolution: "@cspell/dict-markdown@npm:2.0.11"
   peerDependencies:
     "@cspell/dict-css": ^4.0.17
     "@cspell/dict-html": ^4.0.11
     "@cspell/dict-html-symbol-entities": ^4.0.3
-    "@cspell/dict-typescript": ^3.2.1
-  checksum: 10c0/e976a295c1f936576edf412cf50818eccdd22c4a872d6a1a93e6499fa5577eb8564af1b61da09b5072f05053c92477573b30bff781a0c4819e9452cced413eb7
+    "@cspell/dict-typescript": ^3.2.2
+  checksum: 10c0/2bcd668636eb76e3302b118d1cd7939331752cfd10dc9939b2a290772c73ff440dc7ec85b3e86467bad8818a5d4ce1a99df37383aa3a0d89f4f9aba67bf4f911
   languageName: node
   linkType: hard
 
@@ -928,9 +928,9 @@ __metadata:
   linkType: hard
 
 "@cspell/dict-software-terms@npm:^5.0.5":
-  version: 5.0.11
-  resolution: "@cspell/dict-software-terms@npm:5.0.11"
-  checksum: 10c0/a57e19f83437b9307901714be4abb7b2103641d93abd8b3a6a65664c7c2224587822d35c8e91d959bea50ec7956945336a65a4aca6ebfc814885989ef1bf6f03
+  version: 5.1.0
+  resolution: "@cspell/dict-software-terms@npm:5.1.0"
+  checksum: 10c0/62bc7e699d76a9d04c0ec77c4fb9f32d8a4b50c4cb65b9160f0d1fbe36b94976063bb945d5515a2f5c8d11c4c57b4dca545b1659d7946a95ea22d1e446415aaa
   languageName: node
   linkType: hard
 
@@ -963,9 +963,9 @@ __metadata:
   linkType: hard
 
 "@cspell/dict-typescript@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@cspell/dict-typescript@npm:3.2.1"
-  checksum: 10c0/79069c810021210052c450a5c68097108730ff07c57a411e156f2ed225bcef8504b80581975867ac952d942b675409a5a16ca29d91c684438528e9bd525ec42b
+  version: 3.2.2
+  resolution: "@cspell/dict-typescript@npm:3.2.2"
+  checksum: 10c0/e8ea707af91ad47730046a0539bf634fa709297c41e99f430ace627684bb46276e7cf85400e219718a14e06399b60e92dacb78ce1a36839ab2cb068f99e93796
   languageName: node
   linkType: hard
 
@@ -2170,20 +2170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@markuplint/ml-spec@npm:4.9.6":
-  version: 4.9.6
-  resolution: "@markuplint/ml-spec@npm:4.9.6"
-  dependencies:
-    "@markuplint/ml-ast": "npm:4.4.9"
-    "@markuplint/types": "npm:4.7.6"
-    dom-accessibility-api: "npm:0.7.0"
-    is-plain-object: "npm:5.0.0"
-    type-fest: "npm:4.39.1"
-  checksum: 10c0/f0ec5cdd93c8332dad57d291f6c84bc7111775eb2efd6ce28b181dd59face873a4d3624893b54e56cebe94427373d50694fd2bd301a877ebb6de0d76407ad449
-  languageName: node
-  linkType: hard
-
-"@markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
+"@markuplint/ml-spec@npm:4.9.6, @markuplint/ml-spec@workspace:packages/@markuplint/ml-spec":
   version: 0.0.0-use.local
   resolution: "@markuplint/ml-spec@workspace:packages/@markuplint/ml-spec"
   dependencies:
@@ -16706,13 +16693,6 @@ __metadata:
   version: 4.37.0
   resolution: "type-fest@npm:4.37.0"
   checksum: 10c0/5bad189f66fbe3431e5d36befa08cab6010e56be68b7467530b7ef94c3cf81ef775a8ac3047c8bbda4dd3159929285870357498d7bc1df062714f9c5c3a84926
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:4.39.1":
-  version: 4.39.1
-  resolution: "type-fest@npm:4.39.1"
-  checksum: 10c0/f5bf302eb2e2f70658be1757aa578f4a09da3f65699b0b12b7ae5502ccea76e5124521a6e6b69540f442c3dc924c394202a2ab58718d0582725c7ac23c072594
   languageName: node
   linkType: hard
 
