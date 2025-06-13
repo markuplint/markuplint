@@ -441,6 +441,12 @@ jobs:
                   ls -la ../../../../markuplint/packages/markuplint/ | head -5
                   echo "=== Test relative path calculation ==="
                   ls -la ../../../../markuplint/packages/@markuplint/ml-core/ | head -5
+                  echo "=== Check all files in directory ==="
+                  ls -la
+                  echo "=== Check tsconfig.json (if exists) ==="
+                  cat tsconfig.json 2>/dev/null || echo "tsconfig.json not found"
+                  echo "=== Check markuplint.config.ts ==="
+                  cat markuplint.config.ts 2>/dev/null || echo "markuplint.config.ts not found"
 
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
