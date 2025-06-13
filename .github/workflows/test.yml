@@ -465,4 +465,13 @@ jobs:
               env:
                   DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
               run: |
+                  if [ "${{ matrix.env }}" = "ts-config-ts" ]; then
+                    echo "=== Debug tsx configuration ==="
+                    echo "TSX version:"
+                    npx tsx --version
+                    echo "TypeScript configuration being used:"
+                    npx tsx --print-config index.ts 2>/dev/null || echo "Cannot print config"
+                    echo "Test TypeScript compilation:"
+                    npx tsc --noEmit --showConfig 2>/dev/null || echo "tsc showConfig failed"
+                  fi
                   ${{ matrix.pm }} test
