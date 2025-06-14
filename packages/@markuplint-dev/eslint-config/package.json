@@ -19,7 +19,7 @@
 		"eslint-import-resolver-typescript": "4.4.3",
 		"eslint-plugin-import-x": "4.15.2",
 		"eslint-plugin-jsdoc": "50.8.0",
-		"eslint-plugin-n": "17.19.0",
+		"eslint-plugin-n": "17.20.0",
 		"eslint-plugin-regexp": "2.9.0",
 		"eslint-plugin-sort-class-members": "1.21.0",
 		"eslint-plugin-unicorn": "59.0.1",
