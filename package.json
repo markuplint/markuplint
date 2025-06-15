@@ -101,9 +101,11 @@
 	},
 	"packageManager": "yarn@4.9.2",
 	"volta": {
-		"node": "22.15.0"
+		"node": "22.15.0",
+		"yarn": "4.9.2"
 	},
 	"resolutions": {
-		"markuplint": "workspace:*"
+		"markuplint": "workspace:*",
+		"@isaacs/brace-expansion": "5.0.0"
 	}
 }
