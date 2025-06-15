@@ -102,10 +102,10 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn run vscode:build",
+		"vscode:prepublish": "npm run vscode:build",
 		"vscode:build": "run-p vscode:build:*",
-		"vscode:build:extension": "esbuild src/extension.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
-		"vscode:build:server": "esbuild src/server/index.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
+		"vscode:build:extension": "esbuild src/extension.ts --bundle --external:vscode --external:vscode-* --external:node:* --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
+		"vscode:build:server": "esbuild src/server/index.ts --bundle --external:vscode --external:vscode-* --external:node:* --external:markuplint --external:debug --external:glob --external:semver --external:mocha --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
 		"vscode:dev": "run-p vscode:dev:extension vscode:dev:server",
 		"vscode:dev:extension": "yarn run vscode:build:extension --watch",
 		"vscode:dev:server": "yarn run vscode:build:server --watch",
@@ -119,7 +119,6 @@
 	},
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "1.0.8",
-		"@markuplint/file-resolver": "4.9.14",
 		"@types/mocha": "10.0.10",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.7.0",
@@ -130,6 +129,7 @@
 		"typescript": "5.8.3"
 	},
 	"dependencies": {
+		"@markuplint/file-resolver": "4.9.14",
 		"@markuplint/i18n": "4.6.0",
 		"@markuplint/ml-spec": "4.9.3",
 		"debug": "4.4.0",
