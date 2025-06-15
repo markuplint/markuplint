@@ -38,9 +38,16 @@ try {
 		execSync(`rm -rf "${nodeModulesPath}"`, { stdio: 'inherit' });
 	}
 
-	// 4. Install dependencies with npm
-	console.log('4. Installing dependencies with npm...');
-	execSync('npm install', { cwd: vscodeDir, stdio: 'inherit' });
+	// 4. Install dependencies
+	console.log('4. Installing dependencies...');
+	// Try yarn first, fallback to npm
+	try {
+		console.log('Trying yarn install...');
+		execSync('yarn install --no-immutable', { cwd: vscodeDir, stdio: 'inherit' });
+	} catch {
+		console.log('Yarn failed, trying npm install...');
+		execSync('npm install', { cwd: vscodeDir, stdio: 'inherit' });
+	}
 
 	// 5. Build extension
 	console.log('5. Building extension...');
@@ -60,6 +67,9 @@ try {
 	console.log('✅ VS Code extension build completed successfully!');
 } catch (error) {
 	console.error('❌ Build failed:', error.message);
+	if (error.stdout) console.error('STDOUT:', error.stdout.toString());
+	if (error.stderr) console.error('STDERR:', error.stderr.toString());
+	console.error('Full error:', error);
 	// Set exit code but don't exit immediately - let finally block run
 	process.exitCode = 1;
 } finally {
