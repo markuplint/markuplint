@@ -27,5 +27,8 @@ jobs:
                   corepack enable
                   yarn --version
 
+            - name: Install root dependencies
+              run: yarn install
+
             - name: Install dependencies and package
               run: yarn run vscode:package
