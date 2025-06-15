@@ -1,0 +1,36 @@
+{
+	"name": "@markuplint/mcp-server",
+	"version": "4.8.9",
+	"description": "MCP server for providing natural language rule descriptions to AI agents",
+	"author": "markuplint",
+	"license": "MIT",
+	"type": "module",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"bin": {
+		"markuplint-mcp-server": "lib/cli.js"
+	},
+	"files": [
+		"lib"
+	],
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --build --watch",
+		"clean": "tsc --build --clean",
+		"update-rules": "node scripts/update-rule-metadata.js"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.12.3"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/markuplint/markuplint.git"
+	},
+	"bugs": {
+		"url": "https://github.com/markuplint/markuplint/issues"
+	},
+	"homepage": "https://markuplint.dev/"
+}
