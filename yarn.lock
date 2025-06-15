@@ -8126,10 +8126,10 @@ linkify-it@^5.0.0:
   dependencies:
     uc.micro "^2.0.0"
 
-lint-staged@16.1.1:
-  version "16.1.1"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-16.1.1.tgz#e2321462e2df87b37ebeb2661887c911508a1d97"
-  integrity sha512-kVZvRAHw9WuufENnwuZLiB1X/8B8YpGszzjMET0bP+uJSjjB7KXeaX2ckYRtQyHfeQdCWMc6tRK34t4geHL9sg==
+lint-staged@16.1.2:
+  version "16.1.2"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-16.1.2.tgz#8cb84daa844f39c7a9790dd2c0caa327125ef059"
+  integrity sha512-sQKw2Si2g9KUZNY3XNvRuDq4UJqpHwF0/FQzZR2M7I5MvtpWvibikCjUVJzZdGE0ByurEl3KQNvsGetd1ty1/Q==
   dependencies:
     chalk "^5.4.1"
     commander "^14.0.0"
