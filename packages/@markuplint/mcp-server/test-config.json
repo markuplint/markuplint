@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "required-attr": true,
+    "required-h1": false,
+    "wai-aria": "error"
+  }
+}
