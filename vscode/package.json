@@ -114,8 +114,8 @@
 		"vscode:test:suite": "node ./test/suite/run-tests.js",
 		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
-		"vscode:package": "vsce package --no-yarn",
-		"vscode:release": "vsce publish --no-yarn"
+		"vscode:package": "npx @vscode/vsce package --no-yarn",
+		"vscode:release": "npx @vscode/vsce publish --no-yarn"
 	},
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "1.0.8",

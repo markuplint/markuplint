@@ -42,12 +42,16 @@ try {
 	console.log('4. Installing dependencies with npm...');
 	execSync('npm install', { cwd: vscodeDir, stdio: 'inherit' });
 
-	// 5. Run vscode command
-	console.log(`5. Running vscode:${mode}...`);
+	// 5. Build extension
+	console.log('5. Building extension...');
+	execSync('npm run vscode:build', { cwd: vscodeDir, stdio: 'inherit' });
+
+	// 6. Run vscode command
+	console.log(`6. Running vscode:${mode}...`);
 	execSync(`npm run vscode:${mode}`, { cwd: vscodeDir, stdio: 'inherit' });
 
-	// 6. Clean up package-lock.json
-	console.log('6. Cleaning up package-lock.json...');
+	// 7. Clean up package-lock.json
+	console.log('7. Cleaning up package-lock.json...');
 	const packageLockPath = path.join(vscodeDir, 'package-lock.json');
 	if (fs.existsSync(packageLockPath)) {
 		fs.unlinkSync(packageLockPath);
@@ -59,8 +63,8 @@ try {
 	// Set exit code but don't exit immediately - let finally block run
 	process.exitCode = 1;
 } finally {
-	// 7. Always restore package.json
-	console.log('7. Restoring package.json...');
+	// 8. Always restore package.json
+	console.log('8. Restoring package.json...');
 	if (fs.existsSync(backupPath)) {
 		fs.copyFileSync(backupPath, packageJsonPath);
 		fs.unlinkSync(backupPath);
