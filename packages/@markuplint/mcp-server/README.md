@@ -68,4 +68,30 @@ The MCP server will output:
 
 ## License
 
+## Maintenance
+
+### Updating Rule Metadata
+
+The MCP server includes a static database of rule descriptions to ensure it works without network access. However, this data may become outdated when `@markuplint/rules` is updated.
+
+To update the rule metadata:
+
+```bash
+npm run update-rules
+```
+
+This script:
+1. Reads the latest rule descriptions from `@markuplint/rules/src/*/README.md`
+2. Extracts categories from `@markuplint/rules/src/*/meta.ts`
+3. Updates the static database in `src/config-to-markdown.ts`
+
+**When to run:**
+- After updating the `@markuplint/rules` package
+- Before releasing a new version of the MCP server
+- When contributing rule description changes
+
+For production deployments requiring always-fresh data, consider implementing the `fetchLatestRuleMetadata()` function which can fetch rule descriptions directly from GitHub.
+
+## License
+
 MIT

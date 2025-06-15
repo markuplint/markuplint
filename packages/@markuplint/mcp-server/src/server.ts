@@ -59,20 +59,6 @@ export class MarkuplintMcpServer {
 							},
 						},
 					},
-					{
-						name: 'explain_markuplint_rule',
-						description: 'Get detailed explanation of a specific Markuplint rule',
-						inputSchema: {
-							type: 'object',
-							properties: {
-								ruleName: {
-									type: 'string',
-									description: 'Name of the Markuplint rule to explain',
-								},
-							},
-							required: ['ruleName'],
-						},
-					},
 				],
 			};
 		});
@@ -84,10 +70,6 @@ export class MarkuplintMcpServer {
 			switch (name) {
 				case 'get_markuplint_rules': {
 					return this.getMarkuplintRules(args as { configPath?: string; cwd?: string });
-				}
-
-				case 'explain_markuplint_rule': {
-					return this.explainMarkuplintRule(args as { ruleName: string });
 				}
 
 				default: {
@@ -185,42 +167,6 @@ export class MarkuplintMcpServer {
 		// Return default config if no configuration found
 		return {
 			rules: {},
-		};
-	}
-
-	/**
-	 * Handle the explain_markuplint_rule tool
-	 */
-	private explainMarkuplintRule(args: { ruleName: string }): { content: Array<{ type: string; text: string }> } {
-		const { ruleName } = args;
-
-		const ruleDetails = ConfigToMarkdown.getRuleDetails(ruleName);
-		if (!ruleDetails) {
-			return {
-				content: [
-					{
-						type: 'text',
-						text: `Rule "${ruleName}" is not a known built-in Markuplint rule. It may be a custom rule or plugin rule. Please refer to your project's documentation for details about this rule.`,
-					},
-				],
-			};
-		}
-
-		const markdown = `# ${ruleDetails.name}
-
-**Category**: ${ruleDetails.category || 'unknown'}
-
-**Description**: ${ruleDetails.description}
-
-This is a built-in Markuplint rule. For more detailed documentation including configuration examples, please refer to the official Markuplint documentation at https://markuplint.dev/rules/${ruleName}.`;
-
-		return {
-			content: [
-				{
-					type: 'text',
-					text: markdown,
-				},
-			],
 		};
 	}
 

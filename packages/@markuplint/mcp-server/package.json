@@ -16,7 +16,8 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --build --watch",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean",
+		"update-rules": "node scripts/update-rule-metadata.js"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.12.3"
