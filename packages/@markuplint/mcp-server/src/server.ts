@@ -1,11 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-	CallToolRequestSchema,
-	ErrorCode,
-	ListToolsRequestSchema,
-	McpError,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { ConfigToMarkdown, type Config } from './config-to-markdown.js';
@@ -34,7 +29,7 @@ export class MarkuplintMcpServer {
 				capabilities: {
 					tools: {},
 				},
-			}
+			},
 		);
 
 		this.setupHandlers();
@@ -42,7 +37,7 @@ export class MarkuplintMcpServer {
 
 	private setupHandlers() {
 		// List available tools
-		this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+		this.server.setRequestHandler(ListToolsRequestSchema, () => {
 			return {
 				tools: [
 					{
@@ -53,11 +48,13 @@ export class MarkuplintMcpServer {
 							properties: {
 								configPath: {
 									type: 'string',
-									description: 'Path to Markuplint configuration file (optional, will search automatically if not provided)',
+									description:
+										'Path to Markuplint configuration file (optional, will search automatically if not provided)',
 								},
 								cwd: {
 									type: 'string',
-									description: 'Working directory to search for config files (defaults to current directory)',
+									description:
+										'Working directory to search for config files (defaults to current directory)',
 								},
 							},
 						},
@@ -67,18 +64,17 @@ export class MarkuplintMcpServer {
 		});
 
 		// Handle tool calls
-		this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+		this.server.setRequestHandler(CallToolRequestSchema, request => {
 			const { name, arguments: args } = request.params;
 
 			switch (name) {
-				case 'get_markuplint_rules':
+				case 'get_markuplint_rules': {
 					return this.getMarkuplintRules(args as { configPath?: string; cwd?: string });
+				}
 
-				default:
-					throw new McpError(
-						ErrorCode.MethodNotFound,
-						`Unknown tool: ${name}`
-					);
+				default: {
+					throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
+				}
 			}
 		});
 	}
@@ -86,7 +82,7 @@ export class MarkuplintMcpServer {
 	/**
 	 * Get Markuplint rules from configuration and convert to markdown
 	 */
-	private async getMarkuplintRules(args: { configPath?: string; cwd?: string }) {
+	private async getMarkuplintRules(args: Readonly<{ configPath?: string; cwd?: string }>) {
 		try {
 			const workingDir = args.cwd || process.cwd();
 			let config: Config;
@@ -100,7 +96,7 @@ export class MarkuplintMcpServer {
 				config = await this.findAndLoadConfig(workingDir);
 			}
 
-			const markdown = await ConfigToMarkdown.configToMarkdown(config);
+			const markdown = ConfigToMarkdown.configToMarkdown(config);
 
 			return {
 				content: [
@@ -113,7 +109,7 @@ export class MarkuplintMcpServer {
 		} catch (error) {
 			throw new McpError(
 				ErrorCode.InternalError,
-				`Failed to load Markuplint configuration: ${error instanceof Error ? error.message : String(error)}`
+				`Failed to load Markuplint configuration: ${error instanceof Error ? error.message : String(error)}`,
 			);
 		}
 	}
@@ -123,8 +119,8 @@ export class MarkuplintMcpServer {
 	 */
 	private async loadConfigFile(filePath: string): Promise<Config> {
 		try {
-			const configText = await fs.readFile(filePath, 'utf-8');
-			
+			const configText = await fs.readFile(filePath, 'utf8');
+
 			if (filePath.endsWith('.json') || filePath.endsWith('.markuplintrc')) {
 				return JSON.parse(configText);
 			}
@@ -132,7 +128,9 @@ export class MarkuplintMcpServer {
 			// Try parsing as JSON by default
 			return JSON.parse(configText);
 		} catch (error) {
-			throw new Error(`Failed to load config file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+			throw new Error(
+				`Failed to load config file ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+			);
 		}
 	}
 
@@ -140,11 +138,7 @@ export class MarkuplintMcpServer {
 	 * Find and load configuration file from a directory
 	 */
 	private async findAndLoadConfig(workingDir: string): Promise<Config> {
-		const configFileNames = [
-			'.markuplintrc',
-			'.markuplintrc.json',
-			'markuplint.config.json',
-		];
+		const configFileNames = ['.markuplintrc', '.markuplintrc.json', 'markuplint.config.json'];
 
 		for (const fileName of configFileNames) {
 			const filePath = path.join(workingDir, fileName);
@@ -162,7 +156,7 @@ export class MarkuplintMcpServer {
 		// If no config file found, check package.json
 		try {
 			const packageJsonPath = path.join(workingDir, 'package.json');
-			const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+			const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
 			if (packageJson.markuplint) {
 				return packageJson.markuplint;
 			}
@@ -182,6 +176,7 @@ export class MarkuplintMcpServer {
 	async start() {
 		const transport = new StdioServerTransport();
 		await this.server.connect(transport);
+		// eslint-disable-next-line no-console
 		console.error('Markuplint MCP server started');
 	}
 }

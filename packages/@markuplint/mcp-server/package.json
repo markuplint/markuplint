@@ -4,6 +4,7 @@
 	"description": "MCP server for providing natural language rule descriptions to AI agents",
 	"author": "markuplint",
 	"license": "MIT",
+	"type": "module",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"bin": {

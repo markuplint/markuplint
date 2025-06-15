@@ -58,23 +58,23 @@ export class ConfigToMarkdown {
 	/**
 	 * Convert a configuration object to markdown
 	 */
-	public static async configToMarkdown(config: Config): Promise<string> {
+	public static configToMarkdown(config: Config): string {
 		const rules = config.rules || {};
-		const ruleDescriptions = await this.extractRuleDescriptions(rules);
-		
+		const ruleDescriptions = this.extractRuleDescriptions(rules);
+
 		return this.generateMarkdown(ruleDescriptions);
 	}
 
 	/**
 	 * Extract rule descriptions from the configuration
 	 */
-	private static async extractRuleDescriptions(rules: Rules): Promise<RuleDescription[]> {
+	private static extractRuleDescriptions(rules: Rules): RuleDescription[] {
 		const descriptions: RuleDescription[] = [];
 
 		for (const [ruleName, ruleConfig] of Object.entries(rules)) {
 			const enabled = this.isRuleEnabled(ruleConfig);
 			const value = this.extractRuleValue(ruleConfig);
-			
+
 			// Try to get description from built-in rules
 			const builtinRule = BUILTIN_RULES[ruleName];
 			const description = builtinRule?.description || `Rule: ${ruleName}`;
@@ -95,12 +95,12 @@ export class ConfigToMarkdown {
 	/**
 	 * Check if a rule is enabled
 	 */
-	private static isRuleEnabled(ruleConfig: any): boolean {
+	private static isRuleEnabled(ruleConfig: unknown): boolean {
 		if (typeof ruleConfig === 'boolean') {
 			return ruleConfig;
 		}
-		if (typeof ruleConfig === 'object' && ruleConfig !== null) {
-			return ruleConfig.severity !== 'off';
+		if (typeof ruleConfig === 'object' && ruleConfig !== null && 'severity' in ruleConfig) {
+			return (ruleConfig as { severity: string }).severity !== 'off';
 		}
 		return true; // Default to enabled for non-boolean values
 	}
@@ -108,9 +108,9 @@ export class ConfigToMarkdown {
 	/**
 	 * Extract the value configuration from a rule
 	 */
-	private static extractRuleValue(ruleConfig: any): any {
+	private static extractRuleValue(ruleConfig: unknown): unknown {
 		if (typeof ruleConfig === 'object' && ruleConfig !== null && 'value' in ruleConfig) {
-			return ruleConfig.value;
+			return (ruleConfig as { value: unknown }).value;
 		}
 		if (typeof ruleConfig !== 'boolean' && typeof ruleConfig !== 'object') {
 			return ruleConfig;
@@ -121,7 +121,7 @@ export class ConfigToMarkdown {
 	/**
 	 * Generate markdown from rule descriptions
 	 */
-	private static generateMarkdown(rules: RuleDescription[]): string {
+	private static generateMarkdown(rules: readonly RuleDescription[]): string {
 		const enabledRules = rules.filter(rule => rule.enabled);
 		const disabledRules = rules.filter(rule => !rule.enabled);
 
