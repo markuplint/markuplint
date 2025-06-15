@@ -8,7 +8,7 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 	t => {
 		const ariaVersion =
 			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
 		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
 		const tokens = attr.tokenList?.allTokens();

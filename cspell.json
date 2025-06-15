@@ -173,6 +173,10 @@
 		// Specs
 		"closedby",
 
+		// Build tools
+		"jscoverage",
+		"wscript",
+
 		// Typo
 		"verifing"
 	],

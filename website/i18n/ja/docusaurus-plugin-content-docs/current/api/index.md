@@ -35,24 +35,3 @@ console.log(result.violations);
 | [`@markuplint/parser-utils`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/parser-utils) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fparser-utils.svg)](https://badge.fury.io/js/%40markuplint%2Fparser-utils) | ユニバーサル     | ESM              |
 | [`@markuplint/rules`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/rules)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)               | ユニバーサル     | ESM              |
 | [`@markuplint/types`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/types)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Ftypes.svg)](https://badge.fury.io/js/%40markuplint%2Ftypes)               | ユニバーサル     | ESM              |
-
-## CommonJSで使う
-
-[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint)はESMです。通常CommonJSのエコシステムでは利用できません。CommonJSからAPIを利用する場合、**[@markuplint/esm-adapter](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/esm-adapter)を利用します。**
-
-```js
-const { MLEngine } = require('@markuplint/esm-adapter');
-
-const result = await MLEngine.fromCode(htmlCode);
-
-console.log(result);
-```
-
-:::info
-`@markuplint/esm-adapter`はESMの対応していない**VS Code拡張機能**のために作られたモジュールです。拡張機能で利用しないAPIは実装されていないため極めて限定的です。
-また、内部的には**[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**を利用しているため、プラットフォームはNode.jsのみとなります。
-:::
-
-:::warning
-`@markuplint/esm-adapter`はNode.jsのバージョン**22未満**でのみサポートしています。
-:::

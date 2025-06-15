@@ -24,7 +24,7 @@ export const checkingDisallowedProp: AttrChecker<
 
 		const ariaVersion =
 			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
 		const statesAndProp = role.ownedProperties.find(p => p.name === attr.name);
 		const propSpec = propSpecs.find(p => p.name === attr.name);

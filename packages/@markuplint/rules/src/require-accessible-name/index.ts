@@ -15,7 +15,7 @@ export default createRule({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			const ariaVersion =
-				el.rule.options?.ariaVersion ?? document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+				el.rule.options?.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
 			if (accnameMayBeMutable(el, document)) {
 				return;

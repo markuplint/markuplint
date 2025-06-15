@@ -2,6 +2,16 @@
 .vscode-test
 out/**/*.map
 src/**/*
+scripts/**/*
+test/**/*
 .eslintrc
 .gitignore
 tsconfig*
+../**
+node_modules/**/yarn.lock
+node_modules/**/*.md
+node_modules/**/*.txt
+node_modules/**/test/
+!node_modules/@markuplint/*/lib/test/
+node_modules/**/tests/
+node_modules/**/.git*

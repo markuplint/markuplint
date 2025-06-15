@@ -1,14 +1,14 @@
 {
-  "name": "@markuplint/website",
+  "name": "markuplint-website",
   "description": "https://markuplint.dev",
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "site:start": "npm run site:prebuild; docusaurus start",
-    "site:build": "npm run site:prebuild; docusaurus build",
+    "site:start": "yarn run site:prebuild; docusaurus start",
+    "site:build": "yarn run site:prebuild; docusaurus build",
     "site:prebuild": "tsx scripts/prebuild/index.mts; npx prettier --write './src/**/*{ts,tsx,json,rc,md,mdx,css,scss}';",
     "presite:lint": "npx @markuplint/pretenders \"./src/**/*.tsx\" --out \"./pretenders.json\"",
-    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}' './*.{js,ts}'; stylelint './src/**/*.css'; textlint --fix './website/i18n/ja'; cd ../; npm run cli './website/**/*.tsx'",
+    "site:lint": "prettier --write './**/*{js,ts,tsx,mdx}' './*{json,rc,js}' '!./build/**/*' '!./.docusaurus/**/*'; eslint --fix './{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}' './*.{js,ts}'; stylelint './src/**/*.css'; textlint --fix './website/i18n/ja'; cd ../; yarn run cli './website/**/*.tsx'",
     "site:up": "npx npm-check-updates --interactive --workspaces --format group"
   },
   "author": "Yusuke Hirao",
@@ -48,6 +48,6 @@
   },
   "volta": {
     "node": "20.17.0",
-    "npm": "10.8.3"
+    "yarn": "4.9.2"
   }
 }

@@ -27,7 +27,7 @@ export const checkingRequiredProp: ElementChecker<
 
 				const ariaVersion =
 					el.rule.options?.version ??
-					el.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+					el.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 					ARIA_RECOMMENDED_VERSION;
 
 				const elAriaSpec = getARIA(

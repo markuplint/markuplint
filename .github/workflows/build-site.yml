@@ -23,5 +23,10 @@ jobs:
               with:
                   node-version: 20
 
-            - name: Install dependencies
-              run: npm run site:build
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Install dependencies and build
+              run: cd website && yarn install --immutable && yarn run site:build

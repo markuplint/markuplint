@@ -6,7 +6,7 @@ import meta from './meta.js';
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {
-		const ariaVersion = document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
 		const triggers = document.querySelectorAll('[popovertarget]');
 		Triggers: for (const trigger of triggers) {

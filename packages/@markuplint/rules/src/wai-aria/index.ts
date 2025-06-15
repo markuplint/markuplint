@@ -61,7 +61,7 @@ export default createRule<boolean, Options>({
 			}
 
 			const ariaVersion =
-				el.rule.options?.version ?? document.ruleCommonSettings.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
 			const computed = getComputedRole(document.specs, el, ariaVersion);
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);

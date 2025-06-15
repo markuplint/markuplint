@@ -44,9 +44,13 @@ export async function search<T = CosmiConfig>(filePath: string, cacheClear: bool
 	if (!result || result.isEmpty) {
 		return null;
 	}
+	const config = result.config as T;
 	return {
 		filePath: result.filepath,
-		config: result.config as T,
+		config:
+			config && typeof config === 'object' && 'default' in config && typeof config.default === 'object'
+				? (config.default as T)
+				: config,
 	};
 }
 
@@ -58,9 +62,13 @@ export async function load<T = CosmiConfig>(filePath: string, cacheClear: boolea
 	if (!result || result.isEmpty) {
 		return new ConfigLoadError('Config file is empty', filePath, referrer);
 	}
+	const config = result.config as T;
 	return {
 		filePath: result.filepath,
-		config: result.config as T,
+		config:
+			config && typeof config === 'object' && 'default' in config && typeof config.default === 'object'
+				? (config.default as T)
+				: config,
 	};
 }
 

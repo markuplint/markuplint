@@ -13,7 +13,7 @@ export const checkingImplicitRole: AttrChecker<boolean, Options> =
 
 		const ariaVersion =
 			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
 		const implicitRole = getImplicitRoleName(attr.ownerElement, ariaVersion, attr.ownerMLDocument.specs);
 		for (const token of tokens) {

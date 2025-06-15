@@ -53,7 +53,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 				const ariaVersion =
 					child.rule.options?.version ??
-					child.ownerMLDocument.ruleCommonSettings.ariaVersion ??
+					child.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 					ARIA_RECOMMENDED_VERSION;
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, ariaVersion);
 				if (

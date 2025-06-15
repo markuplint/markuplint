@@ -60,6 +60,10 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
+# Yarn v4 (node_modules mode)
+.yarn/install-state.gz
+.yarn/build-state.yml
+
 # dotenv environment variables file
 .env
 

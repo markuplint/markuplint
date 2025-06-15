@@ -35,24 +35,3 @@ console.log(result.violations);
 | [`@markuplint/parser-utils`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/parser-utils) | [![npm version](https://badge.fury.io/js/%40markuplint%2Fparser-utils.svg)](https://badge.fury.io/js/%40markuplint%2Fparser-utils) | Universal | ESM         |
 | [`@markuplint/rules`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/rules)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Frules.svg)](https://badge.fury.io/js/%40markuplint%2Frules)               | Universal | ESM         |
 | [`@markuplint/types`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/types)               | [![npm version](https://badge.fury.io/js/%40markuplint%2Ftypes.svg)](https://badge.fury.io/js/%40markuplint%2Ftypes)               | Universal | ESM         |
-
-## Using with CommonJS
-
-[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint) is an ESM (ECMAScript Module). Normally, it can't be used in a CommonJS ecosystem. To use the API from CommonJS, you use **[@markuplint/esm-adapter](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/esm-adapter)**.
-
-```js
-const { MLEngine } = require('@markuplint/esm-adapter');
-
-const result = await MLEngine.fromCode(htmlCode);
-
-console.log(result);
-```
-
-:::info
-`@markuplint/esm-adapter` was created specifically for VS Code extensions that do not support ESM. Because of this, the implemented APIs are extremely limited if you are not using them within an extension.
-Additionally, it internally uses **[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**, so it only works on the Node.js platform.
-:::
-
-:::warning
-`@markuplint/esm-adapter` is supported only on Node.js versions **below 22**.
-:::
