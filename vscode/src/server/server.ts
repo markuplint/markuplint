@@ -7,7 +7,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { NO_INSTALL_WARNING } from '../const.js';
 import { t } from '../i18n.js';
-import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp.js';
+import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
@@ -28,6 +28,10 @@ export function bootServer() {
 
 	const errorLog: Log = message => {
 		void connection.sendNotification(errorToPopup, message);
+	};
+
+	const warningLog: Log = message => {
+		void connection.sendNotification(warningToPopup, message);
 	};
 
 	const sendDiagnostics: SendDiagnostics = params => {
@@ -51,7 +55,7 @@ export function bootServer() {
 				verbosely();
 			}
 
-			const mod = await getModule(log);
+			const mod = await getModule(log, warningLog);
 
 			log(`Found version: ${mod.version} (isLocalModule: ${mod.isLocalModule})`, 'info');
 			log(`Locale: ${locale}`, 'info');

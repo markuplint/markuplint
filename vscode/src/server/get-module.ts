@@ -5,7 +5,44 @@ import path from 'node:path';
 
 import { Files } from 'vscode-languageserver/node.js';
 
-export async function getModule(log: Log): Promise<Module> {
+import { NODE_22_COMPATIBILITY_WARNING } from '../const.js';
+
+// Track if the Node.js 22 compatibility warning has been shown in this session
+let hasShownNode22Warning = false;
+
+/**
+ * Check if an error is related to Node.js 22 import assertion compatibility issues
+ */
+function isNode22ImportAssertionError(error: unknown): boolean {
+	if (!(error instanceof Error)) {
+		return false;
+	}
+
+	// Check for import assertion syntax errors that occur in Node.js 22
+	return (
+		error.name === 'SyntaxError' &&
+		(error.message.includes("Unexpected identifier 'assert'") ||
+			error.message.includes('import assertion') ||
+			error.message.includes('assert { type:'))
+	);
+}
+
+/**
+ * Extract version from a package.json path if possible
+ */
+function tryGetVersionFromPath(modPath: string): string | null {
+	try {
+		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
+		// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+		const pkg = require(packageJsonPath);
+		const resolvedPkg = pkg.default ?? pkg;
+		return resolvedPkg.version || null;
+	} catch {
+		return null;
+	}
+}
+
+export async function getModule(log: Log, warningLog?: Log): Promise<Module> {
 	let markuplint: any;
 	let isLocalModule = false;
 	let pkg: any;
@@ -22,6 +59,27 @@ export async function getModule(log: Log): Promise<Module> {
 		isLocalModule = true;
 	} catch (error: unknown) {
 		log(`Failed to resolve local package: ${error}`, 'error');
+
+		// Check if this is a Node.js 22 import assertion compatibility issue
+		if (isNode22ImportAssertionError(error) && !hasShownNode22Warning && warningLog) {
+			hasShownNode22Warning = true; // Mark as shown to avoid spam
+
+			// Try to get the version from the local module path
+			let version = 'unknown';
+			try {
+				const modPath = await fileResolve(message => log(message));
+				const detectedVersion = tryGetVersionFromPath(modPath);
+				if (detectedVersion) {
+					version = detectedVersion;
+				}
+			} catch {
+				// If we can't get the path or version, use 'unknown'
+			}
+
+			// Show the enhanced warning message with the detected version
+			const warningMessage = NODE_22_COMPATIBILITY_WARNING.replace('{0}', version);
+			warningLog(warningMessage);
+		}
 
 		try {
 			markuplint = await import('markuplint');
