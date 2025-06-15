@@ -23,7 +23,7 @@ Your local markuplint version (v{0}) is incompatible with VS Code's Node.js 22 e
 Using bundled markuplint version instead.
 
 To use your local markuplint version:
-• Upgrade to markuplint@4.10.0 or later
-• Or downgrade VS Code to version < 1.90.0
+- Upgrade to markuplint@4.10.0 or later
+- Or downgrade VS Code to version < 1.90.0
 
 See: https://github.com/markuplint/markuplint/issues/2837`;
