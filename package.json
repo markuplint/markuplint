@@ -80,7 +80,7 @@
 		"lerna": "8.2.2",
 		"lint-staged": "16.1.2",
 		"npm-run-all2": "8.0.4",
-		"textlint": "14.8.1",
+		"textlint": "14.8.4",
 		"textlint-filter-rule-comments": "1.2.2",
 		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "12.0.2",
