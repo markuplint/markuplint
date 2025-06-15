@@ -27,6 +27,7 @@
 		"@types/node": "22.15.2"
 	},
 	"dependencies": {
+		"@isaacs/brace-expansion": "5.0.0",
 		"@markuplint/html-parser": "4.6.19",
 		"@markuplint/ml-ast": "4.4.9",
 		"@markuplint/ml-config": "4.8.11",
