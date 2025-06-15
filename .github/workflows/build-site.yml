@@ -29,4 +29,4 @@ jobs:
                   yarn --version
 
             - name: Install dependencies and build
-              run: yarn run site:build
+              run: cd website && yarn install --immutable && yarn run site:build

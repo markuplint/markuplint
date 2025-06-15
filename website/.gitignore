@@ -19,6 +19,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Yarn v4 (node_modules mode)
+.yarn/install-state.gz
+.yarn/build-state.yml
+
 # Managed in packages/@markuplint/rules
 docs/rules/*.md
 !docs/rules/.gitkeep
