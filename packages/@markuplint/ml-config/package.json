@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -26,6 +25,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "4.4.9",
+		"@markuplint/ml-spec": "4.9.6",
 		"@markuplint/selector": "4.7.4",
 		"@markuplint/shared": "4.4.11",
 		"@types/mustache": "4.2.6",

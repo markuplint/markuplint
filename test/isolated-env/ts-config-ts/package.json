@@ -12,6 +12,8 @@
 	"dependencies": {
 		"@types/node": "latest",
 		"typescript": "latest",
-		"tsx": "latest"
+		"tsx": "latest",
+		"markuplint": "file:../../../../packages/markuplint",
+		"@markuplint/ml-config": "file:../../../../packages/@markuplint/ml-config"
 	}
 }

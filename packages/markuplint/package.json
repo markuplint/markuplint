@@ -4,7 +4,6 @@
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
-	"private": false,
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"type": "module",
 	"exports": {
@@ -17,9 +16,7 @@
 	"typedoc": {
 		"entryPoint": "./src/index.ts"
 	},
-	"bin": {
-		"markuplint": "./bin/markuplint.mjs"
-	},
+	"bin": "./bin/markuplint.mjs",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",

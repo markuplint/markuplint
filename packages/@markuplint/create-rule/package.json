@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -13,9 +12,7 @@
 			"types": "./lib/index.d.ts"
 		}
 	},
-	"bin": {
-		"create-rule": "./bin/create-rule.mjs"
-	},
+	"bin": "./bin/create-rule.mjs",
 	"publishConfig": {
 		"access": "public"
 	},

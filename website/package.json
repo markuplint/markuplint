@@ -1,5 +1,5 @@
 {
-  "name": "@markuplint/website",
+  "name": "markuplint-website",
   "description": "https://markuplint.dev",
   "version": "4.0.0",
   "private": true,
@@ -45,6 +45,10 @@
     "typescript": "5.8.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
+  },
+  "volta": {
+    "node": "22.16.0",
+    "yarn": "4.9.2"
   }
 }

@@ -15,7 +15,8 @@
 	"dependencies": {
 		"@types/node": "latest",
 		"typescript": "latest",
-		"tsx": "latest"
+		"tsx": "latest",
+		"markuplint": "file:../../../../packages/markuplint"
 	},
 	"devDependencies": {
 		"npm-run-all": "latest"
