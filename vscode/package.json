@@ -103,8 +103,8 @@
 	"scripts": {
 		"vscode:prepublish": "npm run vscode:build",
 		"vscode:build": "run-p vscode:build:*",
-		"vscode:build:extension": "esbuild src/extension.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
-		"vscode:build:server": "esbuild src/server/index.ts --bundle --packages=external --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
+		"vscode:build:extension": "esbuild src/extension.ts --bundle --external:vscode --external:vscode-* --external:node:* --platform=node --target=node20.9 --format=cjs --outfile=out/extension.js",
+		"vscode:build:server": "esbuild src/server/index.ts --bundle --external:vscode --external:vscode-* --external:node:* --external:markuplint --external:debug --external:glob --external:semver --external:mocha --platform=node --target=node20.9 --format=cjs --outfile=out/server.js",
 		"vscode:dev": "run-p vscode:dev:extension vscode:dev:server",
 		"vscode:dev:extension": "yarn vscode:build:extension --watch",
 		"vscode:dev:server": "yarn vscode:build:server --watch",
@@ -113,23 +113,24 @@
 		"vscode:test:suite": "node ./test/suite/run-tests.js",
 		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
-		"vscode:package": "vsce package --no-yarn",
-		"vscode:release": "vsce publish --no-yarn"
+		"vscode:package": "npx @vscode/vsce package --no-yarn",
+		"vscode:release": "npx @vscode/vsce publish --no-yarn"
 	},
 	"devDependencies": {
 		"@markuplint-dev/tsconfig": "1.0.8",
-		"@markuplint/file-resolver": "4.9.14",
 		"@types/mocha": "10.0.10",
 		"@types/node": "20.14.12",
 		"@types/semver": "7.7.0",
-		"@types/vscode": "1.100.0",
+		"@types/vscode": "1.90.0",
 		"@vscode/test-electron": "2.5.2",
 		"@vscode/vsce": "3.5.0",
 		"esbuild": "0.25.5",
 		"typescript": "5.8.3"
 	},
 	"dependencies": {
+		"@markuplint/file-resolver": "4.9.14",
 		"@markuplint/i18n": "4.6.0",
+		"@markuplint/ml-spec": "4.9.6",
 		"debug": "4.4.1",
 		"glob": "11.0.3",
 		"markuplint": "4.12.0",
@@ -141,6 +142,6 @@
 	},
 	"volta": {
 		"node": "22.16.0",
-		"yarn": "1.22.22"
+		"yarn": "4.9.2"
 	}
 }

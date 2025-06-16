@@ -22,5 +22,13 @@ jobs:
               with:
                   node-version: 18
 
-            - name: Install dependencies
-              run: yarn vscode:package
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Install root dependencies
+              run: yarn install
+
+            - name: Install dependencies and package
+              run: yarn run vscode:package
