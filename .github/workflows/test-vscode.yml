@@ -30,8 +30,13 @@ jobs:
               with:
                   node-version: 20
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
             - name: Install dependencies
-              run: yarn install --frozen-lockfile && yarn build
+              run: yarn install --immutable && yarn run build
 
             - name: Run tests
-              run: cd vscode && yarn vscode:build && yarn vscode:test
+              run: cd vscode && yarn install && npm run vscode:build && npm run vscode:test
