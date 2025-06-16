@@ -36,3 +36,7 @@ community/code-of-conduct.md
 contributors.json
 
 pretenders.json
+
+# Yarn v4 (node_modules mode)
+.yarn/install-state.gz
+.yarn/build-state.yml
