@@ -92,7 +92,7 @@
 		"typedoc-plugin-mdn-links": "5.0.2",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.8.3",
-		"vitest": "3.0.6"
+		"vitest": "3.2.3"
 	},
 	"config": {
 		"commitizen": {
