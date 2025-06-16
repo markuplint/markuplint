@@ -1,4 +1,5 @@
-/* global cheerio */
+import type * as cheerio from 'cheerio';
+import type { AnyNode } from 'domhandler';
 
 type HasName = { readonly name: string };
 
@@ -41,9 +42,9 @@ export function arrayUnique<T extends HasName>(array: readonly T[]) {
 
 export function getThisOutline(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.Root,
+	$: cheerio.CheerioAPI,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio,
+	$start: cheerio.Cheerio<AnyNode>,
 ) {
 	const $container = $('<div></div>');
 	let $next = $start.next();

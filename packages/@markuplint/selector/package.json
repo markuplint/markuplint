@@ -21,14 +21,14 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "4.9.6",
 		"@types/debug": "4.1.12",
-		"debug": "4.4.0",
+		"debug": "4.4.1",
 		"postcss-selector-parser": "7.1.0",
-		"type-fest": "4.40.0"
+		"type-fest": "4.41.0"
 	},
 	"devDependencies": {
 		"@types/jsdom": "21.1.7",

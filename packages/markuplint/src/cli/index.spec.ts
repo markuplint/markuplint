@@ -168,4 +168,56 @@ describe('Issues', () => {
 		const fixedContent = await readFile(fixedFilePath, { encoding: 'utf8' });
 		expect(originContent).toBe(fixedContent);
 	});
+
+	test('#1824-1', async () => {
+		const filePath = path.resolve(__dirname, '../../test/issue1824/index.html');
+		const config1 = path.resolve(__dirname, '../../test/issue1824/config1.json');
+
+		const { stdout, stderr } = await execa(
+			entryFilePath,
+			[escape(filePath), '--config', escape(config1), '--no-color', '--format', 'json', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(JSON.parse(stdout)).toEqual([
+			{
+				ruleId: 'config-error',
+				filePath,
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				message: `Plugin not found: ${path.resolve(__dirname, '../../test/issue1824/no-exist-plugin.js')}`,
+				raw: '',
+			},
+		]);
+		expect(stderr).toBe('');
+	});
+
+	test('#1824-2', async () => {
+		const filePath = path.resolve(__dirname, '../../test/issue1824/index.html');
+		const config2 = path.resolve(__dirname, '../../test/issue1824/config2.json');
+
+		const { stdout, stderr } = await execa(
+			entryFilePath,
+			[escape(filePath), '--config', escape(config2), '--no-color', '--format', 'json', '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
+
+		expect(JSON.parse(stdout)).toEqual([
+			{
+				ruleId: 'config-error',
+				filePath,
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				message: 'Rule not found: no-exist-namespace/my-rule',
+				raw: '',
+			},
+		]);
+		expect(stderr).toBe('');
+	});
 });

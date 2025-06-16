@@ -124,25 +124,25 @@
 		"@types/semver": "7.7.0",
 		"@types/vscode": "1.90.0",
 		"@vscode/test-electron": "2.5.2",
-		"@vscode/vsce": "3.3.2",
-		"esbuild": "0.25.3",
+		"@vscode/vsce": "3.5.0",
+		"esbuild": "0.25.5",
 		"typescript": "5.8.3"
 	},
 	"dependencies": {
 		"@markuplint/file-resolver": "4.9.14",
 		"@markuplint/i18n": "4.6.0",
-		"@markuplint/ml-spec": "4.9.3",
-		"debug": "4.4.0",
-		"glob": "11.0.2",
+		"@markuplint/ml-spec": "4.9.6",
+		"debug": "4.4.1",
+		"glob": "11.0.3",
 		"markuplint": "4.12.0",
-		"mocha": "11.1.0",
-		"semver": "7.7.1",
+		"mocha": "11.6.0",
+		"semver": "7.7.2",
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.12"
 	},
 	"volta": {
-		"node": "22.15.0",
+		"node": "22.16.0",
 		"yarn": "4.9.2"
 	}
 }

@@ -22,12 +22,12 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/ml-config": "4.8.11",
 		"@markuplint/parser-utils": "4.8.7",
-		"glob": "11.0.2",
+		"glob": "11.0.3",
 		"meow": "13.2.0",
 		"typescript": "5.8.3"
 	}

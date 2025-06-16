@@ -21,7 +21,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean",
+		"clean": "tsc --build --clean tsconfig.build.json",
 		"schema": "run-s schema:json schema:content-models schema:attributes schema:aria schema:prettier schema:eslint schema:prettier",
 		"schema:json": "tsx ./gen/gen.ts",
 		"schema:content-models": "json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts",
@@ -35,7 +35,7 @@
 		"@markuplint/types": "4.7.6",
 		"dom-accessibility-api": "0.7.0",
 		"is-plain-object": "5.0.0",
-		"type-fest": "4.40.0"
+		"type-fest": "4.41.0"
 	},
 	"devDependencies": {
 		"@markuplint/test-tools": "4.5.19",

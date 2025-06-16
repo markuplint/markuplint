@@ -1,4 +1,5 @@
-/* global cheerio */
+import type * as cheerio from 'cheerio';
+import type { Element } from 'domhandler';
 
 import type {
 	ARIAProperty,
@@ -66,7 +67,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	const roles: ARIARoleInSchema[] = [];
 	const getAttr = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		li: cheerio.Element,
+		li: Element,
 	): ARIARoleOwnedProperties => {
 		const $li = $(li);
 		const text = $li.text();
@@ -226,8 +227,8 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			.toArray()
 			.map(el => {
 				const href = $(el).prop('href');
-				const hashIndex = href.indexOf('#');
-				const hash = hashIndex === -1 ? undefined : href.slice(hashIndex);
+				const hashIndex = href?.indexOf('#');
+				const hash = hashIndex === -1 ? undefined : href?.slice(hashIndex);
 				return hash?.slice(1);
 			})
 			.filter((s): s is string => !!s),
@@ -359,7 +360,7 @@ async function getAriaInHtml() {
 
 function $$(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$el: cheerio.Cheerio,
+	$el: cheerio.Cheerio<Element>,
 	selectors: readonly string[],
 ) {
 	let $found = $el;

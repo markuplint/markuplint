@@ -3,7 +3,7 @@ import type { MLNode } from '../ml-dom/node/node.js';
 import type { MLToken } from '../ml-dom/token/token.js';
 import type { MLASTNode, MLASTToken, MLParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
-import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
+import type { MLMLSpec } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
@@ -62,5 +62,5 @@ export function createTestElement(sourceCode: string, options?: CreateTestOption
  * for test suite
  */
 export function dummySchemas() {
-	return [spec] as [MLMLSpec, ...ExtendedSpec[]];
+	return [spec] as [MLMLSpec];
 }

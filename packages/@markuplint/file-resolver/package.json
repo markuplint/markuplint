@@ -24,7 +24,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@types/node": "22.15.2"
+		"@types/node": "22.15.31"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "4.6.19",
@@ -36,11 +36,11 @@
 		"@markuplint/selector": "4.7.4",
 		"@markuplint/shared": "4.4.11",
 		"cosmiconfig": "9.0.0",
-		"debug": "4.4.0",
-		"glob": "11.0.2",
-		"ignore": "7.0.4",
+		"debug": "4.4.1",
+		"glob": "11.0.3",
+		"ignore": "7.0.5",
 		"import-meta-resolve": "4.1.0",
 		"jsonc": "2.0.0",
-		"minimatch": "10.0.1"
+		"minimatch": "10.0.3"
 	}
 }

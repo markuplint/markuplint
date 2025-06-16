@@ -1,4 +1,5 @@
-/* global cheerio */
+import type * as cheerio from 'cheerio';
+import type { Element } from 'domhandler';
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
@@ -146,7 +147,7 @@ export async function fetchHTMLElement(link: string) {
 
 function getProperty(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.Root,
+	$: cheerio.CheerioAPI,
 	prop: string,
 ) {
 	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') ?? $('#Technical_summary').next('table tr');
@@ -161,7 +162,7 @@ function getProperty(
 
 function getAttributes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.Root,
+	$: cheerio.CheerioAPI,
 	heading: string,
 	tagName: string,
 ) {
@@ -232,7 +233,7 @@ function getAttributes(
 
 function getItsHeading(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio,
+	$start: cheerio.Cheerio<Element>,
 ) {
 	let $needle = upToPrevOrParent($start);
 	while ($needle.length > 0) {
@@ -246,7 +247,7 @@ function getItsHeading(
 
 function upToPrevOrParent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio,
+	$start: cheerio.Cheerio<Element>,
 ) {
 	let $needle = $start.prev();
 	if ($needle.length === 0) {
@@ -257,7 +258,7 @@ function upToPrevOrParent(
 
 function isHeading(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$el: cheerio.Cheerio,
+	$el: cheerio.Cheerio<Element>,
 ) {
 	// @ts-ignore
 	return /^h[1-6]$/i.test($el[0].tagName);

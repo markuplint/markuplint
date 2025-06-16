@@ -36,6 +36,11 @@ jobs:
                   corepack enable
                   yarn --version
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
             - name: Install dependencies
               run: yarn install --immutable && yarn run build
 
