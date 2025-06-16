@@ -2157,7 +2157,7 @@ __metadata:
   dependencies:
     "@esbuild/linux-x64": "npm:0.25.5"
     "@esbuild/win32-x64": "npm:0.25.5"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.34.7"
+    "@rollup/rollup-linux-x64-gnu": "npm:4.43.0"
     "@vitest/coverage-v8": "npm:3.2.3"
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
@@ -2844,13 +2844,6 @@ __metadata:
   version: 4.43.0
   resolution: "@rollup/rollup-linux-s390x-gnu@npm:4.43.0"
   conditions: os=linux & cpu=s390x & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-gnu@npm:4.34.7":
-  version: 4.34.7
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.34.7"
-  conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
