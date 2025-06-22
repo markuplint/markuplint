@@ -9,5 +9,11 @@
 		"the svg specification": "the SVG specification",
 		"the wai-aria specification": "the WAI-ARIA specification",
 		"aria in html specification": "ARIA in HTML specification"
+	},
+	"sentences": {
+		"Multiple accessible name sources detected: {0}": "Multiple accessible name sources detected: {0}",
+		"<label> element and aria-labelledby attribute": "<label> element and aria-labelledby attribute",
+		"<label> element and aria-label attribute": "<label> element and aria-label attribute",
+		"multiple <label> elements (both associated and parent)": "multiple <label> elements (both associated and parent)"
 	}
 }

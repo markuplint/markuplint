@@ -167,6 +167,10 @@
 		"zero": "ゼロ"
 	},
 	"sentences": {
+		"Multiple accessible name sources detected: {0}": "複数のアクセシブルな名前ソースが検出されました: {0}",
+		"<label> element and aria-labelledby attribute": "<label>要素とaria-labelledby属性",
+		"<label> element and aria-label attribute": "<label>要素とaria-label属性",
+		"multiple <label> elements (both associated and parent)": "複数の<label>要素 (関連付けと親の両方)",
 		"{0} {1}": "{0}{1}",
 		"{0:c} and {1:c}": "{0}且つ、{1}",
 		"{0:c} on {1}": "{1}では、{0:c}",
