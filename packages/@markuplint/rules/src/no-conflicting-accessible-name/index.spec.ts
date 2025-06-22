@@ -186,3 +186,11 @@ test('works with button elements', async () => {
 		},
 	]);
 });
+
+test('no violations for button with content and aria-label only', async () => {
+	const { violations } = await mlRuleTest(rule, `
+		<button aria-label="ARIA label">Button text</button>
+	`);
+
+	expect(violations).toStrictEqual([]);
+});
