@@ -443,33 +443,66 @@ function getOtherInputAccessibleName(el: HTMLInputElement): string {
 	return title?.trim() ?? '';
 }
 
+// Generic API for label detection - can be used by both accname computation and rule validation
+
+/**
+ * Finds an associated label element by 'for' attribute
+ */
+export function findAssociatedLabelElement(el: Element): Element | null {
+	if (!el.id) {
+		return null;
+	}
+	
+	// First try to find the root element to search from
+	let root: Element = el;
+	while (root.parentElement) {
+		root = root.parentElement;
+	}
+	
+	let label = root.querySelector(`label[for="${el.id}"]`);
+	
+	// If not found in root, try searching in the owner document
+	if (!label && el.ownerDocument) {
+		label = el.ownerDocument.querySelector(`label[for="${el.id}"]`);
+	}
+	
+	return label;
+}
+
+/**
+ * Finds a parent label element
+ */
+export function findParentLabelElement(el: Element): Element | null {
+	return el.closest('label');
+}
+
+/**
+ * Checks if element has an associated label by 'for' attribute
+ */
+export function hasAssociatedLabelElement(el: Element): boolean {
+	return findAssociatedLabelElement(el) !== null;
+}
+
+/**
+ * Checks if element has a parent label element
+ */
+export function hasParentLabelElement(el: Element): boolean {
+	return findParentLabelElement(el) !== null;
+}
+
 // Helper function to get associated label text
 function getAssociatedLabelText(el: HTMLElement): string {
 	// Try to find associated label by 'for' attribute
-	if (el.id) {
-		// First try to find the root element to search from
-		let root: Element = el;
-		while (root.parentElement) {
-			root = root.parentElement;
-		}
-		
-		let label = root.querySelector(`label[for="${el.id}"]`);
-		
-		// If not found in root, try searching in the owner document
-		if (!label && el.ownerDocument) {
-			label = el.ownerDocument.querySelector(`label[for="${el.id}"]`);
-		}
-		
-		if (label) {
-			const labelText = getTextContent(label);
-			if (labelText) {
-				return labelText;
-			}
+	const associatedLabel = findAssociatedLabelElement(el);
+	if (associatedLabel) {
+		const labelText = getTextContent(associatedLabel);
+		if (labelText) {
+			return labelText;
 		}
 	}
 	
 	// Try to find parent label
-	const parentLabel = el.closest('label');
+	const parentLabel = findParentLabelElement(el);
 	if (parentLabel) {
 		const labelText = getTextContent(parentLabel);
 		if (labelText) {

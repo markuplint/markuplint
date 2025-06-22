@@ -1,7 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule } from '@markuplint/ml-core';
-import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, hasAssociatedLabelElement, hasParentLabelElement } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
 
@@ -73,29 +73,4 @@ function detectAccessibleNameConflicts(el: any): AccessibleNameConflict[] {
 	}
 	
 	return conflicts;
-}
-
-function hasAssociatedLabelElement(el: any): boolean {
-	if (!el.id) {
-		return false;
-	}
-	
-	// Search for label with for attribute
-	let root = el;
-	while (root.parentElement) {
-		root = root.parentElement;
-	}
-	
-	let label = root.querySelector(`label[for="${el.id}"]`);
-	
-	// If not found in root, try searching in the owner document
-	if (!label && el.ownerDocument) {
-		label = el.ownerDocument.querySelector(`label[for="${el.id}"]`);
-	}
-	
-	return !!label;
-}
-
-function hasParentLabelElement(el: any): boolean {
-	return !!el.closest('label');
 }
