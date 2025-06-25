@@ -12142,9 +12142,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:11.7.0":
-  version: 11.7.0
-  resolution: "mocha@npm:11.7.0"
+"mocha@npm:11.7.1":
+  version: 11.7.1
+  resolution: "mocha@npm:11.7.1"
   dependencies:
     browser-stdout: "npm:^1.3.1"
     chokidar: "npm:^4.0.1"
@@ -12169,7 +12169,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: 10c0/1eb97ccc6b76804c184688871fcce52bacb38489f0ae885a9105df74f2367d6105a26b8a8e9efad55f38c10275551a3b53690ade8e3c1a586b6e746c10057c27
+  checksum: 10c0/63817742cb265035bdb7796be90f4e8f3c53400d22e41c03310a65eee99baca653fa28992b04ec349bfe2b61857658610996850c0ddacf0a2aac13b755b1132d
   languageName: node
   linkType: hard
 
@@ -17535,7 +17535,7 @@ __metadata:
     esbuild: "npm:0.25.5"
     glob: "npm:11.0.3"
     markuplint: "npm:4.12.0"
-    mocha: "npm:11.7.0"
+    mocha: "npm:11.7.1"
     semver: "npm:7.7.2"
     typescript: "npm:5.8.3"
     vscode-languageclient: "npm:9.0.1"
