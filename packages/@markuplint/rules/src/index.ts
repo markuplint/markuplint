@@ -20,6 +20,7 @@ import LandmarkRoles from './landmark-roles/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
+import NoConflictingAccessibleName from './no-conflicting-accessible-name/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoDefaultValue from './no-default-value/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
@@ -60,6 +61,7 @@ const rules = {
 	'neighbor-popovers': NeighborPopovers,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-boolean-attr-value': NoBooleanAttrValue,
+	'no-conflicting-accessible-name': NoConflictingAccessibleName,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-default-value': NoDefaultValue,
 	'no-duplicate-dt': NoDuplicateDt,
