@@ -1,31 +1,22 @@
-## Merge Props
+## Merge Behavior
 
-| Options                                                                       | Type                   | Merging                      | Path Absolutize |
-| ----------------------------------------------------------------------------- | ---------------------- | ---------------------------- | --------------- |
-| [ruleCommonSettings](https://markuplint.dev/configuration#ruleCommonSettings) | Object                 | Merge                        | ✓               |
-| [plugins](https://markuplint.dev/configuration#plugins)                       | Array                  | Add uniquely                 | ✓               |
-| [parser](https://markuplint.dev/configuration#parser)                         | Object                 | Merge                        | ✓               |
-| [parserOptions](https://markuplint.dev/configuration#parserOptions)           | Object                 | Merge                        | ✓               |
-| [specs](https://markuplint.dev/configuration#specs)                           | Object(v2) / Array(v1) | Merge(v2) / Add uniquely(v1) | -               |
-| [extends](https://markuplint.dev/configuration#extends)                       | Array                  | Delete after merged          | ✓               |
-| [excludeFiles](https://markuplint.dev/configuration#excludeFiles)             | Array                  | Add uniquely                 | ✓               |
-| [rules](https://markuplint.dev/configuration#rules)                           | Object                 | †1                           | -               |
-| [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array                  | Add                          | -               |
-| [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array                  | Add                          | -               |
+| Options                                                                       | Type   | Behavior           | Path Absolutize |
+| ----------------------------------------------------------------------------- | ------ | ------------------ | --------------- |
+| [ruleCommonSettings](https://markuplint.dev/configuration#ruleCommonSettings) | Object | Shallow Merge      | ✓               |
+| [plugins](https://markuplint.dev/configuration#plugins)                       | Array  | Override           | ✓               |
+| [parser](https://markuplint.dev/configuration#parser)                         | Object | Shallow Merge      | ✓               |
+| [parserOptions](https://markuplint.dev/configuration#parserOptions)           | Object | Shallow Merge      | ✓               |
+| [specs](https://markuplint.dev/configuration#specs)                           | Object | Shallow Merge      | -               |
+| [extends](https://markuplint.dev/configuration#extends)                       | Array  | Remove After Merge | ✓               |
+| [excludeFiles](https://markuplint.dev/configuration#excludeFiles)             | Array  | Override           | ✓               |
+| [rules](https://markuplint.dev/configuration#rules)                           | Object | Shallow Merge      | -               |
+| [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array  | Append             | -               |
+| [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array  | Append             | -               |
+| [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object | †1                 | -               |
 
-## †1 Merge Rules
+## †1 Pretenders Merge Behavior
 
-| Value Type                | Merging          |
-| ------------------------- | ---------------- |
-| String / Number / Boolean | Merge(Overwrite) |
-| Array                     | Add              |
-| Object                    | †2               |
-
-## †2 Merge Rule Details
-
-| options  | Type   | Merging                                        |
-| -------- | ------ | ---------------------------------------------- |
-| value    | †1     | †1                                             |
-| severity | Enum   | Merge(Overwrite)                               |
-| option   | Object | Deep Merge(**An array is replaced, no added**) |
-| reason   | String | Merge(Overwrite)                               |
+| Property | Type  | Behavior |
+| -------- | ----- | -------- |
+| files    | Array | Override |
+| data     | Array | Append   |

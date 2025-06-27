@@ -133,21 +133,10 @@
 			}
 		},
 		"specs": {
-			"oneOf": [
-				{
-					"type": "object",
-					"additionalProperties": {
-						"type": "string"
-					}
-				},
-				{
-					"description": "This format is deprecated",
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				}
-			]
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
 		},
 		"nodeRules": {
 			"type": "array",
