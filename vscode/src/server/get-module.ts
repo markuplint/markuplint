@@ -13,7 +13,7 @@ let hasShownNode22Warning = false;
 /**
  * Check if an error is related to Node.js 22 import assertion compatibility issues
  */
-function isNode22ImportAssertionError(error: unknown): boolean {
+export function isNode22ImportAssertionError(error: unknown): boolean {
 	if (!(error instanceof Error)) {
 		return false;
 	}
@@ -30,7 +30,7 @@ function isNode22ImportAssertionError(error: unknown): boolean {
 /**
  * Extract version from a package.json path if possible
  */
-function tryGetVersionFromPath(modPath: string): string | null {
+export function tryGetVersionFromPath(modPath: string): string | null {
 	try {
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
 		// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires

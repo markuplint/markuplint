@@ -2,27 +2,9 @@ import assert from 'node:assert';
 
 import { suite, test } from 'mocha';
 
-// We need to test the helper functions in get-module.ts
-// Since they are not exported, we'll create similar implementations for testing
+import { isNode22ImportAssertionError } from '../src/server/get-module.js';
 
 suite('Get Module Tests', () => {
-	/**
-	 * Test implementation of isNode22ImportAssertionError function
-	 */
-	function isNode22ImportAssertionError(error: unknown): boolean {
-		if (!(error instanceof Error)) {
-			return false;
-		}
-
-		// Check for import assertion syntax errors that occur in Node.js 22
-		return (
-			error.name === 'SyntaxError' &&
-			(error.message.includes("Unexpected identifier 'assert'") ||
-				error.message.includes('import assertion') ||
-				error.message.includes('assert { type:'))
-		);
-	}
-
 	test('should detect Node.js 22 import assertion errors', () => {
 		// Test cases that should be detected as Node.js 22 import assertion errors
 		const node22Errors = [
@@ -59,8 +41,8 @@ Your local markuplint version (v{0}) is incompatible with VS Code's Node.js 22 e
 Using bundled markuplint version instead.
 
 To use your local markuplint version:
-• Upgrade to markuplint@4.10.0 or later
-• Or downgrade VS Code to version < 1.90.0
+- Upgrade to markuplint@4.10.0 or later
+- Or downgrade VS Code to version < 1.90.0
 
 See: https://github.com/markuplint/markuplint/issues/2837`;
 
