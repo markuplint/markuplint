@@ -2,23 +2,9 @@ import assert from 'node:assert';
 
 import { suite, test } from 'mocha';
 
+import { isNode22ImportAssertionError } from './get-module.js';
+
 suite('Get Module Tests', () => {
-	// Helper function to test Node.js 22 import assertion error detection
-	// This replicates the logic from get-module.ts for testing purposes
-	function isNode22ImportAssertionError(error: unknown): boolean {
-		if (!(error instanceof Error)) {
-			return false;
-		}
-
-		// Check for import assertion syntax errors that occur in Node.js 22
-		return (
-			error.name === 'SyntaxError' &&
-			(error.message.includes("Unexpected identifier 'assert'") ||
-				error.message.includes('import assertion') ||
-				error.message.includes('assert { type:'))
-		);
-	}
-
 	test('should detect Node.js 22 import assertion errors', () => {
 		// Test cases that should be detected as Node.js 22 import assertion errors
 		const node22Errors = [
