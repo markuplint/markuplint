@@ -2,7 +2,7 @@ import assert from 'node:assert';
 
 import { suite, test } from 'mocha';
 
-import { isNode22ImportAssertionError } from './get-module.js';
+import { isNode22ImportAssertionError } from './suite/get-module.js';
 
 suite('Get Module Tests', () => {
 	test('should detect Node.js 22 import assertion errors', () => {
