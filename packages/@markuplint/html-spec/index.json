@@ -47207,6 +47207,11 @@
 					},
 					"animatable": true
 				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetches the external script at a high priority relative to other external scripts. low Fetches the external script at a low priority relative to other external scripts. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
+					"experimental": true,
+					"nonStandard": true
+				},
 				"href": {
 					"type": "URL"
 				},
