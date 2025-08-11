@@ -48353,7 +48353,7 @@
 					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI>; Default value: none; Animatable: yes Warning: Since SVG 2, the xlink:href attribute is deprecated in favor of href. See xlink:href page for more information.",
 					"deprecated": true
 				},
 				"y": {
