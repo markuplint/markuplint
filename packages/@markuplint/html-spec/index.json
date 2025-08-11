@@ -207,7 +207,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/vkern",
 		"https://w3c.github.io/aria/",
 		"https://w3c.github.io/graphics-aria/",
 		"https://www.w3.org/TR/graphics-aria-1.0/",
@@ -48400,24 +48399,6 @@
 					"deprecated": true
 				}
 			}
-		},
-		{
-			"name": "svg:vkern",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <vkern> SVG element allows to fine-tweak the vertical distance between two glyphs in top-to-bottom fonts. This process is known as kerning.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
 		}
 	]
 }
