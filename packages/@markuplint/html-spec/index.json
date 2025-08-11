@@ -39504,9 +39504,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"form": {
-					"description": "This optional attribute is used to explicitly set a <form> owner for the <meter> element. If omitted, the <meter> is associated with its ancestor <form> element or the form association set by the form attribute on another ancestor element, such as on a <fieldset>, if any. If included, the value must be the id of a <form> in the same tree."
-				},
 				"high": {
 					"type": "Number"
 				},
