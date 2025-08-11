@@ -208,12 +208,11 @@ jobs:
             fail-fast: false
             matrix:
                 os:
-                    - ubuntu-latest
                     - macos-latest
                     - windows-latest
-                node: [18]
+                node: [24]
                 include:
-                    - node: 22
+                    - node: 18
                       os: ubuntu-latest
                     - node: 24
                       os: ubuntu-latest
@@ -265,11 +264,13 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
-                node: [18]
+                os:
+                    - macos-latest
+                    - windows-latest
+                node: [24]
                 shard: [1/4, 2/4, 3/4, 4/4]
                 include:
-                    - node: 22
+                    - node: 18
                       os: ubuntu-latest
                       shard: 1/1
                     - node: 24
