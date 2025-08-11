@@ -46281,6 +46281,9 @@
 				"height": {
 					"defaultValue": "120%"
 				},
+				"mask-type": {
+					"description": "This attribute defines the mask mode for the contents for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
+				},
 				"maskContentUnits": {
 					"type": {
 						"enum": ["userSpaceOnUse", "objectBoundingBox"]
