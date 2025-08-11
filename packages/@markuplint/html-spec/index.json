@@ -48341,13 +48341,13 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The height of the <use> element. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"href": {
 					"type": "URL"
 				},
 				"width": {
-					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The width of the <use> element. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"x": {
 					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
