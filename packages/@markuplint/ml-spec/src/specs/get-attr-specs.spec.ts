@@ -10,7 +10,7 @@ describe('getSpec', () => {
 		expect(x).toStrictEqual({
 			defaultValue: '0',
 			description:
-				'Positions the image horizontally from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes',
+				'Positions the image horizontally from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes',
 			name: 'x',
 			type: ['<svg-length>', '<percentage>'],
 			animatable: true,
@@ -23,7 +23,7 @@ describe('getSpec', () => {
 		expect(x).toStrictEqual({
 			defaultValue: '0',
 			description:
-				'The x coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes',
+				'The x coordinate of the foreignObject. Value type: <length> | <percentage>; Default value: 0; Animatable: yes',
 			name: 'x',
 			type: ['<svg-length>', '<percentage>'],
 			animatable: true,
@@ -35,7 +35,7 @@ describe('getSpec', () => {
 		const x = specs?.find(spec => spec.name === 'xlink:href');
 		expect(x).toStrictEqual({
 			description:
-				'An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes',
+				'An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes',
 			name: 'xlink:href',
 			type: 'URL',
 			deprecated: true,
