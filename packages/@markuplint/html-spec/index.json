@@ -46156,7 +46156,7 @@
 			"name": "svg:mask",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
-			"description": "The <mask> SVG element defines an alpha mask for compositing the current object into the background. A mask is used/referenced using the mask property.",
+			"description": "The <mask> SVG element defines a mask for compositing the current object into the background. A mask is used/referenced using the mask property and CSS mask-image property.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
