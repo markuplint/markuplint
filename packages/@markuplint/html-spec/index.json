@@ -149,7 +149,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/cursor",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
@@ -182,14 +181,12 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hkern",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/metadata",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/missing",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mpath",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/pattern",
@@ -207,11 +204,9 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tref",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/vkern",
 		"https://w3c.github.io/aria/",
 		"https://w3c.github.io/graphics-aria/",
 		"https://www.w3.org/TR/graphics-aria-1.0/",
@@ -1650,7 +1645,7 @@
 				"roles": [
 					{
 						"name": "alert",
-						"description": "A type of live region with important, and usually time-sensitive, information. See related alertdialog and status.\n\nAlerts are used to convey messages that might be immediately important to users. In the case of audio warnings, alerts provide an accessible alternative for hearing-impaired users. The alert role is applied to the element containing the alert message. An alert is a specialized form of the status role, which is processed as an atomic live region.\n\nAlerts are assertive live regions, which means they cause immediate notification for assistive technology users. If the operating system allows, the user agent SHOULD fire a system alert event through the accessibility API when the WAI-ARIA alert is created.\n\nNeither authors nor user agents are required to set or manage focus to an alert in order for it to be processed. Since alerts are not required to receive focus, authors SHOULD NOT require users to close an alert. If an author desires focus to move to a message when it is conveyed, the author SHOULD use alertdialog instead of alert.\n\nElements with the role alert have an implicit aria-live value of assertive, and an implicit aria-atomic value of true.",
+						"description": "A type of live region with important, and usually time-sensitive, information. See related alertdialog and status.\n\nAlerts are used to convey messages that will be immediately important to users. In the case of audio warnings, visibly displayed alerts provide an accessible alternative to audible alerts for Deaf or hard-of-hearing users. Likewise, alerts can provide an accessible alternative to the visible alerts for blind, deaf-blind, or low-vision users, and others with certain developmental disabilities. The alert role is applied to the element containing the alert message.\n\nAlert is a special type of assertive live region that is intended to cause immediate notification for assistive technology users. If the operating system allows, the user agent SHOULD fire a system alert event through the accessibility API when the alert is rendered.\n\nNeither authors nor user agents are required to set or manage focus to an alert in order for it to be processed. Since alerts are not required to receive focus, authors SHOULD NOT require users to close an alert. If an author desires focus to move to a message when it is conveyed, the author SHOULD use alertdialog instead of alert.\n\nElements with the role alert have an implicit aria-live value of assertive, and an implicit aria-atomic value of true.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -1764,7 +1759,7 @@
 					},
 					{
 						"name": "alertdialog",
-						"description": "A type of dialog that contains an alert message, where initial focus goes to an element within the dialog. See related alert and dialog.\n\nAlert dialogs are used to convey messages to alert the user. The alertdialog role goes on the node containing both the alert message and the rest of the dialog. Authors SHOULD make alert dialogs modal by ensuring that, while the alertdialog is shown, keyboard and mouse interactions only operate within the dialog. See aria-modal.\n\nUnlike alert, alertdialog can receive a response from the user. For example, to confirm that the user understands the alert being generated. When the alert dialog is displayed, authors SHOULD set focus to an active element within the alert dialog, such as a form control or confirmation button. The user agent SHOULD fire a system alert event through the accessibility API when the alert is created, provided one is specified by the intended accessibility API.\n\nAuthors SHOULD provide an accessible name for an alertdialog, which can be done with the aria-label or aria-labelledby attribute.\n\nAuthors SHOULD use aria-describedby on an alertdialog to reference the alert message element in the dialog. If they do not, an assistive technology can resort to its internal recovery mechanism to determine the contents of the alert message.",
+						"description": "A type of dialog that contains an alert message, where initial focus goes to an element within the dialog. See related alert and dialog.\n\nAlert dialogs are used to convey messages to alert the user. The alertdialog role goes on the node containing both the alert message and the rest of the dialog. Authors SHOULD make alert dialogs modal by ensuring that, while the alertdialog is shown, keyboard and mouse interactions only operate within the dialog. See aria-modal.\n\nAlertdialog is a special type of dialog that is intended to cause an immediate, alert-level notification for assistive technology users. If the operating system allows, the user agent SHOULD fire a system alert event through the accessibility API when the alert dialog is rendered.\n\nUnlike alert, alertdialog can receive a response from the user. For example, to confirm that the user understands the alert being generated. When the alert dialog is displayed, authors SHOULD set focus to an active element within the alert dialog, such as a form control or confirmation button. The user agent SHOULD fire a system alert event through the accessibility API when the alert is created, provided one is specified by the intended accessibility API.\n\nAuthors SHOULD provide an accessible name for an alertdialog, which can be done with the aria-label or aria-labelledby attribute.\n\nAuthors SHOULD use aria-describedby on an alertdialog to reference the alert message element in the dialog. If they do not, an assistive technology can resort to its internal recovery mechanism to determine the contents of the alert message.",
 						"generalization": ["alert", "dialog"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -11620,7 +11615,7 @@
 					},
 					{
 						"name": "tab",
-						"description": "A grouping label providing a mechanism for selecting the tab content that is to be rendered to the user.\n\nIf a tabpanel or item in a tabpanel has focus, the associated tab is the currently active tab in the tablist, as defined in Managing Focus. tablist elements, which contain a set of associated tab elements, are typically placed near a series of tabpanel elements, usually preceding it. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nAuthors MUST ensure elements with role tab are accessibility children of an element with the role tablist.\n\nAuthors SHOULD ensure the tabpanel associated with the currently active tab is perceivable to the user.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\nAuthors SHOULD ensure that a selected tab has its aria-selected attribute set to true, that inactive tab elements have their aria-selected attribute set to false, and that the currently selected tab provides a visual indication that it is selected.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each tab in a tablist, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:",
+						"description": "A grouping label providing a mechanism for selecting the tab content that is to be rendered to the user.\n\nIf a tabpanel or item in a tabpanel has focus, the associated tab is the currently active tab in the tablist, as defined in Managing Focus. tablist elements, which contain a set of associated tab elements, are typically placed near a series of tabpanel elements, usually preceding it. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nAuthors MUST ensure elements with role tab are accessibility children of an element with the role tablist.\n\nAuthors MUST ensure that if a tab is active, a corresponding tabpanel that represents the active tab is rendered.\n\nAuthors SHOULD ensure the tabpanel associated with the currently active tab is perceivable to the user.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\nAuthors SHOULD ensure that a selected tab has its aria-selected attribute set to true, that inactive tab elements have their aria-selected attribute set to false, and that the currently selected tab provides a visual indication that it is selected.\n\nIn certain conditions, a user agent MAY provide an implicit value for aria-selected for each tab in a tablist, and if it does, the user agent MUST ensure the following conditions are met before providing an implicit value:",
 						"generalization": ["sectionhead", "widget"],
 						"requiredContextRole": ["tablist"],
 						"requiredOwnedElements": [],
@@ -11863,7 +11858,7 @@
 					},
 					{
 						"name": "tablist",
-						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
+						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
 						"generalization": ["composite"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["tab"],
@@ -11986,7 +11981,7 @@
 					},
 					{
 						"name": "tabpanel",
-						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.",
+						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -35622,7 +35617,7 @@
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e., without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
 				},
 				"loop": {
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
@@ -35801,7 +35796,7 @@
 					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e., without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
 				},
 				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See this proposed specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
+					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
 				},
 				"loop": {
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
@@ -36812,7 +36807,12 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {
+				"compact": {
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true
+				}
+			}
 		},
 		{
 			"name": "dt",
@@ -37857,7 +37857,7 @@
 					"type": "Any"
 				},
 				"attributionsrc": {
-					"description": "specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with a Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
+					"description": "Specifies that you want the browser to send an Attribution-Reporting-Eligible header along with the image request. On the server-side this is used to trigger sending an Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header in the response, to register an image-based attribution source or attribution trigger, respectively. Which response header should be sent back depends on the value of the Attribution-Reporting-Eligible header that triggered the registration. The corresponding source or trigger event is set off once the browser receives the response containing the image file. Note: See the Attribution Reporting API for more details. There are two versions of this attribute that you can set: Boolean, i.e., just the attributionsrc name. This specifies that you want the Attribution-Reporting-Eligible header sent to the same server as the src attribute points to. This is fine when you are handling the attribution source or trigger registration on the same server. When registering an attribution trigger this property is optional, and a boolean value will be used if it is omitted. Value containing one or more URLs, for example: html<img src=\"image-file.png\" alt=\"My image file description\" attributionsrc=\"https://a.example/register-source https://b.example/register-source\" /> This is useful in cases where the requested resource is not on a server you control, or you just want to handle registering the attribution source on a different server. In this case, you can specify one or more URLs as the value of attributionsrc. When the resource request occurs the Attribution-Reporting-Eligible header will be sent to the URL(s) specified in attributionSrc in addition to the resource origin. These URLs can then respond with a Attribution-Reporting-Register-Source or Attribution-Reporting-Register-Trigger header as appropriate to complete registration. Note: Specifying multiple URLs means that multiple attribution sources can be registered on the same feature. You might for example have different campaigns that you are trying to measure the success of, which involve generating different reports on different data.",
 					"experimental": true
 				},
 				"border": {
@@ -37895,7 +37895,7 @@
 					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. Note: Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when. Note: Images with loading set to lazy will never be loaded if they do not intersect a visible part of an element, even if loading them would change that as unloaded images have a width and height of 0. Putting width and height on lazy-loaded images fixes this issue and is a best practice, recommended by the specification. Doing so also helps prevent layout shifts."
 				},
 				"longdesc": {
-					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is mentioned in the latest W3C version, HTML 5.2, but has been removed from the WHATWG's HTML Living Standard. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
+					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is considered obsolete in the HTML spec. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
 					"deprecated": true
 				},
 				"name": {
@@ -37906,7 +37906,7 @@
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer: The Referer header will not be sent. no-referrer-when-downgrade: The Referer header will not be sent to origins without TLS (HTTPS). origin: The sent referrer will be limited to the origin of the referring page: its scheme, host, and port. origin-when-cross-origin: The referrer sent to other origins will be limited to the scheme, the host, and the port. Navigations on the same origin will still include the path. same-origin: A referrer will be sent for same origin, but cross-origin requests will contain no referrer information. strict-origin: Only send the origin of the document as the referrer when the protocol security level stays the same (HTTPS→HTTPS), but don't send it to a less secure destination (HTTPS→HTTP). strict-origin-when-cross-origin (default): Send a full URL when performing a same-origin request, only send the origin when the protocol security level stays the same (HTTPS→HTTPS), and send no header to a less secure destination (HTTPS→HTTP). unsafe-url: The referrer will include the origin and the path (but not the fragment, password, or username). This value is unsafe, because it leaks origins and paths from TLS-protected resources to insecure origins."
 				},
 				"sizes": {
-					"description": "One or more strings separated by commas, indicating a set of source sizes. Each source size consists of: A media condition. This must be omitted for the last item in the list. A source size value. Media Conditions describe properties of the viewport, not of the image. For example, (max-height: 500px) 1000px proposes to use a source of 1000px width, if the viewport is not higher than 500px. Because a source size descriptor is used to specify the width to use for the image during layout of the page, the media condition is typically (but not necessarily) based on the width information. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image's display size if no CSS styling is applied). If the srcset attribute is absent, or contains no values with a width descriptor, then the sizes attribute has no effect. A source size value can be any non-negative length. It must not use CSS functions other than the math functions. Units are interpreted in the same way as media queries, meaning that all relative length units are relative to the document root rather than the <img> element, so an em value is relative to the root font size, rather than the font size of the image. Percentage values are not allowed. Additionally, you can use the value auto to replace the whole list of sizes or the first entry in the list. It is only valid when combined with loading=\"lazy\", and resolves to the concrete size of the image."
+					"description": "One or more strings separated by commas, indicating a set of source sizes. Each source size consists of: A media condition. This must be omitted for the last item in the list. A source size value. Media Conditions describe properties of the viewport, not of the image. For example, (height <= 500px) 1000px proposes to use a source of 1000px width, if the viewport is not higher than 500px. Because a source size descriptor is used to specify the width to use for the image during layout of the page, the media condition is typically (but not necessarily) based on the width information. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The selected source size affects the intrinsic size of the image (the image's display size if no CSS styling is applied). If the srcset attribute is absent, or contains no values with a width descriptor, then the sizes attribute has no effect. A source size value can be any non-negative length. It must not use CSS functions other than the math functions. Units are interpreted in the same way as media queries, meaning that all relative length units are relative to the document root rather than the <img> element, so an em value is relative to the root font size, rather than the font size of the image. Percentage values are not allowed. The sizes attribute also accepts the following keyword values: auto auto can replace the whole list of sizes or the first entry in the list. It is only valid when combined with loading=\"lazy\", and resolves to the concrete size of the image. Since the intrinsic size of the image is not yet known, width and height attributes (or CSS equivalents) should also be specified to prevent the browser assuming a default width of 300px."
 				},
 				"src": {
 					"type": "URL",
@@ -39381,7 +39381,12 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {
+				"compact": {
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true
+				}
+			}
 		},
 		{
 			"name": "menuitem",
@@ -39403,7 +39408,7 @@
 		{
 			"name": "meta",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
-			"description": "The <meta> HTML element represents metadata that cannot be represented by other HTML meta-related elements, like <base>, <link>, <script>, <style> or <title>.",
+			"description": "The <meta> HTML element represents metadata that cannot be represented by other meta-related elements, such as <base>, <link>, <script>, <style>, or <title>.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
 				"contents": false
@@ -39499,9 +39504,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"form": {
-					"description": "This optional attribute is used to explicitly set a <form> owner for the <meter> element. If omitted, the <meter> is associated with its ancestor <form> element or the form association set by the form attribute on another ancestor element, such as on a <fieldset>, if any. If included, the value must be the id of a <form> in the same tree."
-				},
 				"high": {
 					"type": "Number"
 				},
@@ -39791,6 +39793,11 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"compact": {
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"deprecated": true,
+					"nonStandard": true
+				},
 				"reversed": {
 					"type": "Boolean"
 				},
@@ -41492,7 +41499,7 @@
 					"deprecated": true
 				},
 				"rowspan": {
-					"description": "A non-negative integer value indicating how many rows the header cell spans or extends. The default value is 1; if its value is set to 0, the header cell will extends to the end of the table grouping section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the <th> belongs to. Values higher than 65534 are clipped at 65534."
+					"description": "A non-negative integer value indicating how many rows the header cell spans or extends. The default value is 1; if its value is set to 0, the header cell will extend to the end of the table grouping section (<thead>, <tbody>, <tfoot>, even if implicitly defined), that the <th> belongs to. Values higher than 65534 are clipped at 65534."
 				},
 				"scope": {
 					"type": {
@@ -41591,7 +41598,7 @@
 		{
 			"name": "title",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
-			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; tags within the element are ignored.",
+			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; HTML tags within the element, if any, are also treated as plain text.",
 			"categories": ["#metadata"],
 			"contentModel": {
 				"contents": [
@@ -41804,7 +41811,7 @@
 			},
 			"attributes": {
 				"compact": {
-					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute depends on the user agent, and it doesn't work in all browsers. Warning: Do not use this attribute, as it has been deprecated: use CSS instead. To give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
+					"description": "This Boolean attribute hints that the list should be rendered in a compact style. The interpretation of this attribute is browser-specific. Use CSS instead: to give a similar effect as the compact attribute, the CSS property line-height can be used with a value of 80%.",
 					"deprecated": true
 				},
 				"type": {
@@ -42116,32 +42123,32 @@
 			},
 			"attributes": {
 				"download": {
-					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"href": {
-					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL> ; Default value: none; Animatable: yes"
+					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL>; Default value: none; Animatable: yes"
 				},
 				"hreflang": {
-					"description": "The human language of the URL or URL fragment that the hyperlink points to. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "The human language of the URL or URL fragment that the hyperlink points to. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"ping": {
-					"description": "A space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking. For a more widely-supported feature addressing the same use cases, see Navigator.sendBeacon(). Value type: <list-of-URLs> ; Default value: none; Animatable: no",
+					"description": "A space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking. For a more widely-supported feature addressing the same use cases, see Navigator.sendBeacon(). Value type: <list-of-URLs>; Default value: none; Animatable: no",
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no"
+					"description": "Which referrer to send when fetching the URL. Value type: no-referrer | no-referrer-when-downgrade | same-origin | origin | strict-origin | origin-when-cross-origin | strict-origin-when-cross-origin | unsafe-url; Default value: none; Animatable: no"
 				},
 				"rel": {
-					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: no"
+					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types>; Default value: none; Animatable: no"
 				},
 				"target": {
-					"description": "Where to display the linked URL. Value type: _self|_parent|_top|_blank|<XML-Name> ; Default value: _self; Animatable: yes"
+					"description": "Where to display the linked URL. Value type: _self | _parent | _top | _blank | <XML-Name>; Default value: _self; Animatable: yes"
 				},
 				"type": {
-					"description": "A MIME type for the linked URL. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "A MIME type for the linked URL. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"xlink:href": {
-					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL> ; Default value: none; Animatable: yes",
+					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL>; Default value: none; Animatable: yes",
 					"deprecated": true
 				}
 			}
@@ -42489,17 +42496,17 @@
 			},
 			"attributes": {
 				"cx": {
-					"description": "The x-axis coordinate of the center of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x-axis coordinate of the center of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"cy": {
-					"description": "The y-axis coordinate of the center of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y-axis coordinate of the center of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"r": {
-					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -42612,24 +42619,6 @@
 					"defaultValue": "true"
 				}
 			}
-		},
-		{
-			"name": "svg:cursor",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <cursor> SVG element can be used to define a platform-independent custom cursor. A recommended approach for defining a platform-independent custom cursor is to create a PNG image and define a cursor element that references the PNG image and identifies the exact position within the image which is the pointer position (i.e., the hot spot).",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
 		},
 		{
 			"name": "svg:defs",
@@ -42771,7 +42760,7 @@
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-			"description": "The <discard> SVG element may be used to specify the time at which a particular element should be removed from the DOM. This allows an SVG viewer to conserve memory by discarding elements that are no longer needed, such as animated elements that have completed.",
+			"description": "SVG drawings and images are created using a wide array of elements which are dedicated to the construction, drawing, and layout of vector images and diagrams. Here you'll find reference documentation for each of the SVG elements.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42913,20 +42902,20 @@
 			},
 			"attributes": {
 				"cx": {
-					"description": "The x position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x position of the center of the ellipse. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"cy": {
-					"description": "The y position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y position of the center of the ellipse. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"rx": {
-					"description": "The radius of the ellipse on the x axis. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The radius of the ellipse on the x axis. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"ry": {
-					"description": "The radius of the ellipse on the y axis. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The radius of the ellipse on the y axis. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				}
 			}
 		},
@@ -45432,16 +45421,16 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the foreignObject. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"width": {
-					"description": "The width of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the foreignObject. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of the foreignObject. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The y coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of the foreignObject. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -45564,24 +45553,6 @@
 			"attributes": {}
 		},
 		{
-			"name": "svg:hkern",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <hkern> SVG element allows to fine-tweak the horizontal distance between two glyphs. This process is known as kerning.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
 			"name": "svg:image",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
@@ -45701,10 +45672,15 @@
 					}
 				},
 				"decoding": {
-					"description": "Provides a hint to the browser as to whether it should perform image decoding synchronously or asynchronously. Value type: async | sync | auto ; Default value: auto; Animatable: yes"
+					"description": "Provides a hint to the browser as to whether it should perform image decoding synchronously or asynchronously. Value type: async | sync | auto; Default value: auto; Animatable: yes"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external image. Allowed values: high Fetches the external image at a high priority relative to other external resources. low Fetches the external image at a low priority relative to other external resources. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
+					"experimental": true,
+					"nonStandard": true
 				},
 				"height": {
-					"description": "The height the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"href": {
 					"type": "URL"
@@ -45714,17 +45690,17 @@
 					"defaultValue": "xMidYMid meet"
 				},
 				"width": {
-					"description": "The width the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "Positions the image horizontally from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "Positions the image horizontally from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "Points at a URL for the image file. Value type: <URL> ; Default value: none; Animatable: no",
+					"description": "Points at a URL for the image file. Value type: <URL>; Default value: none; Animatable: no",
 					"deprecated": true
 				},
 				"y": {
-					"description": "Positions the image vertically from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "Positions the image vertically from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -45998,7 +45974,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
 					"deprecated": true
 				},
 				"y1": {
@@ -46192,7 +46168,7 @@
 			"name": "svg:mask",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
-			"description": "The <mask> SVG element defines an alpha mask for compositing the current object into the background. A mask is used/referenced using the mask property.",
+			"description": "The <mask> SVG element defines a mask for compositing the current object into the background. A mask is used/referenced using the mask property and CSS mask-image property.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -46302,6 +46278,9 @@
 				"height": {
 					"defaultValue": "120%"
 				},
+				"mask-type": {
+					"description": "This attribute defines the mask mode for the contents for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
+				},
 				"maskContentUnits": {
 					"type": {
 						"enum": ["userSpaceOnUse", "objectBoundingBox"]
@@ -46350,24 +46329,6 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:missing",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
@@ -46509,7 +46470,7 @@
 			},
 			"attributes": {
 				"d": {
-					"description": "This attribute defines the shape of the path. Value type: <string> ; Default value: ''; Animatable: yes"
+					"description": "This attribute defines the shape of the path. Value type: <string>; Default value: ''; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
@@ -46668,14 +46629,14 @@
 					"defaultValue": "0"
 				},
 				"x": {
-					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
 					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used.",
 					"deprecated": true
 				},
 				"y": {
-					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47069,7 +47030,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
 					"deprecated": true
 				}
 			}
@@ -47189,26 +47150,26 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the rect. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"rx": {
-					"description": "The horizontal corner radius of the rect. Defaults to ry if it is specified. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The horizontal corner radius of the rect. Defaults to ry if it is specified. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"ry": {
-					"description": "The vertical corner radius of the rect. Defaults to rx if it is specified. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The vertical corner radius of the rect. Defaults to rx if it is specified. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"width": {
-					"description": "The width of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the rect. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of the rect. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of the rect. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The y coordinate of the rect. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of the rect. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47243,6 +47204,11 @@
 					},
 					"animatable": true
 				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetches the external script at a high priority relative to other external scripts. low Fetches the external script at a low priority relative to other external scripts. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
+					"experimental": true,
+					"nonStandard": true
+				},
 				"href": {
 					"type": "URL"
 				},
@@ -47251,7 +47217,7 @@
 					"defaultValue": "application/ecmascript"
 				},
 				"xlink:href": {
-					"description": "The URL to the script to load. Value type: <URL> ; Default value: none; Animatable: no",
+					"description": "The URL to the script to load. Value type: <URL>; Default value: none; Animatable: no",
 					"deprecated": true
 				}
 			}
@@ -47603,10 +47569,10 @@
 					"defaultValue": "auto"
 				},
 				"x": {
-					"description": "The displayed x coordinate of the svg container. No effect on outermost svg elements. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The displayed x coordinate of the svg container. No effect on outermost svg elements. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The displayed y coordinate of the svg container. No effect on outermost svg elements. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The displayed y coordinate of the svg container. No effect on outermost svg elements. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47766,7 +47732,7 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "This attribute determines the height of the symbol. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "This attribute determines the height of the symbol. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"preserveAspectRatio": {
 					"type": "<preserve-aspect-ratio>",
@@ -47796,13 +47762,13 @@
 					"type": "<view-box>"
 				},
 				"width": {
-					"description": "This attribute determines the width of the symbol. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "This attribute determines the width of the symbol. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "This attribute determines the x coordinate of the symbol. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the x coordinate of the symbol. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "This attribute determines the y coordinate of the symbol. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the y coordinate of the symbol. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -48141,24 +48107,6 @@
 			"attributes": {}
 		},
 		{
-			"name": "svg:tref",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The textual content for a <text> SVG element can be either character data directly embedded within the <text> element or the character data content of a referenced element, where the referencing is specified with a <tref> element.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
-		},
-		{
 			"name": "svg:tspan",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
@@ -48305,7 +48253,7 @@
 			"name": "svg:use",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
-			"description": "The <use> element takes nodes from within the SVG document, and duplicates them somewhere else. The effect is the same as if the nodes were deeply cloned into a non-exposed DOM, then pasted where the use element is, much like cloned template elements.",
+			"description": "The <use> element takes nodes from within an SVG document, and duplicates them somewhere else. The effect is the same as if the nodes were deeply cloned into a non-exposed DOM, then pasted where the <use> element is, much like cloned <template> elements.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -48413,23 +48361,23 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The height of the <use> element. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"href": {
 					"type": "URL"
 				},
 				"width": {
-					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "The width of the <use> element. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI>; Default value: none; Animatable: yes Warning: Since SVG 2, the xlink:href attribute is deprecated in favor of href. See xlink:href page for more information.",
 					"deprecated": true
 				},
 				"y": {
-					"description": "The y coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -48476,24 +48424,6 @@
 					"deprecated": true
 				}
 			}
-		},
-		{
-			"name": "svg:vkern",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <vkern> SVG element allows to fine-tweak the vertical distance between two glyphs in top-to-bottom fonts. This process is known as kerning.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
 		}
 	]
 }
