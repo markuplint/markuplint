@@ -86,6 +86,30 @@ This will:
 - Convert JSON Schema to TypeScript via `json2ts` into `src/types/*.ts`
 - Format with Prettier and ESLint
 
+#### What `yarn up:schema` does
+
+From the repository root, this executes schema maintenance across packages in order:
+
+1. `@markuplint/types`
+
+- Run `gen/types.ts` to build `types.schema.json` from css-tree keywords/types and
+  `gen/specific-schema.json`
+- Generate TypeScript types: `types.schema.json` → `src/types.schema.ts` (via `json2ts`)
+- Format (`prettier`/`eslint`) and build the package
+
+2. `@markuplint/ml-spec` (this package)
+
+- Run `gen/gen.ts` to output `schemas/global-attributes.schema.json` and `schemas/attributes.schema.json`
+- Generate TypeScript types from schemas:
+  - `schemas/content-models.schema.json` → `src/types/permitted-structures.ts`
+  - `schemas/attributes.schema.json` → `src/types/attributes.ts`
+  - `schemas/aria.schema.json` → `src/types/aria.ts`
+- Format (`prettier`/`eslint`)
+
+Dependency note: `schemas/attributes.schema.json` references
+`@markuplint/types/types.schema.json#/definitions/type`. Updating types first ensures references stay
+consistent; `yarn up:schema` takes care of this order.
+
 3. Build (optional) and sanity-check
 
 ```bash
