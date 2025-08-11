@@ -130,6 +130,30 @@ When to change shared files:
 - Add/edit global attribute categories or items → `src/spec-common.attributes.json`
 - Add/edit reusable content model macros → `src/spec-common.contents.json`
 
+#### File naming conventions
+
+- HTML elements: `src/spec.<tag>.json` (lowercase), e.g. `spec.a.json`, `spec.dialog.json`
+- SVG elements: `src/spec.svg_<local>.json`, e.g. `spec.svg_text.json` → element name `svg:text`
+  - The generator infers the element name from the filename; do not add a `name` field manually
+
+#### Common editing recipes
+
+- Add a new element
+  - Create `src/spec.<tag>.json` (or `src/spec.svg_<local>.json`)
+  - Define `contentModel`, `globalAttrs`, minimal `attributes`, and `aria`
+  - Run `yarn up:gen` and verify `index.json`
+
+- Tighten an attribute type
+  - Update the attribute entry under `attributes` with the desired `type`
+  - If a new value type is needed, extend `@markuplint/types` first, then regenerate this package
+
+- Mark an attribute unstable
+  - Set `experimental: true`, `deprecated: true`, or `obsolete: true`
+  - Manual flags override MDN if the scraper disagrees
+
+- Restrict ARIA usage for an element
+  - Use `aria.properties`/`aria.permittedRoles` or add `aria.conditions` for context-specific rules
+
 3. Do not edit generated files
 
 - Do not modify `index.json` directly. Always update the files under `src/` and regenerate.
