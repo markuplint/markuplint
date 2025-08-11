@@ -160,6 +160,50 @@ This enables framework-specific specs (Vue/React/Svelte, etc.) to extend the HTM
   - Edit `schemas/aria.schema.json`
   - Regenerate types via the schema scripts
 
+### Content model quick reference
+
+Content models describe allowed children for each element. See the JSON Schema
+`schemas/content-models.schema.json` and the generated TS types `src/types/permitted-structures.ts`.
+Also refer to the website docs: [Rule: permitted-contents](https://markuplint.dev/rules/permitted-contents).
+
+- Basic categories (strings): `"#flow"`, `"#phrasing"`, `"#interactive"`, …
+- Model item forms:
+  - `require` | `optional` | `oneOrMore` | `zeroOrMore`: a string, category, or nested patterns
+  - `choice`: 2–5 alternative pattern arrays
+  - `transparent`: inherits parent model filtered by selector string
+
+Examples:
+
+```json
+{
+  "contentModel": {
+    "contents": [{ "require": "#phrasing" }, { "optional": [{ "oneOrMore": "#interactive" }] }]
+  }
+}
+```
+
+```json
+{
+  "contentModel": {
+    "contents": [{ "choice": [[{ "oneOrMore": "#flow" }], [{ "require": "#phrasing" }]] }]
+  }
+}
+```
+
+```json
+{
+  "contentModel": {
+    "contents": [{ "transparent": ":not(:model(interactive))" }],
+    "conditional": [
+      {
+        "condition": "[type=button]",
+        "contents": [{ "require": "#phrasing" }]
+      }
+    ]
+  }
+}
+```
+
 ### License
 
 MIT
