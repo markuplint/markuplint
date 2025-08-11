@@ -21,9 +21,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "npm-run-all gen:*",
+		"gen": "npm-run-all gen:build gen:prettier",
 		"gen:build": "node build.mjs",
-		"gen:prettier": "prettier --write index.json"
+		"gen:prettier": "npx prettier --write index.json"
 	},
 	"devDependencies": {
 		"@markuplint/spec-generator": "4.6.19",
