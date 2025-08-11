@@ -116,6 +116,7 @@
 		"onbeforetoggle",
 		"oncontextlost",
 		"oncontextrestored",
+		"onpointerrawupdate",
 		"onwebkitanimationend",
 		"onwebkitanimationiteration",
 		"onwebkitanimationstart",
