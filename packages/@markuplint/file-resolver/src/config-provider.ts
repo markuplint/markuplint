@@ -99,7 +99,7 @@ export class ConfigProvider {
 		}
 		let configSet = await this._mergeConfigs(keys, cache, targetFile.path);
 
-		const filePath = [...configSet.files].toReversed()[0];
+		const filePath = [...configSet.files].reverse()[0];
 		if (!filePath) {
 			throw new ConfigParserError('Config file not found', {
 				filePath: targetFile.path,
