@@ -181,7 +181,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/hkern",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
@@ -45542,24 +45541,6 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:hkern",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <hkern> SVG element allows to fine-tweak the horizontal distance between two glyphs. This process is known as kerning.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
