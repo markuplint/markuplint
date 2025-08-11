@@ -187,7 +187,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/metadata",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/missing",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mpath",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/pattern",
@@ -46312,24 +46311,6 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:missing",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
