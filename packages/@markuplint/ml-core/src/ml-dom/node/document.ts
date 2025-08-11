@@ -2530,6 +2530,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): null {
+		return null;
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported

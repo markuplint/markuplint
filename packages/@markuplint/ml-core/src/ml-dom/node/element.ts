@@ -2975,6 +2975,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return this.nodeName;
 	}
 
+	/**
+	 * @implements DOM API: `Element`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
 	get textContent(): string {
 		return [...this.childNodes].map(child => child.textContent ?? '').join('');
 	}

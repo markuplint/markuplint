@@ -26,6 +26,14 @@ export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData =
 	}
 
 	/**
+	 * @implements DOM API: `DocumentFragment`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): string {
+		return [...this.childNodes].map(child => child.textContent ?? '').join('');
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @deprecated
