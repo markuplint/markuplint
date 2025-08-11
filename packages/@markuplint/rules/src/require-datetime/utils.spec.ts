@@ -35,10 +35,16 @@ test('parseADatetime', () => {
 		zone: 540,
 	});
 
+	expect(parseADatetime('午後2時', ['en', 'ja'])).toStrictEqual({
+		datetime: {
+			hour: 14,
+			minute: 0,
+		},
+	});
+
 	// attributable to chrono
 	expect(parseADatetime('2015', ['en'])).toStrictEqual(null);
 	expect(parseADatetime('令和5年', ['ja'])).toStrictEqual(null);
-	expect(parseADatetime('午後2時', ['en', 'ja'])).toStrictEqual(null);
 });
 
 test('getCandidateDatetimeString', () => {

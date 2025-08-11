@@ -84,4 +84,10 @@ export const base = [
 			'import-x/resolver-next': [createTypeScriptImportResolver()],
 		},
 	},
+	// for Node.js v18
+	{
+		rules: {
+			'unicorn/no-array-reverse': 0,
+		},
+	},
 ];

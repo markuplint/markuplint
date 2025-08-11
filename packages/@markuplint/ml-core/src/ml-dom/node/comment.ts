@@ -24,7 +24,11 @@ export class MLComment<T extends RuleConfigValue, O extends PlainData = undefine
 		return this.COMMENT_NODE;
 	}
 
-	get textContent() {
-		return this.nodeValue;
+	/**
+	 * @implements DOM API: `Comment`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): string {
+		return this.data;
 	}
 }

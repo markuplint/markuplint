@@ -164,6 +164,14 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * @implements DOM API: `Attr`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): string {
+		return this.value;
+	}
+
+	/**
 	 * @implements `@markuplint/ml-core` API: `MLAttr`
 	 */
 	get tokenList(): MLDomTokenList | null {

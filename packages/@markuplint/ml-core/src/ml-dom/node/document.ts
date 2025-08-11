@@ -743,6 +743,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
+	get onbeforematch():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onbeforematch" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
 	get onbeforeinput():
 		| ((
 				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -1850,6 +1868,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @unsupported
 	 * @implements DOM API: `Document`
 	 */
+	get onpointerrawupdate():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onpointerrawupdate" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
 	get onpointerup():
 		| ((
 				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -2527,6 +2563,14 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get styleSheets(): StyleSheetList {
 		throw new UnexpectedCallError('Not supported "styleSheets" property');
+	}
+
+	/**
+	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): null {
+		return null;
 	}
 
 	/**
