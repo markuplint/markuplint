@@ -42111,32 +42111,32 @@
 			},
 			"attributes": {
 				"download": {
-					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "Instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"href": {
-					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL> ; Default value: none; Animatable: yes"
+					"description": "The URL or URL fragment the hyperlink points to. Value type: <URL>; Default value: none; Animatable: yes"
 				},
 				"hreflang": {
-					"description": "The human language of the URL or URL fragment that the hyperlink points to. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "The human language of the URL or URL fragment that the hyperlink points to. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"ping": {
-					"description": "A space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking. For a more widely-supported feature addressing the same use cases, see Navigator.sendBeacon(). Value type: <list-of-URLs> ; Default value: none; Animatable: no",
+					"description": "A space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking. For a more widely-supported feature addressing the same use cases, see Navigator.sendBeacon(). Value type: <list-of-URLs>; Default value: none; Animatable: no",
 					"experimental": true
 				},
 				"referrerpolicy": {
-					"description": "Which referrer to send when fetching the URL. Value type: no-referrer|no-referrer-when-downgrade|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin|unsafe-url ; Default value: none; Animatable: no"
+					"description": "Which referrer to send when fetching the URL. Value type: no-referrer | no-referrer-when-downgrade | same-origin | origin | strict-origin | origin-when-cross-origin | strict-origin-when-cross-origin | unsafe-url; Default value: none; Animatable: no"
 				},
 				"rel": {
-					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types> ; Default value: none; Animatable: no"
+					"description": "The relationship of the target object to the link object. Value type: <list-of-Link-Types>; Default value: none; Animatable: no"
 				},
 				"target": {
-					"description": "Where to display the linked URL. Value type: _self|_parent|_top|_blank|<XML-Name> ; Default value: _self; Animatable: yes"
+					"description": "Where to display the linked URL. Value type: _self | _parent | _top | _blank | <XML-Name>; Default value: _self; Animatable: yes"
 				},
 				"type": {
-					"description": "A MIME type for the linked URL. Value type: <string> ; Default value: none; Animatable: no"
+					"description": "A MIME type for the linked URL. Value type: <string>; Default value: none; Animatable: no"
 				},
 				"xlink:href": {
-					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL> ; Default value: none; Animatable: yes",
+					"description": "The URL or URL fragment that the hyperlink points to. May be required for backwards compatibility for older browsers. Value type: <URL>; Default value: none; Animatable: yes",
 					"deprecated": true
 				}
 			}
@@ -42484,17 +42484,17 @@
 			},
 			"attributes": {
 				"cx": {
-					"description": "The x-axis coordinate of the center of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x-axis coordinate of the center of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"cy": {
-					"description": "The y-axis coordinate of the center of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y-axis coordinate of the center of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"r": {
-					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The radius of the circle. A value lower or equal to zero disables rendering of the circle. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -42890,20 +42890,20 @@
 			},
 			"attributes": {
 				"cx": {
-					"description": "The x position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x position of the center of the ellipse. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"cy": {
-					"description": "The y position of the center of the ellipse. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y position of the center of the ellipse. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"rx": {
-					"description": "The radius of the ellipse on the x axis. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The radius of the ellipse on the x axis. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"ry": {
-					"description": "The radius of the ellipse on the y axis. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The radius of the ellipse on the y axis. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				}
 			}
 		},
@@ -45409,16 +45409,16 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the foreignObject. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"width": {
-					"description": "The width of the foreignObject. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the foreignObject. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of the foreignObject. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The y coordinate of the foreignObject. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of the foreignObject. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -45660,10 +45660,15 @@
 					}
 				},
 				"decoding": {
-					"description": "Provides a hint to the browser as to whether it should perform image decoding synchronously or asynchronously. Value type: async | sync | auto ; Default value: auto; Animatable: yes"
+					"description": "Provides a hint to the browser as to whether it should perform image decoding synchronously or asynchronously. Value type: async | sync | auto; Default value: auto; Animatable: yes"
+				},
+				"fetchpriority": {
+					"description": "Provides a hint of the relative priority to use when fetching an external image. Allowed values: high Fetches the external image at a high priority relative to other external resources. low Fetches the external image at a low priority relative to other external resources. auto Doesn't set a preference for the fetch priority. It is used if no value or an invalid value is set. This is the default.",
+					"experimental": true,
+					"nonStandard": true
 				},
 				"height": {
-					"description": "The height the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"href": {
 					"type": "URL"
@@ -45673,17 +45678,17 @@
 					"defaultValue": "xMidYMid meet"
 				},
 				"width": {
-					"description": "The width the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width the image renders at. Unlike HTML's <img>, this attribute is required. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "Positions the image horizontally from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "Positions the image horizontally from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
-					"description": "Points at a URL for the image file. Value type: <URL> ; Default value: none; Animatable: no",
+					"description": "Points at a URL for the image file. Value type: <URL>; Default value: none; Animatable: no",
 					"deprecated": true
 				},
 				"y": {
-					"description": "Positions the image vertically from the origin. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "Positions the image vertically from the origin. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -45957,7 +45962,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to another <linearGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
 					"deprecated": true
 				},
 				"y1": {
@@ -46450,7 +46455,7 @@
 			},
 			"attributes": {
 				"d": {
-					"description": "This attribute defines the shape of the path. Value type: <string> ; Default value: ''; Animatable: yes"
+					"description": "This attribute defines the shape of the path. Value type: <string>; Default value: ''; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
@@ -46609,14 +46614,14 @@
 					"defaultValue": "0"
 				},
 				"x": {
-					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the x coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
 					"description": "This attribute references a template pattern that provides default values for the <pattern> attributes. Value type: <URL>; Default value: none; Animatable: yes Note: For browsers implementing href, if both href and xlink:href are set, xlink:href will be ignored and only href will be used.",
 					"deprecated": true
 				},
 				"y": {
-					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the y coordinate shift of the pattern tile. Value type: <length>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47010,7 +47015,7 @@
 					"animatable": true
 				},
 				"xlink:href": {
-					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI> ; Default value: none; Animatable: yes",
+					"description": "An <IRI> reference to another <radialGradient> element that will be used as a template. Value type: <IRI>; Default value: none; Animatable: yes",
 					"deprecated": true
 				}
 			}
@@ -47130,26 +47135,26 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "The height of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The height of the rect. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				},
 				"rx": {
-					"description": "The horizontal corner radius of the rect. Defaults to ry if it is specified. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The horizontal corner radius of the rect. Defaults to ry if it is specified. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"ry": {
-					"description": "The vertical corner radius of the rect. Defaults to rx if it is specified. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The vertical corner radius of the rect. Defaults to rx if it is specified. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"width": {
-					"description": "The width of the rect. Value type: auto|<length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "The width of the rect. Value type: auto | <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of the rect. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of the rect. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The y coordinate of the rect. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of the rect. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47192,7 +47197,7 @@
 					"defaultValue": "application/ecmascript"
 				},
 				"xlink:href": {
-					"description": "The URL to the script to load. Value type: <URL> ; Default value: none; Animatable: no",
+					"description": "The URL to the script to load. Value type: <URL>; Default value: none; Animatable: no",
 					"deprecated": true
 				}
 			}
@@ -47544,10 +47549,10 @@
 					"defaultValue": "auto"
 				},
 				"x": {
-					"description": "The displayed x coordinate of the svg container. No effect on outermost svg elements. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The displayed x coordinate of the svg container. No effect on outermost svg elements. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "The displayed y coordinate of the svg container. No effect on outermost svg elements. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "The displayed y coordinate of the svg container. No effect on outermost svg elements. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -47707,7 +47712,7 @@
 			},
 			"attributes": {
 				"height": {
-					"description": "This attribute determines the height of the symbol. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "This attribute determines the height of the symbol. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"preserveAspectRatio": {
 					"type": "<preserve-aspect-ratio>",
@@ -47737,13 +47742,13 @@
 					"type": "<view-box>"
 				},
 				"width": {
-					"description": "This attribute determines the width of the symbol. Value type: <length>|<percentage> ; Default value: auto; Animatable: yes"
+					"description": "This attribute determines the width of the symbol. Value type: <length> | <percentage>; Default value: auto; Animatable: yes"
 				},
 				"x": {
-					"description": "This attribute determines the x coordinate of the symbol. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the x coordinate of the symbol. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				},
 				"y": {
-					"description": "This attribute determines the y coordinate of the symbol. Value type: <length>|<percentage> ; Default value: 0; Animatable: yes"
+					"description": "This attribute determines the y coordinate of the symbol. Value type: <length> | <percentage>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
@@ -48345,14 +48350,14 @@
 					"description": "The width of the use element. Value type: <length> ; Default value: 0; Animatable: yes"
 				},
 				"x": {
-					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The x coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				},
 				"xlink:href": {
 					"description": "An <IRI> reference to an element/fragment that needs to be duplicated. If both href and xlink:href are present, the value given by href is used. Value type: <IRI> ; Default value: none; Animatable: yes",
 					"deprecated": true
 				},
 				"y": {
-					"description": "The y coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate> ; Default value: 0; Animatable: yes"
+					"description": "The y coordinate of an additional final offset transformation applied to the <use> element. Value type: <coordinate>; Default value: 0; Animatable: yes"
 				}
 			}
 		},
