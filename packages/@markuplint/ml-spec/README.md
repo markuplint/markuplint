@@ -182,6 +182,44 @@ Examples:
 }
 ```
 
+Transparent selector syntax
+
+- A CSS-like selector string with an extra pseudo: `:model(<CATEGORY>)`
+- You can combine standard selectors: type, class, id, attribute selectors, `:not(...)`, `:has(...)`,
+  combinators, etc.
+- `:model(<CATEGORY>)` matches any element belonging to the specified content category.
+
+Examples:
+
+```text
+:not(:model(interactive))
+:has(:model(interactive), a, [tabindex])
+```
+
+SVG categories
+
+The following categories are available for SVG elements (see `schemas/content-models.schema.json`):
+
+- `#SVGAnimation`
+- `#SVGBasicShapes`
+- `#SVGContainer`
+- `#SVGDescriptive`
+- `#SVGFilterPrimitive`
+- `#SVGFont`
+- `#SVGGradient`
+- `#SVGGraphics`
+- `#SVGGraphicsReferencing`
+- `#SVGLightSource`
+- `#SVGNeverRendered`
+- `#SVGNone`
+- `#SVGPaintServer`
+- `#SVGRenderable`
+- `#SVGShape`
+- `#SVGStructural`
+- `#SVGStructurallyExternal`
+- `#SVGTextContent`
+- `#SVGTextContentChild`
+
 ```json
 {
   "contentModel": {
