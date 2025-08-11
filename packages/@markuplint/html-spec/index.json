@@ -41586,7 +41586,7 @@
 		{
 			"name": "title",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
-			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; tags within the element are ignored.",
+			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; HTML tags within the element, if any, are also treated as plain text.",
 			"categories": ["#metadata"],
 			"contentModel": {
 				"contents": [
