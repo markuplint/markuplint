@@ -48,7 +48,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -62,7 +62,7 @@ jobs:
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -98,7 +98,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -107,7 +107,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       packages/**/lib
@@ -127,7 +127,7 @@ jobs:
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -168,7 +168,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -180,7 +180,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       packages/**/lib
@@ -238,7 +238,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -251,7 +251,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -297,7 +297,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -305,7 +305,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -380,7 +380,7 @@ jobs:
               shell: bash
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       '**/node_modules'
@@ -388,7 +388,7 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
