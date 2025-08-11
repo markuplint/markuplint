@@ -25,12 +25,12 @@
 		"@markuplint/cli-utils": "4.4.11",
 		"@markuplint/ml-core": "4.12.4",
 		"glob": "11.0.3",
-		"prettier": "3.6.1",
+		"prettier": "3.6.2",
 		"ts-node": "10.9.2",
 		"typescript": "5.9.2"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",
-		"fs-extra": "11.3.0"
+		"fs-extra": "11.3.1"
 	}
 }
