@@ -149,7 +149,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/cursor",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
@@ -42612,24 +42611,6 @@
 					"defaultValue": "true"
 				}
 			}
-		},
-		{
-			"name": "svg:cursor",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <cursor> SVG element can be used to define a platform-independent custom cursor. A recommended approach for defining a platform-independent custom cursor is to create a PNG image and define a cursor element that references the PNG image and identifies the exact position within the image which is the pointer position (i.e., the hot spot).",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
 		},
 		{
 			"name": "svg:defs",
