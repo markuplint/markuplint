@@ -204,7 +204,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tref",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
@@ -48081,24 +48080,6 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
-		},
-		{
-			"name": "svg:tref",
-			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The textual content for a <text> SVG element can be either character data directly embedded within the <text> element or the character data content of a referenced element, where the referencing is specified with a <tref> element.",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"permittedRoles": true,
-				"implicitRole": false
-			},
-			"omission": false,
-			"obsolete": true,
-			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
