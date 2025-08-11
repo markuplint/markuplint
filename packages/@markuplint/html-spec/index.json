@@ -11858,7 +11858,7 @@
 					},
 					{
 						"name": "tablist",
-						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
+						"description": "A list of tab elements, which are references to tabpanel elements.\n\nTo be keyboard accessible, authors SHOULD manage focus of descendants for all instances of this role, as described in Managing Focus.\n\nFor a single-selectable tablist, authors SHOULD hide from all users other tabpanel elements until the user selects the tab associated with that tabpanel. For a multi-selectable tablist, authors SHOULD ensure that the tab for each visible tabpanel has the aria-expanded attribute set to true, and that the tabs associated with the remaining hidden from all users tabpanel elements have their aria-expanded attributes set to false.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.\n\nElements with the role tablist have an implicit aria-orientation value of horizontal.",
 						"generalization": ["composite"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": ["tab"],
@@ -11981,7 +11981,7 @@
 					},
 					{
 						"name": "tabpanel",
-						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.",
+						"description": "A container for the resources associated with a tab, where each tab is contained in a tablist.\n\nAuthors SHOULD associate a tabpanel element with its tab, by using the aria-controls attribute on the tab to reference the tab panel, and/or by using the aria-labelledby attribute on the tab panel to reference the tab.\n\ntablist elements are typically placed near, and usually preceding, a series of tabpanel elements. See the ARIA Authoring Practices Guide for details on implementing a tab set design pattern.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
