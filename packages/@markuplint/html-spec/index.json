@@ -39398,7 +39398,7 @@
 		{
 			"name": "meta",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
-			"description": "The <meta> HTML element represents metadata that cannot be represented by other HTML meta-related elements, like <base>, <link>, <script>, <style> or <title>.",
+			"description": "The <meta> HTML element represents metadata that cannot be represented by other meta-related elements, such as <base>, <link>, <script>, <style>, or <title>.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
 				"contents": false
