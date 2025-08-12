@@ -87,6 +87,7 @@ Options
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
+	--max-violations                       Limit the number of violations shown. Default: 0 (no limit).
 
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
@@ -96,6 +97,7 @@ Options
 
 Examples
 	$ markuplint verifyee.html --config path/to/.markuplintrc
+	$ markuplint "**/*.html" --max-violations=10
 	$ cat verifyee.html | markuplint
 ```
 
