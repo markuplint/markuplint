@@ -65,6 +65,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			importPresetRules,
 			debug: verbose,
 			severity,
+			maxViolations: options.maxViolations,
 			...apiOptions,
 		});
 
