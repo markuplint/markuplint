@@ -14,6 +14,7 @@ export type APIOptions = {
 	readonly rules?: readonly Readonly<AnyMLRule>[];
 	readonly importPresetRules?: boolean;
 	readonly severity?: SeverityOptions;
+	readonly maxViolations?: number;
 	/**
 	 * @deprecated
 	 */

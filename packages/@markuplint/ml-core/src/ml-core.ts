@@ -5,10 +5,18 @@ import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleConfigValue, SeverityOptions, Violation } from '@markuplint/ml-config';
 
+export type MLCoreVerifyResult = {
+	readonly violations: Violation[];
+	readonly truncated?: {
+		readonly maxViolations: number;
+	};
+};
+
 import { ParserError } from '@markuplint/parser-utils';
 
 import { log, enableDebug } from './debug.js';
 import { Document } from './ml-dom/index.js';
+import { ViolationCollector } from './violation-collector.js';
 
 const resultLog = log.extend('result');
 
@@ -103,9 +111,9 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	async verify(fix = false) {
+	async verify(fix = false, maxViolations = 0): Promise<MLCoreVerifyResult> {
 		log('verify: start');
-		const violations: Violation[] = [];
+		const collector = new ViolationCollector(fix ? 0 : maxViolations);
 		if (this.#document instanceof ParserError) {
 			const parseError = this._createParseError(
 				this.#document.message,
@@ -115,12 +123,15 @@ export class MLCore {
 			);
 
 			if (!parseError) {
-				return [];
+				return { violations: [] };
 			}
 
-			violations.push(parseError);
+			collector.push(parseError);
 			log('verify: error %o', this.#document.message);
-			return violations;
+			return {
+				violations: collector.toArray(),
+				...(collector.isTruncated() ? { truncated: { maxViolations: collector.getMaxViolations() } } : {}),
+			};
 		}
 
 		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
@@ -133,7 +144,7 @@ export class MLCore {
 
 		for (const setRuleName of setRuleNames) {
 			if (!definedRuleName.has(setRuleName)) {
-				violations.push({
+				collector.push({
 					ruleId: 'config-error',
 					severity: 'warning',
 					message: `Rule not found: ${setRuleName}`,
@@ -145,7 +156,7 @@ export class MLCore {
 		}
 
 		for (const error of this.#configErrors) {
-			violations.push({
+			collector.push({
 				ruleId: 'config-error',
 				severity: 'warning',
 				message: error.message,
@@ -161,6 +172,11 @@ export class MLCore {
 				continue;
 			}
 
+			// Early abort if collector is locked
+			if (collector.isLocked()) {
+				break;
+			}
+
 			log('%s Rule: verify', rule.name);
 			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
 				if (error instanceof ParserError) {
@@ -173,13 +189,14 @@ export class MLCore {
 				const parseError = this._createParseError(results.message, results.line, results.col, results.raw);
 				if (parseError) {
 					log('%s Rule: verify error %o', rule.name, results.message);
-					violations.push(parseError);
+					collector.push(parseError);
 				}
 			} else {
-				violations.push(...results);
+				collector.push(...results);
 			}
 			log('%s Rule: verify end', rule.name);
 		}
+		const violations = collector.toArray();
 		if (resultLog.enabled) {
 			// eslint-disable-next-line unicorn/no-array-reduce
 			const { e, w, i } = violations.reduce(
@@ -196,7 +213,10 @@ export class MLCore {
 			resultLog('Info: %d', i);
 		}
 		log('verify: end');
-		return violations;
+		return {
+			violations,
+			...(collector.isTruncated() ? { truncated: { maxViolations: collector.getMaxViolations() } } : {}),
+		};
 	}
 
 	private _createDocument() {
