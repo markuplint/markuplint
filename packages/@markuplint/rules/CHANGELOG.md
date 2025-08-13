@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.12...@markuplint/rules@4.11.0) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+
+### Features
+
+- **rules:** improve error message for multiple required attributes ([4aa4e4f](https://github.com/markuplint/markuplint/commit/4aa4e4fe54efc05edf7e9166a7fd769127b75769))
+
 ## [4.10.12](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.11...@markuplint/rules@4.10.12) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint/rules

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "4.7.4",
+	"version": "4.7.5",
 	"description": "Extended W3C Selectors matcher",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,7 +24,7 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "4.9.6",
+		"@markuplint/ml-spec": "4.9.7",
 		"@types/debug": "4.1.12",
 		"debug": "4.4.1",
 		"postcss-selector-parser": "7.1.0",

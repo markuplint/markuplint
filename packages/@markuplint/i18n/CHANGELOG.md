@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.6.0...@markuplint/i18n@4.7.0) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+
+### Features
+
+- **i18n:** add new sentence format pattern '{0} {1}' ([6b61b5b](https://github.com/markuplint/markuplint/commit/6b61b5b03ad441c253fbeb921e0604509b7d32e3))
+
 # [4.6.0](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.5.7...@markuplint/i18n@4.6.0) (2024-11-17)
 
 ### Features

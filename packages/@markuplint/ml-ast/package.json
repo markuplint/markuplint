@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-ast",
-	"version": "4.4.9",
+	"version": "4.4.10",
 	"description": "The markuplint AST types.",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

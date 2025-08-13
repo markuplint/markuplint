@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.15.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.14.2...@markuplint/html-spec@4.15.0) (2025-08-13)
+
+### Bug Fixes
+
+- **html-spec:** format attribute value types with proper spacing ([b726ab9](https://github.com/markuplint/markuplint/commit/b726ab97faeee186e0f05f6690de338d7182a060))
+- **html-spec:** update img src/srcset attributes to be mutually required ([1a9a611](https://github.com/markuplint/markuplint/commit/1a9a61102468407ef254e970c2903a69d9ec6465))
+
+### Features
+
+- **html-spec:** add compact attribute to dl element ([936aa24](https://github.com/markuplint/markuplint/commit/936aa24ebc4f1e6122a167466ccd4c63025e8ca2))
+- **html-spec:** add compact attribute to menu element ([d4c16f8](https://github.com/markuplint/markuplint/commit/d4c16f89fe1f3a8acb08e3e83cb23e260c017ec6))
+- **html-spec:** add compact attribute to ol element ([a19785b](https://github.com/markuplint/markuplint/commit/a19785b2af45b6ceb65a66b8ef1162b385b15684))
+- **html-spec:** add fetchpriority attribute to SVG script element ([2669d23](https://github.com/markuplint/markuplint/commit/2669d238e0496c5c57b2ca9182685db420312103))
+- **html-spec:** add mask-type attribute to SVG mask element ([9e27e27](https://github.com/markuplint/markuplint/commit/9e27e27eae2166e99cb124725a299c317a1736d9))
+- **html-spec:** remove form attribute from meter element ([1cee2cb](https://github.com/markuplint/markuplint/commit/1cee2cb54f18e38c8ec652ddfd5f382e757eb1b4))
+- **html-spec:** remove the `cursor` SVG element ([43d224f](https://github.com/markuplint/markuplint/commit/43d224f598a0735da95f5754bb1c5577eb091b2a))
+- **html-spec:** remove the `khern` SVG element ([4c05a01](https://github.com/markuplint/markuplint/commit/4c05a010f33100d912d851731eb689b938b0be99))
+- **html-spec:** remove the `missing` SVG element ([c66f316](https://github.com/markuplint/markuplint/commit/c66f316210e0fc185be8c1fe3d33798ed0492b4d))
+- **html-spec:** remove the `tref` SVG element ([520c81f](https://github.com/markuplint/markuplint/commit/520c81f4e391486feea574e99e163faf3b129601))
+- **html-spec:** remove the `vkern` SVG element ([aadd4cc](https://github.com/markuplint/markuplint/commit/aadd4cc91bb6622c64bcb1b1d5beff9759bdbbb6))
+- **html-spec:** update accessibleNameRequired for specific roles ([4e79515](https://github.com/markuplint/markuplint/commit/4e79515a86bd488cb2a8156ad11fcb9a9967453e))
+- **html-spec:** update descriptions for specific roles ([f018270](https://github.com/markuplint/markuplint/commit/f018270b0d3a301899a7a66c22d4c7ed9c1199fe))
+- **html-spec:** update tree role required owned elements based on ARIA spec change ([0e681bb](https://github.com/markuplint/markuplint/commit/0e681bb686869c01e33a67dd65445ff4dc0c1b1c))
+
 ## [4.14.2](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.14.1...@markuplint/html-spec@4.14.2) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint/html-spec
