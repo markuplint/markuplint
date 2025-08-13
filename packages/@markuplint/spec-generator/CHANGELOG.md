@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.19...@markuplint/spec-generator@4.7.0) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+
+### Features
+
+- **spec-generator:** update ARIA spec scraping for ARIA 1.3 page structure ([f614b54](https://github.com/markuplint/markuplint/commit/f614b54b6e495fd52783ac3fa5e5ca199f5632a3))
+
 ## [4.6.19](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.18...@markuplint/spec-generator@4.6.19) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint/spec-generator

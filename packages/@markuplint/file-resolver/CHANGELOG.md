@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.15](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.14...@markuplint/file-resolver@4.9.15) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+- **file-resolver:** change error handling in JSON import and update error message test ([4feb736](https://github.com/markuplint/markuplint/commit/4feb736aac43c339f1a9892f001a84b9e85d3276))
+- **file-resolver:** resolve Windows path issue when importing plugins ([33a006a](https://github.com/markuplint/markuplint/commit/33a006abb6f9436f48e6a91640cdc299ba047558))
+- resolve import compatibility issues in cosmiconfig ([d2d6413](https://github.com/markuplint/markuplint/commit/d2d6413353641a4c27580a01269c791d1e3d4df0))
+- revert toReversed usage for Node.js v18 compatibility ([36b0453](https://github.com/markuplint/markuplint/commit/36b0453a7bf850c035e82c6fccc2f9567a5d4674))
+
 ## [4.9.14](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.13...@markuplint/file-resolver@4.9.14) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint/file-resolver

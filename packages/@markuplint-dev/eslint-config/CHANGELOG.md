@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.16](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.15...@markuplint-dev/eslint-config@1.0.16) (2025-08-13)
+
+### Bug Fixes
+
+- revert toReversed usage for Node.js v18 compatibility ([36b0453](https://github.com/markuplint/markuplint/commit/36b0453a7bf850c035e82c6fccc2f9567a5d4674))
+
 ## [1.0.15](https://github.com/markuplint/markuplint/compare/@markuplint-dev/eslint-config@1.0.14...@markuplint-dev/eslint-config@1.0.15) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint-dev/eslint-config

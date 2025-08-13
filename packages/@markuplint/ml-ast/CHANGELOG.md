@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.10](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.9...@markuplint/ml-ast@4.4.10) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+
 ## [4.4.9](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.8...@markuplint/ml-ast@4.4.9) (2024-11-17)
 
 **Note:** Version bump only for package @markuplint/ml-ast

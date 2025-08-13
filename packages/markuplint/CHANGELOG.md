@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/markuplint/markuplint/compare/markuplint@4.12.0...markuplint@4.13.0) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+- **markuplint:** remove duplicate test for cross-platform compatibility ([d7af614](https://github.com/markuplint/markuplint/commit/d7af6142892a1b4ba4ae196e53df4480817044ff))
+
+### Features
+
+- **markuplint:** add --max-violations CLI option ([3ec868d](https://github.com/markuplint/markuplint/commit/3ec868d5e666993a6220a352081100947c31f999))
+- **markuplint:** add --max-warnings option for incremental adoption ([b14513d](https://github.com/markuplint/markuplint/commit/b14513d952b3c47330aba2ce8c4b31714bbc1625)), closes [#2523](https://github.com/markuplint/markuplint/issues/2523)
+- **markuplint:** add maxViolations support to API layer ([cb6d577](https://github.com/markuplint/markuplint/commit/cb6d577483a38e32a378d89a13e950c0eb311b09))
+- **markuplint:** add skip status display to reporters ([5c1f189](https://github.com/markuplint/markuplint/commit/5c1f1897c76b42fc97fce4ce2edd75dd31470abd))
+- **markuplint:** add status field to MLResultInfo and simplify verification ([56deb99](https://github.com/markuplint/markuplint/commit/56deb999a330bb7d91333dc464a034cbc6010479))
+- **markuplint:** add truncation info message to standard reporter ([9c9a21d](https://github.com/markuplint/markuplint/commit/9c9a21dcc01b391a68d23cc315254b69039d9afc))
+- **markuplint:** implement max-count option with skip status tracking ([20ca12d](https://github.com/markuplint/markuplint/commit/20ca12d391bcf8f09eae4c8786ba688ef7192506))
+
 # [4.12.0](https://github.com/markuplint/markuplint/compare/markuplint@4.11.8...markuplint@4.12.0) (2025-04-13)
 
 ### Features

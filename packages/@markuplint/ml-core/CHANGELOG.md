@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.12.4...@markuplint/ml-core@4.13.0) (2025-08-13)
+
+### Bug Fixes
+
+- ensure that each `clean` command correctly removes build files ([110b78e](https://github.com/markuplint/markuplint/commit/110b78e85379d29a84ca68325127344a87a570b6))
+
+### Features
+
+- **markuplint:** add maxViolations support to API layer ([cb6d577](https://github.com/markuplint/markuplint/commit/cb6d577483a38e32a378d89a13e950c0eb311b09))
+- **markuplint:** add status field to MLResultInfo and simplify verification ([56deb99](https://github.com/markuplint/markuplint/commit/56deb999a330bb7d91333dc464a034cbc6010479))
+- **ml-core:** add new DOM API properties from TypeScript 5.9.2 ([a6cfed3](https://github.com/markuplint/markuplint/commit/a6cfed32c3abf6874161aad9c4f5c47541320b7b))
+- **ml-core:** add validation for rule existence ([4c7ee75](https://github.com/markuplint/markuplint/commit/4c7ee758bd98737e8df7b0aa247306e61e48d30a))
+- **ml-core:** add ViolationCollector for performance optimization ([a4e9694](https://github.com/markuplint/markuplint/commit/a4e9694a87f3e0958a59974ad6d03775831ec399))
+- **ml-core:** enhance ViolationCollector for max-count functionality ([92316a4](https://github.com/markuplint/markuplint/commit/92316a4b070a1d53ae12cf1ae8cfdf3444e02025))
+- **ml-core:** implement consistent textContent property across DOM nodes ([6c0fb62](https://github.com/markuplint/markuplint/commit/6c0fb62ded45f779f30602bf11299e928bdf24aa))
+
 ## [4.12.4](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.12.3...@markuplint/ml-core@4.12.4) (2025-04-13)
 
 **Note:** Version bump only for package @markuplint/ml-core
