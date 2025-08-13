@@ -74,16 +74,10 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			const next = lines[startLine + rawLines.length] ?? '';
 			out.push(`  ${font.cyan(pad(startLine + rawLines.length + 1, sizes.col, true))}: ${space(next)}`);
 		}
-
-		// Add truncation info message
-		if (results.truncated) {
-			out.push(
-				'',
-				`<${commandName}> ${font.yellow(`Maximum ${results.truncated.maxViolations} violations shown based on --max-violations option.`)}`,
-			);
-		}
 	} else if (!options.problemOnly) {
-		out.push(`<${commandName}> ${font.green('passed')} ${font.underline(results.filePath)}`);
+		const message = results.status === 'skipped' ? 'skipped' : 'passed';
+		const color = results.status === 'skipped' ? font.yellow : font.green;
+		out.push(`<${commandName}> ${color(message)} ${font.underline(results.filePath)}`);
 	}
 
 	return out;
