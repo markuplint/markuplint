@@ -16,24 +16,25 @@ And returns `1` if the result has problems one or more.
 
 ## Options
 
-| Long Option                | Short Option | Argument                                 | Default    | Description                                                         |
-| -------------------------- | ------------ | ---------------------------------------- | ---------- | ------------------------------------------------------------------- |
-| `--config`                 | `-c`         | File path                                | none       | A configuration file path                                           |
-| `--fix`                    | none         | none                                     | false      | Fix target files if the rule supports.                              |
-| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard` | Select output format.                                               |
-| `--no-search-config`       | none         | none                                     | false      | No search a configure file automatically.                           |
-| `--ignore-ext`             | none         | none                                     | false      | Evaluate files that are received even though the type of extension. |
-| `--no-import-preset-rules` | none         | none                                     | false      | No import preset rules.                                             |
-| `--locale`                 | none         | Language code (example: `en`)            | OS setting | Locale of the message of violation.                                 |
-| `--no-color`               | none         | none                                     | false      | Output no color.                                                    |
-| `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                               |
-| `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                    |
-| `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.              |
-| `--show-config`            | none         | empty, `details`                         | none       | Output computed configuration of the target file.                   |
-| `--verbose`                | none         | none                                     | false      | Output with detailed information.                                   |
-| `--include-node-modules`   | none         | none                                     | false      | Include files in node_modules directory.                            |
-| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                       |
-| `--max-count`              | none         | Number                                   | `0`        | Limit the number of violations shown. `0` means no limit.           |
+| Long Option                | Short Option | Argument                                 | Default    | Description                                                           |
+| -------------------------- | ------------ | ---------------------------------------- | ---------- | --------------------------------------------------------------------- |
+| `--config`                 | `-c`         | File path                                | none       | A configuration file path                                             |
+| `--fix`                    | none         | none                                     | false      | Fix target files if the rule supports.                                |
+| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard` | Select output format.                                                 |
+| `--no-search-config`       | none         | none                                     | false      | No search a configure file automatically.                             |
+| `--ignore-ext`             | none         | none                                     | false      | Evaluate files that are received even though the type of extension.   |
+| `--no-import-preset-rules` | none         | none                                     | false      | No import preset rules.                                               |
+| `--locale`                 | none         | Language code (example: `en`)            | OS setting | Locale of the message of violation.                                   |
+| `--no-color`               | none         | none                                     | false      | Output no color.                                                      |
+| `--problem-only`           | `-p`         | none                                     | false      | Output only problems.                                                 |
+| `--allow-warnings`         | none         | none                                     | false      | Return status code 0 even if there are warnings.                      |
+| `--no-allow-empty-input`   | none         | none                                     | false      | Return status code 1 even if there are no input files.                |
+| `--show-config`            | none         | empty, `details`                         | none       | Output computed configuration of the target file.                     |
+| `--verbose`                | none         | none                                     | false      | Output with detailed information.                                     |
+| `--include-node-modules`   | none         | none                                     | false      | Include files in node_modules directory.                              |
+| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                         |
+| `--max-count`              | none         | Number                                   | `0`        | Limit the number of violations shown. `0` means no limit.             |
+| `--max-warnings`           | none         | Number                                   | `-1`       | Number of warnings to trigger nonzero exit code. `-1` means no limit. |
 
 ## Particular run
 
@@ -87,3 +88,32 @@ $ markuplint index.html --max-count=0
 4. Eventually remove the limit when all violations are fixed
 
 Note: Files that are skipped due to the limit will be marked as "skipped" in the output, making it clear which files were not processed.
+
+### `--max-warnings`
+
+Set a limit on the number of warnings. If the number of warnings exceeds the specified limit, Markuplint will exit with a non-zero exit code. This option is particularly useful for gradual adoption of Markuplint in existing projects.
+
+```shell
+# Allow up to 10 warnings
+$ markuplint "**/*.html" --max-warnings=10
+
+# No warnings allowed (strict mode)
+$ markuplint index.html --max-warnings=0
+
+# No limit (default behavior)
+$ markuplint index.html --max-warnings=-1
+```
+
+**Key features:**
+
+- **Gradual adoption**: Allows incremental improvement by setting warning thresholds
+- **Cross-file aggregation**: Counts warnings across all processed files
+- **CI integration**: Perfect for setting warning limits in continuous integration
+- **Error precedence**: Errors always cause non-zero exit code regardless of warning limit
+
+**Usage example for gradual improvement:**
+
+1. Check current warnings: `markuplint "**/*.html" --allow-warnings` to see all warnings
+2. Set initial limit: `markuplint "**/*.html" --max-warnings=50` in your CI
+3. Gradually reduce warnings and lower the limit over time
+4. Eventually reach zero warnings with `--max-warnings=0`

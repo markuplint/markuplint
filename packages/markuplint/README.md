@@ -88,6 +88,7 @@ Options
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
+	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
