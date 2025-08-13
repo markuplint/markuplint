@@ -132,6 +132,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				filePath: this.#file.path,
 				sourceCode,
 				fixedCode,
+				status: 'processed',
 			};
 		}
 
@@ -144,6 +145,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			filePath: this.#file.path,
 			sourceCode,
 			fixedCode,
+			status: 'processed',
 		};
 	}
 

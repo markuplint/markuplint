@@ -161,6 +161,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaActiveDescendantElement(): MLElement<T, O> | null {
+		throw new UnexpectedCallError('Not supported "ariaActiveDescendantElement" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaAtomic(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaAtomic" property');
 	}
@@ -271,8 +282,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaControlsElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaControlsElements" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaCurrent(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaCurrent" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaDescribedByElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaDescribedByElements" property');
 	}
 
 	/**
@@ -293,6 +326,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaDetailsElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaDetailsElements" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaDisabled(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaDisabled" property');
 	}
@@ -304,8 +348,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get ariaErrorMessageElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaErrorMessageElements" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get ariaExpanded(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaExpanded" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaFlowToElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaFlowToElements" property');
 	}
 
 	/**
@@ -361,6 +427,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get ariaLabel(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaLabel" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaLabelledByElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaLabelledByElements" property');
 	}
 
 	/**
@@ -427,6 +504,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get ariaOrientation(): string | null {
 		throw new UnexpectedCallError('Not supported "ariaOrientation" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get ariaOwnsElements(): readonly MLElement<T, O>[] {
+		throw new UnexpectedCallError('Not supported "ariaOwnsElements" property');
 	}
 
 	/**
@@ -684,6 +772,17 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get autocapitalize(): string {
 		throw new UnexpectedCallError('Not supported "autocapitalize" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get autocorrect(): boolean {
+		throw new UnexpectedCallError('Not supported "autocorrect" property');
 	}
 
 	/**
@@ -1155,6 +1254,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onauxclick" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
+	get onbeforematch():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onbeforematch" property');
 	}
 
 	/**
@@ -2235,6 +2352,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @unsupported
 	 * @implements DOM API: `Element`
 	 */
+	get onpointerrawupdate():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "onpointerrawupdate" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get onpointerup():
 		| ((
 				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -2975,6 +3110,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return this.nodeName;
 	}
 
+	/**
+	 * @implements DOM API: `Element`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
 	get textContent(): string {
 		return [...this.childNodes].map(child => child.textContent ?? '').join('');
 	}

@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -16,6 +15,6 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"prettier": "3.5.3"
+		"prettier": "3.6.2"
 	}
 }

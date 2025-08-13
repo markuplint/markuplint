@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import { Bar, Presets } from 'cli-progress';
 
 const cache = new Map<string, string>();
-const domCache = new Map<string, cheerio.Root>();
+const domCache = new Map<string, cheerio.CheerioAPI>();
 
 let total = 1;
 let current = 0;

@@ -13,9 +13,11 @@ on:
             - 'packages/@markuplint/config-presets/src/README.md'
             - 'test/**'
             - 'yarn.lock'
+            - '.yarnrc.yml'
 
 env:
-    NODE_BUILD_VERSION: 22
+    NODE_BUILD_VERSION: 24
+    NX_DISABLE_DB: true
 
 jobs:
     dev-setup:
@@ -31,28 +33,41 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Install dependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              run: yarn install --frozen-lockfile --check-files
+              run: yarn install --immutable
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
               id: cache-save-dev-depends
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     build:
         needs: dev-setup
@@ -68,20 +83,31 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       packages/**/lib
@@ -92,13 +118,16 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              run: yarn build
+              run: yarn run build
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -124,20 +153,34 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
 
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   path: |
                       packages/**/lib
@@ -149,7 +192,7 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Lint
-              run: yarn lint-check
+              run: yarn run lint-check
 
     os-setup:
         runs-on: ${{ matrix.os }}
@@ -165,14 +208,13 @@ jobs:
             fail-fast: false
             matrix:
                 os:
-                    - ubuntu-latest
                     - macos-latest
                     - windows-latest
-                node: [18]
+                node: [24]
                 include:
-                    - node: 21
+                    - node: 18
                       os: ubuntu-latest
-                    - node: 22
+                    - node: 24
                       os: ubuntu-latest
         steps:
             - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -181,31 +223,40 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
-            - name: Cache Restore productionDependencies
-              id: cache-restore-prod-depends
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
-            - name: Create .yarnrc for Windows
-              if: runner.os == 'Windows'
-              run: echo "network-timeout 600000" > .yarnrc
+            - name: Install dependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              run: yarn install --immutable
 
-            - name: Install prodcution dependencies
-              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              run: yarn install --production --frozen-lockfile --check-files --ignore-engines
-
-            - name: Cache Save productionDependencies
-              if: steps.cache-restore-prod-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     test:
         needs: [os-setup, build]
@@ -213,14 +264,16 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
-                node: [18]
+                os:
+                    - macos-latest
+                    - windows-latest
+                node: [24]
                 shard: [1/4, 2/4, 3/4, 4/4]
                 include:
-                    - node: 21
+                    - node: 18
                       os: ubuntu-latest
                       shard: 1/1
-                    - node: 22
+                    - node: 24
                       os: ubuntu-latest
                       shard: 1/1
         steps:
@@ -230,18 +283,29 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ matrix.node }}
 
-            - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -252,6 +316,9 @@ jobs:
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
 
             - name: Show directories
               run: |
@@ -271,13 +338,11 @@ jobs:
                   timeout_minutes: 20
                   max_attempts: 3
                   shell: bash
-                  command: yarn vitest run --shard=${{ matrix.shard }}
+                  command: npx vitest run --shard=${{ matrix.shard }}
 
     isolated-env:
         needs: [os-setup, build]
         runs-on: ${{ matrix.os }}
-        env:
-            PACKAGES: 'markuplint @markuplint/alpine-parser @markuplint/astro-parser @markuplint/config-presets @markuplint/cli-utils @markuplint/ejs-parser @markuplint/erb-parser @markuplint/file-resolver @markuplint/html-parser @markuplint/html-spec @markuplint/i18n @markuplint/jsx-parser @markuplint/liquid-parser @markuplint/ml-ast @markuplint/ml-config @markuplint/ml-core @markuplint/ml-spec @markuplint/mustache-parser @markuplint/nunjucks-parser @markuplint/parser-utils @markuplint/php-parser @markuplint/pug-parser @markuplint/react-spec @markuplint/rule-textlint @markuplint/rules @markuplint/selector @markuplint/shared @markuplint/smarty-parser @markuplint/svelte-parser @markuplint/types @markuplint/vue-parser @markuplint/vue-spec'
         strategy:
             fail-fast: false
             matrix:
@@ -291,9 +356,18 @@ jobs:
                   fetch-depth: '0'
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
             # Add step to remove packageManager field using jq for pnpm tests
             - name: Remove packageManager field from package.json
@@ -305,14 +379,16 @@ jobs:
                   cat package.json
               shell: bash
 
-            - name: Cache Restore productionDependencies
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
-                  path: '**/node_modules'
-                  key: depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Cache Restore Production
-              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+              uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -324,11 +400,33 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
+            - name: Install dependencies
+              run: yarn install --immutable
+
             - name: Create sandbox directory
               run: |
                   mkdir -p ${{ github.workspace }}/../sandbox
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   ls -la ${{ github.workspace }}/../sandbox/test
+
+            - name: Debug - Check directory structure
+              run: |
+                  echo "=== Current working directory ==="
+                  pwd
+                  echo "=== List current directory ==="
+                  ls -la
+                  echo "=== Check if packages directory exists ==="
+                  ls -la packages/ | head -10
+                  echo "=== Check sandbox structure ==="
+                  find ${{ github.workspace }}/../sandbox -type d -maxdepth 3
+                  echo "=== Check if markuplint package exists ==="
+                  ls -la packages/markuplint/ | head -5
+                  echo "=== Check workspace path ==="
+                  echo "workspace: ${{ github.workspace }}"
+                  echo "parent: ${{ github.workspace }}/.."
+
+            - name: Delete package manager settings
+              run: jq 'del(.packageManager, .volta)' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
@@ -337,54 +435,48 @@ jobs:
                   version: latest # Use latest pnpm version
                   run_install: false
 
-            - name: Package paths (npm)
-              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
-              id: package-paths
-              with:
-                  script: |
-                      const packages = process.env.PACKAGES.split(' ');
-                      return packages.map(p => `file:../../../../markuplint/packages/${p}`).join(' ');
-                  result-encoding: string
-
-            - name: Create the lock file (npm)
-              if: matrix.pm == 'npm'
+            - name: Debug - Before install
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
-                  npm install -S ${{ steps.package-paths.outputs.result }}
+                  echo "=== Current working directory ==="
+                  pwd
+                  echo "=== Check package.json ==="
+                  head -20 package.json
+                  echo "=== Check if file: paths exist ==="
+                  ls -la ../../../../markuplint/packages/markuplint/ | head -5
+                  echo "=== Test relative path calculation ==="
+                  ls -la ../../../../markuplint/packages/@markuplint/ml-core/ | head -5
+                  echo "=== Check all files in directory ==="
+                  ls -la
+                  echo "=== Check tsconfig.json (if exists) ==="
+                  cat tsconfig.json 2>/dev/null || echo "tsconfig.json not found"
+                  echo "=== Check markuplint.config.ts ==="
+                  cat markuplint.config.ts 2>/dev/null || echo "markuplint.config.ts not found"
 
-            - name: Create the lock file (yarn)
-              if: matrix.pm == 'yarn'
+            - name: Install dependencies
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: ${{ matrix.pm }} install
+
+            - name: Debug - After install
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
-                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
-                  for package in "${packages[@]}"
-                  do
-                    (cd "../../../../markuplint/packages/$package" && yarn link)
-                    yarn link $package
-                  done
-                  ${{ matrix.pm }} install
-
-            - name: Create the lock file (pnpm)
-              if: matrix.pm == 'pnpm'
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  IFS=' ' read -r -a packages <<< "${{ env.PACKAGES }}"
-                  for package in "${packages[@]}"
-                  do
-                    # Skip linking the main 'markuplint' package itself
-                    if [ "$package" != "markuplint" ]; then
-                      echo "Linking $package..."
-                      pnpm link "../../../../markuplint/packages/$package"
-                    else
-                      echo "Skipping initial link for markuplint package."
-                    fi
-                  done
-                  # Explicitly add the local markuplint package and install other deps
-                  echo "Adding local markuplint package and installing dependencies..."
-                  pnpm add "../../../../markuplint/packages/markuplint"
-              shell: bash
+                  echo "=== Check if packages were installed ==="
+                  ls -la node_modules/ | head -10
+                  echo "=== Check markuplint in node_modules ==="
+                  ls -la node_modules/markuplint/ 2>/dev/null || echo "markuplint not found in node_modules"
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
               run: |
+                  if [ "${{ matrix.env }}" = "ts-config-ts" ]; then
+                    echo "=== Debug tsx configuration ==="
+                    echo "TSX version:"
+                    npx tsx --version
+                    echo "TypeScript configuration being used:"
+                    npx tsx --print-config index.ts 2>/dev/null || echo "Cannot print config"
+                    echo "Test TypeScript compilation:"
+                    npx tsc --noEmit --showConfig 2>/dev/null || echo "tsc showConfig failed"
+                  fi
                   ${{ matrix.pm }} test

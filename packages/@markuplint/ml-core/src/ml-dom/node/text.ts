@@ -42,10 +42,6 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 		return this.TEXT_NODE;
 	}
 
-	get textContent() {
-		return this.nodeValue;
-	}
-
 	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *

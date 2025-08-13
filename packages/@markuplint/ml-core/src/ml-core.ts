@@ -103,7 +103,7 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	async verify(fix = false) {
+	async verify(fix = false): Promise<Violation[]> {
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
@@ -121,6 +121,27 @@ export class MLCore {
 			violations.push(parseError);
 			log('verify: error %o', this.#document.message);
 			return violations;
+		}
+
+		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
+
+		const setRuleNames = new Set([
+			...Object.keys(this.#ruleset.rules),
+			...this.#ruleset.nodeRules.flatMap(nodeRule => Object.keys(nodeRule.rules ?? {})),
+			...this.#ruleset.childNodeRules.flatMap(childNodeRule => Object.keys(childNodeRule.rules ?? {})),
+		]);
+
+		for (const setRuleName of setRuleNames) {
+			if (!definedRuleName.has(setRuleName)) {
+				violations.push({
+					ruleId: 'config-error',
+					severity: 'warning',
+					message: `Rule not found: ${setRuleName}`,
+					col: 1,
+					line: 1,
+					raw: '',
+				});
+			}
 		}
 
 		for (const error of this.#configErrors) {

@@ -75,7 +75,9 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			out.push(`  ${font.cyan(pad(startLine + rawLines.length + 1, sizes.col, true))}: ${space(next)}`);
 		}
 	} else if (!options.problemOnly) {
-		out.push(`<${commandName}> ${font.green('passed')} ${font.underline(results.filePath)}`);
+		const message = results.status === 'skipped' ? 'skipped' : 'passed';
+		const color = results.status === 'skipped' ? font.yellow : font.green;
+		out.push(`<${commandName}> ${color(message)} ${font.underline(results.filePath)}`);
 	}
 
 	return out;

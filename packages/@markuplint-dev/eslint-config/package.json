@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"main": "index.js",
 	"publishConfig": {
@@ -13,16 +12,16 @@
 	},
 	"dependencies": {
 		"@eslint-community/eslint-plugin-eslint-comments": "4.5.0",
-		"@typescript-eslint/eslint-plugin": "8.29.1",
-		"@typescript-eslint/parser": "8.29.1",
-		"eslint": "9.24.0",
-		"eslint-import-resolver-typescript": "4.3.2",
-		"eslint-plugin-import": "2.31.0",
-		"eslint-plugin-jsdoc": "50.6.9",
-		"eslint-plugin-n": "17.17.0",
-		"eslint-plugin-regexp": "2.7.0",
+		"@typescript-eslint/eslint-plugin": "8.39.0",
+		"@typescript-eslint/parser": "8.39.0",
+		"eslint": "9.33.0",
+		"eslint-import-resolver-typescript": "4.4.4",
+		"eslint-plugin-import-x": "4.16.1",
+		"eslint-plugin-jsdoc": "52.0.4",
+		"eslint-plugin-n": "17.21.3",
+		"eslint-plugin-regexp": "2.10.0",
 		"eslint-plugin-sort-class-members": "1.21.0",
-		"eslint-plugin-unicorn": "58.0.0",
-		"typescript-eslint": "8.29.1"
+		"eslint-plugin-unicorn": "60.0.0",
+		"typescript-eslint": "8.39.0"
 	}
 }

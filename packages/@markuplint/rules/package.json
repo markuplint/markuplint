@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -19,7 +18,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"browser": {
 		"./lib/permitted-contents/debug.js": "./lib/permitted-contents/debug.browser.js"
@@ -34,8 +33,8 @@
 		"@types/debug": "4.1.12",
 		"@ungap/structured-clone": "1.3.0",
 		"ansi-colors": "4.1.3",
-		"chrono-node": "2.8.0",
-		"debug": "4.4.0",
-		"type-fest": "4.39.1"
+		"chrono-node": "2.8.4",
+		"debug": "4.4.1",
+		"type-fest": "4.41.0"
 	}
 }

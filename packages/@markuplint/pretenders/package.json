@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -13,9 +12,7 @@
 			"types": "./lib/index.d.ts"
 		}
 	},
-	"bin": {
-		"pretenders": "./bin/pretenders.mjs"
-	},
+	"bin": "./bin/pretenders.mjs",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -25,13 +22,13 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/ml-config": "4.8.11",
 		"@markuplint/parser-utils": "4.8.7",
-		"glob": "11.0.1",
+		"glob": "11.0.3",
 		"meow": "13.2.0",
-		"typescript": "5.8.3"
+		"typescript": "5.9.2"
 	}
 }

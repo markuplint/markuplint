@@ -4,7 +4,6 @@
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
-	"private": false,
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"type": "module",
 	"exports": {
@@ -17,13 +16,11 @@
 	"typedoc": {
 		"entryPoint": "./src/index.ts"
 	},
-	"bin": {
-		"markuplint": "./bin/markuplint.mjs"
-	},
+	"bin": "./bin/markuplint.mjs",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/cli-utils": "4.4.11",
@@ -39,12 +36,12 @@
 		"@markuplint/shared": "4.4.11",
 		"@types/debug": "4.1.12",
 		"chokidar": "4.0.3",
-		"debug": "4.4.0",
+		"debug": "4.4.1",
 		"get-stdin": "9.0.0",
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.1.0",
-		"type-fest": "4.39.1"
+		"type-fest": "4.41.0"
 	}
 }

@@ -70,6 +70,14 @@ export abstract class MLCharacterData<
 
 	/**
 	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): string {
+		return this.data;
+	}
+
+	/**
+	 * @implements DOM API: `CharacterData`
 	 */
 	after(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

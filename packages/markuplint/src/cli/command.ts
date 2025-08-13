@@ -1,12 +1,13 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
 import type { Target } from '@markuplint/file-resolver';
-import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
+import type { Severity, SeverityOptions } from '@markuplint/ml-config';
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 import { resolveFiles } from '@markuplint/file-resolver';
+import { ViolationCollector } from '@markuplint/ml-core';
 
 import { MLEngine } from '../api/index.js';
 import { log } from '../debug.js';
@@ -45,9 +46,12 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const format = options.format?.toLowerCase().trim();
 
 	let hasError = false;
+	let totalWarningCount = 0;
 
-	const jsonOutput: (Violation & { filePath: string })[] = [];
-
+	const collector = new ViolationCollector(options.maxCount);
+	const processedFiles: string[] = [];
+	const skippedFiles: string[] = [];
+	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
 	const severityParseError = options.severityParseError.toLowerCase();
 	const severity: SeverityOptions = {
 		parseError: ['error', 'warning', 'off'].includes(severityParseError)
@@ -56,6 +60,13 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	};
 
 	for (const file of fileList) {
+		// Check if collector is already locked (max-count reached)
+		if (collector.isLocked()) {
+			log('Skipping file due to max-count limit: %s', file.path);
+			skippedFiles.push(file.path);
+			continue;
+		}
+
 		const engine = new MLEngine(file, {
 			configFile,
 			fix,
@@ -95,8 +106,22 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		if (!result) {
 			continue;
 		}
+
+		// Track processed file
+		processedFiles.push(result.filePath);
+		filesContent.set(result.filePath, {
+			sourceCode: result.sourceCode,
+			fixedCode: result.fixedCode,
+		});
+
+		// Add violations to collector
+		collector.pushWithFile(result.filePath, ...result.violations);
+
 		const errorCount = result.violations.filter(v => v.severity === 'error').length;
 		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
+
+		// Track total warning count across all files
+		totalWarningCount += warningCount;
 
 		if (!hasError && (errorCount > 0 || (warningCount > 0 && !options.allowWarnings))) {
 			hasError = true;
@@ -106,24 +131,61 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			log('Overwrite file: %s', result.filePath);
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
 		}
-
-		if (format === 'json') {
-			jsonOutput.push(
-				...result.violations.map(v => ({
-					...v,
-					filePath: result.filePath,
-				})),
-			);
-			continue;
-		}
-
-		log('Output reports');
-		output(result, options);
 	}
 
+	// Output results
 	if (format === 'json') {
+		const jsonOutput = collector.toArray();
 		process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
 		return false;
+	}
+
+	// For standard/simple/github output, group violations by file
+	const violationsByFile = collector.groupByFile();
+
+	// Output per file - include processed files without violations
+	for (const filePath of processedFiles) {
+		const violations = violationsByFile.get(filePath) || [];
+		const content = filesContent.get(filePath) || { sourceCode: '', fixedCode: '' };
+
+		if (violations.length === 0 && !options.problemOnly) {
+			log('Output reports');
+			output(
+				{
+					violations,
+					filePath,
+					sourceCode: content.sourceCode,
+					fixedCode: content.fixedCode,
+					status: 'processed',
+				},
+				options,
+			);
+		} else if (violations.length > 0) {
+			log('Output reports');
+			output(
+				{
+					violations,
+					filePath,
+					sourceCode: content.sourceCode,
+					fixedCode: content.fixedCode,
+					status: 'processed',
+				},
+				options,
+			);
+		}
+	}
+
+	// Output skipped files
+	if (!options.problemOnly) {
+		for (const filePath of skippedFiles) {
+			log('Output skipped file report');
+			output({ violations: [], filePath, sourceCode: '', fixedCode: '', status: 'skipped' }, options);
+		}
+	}
+
+	// Check if max-warnings limit is exceeded (ESLint compatible)
+	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {
+		hasError = true;
 	}
 
 	return hasError;

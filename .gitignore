@@ -83,3 +83,10 @@ packages/@markuplint/rules/src/__*
 
 # IDEs
 .idea
+
+# Claude settings
+.claude/settings.local.json
+
+# Yarn v4 (node_modules mode)
+.yarn/install-state.gz
+.yarn/build-state.yml

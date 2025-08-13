@@ -5,7 +5,6 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
-	"private": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -27,12 +26,12 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "4.6.19",
 		"@markuplint/ml-ast": "4.4.9",
 		"@markuplint/parser-utils": "4.8.7",
-		"svelte": "5.26.2"
+		"svelte": "5.38.0"
 	}
 }

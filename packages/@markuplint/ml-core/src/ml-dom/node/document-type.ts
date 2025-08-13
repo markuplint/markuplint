@@ -44,6 +44,14 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	}
 
 	/**
+	 * @implements DOM API: `DocumentType`
+	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
+	 */
+	get textContent(): null {
+		return null;
+	}
+
+	/**
 	 * @implements DOM API: `CharacterData`
 	 */
 	after(
