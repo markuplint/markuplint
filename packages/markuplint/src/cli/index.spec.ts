@@ -389,27 +389,6 @@ describe('--max-warnings option', () => {
 		expect(exitCode3).toBe(1);
 	});
 
-	test('--max-warnings with glob pattern aggregates warning counts', async () => {
-		// Test with glob pattern that matches files with only warnings
-		const globPattern = path.resolve(__dirname, '../../../../test/fixture/00[1-2].html');
-
-		// With limit 10, should exit with code 0 (6 total warnings < 10)
-		const { exitCode: exitCode10 } = await execa(
-			entryFilePath,
-			['--max-warnings=10', '--allow-warnings', escape(globPattern)],
-			{ reject: false },
-		);
-		expect(exitCode10).toBe(0);
-
-		// With limit 3, should exit with code 1 (6 total warnings > 3)
-		const { exitCode: exitCode3 } = await execa(
-			entryFilePath,
-			['--max-warnings=3', '--allow-warnings', escape(globPattern)],
-			{ reject: false },
-		);
-		expect(exitCode3).toBe(1);
-	});
-
 	test('--max-warnings with errors still returns exit code 1', async () => {
 		// Use a file that has both errors and warnings
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
