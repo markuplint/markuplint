@@ -31,7 +31,7 @@ CLIはターゲットとなるHTMLファイルを可変長引数として受け�
 | `--verbose`                | なし             | なし                                         | false        | 詳細な情報も同時に出力します                                  |
 | `--include-node-modules`   | なし             | なし                                         | false        | `node_module`ディレクトリ内のファイルを含めて評価します       |
 | `--severity-parse-error`   | なし             | `error`、`warning`もしくは`off`              | `error`      | パースエラーの深刻度レベルを指定します                        |
-| `--max-violations`         | なし             | 数値                                         | `0`          | 表示する違反数を制限します。`0`は制限なしを意味します         |
+| `--max-count`              | なし             | 数値                                         | `0`          | 表示する違反数を制限します。`0`は制限なしを意味します         |
 
 ## Particular run
 
@@ -53,19 +53,19 @@ $ npx markuplint --init
 
 質問に対話的に答えることで、必要なモジュールをインストールします。
 
-### `--max-violations`
+### `--max-count`
 
-出力に表示される違反数を制限します。このオプションは特に、多くの違反がある既存プロジェクトにMarkuplintを導入する際に、圧倒的な出力を管理し、パフォーマンスを向上させるのに役立ちます。
+出力に表示される違反数を制限します。制限に達すると、残りのファイルはスキップされ、出力で「skipped」としてマークされます。このオプションは特に、多くの違反がある既存プロジェクトにMarkuplintを導入する際に、圧倒的な出力を管理し、パフォーマンスを向上させるのに役立ちます。
 
 ```shell
 # 最初の10件の違反のみを表示
-$ markuplint "**/*.html" --max-violations=10
+$ markuplint "**/*.html" --max-count=10
 
 # 最初の違反のみを表示
-$ markuplint index.html --max-violations=1
+$ markuplint index.html --max-count=1
 
 # 制限なし（デフォルトの動作）
-$ markuplint index.html --max-violations=0
+$ markuplint index.html --max-count=0
 ```
 
 **主な機能:**
@@ -79,6 +79,8 @@ $ markuplint index.html --max-violations=0
 **段階的改善の使用例:**
 
 1. 現在の違反数を確認: `markuplint "**/*.html" | wc -l` で現在の違反数をカウント
-2. 制限を設定: CIで `markuplint "**/*.html" --max-violations=50` を実行
+2. 制限を設定: CIで `markuplint "**/*.html" --max-count=50` を実行
 3. 徐々に違反を修正し、制限値を減らしていく
 4. すべての違反が修正されたら最終的に制限を削除
+
+注意: 制限によりスキップされたファイルは、出力で「skipped」としてマークされ、どのファイルが処理されなかったかが明確にわかります。
