@@ -42,13 +42,14 @@
     "stylelint-config-standard": "38.0.0",
     "stylelint-order": "7.0.0",
     "tsx": "4.20.3",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=22"
   },
   "volta": {
-    "node": "22.16.0",
+    "node": "24.5.0",
     "yarn": "4.9.2"
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }
