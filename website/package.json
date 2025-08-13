@@ -42,7 +42,7 @@
     "stylelint-config-standard": "38.0.0",
     "stylelint-order": "7.0.0",
     "tsx": "4.20.3",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=22"
