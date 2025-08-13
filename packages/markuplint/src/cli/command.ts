@@ -46,6 +46,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const format = options.format?.toLowerCase().trim();
 
 	let hasError = false;
+	let totalWarningCount = 0;
 
 	const collector = new ViolationCollector(options.maxCount);
 	const processedFiles: string[] = [];
@@ -119,6 +120,9 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		const errorCount = result.violations.filter(v => v.severity === 'error').length;
 		const warningCount = result.violations.filter(v => v.severity === 'warning').length;
 
+		// Track total warning count across all files
+		totalWarningCount += warningCount;
+
 		if (!hasError && (errorCount > 0 || (warningCount > 0 && !options.allowWarnings))) {
 			hasError = true;
 		}
@@ -177,6 +181,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			log('Output skipped file report');
 			output({ violations: [], filePath, sourceCode: '', fixedCode: '', status: 'skipped' }, options);
 		}
+	}
+
+	// Check if max-warnings limit is exceeded (ESLint compatible)
+	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {
+		hasError = true;
 	}
 
 	return hasError;
