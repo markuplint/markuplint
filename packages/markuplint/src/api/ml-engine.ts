@@ -104,7 +104,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const result = await core.verify(this.#options?.fix, this.#options?.maxViolations).catch(error => {
+		const violations = await core.verify(this.#options?.fix).catch(error => {
 			if (error instanceof Error) {
 				return error;
 			}
@@ -114,9 +114,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 		const fixedCode = core.document.toString(true);
 
-		if (result instanceof Error) {
-			this.emit('lint-error', this.#file.path, sourceCode, result);
-			const errMessage = result.stack ?? result.message;
+		if (violations instanceof Error) {
+			this.emit('lint-error', this.#file.path, sourceCode, violations);
+			const errMessage = violations.stack ?? violations.message;
 			log('exec: error %O', errMessage);
 			return {
 				violations: [
@@ -132,19 +132,20 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				filePath: this.#file.path,
 				sourceCode,
 				fixedCode,
+				status: 'processed',
 			};
 		}
 
 		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
 
-		this.emit('lint', this.#file.path, sourceCode, result.violations, fixedCode, debugMap);
+		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, debugMap);
 		log('exec: end');
 		return {
-			violations: result.violations,
+			violations,
 			filePath: this.#file.path,
 			sourceCode,
 			fixedCode,
-			...(result.truncated ? { truncated: result.truncated } : {}),
+			status: 'processed',
 		};
 	}
 
