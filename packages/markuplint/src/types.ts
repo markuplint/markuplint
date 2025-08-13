@@ -6,6 +6,7 @@ export interface MLResultInfo {
 	readonly filePath: string;
 	readonly sourceCode: string;
 	readonly fixedCode: string;
+	readonly status: 'processed' | 'skipped';
 }
 
 /**

@@ -103,7 +103,7 @@ export class MLCore {
 		this._createDocument();
 	}
 
-	async verify(fix = false) {
+	async verify(fix = false): Promise<Violation[]> {
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {

@@ -35,7 +35,8 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 			);
 		}
 	} else if (!options.problemOnly) {
-		out.push(`<${commandName}> ${font.underline(results.filePath)}: ${font.green('✓')}`);
+		const icon = results.status === 'skipped' ? font.yellow('⚠') : font.green('✓');
+		out.push(`<${commandName}> ${font.underline(results.filePath)}: ${icon}`);
 	}
 
 	return out;

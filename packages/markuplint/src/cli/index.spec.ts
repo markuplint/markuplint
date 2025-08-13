@@ -149,6 +149,108 @@ describe('STDOUT Test', () => {
 		});
 		expect(exitCode).toBe(0);
 	});
+
+	test('--max-count with 002.html', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
+
+		// First, get the full number of violations
+		const { stderr: fullStderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+			reject: false,
+		});
+		const fullViolationCount = fullStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
+
+		// Test with limit
+		const { stderr: limitedStderr } = await execa(
+			entryFilePath,
+			['--no-color', '--max-count=3', escape(targetFilePath)],
+			{
+				reject: false,
+			},
+		);
+		const limitedViolationCount = limitedStderr.split('\n').filter(line => line.includes('<markuplint>')).length;
+
+		expect(fullViolationCount).toBeGreaterThan(3);
+		expect(limitedViolationCount).toBe(3);
+	});
+
+	test('--max-count=1', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
+		const { stderr, exitCode } = await execa(
+			entryFilePath,
+			['--no-color', '--max-count=1', escape(targetFilePath)],
+			{
+				reject: false,
+			},
+		);
+
+		const violationCount = stderr.split('\n').filter(line => line.includes('<markuplint>')).length;
+
+		expect(violationCount).toBe(1);
+		expect(exitCode).toBe(1); // Still should exit with error
+	});
+
+	test('--max-count=0 (no limit)', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
+
+		// Get violations without limit
+		const { stderr: noLimitStderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+			reject: false,
+		});
+		const noLimitCount = noLimitStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
+
+		// Get violations with --max-count=0
+		const { stderr: zeroLimitStderr } = await execa(
+			entryFilePath,
+			['--no-color', '--max-count=0', escape(targetFilePath)],
+			{
+				reject: false,
+			},
+		);
+		const zeroLimitCount = zeroLimitStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
+
+		// Should be the same (0 means no limit)
+		expect(noLimitCount).toBe(zeroLimitCount);
+		expect(noLimitCount).toBeGreaterThan(1);
+	});
+
+	test('--max-count with JSON format', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
+
+		// Test with JSON format and limit
+		const { stdout } = await execa(entryFilePath, ['--format=json', '--max-count=2', escape(targetFilePath)], {
+			reject: false,
+		});
+
+		const violations = JSON.parse(stdout);
+		expect(Array.isArray(violations)).toBe(true);
+		expect(violations.length).toBe(2);
+	});
+
+	test('--max-count with multiple files shows skipped status', async () => {
+		const targetFiles = [
+			path.resolve(__dirname, '../../../../test/fixture/001.html'), // No violations
+			path.resolve(__dirname, '../../../../test/fixture/002.html'), // Has violations
+			path.resolve(__dirname, '../../../../test/fixture/003.html'), // Should be skipped
+		];
+
+		const { stdout } = await execa(
+			entryFilePath,
+			['--no-color', '--max-count=3', '--format=simple', ...targetFiles.map(escape)],
+			{
+				reject: false,
+			},
+		);
+
+		// Check for passed, processed, and skipped indicators
+		expect(stdout).toContain('✓'); // 001.html should be passed
+		expect(stdout).toContain('⚠'); // 003.html should be skipped
+	});
 });
 
 describe('Issues', () => {
