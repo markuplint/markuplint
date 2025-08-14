@@ -11847,7 +11847,7 @@ __metadata:
     textlint-rule-preset-japanese: "npm:10.0.4"
     textlint-rule-preset-jtf-style: "npm:3.0.2"
     ts-node: "npm:10.9.2"
-    tsx: "npm:4.20.3"
+    tsx: "npm:4.20.4"
     typedoc: "npm:0.28.10"
     typedoc-plugin-mdn-links: "npm:5.0.8"
     typedoc-plugin-resolve-crossmodule-references: "npm:0.3.3"
@@ -16984,9 +16984,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:4.20.3":
-  version: 4.20.3
-  resolution: "tsx@npm:4.20.3"
+"tsx@npm:4.20.4":
+  version: 4.20.4
+  resolution: "tsx@npm:4.20.4"
   dependencies:
     esbuild: "npm:~0.25.0"
     fsevents: "npm:~2.3.3"
@@ -16996,7 +16996,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10c0/6ff0d91ed046ec743fac7ed60a07f3c025e5b71a5aaf58f3d2a6b45e4db114c83e59ebbb078c8e079e48d3730b944a02bc0de87695088aef4ec8bbc705dc791b
+  checksum: 10c0/2deb24b0c689031962901f29fc3411bc9a3753780e9a39b8bf0233dba7fc59dc8f9732f6ebbfe16f498fc27b6adf1eeecfa46360d1161081aafffaaa26371998
   languageName: node
   linkType: hard
 
