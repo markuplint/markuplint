@@ -1843,7 +1843,7 @@ __metadata:
     "@markuplint/parser-utils": "npm:4.8.8"
     "@markuplint/selector": "npm:4.7.5"
     "@markuplint/shared": "npm:4.4.12"
-    "@types/node": "npm:24.2.1"
+    "@types/node": "npm:24.3.0"
     cosmiconfig: "npm:9.0.0"
     debug: "npm:4.4.1"
     glob: "npm:11.0.3"
@@ -3786,7 +3786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:24.2.1":
+"@types/node@npm:*":
   version: 24.2.1
   resolution: "@types/node@npm:24.2.1"
   dependencies:
@@ -3801,6 +3801,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10c0/e1c603b660d3de3243dfc02ded5d40623ff3f36315ffbdd8cdc81bc2c5a8da172035879d437b72e9fa61ca01827f28e9c2b0c32898f411a8e9ba0a5efac0b4ca
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:24.3.0":
+  version: 24.3.0
+  resolution: "@types/node@npm:24.3.0"
+  dependencies:
+    undici-types: "npm:~7.10.0"
+  checksum: 10c0/96bdeca01f690338957c2dcc92cb9f76c262c10398f8d91860865464412b0f9d309c24d9b03d0bdd26dd47fa7ee3f8227893d5c89bc2009d919a525a22512030
   languageName: node
   linkType: hard
 
