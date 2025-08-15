@@ -34,7 +34,7 @@
     "@imgix/js-core": "3.8.0",
     "@markuplint-dev/prettier-config": "1.0.13",
     "@tsconfig/strictest": "2.0.5",
-    "@types/glob": "8.1.0",
+    "@types/glob": "9.0.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
     "stylelint": "16.20.0",
