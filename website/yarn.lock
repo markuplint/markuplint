@@ -8950,7 +8950,7 @@ __metadata:
     react: "npm:19.1.1"
     react-dom: "npm:19.1.1"
     stylelint: "npm:16.20.0"
-    stylelint-config-recess-order: "npm:6.1.0"
+    stylelint-config-recess-order: "npm:7.2.0"
     stylelint-config-standard: "npm:38.0.0"
     stylelint-order: "npm:7.0.0"
     tsx: "npm:4.20.4"
@@ -11461,15 +11461,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-sorting@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "postcss-sorting@npm:8.0.2"
-  peerDependencies:
-    postcss: ^8.4.20
-  checksum: 10c0/955c72d8d71b6b54dcdcbcef765a593803512d215cef12a49b71d1abf8ab8d2dacb5645dbb5a0a6535609aab6bffb834599d6073f28fe61e589a4437af85e243
-  languageName: node
-  linkType: hard
-
 "postcss-sorting@npm:^9.1.0":
   version: 9.1.0
   resolution: "postcss-sorting@npm:9.1.0"
@@ -11518,7 +11509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.21, postcss@npm:^8.4.24, postcss@npm:^8.4.32, postcss@npm:^8.4.33, postcss@npm:^8.5.3, postcss@npm:^8.5.4":
+"postcss@npm:^8.4.21, postcss@npm:^8.4.24, postcss@npm:^8.4.33, postcss@npm:^8.5.3, postcss@npm:^8.5.4":
   version: 8.5.6
   resolution: "postcss@npm:8.5.6"
   dependencies:
@@ -13189,14 +13180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-recess-order@npm:6.1.0":
-  version: 6.1.0
-  resolution: "stylelint-config-recess-order@npm:6.1.0"
-  dependencies:
-    stylelint-order: "npm:^6.0.4"
+"stylelint-config-recess-order@npm:7.2.0":
+  version: 7.2.0
+  resolution: "stylelint-config-recess-order@npm:7.2.0"
   peerDependencies:
-    stylelint: ">=16"
-  checksum: 10c0/4c631e41164f8b061c1f9ccdd58683f8fa4f99236bee33f89c3d3db60424f896c05bd3f4ce0bb641239d1a21bd9efb51dc5156898c6b81de043edbdc09b538c8
+    stylelint: ">=16.18"
+    stylelint-order: ">=7"
+  checksum: 10c0/f5dfe243bb103759747a1f7ce93336d686f0e27e282daa55a3005083a19fa3918457eeaa4fbfb153d275b917f75149307b198bb61e4730d2bce763aa9d5f1185
   languageName: node
   linkType: hard
 
@@ -13229,18 +13219,6 @@ __metadata:
   peerDependencies:
     stylelint: ^16.18.0
   checksum: 10c0/202ea7f0ce44b272f0ee8745383e347520663ef3defb9478c2dae8f33378950e32138815d038228db49383cab7b111148b9b9521e409311a91047cfc4740d507
-  languageName: node
-  linkType: hard
-
-"stylelint-order@npm:^6.0.4":
-  version: 6.0.4
-  resolution: "stylelint-order@npm:6.0.4"
-  dependencies:
-    postcss: "npm:^8.4.32"
-    postcss-sorting: "npm:^8.0.2"
-  peerDependencies:
-    stylelint: ^14.0.0 || ^15.0.0 || ^16.0.1
-  checksum: 10c0/9a1f6ba7ab04855462bfae28fe36ad2a297fec56f42da2f588b57295b89b72e6f517d5e35ecbcefb11fcc373f3db40f0e6a8eefb41a4d267550ac6324f12a3ca
   languageName: node
   linkType: hard
 
