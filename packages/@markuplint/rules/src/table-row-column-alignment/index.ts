@@ -51,6 +51,23 @@ export default createRule<boolean>({
 					continue;
 				}
 
+				// Skip validation for rows that have expected column count differences due to rowspan/colspan
+				const cells = findChildren(rowEl, 'th, td');
+				let actualCellCount = 0;
+				for (const cell of cells) {
+					const colspan = Number.parseInt(cell.getAttribute('colspan') ?? '1');
+					actualCellCount += colspan;
+				}
+
+				// Check for rowspan cells occupying spaces in this row
+				const rowspanOccupiedCount = row.filter(cell => cell === '↓').length;
+				const expectedColumnCount = actualCellCount + rowspanOccupiedCount;
+
+				if (expectedColumnCount === baseColLength) {
+					// This row has the correct structure accounting for spans
+					continue;
+				}
+
 				const indexes = getIndexes(row);
 
 				if (colLength > baseColLength) {
@@ -86,7 +103,7 @@ export default createRule<boolean>({
 					});
 				}
 
-				if (colLength < baseColLength) {
+				if (colLength < baseColLength && expectedColumnCount < baseColLength) {
 					const diff = baseColLength - colLength;
 
 					report({

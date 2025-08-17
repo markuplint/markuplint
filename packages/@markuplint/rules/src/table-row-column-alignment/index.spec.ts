@@ -344,4 +344,23 @@ describe('Complex', () => {
 			},
 		]);
 	});
+
+	test('User reported case - table with rowspan and colspan', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<table aria-label="テーブルのテストです">
+  <tr>
+      <th rowspan="2">縦2行分</th>
+      <th colspan="2">横2列分</th>
+  </tr>
+  <tr>
+      <th>1</th>
+      <th>2</th>
+  </tr>
+</table>
+`,
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });
