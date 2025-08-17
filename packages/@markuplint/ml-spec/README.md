@@ -48,23 +48,23 @@ Generated TypeScript types (do not edit directly):
 
 **HTML Standard Algorithms**:
 
-- Focusable Area Algorithm (`src/dom-traverse/may-be-focusable.ts`)
+- Focusable Area Algorithm (`src/algorithm/html/may-be-focusable.ts`)
 - Interactive Content classification
-- Content Model validation (`src/specs/get-content-model.ts`)
+- Content Model validation (`src/algorithm/html/get-content-model.ts`)
 
 **WAI-ARIA Specification Algorithms**:
 
 - **Accessible Name Computation** - W3C AccName 1.1 compliant (via `dom-accessibility-api`)
-- **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/dom-traverse/get-computed-role.ts`)
-- **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/dom-traverse/is-exposed.ts`)
-- **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/dom-traverse/get-computed-aria-props.ts`)
-- **Required Context Validation** - Composite role validation (`src/dom-traverse/has-required-owned-elements.ts`)
+- **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/algorithm/aria/get-computed-role.ts`)
+- **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/algorithm/aria/is-exposed.ts`)
+- **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/algorithm/aria/get-computed-aria-props.ts`)
+- **Required Context Validation** - Composite role validation (`src/algorithm/aria/has-required-owned-elements.ts`)
 
 **Specification Integration**:
 
-- Cross-specification utilities (`src/specs/get-spec-by-tag-name.ts`)
-- Version-aware specification resolution (`src/specs/resolve-version.ts`)
-- Schema-to-runtime conversion (`src/specs/schema-to-spec.ts`)
+- Cross-specification utilities (`src/utils/get-spec-by-tag-name.ts`)
+- Version-aware specification resolution (`src/utils/resolve-version.ts`)
+- Schema-to-runtime conversion (`src/utils/schema-to-spec.ts`)
 
 ### JSON Schemas (Structure Definitions)
 
@@ -198,7 +198,7 @@ yarn build
 ### How schema merging works (Specs extension)
 
 At runtime, markuplint can merge multiple specs. The merger in
-`src/specs/schema-to-spec.ts` follows these rules:
+`src/utils/schema-to-spec.ts` follows these rules:
 
 - `def.#globalAttrs.#extends` from an extended spec augments the base `#HTMLGlobalAttrs` map.
 - For a given element, if both base and extended specs define the same attribute, the extended spec

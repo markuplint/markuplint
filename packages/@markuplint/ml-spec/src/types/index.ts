@@ -1,7 +1,7 @@
 import type { ARIA } from './aria.js';
 import type { AttributeJSON, AttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
-import type { ariaVersions } from '../constant/aria-version.js';
+import type { ariaVersions } from '../utils/aria-version.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 import type { ReadonlyDeep } from 'type-fest';
 
