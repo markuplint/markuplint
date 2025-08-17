@@ -2,161 +2,293 @@
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fhtml-spec.svg)](https://www.npmjs.com/package/@markuplint/html-spec)
 
-This package is the canonical dataset of the HTML Schema for markuplint — HTML element specifications
-(structure, attributes, ARIA, and content models).
+**Canonical HTML Living Standard dataset provider with automated external data enrichment.**
 
-### What’s in this package
+This package provides the consolidated HTML element specification data for markuplint, including:
 
-- Built output consumed by markuplint:
-  - `index.json`
-- Sources (do not edit generated files):
-  - `src/spec-*.json` (element specs and common data)
-  - Build script: `build.mjs` (invokes `@markuplint/spec-generator`)
+- **HTML Living Standard elements** with complete attribute definitions
+- **WAI-ARIA mappings** (implicit roles, permitted roles, ARIA properties)
+- **Content model definitions** for each element
+- **MDN-enriched metadata** (descriptions, compatibility, experimental status)
+- **Automated external data integration** from authoritative sources
 
-For the common schema shapes (JSON Schema), generation workflow, and spec-merging behavior, see
-`@markuplint/ml-spec` README.
+This package serves as the data layer in markuplint's specification system, depending on `@markuplint/ml-spec` for type definitions and structural schemas.
 
-### Editing workflow (HTML spec data)
+## Package Architecture
 
-1. Edit sources
+This package serves as the data layer in markuplint's specification system:
 
-- Element specs: add or edit files under `src/spec-*.json` (e.g. `src/spec.a.json`)
-- Common data shared across elements:
-  - Attributes: `src/spec-common.attributes.json`
-  - Content models: `src/spec-common.contents.json`
-
-2. Regenerate the built dataset
-
-From the repository root (recommended):
-
-```bash
-yarn up:gen
+```
+@markuplint/ml-spec (Foundation Layer)
+  ↓ provides types, algorithms, schemas
+@markuplint/html-spec (Data Layer) ← YOU ARE HERE
+  ↓ provides HTML specification data
+Framework-specific specs (Extension Layer)
+  ↓ provide framework extensions
+Core packages (Application Layer)
+  ↓ consume specifications for validation
 ```
 
-or only for this package:
+## Package Contents
 
-```bash
-yarn workspace @markuplint/html-spec run gen
+### Generated Output (DO NOT EDIT)
+
+- **`index.json`** - Consolidated specification data (48K+ lines)
+  - All HTML elements with complete specifications
+  - Global attribute definitions (`#HTMLGlobalAttrs`, `#ARIAAttrs`)
+  - ARIA role and property definitions (`#aria`)
+  - Content model macros (`#contentModels`)
+  - Citation references to authoritative sources
+
+### Source Files (EDIT THESE)
+
+- **`src/spec-*.json`** - Individual element specifications
+  - `src/spec.div.json` → `<div>` element specification
+  - `src/spec.table.json` → `<table>` element specification
+  - `src/spec.svg_text.json` → `<svg:text>` element specification
+- **`src/spec-common.attributes.json`** - Shared attribute definitions
+- **`src/spec-common.contents.json`** - Reusable content model macros
+
+### Build Process
+
+- **`build.mjs`** - Generation script that invokes `@markuplint/spec-generator`
+- **External data sources**:
+  - **MDN Web Docs** - Element descriptions, compatibility data, attribute metadata
+  - **W3C ARIA specifications** - Role definitions, property mappings (1.1/1.2/1.3)
+  - **HTML Living Standard** - Obsolete element definitions
+  - **SVG specifications** - SVG element definitions and categories
+
+## Data Structure
+
+The generated `index.json` follows this structure:
+
+```typescript
+{
+  cites: Cites;           // Reference citations to external specs
+  def: {                  // Global definitions
+    "#HTMLGlobalAttrs": GlobalAttributes;
+    "#ARIAAttrs": ARIAAttributes;
+    "#aria": ARIASpecification;
+    "#contentModels": ContentModelMacros;
+  };
+  specs: ElementSpec[];   // Individual element specifications
+}
 ```
 
-This runs the local build script (`build.mjs`) which invokes `@markuplint/spec-generator` and writes
-`index.json`, then formats it with Prettier.
+### Element Specification Format
 
-#### What `yarn up:gen` does exactly
+Each element specification includes:
 
-From the repository root, it executes:
+```typescript
+{
+  name: string;                    // Element name (e.g., "table", "tr")
+  cite: string;                   // MDN reference URL
+  description: string;            // Human-readable description
+  categories: string[];           // Content categories (flow, phrasing, etc.)
+  contentModel: ContentModel;     // Permitted child elements
+  globalAttrs: GlobalAttrSets;    // Applicable global attributes
+  attributes: AttributeSpecs;     // Element-specific attributes
+  aria: {                        // ARIA integration
+    implicitRole: string | null;  // Default ARIA role
+    permittedRoles: string[] | boolean;  // Allowed ARIA roles
+    namingProhibited?: boolean;   // Accessible name constraints
+    conditions?: ConditionalARIA; // Context-specific ARIA rules
+  };
+  omission?: TagOmissionRules;    // Start/end tag omission rules
+}
+```
 
-1. Change directory into this package
-   - `cd packages/@markuplint/html-spec/`
-2. Run the local `gen` script, which is an alias of:
-   - `node build.mjs` (generate `index.json`)
-   - `npx prettier --write index.json` (format the output)
+## Relationship to @markuplint/ml-spec
 
-Inside `build.mjs`, the generator is called with the following inputs:
+**@markuplint/ml-spec** provides the foundation:
 
-- Output: `index.json`
-- HTML spec sources: `src/spec.*.json`
-- Common attributes: `src/spec-common.attributes.json`
-- Common content models: `src/spec-common.contents.json`
+- **Type definitions** (`ElementSpec`, `ExtendedSpec`, `MLMLSpec`) that structure this data
+- **JSON schemas** that validate the specification format
+- **Algorithms** that process and compute values from this specification data
+- **Runtime utilities** that consume this consolidated specification data
 
-No other files are modified. This command does not publish anything.
+**@markuplint/html-spec** (this package) provides:
 
-### What the generator actually does
+- **Canonical HTML data** following the type definitions from `@markuplint/ml-spec`
+- **External data enrichment** from MDN and W3C specifications
+- **Build automation** that keeps data synchronized with external sources
+- **Single consolidated dataset** optimized for runtime consumption
 
-The builder (`@markuplint/spec-generator`) produces a single Extended Spec JSON (`index.json`) by:
+This separation enables:
 
-- Reading every `src/spec.*.json` and inferring the element name from the filename
-  - Example: `src/spec.a.json` → name `a`
-- Scraping MDN for each element to enrich missing metadata
-  - Fills/updates: `cite` (MDN URL), `description`, `categories`, `omission` (tag omission hints),
-    and known attribute metadata (deprecated/obsolete/experimental/nonStandard)
-  - Your fields in `src/spec.*.json` take precedence when both exist (manual beats scraped)
-- Injecting obsolete elements not present in sources (WHATWG obsolete list + deprecated SVG)
-- Loading shared data
-  - Global attribute sets: `src/spec-common.attributes.json`
-  - Content model macros: `src/spec-common.contents.json` (its `models`)
-- Building ARIA definitions by scraping WAI-ARIA and HTML-ARIA
-  - Populates `def['#aria']` with roles, properties and graphics-ARIA per version (1.1/1.2/1.3)
-- Emitting the Extended Spec object `{ cites, def: { #globalAttrs, #aria, #contentModels }, specs: [...] }`
-  and formatting to `index.json`
+- **Independent data updates** without affecting type definitions or algorithms
+- **Algorithm improvements** without requiring data regeneration
+- **Framework extensions** that can augment this base HTML data
 
-The output is consumed by markuplint and can be merged with other framework specs.
+## Development Workflow
 
-### How to edit `src/spec.*.json`
+### Adding or Editing HTML Elements
 
-Each file describes one HTML element. Only specify what differs from the defaults or what you want
-to override from MDN. Recognized top-level keys include:
+1. **Edit source specifications**
+   - Add new file: `src/spec.<element>.json` (e.g., `src/spec.dialog.json`)
+   - Edit existing: Update relevant `src/spec-*.json` file
+   - For SVG elements: Use pattern `src/spec.svg_<local>.json`
 
-- `contentModel`: allowed children pattern; see `@markuplint/ml-spec` content-model schema
-- `globalAttrs`: enable global attribute sets or list specific ones per category
-- `attributes`: element-specific attributes and their types/options
-- `aria`: implicit role, permitted roles, and ARIA property constraints for this element
-- `omission`: start/end tag omission rules (when applicable)
+2. **Regenerate the dataset**
 
-Minimal example (anchor element):
+   ```bash
+   # From repository root (recommended)
+   yarn up:gen
+
+   # Or for this package only
+   yarn workspace @markuplint/html-spec run gen
+   ```
+
+3. **Verify output**
+   - Check `index.json` for expected changes
+   - Ensure no unintended modifications to other elements
+
+### Element Specification Guide
+
+**Minimal element specification**:
 
 ```json
 {
   "contentModel": {
-    "contents": [{ "transparent": ":not(:model(interactive), a, [tabindex])" }]
+    "contents": [{ "require": "#phrasing" }]
   },
   "globalAttrs": {
     "#HTMLGlobalAttrs": true,
-    "#GlobalEventAttrs": true,
-    "#ARIAAttrs": true,
-    "#HTMLLinkAndFetchingAttrs": ["href", "target", "rel"]
+    "#ARIAAttrs": true
   },
   "attributes": {
-    "download": { "type": "Any" }
+    "custom-attr": { "type": "String" }
   },
   "aria": {
-    "implicitRole": "link",
-    "permittedRoles": ["button", "menuitem"],
-    "conditions": {
-      ":not([href])": { "implicitRole": "generic", "namingProhibited": true }
+    "implicitRole": "button",
+    "permittedRoles": ["link", "tab"]
+  }
+}
+```
+
+**Key principles**:
+
+- Only specify what differs from defaults or overrides MDN data
+- Use references to global attribute sets when possible
+- Define content models using semantic categories (`#flow`, `#phrasing`)
+- Include ARIA specifications following HTML-ARIA mapping guidelines
+
+### Common Editing Patterns
+
+**Adding element-specific attributes**:
+
+```json
+{
+  "attributes": {
+    "href": {
+      "type": "URL",
+      "required": false,
+      "description": "Target URL for navigation"
+    },
+    "download": {
+      "type": "String",
+      "experimental": true
     }
   }
 }
 ```
 
-Attribute entries follow the shape from `@markuplint/ml-spec` (`attributes.schema.json`):
+**Conditional ARIA rules**:
 
-- Common fields: `type`, `defaultValue`, `required`, `requiredEither`, `noUse`, `condition`,
-  `ineffective`, `animatable`, `experimental`, `deprecated`, `obsolete`, `nonStandard`
-- Types come from `@markuplint/types` (`types.schema.json`)
+```json
+{
+  "aria": {
+    "implicitRole": "link",
+    "permittedRoles": ["button", "menuitem"],
+    "conditions": {
+      ":not([href])": {
+        "implicitRole": "generic",
+        "namingProhibited": true
+      }
+    }
+  }
+}
+```
 
-When to change shared files:
+**Complex content models**:
 
-- Add/edit global attribute categories or items → `src/spec-common.attributes.json`
-- Add/edit reusable content model macros → `src/spec-common.contents.json`
+```json
+{
+  "contentModel": {
+    "contents": [{ "transparent": ":not(:model(interactive), a, [tabindex])" }]
+  }
+}
+```
 
-#### File naming conventions
+## Build Process Details
 
-- HTML elements: `src/spec.<tag>.json` (lowercase), e.g. `spec.a.json`, `spec.dialog.json`
-- SVG elements: `src/spec.svg_<local>.json`, e.g. `spec.svg_text.json` → element name `svg:text`
-  - The generator infers the element name from the filename; do not add a `name` field manually
+### What `yarn up:gen` does
 
-#### Common editing recipes
+1. **Invokes spec-generator** with inputs:
+   - HTML spec sources: `src/spec-*.json`
+   - Common attributes: `src/spec-common.attributes.json`
+   - Common content models: `src/spec-common.contents.json`
 
-- Add a new element
-  - Create `src/spec.<tag>.json` (or `src/spec.svg_<local>.json`)
-  - Define `contentModel`, `globalAttrs`, minimal `attributes`, and `aria`
-  - Run `yarn up:gen` and verify `index.json`
+2. **External data enrichment**:
+   - **MDN scraping**: Fetches descriptions, categories, attribute metadata
+   - **ARIA integration**: Downloads W3C ARIA specifications (1.1/1.2/1.3)
+   - **Obsolete elements**: Adds deprecated elements from HTML Living Standard
+   - **SVG specifications**: Includes SVG element definitions and categories
 
-- Tighten an attribute type
-  - Update the attribute entry under `attributes` with the desired `type`
-  - If a new value type is needed, extend `@markuplint/types` first, then regenerate this package
+3. **Data consolidation**:
+   - Merges manual specifications with fetched data
+   - Resolves conflicts (manual data takes precedence)
+   - Validates against JSON schemas from `@markuplint/ml-spec`
+   - Generates citations and references
 
-- Mark an attribute unstable
-  - Set `experimental: true`, `deprecated: true`, or `obsolete: true`
-  - Manual flags override MDN if the scraper disagrees
+4. **Output generation**:
+   - Writes consolidated `index.json`
+   - Formats with Prettier
+   - Validates structural integrity
 
-- Restrict ARIA usage for an element
-  - Use `aria.properties`/`aria.permittedRoles` or add `aria.conditions` for context-specific rules
+### External Data Sources
 
-3. Do not edit generated files
+**MDN Web Docs** (`developer.mozilla.org`):
 
-- Do not modify `index.json` directly. Always update the files under `src/` and regenerate.
+- Element descriptions and usage guidance
+- Compatibility tables and browser support
+- Attribute metadata (deprecated, experimental, obsolete)
+- Tag omission rules and semantic information
+
+**W3C ARIA Specifications**:
+
+- **ARIA 1.1**: `https://www.w3.org/TR/wai-aria-1.1/`
+- **ARIA 1.2**: `https://www.w3.org/TR/wai-aria-1.2/`
+- **ARIA 1.3**: `https://w3c.github.io/aria/`
+- **HTML-ARIA**: `https://www.w3.org/TR/html-aria/`
+
+**HTML Living Standard** (`https://html.spec.whatwg.org/`):
+
+- Obsolete element definitions
+- Semantic category classifications
+- Content model specifications
+
+### Caching and Performance
+
+- **External fetches are cached** to prevent unnecessary network requests during development
+- **CI/CD builds** refresh external data to stay current with specification changes
+- **Generated output is optimized** for runtime consumption (single file, pre-resolved references)
+
+## File Naming Conventions
+
+**HTML elements**: `src/spec.<tag>.json`
+
+- Examples: `spec.div.json`, `spec.table.json`, `spec.input.json`
+
+**SVG elements**: `src/spec.svg_<local>.json`
+
+- Examples: `spec.svg_text.json`, `spec.svg_circle.json`
+- Element name inferred as `svg:<local>` (e.g., `svg:text`)
+
+**Special files**:
+
+- `spec-common.attributes.json` - Global attribute category definitions
+- `spec-common.contents.json` - Reusable content model macros
 
 ## Install
 
@@ -172,3 +304,32 @@ $ yarn add @markuplint/html-spec
 ```
 
 </details>
+
+## Important Notes
+
+### Do Not Edit Generated Files
+
+- **Never modify `index.json` directly** - it will be overwritten
+- Always update source files in `src/` and regenerate
+
+### Manual Data Takes Precedence
+
+- Your specifications in `src/spec-*.json` override scraped MDN data
+- Use this to correct inaccuracies or add missing information
+- External data fills gaps but doesn't override manual specifications
+
+### Specification Compliance
+
+- ARIA mappings should follow W3C HTML-ARIA mapping guidelines
+- Content models should align with HTML Living Standard definitions
+- Attribute types should reference `@markuplint/types` definitions
+
+### Framework Integration
+
+- This package provides base HTML specifications
+- Framework-specific packages (Vue, React, Svelte) extend this base data
+- Extensions are merged at runtime using `@markuplint/ml-spec` utilities
+
+## License
+
+MIT

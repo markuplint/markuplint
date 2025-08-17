@@ -2,9 +2,114 @@
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fml-spec.svg)](https://www.npmjs.com/package/@markuplint/ml-spec)
 
-This package provides the HTML Schema (aka "Specs") shape definitions and utilities used by
-markuplint, plus the generated TypeScript types derived from those schemas. The canonical HTML
-element spec data itself is aggregated in `@markuplint/html-spec`.
+**Foundation package providing type definitions, W3C specification algorithms, and unified API for markup language specifications.**
+
+This package serves as the foundational layer for markuplint's specification system, providing:
+
+- **Type definitions** for markup language specifications (HTML, ARIA, SVG)
+- **W3C specification algorithms** (HTML Standard, WAI-ARIA 1.1/1.2/1.3 compliance)
+- **JSON schemas** that define the structure of element specifications
+- **Runtime utilities** for specification resolution, attribute validation, and content model checking
+- **Unified API** for consuming specification data from various sources
+
+The canonical HTML element specification data is provided by `@markuplint/html-spec`, which depends on this package for type definitions and algorithmic processing.
+
+## Package Architecture
+
+This package serves as the foundation layer in markuplint's specification system:
+
+```
+@markuplint/ml-spec (Foundation Layer)
+  ↓ provides types, algorithms, schemas
+@markuplint/html-spec (Data Layer)
+  ↓ provides HTML specification data
+Framework-specific specs (Extension Layer)
+  ↓ provide framework extensions
+Core packages (Application Layer)
+  ↓ consume specifications for validation
+```
+
+## Package Contents
+
+### Type Definitions
+
+- **Core Types**: `ElementSpec`, `ExtendedSpec`, `MLMLSpec`, `ARIAVersion`
+- **ARIA Types**: Complete WAI-ARIA 1.1/1.2/1.3 type definitions
+- **Attribute Types**: HTML attribute definitions with validation rules
+- **Content Model Types**: Permitted content structure definitions
+
+Generated TypeScript types (do not edit directly):
+
+- `src/types/attributes.ts` - Attribute specification types
+- `src/types/aria.ts` - ARIA specification types
+- `src/types/permitted-structures.ts` - Content model types
+
+### W3C Specification Algorithms
+
+**HTML Standard Algorithms**:
+
+- Focusable Area Algorithm (`src/algorithm/html/may-be-focusable.ts`)
+- Interactive Content classification
+- Content Model validation (`src/algorithm/html/get-content-model.ts`)
+
+**WAI-ARIA Specification Algorithms**:
+
+- **Accessible Name Computation** - W3C AccName 1.1 compliant (via `dom-accessibility-api`)
+- **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/algorithm/aria/get-computed-role.ts`)
+- **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/algorithm/aria/is-exposed.ts`)
+- **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/algorithm/aria/get-computed-aria-props.ts`)
+- **Required Context Validation** - Composite role validation (`src/algorithm/aria/has-required-owned-elements.ts`)
+
+**Specification Integration**:
+
+- Cross-specification utilities (`src/utils/get-spec-by-tag-name.ts`)
+- Version-aware specification resolution (`src/utils/resolve-version.ts`)
+- Schema-to-runtime conversion (`src/utils/schema-to-spec.ts`)
+
+### JSON Schemas (Structure Definitions)
+
+- `schemas/element.schema.json` - Element specification schema
+- `schemas/aria.schema.json` - ARIA specification schema
+- `schemas/content-models.schema.json` - Content model schema
+- `schemas/global-attributes.schema.json` (generated) - Global attribute categories
+- `schemas/attributes.schema.json` (generated) - Attribute definition schema
+
+### Schema Generators
+
+- `gen/gen.ts` - Builds generated schema files from data
+- `gen/global-attribute.data.*` - Source data for global attribute categories
+
+### Runtime Utilities
+
+- **Spec Resolution**: `getSpecByTagName`, `getAttrSpecs`, `getRoleSpec`
+- **Content Model Utilities**: `getContentModel`, `isPalpableElements`, `isVoidElement`
+- **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`
+- **Accessibility Utilities**: `accnameComputation`, `isExposed`, `mayBeFocusable`
+- **Schema Utilities**: `schemaToSpec`, `resolveNamespace`, `validateAriaVersion`
+- **Framework Extension**: Merges base HTML specs with framework-specific extensions
+
+**Note**: Attribute value types are defined in `@markuplint/types`. The schemas here reference `@markuplint/types/types.schema.json`.
+
+## Relationship to @markuplint/html-spec
+
+**@markuplint/html-spec** provides the canonical HTML element specification data:
+
+- **Built output**: `index.json` (48K+ lines, consolidated specification data)
+- **Sources**: `src/spec-*.json` (individual element specifications)
+- **Build process**: `build.mjs` → `@markuplint/spec-generator` → enriched with MDN/W3C data
+
+**@markuplint/ml-spec** (this package) provides:
+
+- **Type definitions** that `@markuplint/html-spec` uses to structure its data
+- **JSON schemas** that validate the specification format
+- **Algorithms** that process and compute values from the specification data
+- **Runtime utilities** that consume the consolidated specification data
+
+This separation enables:
+
+- **Data updates** (`@markuplint/html-spec`) without affecting type definitions
+- **Algorithm improvements** (`@markuplint/ml-spec`) without regenerating data
+- **Framework extensions** that can reuse both type definitions and base HTML data
 
 ### Install
 
@@ -20,37 +125,6 @@ yarn add @markuplint/ml-spec
 
 - "HTML Schema" and "Specs" are used interchangeably in markuplint to mean the JSON Schema that
   describes HTML element specs (attributes, ARIA, content models, etc) and their TypeScript types.
-
-### What’s in this package
-
-- JSON Schemas (shape definitions):
-  - `schemas/element.schema.json`
-  - `schemas/aria.schema.json`
-  - `schemas/content-models.schema.json`
-  - `schemas/global-attributes.schema.json` (generated)
-  - `schemas/attributes.schema.json` (generated)
-- Generated TypeScript types (do not edit):
-  - `src/types/attributes.ts`
-  - `src/types/aria.ts`
-  - `src/types/permitted-structures.ts`
-- Schema generators:
-  - `gen/gen.ts` … builds `global-attributes.schema.json` and `attributes.schema.json`
-  - Global attribute categories data: `gen/global-attribute.data.*`
-- Spec merger (runtime behavior):
-  - `src/specs/schema-to-spec.ts` … merges the main HTML spec with
-    extended specs provided by other packages (e.g. Vue/React/Svelte specs)
-
-Note: Attribute value types are defined in `@markuplint/types`. The schemas here reference
-`@markuplint/types/types.schema.json`.
-
-### Where is the base HTML spec data?
-
-- Base HTML element specs live in `packages/@markuplint/html-spec/`:
-  - Built output: `packages/@markuplint/html-spec/index.json`
-  - Sources: `packages/@markuplint/html-spec/src/spec-*.json`
-  - Build script: `packages/@markuplint/html-spec/build.mjs` (invokes `@markuplint/spec-generator`)
-- This `@markuplint/ml-spec` package defines the JSON Schema shapes and the merging logic that
-  consume that data, but does not contain the canonical HTML element dataset.
 
 ### Editing workflow (HTML Schema/Specs)
 
@@ -124,7 +198,7 @@ yarn build
 ### How schema merging works (Specs extension)
 
 At runtime, markuplint can merge multiple specs. The merger in
-`src/specs/schema-to-spec.ts` follows these rules:
+`src/utils/schema-to-spec.ts` follows these rules:
 
 - `def.#globalAttrs.#extends` from an extended spec augments the base `#HTMLGlobalAttrs` map.
 - For a given element, if both base and extended specs define the same attribute, the extended spec
