@@ -63,10 +63,13 @@ export default createRule<boolean>({
 				const rowspanOccupiedCount = row.filter(cell => cell === '↓').length;
 				const expectedColumnCount = actualCellCount + rowspanOccupiedCount;
 
-				if (expectedColumnCount === baseColLength) {
-					// This row has the correct structure accounting for spans
+				// Skip validation if the structure is valid accounting for spans
+				if (expectedColumnCount === baseColLength || actualCellCount + rowspanOccupiedCount === baseColLength) {
 					continue;
 				}
+
+				// Debug log
+				// console.log(`Row ${rowNum}: baseColLength=${baseColLength}, colLength=${colLength}, actualCellCount=${actualCellCount}, rowspanOccupiedCount=${rowspanOccupiedCount}, expectedColumnCount=${expectedColumnCount}`);
 
 				const indexes = getIndexes(row);
 
