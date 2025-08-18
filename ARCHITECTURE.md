@@ -14,7 +14,7 @@ The Markuplint ecosystem consists of **19 packages** that depend on `@markuplint
 
 ```mermaid
 graph TD
-    A[@markuplint/ml-spec] --> B[@markuplint/html-spec]
+    A[ml-spec] --> B[html-spec]
     A --> C[Framework Specs]
     A --> D[Core Packages]
     A --> E[Parser Packages]
