@@ -2,9 +2,9 @@
 
 ## Executive Summary
 
-This document clarifies the design strategy and role division between core packages in the Markuplint ecosystem, specifically addressing the concerns raised in [Issue #596](https://github.com/markuplint/markuplint/issues/596) about the relationship between `@markuplint/ml-spec` and `@markuplint/html-spec`.
+This document outlines the design strategy and role division between core packages in the Markuplint ecosystem, focusing on the relationship between `@markuplint/ml-spec` and `@markuplint/html-spec`.
 
-**Key Finding**: The current architecture is well-designed and should be maintained. The primary issue was documentation clarity, not architectural problems.
+**Key Principle**: The current architecture follows a foundation-data separation pattern that optimizes for performance, maintainability, and W3C specification compliance.
 
 ## Architecture Analysis Results
 
@@ -167,9 +167,9 @@ This tight coupling means that separating "static schemas" from "computing algor
 - Current generation workflow is optimized
 - No significant maintenance or performance benefits
 
-### Decision 3: Documentation-First Improvement
+### Decision 3: Documentation-First Approach
 
-**Rationale**: The core issue identified in #596 was role clarity, not architectural problems
+**Rationale**: Clear documentation is essential for maintaining architectural understanding
 
 - Current architecture serves its purpose well
 - Dependency relationships are healthy
@@ -257,20 +257,60 @@ The packages require coordinated updates when:
 - New HTML elements require both data definitions and algorithmic support
 - ARIA specification updates affect role computation and element mappings
 
-## Future Considerations
+## Current Architecture Implementation
 
-### Potential Improvements (Non-Breaking)
+### Directory Structure Organization
 
-1. **Enhanced Documentation**: API documentation, usage examples, architectural guides
-2. **Development Tooling**: Better schema validation, automated testing, development workflows
-3. **Performance Monitoring**: Bundle size tracking, algorithm performance measurement
-4. **Specification Compliance**: Automated test case validation, specification change tracking
+The ml-spec package follows a taxonomy-based organization that improves code clarity and maintainability:
+
+**Current Structure**:
+
+- **ARIA algorithms**: `algorithm/aria/` - W3C ARIA specification implementations
+- **HTML algorithms**: `algorithm/html/` - HTML Living Standard algorithms
+- **Utilities**: `utils/` - Shared utilities and helper functions
+
+**Benefits**:
+
+- Clear separation of specification domains
+- Logical grouping by functionality
+- Enhanced maintainability and discoverability
+- Preserved performance characteristics
+
+### Generation Workflow
+
+**Current Generation Process**:
+
+```
+@markuplint/types (gen/types.ts) → types.schema.json
+  ↓
+@markuplint/ml-spec (gen/gen.ts) → schemas/*.json
+  ↓
+@markuplint/html-spec (build.mjs + @markuplint/spec-generator) → index.json
+  ↓
+Framework-specific specs (extend base data)
+```
+
+**Responsibility Boundaries**:
+
+- **@markuplint/spec-generator**: External data fetching and enrichment (MDN scraping, W3C ARIA downloading)
+- **@markuplint/ml-spec/gen/**: Schema structure generation and type-to-schema transformations
+- **Package build scripts**: Local data processing and file operations
+
+## Architectural Principles
+
+### Design Guidelines
+
+1. **Specification Fidelity**: Maintain close alignment with W3C specifications
+2. **Performance Optimization**: Prioritize runtime efficiency and development workflow speed
+3. **Clear Boundaries**: Separate foundation logic from data while preserving necessary coupling
+4. **Extensibility**: Support framework-specific extensions through well-defined patterns
 
 ### Non-Recommended Changes
 
 1. **Package Separation**: Would create artificial boundaries and reduce performance
-2. **Algorithm Extraction**: Would break specification coupling and reduce maintainability
+2. **Algorithm Extraction to Separate Package**: Would break specification coupling and reduce maintainability
 3. **Data Structure Changes**: Would require extensive migration with minimal benefits
+4. **Generator Responsibility Mixing**: Moving schema operations to spec-generator would muddy architectural boundaries
 
 ## Conclusion
 
@@ -281,11 +321,10 @@ The current architecture represents a mature, well-optimized design that effecti
 - **Maintainability**: Clear separation of concerns with appropriate coupling
 - **Extensibility**: Framework extension points and customization capabilities
 
-The primary recommendation is to enhance documentation and clarify package roles rather than make architectural changes. This approach addresses the concerns raised in Issue #596 while preserving the significant architectural investments and optimizations already in place.
+The primary recommendation is to enhance documentation and clarify package roles rather than make architectural changes. This approach maintains architectural clarity while preserving the significant architectural investments and optimizations already in place.
 
 ## References
 
-- [Issue #596: Fix the division of roles between ml-spec and html-spec packages](https://github.com/markuplint/markuplint/issues/596)
 - [HTML Living Standard](https://html.spec.whatwg.org/)
 - [WAI-ARIA 1.1](https://www.w3.org/TR/wai-aria-1.1/)
 - [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/)
