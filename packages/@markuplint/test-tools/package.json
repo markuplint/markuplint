@@ -39,6 +39,6 @@
 	"optionalDependencies": {
 		"@esbuild/linux-x64": "0.25.9",
 		"@esbuild/win32-x64": "0.25.9",
-		"@rollup/rollup-linux-x64-gnu": "4.46.4"
+		"@rollup/rollup-linux-x64-gnu": "4.47.1"
 	}
 }
