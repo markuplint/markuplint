@@ -1,212 +1,207 @@
 {
 	"cites": [
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/acronym",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/applet",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/basefont",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bgsound",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/big",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/center",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dir",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frameset",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/isindex",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/listing",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/marquee",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/math",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/multicol",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nextid",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nobr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noembed",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noframes",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/plaintext",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rb",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rtc",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/spacer",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strike",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/xmp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/applet",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/basefont",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bgsound",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/big",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blink",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/canvas",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/center",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/cite",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/code",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/col",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/colgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/data",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dd",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dfn",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dir",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/em",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/embed",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/footer",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frame",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frameset",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/head",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/html",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/i",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/isindex",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/keygen",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/listing",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/math",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menuitem",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/multicol",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nextid",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nobr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noembed",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noframes",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/object",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ol",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/p",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/param",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/plaintext",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/q",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rb",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rtc",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/s",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/samp",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/spacer",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strike",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/style",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sub",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sup",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/td",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tfoot",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/thead",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tt",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/u",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/var",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr",
+		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/xmp",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/ellipse",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feBlend",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComponentTransfer",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComposite",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feConvolveMatrix",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDiffuseLighting",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDisplacementMap",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDistantLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDropShadow",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFlood",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncA",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncB",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncG",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncR",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feGaussianBlur",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feImage",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMerge",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMergeNode",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feOffset",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/fePointLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpecularLighting",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpotLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTile",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/metadata",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mpath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/pattern",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polyline",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/script",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/set",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/stop",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/style",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/switch",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/symbol",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animate",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateMotion",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/circle",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/defs",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/desc",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/discard",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/ellipse",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feBlend",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feColorMatrix",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComponentTransfer",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComposite",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feConvolveMatrix",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDiffuseLighting",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDistantLight",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDropShadow",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFlood",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncA",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncB",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncG",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncR",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feImage",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMerge",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMergeNode",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMorphology",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feOffset",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpecularLighting",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpotLight",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/filter",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/foreignObject",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/image",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/line",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/linearGradient",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/marker",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mask",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/metadata",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mpath",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/path",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polygon",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polyline",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/radialGradient",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/rect",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/set",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/stop",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/style",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/symbol",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/textPath",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/title",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/tspan",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/use",
+		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/view",
 		"https://w3c.github.io/aria/",
 		"https://w3c.github.io/graphics-aria/",
 		"https://www.w3.org/TR/graphics-aria-1.0/",
@@ -35212,8 +35207,8 @@
 	"specs": [
 		{
 			"name": "a",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
-			"description": "The <a> HTML element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+			"description": "The <a> HTML element (or anchor element), with its href attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address. Content within each <a> should indicate the link's destination. If the href attribute is present, pressing the enter key while focused on the <a> element will activate it.",
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -35335,8 +35330,8 @@
 		},
 		{
 			"name": "abbr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr",
-			"description": "The <abbr> HTML element represents an abbreviation or acronym.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr",
+			"description": "The <abbr> HTML element represents an abbreviation or acronym. When including an abbreviation or acronym, provide a full expansion of the term in plain text on first use, along with the <abbr> to mark up the abbreviation. This informs the user what the abbreviation or acronym means. The optional title attribute can provide an expansion for the abbreviation or acronym when a full expansion is not present. This provides a hint to user agents on how to announce/display the content while informing all users what the abbreviation means. If present, title must contain this full description and nothing else.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -35361,7 +35356,7 @@
 		{
 			"name": "acronym",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35377,7 +35372,7 @@
 		},
 		{
 			"name": "address",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address",
 			"description": "The <address> HTML element indicates that the enclosed HTML provides contact information for a person or people, or for an organization.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -35422,8 +35417,8 @@
 		},
 		{
 			"name": "area",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/area",
-			"description": "The <area> HTML element defines an area inside an image map that has predefined clickable areas. An image map allows geometric areas on an image to be associated with hypertext links.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area",
+			"description": "The <area> HTML element defines an area inside an image map that has predefined clickable areas. An image map allows geometric areas on an image to be associated with hypertext links. This element is used only within a <map> element.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": false,
@@ -35510,7 +35505,7 @@
 		},
 		{
 			"name": "article",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article",
 			"description": "The <article> HTML element represents a self-contained composition in a document, page, application, or site, which is intended to be independently distributable or reusable (e.g., in syndication). Examples include: a forum post, a magazine or newspaper article, or a blog entry, a product card, a user-submitted comment, an interactive widget or gadget, or any other independent item of content.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"contentModel": {
@@ -35534,7 +35529,7 @@
 		},
 		{
 			"name": "aside",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside",
 			"description": "The <aside> HTML element represents a portion of a document whose content is only indirectly related to the document's main content. Asides are frequently presented as sidebars or call-out boxes.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"contentModel": {
@@ -35558,7 +35553,7 @@
 		},
 		{
 			"name": "audio",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio",
 			"description": "The <audio> HTML element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -35635,7 +35630,7 @@
 		},
 		{
 			"name": "b",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b",
 			"description": "The <b> HTML element is used to draw the reader's attention to the element's contents, which are not otherwise granted special importance. This was formerly known as the Boldface element, and most browsers still draw the text in boldface. However, you should not use <b> for styling text or granting importance. If you wish to create boldface text, you should use the CSS font-weight property. If you wish to indicate an element is of special importance, you should use the <strong> element.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -35663,8 +35658,8 @@
 		},
 		{
 			"name": "base",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base",
-			"description": "The <base> HTML element specifies the base URL to use for all relative URLs in a document. There can be only one <base> element in a document.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base",
+			"description": "The <base> HTML element specifies the base URL to use for all relative URLs in a document. There can be only one <base> element in a document. A document's used base URL can be accessed by scripts with Node.baseURI. If the document has no <base> elements, then baseURI defaults to location.href.",
 			"categories": ["#metadata"],
 			"contentModel": {
 				"contents": false
@@ -35693,7 +35688,7 @@
 		{
 			"name": "basefont",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The CSS fonts module defines font-related properties and how font resources are loaded. It lets you define the style of a font, such as its family, size and weight, and the glyph variants to use when multiple are available for a single character.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35709,7 +35704,7 @@
 		},
 		{
 			"name": "bdi",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdi",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi",
 			"description": "The <bdi> HTML element tells the browser's bidirectional algorithm to treat the text it contains in isolation from its surrounding text. It's particularly useful when a website dynamically inserts some text and doesn't know the directionality of the text being inserted.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -35737,7 +35732,7 @@
 		},
 		{
 			"name": "bdo",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/bdo",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo",
 			"description": "The <bdo> HTML element overrides the current directionality of text, so that the text within is rendered in a different direction.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -35770,7 +35765,7 @@
 		{
 			"name": "bgsound",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <audio> HTML element is used to embed sound content in documents. It may contain one or more audio sources, represented using the src attribute or the <source> element: the browser will choose the most suitable one. It can also be the destination for streamed media, using a MediaStream.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35782,40 +35777,12 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
-			"attributes": {
-				"autoplay": {
-					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay."
-				},
-				"controls": {
-					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
-				},
-				"controlslist": {
-					"description": "The controlslist attribute, when specified, helps the browser select what controls to show for the audio element whenever the browser shows its own set of controls (that is, when the controls attribute is specified). The allowed values are nodownload, nofullscreen and noremoteplayback."
-				},
-				"crossorigin": {
-					"description": "This enumerated attribute indicates whether to use CORS to fetch the related audio file. CORS-enabled resources can be reused in the <canvas> element without being tainted. The allowed values are: anonymous Sends a cross-origin request without a credential. In other words, it sends the Origin: HTTP header without a cookie, X.509 certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (by not setting the Access-Control-Allow-Origin: HTTP header), the resource will be tainted, and its usage restricted. use-credentials Sends a cross-origin request with a credential. In other words, it sends the Origin: HTTP header with a cookie, a certificate, or performing HTTP Basic authentication. If the server does not give credentials to the origin site (through Access-Control-Allow-Credentials: HTTP header), the resource will be tainted and its usage restricted. When not present, the resource is fetched without a CORS request (i.e., without sending the Origin: HTTP header), preventing its non-tainted use in <canvas> elements. If invalid, it is handled as if the enumerated keyword anonymous was used. See CORS settings attributes for additional information."
-				},
-				"disableremoteplayback": {
-					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
-				},
-				"loop": {
-					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
-				},
-				"muted": {
-					"description": "A Boolean attribute that indicates whether the audio will be initially silenced. Its default value is false."
-				},
-				"preload": {
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience. It may have one of the following values: none: Indicates that the audio should not be preloaded. metadata: Indicates that only audio metadata (e.g., length) is fetched. auto: Indicates that the whole audio file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the audio for playback. The browser is not forced by the specification to follow the value of this attribute; it is a mere hint."
-				},
-				"src": {
-					"description": "The URL of the audio to embed. This is subject to HTTP access controls. This is optional; you may instead use the <source> element within the audio block to specify the audio to embed."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "big",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -35848,7 +35815,7 @@
 		},
 		{
 			"name": "blockquote",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote",
 			"description": "The <blockquote> HTML element indicates that the enclosed text is an extended quotation. Usually, this is rendered visually by indentation (see Notes for how to change it). A URL for the source of the quotation may be given using the cite attribute, while a text representation of the source can be given using the <cite> element.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -35879,7 +35846,7 @@
 		},
 		{
 			"name": "body",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body",
 			"description": "The <body> HTML element represents the content of an HTML document. There can be only one <body> element in a document.",
 			"categories": [],
 			"contentModel": {
@@ -36016,7 +35983,7 @@
 		},
 		{
 			"name": "br",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br",
 			"description": "The <br> HTML element produces a line break in text (carriage-return). It is useful for writing a poem or an address, where the division of lines is significant.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -36050,8 +36017,8 @@
 		},
 		{
 			"name": "button",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button",
-			"description": "The <button> HTML element is an interactive element activated by a user with a mouse, keyboard, finger, voice command, or other assistive technology. Once activated, it then performs an action, such as submitting a form or opening a dialog.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button",
+			"description": "The <button> HTML element is an interactive element activated by a user with a mouse, keyboard, finger, voice command, or other assistive technology. Once activated, it then performs an action, such as submitting a form or opening a dialog. By default, HTML buttons are presented in a style resembling the platform the user agent runs on, but you can change buttons' appearance with CSS.",
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -36170,7 +36137,7 @@
 		},
 		{
 			"name": "canvas",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/canvas",
 			"description": "Use the HTML <canvas> element with either the canvas scripting API or the WebGL API to draw graphics and animations.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#palpable"],
 			"contentModel": {
@@ -36207,7 +36174,7 @@
 		},
 		{
 			"name": "caption",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption",
 			"description": "The <caption> HTML element specifies the caption (or title) of a table, providing the table an accessible description.",
 			"categories": [],
 			"contentModel": {
@@ -36244,7 +36211,7 @@
 		{
 			"name": "center",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -36260,7 +36227,7 @@
 		},
 		{
 			"name": "cite",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/cite",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/cite",
 			"description": "The <cite> HTML element is used to mark up the title of a creative work. The reference may be in an abbreviated form according to context-appropriate conventions related to citation metadata.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -36285,7 +36252,7 @@
 		},
 		{
 			"name": "code",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/code",
 			"description": "The <code> HTML element displays its contents styled in a fashion intended to indicate that the text is a short fragment of computer code. By default, the content text is displayed using the user agent's default monospace font.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -36313,7 +36280,7 @@
 		},
 		{
 			"name": "col",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/col",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/col",
 			"description": "The <col> HTML element defines one or more columns in a column group represented by its parent <colgroup> element. The <col> element is only valid as a child of a <colgroup> element that has no span attribute defined.",
 			"categories": [],
 			"contentModel": {
@@ -36368,7 +36335,7 @@
 		},
 		{
 			"name": "colgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/colgroup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/colgroup",
 			"description": "The <colgroup> HTML element defines a group of columns within a table.",
 			"categories": [],
 			"contentModel": {
@@ -36433,7 +36400,7 @@
 		},
 		{
 			"name": "data",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/data",
 			"description": "The <data> HTML element links a given piece of content with a machine-readable translation. If the content is time- or date-related, the <time> element must be used.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -36466,7 +36433,7 @@
 		},
 		{
 			"name": "datalist",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist",
 			"description": "The <datalist> HTML element contains a set of <option> elements that represent the permissible or recommended options available to choose from within other controls.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -36502,7 +36469,7 @@
 		},
 		{
 			"name": "dd",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dd",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dd",
 			"description": "The <dd> HTML element provides the description, definition, or value for the preceding term (<dt>) in a description list (<dl>).",
 			"categories": [],
 			"contentModel": {
@@ -36533,7 +36500,7 @@
 		},
 		{
 			"name": "del",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
 			"description": "The <del> HTML element represents a range of text that has been deleted from a document. This can be used when rendering \"track changes\" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -36568,8 +36535,8 @@
 		},
 		{
 			"name": "details",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
-			"description": "The <details> HTML element creates a disclosure widget in which information is visible only when the widget is toggled into an open state. A summary or label must be provided using the <summary> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
+			"description": "The <details> HTML element creates a disclosure widget in which information is visible only when the widget is toggled into an open state. A summary or label must be provided using the <summary> element. A disclosure widget is typically presented onscreen using a small triangle that rotates (or twists) to indicate open/closed state, with a label next to the triangle. The contents of the <summary> element are used as the label for the disclosure widget. The contents of the <details> provide the accessible description for the <summary>.",
 			"categories": ["#flow", "#interactive", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -36606,8 +36573,8 @@
 		},
 		{
 			"name": "dfn",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn",
-			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the full definition of the term can be one of the following:",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dfn",
+			"description": "The <dfn> HTML element indicates a term to be defined. The <dfn> element should be used in a complete definition statement, where the full definition of the term can be one of the following: The ancestor paragraph (a block of text, sometimes marked by a <p> element) The <dt>/<dd> pairing The nearest section ancestor of the <dfn> element,",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -36630,8 +36597,8 @@
 		},
 		{
 			"name": "dialog",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
-			"description": "The <dialog> HTML element represents a modal or non-modal dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+			"description": "The <dialog> HTML element represents a modal or non-modal dialog box or other interactive component, such as a dismissible alert, inspector, or subwindow. The HTML <dialog> element is used to create both modal and non-modal dialog boxes. Modal dialog boxes interrupt interaction with the rest of the page being inert, while non-modal dialog boxes allow interaction with the rest of the page. JavaScript should be used to display the <dialog> element. Use the .showModal() method to display a modal dialog and the .show() method to display a non-modal dialog. The dialog box can be closed using the .close() method or using the dialog method when submitting a <form> that is nested within the <dialog> element. Modal dialogs can also be closed by pressing the Esc key.",
 			"categories": ["#flow"],
 			"contentModel": {
 				"contents": [
@@ -36673,7 +36640,7 @@
 		{
 			"name": "dir",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -36694,7 +36661,7 @@
 		},
 		{
 			"name": "div",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
 			"description": "The <div> HTML element is the generic container for flow content. It has no effect on the content or layout until styled in some way using CSS (e.g., styling is directly applied to it, or some kind of layout model like Flexbox is applied to its parent element).",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -36754,7 +36721,7 @@
 		},
 		{
 			"name": "dl",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl",
 			"description": "The <dl> HTML element represents a description list. The element encloses a list of groups of terms (specified using the <dt> element) and descriptions (provided by <dd> elements). Common uses for this element are to implement a glossary or to display metadata (a list of key-value pairs).",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -36816,8 +36783,8 @@
 		},
 		{
 			"name": "dt",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dt",
-			"description": "The <dt> HTML element specifies a term in a description or definition list, and as such must be used inside a <dl> element. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dt",
+			"description": "The <dt> HTML element specifies a term in a description or definition list, and as such must be used inside a <dl> element. It is usually followed by a <dd> element; however, multiple <dt> elements in a row indicate several terms that are all defined by the immediate next <dd> element. The subsequent <dd> (Description Details) element provides the definition or other related text associated with the term specified using <dt>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -36843,7 +36810,7 @@
 		},
 		{
 			"name": "em",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/em",
 			"description": "The <em> HTML element marks text that has stress emphasis. The <em> element can be nested, with each level of nesting indicating a greater degree of emphasis.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -36871,7 +36838,7 @@
 		},
 		{
 			"name": "embed",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/embed",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/embed",
 			"description": "The <embed> HTML element embeds external content at the specified point in the document. This content is provided by an external application or other source of interactive content such as a browser plug-in.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -36906,7 +36873,7 @@
 		},
 		{
 			"name": "fieldset",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset",
 			"description": "The <fieldset> HTML element is used to group several controls as well as labels (<label>) within a web form.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -36944,7 +36911,7 @@
 		},
 		{
 			"name": "figcaption",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption",
 			"description": "The <figcaption> HTML element represents a caption or legend describing the rest of the contents of its parent <figure> element, providing the <figure> an accessible description.",
 			"categories": [],
 			"contentModel": {
@@ -36969,7 +36936,7 @@
 		},
 		{
 			"name": "figure",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure",
 			"description": "The <figure> HTML element represents self-contained content, potentially with an optional caption, which is specified using the <figcaption> element. The figure, its caption, and its contents are referenced as a single unit.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -37021,7 +36988,7 @@
 		{
 			"name": "font",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <font> HTML element defines the font size, color and face for its content.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <font> HTML element defines the font size, color and face for its content. Warning: Do not use this element. Use the CSS Fonts properties to style text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -37050,7 +37017,7 @@
 		},
 		{
 			"name": "footer",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/footer",
 			"description": "The <footer> HTML element represents a footer for its nearest ancestor sectioning content or sectioning root element. A <footer> typically contains information about the author of the section, copyright data or links to related documents.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -37088,7 +37055,7 @@
 		},
 		{
 			"name": "form",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
 			"description": "The <form> HTML element represents a document section containing interactive controls for submitting information.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -37185,7 +37152,7 @@
 		{
 			"name": "frame",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -37231,7 +37198,7 @@
 		{
 			"name": "frameset",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <frameset> HTML element is used to contain <frame> elements.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -37256,7 +37223,7 @@
 		},
 		{
 			"name": "h1",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37283,7 +37250,7 @@
 		},
 		{
 			"name": "h2",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37310,7 +37277,7 @@
 		},
 		{
 			"name": "h3",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37337,7 +37304,7 @@
 		},
 		{
 			"name": "h4",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h4",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37364,7 +37331,7 @@
 		},
 		{
 			"name": "h5",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h5",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37391,7 +37358,7 @@
 		},
 		{
 			"name": "h6",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h6",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
 			"description": "The <h1> to <h6> HTML elements represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest. By default, all heading elements create a block-level box in the layout, starting on a new line and taking up the full width available in their containing block.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37418,8 +37385,8 @@
 		},
 		{
 			"name": "head",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head",
-			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets. There can be only one <head> element in an HTML document.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/head",
+			"description": "The <head> HTML element contains machine-readable information (metadata) about the document, like its title, scripts, and style sheets. There can be only one <head> element in an HTML document. Note: <head> primarily holds information for machine processing, not human-readability. For human-visible information, like top-level headings and listed authors, see the <header> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -37454,7 +37421,7 @@
 		},
 		{
 			"name": "header",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header",
 			"description": "The <header> HTML element represents introductory content, typically a group of introductory or navigational aids. It may contain some heading elements but also a logo, a search form, an author name, and other elements.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -37492,7 +37459,7 @@
 		},
 		{
 			"name": "hgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hgroup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hgroup",
 			"description": "The <hgroup> HTML element represents a heading and related content. It groups a single <h1>–<h6> element with one or more <p>.",
 			"categories": ["#flow", "#heading", "#palpable"],
 			"contentModel": {
@@ -37538,7 +37505,7 @@
 		},
 		{
 			"name": "hr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
 			"description": "The <hr> HTML element represents a thematic break between paragraph-level elements: for example, a change of scene in a story, or a shift of topic within a section.",
 			"categories": ["#flow"],
 			"contentModel": {
@@ -37588,7 +37555,7 @@
 		},
 		{
 			"name": "html",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/html",
 			"description": "The <html> HTML element represents the root (top-level element) of an HTML document, so it is also referred to as the root element. All other elements must be descendants of this element. There can be only one <html> element in a document.",
 			"categories": [],
 			"contentModel": {
@@ -37624,7 +37591,7 @@
 		},
 		{
 			"name": "i",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/i",
 			"description": "The <i> HTML element represents a range of text that is set off from the normal text for some reason, such as idiomatic text, technical terms, taxonomical designations, among others. Historically, these have been presented using italicized type, which is the original source of the <i> naming of this element.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -37652,7 +37619,7 @@
 		},
 		{
 			"name": "iframe",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
 			"description": "The <iframe> HTML element represents a nested browsing context, embedding another HTML page into the current one.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -37770,7 +37737,7 @@
 		},
 		{
 			"name": "img",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
 			"description": "The <img> HTML element embeds an image into the document.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -37931,7 +37898,7 @@
 		},
 		{
 			"name": "input",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
 			"description": "The <input> HTML element is used to create interactive controls for web-based forms in order to accept data from the user; a wide variety of types of input data and control widgets are available, depending on the device and user agent. The <input> element is one of the most powerful and complex in all of HTML due to the sheer number of combinations of input types and attributes.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -38776,7 +38743,7 @@
 		},
 		{
 			"name": "ins",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ins",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins",
 			"description": "The <ins> HTML element represents a range of text that has been added to a document. You can use the <del> element to similarly represent a range of text that has been deleted from the document.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -38828,7 +38795,7 @@
 		},
 		{
 			"name": "kbd",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/kbd",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
 			"description": "The <kbd> HTML element represents a span of inline text denoting textual user input from a keyboard, voice input, or any other text entry device. By convention, the user agent defaults to rendering the contents of a <kbd> element using its default monospace font, although this is not mandated by the HTML standard.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -38870,7 +38837,7 @@
 		},
 		{
 			"name": "label",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
 			"description": "The <label> HTML element represents a caption for an item in a user interface.",
 			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
 			"contentModel": {
@@ -38899,8 +38866,8 @@
 		},
 		{
 			"name": "legend",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend",
-			"description": "The <legend> HTML element represents a caption for the content of its parent <fieldset>.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend",
+			"description": "The <legend> HTML element represents a caption for the content of its parent <fieldset>. In customizable <select> elements, the <legend> element is allowed as a child of <optgroup>, to provide a label that is easy to target and style. This replaces any text set in the <optgroup> element's label attribute, and it has the same semantics.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -38924,7 +38891,7 @@
 		},
 		{
 			"name": "li",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li",
 			"description": "The <li> HTML element is used to represent an item in a list. It must be contained in a parent element: an ordered list (<ol>), an unordered list (<ul>), or a menu (<menu>). In menus and unordered lists, list items are usually displayed using bullet points. In ordered lists, they are usually displayed with an ascending counter on the left, such as a number or letter.",
 			"categories": [],
 			"contentModel": {
@@ -38968,7 +38935,7 @@
 		},
 		{
 			"name": "link",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
 			"description": "The <link> HTML element specifies relationships between the current document and an external resource. This element is most commonly used to link to stylesheets, but is also used to establish site icons (both \"favicon\" style icons and icons for the home screen and apps on mobile devices) among other things.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
@@ -39161,7 +39128,7 @@
 		},
 		{
 			"name": "main",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main",
 			"description": "The <main> HTML element represents the dominant content of the <body> of a document. The main content area consists of content that is directly related to or expands upon the central topic of a document, or the central functionality of an application.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -39189,7 +39156,7 @@
 		},
 		{
 			"name": "map",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
 			"description": "The <map> HTML element is used with <area> elements to define an image map (a clickable link area).",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -39218,7 +39185,7 @@
 		},
 		{
 			"name": "mark",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/mark",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
 			"description": "The <mark> HTML element represents text which is marked or highlighted for reference or notation purposes due to the marked passage's relevance in the enclosing context.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -39244,7 +39211,7 @@
 		{
 			"name": "marquee",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <marquee> HTML element is used to insert a scrolling area of text. You can control what happens when the text reaches the edges of its content area using its attributes. The HTML <marquee> element is deprecated and its use is strongly discouraged. If you must create the effect of scrolling text or continuous elements, consider using CSS animations with CSS transforms instead of <marquee> elements to smoothly animate content. Additionally, include the prefers-reduced-motion CSS @media query to stop the animation based on user preference, thereby improving user experience and accessibility.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39305,8 +39272,8 @@
 		},
 		{
 			"name": "math",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/math",
-			"description": "The <math> MathML element is the top-level MathML element, used to write a single mathematical formula. It can be placed in HTML content where flow content is permitted.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/math",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39323,15 +39290,11 @@
 			"globalAttrs": {
 				"#ARIAAttrs": true
 			},
-			"attributes": {
-				"display": {
-					"description": "This enumerated attribute specifies how the enclosed MathML markup should be rendered. It can have one of the following values: block, which means that this element will be displayed in its own block outside the current span of text and with math-style set to normal. inline, which means that this element will be displayed inside the current span of text and with math-style set to compact. If not present, its default value is inline."
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"name": "menu",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menu",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
 			"description": "The <menu> HTML element is described in the HTML specification as a semantic alternative to <ul>, but treated by browsers (and exposed through the accessibility tree) as no different than <ul>. It represents an unordered list of items (which are represented by <li> elements).",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -39391,7 +39354,7 @@
 		{
 			"name": "menuitem",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "This page lists all the HTML elements, which are created using tags.",
+			"description": "",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39407,8 +39370,8 @@
 		},
 		{
 			"name": "meta",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
-			"description": "The <meta> HTML element represents metadata that cannot be represented by other meta-related elements, such as <base>, <link>, <script>, <style>, or <title>.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
+			"description": "The <meta> HTML element represents metadata that cannot be represented by other meta-related elements, such as <base>, <link>, <script>, <style>, or <title>. The type of metadata provided by the <meta> element can be one of the following: If the name attribute is set, the <meta> element provides document-level metadata that applies to the whole page. If the http-equiv attribute is set, the <meta> element acts as a pragma directive to simulate directives that could otherwise be given by an HTTP header. If the charset attribute is set, the <meta> element is a charset declaration, giving the character encoding in which the document is encoded. If the itemprop attribute is set, the <meta> element provides user-defined metadata.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
 				"contents": false
@@ -39467,7 +39430,7 @@
 		},
 		{
 			"name": "meter",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter",
 			"description": "The <meter> HTML element represents either a scalar value within a known range or a fractional value.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -39543,7 +39506,7 @@
 		},
 		{
 			"name": "nav",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav",
 			"description": "The <nav> HTML element represents a section of a page whose purpose is to provide navigation links, either within the current document or to other documents. Common examples of navigation sections are menus, tables of contents, and indexes.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"contentModel": {
@@ -39588,7 +39551,7 @@
 		{
 			"name": "nobr",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39605,7 +39568,7 @@
 		{
 			"name": "noembed",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39622,7 +39585,7 @@
 		{
 			"name": "noframes",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -39638,7 +39601,7 @@
 		},
 		{
 			"name": "noscript",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript",
 			"description": "The <noscript> HTML element defines a section of HTML to be inserted if a script type on the page is unsupported or if scripting is currently turned off in the browser.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
@@ -39663,7 +39626,7 @@
 		},
 		{
 			"name": "object",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/object",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/object",
 			"description": "The <object> HTML element represents an external resource, which can be treated as an image, a nested browsing context, or a resource to be handled by a plugin.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -39742,7 +39705,7 @@
 		},
 		{
 			"name": "ol",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ol",
 			"description": "The <ol> HTML element represents an ordered list of items — typically rendered as a numbered list.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -39816,8 +39779,8 @@
 		},
 		{
 			"name": "optgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup",
-			"description": "The <optgroup> HTML element creates a grouping of options within a <select> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup",
+			"description": "The <optgroup> HTML element creates a grouping of options within a <select> element. In customizable <select> elements, the <legend> element is allowed as a child of <optgroup>, to provide a label that is easy to target and style. This replaces any text set in the <optgroup> element's label attribute, and it has the same semantics.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -39853,7 +39816,7 @@
 		},
 		{
 			"name": "option",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/option",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option",
 			"description": "The <option> HTML element is used to define an item contained in a <select>, an <optgroup>, or a <datalist> element. As such, <option> can represent menu items in popups and other lists of items in an HTML document.",
 			"categories": [],
 			"contentModel": {
@@ -39929,7 +39892,7 @@
 		},
 		{
 			"name": "output",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output",
 			"description": "The <output> HTML element is a container element into which a site or app can inject the results of a calculation or the outcome of a user action.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -39969,8 +39932,8 @@
 		},
 		{
 			"name": "p",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p",
-			"description": "The <p> HTML element represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/p",
+			"description": "The <p> HTML element represents a paragraph. Paragraphs are usually represented in visual media as blocks of text separated from adjacent blocks by blank lines and/or first-line indentation, but HTML paragraphs can be any structural grouping of related content, such as images or form fields. Paragraphs are block-level elements, and notably will automatically close if another block-level element is parsed before the closing </p> tag. See \"Tag omission\" below.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -39998,7 +39961,7 @@
 		{
 			"name": "param",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <param> HTML element defines parameters for an <object> element.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40031,8 +39994,8 @@
 		},
 		{
 			"name": "picture",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture",
-			"description": "The <picture> HTML element contains zero or more <source> elements and one <img> element to offer alternative versions of an image for different display/device scenarios.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture",
+			"description": "The <picture> HTML element contains zero or more <source> elements and one <img> element to offer alternative versions of an image for different display/device scenarios. The browser will consider each child <source> element and choose the best match among them. If no matches are found—or the browser doesn't support the <picture> element—the URL of the <img> element's src attribute is selected. The selected image is then presented in the space occupied by the <img> element.",
 			"categories": ["#flow", "#phrasing", "#embedded"],
 			"contentModel": {
 				"contents": [
@@ -40079,7 +40042,7 @@
 		{
 			"name": "plaintext",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40095,8 +40058,8 @@
 		},
 		{
 			"name": "pre",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre",
-			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or monospaced font.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre",
+			"description": "The <pre> HTML element represents preformatted text which is to be presented exactly as written in the HTML file. The text is typically rendered using a non-proportional, or monospaced font. Whitespace inside this element is displayed as written, with one exception. If one or more leading newline characters are included immediately following the opening <pre> tag, the first newline character is stripped. <pre> elements' text content is parsed as HTML, so if you want to ensure that your text content stays as plain text, some syntax characters, such as <, may need to be escaped using their respective character references. See escaping ambiguous characters for more information. <pre> elements commonly contain <code>, <samp>, and <kbd> elements, to represent computer code, computer output, and user input, respectively. By default, <pre> is a block-level element, i.e., its default display value is block.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -40134,7 +40097,7 @@
 		},
 		{
 			"name": "progress",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress",
 			"description": "The <progress> HTML element displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -40175,7 +40138,7 @@
 		},
 		{
 			"name": "q",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/q",
 			"description": "The <q> HTML element indicates that the enclosed text is a short inline quotation. Most modern browsers implement this by surrounding the text in quotation marks. This element is intended for short quotations that don't require paragraph breaks; for long quotations use the <blockquote> element.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -40208,7 +40171,7 @@
 		{
 			"name": "rb",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40224,7 +40187,7 @@
 		},
 		{
 			"name": "rp",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rp",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rp",
 			"description": "The <rp> HTML element is used to provide fall-back parentheses for browsers that do not support display of ruby annotations using the <ruby> element. One <rp> element should enclose each of the opening and closing parentheses that wrap the <rt> element that contains the annotation's text.",
 			"categories": [],
 			"contentModel": {
@@ -40248,7 +40211,7 @@
 		},
 		{
 			"name": "rt",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/rt",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rt",
 			"description": "The <rt> HTML element specifies the ruby text component of a ruby annotation, which is used to provide pronunciation, translation, or transliteration information for East Asian typography. The <rt> element must always be contained within a <ruby> element.",
 			"categories": [],
 			"contentModel": {
@@ -40274,7 +40237,7 @@
 		{
 			"name": "rtc",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40290,8 +40253,8 @@
 		},
 		{
 			"name": "ruby",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ruby",
-			"description": "The <ruby> HTML element represents small annotations that are rendered above, below, or next to base text, usually used for showing the pronunciation of East Asian characters. It can also be used for annotating other kinds of text, but this usage is less common.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby",
+			"description": "The <ruby> HTML element represents small annotations that are rendered above, below, or next to base text, usually used for showing the pronunciation of East Asian characters. It can also be used for annotating other kinds of text, but this usage is less common. The term ruby originated as a unit of measurement used by typesetters, representing the smallest size that text can be printed on newsprint while remaining legible.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -40342,7 +40305,7 @@
 		},
 		{
 			"name": "s",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/s",
 			"description": "The <s> HTML element renders text with a strikethrough, or a line through it. Use the <s> element to represent things that are no longer relevant or no longer accurate. However, <s> is not appropriate when indicating document edits; for that, use the <del> and <ins> elements, as appropriate.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -40370,7 +40333,7 @@
 		},
 		{
 			"name": "samp",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/samp",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/samp",
 			"description": "The <samp> HTML element is used to enclose inline text which represents sample (or quoted) output from a computer program. Its contents are typically rendered using the browser's default monospaced font (such as Courier or Lucida Console).",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -40398,7 +40361,7 @@
 		},
 		{
 			"name": "script",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
 			"description": "The <script> HTML element is used to embed executable code or data; this is typically used to embed or refer to JavaScript code. The <script> element can also be used with other languages, such as WebGL's GLSL shader programming language and JSON.",
 			"categories": ["#metadata", "#flow", "#phrasing"],
 			"contentModel": {
@@ -40488,7 +40451,7 @@
 		},
 		{
 			"name": "search",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/search",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search",
 			"description": "The <search> HTML element is a container representing the parts of the document or application with form controls or other content related to performing a search or filtering operation. The <search> element semantically identifies the purpose of the element's contents as having search or filtering capabilities. The search or filtering functionality can be for the website or application, the current web page or document, or the entire Internet or subsection thereof.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -40512,7 +40475,7 @@
 		},
 		{
 			"name": "section",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section",
 			"description": "The <section> HTML element represents a generic standalone section of a document, which doesn't have a more specific semantic element to represent it. Sections should always have a heading, with very few exceptions.",
 			"categories": ["#flow", "#sectioning", "#palpable"],
 			"contentModel": {
@@ -40585,7 +40548,7 @@
 		},
 		{
 			"name": "select",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select",
 			"description": "The <select> HTML element represents a control that provides a menu of options.",
 			"categories": ["#flow", "#phrasing", "#interactive"],
 			"contentModel": {
@@ -40664,7 +40627,7 @@
 		},
 		{
 			"name": "slot",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
 			"description": "The <slot> HTML element—part of the Web Components technology suite—is a placeholder inside a web component that you can fill with your own markup, which lets you create separate DOM trees and present them together.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -40693,7 +40656,7 @@
 		},
 		{
 			"name": "small",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small",
 			"description": "The <small> HTML element represents side-comments and small print, like copyright and legal text, independent of its styled presentation. By default, it renders text within it one font-size smaller, such as from small to x-small.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -40721,7 +40684,7 @@
 		},
 		{
 			"name": "source",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
 			"description": "The <source> HTML element specifies one or more media resources for the <picture>, <audio>, and <video> elements. It is a void element, which means that it has no content and does not require a closing tag. This element is commonly used to offer the same media content in multiple file formats in order to provide compatibility with a broad range of browsers given their differing support for image file formats and media file formats.",
 			"categories": [],
 			"contentModel": {
@@ -40785,7 +40748,7 @@
 		},
 		{
 			"name": "span",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span",
 			"description": "The <span> HTML element is a generic inline container for phrasing content, which does not inherently represent anything. It can be used to group elements for styling purposes (using the class or id attributes), or because they share attribute values, such as lang. It should be used only when no other semantic element is appropriate. <span> is very much like a <div> element, but <div> is a block-level element whereas a <span> is an inline-level element.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -40814,7 +40777,7 @@
 		{
 			"name": "strike",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <strike> HTML element places a strikethrough (horizontal line) over text.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -40830,7 +40793,7 @@
 		},
 		{
 			"name": "strong",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong",
 			"description": "The <strong> HTML element indicates that its contents have strong importance, seriousness, or urgency. Browsers typically render the contents in bold type.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -40858,7 +40821,7 @@
 		},
 		{
 			"name": "style",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/style",
 			"description": "The <style> HTML element contains style information for a document, or part of a document. It contains CSS, which is applied to the contents of the document containing the <style> element.",
 			"categories": ["#metadata"],
 			"contentModel": {
@@ -40906,7 +40869,7 @@
 		},
 		{
 			"name": "sub",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sub",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sub",
 			"description": "The <sub> HTML element specifies inline text which should be displayed as subscript for solely typographical reasons. Subscripts are typically rendered with a lowered baseline using smaller text.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -40934,7 +40897,7 @@
 		},
 		{
 			"name": "summary",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
 			"description": "The <summary> HTML element specifies a summary, caption, or legend for a <details> element's disclosure box. Clicking the <summary> element toggles the state of the parent <details> element open and closed.",
 			"categories": [],
 			"contentModel": {
@@ -40973,7 +40936,7 @@
 		},
 		{
 			"name": "sup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/sup",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sup",
 			"description": "The <sup> HTML element specifies inline text which is to be displayed as superscript for solely typographical reasons. Superscripts are usually rendered with a raised baseline using smaller text.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -41001,7 +40964,7 @@
 		},
 		{
 			"name": "table",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
 			"description": "The <table> HTML element represents tabular data—that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.",
 			"categories": ["#flow"],
 			"contentModel": {
@@ -41103,7 +41066,7 @@
 		},
 		{
 			"name": "tbody",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody",
 			"description": "The <tbody> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the body of a table's (main) data.",
 			"categories": [],
 			"contentModel": {
@@ -41148,7 +41111,7 @@
 		},
 		{
 			"name": "td",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/td",
 			"description": "The <td> HTML element defines a cell of a table that contains data and may be used as a child of the <tr> element.",
 			"categories": [],
 			"contentModel": {
@@ -41234,7 +41197,7 @@
 		},
 		{
 			"name": "template",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
 			"description": "The <template> HTML element serves as a mechanism for holding HTML fragments, which can either be used later via JavaScript or generated immediately into shadow DOM.",
 			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
 			"contentModel": {
@@ -41272,7 +41235,7 @@
 		},
 		{
 			"name": "textarea",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea",
 			"description": "The <textarea> HTML element represents a multi-line plain-text editing control, useful when you want to allow users to enter a sizeable amount of free-form text, for example a comment on a review or feedback form.",
 			"categories": ["#flow", "#phrasing", "#interactive"],
 			"contentModel": {
@@ -41375,7 +41338,7 @@
 		},
 		{
 			"name": "tfoot",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tfoot",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tfoot",
 			"description": "The <tfoot> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the foot of a table with information about the table's columns. This is usually a summary of the columns, e.g., a sum of the given numbers in a column.",
 			"categories": [],
 			"contentModel": {
@@ -41420,7 +41383,7 @@
 		},
 		{
 			"name": "th",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
 			"description": "The <th> HTML element defines a cell as the header of a group of table cells and may be used as a child of the <tr> element. The exact nature of this group is defined by the scope and headers attributes.",
 			"categories": [],
 			"contentModel": {
@@ -41520,7 +41483,7 @@
 		},
 		{
 			"name": "thead",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/thead",
 			"description": "The <thead> HTML element encapsulates a set of table rows (<tr> elements), indicating that they comprise the head of a table with information about the table's columns. This is usually in the form of column headers (<th> elements).",
 			"categories": [],
 			"contentModel": {
@@ -41565,8 +41528,8 @@
 		},
 		{
 			"name": "time",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time",
-			"description": "The <time> HTML element represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time",
+			"description": "The <time> HTML element represents a specific period in time. It may include the datetime attribute to translate dates into machine-readable format, allowing for better search engine results or custom features such as reminders. It may represent one of the following: A time on a 24-hour clock. A precise date in the Gregorian calendar (with optional time and timezone information). A valid time duration.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -41597,8 +41560,8 @@
 		},
 		{
 			"name": "title",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title",
-			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; HTML tags within the element, if any, are also treated as plain text.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title",
+			"description": "The <title> HTML element defines the document's title that is shown in a browser's title bar or a page's tab. It only contains text; HTML tags within the element, if any, are also treated as plain text. html<title>Grandma's Heavy Metal Festival Journal</title>",
 			"categories": ["#metadata"],
 			"contentModel": {
 				"contents": [
@@ -41622,7 +41585,7 @@
 		},
 		{
 			"name": "tr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tr",
 			"description": "The <tr> HTML element defines a row of cells in a table. The row's cells can then be established using a mix of <td> (data cell) and <th> (header cell) elements.",
 			"categories": [],
 			"contentModel": {
@@ -41672,8 +41635,8 @@
 		},
 		{
 			"name": "track",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track",
-			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track",
+			"description": "The <track> HTML element is used as a child of the media elements, <audio> and <video>. Each track element lets you specify a timed text track (or time-based data) that can be displayed in parallel with the media element, for example to overlay subtitles or closed captions on top of a video or alongside audio tracks. Multiple tracks can be specified for a media element, containing different kinds of timed text data, or timed text data that has been translated for different locales. The data that is used will either be the track that has been set to be the default, or a kind and translation based on user preferences. The tracks are formatted in WebVTT format (.vtt files) — Web Video Text Tracks.",
 			"categories": [],
 			"contentModel": {
 				"contents": false
@@ -41715,7 +41678,7 @@
 		{
 			"name": "tt",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -41731,8 +41694,8 @@
 		},
 		{
 			"name": "u",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u",
-			"description": "The <u> HTML element represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a single solid underline, but may be altered using CSS.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/u",
+			"description": "The <u> HTML element represents a span of inline text which should be rendered in a way that indicates that it has a non-textual annotation. This is rendered by default as a single solid underline, but may be altered using CSS. Warning: This element used to be called the \"Underline\" element in older versions of HTML, and is still sometimes misused in this way. To underline text, you should instead apply a style that includes the CSS text-decoration property set to underline.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
 				"contents": [
@@ -41759,7 +41722,7 @@
 		},
 		{
 			"name": "ul",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
 			"description": "The <ul> HTML element represents an unordered list of items, typically rendered as a bulleted list.",
 			"categories": ["#flow", "#palpable"],
 			"contentModel": {
@@ -41822,7 +41785,7 @@
 		},
 		{
 			"name": "var",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/var",
 			"description": "The <var> HTML element represents the name of a variable in a mathematical expression or a programming context. It's typically presented using an italicized version of the current typeface, although that behavior is browser-dependent.",
 			"categories": ["#flow", "#phrasing", "#palpable"],
 			"contentModel": {
@@ -41847,7 +41810,7 @@
 		},
 		{
 			"name": "video",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video",
 			"description": "The <video> HTML element embeds a media player which supports video playback into the document. You can use <video> for audio content as well, but the <audio> element may provide a more appropriate user experience.",
 			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
 			"contentModel": {
@@ -41956,7 +41919,7 @@
 		},
 		{
 			"name": "wbr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr",
 			"description": "The <wbr> HTML element represents a word break opportunity—a position within text where the browser may optionally break a line, though its line-breaking rules would not otherwise create a break at that location.",
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
@@ -41983,7 +41946,7 @@
 		{
 			"name": "xmp",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"description": "The <xmp> HTML element renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line.",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time.",
 			"categories": [],
 			"contentModel": {
 				"contents": true
@@ -42000,8 +41963,8 @@
 		{
 			"name": "svg:a",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/a",
-			"description": "The <a> SVG element creates a hyperlink to other web pages, files, locations in the same page, email addresses, or any other URL. It is very similar to HTML's <a> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a",
+			"description": "The <a> SVG element creates a hyperlink to other web pages, files, locations in the same page, email addresses, or any other URL. It is very similar to HTML's <a> element. SVG's <a> element is a container, which means you can create a link around text (like in HTML) but also around any shape.",
 			"categories": [],
 			"contentModel": {
 				"conditional": [
@@ -42156,7 +42119,7 @@
 		{
 			"name": "svg:animate",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animate",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animate",
 			"description": "The <animate> SVG element provides a way to animate an attribute of an element over time.",
 			"categories": [],
 			"contentModel": {
@@ -42268,8 +42231,8 @@
 		{
 			"name": "svg:animateMotion",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateMotion",
-			"description": "The <animateMotion> SVG element provides a way to define how an element moves along a motion path.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateMotion",
+			"description": "The <animateMotion> SVG element provides a way to define how an element moves along a motion path. Note: To reuse an existing path, it will be necessary to use an <mpath> element inside the <animateMotion> element instead of the path attribute.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42340,7 +42303,7 @@
 		{
 			"name": "svg:animateTransform",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/animateTransform",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform",
 			"description": "The <animateTransform> SVG element animates a transformation attribute on its target element, thereby allowing animations to control translation, scaling, rotation, and/or skewing.",
 			"categories": [],
 			"contentModel": {
@@ -42389,7 +42352,7 @@
 		{
 			"name": "svg:circle",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/circle",
 			"description": "The <circle> SVG element is an SVG basic shape, used to draw circles based on a center point and a radius.",
 			"categories": [],
 			"contentModel": {
@@ -42513,8 +42476,8 @@
 		{
 			"name": "svg:clipPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath",
-			"description": "The <clipPath> SVG element defines a clipping path, to be used by the clip-path property.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath",
+			"description": "The <clipPath> SVG element defines a clipping path, to be used by the clip-path property. A clipping path restricts the region to which paint can be applied. Conceptually, parts of the drawing that lie outside of the region bounded by the clipping path are not drawn.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42623,8 +42586,8 @@
 		{
 			"name": "svg:defs",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs",
-			"description": "The <defs> SVG element is used to store graphical objects that will be used at a later time. Objects created inside a <defs> element are not rendered directly. To display them you have to reference them (with a <use> element for example).",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/defs",
+			"description": "The <defs> SVG element is used to store graphical objects that will be used at a later time. Objects created inside a <defs> element are not rendered directly. To display them you have to reference them (with a <use> element for example). Graphical objects can be referenced from anywhere, however, defining these objects inside of a <defs> element promotes understandability of the SVG content and is beneficial to the overall accessibility of the document.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42735,8 +42698,8 @@
 		{
 			"name": "svg:desc",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/desc",
-			"description": "The <desc> SVG element provides an accessible, long-text description of any SVG container element or graphics element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/desc",
+			"description": "The <desc> SVG element provides an accessible, long-text description of any SVG container element or graphics element. Text in a <desc> element is not rendered as part of the graphic. If the element can be described by visible text, it is possible to reference that text with the aria-describedby attribute. If aria-describedby is used, it will take precedence over <desc>. The hidden text of a <desc> element can also be concatenated with the visible text of other elements using multiple IDs in an aria-describedby value. In that case, the <desc> element must provide an ID for reference.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42759,7 +42722,7 @@
 		{
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/discard",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/discard",
 			"description": "SVG drawings and images are created using a wide array of elements which are dedicated to the construction, drawing, and layout of vector images and diagrams. Here you'll find reference documentation for each of the SVG elements.",
 			"categories": [],
 			"contentModel": {
@@ -42792,8 +42755,8 @@
 		{
 			"name": "svg:ellipse",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/ellipse",
-			"description": "The <ellipse> SVG element is an SVG basic shape, used to create ellipses based on a center coordinate, and both their x and y radius.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/ellipse",
+			"description": "The <ellipse> SVG element is an SVG basic shape, used to create ellipses based on a center coordinate, and both their x and y radius. Note: Ellipses are unable to specify the exact orientation of the ellipse (if, for example, you wanted to draw an ellipse tilted at a 45 degree angle), but it can be rotated by using the transform attribute.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -42922,8 +42885,8 @@
 		{
 			"name": "svg:feBlend",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feBlend",
-			"description": "The <feBlend> SVG filter primitive composes two objects together ruled by a certain blending mode. This is similar to what is known from image editing software when blending two layers. The mode is defined by the mode attribute.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feBlend",
+			"description": "The <feBlend> SVG filter primitive composes two objects together ruled by a certain blending mode. This is similar to what is known from image editing software when blending two layers. The mode is defined by the mode attribute. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43039,8 +43002,8 @@
 		{
 			"name": "svg:feColorMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix",
-			"description": "The <feColorMatrix> SVG filter element changes colors based on a transformation matrix. Every pixel's color value [R,G,B,A] is matrix multiplied by a 5 by 5 color matrix to create new color [R',G',B',A'].",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feColorMatrix",
+			"description": "The <feColorMatrix> SVG filter element changes colors based on a transformation matrix. Every pixel's color value [R,G,B,A] is matrix multiplied by a 5 by 5 color matrix to create new color [R',G',B',A']. Note: The prime symbol ' is used in mathematics indicate the result of a transformation. | R' | | r1 r2 r3 r4 r5 | | R | | G' | | g1 g2 g3 g4 g5 | | G | | B' | = | b1 b2 b3 b4 b5 | * | B | | A' | | a1 a2 a3 a4 a5 | | A | | 1 | | 0 0 0 0 1 | | 1 | In simplified terms, below is how each color channel in the new pixel is calculated. The last row is ignored because its values are constant. R' = r1*R + r2*G + r3*B + r4*A + r5 G' = g1*R + g2*G + g3*B + g4*A + g5 B' = b1*R + b2*G + b3*B + b4*A + b5 A' = a1*R + a2*G + a3*B + a4*A + a5 Take the amount of red in the new pixel, or R': It is the sum of: r1 times the old pixel's red R, r2 times the old pixel's green G, r3 times of the old pixel's blue B, r4 times the old pixel's alpha A, plus a shift r5. These specified amounts can be any real number, though the final R' will be clamped between 0 and 1. The same goes for G', B', and A'. R' = r1 * R + r2 * G + r3 * B + r4 * A + r5 New red = [ r1 * old red ] + [ r2 * old green ] + [ r3 * old Blue ] + [ r4 * old Alpha ] + [ shift of r5 ] If, say, we want to make a completely black image redder, we can make the r5 a positive real number x, boosting the redness on every pixel of the new image by x. An identity matrix looks like this: R G B A W R' | 1 0 0 0 0 | G' | 0 1 0 0 0 | B' | 0 0 1 0 0 | A' | 0 0 0 1 0 | In it, every new value is exactly 1 times its old value, with nothing else added. It is recommended to start manipulating the matrix from here. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43145,8 +43108,8 @@
 		{
 			"name": "svg:feComponentTransfer",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComponentTransfer",
-			"description": "The <feComponentTransfer> SVG filter primitive performs color-component-wise remapping of data for each pixel. It allows operations like brightness adjustment, contrast adjustment, color balance or thresholding.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComponentTransfer",
+			"description": "The <feComponentTransfer> SVG filter primitive performs color-component-wise remapping of data for each pixel. It allows operations like brightness adjustment, contrast adjustment, color balance or thresholding. The calculations are performed on non-premultiplied color values. The colors are modified by changing each channel (R, G, B, and A) to the result of what the children <feFuncR>, <feFuncB>, <feFuncG>, and <feFuncA> return. If more than one of the same element is provided, the last one specified is used, and if no element is supplied to modify one of the channels, the effect is the same is if an identity transformation had been given for that channel. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43246,8 +43209,8 @@
 		{
 			"name": "svg:feComposite",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feComposite",
-			"description": "The <feComposite> SVG filter primitive performs the combination of two input images pixel-wise in image space using one of the Porter-Duff compositing operations: over, in, atop, out, xor, lighter, or arithmetic.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComposite",
+			"description": "The <feComposite> SVG filter primitive performs the combination of two input images pixel-wise in image space using one of the Porter-Duff compositing operations: over, in, atop, out, xor, lighter, or arithmetic. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead. The table below shows each of these operations using an image of the MDN logo composited with a red circle: Operation Description over The source graphic defined by the in attribute (the MDN logo) is placed over the destination graphic defined by the in2 attribute (the circle). This is the default operation, which will be used if no operation or an unsupported operation is specified. in The parts of the source graphic defined by the in attribute that overlap the destination graphic defined in the in2 attribute, replace the destination graphic. out The parts of the source graphic defined by the in attribute that fall outside the destination graphic defined in the in2 attribute, are displayed. atop The parts of the source graphic defined in the in attribute, which overlap the destination graphic defined in the in2 attribute, replace the destination graphic. The parts of the destination graphic that do not overlap with the source graphic stay untouched. xor The non-overlapping regions of the source graphic defined in the in attribute and the destination graphic defined in the in2 attribute are combined. lighter The sum of the source graphic defined in the in attribute and the destination graphic defined in the in2 attribute is displayed. arithmetic The arithmetic operation is useful for combining the output from the <feDiffuseLighting> and <feSpecularLighting> filters with texture data. If the arithmetic operation is chosen, each result pixel is computed using the following formula: result = k1*i1*i2 + k2*i1 + k3*i2 + k4 where: i1 and i2 indicate the corresponding pixel channel values of the input image, which map to in and in2 respectively k1, k2, k3, and k4 indicate the values of the attributes with the same name.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43390,8 +43353,8 @@
 		{
 			"name": "svg:feConvolveMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feConvolveMatrix",
-			"description": "The <feConvolveMatrix> SVG filter primitive applies a matrix convolution filter effect. A convolution combines pixels in the input image with neighboring pixels to produce a resulting image. A wide variety of imaging operations can be achieved through convolutions, including blurring, edge detection, sharpening, embossing and beveling.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feConvolveMatrix",
+			"description": "The <feConvolveMatrix> SVG filter primitive applies a matrix convolution filter effect. A convolution combines pixels in the input image with neighboring pixels to produce a resulting image. A wide variety of imaging operations can be achieved through convolutions, including blurring, edge detection, sharpening, embossing and beveling. A matrix convolution is based on an n-by-m matrix (the convolution kernel) which describes how a given pixel value in the input image is combined with its neighboring pixel values to produce a resulting pixel value. Each result pixel is determined by applying the kernel matrix to the corresponding source pixel and its neighboring pixels. The basic convolution formula which is applied to each color value for a given pixel is: colorX,Y=∑i=0orderY−1∑j=0orderX−1sourcex−targetX+j,y−targetY+i⋅kernelMatrixorderX−j−1,orderY−i−1divisor+bias⋅alphax,y\\left(color\\right)_{X , Y} = \\frac{\\sum_{i = 0}^{orderY - 1} \\sum_{j = 0}^{orderX - 1} \\left(source\\right)_{x - targetX + j , y - \\mathit{targetY} + i} \\cdot \\left(kernelMatrix\\right)_{orderX - j - 1, orderY - i - 1}}{divisor} + bias \\cdot \\left(alpha\\right)_{x , y} where \"orderX\" and \"orderY\" represent the X and Y values for the order attribute, and the other variables refer to the targetX, targetY, kernelMatrix, divisor, and bias attributes. Note in the above formulas that the values in the kernel matrix are applied such that the kernel matrix is rotated 180 degrees relative to the source and destination images in order to match convolution theory as described in many computer graphics textbooks. To illustrate, suppose you have an input image which is 5 pixels by 5 pixels, whose color values for one of the color channels are as follows: 0 20 40 235 235 100 120 140 235 235 200 220 240 235 235 225 225 255 255 255 225 225 255 255 255 and you define a 3-by-3 convolution kernel as follows: 1 2 3 4 5 6 7 8 9 Let's focus on the color value at the second row and second column of the image (source pixel value is 120). Assuming the simplest case (where the input image's pixel grid aligns perfectly with the kernel's pixel grid) and assuming default values for attributes divisor, targetX and targetY, then resulting color value will be: (9*0 + 8*20 + 7*40 + 6*100 + 5*120 + 4*140 + 3*200 + 2*220 + 1*240) / (9+8+7+6+5+4+3+2+1) Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43532,8 +43495,8 @@
 		{
 			"name": "svg:feDiffuseLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDiffuseLighting",
-			"description": "The <feDiffuseLighting> SVG filter primitive lights an image using the alpha channel as a bump map. The resulting image, which is an RGBA opaque image, depends on the light color, light position and surface geometry of the input bump map.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDiffuseLighting",
+			"description": "The <feDiffuseLighting> SVG filter primitive lights an image using the alpha channel as a bump map. The resulting image, which is an RGBA opaque image, depends on the light color, light position and surface geometry of the input bump map. The light map produced by this filter primitive can be combined with a texture image using the multiply term of the arithmetic operator of the <feComposite> filter primitive. Multiple light sources can be simulated by adding several of these light maps together before applying it to the texture image. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43659,8 +43622,8 @@
 		{
 			"name": "svg:feDisplacementMap",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDisplacementMap",
-			"description": "The <feDisplacementMap> SVG filter primitive uses the pixel values from the image from in2 to spatially displace the image from in.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap",
+			"description": "The <feDisplacementMap> SVG filter primitive uses the pixel values from the image from in2 to spatially displace the image from in. The formula for the transformation looks like this: P'(x,y) ← P(x + scale * (XC(x,y) - 0.5), y + scale * (YC(x,y) - 0.5)) where P(x,y) is the input image, in, and P'(x,y) is the destination. XC(x,y) and YC(x,y) are the component values of the channel designated by xChannelSelector and yChannelSelector. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43792,8 +43755,8 @@
 		{
 			"name": "svg:feDistantLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDistantLight",
-			"description": "The <feDistantLight> SVG filter primitive defines a distant light source that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDistantLight",
+			"description": "The <feDistantLight> SVG filter primitive defines a distant light source that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43826,8 +43789,8 @@
 		{
 			"name": "svg:feDropShadow",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDropShadow",
-			"description": "The <feDropShadow> SVG filter primitive creates a drop shadow of the input image. It can only be used inside a <filter> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDropShadow",
+			"description": "The <feDropShadow> SVG filter primitive creates a drop shadow of the input image. It can only be used inside a <filter> element. Note: The drop shadow color and opacity can be changed by using the flood-color and flood-opacity presentation attributes. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -43936,7 +43899,7 @@
 		{
 			"name": "svg:feFlood",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFlood",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFlood",
 			"description": "The <feFlood> SVG filter primitive fills the filter subregion with the color and opacity defined by flood-color and flood-opacity.",
 			"categories": [],
 			"contentModel": {
@@ -44039,7 +44002,7 @@
 		{
 			"name": "svg:feFuncA",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncA",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncA",
 			"description": "The <feFuncA> SVG filter primitive defines the transfer function for the alpha component of the input graphic of its parent <feComponentTransfer> element.",
 			"categories": [],
 			"contentModel": {
@@ -44071,7 +44034,7 @@
 		{
 			"name": "svg:feFuncB",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncB",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncB",
 			"description": "The <feFuncB> SVG filter primitive defines the transfer function for the blue component of the input graphic of its parent <feComponentTransfer> element.",
 			"categories": [],
 			"contentModel": {
@@ -44103,7 +44066,7 @@
 		{
 			"name": "svg:feFuncG",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncG",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncG",
 			"description": "The <feFuncG> SVG filter primitive defines the transfer function for the green component of the input graphic of its parent <feComponentTransfer> element.",
 			"categories": [],
 			"contentModel": {
@@ -44135,7 +44098,7 @@
 		{
 			"name": "svg:feFuncR",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feFuncR",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncR",
 			"description": "The <feFuncR> SVG filter primitive defines the transfer function for the red component of the input graphic of its parent <feComponentTransfer> element.",
 			"categories": [],
 			"contentModel": {
@@ -44167,8 +44130,8 @@
 		{
 			"name": "svg:feGaussianBlur",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feGaussianBlur",
-			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
+			"description": "The <feGaussianBlur> SVG filter primitive blurs the input image by the amount specified in stdDeviation, which defines the bell-curve. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44274,7 +44237,7 @@
 		{
 			"name": "svg:feImage",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feImage",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feImage",
 			"description": "The <feImage> SVG filter primitive fetches image data from an external source and provides the pixel data as output (meaning if the external source is an SVG image, it is rasterized.)",
 			"categories": [],
 			"contentModel": {
@@ -44402,8 +44365,8 @@
 		{
 			"name": "svg:feMerge",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMerge",
-			"description": "The <feMerge> SVG element allows filter effects to be applied concurrently instead of sequentially. This is achieved by other filters storing their output via the result attribute and then accessing it in a <feMergeNode> child.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMerge",
+			"description": "The <feMerge> SVG element allows filter effects to be applied concurrently instead of sequentially. This is achieved by other filters storing their output via the result attribute and then accessing it in a <feMergeNode> child. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44496,7 +44459,7 @@
 		{
 			"name": "svg:feMergeNode",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMergeNode",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMergeNode",
 			"description": "The <feMergeNode> SVG takes the result of another filter to be processed by its parent <feMerge>.",
 			"categories": [],
 			"contentModel": {
@@ -44520,8 +44483,8 @@
 		{
 			"name": "svg:feMorphology",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology",
-			"description": "The <feMorphology> SVG filter primitive is used to erode or dilate the input image. Its usefulness lies especially in fattening or thinning effects.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMorphology",
+			"description": "The <feMorphology> SVG filter primitive is used to erode or dilate the input image. Its usefulness lies especially in fattening or thinning effects. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44628,7 +44591,7 @@
 		{
 			"name": "svg:feOffset",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feOffset",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feOffset",
 			"description": "The <feOffset> SVG filter primitive enables offsetting an input image relative to its current position. The input image as a whole is offset by the values specified in the dx and dy attributes.",
 			"categories": [],
 			"contentModel": {
@@ -44733,8 +44696,8 @@
 		{
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/fePointLight",
-			"description": "The <fePointLight> SVG filter primitive defines a light source which allows to create a point light effect. It that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
+			"description": "The <fePointLight> SVG filter primitive defines a light source which allows to create a point light effect. It that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44772,8 +44735,8 @@
 		{
 			"name": "svg:feSpecularLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpecularLighting",
-			"description": "The <feSpecularLighting> SVG filter primitive lights a source graphic using the alpha channel as a bump map. The resulting image is an RGBA image based on the light color. The lighting calculation follows the standard specular component of the Phong lighting model. The resulting image depends on the light color, light position and surface geometry of the input bump map. The result of the lighting calculation is added. The filter primitive assumes that the viewer is at infinity in the z direction.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpecularLighting",
+			"description": "The <feSpecularLighting> SVG filter primitive lights a source graphic using the alpha channel as a bump map. The resulting image is an RGBA image based on the light color. The lighting calculation follows the standard specular component of the Phong lighting model. The resulting image depends on the light color, light position and surface geometry of the input bump map. The result of the lighting calculation is added. The filter primitive assumes that the viewer is at infinity in the z direction. This filter primitive produces an image which contains the specular reflection part of the lighting calculation. Such a map is intended to be combined with a texture using the add term of the arithmetic <feComposite> method. Multiple light sources can be simulated by adding several of these light maps before applying it to the texture image. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44903,8 +44866,8 @@
 		{
 			"name": "svg:feSpotLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feSpotLight",
-			"description": "The <feSpotLight> SVG filter primitive defines a light source that can be used to create a spotlight effect. It is used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpotLight",
+			"description": "The <feSpotLight> SVG filter primitive defines a light source that can be used to create a spotlight effect. It is used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44966,7 +44929,7 @@
 		{
 			"name": "svg:feTile",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTile",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
 			"description": "The <feTile> SVG filter primitive allows to fill a target rectangle with a repeated, tiled pattern of an input image. The effect is similar to the one of a <pattern>.",
 			"categories": [],
 			"contentModel": {
@@ -45060,8 +45023,8 @@
 		{
 			"name": "svg:feTurbulence",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence",
-			"description": "The <feTurbulence> SVG filter primitive creates an image using the Perlin turbulence function. It allows the synthesis of artificial textures like clouds or marble. The resulting image will fill the entire filter primitive subregion.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence",
+			"description": "The <feTurbulence> SVG filter primitive creates an image using the Perlin turbulence function. It allows the synthesis of artificial textures like clouds or marble. The resulting image will fill the entire filter primitive subregion. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -45184,7 +45147,7 @@
 		{
 			"name": "svg:filter",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/filter",
 			"description": "The <filter> SVG element defines a custom filter effect by grouping atomic filter primitives. It is never rendered itself, but must be used by the filter attribute on SVG elements, or the filter CSS property for SVG/HTML elements.",
 			"categories": [],
 			"contentModel": {
@@ -45324,7 +45287,7 @@
 		{
 			"name": "svg:foreignObject",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/foreignObject",
 			"description": "The <foreignObject> SVG element includes elements from a different XML namespace. In the context of a browser, it is most likely (X)HTML.",
 			"categories": [],
 			"contentModel": {
@@ -45437,8 +45400,8 @@
 		{
 			"name": "svg:g",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/g",
-			"description": "The <g> SVG element is a container used to group other SVG elements.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
+			"description": "The <g> SVG element is a container used to group other SVG elements. Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -45555,8 +45518,8 @@
 		{
 			"name": "svg:image",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/image",
-			"description": "The <image> SVG element includes images inside SVG documents. It can display raster image files or other SVG files.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/image",
+			"description": "The <image> SVG element includes images inside SVG documents. It can display raster image files or other SVG files. The only image formats SVG software must support are JPEG, PNG, and other SVG files. Animated GIF behavior is undefined. SVG files displayed with <image> are treated as an image: external resources aren't loaded, :visited styles aren't applied, and they cannot be interactive. To include dynamic SVG elements, try <use> with an external URL. To include SVG files and run scripts inside them, try <object> inside of <foreignObject>. Note: The HTML spec defines <image> as a synonym for <img> while parsing HTML. This specific element and its behavior only apply inside SVG documents or inline SVGs.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -45707,7 +45670,7 @@
 		{
 			"name": "svg:line",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/line",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/line",
 			"description": "The <line> SVG element is an SVG basic shape used to create a line connecting two points.",
 			"categories": [],
 			"contentModel": {
@@ -45841,7 +45804,7 @@
 		{
 			"name": "svg:linearGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/linearGradient",
 			"description": "The <linearGradient> SVG element lets authors define linear gradients to apply to other SVG elements.",
 			"categories": [],
 			"contentModel": {
@@ -45992,8 +45955,8 @@
 		{
 			"name": "svg:marker",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/marker",
-			"description": "The <marker> SVG element defines a graphic used for drawing arrowheads or polymarkers on a given <path>, <line>, <polyline> or <polygon> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/marker",
+			"description": "The <marker> SVG element defines a graphic used for drawing arrowheads or polymarkers on a given <path>, <line>, <polyline> or <polygon> element. Markers can be attached to shapes using the marker-start, marker-mid, and marker-end properties.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -46167,7 +46130,7 @@
 		{
 			"name": "svg:mask",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mask",
 			"description": "The <mask> SVG element defines a mask for compositing the current object into the background. A mask is used/referenced using the mask property and CSS mask-image property.",
 			"categories": [],
 			"contentModel": {
@@ -46310,7 +46273,7 @@
 		{
 			"name": "svg:metadata",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/metadata",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/metadata",
 			"description": "The <metadata> SVG element adds metadata to SVG content. Metadata is structured information about data. The contents of <metadata> should be elements from other XML namespaces such as RDF, FOAF, etc.",
 			"categories": [],
 			"contentModel": {
@@ -46334,7 +46297,7 @@
 		{
 			"name": "svg:mpath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mpath",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mpath",
 			"description": "The <mpath> SVG sub-element for the <animateMotion> element provides the ability to reference an external <path> element as the definition of a motion path.",
 			"categories": [],
 			"contentModel": {
@@ -46362,7 +46325,7 @@
 		{
 			"name": "svg:path",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/path",
 			"description": "The <path> SVG element is the generic element to define a shape. All the basic shapes can be created with a path element.",
 			"categories": [],
 			"contentModel": {
@@ -46481,8 +46444,8 @@
 		{
 			"name": "svg:pattern",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/pattern",
-			"description": "The <pattern> SVG element defines a graphics object which can be redrawn at repeated x- and y-coordinate intervals (\"tiled\") to cover an area.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern",
+			"description": "The <pattern> SVG element defines a graphics object which can be redrawn at repeated x- and y-coordinate intervals (\"tiled\") to cover an area. The <pattern> is referenced by the fill and/or stroke attributes on other graphics elements to fill or stroke those elements with the referenced pattern.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -46643,8 +46606,8 @@
 		{
 			"name": "svg:polygon",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon",
-			"description": "The <polygon> SVG element defines a closed shape consisting of a set of connected straight line segments. The last point is connected to the first point.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polygon",
+			"description": "The <polygon> SVG element defines a closed shape consisting of a set of connected straight line segments. The last point is connected to the first point. For open shapes, see the <polyline> element.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -46761,7 +46724,7 @@
 		{
 			"name": "svg:polyline",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polyline",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polyline",
 			"description": "The <polyline> SVG element is an SVG basic shape that creates straight lines connecting several points. Typically a polyline is used to create open shapes as the last point doesn't have to be connected to the first point. For closed shapes see the <polygon> element.",
 			"categories": [],
 			"contentModel": {
@@ -46879,8 +46842,8 @@
 		{
 			"name": "svg:radialGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/radialGradient",
-			"description": "The <radialGradient> SVG element lets authors define radial gradients that can be applied to fill or stroke of graphical elements.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/radialGradient",
+			"description": "The <radialGradient> SVG element lets authors define radial gradients that can be applied to fill or stroke of graphical elements. Note: Don't be confused with CSS radial-gradient() as CSS gradients can only apply to HTML elements where SVG gradient can only apply to SVG elements.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47038,7 +47001,7 @@
 		{
 			"name": "svg:rect",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/rect",
 			"description": "The <rect> SVG element is a basic SVG shape that draws rectangles, defined by their position, width, and height. The rectangles may have their corners rounded.",
 			"categories": [],
 			"contentModel": {
@@ -47176,8 +47139,8 @@
 		{
 			"name": "svg:script",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/script",
-			"description": "The <script> SVG element allows to add scripts to an SVG document.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
+			"description": "The <script> SVG element allows to add scripts to an SVG document. Note: While SVG's script element is equivalent to the HTML <script> element, it has some discrepancies, like it uses the href attribute instead of src and it doesn't support ECMAScript modules so far (See browser compatibility below for details)",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47225,8 +47188,8 @@
 		{
 			"name": "svg:set",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/set",
-			"description": "The <set> SVG element provides a method of setting the value of an attribute for a specified duration.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/set",
+			"description": "The <set> SVG element provides a method of setting the value of an attribute for a specified duration. It supports all attribute types, including those that cannot reasonably be interpolated, such as string and boolean values. For attributes that can be reasonably be interpolated, the <animate> is usually preferred. Note: The <set> element is non-additive. The additive and accumulate attributes are not allowed, and will be ignored if specified.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47268,7 +47231,7 @@
 		{
 			"name": "svg:stop",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/stop",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/stop",
 			"description": "The <stop> SVG element defines a color and its position to use on a gradient. This element is always a child of a <linearGradient> or <radialGradient> element.",
 			"categories": [],
 			"contentModel": {
@@ -47378,8 +47341,8 @@
 		{
 			"name": "svg:style",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/style",
-			"description": "The <style> SVG element allows style sheets to be embedded directly within SVG content.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/style",
+			"description": "The <style> SVG element allows style sheets to be embedded directly within SVG content. Note: SVG's style element has the same attributes as the corresponding element in HTML (see HTML's <style> element).",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47414,8 +47377,8 @@
 		{
 			"name": "svg:svg",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg",
-			"description": "The <svg> SVG element is a container that defines a new coordinate system and viewport. It is used as the outermost element of SVG documents, but it can also be used to embed an SVG fragment inside an SVG or HTML document.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg",
+			"description": "The <svg> SVG element is a container that defines a new coordinate system and viewport. It is used as the outermost element of SVG documents, but it can also be used to embed an SVG fragment inside an SVG or HTML document. Note: The xmlns attribute is only required on the outermost svg element of SVG documents, or inside HTML documents with XML serialization. It is unnecessary for inner svg elements or inside HTML documents with HTML serialization.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47579,8 +47542,8 @@
 		{
 			"name": "svg:switch",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/switch",
-			"description": "The <switch> SVG element evaluates any requiredFeatures, requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
+			"description": "The <switch> SVG element evaluates any requiredFeatures, requiredExtensions and systemLanguage attributes on its direct child elements in order, and then renders the first child where these attributes evaluate to true. Other direct children will be bypassed and therefore not rendered. If a child element is a container element, like <g>, then its subtree is also processed/rendered or bypassed/not rendered. Note: The display and visibility properties have no effect on <switch> element processing. In particular, setting display:none on a child has no effect on the true/false testing for <switch> processing.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47687,8 +47650,8 @@
 		{
 			"name": "svg:symbol",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/symbol",
-			"description": "The <symbol> SVG element is used to define graphical template objects which can be instantiated by a <use> element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/symbol",
+			"description": "The <symbol> SVG element is used to define graphical template objects which can be instantiated by a <use> element. The use of <symbol> elements for graphics that are used multiple times in the same document adds structure and semantics. Documents that are rich in structure may be rendered graphically, as speech, or as Braille, and thus promote accessibility. Note: A <symbol> element itself is not meant to be rendered. Only instances of a <symbol> element (i.e., a reference to a <symbol> by a <use> element) are rendered. That means that some browsers could refuse to directly display a <symbol> element even if the CSS display property tells otherwise.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47775,8 +47738,8 @@
 		{
 			"name": "svg:text",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text",
-			"description": "The <text> SVG element draws a graphics element consisting of text. It's possible to apply a gradient, pattern, clipping path, mask, or filter to <text>, like any other SVG graphics element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text",
+			"description": "The <text> SVG element draws a graphics element consisting of text. It's possible to apply a gradient, pattern, clipping path, mask, or filter to <text>, like any other SVG graphics element. If text is included in SVG not inside of a <text> element, it is not rendered. This is different than being hidden by default, as setting the display property won't show the text. Note: The <text> element does not wrap by default, to make this happen it needs to be styled with the white-space CSS property.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47922,7 +47885,7 @@
 		{
 			"name": "svg:textPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/textPath",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/textPath",
 			"description": "The <textPath> SVG element is used to render text along the shape of a <path> element. The text must be enclosed in the <textPath> element and its href attribute is used to reference the desired <path>.",
 			"categories": [],
 			"contentModel": {
@@ -48085,8 +48048,8 @@
 		{
 			"name": "svg:title",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/title",
-			"description": "The <title> SVG element provides an accessible, short-text description of any SVG container element or graphics element.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/title",
+			"description": "The <title> SVG element provides an accessible, short-text description of any SVG container element or graphics element. Text in a <title> element is not rendered as part of the graphic, but browsers usually display it as a tooltip. If an element can be described by visible text, it is recommended to reference that text with an aria-labelledby attribute rather than using the <title> element. Note: For backward compatibility with SVG 1.1, <title> elements should be the first child element of their parent.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -48109,8 +48072,8 @@
 		{
 			"name": "svg:tspan",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/tspan",
-			"description": "The <tspan> SVG element defines a subtext within a <text> element or another <tspan> element. It allows for adjustment of the style and/or position of that subtext as needed.",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/tspan",
+			"description": "The <tspan> SVG element defines a subtext within a <text> element or another <tspan> element. It allows for adjustment of the style and/or position of that subtext as needed. Note: The <tspan> element does not wrap by default, to make this happen it needs to be styled with the white-space CSS property.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -48252,7 +48215,7 @@
 		{
 			"name": "svg:use",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/use",
 			"description": "The <use> element takes nodes from within an SVG document, and duplicates them somewhere else. The effect is the same as if the nodes were deeply cloned into a non-exposed DOM, then pasted where the <use> element is, much like cloned <template> elements.",
 			"categories": [],
 			"contentModel": {
@@ -48384,7 +48347,7 @@
 		{
 			"name": "svg:view",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/view",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/view",
 			"description": "The <view> SVG element defines a particular view of an SVG document. A specific view can be displayed by referencing the <view> element's id as the target fragment of a URL.",
 			"categories": [],
 			"contentModel": {

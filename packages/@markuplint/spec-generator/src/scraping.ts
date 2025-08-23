@@ -4,25 +4,9 @@ import type { Element } from 'domhandler';
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
 import { fetch } from './fetch.js';
-import { getThisOutline, sortObjectByKey } from './utils.js';
+import { sortObjectByKey } from './utils.js';
 
-const MAIN_ARTICLE_SELECTOR = 'article.main-page-content, article.article';
-
-export async function fetchHTMLElementLinks() {
-	const $ = await fetch('https://developer.mozilla.org/en-US/docs/Web/HTML/Element');
-	const $listHeading = $(
-		$('#sidebar-quicklinks summary')
-			.toArray()
-			.find(el => /html elements/i.test($(el).text())),
-	);
-	const $list = $listHeading.siblings('ol,ul');
-	const lists = $list
-		.find('li a')
-		.toArray()
-		.map(el => `https://developer.mozilla.org${$(el).attr('href')}`);
-
-	return lists;
-}
+const MAIN_ARTICLE_SELECTOR = 'main#content';
 
 export function fetchObsoleteElements(
 	obsoleteList: readonly string[],
@@ -56,17 +40,13 @@ export function fetchObsoleteElements(
 
 export async function fetchHTMLElement(link: string) {
 	const $ = await fetch(link);
-	let name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
-	if (name === 'heading_elements') {
-		name = 'h1-h6';
-	}
+	const name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
 	const $article = $(MAIN_ARTICLE_SELECTOR);
-	$article.find('p:empty').remove();
-	const description =
-		$article.find('h2#summary').next('div').find('> p:first-of-type').text().trim().replaceAll(/\s+/g, ' ') ||
-		$article.find('.seoSummary').closest('p').text().trim().replaceAll(/\s+/g, ' ') ||
-		$article.find('h1').next('div').find('> p:first-of-type').text().trim().replaceAll(/\s+/g, ' ') ||
-		$article.find('.section-content:eq(0)').find('> p:eq(0)').text().trim().replaceAll(/\s+/g, ' ');
+	const description = $article
+		.find('.reference-layout__header .content-section')
+		.text()
+		.trim()
+		.replaceAll(/\s+/g, ' ');
 
 	const $bcTable = $article.find('.bc-table');
 	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
@@ -109,11 +89,11 @@ export async function fetchHTMLElement(link: string) {
 	if (/palpable content/i.test(cat)) categories.push('#palpable');
 	if (/script-supporting/i.test(cat)) categories.push('#script-supporting');
 
-	let { attributes } = getAttributes($, '#attributes', name);
-	const { attributes: deprecatedAttributes } = getAttributes($, '#deprecated_attributes', name);
-	const { attributes: individualAttributes } = getAttributes($, '#individual_attributes', name);
-	const { attributes: nonStandardAttributes } = getAttributes($, '#non-standard_attributes', name);
-	const { attributes: obsoleteAttributes } = getAttributes($, '#obsolete_attributes', name);
+	let { attributes } = getAttributes($, 'attributes');
+	const { attributes: deprecatedAttributes } = getAttributes($, 'deprecated_attributes');
+	const { attributes: individualAttributes } = getAttributes($, 'individual_attributes');
+	const { attributes: nonStandardAttributes } = getAttributes($, 'non-standard_attributes');
+	const { attributes: obsoleteAttributes } = getAttributes($, 'obsolete_attributes');
 	attributes = sortObjectByKey({
 		...attributes,
 		...deprecatedAttributes,
@@ -150,7 +130,7 @@ function getProperty(
 	$: cheerio.CheerioAPI,
 	prop: string,
 ) {
-	const $tr = $(MAIN_ARTICLE_SELECTOR).find('table.properties tr') ?? $('#Technical_summary').next('table tr');
+	const $tr = $('#technical_summary ~ figure.table-container > table tr');
 	const $th = $(
 		$tr
 			.find('th')
@@ -163,13 +143,11 @@ function getProperty(
 function getAttributes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$: cheerio.CheerioAPI,
-	heading: string,
-	tagName: string,
+	id: string,
 ) {
-	const $heading = $(heading);
-	const $outline = getThisOutline($, $heading);
+	const $section = $(`.content-section[aria-labelledby="${id}"]`);
 	const attributes: Record<string, Attribute> = {};
-	for (const dt of $outline.find('> div > dl > dt').toArray()) {
+	for (const dt of $section.find('> dl > dt').toArray()) {
 		const $dt = $(dt);
 		const name = $dt.find('code').text().trim();
 		if (!name) {
