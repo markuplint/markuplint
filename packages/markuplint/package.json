@@ -37,7 +37,6 @@
 		"@types/debug": "4.1.12",
 		"chokidar": "4.0.3",
 		"debug": "4.4.1",
-		"get-stdin": "9.0.0",
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
