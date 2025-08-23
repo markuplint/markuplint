@@ -1,4 +1,4 @@
-import getStdin from 'get-stdin';
+import { text } from 'node:stream/consumers';
 
 import { verbosely } from '../debug.js';
 
@@ -51,7 +51,7 @@ if (files.length > 0) {
 }
 
 if (usePipe()) {
-	const stdin = await getStdin().catch(error => {
+	const stdin = await text(process.stdin).catch(error => {
 		// eslint-disable-next-line no-console
 		console.warn(error);
 		process.exit(1);
