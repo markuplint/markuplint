@@ -2,14 +2,15 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-// @ts-ignore
 import { lexer } from 'css-tree';
 
 import { types as extendedTypes, tokenizers } from '../src/defs.js';
 
 const require = createRequire(import.meta.url);
 
+// @ts-ignore
 const props = Object.keys(lexer.properties).map(p => `<'${p}'>`);
+// @ts-ignore
 const types = Object.keys(lexer.types).map(t => `<${t}>`);
 
 const specific = require('./specific-schema.json');
