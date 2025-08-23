@@ -118,10 +118,6 @@ export async function getElements(filePattern: string) {
 				),
 			};
 
-			if (localName === 'audio') {
-				console.log(spec);
-			}
-
 			return spec;
 		}),
 	);
