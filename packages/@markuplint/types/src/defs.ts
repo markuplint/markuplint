@@ -15,6 +15,7 @@ import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
 import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
+import { checkLinkType } from './whatwg/check-link-type.js';
 
 export const defs: Defs = {
 	Any: {
@@ -673,5 +674,49 @@ export const defs: Defs = {
 						],
 					});
 		},
+	},
+
+	LinkTypeForLinkElement: {
+		ref: 'https://html.spec.whatwg.org/multipage/links.html#linkTypes',
+		expects: [
+			{
+				type: 'const',
+				value: 'Link types allowed in the `link` element when used in the `body` element',
+			},
+		],
+		is: checkLinkType({ el: 'link' }),
+	},
+
+	LinkTypeForLinkElementInBody: {
+		ref: 'https://html.spec.whatwg.org/multipage/links.html#body-ok',
+		expects: [
+			{
+				type: 'const',
+				value: 'Link types allowed in the `link` element when used in the `body` element',
+			},
+		],
+		is: checkLinkType({ el: 'body link' }),
+	},
+
+	LinkTypeForAnchorAndAreaElement: {
+		ref: 'https://html.spec.whatwg.org/multipage/links.html#linkTypes',
+		expects: [
+			{
+				type: 'const',
+				value: 'Link types allowed in `a` and `area` elements',
+			},
+		],
+		is: checkLinkType({ el: 'a, area' }),
+	},
+
+	LinkTypeForFormElement: {
+		ref: 'https://html.spec.whatwg.org/multipage/links.html#linkTypes',
+		expects: [
+			{
+				type: 'const',
+				value: 'Link types allowed in the `form` element',
+			},
+		],
+		is: checkLinkType({ el: 'form' }),
 	},
 };
