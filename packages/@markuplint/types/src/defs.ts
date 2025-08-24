@@ -1,4 +1,4 @@
-import type { Defs, CssSyntaxTokenizer } from './types.js';
+import type { Defs } from './types.js';
 
 import { checkMultiTypes } from './check-multi-types.js';
 import { getCandidate } from './get-candidate.js';
@@ -946,43 +946,5 @@ export const types: Defs = {
 				'number-optional-number': '<number> | <number> , <number>',
 			},
 		},
-	},
-};
-
-export const overrides: Record<string, string> = {
-	// Alias
-	'legacy-length-percentage': '<length> | <percentage> | <svg-length>',
-	'legacy-angle': '<angle> | <zero> | <number>',
-
-	/**
-	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-translate
-	 */
-	'translate()':
-		'translate( <legacy-length-percentage> , <legacy-length-percentage>? ) | translate( <legacy-length-percentage> <legacy-length-percentage>? )',
-
-	/**
-	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-scale
-	 */
-	'scale()': 'scale( [ <number> | <percentage> ]#{1,2} )',
-
-	/**
-	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-rotate
-	 */
-	'rotate()': 'rotate( <legacy-angle> )',
-
-	/**
-	 * @see https://www.w3.org/TR/css-transforms-1/#funcdef-transform-skew
-	 */
-	'skew()': 'skew( <legacy-angle> , <legacy-angle>? ) | skew( <legacy-angle> <legacy-angle>? )',
-};
-
-export const tokenizers: Record<string, CssSyntaxTokenizer> = {
-	// RFC
-	// https://tools.ietf.org/rfc/bcp/bcp47.html
-	'bcp-47'(token) {
-		if (!token) {
-			return 0;
-		}
-		return isBCP47()(token.value) ? 1 : 0;
 	},
 };
