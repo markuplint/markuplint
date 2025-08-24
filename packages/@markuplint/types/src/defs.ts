@@ -16,7 +16,7 @@ import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 
-export const types: Defs = {
+export const defs: Defs = {
 	Any: {
 		ref: '',
 		is: () => matched(),
