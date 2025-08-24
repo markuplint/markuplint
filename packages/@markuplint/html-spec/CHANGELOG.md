@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.16.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.15.0...@markuplint/html-spec@4.16.0) (2025-08-24)
+
+
+### Features
+
+* **html-spec:** implement link type definitions for rel attributes ([0bfa05f](https://github.com/markuplint/markuplint/commit/0bfa05fa39fbcff99e237eb628e89ea2090abd92))
+* **html-spec:** update element references for new MDN URL structure ([452eebb](https://github.com/markuplint/markuplint/commit/452eebb9a4e7d75aca9ff15ee023935206ae237e))
+
+
+
+
+
 # [4.15.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.14.2...@markuplint/html-spec@4.15.0) (2025-08-13)
 
 ### Bug Fixes

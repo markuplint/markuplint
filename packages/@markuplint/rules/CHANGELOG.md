@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.1](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.11.0...@markuplint/rules@4.11.1) (2025-08-24)
+
+
+### Bug Fixes
+
+* **rules:** handle rowspan/colspan combinations correctly in table-row-column-alignment ([5579c98](https://github.com/markuplint/markuplint/commit/5579c98995fbad02086e2c9a5470cfcee5ef9ef0))
+
+
+
+
+
 # [4.11.0](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.10.12...@markuplint/rules@4.11.0) (2025-08-13)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "4.7.7",
+	"version": "4.8.0",
 	"description": "Type declaration and value checker",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",

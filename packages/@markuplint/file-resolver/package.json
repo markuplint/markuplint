@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "4.9.15",
+	"version": "4.9.16",
 	"description": "The file resolver of markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -27,13 +27,13 @@
 		"@types/node": "24.3.0"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.20",
+		"@markuplint/html-parser": "4.6.21",
 		"@markuplint/ml-ast": "4.4.10",
-		"@markuplint/ml-config": "4.8.12",
-		"@markuplint/ml-core": "4.13.0",
-		"@markuplint/ml-spec": "4.9.7",
-		"@markuplint/parser-utils": "4.8.8",
-		"@markuplint/selector": "4.7.5",
+		"@markuplint/ml-config": "4.8.13",
+		"@markuplint/ml-core": "4.13.1",
+		"@markuplint/ml-spec": "4.10.0",
+		"@markuplint/parser-utils": "4.8.9",
+		"@markuplint/selector": "4.7.6",
 		"@markuplint/shared": "4.4.12",
 		"cosmiconfig": "9.0.0",
 		"debug": "4.4.1",

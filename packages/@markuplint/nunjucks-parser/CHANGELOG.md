@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.21](https://github.com/markuplint/markuplint/compare/@markuplint/nunjucks-parser@4.6.20...@markuplint/nunjucks-parser@4.6.21) (2025-08-24)
+
+**Note:** Version bump only for package @markuplint/nunjucks-parser
+
+
+
+
+
 ## [4.6.20](https://github.com/markuplint/markuplint/compare/@markuplint/nunjucks-parser@4.6.19...@markuplint/nunjucks-parser@4.6.20) (2025-08-13)
 
 ### Bug Fixes
