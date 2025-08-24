@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.21](https://github.com/markuplint/markuplint/compare/@markuplint/jsx-parser@4.7.20...@markuplint/jsx-parser@4.7.21) (2025-08-24)
+
+**Note:** Version bump only for package @markuplint/jsx-parser
+
+
+
+
+
 ## [4.7.20](https://github.com/markuplint/markuplint/compare/@markuplint/jsx-parser@4.7.19...@markuplint/jsx-parser@4.7.20) (2025-08-13)
 
 ### Bug Fixes

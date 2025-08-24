@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.7.7...@markuplint/types@4.8.0) (2025-08-24)
+
+
+### Bug Fixes
+
+* **types:** adjust type checking for css-tree update ([7fff913](https://github.com/markuplint/markuplint/commit/7fff913f4630eab6017861934142636d3c267336))
+* **types:** fix bug that spaces are invalid even if separator is 'space' when disallowToSurroundBySpaces is enabled ([3b81c3b](https://github.com/markuplint/markuplint/commit/3b81c3b525cd406275936236f8b793efed8864d7))
+
+
+### Features
+
+* **types:** add link type definitions for specific HTML elements ([7199a8e](https://github.com/markuplint/markuplint/commit/7199a8eb4eaf334855ba78064c4340e040d8614c))
+* **types:** add link type validation for HTML elements ([ed7cc6c](https://github.com/markuplint/markuplint/commit/ed7cc6c2b703e14b8572087eb07c63a97d864187))
+
+
+
+
+
 ## [4.7.7](https://github.com/markuplint/markuplint/compare/@markuplint/types@4.7.6...@markuplint/types@4.7.7) (2025-08-13)
 
 ### Bug Fixes

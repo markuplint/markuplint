@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.9.7...@markuplint/ml-spec@4.10.0) (2025-08-24)
+
+
+### Features
+
+* **types:** add link type definitions for specific HTML elements ([7199a8e](https://github.com/markuplint/markuplint/commit/7199a8eb4eaf334855ba78064c4340e040d8614c))
+
+
+
+
+
 ## [4.9.7](https://github.com/markuplint/markuplint/compare/@markuplint/ml-spec@4.9.6...@markuplint/ml-spec@4.9.7) (2025-08-13)
 
 ### Bug Fixes
