@@ -58,13 +58,16 @@ export async function getElements(filePattern: string) {
 	specs = await Promise.all(
 		specs.map(async el => {
 			const { localName, namespace, ml } = getName(el.name);
-			const cite = `https://developer.mozilla.org/en-US/docs/Web/${ml}/Element/${localName}`;
+			const urlTagName = /^h[1-6]$/i.test(localName) ? 'Heading_Elements' : localName;
+			// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a
+			// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a
+			const cite = `https://developer.mozilla.org/en-US/docs/Web/${ml}/Reference/Element${ml === 'HTML' ? 's' : ''}/${urlTagName}`;
 			const mdnData = await fetchHTMLElement(cite);
 			// @ts-ignore
 			delete el.name;
 			// @ts-ignore
 			delete el.namespace;
-			return {
+			const spec = {
 				// @ts-ignore
 				name: namespace === 'http://www.w3.org/2000/svg' ? `svg:${localName}` : localName,
 				namespace,
@@ -114,11 +117,12 @@ export async function getElements(filePattern: string) {
 					})(),
 				),
 			};
+
+			return spec;
 		}),
 	);
 
 	return specs
 		.sort(nameCompare)
-		.sort((a, b) => (a.namespace == b.namespace ? 0 : a.namespace === 'http://www.w3.org/2000/svg' ? 1 : -1))
-		.filter(spec => spec.name !== 'h1-h6');
+		.sort((a, b) => (a.namespace == b.namespace ? 0 : a.namespace === 'http://www.w3.org/2000/svg' ? 1 : -1));
 }

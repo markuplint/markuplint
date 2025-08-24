@@ -1,25 +1,24 @@
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-// @ts-ignore
 import { lexer } from 'css-tree';
 
-import { types as extendedTypes, tokenizers } from '../src/defs.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { defs } from '../src/defs.js';
+import { cssDefs } from '../src/css-defs.js';
+import { cssTokenizers } from '../src/css-tokenizers.js';
 
 const require = createRequire(import.meta.url);
 
+// @ts-ignore
 const props = Object.keys(lexer.properties).map(p => `<'${p}'>`);
+// @ts-ignore
 const types = Object.keys(lexer.types).map(t => `<${t}>`);
 
 const specific = require('./specific-schema.json');
 
 fs.writeFileSync(
-	path.resolve(__dirname, '..', 'types.schema.json'),
+	path.resolve(import.meta.dirname, '..', 'types.schema.json'),
 	JSON.stringify({
 		$schema: 'http://json-schema.org/draft-07/schema#',
 		type: 'object',
@@ -27,11 +26,11 @@ fs.writeFileSync(
 		definitions: {
 			'css-syntax': {
 				type: 'string',
-				enum: [...new Set([...props, ...types]), ...Object.keys(tokenizers).map(t => `<${t}>`)].sort(),
+				enum: [...new Set([...props, ...types]), ...Object.keys(cssTokenizers).map(t => `<${t}>`)].sort(),
 			},
 			'extended-type': {
 				type: 'string',
-				enum: Object.keys(extendedTypes).sort(),
+				enum: Object.keys({ ...defs, ...cssDefs }).sort(),
 			},
 			'html-attr-requirement': {
 				type: 'string',

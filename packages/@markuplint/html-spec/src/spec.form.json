@@ -64,24 +64,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/forms.html#attr-form-rel
 		"rel": {
-			"type": {
-				"token": {
-					"enum": [
-						"external",
-						"help",
-						"license",
-						"next",
-						"nofollow",
-						"noopener",
-						"noreferrer",
-						"opener",
-						"prev",
-						"search"
-					]
-				},
-				"unique": true,
-				"separator": "space"
-			}
+			"type": "LinkTypeForFormElement"
 		}
 	},
 	"aria": {

@@ -1,12 +1,18 @@
-import type { Result, Directive, UnmatchedResult } from './types.js';
+import type { Result, Directive, UnmatchedResult, Defs } from './types.js';
 import type { ReadonlyDeep } from 'type-fest';
 
 import { regexParser } from '@markuplint/shared';
 
-import { check } from './check.js';
+import { checkBase } from './check-base.js';
 import { matched, unmatched } from './match-result.js';
 
-export function checkDirective(value: string, type: ReadonlyDeep<Directive>, ref?: string, cache = true): Result {
+export function checkDirective(
+	value: string,
+	type: ReadonlyDeep<Directive>,
+	defs: Defs,
+	ref?: string,
+	cache = true,
+): Result {
 	const unmatches: UnmatchedResult[] = [];
 
 	for (const directive of type.directive) {
@@ -40,7 +46,7 @@ export function checkDirective(value: string, type: ReadonlyDeep<Directive>, ref
 			tokenPart = value.slice(directive.length);
 		}
 
-		const result = check(tokenPart, type.token, ref, cache);
+		const result = checkBase(tokenPart, type.token, defs, ref, cache);
 		if (result.matched) {
 			return result;
 		}

@@ -3,8 +3,9 @@ import type { CustomCssSyntax, CssSyntaxTokenizer, CSSSyntaxToken, GetNextToken,
 import { fork } from 'css-tree';
 
 import { log } from './debug.js';
-import { tokenizers, overrides } from './defs.js';
 import { matched } from './match-result.js';
+import { cssTokenizers } from './css-tokenizers.js';
+import { cssOverrides } from './css-overrides.js';
 
 const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
@@ -35,7 +36,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 		}
 
 		const types = {
-			...tokenizers,
+			...cssTokenizers,
 			...type.syntax.def,
 		};
 		for (const key of Object.keys(types)) {
@@ -59,7 +60,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	// @ts-ignore
 	const lexer = fork({
 		types: {
-			...overrides,
+			...cssOverrides,
 			...typesExtended,
 		},
 		properties: propsExtended,

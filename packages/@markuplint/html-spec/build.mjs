@@ -2,11 +2,9 @@ import path from 'node:path';
 
 import { main } from '@markuplint/spec-generator';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 await main({
-	outputFilePath: path.resolve(__dirname, 'index.json'),
-	htmlFilePattern: path.resolve(__dirname, 'src', 'spec.*.json'),
-	commonAttrsFilePath: path.resolve(__dirname, 'src', 'spec-common.attributes.json'),
-	commonContentsFilePath: path.resolve(__dirname, 'src', 'spec-common.contents.json'),
+	outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
+	htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.json'),
+	commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.json'),
+	commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.json'),
 });

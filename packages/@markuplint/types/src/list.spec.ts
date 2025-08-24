@@ -2,7 +2,11 @@ import type { List } from './types.schema.js';
 
 import { test, expect, describe } from 'vitest';
 
-import { checkList } from './list.js';
+import { checkList as _checkList } from './list.js';
+import { defs } from './defs.js';
+import { cssDefs } from './css-defs.js';
+
+const checkList = (value: string, type: List) => _checkList(value, type, { ...defs, ...cssDefs });
 
 test('Zero space', () => {
 	const type: List = { token: 'Zero', separator: 'space' };

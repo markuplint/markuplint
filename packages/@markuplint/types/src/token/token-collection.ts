@@ -169,7 +169,7 @@ export class TokenCollection extends Array<Token> {
 	check(options: { expects?: Expect[]; ref?: string; cache?: boolean } = {}) {
 		const { expects, ref } = options;
 
-		if (this.disallowToSurroundBySpaces) {
+		if (this.separator !== 'space' && this.disallowToSurroundBySpaces) {
 			for (const token of this) {
 				if (token.type === 13) {
 					return token.unmatched({

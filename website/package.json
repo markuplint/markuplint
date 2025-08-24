@@ -21,34 +21,35 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.8.1",
     "@octokit/rest": "22.0.0",
     "clsx": "2.1.1",
-    "dotenv": "16.5.0",
+    "dotenv": "17.2.1",
     "gray-matter": "4.0.3",
     "prism-react-renderer": "2.4.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "unist-util-visit": "5.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.8.1",
     "@docusaurus/tsconfig": "3.8.1",
     "@imgix/js-core": "3.8.0",
-    "@markuplint-dev/prettier-config": "1.0.12",
+    "@markuplint-dev/prettier-config": "1.0.13",
     "@tsconfig/strictest": "2.0.5",
-    "@types/glob": "8.1.0",
+    "@types/glob": "9.0.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
-    "stylelint": "16.20.0",
-    "stylelint-config-recess-order": "6.1.0",
-    "stylelint-config-standard": "38.0.0",
+    "stylelint": "16.23.1",
+    "stylelint-config-recess-order": "7.2.0",
+    "stylelint-config-standard": "39.0.0",
     "stylelint-order": "7.0.0",
-    "tsx": "4.20.3",
-    "typescript": "5.8.3"
+    "tsx": "4.20.5",
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=22"
   },
   "volta": {
-    "node": "22.16.0",
-    "yarn": "4.9.2"
-  }
+    "node": "24.6.0",
+    "yarn": "4.9.3"
+  },
+  "packageManager": "yarn@4.9.3"
 }
