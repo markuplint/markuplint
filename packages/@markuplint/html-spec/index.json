@@ -704,29 +704,7 @@
 					"condition": "[href]"
 				},
 				"rel": {
-					"type": {
-						"token": {
-							"enum": [
-								"alternate",
-								"author",
-								"bookmark",
-								"external",
-								"help",
-								"license",
-								"next",
-								"nofollow",
-								"noopener",
-								"noreferrer",
-								"opener",
-								"prev",
-								"search",
-								"tag",
-								"terms-of-service"
-							]
-						},
-						"unique": true,
-						"separator": "space"
-					},
+					"type": "LinkTypeForAnchorAndAreaElement",
 					"condition": "[href]"
 				},
 				"hreflang": {
@@ -37125,24 +37103,7 @@
 					"type": "Boolean"
 				},
 				"rel": {
-					"type": {
-						"token": {
-							"enum": [
-								"external",
-								"help",
-								"license",
-								"next",
-								"nofollow",
-								"noopener",
-								"noreferrer",
-								"opener",
-								"prev",
-								"search"
-							]
-						},
-						"unique": true,
-						"separator": "space"
-					}
+					"type": "LinkTypeForFormElement"
 				},
 				"target": {
 					"type": "NavigableTargetNameOrKeyword"
@@ -39048,38 +39009,7 @@
 					"description": "A string indicating which referrer to use when fetching the resource: no-referrer means that the Referer header will not be sent. no-referrer-when-downgrade means that no Referer header will be sent when navigating to an origin without TLS (HTTPS). This is a user agent's default behavior, if no policy is otherwise specified. origin means that the referrer will be the origin of the page, which is roughly the scheme, the host, and the port. origin-when-cross-origin means that navigating to other origins will be limited to the scheme, the host, and the port, while navigating on the same origin will include the referrer's path. unsafe-url means that the referrer will include the origin and the path (but not the fragment, password, or username). This case is unsafe because it can leak origins and paths from TLS-protected resources to insecure origins."
 				},
 				"rel": {
-					"type": [
-						"Any",
-						{
-							"token": {
-								"enum": [
-									"alternate",
-									"canonical",
-									"author",
-									"dns-prefetch",
-									"expect",
-									"help",
-									"icon",
-									"manifest",
-									"modulepreload",
-									"license",
-									"next",
-									"pingback",
-									"preconnect",
-									"prefetch",
-									"preload",
-									"prerender",
-									"prev",
-									"privacy-policy",
-									"search",
-									"stylesheet",
-									"terms-of-service"
-								]
-							},
-							"unique": true,
-							"separator": "space"
-						}
-					],
+					"type": "LinkTypeForLinkElement",
 					"requiredEither": ["itemprop"]
 				},
 				"rev": {

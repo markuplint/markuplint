@@ -620,29 +620,7 @@
 		},
 		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-rel
 		"rel": {
-			"type": {
-				"token": {
-					"enum": [
-						"alternate",
-						"author",
-						"bookmark",
-						"external",
-						"help",
-						"license",
-						"next",
-						"nofollow",
-						"noopener",
-						"noreferrer",
-						"opener",
-						"prev",
-						"search",
-						"tag",
-						"terms-of-service"
-					]
-				},
-				"unique": true,
-				"separator": "space"
-			},
+			"type": "LinkTypeForAnchorAndAreaElement",
 			"condition": "[href]"
 		},
 		// https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-hreflang

@@ -1,16 +1,15 @@
-import type { Result } from './types.js';
+import type { Defs, Result } from './types.js';
 import type { KeywordDefinedType, CssSyntax } from './types.schema.js';
 
-import { isCSSSyntax } from './check.js';
+import { isCSSSyntax } from './check-base.js';
 import { cssSyntaxMatch } from './css-syntax.js';
 import { log } from './debug.js';
-import { types } from './defs.js';
 import { matched } from './match-result.js';
 
 const resultCache = new Map<string, Result>();
 const CACHE_KEY_PREFIX = '@markuplint/types/checkKeywordType/cache:::';
 
-export function checkKeywordType(value: string, type: KeywordDefinedType, cache = true) {
+export function checkKeywordType(value: string, type: KeywordDefinedType, defs: Defs, cache = true) {
 	const key = `${CACHE_KEY_PREFIX}${value}${type}`;
 	if (cache) {
 		const cachedResult = resultCache.get(key);
@@ -19,7 +18,7 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, cache 
 			return cachedResult;
 		}
 	}
-	const result = _checkKeywordType(value, type);
+	const result = _checkKeywordType(value, type, defs);
 
 	if (cache) {
 		resultCache.set(key, result);
@@ -36,8 +35,8 @@ export function checkKeywordType(value: string, type: KeywordDefinedType, cache 
 	return result;
 }
 
-function _checkKeywordType(value: string, type: KeywordDefinedType): Result {
-	const def = types[type];
+function _checkKeywordType(value: string, type: KeywordDefinedType, defs: Defs): Result {
+	const def = defs[type];
 	if (!def) {
 		log('The "%s" type is not defined in custom type identifier markuplint specified', type);
 		try {

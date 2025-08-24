@@ -73,7 +73,7 @@ export type FormattedPrimitiveTypeCheck = (value: string) => boolean;
 
 export type FormattedPrimitiveTypeCreator<O = never> = (options?: O) => FormattedPrimitiveTypeCheck;
 
-export type Defs = Record<string, CustomCssSyntax | CustomSyntax>;
+export type Defs = Readonly<Record<string, CustomCssSyntax | CustomSyntax>>;
 
 export type CustomSyntax = {
 	readonly ref: string;
