@@ -4,7 +4,9 @@ import path from 'node:path';
 
 import { lexer } from 'css-tree';
 
-import { types as extendedTypes, tokenizers } from '../src/defs.js';
+import { defs } from '../src/defs.js';
+import { cssDefs } from '../src/css-defs.js';
+import { cssTokenizers } from '../src/css-tokenizers.js';
 
 const require = createRequire(import.meta.url);
 
@@ -24,11 +26,11 @@ fs.writeFileSync(
 		definitions: {
 			'css-syntax': {
 				type: 'string',
-				enum: [...new Set([...props, ...types]), ...Object.keys(tokenizers).map(t => `<${t}>`)].sort(),
+				enum: [...new Set([...props, ...types]), ...Object.keys(cssTokenizers).map(t => `<${t}>`)].sort(),
 			},
 			'extended-type': {
 				type: 'string',
-				enum: Object.keys(extendedTypes).sort(),
+				enum: Object.keys({ ...defs, ...cssDefs }).sort(),
 			},
 			'html-attr-requirement': {
 				type: 'string',
