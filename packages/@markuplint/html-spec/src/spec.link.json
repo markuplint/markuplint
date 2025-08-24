@@ -23,38 +23,7 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel
 		"rel": {
-			"type": [
-				"Any",
-				{
-					"token": {
-						"enum": [
-							"alternate",
-							"canonical",
-							"author",
-							"dns-prefetch",
-							"expect",
-							"help",
-							"icon",
-							"manifest",
-							"modulepreload",
-							"license",
-							"next",
-							"pingback",
-							"preconnect",
-							"prefetch",
-							"preload",
-							"prerender",
-							"prev",
-							"privacy-policy",
-							"search",
-							"stylesheet",
-							"terms-of-service"
-						]
-					},
-					"unique": true,
-					"separator": "space"
-				}
-			],
+			"type": "LinkTypeForLinkElement",
 			"requiredEither": ["itemprop"]
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element:names:-the-itemprop-attribute
