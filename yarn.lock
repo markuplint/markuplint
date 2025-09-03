@@ -3825,10 +3825,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:7.7.0":
-  version: 7.7.0
-  resolution: "@types/semver@npm:7.7.0"
-  checksum: 10c0/6b5f65f647474338abbd6ee91a6bbab434662ddb8fe39464edcbcfc96484d388baad9eb506dff217b6fc1727a88894930eb1f308617161ac0f376fe06be4e1ee
+"@types/semver@npm:7.7.1":
+  version: 7.7.1
+  resolution: "@types/semver@npm:7.7.1"
+  checksum: 10c0/c938aef3bf79a73f0f3f6037c16e2e759ff40c54122ddf0b2583703393d8d3127130823facb880e694caa324eb6845628186aac1997ee8b31dc2d18fafe26268
   languageName: node
   linkType: hard
 
@@ -17416,7 +17416,7 @@ __metadata:
     "@markuplint/ml-spec": "npm:4.9.7"
     "@types/mocha": "npm:10.0.10"
     "@types/node": "npm:22.17.0"
-    "@types/semver": "npm:7.7.0"
+    "@types/semver": "npm:7.7.1"
     "@types/vscode": "npm:1.102.0"
     "@vscode/test-electron": "npm:2.5.2"
     "@vscode/vsce": "npm:3.6.0"
