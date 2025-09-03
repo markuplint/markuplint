@@ -120,7 +120,7 @@
 		"@markuplint-dev/tsconfig": "1.0.9",
 		"@types/mocha": "10.0.10",
 		"@types/node": "22.17.0",
-		"@types/semver": "7.7.0",
+		"@types/semver": "7.7.1",
 		"@types/vscode": "1.102.0",
 		"@vscode/test-electron": "2.5.2",
 		"@vscode/vsce": "3.6.0",
