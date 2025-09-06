@@ -8980,7 +8980,7 @@ __metadata:
     react: "npm:19.1.1"
     react-dom: "npm:19.1.1"
     stylelint: "npm:16.23.1"
-    stylelint-config-recess-order: "npm:7.2.0"
+    stylelint-config-recess-order: "npm:7.3.0"
     stylelint-config-standard: "npm:39.0.0"
     stylelint-order: "npm:7.0.0"
     tsx: "npm:4.20.5"
@@ -13212,13 +13212,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-config-recess-order@npm:7.2.0":
-  version: 7.2.0
-  resolution: "stylelint-config-recess-order@npm:7.2.0"
+"stylelint-config-recess-order@npm:7.3.0":
+  version: 7.3.0
+  resolution: "stylelint-config-recess-order@npm:7.3.0"
   peerDependencies:
     stylelint: ">=16.18"
     stylelint-order: ">=7"
-  checksum: 10c0/f5dfe243bb103759747a1f7ce93336d686f0e27e282daa55a3005083a19fa3918457eeaa4fbfb153d275b917f75149307b198bb61e4730d2bce763aa9d5f1185
+  checksum: 10c0/520558d703c917c1854eb54cb04390472df772ca293f9151e07c0d60508fd8d4b91f5995c401d9529be72afede5b8c563dd1b6ae41687ffdaedd841fc6e5b4d7
   languageName: node
   linkType: hard
 
