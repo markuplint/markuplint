@@ -40,7 +40,7 @@
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
-		"strip-ansi": "7.1.0",
+		"strip-ansi": "7.1.2",
 		"type-fest": "4.41.0"
 	}
 }
