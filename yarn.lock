@@ -2126,7 +2126,7 @@ __metadata:
     "@markuplint/html-parser": "npm:4.6.20"
     "@markuplint/ml-ast": "npm:4.4.10"
     "@markuplint/parser-utils": "npm:4.8.8"
-    svelte: "npm:5.38.7"
+    svelte: "npm:5.38.9"
   languageName: unknown
   linkType: soft
 
@@ -15521,9 +15521,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:5.38.7":
-  version: 5.38.7
-  resolution: "svelte@npm:5.38.7"
+"svelte@npm:5.38.9":
+  version: 5.38.9
+  resolution: "svelte@npm:5.38.9"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.4"
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
@@ -15539,7 +15539,7 @@ __metadata:
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10c0/b8ea04effc6a7bc38cd17236cc9ab047b149bf6f803e5a3005d9381f3a83098733089849deeb83d073c325c543891429c6d3faa098d9502c5cf4b26534577646
+  checksum: 10c0/fab60c7f0d5e090b98589bf69972d073a5dbb9e3762d7415a3b28fe75d6a55972cc15c5fc779f880a43685ef35d7c10861ec6e817cbf28932b0243c6e2eacc9a
   languageName: node
   linkType: hard
 
