@@ -36,7 +36,7 @@
 		"@markuplint/selector": "4.7.5",
 		"@markuplint/shared": "4.4.12",
 		"cosmiconfig": "9.0.0",
-		"debug": "4.4.1",
+		"debug": "4.4.3",
 		"glob": "11.0.3",
 		"ignore": "7.0.5",
 		"import-meta-resolve": "4.2.0",
