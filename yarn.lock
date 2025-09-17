@@ -1720,7 +1720,7 @@ __metadata:
     eslint-import-resolver-typescript: "npm:4.4.4"
     eslint-plugin-import-x: "npm:4.16.1"
     eslint-plugin-jsdoc: "npm:54.7.0"
-    eslint-plugin-n: "npm:17.22.0"
+    eslint-plugin-n: "npm:17.23.0"
     eslint-plugin-regexp: "npm:2.10.0"
     eslint-plugin-sort-class-members: "npm:1.21.0"
     eslint-plugin-unicorn: "npm:60.0.0"
@@ -7519,9 +7519,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-n@npm:17.22.0":
-  version: 17.22.0
-  resolution: "eslint-plugin-n@npm:17.22.0"
+"eslint-plugin-n@npm:17.23.0":
+  version: 17.23.0
+  resolution: "eslint-plugin-n@npm:17.23.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.5.0"
     enhanced-resolve: "npm:^5.17.1"
@@ -7534,7 +7534,7 @@ __metadata:
     ts-declaration-location: "npm:^1.0.6"
   peerDependencies:
     eslint: ">=8.23.0"
-  checksum: 10c0/572d22ecee874a00e3ce0c89a737bf8f159ab4318a32e9665b829e62ba4e683ae3c3c40637c33316b4d4b5cd11e82ab8130ef400c8a504c40a2d39f43be5d998
+  checksum: 10c0/3737996d8e1cb17f0b67efa8664aa08c180002487f19c454e1fad2b4a28f82139ece6e1049f8c4f8a1f28771683d60e50af1059c910df4d1054ebcba775daa47
   languageName: node
   linkType: hard
 
