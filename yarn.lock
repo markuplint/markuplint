@@ -3875,10 +3875,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:1.102.0":
-  version: 1.102.0
-  resolution: "@types/vscode@npm:1.102.0"
-  checksum: 10c0/4e1bb45218c255a5ba7dfd050e354b73de88ead216c5dbb104dd9b097c9107d77d17d3b0a16ae0996857a19cd8e58840fed3e650c520515e69ebbd2027e75b5b
+"@types/vscode@npm:1.104.0":
+  version: 1.104.0
+  resolution: "@types/vscode@npm:1.104.0"
+  checksum: 10c0/6d9dd470a8d430c65ce5069bc504b9b3f500fcfe13dc7e5df23994f70ea569707ea005936cf706d325b3abf28bfdc402eb8b8449c548b7428f1a6ebfe0d264b9
   languageName: node
   linkType: hard
 
@@ -17482,7 +17482,7 @@ __metadata:
     "@types/mocha": "npm:10.0.10"
     "@types/node": "npm:22.17.0"
     "@types/semver": "npm:7.7.1"
-    "@types/vscode": "npm:1.102.0"
+    "@types/vscode": "npm:1.104.0"
     "@vscode/test-electron": "npm:2.5.2"
     "@vscode/vsce": "npm:3.6.0"
     debug: "npm:4.4.3"
