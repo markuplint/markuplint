@@ -39,7 +39,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/compiler@npm:2.12.2, @astrojs/compiler@npm:^2.0.0":
+"@astrojs/compiler@npm:2.13.0":
+  version: 2.13.0
+  resolution: "@astrojs/compiler@npm:2.13.0"
+  checksum: 10c0/d8f4ee217468acc03beeb1f632cad8811622f7fef9075133cb5c327ec7ce290bc04e55e74740011800618d9a06be5cc3c2a93fd574c8c3421bad00ad133625c3
+  languageName: node
+  linkType: hard
+
+"@astrojs/compiler@npm:^2.0.0":
   version: 2.12.2
   resolution: "@astrojs/compiler@npm:2.12.2"
   checksum: 10c0/3e63055117010247a9fa6d2c8de1263b3e6f3c089bb6b3cddea76bf3eea6b62b77359c89950e6d048d860874a79521ca2c0cc734af1ee59c7568e01e76a4df10
@@ -1757,7 +1764,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/astro-parser@workspace:packages/@markuplint/astro-parser"
   dependencies:
-    "@astrojs/compiler": "npm:2.12.2"
+    "@astrojs/compiler": "npm:2.13.0"
     "@markuplint/ml-ast": "npm:4.4.10"
     "@markuplint/parser-utils": "npm:4.8.8"
     astro-eslint-parser: "npm:1.2.2"
