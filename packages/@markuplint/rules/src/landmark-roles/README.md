@@ -1,12 +1,12 @@
 ---
 id: landmark-roles
-description: Whether banner, main, complementary and contentinfo are top-level landmarks. Whether a specific landmark roll has unique label when used multiple times on a page
+description: Whether banner, main, complementary and contentinfo are top-level landmarks. Whether a specific landmark role has unique label when used multiple times on a page
 ---
 
 # `landmark-roles`
 
 - Whether `banner`, `main`, `complementary` and `contentinfo` are top-level landmarks
-- Whether a specific landmark roll has unique label when used multiple times on a page
+- Whether a specific landmark role has unique label when used multiple times on a page
 - ~~Whether perceptible content exists on any landmark~~ (Work in progress)
 
 Check the above and warn if it is not satisfied.
