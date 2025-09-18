@@ -1805,7 +1805,6 @@ __metadata:
     fs-extra: "npm:11.3.2"
     glob: "npm:11.0.3"
     prettier: "npm:3.6.2"
-    ts-node: "npm:10.9.2"
     typescript: "npm:5.9.2"
   bin:
     create-rule: ./bin/create-rule.mjs
