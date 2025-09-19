@@ -111,7 +111,9 @@
 		"vscode:typecheck": "tsc",
 		"vscode:test": "run-s vscode:test:pre vscode:test:suite",
 		"vscode:test:suite": "node ./test/suite/run-tests.js",
-		"vscode:test:pre": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
+		"vscode:test:pre": "run-s vscode:test:pre:src vscode:test:pre:tests",
+		"vscode:test:pre:src": "esbuild \"src/server/get-module.ts\" --bundle --platform=node --target=node20.9 --format=cjs --outfile=\"test/suite/get-module.js\"",
+		"vscode:test:pre:tests": "esbuild \"test/*.ts\" --platform=node --target=node20.9 --format=cjs --outdir=\"test/suite\"",
 		"vscode:login": "vsce login yusukehirao",
 		"vscode:package": "npx @vscode/vsce package --no-yarn",
 		"vscode:release": "npx @vscode/vsce publish --no-yarn"
