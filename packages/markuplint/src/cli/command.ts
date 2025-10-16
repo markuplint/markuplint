@@ -107,12 +107,27 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			continue;
 		}
 
-		// Track processed file
-		processedFiles.push(result.filePath);
-		filesContent.set(result.filePath, {
-			sourceCode: result.sourceCode,
-			fixedCode: result.fixedCode,
-		});
+		// Progressive出力が有効でJSON形式でない場合
+		if (options.progressiveOutput && format !== 'json') {
+			// 即座に出力
+			output(
+				{
+					violations: result.violations,
+					filePath: result.filePath,
+					sourceCode: result.sourceCode,
+					fixedCode: result.fixedCode,
+					status: 'processed',
+				},
+				options,
+			);
+		} else {
+			// 従来の動作：メモリに蓄積
+			processedFiles.push(result.filePath);
+			filesContent.set(result.filePath, {
+				sourceCode: result.sourceCode,
+				fixedCode: result.fixedCode,
+			});
+		}
 
 		// Add violations to collector
 		collector.pushWithFile(result.filePath, ...result.violations);
@@ -140,46 +155,49 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		return false;
 	}
 
-	// For standard/simple/github output, group violations by file
-	const violationsByFile = collector.groupByFile();
+	// Progressive出力が無効の場合のみループ後に出力
+	if (!options.progressiveOutput) {
+		// For standard/simple/github output, group violations by file
+		const violationsByFile = collector.groupByFile();
 
-	// Output per file - include processed files without violations
-	for (const filePath of processedFiles) {
-		const violations = violationsByFile.get(filePath) || [];
-		const content = filesContent.get(filePath) || { sourceCode: '', fixedCode: '' };
+		// Output per file - include processed files without violations
+		for (const filePath of processedFiles) {
+			const violations = violationsByFile.get(filePath) || [];
+			const content = filesContent.get(filePath) || { sourceCode: '', fixedCode: '' };
 
-		if (violations.length === 0 && !options.problemOnly) {
-			log('Output reports');
-			output(
-				{
-					violations,
-					filePath,
-					sourceCode: content.sourceCode,
-					fixedCode: content.fixedCode,
-					status: 'processed',
-				},
-				options,
-			);
-		} else if (violations.length > 0) {
-			log('Output reports');
-			output(
-				{
-					violations,
-					filePath,
-					sourceCode: content.sourceCode,
-					fixedCode: content.fixedCode,
-					status: 'processed',
-				},
-				options,
-			);
+			if (violations.length === 0 && !options.problemOnly) {
+				log('Output reports');
+				output(
+					{
+						violations,
+						filePath,
+						sourceCode: content.sourceCode,
+						fixedCode: content.fixedCode,
+						status: 'processed',
+					},
+					options,
+				);
+			} else if (violations.length > 0) {
+				log('Output reports');
+				output(
+					{
+						violations,
+						filePath,
+						sourceCode: content.sourceCode,
+						fixedCode: content.fixedCode,
+						status: 'processed',
+					},
+					options,
+				);
+			}
 		}
-	}
 
-	// Output skipped files
-	if (!options.problemOnly) {
-		for (const filePath of skippedFiles) {
-			log('Output skipped file report');
-			output({ violations: [], filePath, sourceCode: '', fixedCode: '', status: 'skipped' }, options);
+		// Output skipped files
+		if (!options.problemOnly) {
+			for (const filePath of skippedFiles) {
+				log('Output skipped file report');
+				output({ violations: [], filePath, sourceCode: '', fixedCode: '', status: 'skipped' }, options);
+			}
 		}
 	}
 
