@@ -9,6 +9,7 @@ import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-lan
 
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,
+	COMMAND_NAME_RESTART_SERVER,
 	ID,
 	OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME,
 	OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME,
@@ -26,6 +27,8 @@ import {
 import { StatusBar } from './status-bar.js';
 
 let client: LanguageClient;
+let logger: Logger;
+let dignosticslogger: Logger;
 
 export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -37,10 +40,8 @@ export function activate(
 		return;
 	}
 
-	const logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
-	const dignosticslogger = new Logger(
-		window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }),
-	);
+	logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
+	dignosticslogger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }));
 
 	const serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
 
@@ -135,6 +136,18 @@ export function activate(
 		logger.show();
 	});
 	context.subscriptions.push(openLogCommand);
+
+	const restartServerCommand = commands.registerCommand(COMMAND_NAME_RESTART_SERVER, async () => {
+		try {
+			void window.showInformationMessage('Restarting Markuplint language server...');
+			await client.stop();
+			await client.start();
+			void window.showInformationMessage('Markuplint language server restarted successfully.');
+		} catch (error) {
+			void window.showErrorMessage(`Failed to restart Markuplint language server: ${String(error)}`);
+		}
+	});
+	context.subscriptions.push(restartServerCommand);
 }
 
 export function deactivate() {

@@ -98,6 +98,13 @@
 				"fileMatch": "**/{.markuplintrc,.markuplintrc.json}",
 				"url": "https://raw.githubusercontent.com/markuplint/markuplint/main/config.schema.json"
 			}
+		],
+		"commands": [
+			{
+				"command": "markuplint.restartServer",
+				"title": "Restart Language Server",
+				"category": "Markuplint"
+			}
 		]
 	},
 	"scripts": {
