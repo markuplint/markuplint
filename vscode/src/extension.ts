@@ -28,7 +28,7 @@ import { StatusBar } from './status-bar.js';
 
 let client: LanguageClient;
 let logger: Logger;
-let dignosticslogger: Logger;
+let diagnosticsLogger: Logger;
 
 export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -41,7 +41,7 @@ export function activate(
 	}
 
 	logger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, { log: true }));
-	dignosticslogger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }));
+	diagnosticsLogger = new Logger(window.createOutputChannel(OUTPUT_CHANNEL_DIAGNOSTICS_CHANNEL_NAME, { log: true }));
 
 	const serverModule = context.asAbsolutePath(path.join('out', 'server.js'));
 
@@ -116,7 +116,7 @@ export function activate(
 		});
 
 		client.onNotification(logToDiagnosticsChannel, ([message, type]) => {
-			dignosticslogger.log(message, type);
+			diagnosticsLogger.log(message, type);
 		});
 
 		client.onNotification(errorToPopup, message => {
