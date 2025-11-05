@@ -1222,9 +1222,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-x64@npm:0.25.10":
-  version: 0.25.10
-  resolution: "@esbuild/linux-x64@npm:0.25.10"
+"@esbuild/linux-x64@npm:0.25.12":
+  version: 0.25.12
+  resolution: "@esbuild/linux-x64@npm:0.25.12"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -2161,7 +2161,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
-    "@esbuild/linux-x64": "npm:0.25.10"
+    "@esbuild/linux-x64": "npm:0.25.12"
     "@esbuild/win32-x64": "npm:0.25.12"
     "@rollup/rollup-linux-x64-gnu": "npm:4.50.2"
     "@vitest/coverage-v8": "npm:3.2.4"
