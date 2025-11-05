@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/selector
 
-
-
-
-
 ## [4.7.5](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.4...@markuplint/selector@4.7.5) (2025-08-13)
 
 ### Bug Fixes

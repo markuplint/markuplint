@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/file-resolver
 
-
-
-
-
 ## [4.9.15](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.14...@markuplint/file-resolver@4.9.15) (2025-08-13)
 
 ### Bug Fixes

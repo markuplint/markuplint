@@ -13,19 +13,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.7.0...@markuplint/spec-generator@4.8.0) (2025-08-24)
 
-
 ### Bug Fixes
 
-* **spec-generator:** remove debug log ([a00691b](https://github.com/markuplint/markuplint/commit/a00691bc9874ba6a8adb5bf6217e7d6c79959660))
-
+- **spec-generator:** remove debug log ([a00691b](https://github.com/markuplint/markuplint/commit/a00691bc9874ba6a8adb5bf6217e7d6c79959660))
 
 ### Features
 
-* **spec-generator:** update MDN scraping logic ([45889a9](https://github.com/markuplint/markuplint/commit/45889a9a308c48ccd43df6837463d0ecabd547a8))
-
-
-
-
+- **spec-generator:** update MDN scraping logic ([45889a9](https://github.com/markuplint/markuplint/commit/45889a9a308c48ccd43df6837463d0ecabd547a8))
 
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.6.19...@markuplint/spec-generator@4.7.0) (2025-08-13)
 

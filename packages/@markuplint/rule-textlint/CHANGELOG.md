@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/rule-textlint
 
-
-
-
-
 ## [4.7.20](https://github.com/markuplint/markuplint/compare/@markuplint/rule-textlint@4.7.19...@markuplint/rule-textlint@4.7.20) (2025-08-13)
 
 ### Bug Fixes

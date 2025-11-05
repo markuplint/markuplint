@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/pretenders
 
-
-
-
-
 ## [0.0.22](https://github.com/markuplint/markuplint/compare/@markuplint/pretenders@0.0.21...@markuplint/pretenders@0.0.22) (2025-08-13)
 
 ### Bug Fixes

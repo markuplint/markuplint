@@ -5,17 +5,24 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.14.0](https://github.com/markuplint/markuplint/compare/markuplint@4.13.1...markuplint@4.14.0) (2025-11-05)
 
+
 ### Features
 
-- **markuplint:** add progressive output option for CLI ([9cbfa69](https://github.com/markuplint/markuplint/commit/9cbfa69d1acbcb123b7b83a91cdbaf9a97f6c3d7))
+* **markuplint:** add progressive output option for CLI ([9cbfa69](https://github.com/markuplint/markuplint/commit/9cbfa69d1acbcb123b7b83a91cdbaf9a97f6c3d7))
+
+
+
+
 
 ## [4.13.1](https://github.com/markuplint/markuplint/compare/markuplint@4.13.0...markuplint@4.13.1) (2025-08-24)
 
 **Note:** Version bump only for package markuplint
 
-## [4.13.1](https://github.com/markuplint/markuplint/compare/markuplint@4.13.0...markuplint@4.13.1) (2025-08-24)
+# [Unreleased](https://github.com/markuplint/markuplint/compare/markuplint@4.13.0...HEAD)
 
-**Note:** Version bump only for package markuplint
+### Features
+
+- **markuplint:** add --progressive-output option for CLI ([9cbfa69](https://github.com/markuplint/markuplint/commit/9cbfa69d1))
 
 # [4.13.0](https://github.com/markuplint/markuplint/compare/markuplint@4.12.0...markuplint@4.13.0) (2025-08-13)
 

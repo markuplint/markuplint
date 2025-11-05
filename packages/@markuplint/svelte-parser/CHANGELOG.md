@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/svelte-parser
 
-
-
-
-
 ## [4.7.10](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.9...@markuplint/svelte-parser@4.7.10) (2025-08-13)
 
 ### Bug Fixes
