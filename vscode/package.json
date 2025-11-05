@@ -2,7 +2,7 @@
 	"name": "vscode-markuplint",
 	"displayName": "Markuplint",
 	"description": "Markuplint for VS Code",
-	"version": "4.8.11",
+	"version": "4.9.0",
 	"publisher": "yusukehirao",
 	"license": "MIT",
 	"private": true,
@@ -135,9 +135,9 @@
 		"typescript": "5.9.2"
 	},
 	"dependencies": {
-		"@markuplint/file-resolver": "4.9.16",
+		"@markuplint/file-resolver": "4.9.17",
 		"@markuplint/i18n": "4.7.0",
-		"@markuplint/ml-spec": "4.10.0",
+		"@markuplint/ml-spec": "4.10.1",
 		"debug": "4.4.3",
 		"glob": "11.0.3",
 		"markuplint": "4.13.0",
