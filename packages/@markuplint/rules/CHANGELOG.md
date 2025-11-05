@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/rules
 
-
-
-
-
 ## [4.11.1](https://github.com/markuplint/markuplint/compare/@markuplint/rules@4.11.0...@markuplint/rules@4.11.1) (2025-08-24)
 
 ### Bug Fixes
