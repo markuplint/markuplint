@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/ml-core
 
-
-
-
-
 # [4.13.0](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.12.4...@markuplint/ml-core@4.13.0) (2025-08-13)
 
 ### Bug Fixes

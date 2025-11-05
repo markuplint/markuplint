@@ -26,11 +26,10 @@
 		"@markuplint/ml-core": "4.13.1",
 		"glob": "11.0.3",
 		"prettier": "3.6.2",
-		"ts-node": "10.9.2",
 		"typescript": "5.9.2"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "11.0.4",
-		"fs-extra": "11.3.1"
+		"fs-extra": "11.3.2"
 	}
 }

@@ -35,6 +35,7 @@ And returns `1` if the result has problems one or more.
 | `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`    | Specifies the severity level of parse errors.                         |
 | `--max-count`              | none         | Number                                   | `0`        | Limit the number of violations shown. `0` means no limit.             |
 | `--max-warnings`           | none         | Number                                   | `-1`       | Number of warnings to trigger nonzero exit code. `-1` means no limit. |
+| `--progressive-output`     | none         | none                                     | false     | Output results immediately after processing each file.                |
 
 ## Particular run
 
@@ -117,3 +118,32 @@ $ markuplint index.html --max-warnings=-1
 2. Set initial limit: `markuplint "**/*.html" --max-warnings=50` in your CI
 3. Gradually reduce warnings and lower the limit over time
 4. Eventually reach zero warnings with `--max-warnings=0`
+
+### `--progressive-output`
+
+Output results immediately after processing each file instead of waiting for all files to be processed. This option improves the user experience when processing large numbers of files by providing real-time feedback and preventing the appearance of the CLI being frozen.
+
+```shell
+# Output results progressively as each file is processed
+$ markuplint "**/*.html" --progressive-output
+
+# Traditional batch output (default behavior)
+$ markuplint "**/*.html"
+```
+
+**Key features:**
+
+- **Real-time feedback**: See results as soon as each file is processed
+- **Improved UX**: Prevents the appearance of CLI being frozen during large file processing
+- **Backward compatibility**: Defaults to `false` to maintain existing behavior
+- **JSON format exception**: JSON output always uses batch mode regardless of this setting
+- **Performance**: No performance impact, only changes output timing
+
+**When to use:**
+
+- Processing large numbers of files (hundreds or thousands)
+- Interactive development workflows where immediate feedback is valuable
+- CI/CD pipelines where you want to see progress in real-time
+- Debugging issues with specific files in large projects
+
+**Note:** This option will default to `true` in the next major version of Markuplint.

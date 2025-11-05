@@ -36,11 +36,11 @@
 		"@markuplint/shared": "4.4.12",
 		"@types/debug": "4.1.12",
 		"chokidar": "4.0.3",
-		"debug": "4.4.1",
+		"debug": "4.4.3",
 		"meow": "13.2.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
-		"strip-ansi": "7.1.0",
+		"strip-ansi": "7.1.2",
 		"type-fest": "4.41.0"
 	}
 }
