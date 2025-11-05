@@ -35,7 +35,7 @@
 		},
 		{
 			"matchFileNames": ["vscode/*"],
-			"ignoreDeps": ["@types/node"]
+			"ignoreDeps": ["@types/node", "@types/vscode"]
 		},
 		{
 			"matchFileNames": ["packages/**/*"],
@@ -49,10 +49,6 @@
 			"matchPackageNames": ["node"],
 			"matchManagers": ["dockerfile"],
 			"enabled": false
-		},
-		{
-			"automerge": false,
-			"matchPackageNames": ["/@types/vscode/"]
 		}
 	]
 }
