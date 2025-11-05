@@ -44,7 +44,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -94,7 +94,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -164,7 +164,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -234,7 +234,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
@@ -294,7 +294,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
               uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -323,13 +323,13 @@ jobs:
             - name: Show directories
               run: |
                   pwd
-                  ls -la
-                  ls -la ./packages/markuplint
-                  ls -la ./packages/markuplint/lib
-                  ls -la ./packages/@markuplint
-                  ls -la ./packages/@markuplint/*
-                  ls -la ./packages/@markuplint/*/lib
-                  ls -la ./packages/@markuplint/config-presets
+                  find . -maxdepth 1 \( -type f -o -type d \) | sort
+                  find ./packages/markuplint -maxdepth 1 2>/dev/null || true
+                  find ./packages/markuplint/lib -maxdepth 1 2>/dev/null || true
+                  find ./packages/@markuplint -maxdepth 1 2>/dev/null || true
+                  find ./packages/@markuplint -mindepth 1 -maxdepth 1 -type d 2>/dev/null || true
+                  find ./packages/@markuplint -mindepth 2 -maxdepth 2 -name lib -type d 2>/dev/null || true
+                  find ./packages/@markuplint/config-presets -maxdepth 1 2>/dev/null || true
               shell: bash
 
             - name: Test
@@ -367,7 +367,7 @@ jobs:
 
             - name: Get yarn cache directory path
               id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             # Add step to remove packageManager field using jq for pnpm tests
             - name: Remove packageManager field from package.json
@@ -407,20 +407,20 @@ jobs:
               run: |
                   mkdir -p ${{ github.workspace }}/../sandbox
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
-                  ls -la ${{ github.workspace }}/../sandbox/test
+                  find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
 
             - name: Debug - Check directory structure
               run: |
                   echo "=== Current working directory ==="
                   pwd
                   echo "=== List current directory ==="
-                  ls -la
+                  find . -maxdepth 1 \( -type f -o -type d \) | sort
                   echo "=== Check if packages directory exists ==="
-                  ls -la packages/ | head -10
+                  find packages/ -maxdepth 1 2>/dev/null | head -10 || true
                   echo "=== Check sandbox structure ==="
-                  find ${{ github.workspace }}/../sandbox -type d -maxdepth 3
+                  find ${{ github.workspace }}/../sandbox -maxdepth 3 -type d
                   echo "=== Check if markuplint package exists ==="
-                  ls -la packages/markuplint/ | head -5
+                  find packages/markuplint/ -maxdepth 1 2>/dev/null | head -5 || true
                   echo "=== Check workspace path ==="
                   echo "workspace: ${{ github.workspace }}"
                   echo "parent: ${{ github.workspace }}/.."
@@ -443,11 +443,11 @@ jobs:
                   echo "=== Check package.json ==="
                   head -20 package.json
                   echo "=== Check if file: paths exist ==="
-                  ls -la ../../../../markuplint/packages/markuplint/ | head -5
+                  find ../../../../markuplint/packages/markuplint/ -maxdepth 1 2>/dev/null | head -5 || true
                   echo "=== Test relative path calculation ==="
-                  ls -la ../../../../markuplint/packages/@markuplint/ml-core/ | head -5
+                  find ../../../../markuplint/packages/@markuplint/ml-core/ -maxdepth 1 2>/dev/null | head -5 || true
                   echo "=== Check all files in directory ==="
-                  ls -la
+                  find . -maxdepth 1 \( -type f -o -type d \) | sort
                   echo "=== Check tsconfig.json (if exists) ==="
                   cat tsconfig.json 2>/dev/null || echo "tsconfig.json not found"
                   echo "=== Check markuplint.config.ts ==="
@@ -461,9 +461,9 @@ jobs:
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
                   echo "=== Check if packages were installed ==="
-                  ls -la node_modules/ | head -10
+                  find node_modules/ -maxdepth 1 2>/dev/null | head -10 || true
                   echo "=== Check markuplint in node_modules ==="
-                  ls -la node_modules/markuplint/ 2>/dev/null || echo "markuplint not found in node_modules"
+                  find node_modules/markuplint/ -maxdepth 1 2>/dev/null | head -5 || echo "markuplint not found in node_modules"
 
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
