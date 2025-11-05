@@ -19,7 +19,7 @@
     "@docusaurus/plugin-content-docs": "3.8.1",
     "@docusaurus/preset-classic": "3.8.1",
     "@docusaurus/remark-plugin-npm2yarn": "3.8.1",
-    "@octokit/rest": "22.0.0",
+    "@octokit/rest": "22.0.1",
     "clsx": "2.1.1",
     "dotenv": "17.2.2",
     "gray-matter": "4.0.3",
