@@ -5,21 +5,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.9.0](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.11...vscode-markuplint@4.9.0) (2025-11-05)
 
-
 ### Bug Fixes
 
-* **vscode:** align engines and @types/vscode to 1.99.1 and configure Renovate to ignore @types/vscode updates ([0d112ff](https://github.com/markuplint/markuplint/commit/0d112ff7209fc9896b92127d43279fda5bbbd574))
-* **vscode:** fix typo in diagnostics logger variable name ([36a00a2](https://github.com/markuplint/markuplint/commit/36a00a2d5b1df6ee83d6b8bfec42c2497f10897d))
-* **vscode:** update engines to support Cursor internal VS Code version ([35ef476](https://github.com/markuplint/markuplint/commit/35ef476fdee5883f94a6c340bd24bb9866b5cab8))
-
+- **vscode:** align engines and @types/vscode to 1.99.1 and configure Renovate to ignore @types/vscode updates ([0d112ff](https://github.com/markuplint/markuplint/commit/0d112ff7209fc9896b92127d43279fda5bbbd574))
+- **vscode:** fix typo in diagnostics logger variable name ([36a00a2](https://github.com/markuplint/markuplint/commit/36a00a2d5b1df6ee83d6b8bfec42c2497f10897d))
+- **vscode:** update engines to support Cursor internal VS Code version ([35ef476](https://github.com/markuplint/markuplint/commit/35ef476fdee5883f94a6c340bd24bb9866b5cab8))
 
 ### Features
 
-* **vscode:** add restart language server command ([c331ba8](https://github.com/markuplint/markuplint/commit/c331ba8583e40d99a396ccfcd2cddc64a6201e0c))
-
-
-
-
+- **vscode:** add restart language server command ([c331ba8](https://github.com/markuplint/markuplint/commit/c331ba8583e40d99a396ccfcd2cddc64a6201e0c))
 
 ## [4.8.11](https://github.com/markuplint/markuplint/compare/vscode-markuplint@4.8.10...vscode-markuplint@4.8.11) (2025-08-24)
 

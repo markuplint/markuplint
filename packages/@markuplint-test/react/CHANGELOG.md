@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint-test/react
 
-
-
-
-
 ## [0.0.19](https://github.com/markuplint/markuplint/compare/@markuplint-test/react@0.0.18...@markuplint-test/react@0.0.19) (2025-08-24)
 
 **Note:** Version bump only for package @markuplint-test/react

@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/ml-config
 
-
-
-
-
 ## [4.8.13](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.12...@markuplint/ml-config@4.8.13) (2025-08-24)
 
 **Note:** Version bump only for package @markuplint/ml-config

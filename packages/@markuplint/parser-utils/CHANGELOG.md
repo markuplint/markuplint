@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/parser-utils
 
-
-
-
-
 ## [4.8.9](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.8...@markuplint/parser-utils@4.8.9) (2025-08-24)
 
 **Note:** Version bump only for package @markuplint/parser-utils

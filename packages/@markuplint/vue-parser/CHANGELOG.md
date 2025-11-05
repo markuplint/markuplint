@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @markuplint/vue-parser
 
-
-
-
-
 ## [4.6.21](https://github.com/markuplint/markuplint/compare/@markuplint/vue-parser@4.6.20...@markuplint/vue-parser@4.6.21) (2025-08-24)
 
 **Note:** Version bump only for package @markuplint/vue-parser
