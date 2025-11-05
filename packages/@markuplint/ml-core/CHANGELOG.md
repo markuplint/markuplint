@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.2](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.13.1...@markuplint/ml-core@4.13.2) (2025-11-05)
+
+**Note:** Version bump only for package @markuplint/ml-core
+
+
+
+
+
 ## [4.13.1](https://github.com/markuplint/markuplint/compare/@markuplint/ml-core@4.13.0...@markuplint/ml-core@4.13.1) (2025-08-24)
 
 **Note:** Version bump only for package @markuplint/ml-core
