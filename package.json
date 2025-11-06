@@ -85,7 +85,7 @@
 		"textlint-rule-preset-ja-spacing": "2.4.3",
 		"textlint-rule-preset-ja-technical-writing": "12.0.2",
 		"textlint-rule-preset-japanese": "10.0.4",
-		"textlint-rule-preset-jtf-style": "3.0.2",
+		"textlint-rule-preset-jtf-style": "3.0.3",
 		"ts-node": "10.9.2",
 		"tsx": "4.20.5",
 		"typedoc": "0.28.14",
