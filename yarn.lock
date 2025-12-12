@@ -2271,7 +2271,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:4.4.10"
     "@markuplint/ml-spec": "npm:4.10.1"
     "@markuplint/types": "npm:4.8.1"
-    "@types/uuid": "npm:10.0.0"
+    "@types/uuid": "npm:11.0.0"
     "@typescript-eslint/typescript-estree": "npm:8.46.3"
     debug: "npm:4.4.3"
     espree: "npm:10.4.0"
@@ -4252,10 +4252,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:10.0.0":
-  version: 10.0.0
-  resolution: "@types/uuid@npm:10.0.0"
-  checksum: 10c0/9a1404bf287164481cb9b97f6bb638f78f955be57c40c6513b7655160beb29df6f84c915aaf4089a1559c216557dc4d2f79b48d978742d3ae10b937420ddac60
+"@types/uuid@npm:11.0.0":
+  version: 11.0.0
+  resolution: "@types/uuid@npm:11.0.0"
+  dependencies:
+    uuid: "npm:*"
+  checksum: 10c0/6ebf1448d8fdc78d348a8a84389b74083f2f58bed75a5a6cf3be8419d33dcf757735c8b2de746b066ff8ef07f4384d02549774dc84195ffa46b24745471e9d8e
   languageName: node
   linkType: hard
 
@@ -17631,7 +17633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:13.0.0":
+"uuid@npm:*, uuid@npm:13.0.0":
   version: 13.0.0
   resolution: "uuid@npm:13.0.0"
   bin:
