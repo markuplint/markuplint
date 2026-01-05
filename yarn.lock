@@ -2270,7 +2270,7 @@ __metadata:
     "@markuplint/cli-utils": "npm:4.4.13"
     "@markuplint/ml-core": "npm:4.13.2"
     "@types/fs-extra": "npm:11.0.4"
-    fs-extra: "npm:11.3.2"
+    fs-extra: "npm:11.3.3"
     glob: "npm:11.1.0"
     prettier: "npm:3.6.2"
     typescript: "npm:5.9.3"
@@ -9116,14 +9116,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.2":
-  version: 11.3.2
-  resolution: "fs-extra@npm:11.3.2"
+"fs-extra@npm:11.3.3":
+  version: 11.3.3
+  resolution: "fs-extra@npm:11.3.3"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10c0/f5d629e1bb646d5dedb4d8b24c5aad3deb8cc1d5438979d6f237146cd10e113b49a949ae1b54212c2fbc98e2d0995f38009a9a1d0520f0287943335e65fe919b
+  checksum: 10c0/984924ff4104e3e9f351b658a864bf3b354b2c90429f57aec0acd12d92c4e6b762cbacacdffb4e745b280adce882e1f980c485d9f02c453f769ab4e7fc646ce3
   languageName: node
   linkType: hard
 
