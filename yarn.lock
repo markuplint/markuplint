@@ -12218,7 +12218,7 @@ __metadata:
     lint-staged: "npm:16.2.7"
     npm-run-all2: "npm:8.0.4"
     textlint: "npm:15.5.0"
-    textlint-filter-rule-comments: "npm:1.2.2"
+    textlint-filter-rule-comments: "npm:1.3.0"
     textlint-rule-preset-ja-spacing: "npm:2.4.3"
     textlint-rule-preset-ja-technical-writing: "npm:12.0.2"
     textlint-rule-preset-japanese: "npm:10.0.4"
@@ -16514,12 +16514,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-filter-rule-comments@npm:1.2.2":
-  version: 1.2.2
-  resolution: "textlint-filter-rule-comments@npm:1.2.2"
-  peerDependencies:
-    textlint: ">=6.8.0"
-  checksum: 10c0/39edffd3f8ffb057cc9b1810bfb85f95b031625b1c1da7834319247fdde01191cacb4b81d2584a05257b7a70d84feb8018b6b0429c0a95e709a0833d6d3da402
+"textlint-filter-rule-comments@npm:1.3.0":
+  version: 1.3.0
+  resolution: "textlint-filter-rule-comments@npm:1.3.0"
+  checksum: 10c0/52eef93c7f6ef246cd88d072153bbb65b465dbe8b19b7516a6a67ce6d81fbbed10c2b4d81b45a6897cd93a1823c167cb69c93252c80eef4834e39ea7316942bc
   languageName: node
   linkType: hard
 
