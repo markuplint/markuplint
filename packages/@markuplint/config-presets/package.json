@@ -12,7 +12,7 @@
 		"build": "node build.mjs"
 	},
 	"devDependencies": {
-		"@isaacs/brace-expansion": "5.0.0",
+		"@isaacs/brace-expansion": "5.0.1",
 		"glob": "11.1.0",
 		"jsonc-parser": "3.3.1",
 		"mustache": "4.2.0"
