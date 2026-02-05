@@ -1897,6 +1897,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@esbuild/win32-x64@npm:0.27.3":
+  version: 0.27.3
+  resolution: "@esbuild/win32-x64@npm:0.27.3"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@eslint-community/eslint-plugin-eslint-comments@npm:4.5.0":
   version: 4.5.0
   resolution: "@eslint-community/eslint-plugin-eslint-comments@npm:4.5.0"
@@ -2818,7 +2825,7 @@ __metadata:
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
     "@esbuild/linux-x64": "npm:0.27.2"
-    "@esbuild/win32-x64": "npm:0.25.12"
+    "@esbuild/win32-x64": "npm:0.27.3"
     "@rollup/rollup-linux-x64-gnu": "npm:4.55.1"
     "@vitest/coverage-v8": "npm:3.2.4"
     browser-resolve: "npm:2.0.0"
