@@ -14,11 +14,20 @@ export interface MLMLSpec {
 	readonly specs: readonly ElementSpec[];
 }
 
+/**
+ * An element specification for extending or overriding parts of the base spec.
+ * Only the `name` property is required; all other properties are optional partial overrides.
+ * Attributes use `Partial<Attribute>` to allow specifying only changed fields.
+ */
 export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes'>> & {
 	readonly name: ElementSpec['name'];
 	readonly attributes?: Readonly<Record<string, Partial<Attribute>>>;
 };
 
+/**
+ * A partial specification used for extending or customizing the base markup language spec.
+ * Typically provided by parser plugins or framework-specific spec packages (e.g., `@markuplint/vue-spec`).
+ */
 export type ExtendedSpec = {
 	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
@@ -30,6 +39,10 @@ export type ExtendedSpec = {
  */
 export type Cites = readonly string[];
 
+/**
+ * Internal definition data within a markup language spec, containing global attributes,
+ * ARIA role/property definitions for each version, and content model category mappings.
+ */
 export type SpecDefs = {
 	readonly '#globalAttrs': {
 		readonly [category: string]: Readonly<Record<string, Partial<Attribute>>>;
@@ -151,6 +164,9 @@ type ElementCondition = {
 	readonly __WIP__: 'WORK_IN_PROGRESS';
 };
 
+/**
+ * Describes a single HTML/SVG attribute with its type, description, and status flags.
+ */
 export type Attribute = {
 	readonly name: string;
 	readonly type: ReadonlyDeep<AttributeType> | readonly ReadonlyDeep<AttributeType>[];
@@ -164,6 +180,9 @@ export type Attribute = {
 
 type ExtendableAttributeSpec = Omit<ReadonlyDeep<AttributeJSON>, 'type'>;
 
+/**
+ * A fully resolved ARIA role with all its properties, requirements, and naming constraints.
+ */
 export type ARIARole = {
 	readonly name: string;
 	readonly isAbstract: boolean;
@@ -179,6 +198,10 @@ export type ARIARole = {
 	readonly prohibitedProperties: readonly string[];
 };
 
+/**
+ * An ARIA role as defined in the raw schema data. All properties are optional
+ * except `name`, since the schema may provide only partial role information.
+ */
 export type ARIARoleInSchema = Partial<
 	ARIARole & {
 		readonly description: string;
@@ -188,6 +211,10 @@ export type ARIARoleInSchema = Partial<
 	readonly name: string;
 };
 
+/**
+ * Describes a property owned by an ARIA role, including whether it is inherited,
+ * required, or deprecated.
+ */
 export type ARIARoleOwnedProperties = {
 	readonly name: string;
 	readonly inherited?: true;
@@ -195,6 +222,10 @@ export type ARIARoleOwnedProperties = {
 	readonly deprecated?: true;
 };
 
+/**
+ * Describes an ARIA property or state, including its value type, enumeration values,
+ * global status, default value, conditional values per role, and equivalent HTML attributes.
+ */
 export type ARIAProperty = {
 	readonly name: string;
 	readonly type: 'property' | 'state';
@@ -211,6 +242,9 @@ export type ARIAProperty = {
 	readonly valueDescriptions?: Readonly<Record<string, string>>;
 };
 
+/**
+ * The possible value types for ARIA attributes, as defined by the WAI-ARIA specification.
+ */
 export type ARIAAttributeValue =
 	| 'true/false'
 	| 'tristate'
@@ -224,16 +258,32 @@ export type ARIAAttributeValue =
 	| 'token list'
 	| 'URI';
 
+/**
+ * A union type of supported ARIA specification version strings, derived from the `ariaVersions` tuple.
+ */
 export type ARIAVersion = (typeof ariaVersions)[number];
 
+/**
+ * Describes an HTML attribute that is semantically equivalent to an ARIA property,
+ * enabling automatic mapping from HTML attributes to ARIA states/properties.
+ */
 export type EquivalentHtmlAttr = {
 	readonly htmlAttrName: string;
 	readonly isNotStrictEquivalent?: true;
 	readonly value: string | null;
 };
 
+/**
+ * A function that tests whether an element matches a given CSS selector string.
+ * Typically bound to `Element.prototype.matches`.
+ */
 export type Matches = (selector: string) => boolean;
 
+/**
+ * The result of computing an element's ARIA role, containing the element reference,
+ * the resolved role specification (or null if no role applies), and an optional
+ * error type indicating issues during role computation.
+ */
 export type ComputedRole = {
 	readonly el: Element;
 	readonly role:
@@ -245,6 +295,10 @@ export type ComputedRole = {
 	readonly errorType?: RoleComputationError;
 };
 
+/**
+ * Error codes that may arise during ARIA role computation, indicating specific
+ * issues such as abstract roles, invalid context, or presentational conflicts.
+ */
 export type RoleComputationError =
 	| 'ABSTRACT'
 	| 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL'

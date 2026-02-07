@@ -26,12 +26,27 @@ const cpLog = log.extend('config-provider');
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 
+/**
+ * Manages loading, caching, and resolving markuplint configuration files.
+ *
+ * Handles `extends` chains, plugins, presets, overrides, and circular reference detection.
+ * Configuration files are searched via cosmiconfig and cached by file path.
+ */
 export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
 	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config | ConfigLoadError>();
 
+	/**
+	 * Recursively loads a configuration and all its `extends` dependencies.
+	 *
+	 * @param key - The config file path or module name to load
+	 * @param cache - Whether to use cached results
+	 * @param referrer - The file path of the config that referenced this key
+	 * @param depth - Current recursion depth (for circular reference detection)
+	 * @returns A set of loaded config keys and any errors encountered
+	 */
 	async recursiveLoad(
 		key: string,
 		cache: boolean,
@@ -84,6 +99,15 @@ export class ConfigProvider {
 		return { stack, errs };
 	}
 
+	/**
+	 * Resolves the full configuration for a target file by merging all named configs,
+	 * resolving plugins, and applying file-specific overrides.
+	 *
+	 * @param targetFile - The file being linted
+	 * @param names - Config file paths or module names to merge
+	 * @param cache - Whether to use cached results
+	 * @returns The fully resolved configuration set including plugins and errors
+	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
 		if (!cache) {
 			this.#store.clear();
@@ -164,6 +188,12 @@ export class ConfigProvider {
 		return result;
 	}
 
+	/**
+	 * Searches for a markuplint configuration file starting from the target file's directory.
+	 *
+	 * @param targetFile - The file whose directory to search from
+	 * @returns The file path of the found config, or `null` if none was found
+	 */
 	async search(targetFile: Readonly<MLFile>) {
 		const isExists = await targetFile.dirExists();
 
@@ -189,6 +219,13 @@ export class ConfigProvider {
 		return filePath;
 	}
 
+	/**
+	 * Stores a pre-built configuration in the provider's internal store.
+	 *
+	 * @param config - The optimized configuration to store
+	 * @param key - An optional key to store the config under; auto-generated if omitted
+	 * @returns The key under which the config was stored
+	 */
 	set(config: OptimizedConfig, key?: string) {
 		key = key ?? uuid();
 		this.#store.set(key, config);

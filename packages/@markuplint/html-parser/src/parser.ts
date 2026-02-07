@@ -24,6 +24,11 @@ type State = {
 
 type ExtendsOptions = Pick<ParserOptions, 'ignoreTags' | 'maskChar'>;
 
+/**
+ * Parser implementation for standard HTML, built on top of parse5.
+ * Handles document and fragment parsing, ghost elements (omitted tags),
+ * and optimizations for `<head>` / `<body>` tag handling.
+ */
 export class HtmlParser extends Parser<Node, State> {
 	constructor(options?: ExtendsOptions) {
 		super(options, {
@@ -213,4 +218,7 @@ export class HtmlParser extends Parser<Node, State> {
 	}
 }
 
+/**
+ * Default singleton instance of the HTML parser.
+ */
 export const parser = new HtmlParser();

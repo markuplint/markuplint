@@ -7,6 +7,18 @@ import { resolveVersion } from '../../utils/resolve-version.js';
 
 const cache = new Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>();
 
+/**
+ * Retrieves the resolved ARIA specification for an element, taking into account
+ * ARIA version differences and conditional overrides based on the element's
+ * current attribute state (e.g., `input[type=checkbox]` vs `input[type=text]`).
+ *
+ * @param specs - The full markup language specification
+ * @param localName - The local tag name of the element
+ * @param namespace - The namespace URI of the element, or null
+ * @param version - The ARIA specification version to use
+ * @param matches - A function that tests whether the element matches a CSS selector
+ * @returns The resolved ARIA specification for the element, or null if no spec exists
+ */
 export function getARIA(
 	specs: MLMLSpec,
 	localName: string,

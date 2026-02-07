@@ -4,6 +4,13 @@ import { generalImport } from './general-import.js';
 
 type PretendersConfig = OptimizedConfig['pretenders'];
 
+/**
+ * Resolves pretender definitions from files, imported modules, and inline data
+ * in the configuration.
+ *
+ * @param config - The pretenders configuration section from the optimized config
+ * @returns An array of all resolved pretender definitions
+ */
 export async function resolvePretenders(config: PretendersConfig): Promise<Pretender[]> {
 	if (!config) {
 		return [];

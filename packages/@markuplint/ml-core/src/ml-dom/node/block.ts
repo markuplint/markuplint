@@ -8,14 +8,36 @@ import { after, before, remove, replaceWith } from '../manipulations/child-node-
 
 import { MLNode } from './node.js';
 
+/**
+ * Represents a preprocessor-specific block node in the markuplint DOM tree.
+ * These nodes correspond to template engine constructs such as conditionals (`if`/`else`),
+ * loops (`each`), and other preprocessor directives that are not part of standard HTML.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined> extends MLNode<
 	T,
 	O,
 	MLASTPreprocessorSpecificBlock
 > {
+	/**
+	 * The type of conditional this block represents (e.g., `if`, `each`, `switch:case`).
+	 */
 	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
+
+	/**
+	 * Whether this block is transparent, meaning its children are treated
+	 * as belonging to the parent node for tree traversal purposes.
+	 */
 	readonly isTransparent: boolean;
 
+	/**
+	 * Creates a new MLBlock instance.
+	 *
+	 * @param astNode - The AST preprocessor block node to wrap
+	 * @param document - The owning document
+	 */
 	constructor(
 		astNode: MLASTPreprocessorSpecificBlock,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -1,6 +1,9 @@
 import type { Config, PlainData, RuleConfigValue, Violation } from '@markuplint/ml-config';
 import type { Document, Ruleset } from '@markuplint/ml-core';
 
+/**
+ * The result of linting a single file, including violations, source code, and fix results.
+ */
 export interface MLResultInfo {
 	readonly violations: readonly Violation[];
 	readonly filePath: string;

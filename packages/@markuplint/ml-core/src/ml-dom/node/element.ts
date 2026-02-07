@@ -41,11 +41,24 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
+/**
+ * Represents a DOM Element node wrapper in the markuplint DOM tree.
+ * Provides access to element attributes, tag names, namespace, ARIA properties,
+ * accessibility information, pretender context, and CSS selector matching.
+ * This is the primary class used for linting HTML elements.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLElement<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O, MLASTElement>
 	implements Element, HTMLOrSVGElement, HTMLElement
 {
 	#attributes: MLAttr<T, O>[];
+
+	/**
+	 * The closing tag for this element, or null if the element is self-closing or void.
+	 */
 	readonly closeTag: MLElementCloseTag<T, O> | null;
 
 	/**
@@ -58,9 +71,20 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly elementType: ElementType;
 	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
+	/**
+	 * Whether this element belongs to a non-HTML namespace (e.g., SVG or MathML).
+	 */
 	readonly isForeignElement: boolean;
+
+	/**
+	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
+	 */
 	readonly isOmitted: boolean;
 	#localName: string;
+
+	/**
+	 * The namespace URI of this element (e.g., `http://www.w3.org/1999/xhtml` for HTML elements).
+	 */
 	readonly namespaceURI: NamespaceURI;
 	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
@@ -105,11 +129,33 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		| null
 		| undefined;
 
+	/**
+	 * The pretender context if this element is participating in pretender behavior,
+	 * or null if it is not a pretender or pretended element.
+	 */
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
+
+	/**
+	 * The self-closing solidus token (`/`), or null if the element is not self-closing.
+	 */
 	readonly selfClosingSolidus: MLToken | null;
+
+	/**
+	 * The tag close character string (e.g., `>` or `/>` or `%>`).
+	 */
 	readonly tagCloseChar: string;
+
+	/**
+	 * The tag open character string (e.g., `<` or `<%`).
+	 */
 	readonly tagOpenChar: string;
 
+	/**
+	 * Creates a new MLElement instance from an AST element node.
+	 *
+	 * @param astNode - The AST element node to wrap
+	 * @param document - The owning document
+	 */
 	constructor(
 		astNode: MLASTElement,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -726,6 +772,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		throw new UnexpectedCallError('Not supported "assignedSlot" property');
 	}
 
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `Element`
+	 */
 	get attributeStyleMap(): StylePropertyMap {
 		throw new UnexpectedCallError('Not supported "attributeStyleMap" property');
 	}
@@ -925,12 +977,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns the fixed (potentially corrected) node name, which may differ from the
+	 * original node name after lint fixes such as case normalization.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	get fixedNodeName() {
 		return this.#fixedNodeName;
 	}
 
+	/**
+	 * Whether this element has any spread attributes (e.g., `{...props}` in JSX).
+	 */
 	get hasSpreadAttr() {
 		return this.#attributes.some(attr => attr.localName === '#spread');
 	}
@@ -2963,6 +3021,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns the original raw element name exactly as it appears in the AST,
+	 * without any case normalization or pretender resolution.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 */
 	get rawName() {
@@ -2981,6 +3042,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns the rule configuration for this element, respecting the pretender context.
+	 * If the element is a pretended origin, returns the rule from the pretending element.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get rule(): RuleInfo<T, O> {
@@ -3287,6 +3351,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		throw new UnexpectedCallError('Not supported "computedStyleMap" method');
 	}
 
+	/**
+	 * Overrides the fixed node name for this element, used when the element's
+	 * tag name needs to be corrected during linting (e.g., case normalization).
+	 *
+	 * @param name - The new node name to set
+	 */
 	fixNodeName(name: string) {
 		this.#fixedNodeName = name;
 	}
@@ -3306,7 +3376,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Computes the accessible name of this element according to the
+	 * Accessible Name and Description Computation algorithm.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param version - The ARIA specification version to use for computation
+	 * @returns The computed accessible name string
 	 */
 	getAccessibleName(version: ARIAVersion): string {
 		return getAccname(this, version);
@@ -3378,7 +3453,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Gets the attribute value from the original (non-pretended) attributes list,
+	 * bypassing any pretender context that might be active.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @returns The attribute value, or null if the attribute is not found
 	 */
 	getAttributePretended(attrName: string) {
 		for (const attr of this.#attributes) {
@@ -3390,7 +3470,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns all attribute tokens matching the given name, including duplicates.
+	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param attrName - The attribute name to look up (case-insensitive)
+	 * @returns An array of matching attribute tokens
 	 */
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
@@ -3404,7 +3489,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns all attribute tokens for this element, respecting the pretender context.
+	 * If the element is pretending to be another, returns the pretender's attributes.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns A frozen array of all attribute tokens
 	 */
 	getAttributeTokens() {
 		return Object.freeze(
@@ -3423,6 +3512,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		throw new UnexpectedCallError('Not supported "getBoundingClientRect" method');
 	}
 
+	/**
+	 * Returns child elements and non-whitespace text nodes, skipping omitted elements
+	 * by flattening their children into the result. Results are cached for performance.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns An array of child elements and non-whitespace text nodes
+	 */
 	getChildElementsAndTextNodeWithoutWhitespaces() {
 		if (this.#getChildElementsAndTextNodeWithoutWhitespacesCache) {
 			return this.#getChildElementsAndTextNodeWithoutWhitespacesCache;
@@ -3507,7 +3603,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns the source location of the element's tag name (excluding the opening `<` character).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns An object with `offset`, `line`, and `col` properties indicating where the name starts
 	 */
 	getNameLocation() {
 		return {
@@ -3545,7 +3644,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Checks whether this element has any mutable attributes, such as spread
+	 * attributes or attributes with dynamic values from template expressions.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if any attribute is dynamic or lacks a name node (spread)
 	 */
 	hasMutableAttributes() {
 		for (const attr of this.attributes) {
@@ -3560,9 +3663,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * This element has "Preprocessor Specific Block". In other words, Its children are potentially mutable.
+	 * Checks whether this element has children that are potentially mutable,
+	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
+	 * with dynamic attributes.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param attr - When true, also considers children with mutable attributes as mutable
+	 * @returns True if this element has potentially mutable children
 	 */
 	hasMutableChildren(attr = false) {
 		for (const child of this.getPureChildNodes()) {
@@ -3650,7 +3757,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Checks whether this element is a descendant of any element whose UUID
+	 * is in the given list, by walking up the parent element chain.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param uuidList - A list of element UUIDs to check against
+	 * @returns True if any ancestor element's UUID is in the list
 	 */
 	isDescendantByUUIDList(uuidList: readonly string[]) {
 		let el = this.parentElement;
@@ -3669,7 +3781,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Checks whether this element has no meaningful child content
+	 * (only whitespace-only text nodes or no children at all).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if the element has no non-whitespace child content
 	 */
 	isEmpty() {
 		for (const childNode of this.childNodes) {
@@ -3692,6 +3808,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return this.matchMLSelector(selector, scope).matched;
 	}
 
+	/**
+	 * Matches this element against a CSS selector or regex selector pattern,
+	 * returning detailed match results. When the element is a pretender,
+	 * it attempts to match both as the pretender and as the original element.
+	 *
+	 * @param selector - The CSS selector string or regex selector to match against
+	 * @param scope - An optional scope node for scoped selector matching
+	 * @returns The detailed match result including captured groups from regex selectors
+	 */
 	matchMLSelector(
 		selector: string | RegexSelector | undefined,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -3722,7 +3847,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Pretenders Initialization
+	 * Initializes the pretender context for this element based on the given pretender
+	 * configurations. If a matching pretender is found or the element has an `as` attribute,
+	 * sets up the pretender/pretended relationship between elements.
+	 *
+	 * @param pretenders - Optional array of pretender configurations to match against
 	 */
 	pretending(pretenders?: readonly Pretender[]) {
 		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
@@ -4057,7 +4186,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns a normalized string representation of this element including its tag name,
+	 * attributes, and child content. Whitespace-only text nodes are excluded.
+	 * The result is cached for repeated calls.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns The normalized HTML string of this element
 	 */
 	toNormalizeString(): string {
 		if (this.#normalizedString) {
@@ -4082,7 +4216,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Returns a string representation of this element. When `fixed` is true,
+	 * returns the element with any lint fixes applied to the tag name,
+	 * attributes, and embedded comment nodes.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
+	 * @returns The string content of this element
 	 */
 	toString(fixed = false) {
 		if (!fixed) {

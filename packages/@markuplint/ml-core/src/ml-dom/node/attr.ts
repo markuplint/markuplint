@@ -11,17 +11,53 @@ import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
+/**
+ * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
+ * Wraps an AST attribute token and provides access to the attribute's name, value,
+ * tokens (name, equal sign, quotes, value), and metadata such as whether
+ * the attribute is a directive or has a dynamic value.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLNode<T, O, MLASTAttr>
 	implements Attr
 {
+	/**
+	 * A candidate attribute name suggested by the parser, if available.
+	 */
 	readonly candidate?: string;
+
+	/**
+	 * The end quote token of the attribute value, or null if the attribute has no value or quotes.
+	 */
 	readonly endQuote: MLToken | null = null;
+
+	/**
+	 * The equal sign token between the attribute name and value, or null if absent.
+	 */
 	readonly equal: MLToken | null = null;
+
+	/**
+	 * Whether this attribute is a directive (e.g., framework-specific attributes like `v-if` or `@click`).
+	 */
 	readonly isDirective?: true;
+
+	/**
+	 * Whether this attribute can be duplicated on the same element.
+	 */
 	readonly isDuplicatable: boolean;
+
+	/**
+	 * Whether this attribute has a dynamic value (e.g., a template expression rather than a static string).
+	 */
 	readonly isDynamicValue?: true;
 	readonly #localName: string;
+
+	/**
+	 * The token representing the attribute name, or null for spread attributes.
+	 */
 	readonly nameNode: MLToken | null = null;
 	readonly #namespaceURI: string;
 	/**
@@ -31,10 +67,29 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly ownerElement: MLElement<T, O>;
 	readonly #potentialName: string;
 	readonly #potentialValue: string;
+	/**
+	 * The whitespace token after the equal sign, or null if absent.
+	 */
 	readonly spacesAfterEqual: MLToken | null = null;
+
+	/**
+	 * The whitespace token before the equal sign, or null if absent.
+	 */
 	readonly spacesBeforeEqual: MLToken | null = null;
+
+	/**
+	 * The whitespace token before the attribute name, or null if absent.
+	 */
 	readonly spacesBeforeName: MLToken | null = null;
+
+	/**
+	 * The start quote token of the attribute value, or null if the attribute has no value or quotes.
+	 */
 	readonly startQuote: MLToken | null = null;
+
+	/**
+	 * The token representing the attribute value, or null if the attribute has no value.
+	 */
 	readonly valueNode: MLToken | null = null;
 
 	/**
@@ -45,6 +100,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	readonly valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 
+	/**
+	 * Creates a new MLAttr instance from an AST attribute token.
+	 *
+	 * @param astToken - The AST attribute token to wrap
+	 * @param ownElement - The element that owns this attribute
+	 */
 	constructor(
 		astToken: MLASTAttr,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -87,9 +148,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns the local name portion of the attribute (without namespace prefix).
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-localname
 	 */
@@ -98,6 +158,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * Returns the qualified attribute name (the potential name resolved by the parser).
 	 *
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#dom-attr-name
@@ -107,9 +168,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Returns the namespace URI of this attribute, resolved from the attribute name.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Attr`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-namespaceuri
 	 */
@@ -133,6 +193,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		return this.ATTRIBUTE_NODE;
 	}
 
+	/**
+	 * Returns the attribute value, equivalent to the `value` property.
+	 *
+	 * @implements DOM API: `Attr`
+	 * @see https://dom.spec.whatwg.org/#dom-node-nodevalue
+	 */
 	get nodeValue() {
 		return this.value;
 	}
@@ -204,7 +270,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * Returns a normalized string representation of the attribute,
+	 * stripping extraneous whitespace around the name, equal sign, and value tokens.
+	 * Falls back to the raw string if any token is missing.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 * @returns The normalized attribute string
 	 */
 	toNormalizeString() {
 		if (this.nameNode && this.equal && this.startQuote && this.valueNode && this.endQuote) {

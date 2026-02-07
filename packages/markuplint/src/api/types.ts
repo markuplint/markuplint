@@ -3,6 +3,9 @@ import type { LocaleSet } from '@markuplint/i18n';
 import type { Config, SeverityOptions, Violation } from '@markuplint/ml-config';
 import type { AnyMLRule, MLSchema, Ruleset } from '@markuplint/ml-core';
 
+/**
+ * Options for the markuplint API, controlling configuration, locale, rules, and behavior.
+ */
 export type APIOptions = {
 	readonly configFile?: string;
 	readonly config?: Config;
@@ -20,6 +23,9 @@ export type APIOptions = {
 	readonly autoLoad?: boolean;
 };
 
+/**
+ * Event map for the {@link MLEngine}, defining all emitted events and their payload types.
+ */
 export type MLEngineEventMap = {
 	log: [phase: string, message: string];
 	config: [filePath: string, config: ConfigSet, message?: string];

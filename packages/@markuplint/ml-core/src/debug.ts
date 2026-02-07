@@ -3,6 +3,10 @@ import debug from 'debug';
 const CLI_NS = 'markuplint-cli';
 export const log = debug('ml-core');
 
+/**
+ * Enables debug logging for the `ml-core` namespace and the CLI namespace.
+ * No-op if debug logging is already enabled.
+ */
 export function enableDebug() {
 	if (!log.enabled) {
 		debug.enable(`${log.namespace}*`);

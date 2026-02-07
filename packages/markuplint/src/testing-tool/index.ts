@@ -7,6 +7,16 @@ import { MLRule } from '@markuplint/ml-core';
 import { lint } from '../api/index.js';
 import { getGlobal } from '../global-settings.js';
 
+/**
+ * Lints inline source code with a given configuration. Convenience function for testing.
+ *
+ * @param sourceCode - The markup source code to lint
+ * @param config - The markuplint configuration to apply
+ * @param rules - Optional custom rules; if omitted, preset rules are imported
+ * @param locale - The locale for error messages (defaults to `'en'`)
+ * @param fix - Whether to attempt auto-fixing
+ * @returns An object containing violations and the fixed code
+ */
 export async function mlTest(
 	sourceCode: string,
 	config: Config,
@@ -32,6 +42,18 @@ export async function mlTest(
 	};
 }
 
+/**
+ * Tests a single rule against inline source code. Designed for rule unit testing.
+ *
+ * @template T - The rule's configuration value type
+ * @template O - The rule's options type
+ * @param rule - The rule seed to test
+ * @param sourceCode - The markup source code to lint
+ * @param config - Configuration with rule settings, nodeRule, and childNodeRule
+ * @param fix - Whether to attempt auto-fixing
+ * @param locale - The locale for error messages (defaults to `'en'`)
+ * @returns An object containing violations (without ruleId) and the fixed code
+ */
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
@@ -106,6 +128,16 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 	return res;
 }
 
+/**
+ * Lints a file target with a given configuration. Convenience function for integration testing.
+ *
+ * @param target - A file path or inline source code target
+ * @param config - The markuplint configuration to apply
+ * @param rules - Optional custom rules; if omitted, preset rules are imported
+ * @param locale - The locale for error messages
+ * @param fix - Whether to attempt auto-fixing
+ * @returns An object containing violations and the fixed code
+ */
 export async function mlTestFile(
 	target: Target,
 	config?: Config,
@@ -132,6 +164,12 @@ export async function mlTestFile(
 	};
 }
 
+/**
+ * A node-level rule override configuration for testing, targeting elements by selector.
+ *
+ * @template T - The rule's configuration value type
+ * @template O - The rule's options type
+ */
 export interface NodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
@@ -141,6 +179,12 @@ export interface NodeRule<T extends RuleConfigValue, O extends PlainData = undef
 	rule?: Rule<T, O>;
 }
 
+/**
+ * A child-node-level rule override configuration for testing, targeting child elements by selector.
+ *
+ * @template T - The rule's configuration value type
+ * @template O - The rule's options type
+ */
 export interface ChildNodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;

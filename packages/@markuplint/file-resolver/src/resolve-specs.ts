@@ -34,9 +34,9 @@ const caches = new Map<string, MLMLSpec | ExtendedSpec>();
  * }
  * ```
  *
- * @param filePath The lintee file path
- * @param specConfig The `spec` property part of the config
- * @returns
+ * @param filePath - The path of the file being linted, used for pattern matching
+ * @param specConfig - The `specs` property from the config, mapping file patterns to spec module names
+ * @returns An object containing the base HTML spec and any matched extended specs as a schemas tuple
  */
 export async function resolveSpecs(filePath: string, specConfig?: SpecConfig) {
 	const htmlSpec = await importSpecs<MLMLSpec>('@markuplint/html-spec');
