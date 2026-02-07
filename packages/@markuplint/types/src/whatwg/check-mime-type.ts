@@ -14,7 +14,10 @@ const expects = (withoutParameters: boolean) => [
 ];
 
 /**
- * MIME Type
+ * Validates a MIME type string according to the WHATWG MIME Sniffing specification.
+ *
+ * Optionally restricts to MIME types with no parameters.
+ *
  * @see https://mimesniff.spec.whatwg.org/#valid-mime-type
  */
 export const checkMIMEType: CustomSyntaxChecker<{

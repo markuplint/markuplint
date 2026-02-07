@@ -17,6 +17,14 @@ import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 import { checkLinkType } from './whatwg/check-link-type.js';
 
+/**
+ * Built-in type definitions registry for HTML attribute value validation.
+ *
+ * Maps type identifiers to their validation logic, reference URLs,
+ * and expected value descriptions. Includes definitions for common types
+ * (Any, Number, URL, etc.), WHATWG-specified types (DateTime, MIMEType,
+ * CustomElementName, etc.), and format-specific validators (BCP47, Pattern, etc.).
+ */
 export const defs: Defs = {
 	Any: {
 		ref: '',
