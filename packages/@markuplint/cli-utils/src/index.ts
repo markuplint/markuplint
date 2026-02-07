@@ -1,3 +1,11 @@
+/**
+ * @module @markuplint/cli-utils
+ *
+ * Shared CLI utility functions for the markuplint command-line interface.
+ * Provides terminal color helpers, text formatting, interactive prompts,
+ * module installation, and display utilities used across markuplint CLI commands.
+ */
+
 export { default as font } from 'picocolors';
 
 export { xterm } from './color.js';
