@@ -6,8 +6,29 @@ import { bgBlue, bgGreen, cmLog } from './debug.js';
 import { order } from './order.js';
 import { Collection, modelLog } from './utils.js';
 
+/**
+ * WeakMap that tracks which choice branch index produced each result,
+ * used for debug logging to identify the best-matching branch.
+ */
 const indexes = new WeakMap<Result<MatchedReason>, number>();
 
+/**
+ * Evaluates a choice (alternation) pattern against a list of child nodes.
+ * Tries each branch of the choice in order and returns the first successful match.
+ * If no branch fully matches, selects the "barely matched" result that consumed
+ * the most nodes, preferring `UNEXPECTED_EXTRA_NODE` results (which indicate
+ * partial progress) over missing-node results.
+ *
+ * This implements the alternation (`|`) semantics found in content model definitions,
+ * e.g., "either flow content or phrasing content".
+ *
+ * @param pattern - The choice pattern containing multiple alternative content model branches.
+ * @param childNodes - The child nodes to validate against the choice branches.
+ * @param specs - The resolved spec data for content model lookups.
+ * @param options - Validation behavior options.
+ * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @returns A result from the best-matching branch, or the branch that came closest to matching.
+ */
 export function choice(
 	pattern: ReadonlyDeep<PermittedContentChoice>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -88,6 +109,15 @@ export function choice(
 	};
 }
 
+/**
+ * Formats a debug log string for a choice pattern, highlighting the selected
+ * branch index with a color (green for a full match, blue for a barely-matched fallback).
+ *
+ * @param choice - The array of choice branches from the pattern.
+ * @param index - The index of the selected branch.
+ * @param barely - Whether this is a barely-matched fallback (uses blue) or a full match (uses green).
+ * @returns A formatted string showing all branches with the selected one highlighted.
+ */
 function choiceLogString(choice: ReadonlyDeep<PermittedContentChoice['choice']>, index: number, barely = false) {
 	const colorFn = barely ? bgBlue : bgGreen;
 	return choice

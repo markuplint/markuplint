@@ -4,9 +4,26 @@ import { createRule, getLocationFromChars } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Characters that must be escaped using character references in HTML text
+ * and attribute values.
+ */
 const defaultChars = ['"', '&', '<', '>'];
+
+/**
+ * Parent elements whose text content is exempt from character reference checks
+ * because their content is not parsed as HTML.
+ */
 const ignoreParentElement = new Set(['script', 'style']);
 
+/**
+ * Rule that checks whether special characters are properly escaped as
+ * character references.
+ *
+ * Scans text nodes and attribute values for the characters `"`, `&`, `<`,
+ * and `>` that are not already part of a valid character reference. Text
+ * inside `<script>` and `<style>` elements is excluded.
+ */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {

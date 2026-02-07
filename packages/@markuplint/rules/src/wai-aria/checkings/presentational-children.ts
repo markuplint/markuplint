@@ -5,30 +5,19 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 import { getComputedRole } from '@markuplint/ml-spec';
 
 /**
- * Presentational Children
+ * Checks whether ARIA attributes are applied to descendants of an element whose
+ * role has the `childrenArePresentational` characteristic.
+ *
+ * Roles such as `img` and `progressbar` mark their DOM descendants as presentational,
+ * meaning user agents should not expose them to the accessibility API. Setting ARIA
+ * attributes on such descendants is likely ineffective.
  *
  * @see https://www.w3.org/TR/wai-aria/#childrenArePresentational
  * @see https://w3c.github.io/aria/#childrenArePresentational
- *
- * > The DOM descendants are presentational.
- * > user agents SHOULD NOT expose descendants of
- * > this element through the platform accessibility API.
- * > If user agents do not hide the descendant nodes,
- * > some information may be read twice.
- *
  * @see https://w3c.github.io/aria/#tree_exclusion
- *
- * > Any descendants of elements that have the characteristic "Children Presentational: True"
- * > unless the descendant is not allowed to be presentational
- * > because it meets one of the conditions for exception described
- * > in Presentational Roles Conflict Resolution.
- * > However, the text content of any excluded descendants is included.
- *
  * @see https://w3c.github.io/aria/#tree_inclusion
- *
- *  > Text equivalents for hidden referenced objects
- * > may still be used in the name and description computation
- * > even when not included in the accessibility tree.
+ * @param el - The element node to inspect for presentational ancestor context.
+ * @returns A violation if the element has ARIA attributes and an ancestor with presentational children.
  */
 export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 	({ el }) =>
@@ -56,6 +45,13 @@ export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 		};
 	};
 
+/**
+ * Traverses the element's ancestor chain to find one whose computed role
+ * has the `childrenArePresentational` characteristic.
+ *
+ * @param el - The element to start searching from (exclusive, starts from parent).
+ * @returns The computed role of the ancestor with presentational children, or `null` if none found.
+ */
 function getAncestorHasPresentationalChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,

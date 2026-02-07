@@ -2,11 +2,23 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/** The rule value; currently only `'always'` is supported, requiring a doctype. */
 type Value = 'always';
+
+/** Configuration options for the doctype rule. */
 type Option = {
+	/** Whether to report obsolete doctypes that include a public or system identifier. */
 	denyObsoleteType: boolean;
 };
 
+/**
+ * Rule that validates the presence and correctness of the document's DOCTYPE
+ * declaration.
+ *
+ * Reports an error when no DOCTYPE is found (skipped for document fragments)
+ * and when an obsolete DOCTYPE (one with a public or system identifier) is
+ * declared.
+ */
 export default createRule<Value, Option>({
 	meta: meta,
 	defaultValue: 'always',

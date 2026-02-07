@@ -1,3 +1,11 @@
+/**
+ * @module @markuplint/rules
+ *
+ * Built-in rules for markuplint. This module exports a registry of all
+ * core lint rules that ship with markuplint, keyed by their rule name.
+ * Each rule implements the {@link AnyRuleSeed} interface and covers
+ * areas such as accessibility, HTML validity, naming conventions, and coding style.
+ */
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
 import AttrDuplication from './attr-duplication/index.js';
@@ -39,6 +47,10 @@ import TableRowColumnAlignment from './table-row-column-alignment/index.js';
 import UseList from './use-list/index.js';
 import WaiAria from './wai-aria/index.js';
 
+/**
+ * Registry of all built-in markuplint rules, mapping rule names to their seed definitions.
+ * Used by the markuplint core to initialize rule instances during linting.
+ */
 const rules = {
 	'attr-duplication': AttrDuplication,
 	'attr-value-quotes': AttrValueQuotes,

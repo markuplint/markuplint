@@ -4,6 +4,13 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Rule that validates required `<select>` elements have a placeholder label option.
+ *
+ * Per the HTML spec, a `<select>` with `required`, without `multiple`, and with a
+ * display size of 1 must have a placeholder label option (first `<option>` with
+ * an empty value directly under `<select>`).
+ */
 export default createRule<boolean>({
 	meta: meta,
 	verify({ document, report, t }) {
@@ -25,13 +32,13 @@ export default createRule<boolean>({
 });
 
 /**
- * > If a select element has a required attribute specified,
- * > does not have a multiple attribute specified,
- * > and has a display size of 1,
- * > then the select element must have a placeholder label option.
+ * Determines whether a `<select>` element requires a placeholder label option.
  *
- * @param select
- * @returns
+ * Per the HTML spec, a select element needs a placeholder label option when it
+ * has `required`, does not have `multiple`, and has a display size of 1.
+ *
+ * @param select - The `<select>` element to evaluate.
+ * @returns `true` if the select element requires a placeholder label option.
  */
 function needPlaceholderLabelOption(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -56,16 +63,13 @@ function needPlaceholderLabelOption(
 }
 
 /**
- * > If a select element has a required attribute specified,
- * > does not have a multiple attribute specified,
- * > and has a display size of 1;
- * > and if the value of the first option element
- * > in the select element's list of options (if any) is the empty string,
- * > and that option element's parent node is the select element (and not an optgroup element),
- * > then that option is the select element's **placeholder label option**.
+ * Checks whether a `<select>` element already has a valid placeholder label option.
  *
- * @param select
- * @returns
+ * A placeholder label option is the first `<option>` whose value is the empty string
+ * and whose parent is the `<select>` element itself (not an `<optgroup>`).
+ *
+ * @param select - The `<select>` element to check.
+ * @returns `true` if the element has a valid placeholder label option.
  */
 function hasPlaceholderLabelOption(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

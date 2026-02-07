@@ -2,6 +2,14 @@ import { createRule, getSpec } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Rule that reports the use of deprecated, obsolete, or non-standard HTML
+ * elements.
+ *
+ * Walks HTML and SVG elements and checks their spec status. Reports any
+ * element that is marked as deprecated, obsolete, or non-standard in the
+ * HTML specification.
+ */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {

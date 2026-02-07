@@ -8,14 +8,18 @@ import { transparent } from './transparent.js';
 import { isChoice, isTransparent } from './utils.js';
 
 /**
- * Check content condition
+ * Dispatches a single content model pattern to the appropriate handler based on its type.
+ * Acts as a routing layer in the content model validation pipeline:
+ * - Choice patterns (alternation) are delegated to `choice`.
+ * - Transparent patterns are delegated to `transparent`.
+ * - All other quantified patterns (require, optional, oneOrMore, zeroOrMore) are delegated to `countPattern`.
  *
- * @param pattern
- * @param childNodes
- * @param specs
- * @param options
- * @param depth
- * @returns
+ * @param pattern - A single content model pattern to evaluate.
+ * @param childNodes - The child nodes to validate against the pattern.
+ * @param specs - The resolved spec data for content model lookups.
+ * @param options - Validation behavior options.
+ * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @returns A result indicating whether the child nodes match the pattern.
  */
 export function complexBranch(
 	pattern: ReadonlyDeep<PermittedContentPattern>,

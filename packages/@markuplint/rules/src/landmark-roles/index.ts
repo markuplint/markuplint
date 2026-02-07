@@ -4,19 +4,28 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Configuration options for the landmark-roles rule.
+ */
 type Options = {
+	/** Landmark roles to exclude from validation. */
 	ignoreRoles: Roles[];
+	/** Whether to require a unique accessible name when duplicate landmark roles exist. */
 	labelEachArea: boolean;
 };
 
+/** Landmark roles that should appear at the top level of the document. */
 type TopLevelRoles = 'banner' | 'main' | 'complementary' | 'contentinfo';
 
+/** All recognized ARIA landmark roles for this rule. */
 type Roles = TopLevelRoles | 'form' | 'navigation' | 'region';
 
+/** A mapping from each landmark role to its matched elements in the document. */
 type RoleSet = {
 	[role in Roles]: Element<boolean, Options>[];
 };
 
+/** CSS selectors used to identify elements with each landmark role. */
 const selectors: { readonly [role in Roles]: string[] } = {
 	complementary: ['[role="complementary"]', 'aside'],
 	contentinfo: ['[role="contentinfo"]'],
@@ -27,8 +36,16 @@ const selectors: { readonly [role in Roles]: string[] } = {
 	region: ['[role="region"]', 'section[aria-labelledby]', 'section[aria-label]', 'section[title]'],
 };
 
+/** Roles that are required to be top-level landmarks per WAI-ARIA practices. */
 const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
 
+/**
+ * Rule that validates proper usage of ARIA landmark roles.
+ *
+ * Checks that `banner`, `main`, `complementary`, and `contentinfo` landmarks are
+ * top-level (not nested inside other landmarks), and that when duplicate landmarks
+ * of the same role exist, each has a unique accessible name.
+ */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -136,6 +153,12 @@ export default createRule<boolean, Options>({
 	},
 });
 
+/**
+ * Collects all UUIDs of elements that have landmark roles.
+ *
+ * @param roleset - The mapping of roles to their matched elements.
+ * @returns A flat array of UUIDs for all landmark role elements.
+ */
 function landmarkRoleElementUUIDList(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	roleset: RoleSet,
@@ -143,6 +166,12 @@ function landmarkRoleElementUUIDList(
 	return Object.values(roleset).flatMap(elements => elements.map(element => element.uuid));
 }
 
+/**
+ * Checks whether an element has an accessible label via `aria-label` or `aria-labelledby`.
+ *
+ * @param el - The landmark element to check.
+ * @returns `true` if the element has an accessible name, `false` otherwise.
+ */
 function hasLabel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,

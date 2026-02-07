@@ -14,14 +14,20 @@ import { Collection, mergeHints, modelLog, normalizeModel } from './utils.js';
 const cLog = cmLog.extend('countCompereResult');
 
 /**
- * Check count
+ * Validates a quantified content model pattern (require, optional, oneOrMore, or zeroOrMore)
+ * against a list of child nodes. Repeatedly applies the inner pattern via `recursiveBranch`
+ * until the minimum count is satisfied and no more nodes match, or until the maximum count
+ * is exceeded.
  *
- * @param pattern
- * @param childNodes
- * @param specs
- * @param options
- * @param depth
- * @returns
+ * Implements the repetition/quantifier semantics of content models (e.g., "one or more
+ * flow content elements", "optionally a `<caption>`", "exactly one `<tbody>`").
+ *
+ * @param pattern - A quantified content model pattern (require, optional, oneOrMore, or zeroOrMore).
+ * @param childNodes - The child nodes to validate against the repeated pattern.
+ * @param specs - The resolved spec data for content model lookups.
+ * @param options - Validation behavior options.
+ * @param depth - The current recursion depth, used for debug logging and nested evaluation.
+ * @returns A result indicating whether the required count of matches was achieved.
  */
 export function countPattern(
 	pattern:
@@ -218,6 +224,16 @@ export function countPattern(
 	}
 }
 
+/**
+ * Compares two results and returns the one that represents the best diagnostic outcome.
+ * When the primary result is a match or an unexpected-extra-node, it is preferred.
+ * Otherwise, the result with more barely-matched elements (closer to success) is chosen
+ * to provide the most helpful error message.
+ *
+ * @param a - The primary (current iteration) result.
+ * @param b - The barely-matched result from a previous successful partial match, or null.
+ * @returns The result that should be reported to the user.
+ */
 function compereResult(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	a: Readonly<Result>,
