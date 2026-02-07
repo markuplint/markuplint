@@ -5,6 +5,7 @@
  * Includes re-exports of common test dependencies (glob, execa) and DOM creation utilities
  * for constructing JSDOM-based elements used in unit and integration tests.
  */
+
 export * from './exports.js';
 
 import { JSDOM } from 'jsdom';

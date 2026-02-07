@@ -7,9 +7,14 @@ import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 import { lint } from './lint.js';
 
 /**
- * @deprecated
- * @param options
- * @returns
+ * Legacy v1 lint function provided for backward compatibility.
+ *
+ * Translates the v1 option shape into the current `lint` function's parameters
+ * and delegates execution to it.
+ *
+ * @deprecated Use the `lint` function or `MLEngine` class from the current API instead.
+ * @param options - The v1-style lint options including file paths, source codes, config, and rules.
+ * @returns An array of lint result information objects, one per evaluated file.
  */
 export async function lint_v1(options: {
 	/**

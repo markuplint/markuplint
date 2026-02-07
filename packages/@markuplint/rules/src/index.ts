@@ -6,6 +6,7 @@
  * Each rule implements the {@link AnyRuleSeed} interface and covers
  * areas such as accessibility, HTML validity, naming conventions, and coding style.
  */
+
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
 import AttrDuplication from './attr-duplication/index.js';
