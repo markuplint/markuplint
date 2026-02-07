@@ -27,6 +27,30 @@ description: Git manipulation rules
   - Wait for user confirmation or new instructions before proceeding
 - If the OS, application settings, or context suggest a language other than English is being used, provide a translation and explanation of the commit message in that language immediately before executing the commit command.
 
+# Package commit order (dependency-first)
+
+When committing changes that span multiple packages, always commit **from leaves to root** (dependencies before dependents). See `ARCHITECTURE.md` for the full dependency tree.
+
+| Tier | Packages                                                                                                          |
+| ---- | ----------------------------------------------------------------------------------------------------------------- |
+| 0    | `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`                                                         |
+| 1    | `types`                                                                                                           |
+| 2    | `ml-spec`                                                                                                         |
+| 3    | `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`                                                              |
+| 4    | `parser-utils`, `selector`                                                                                        |
+| 5    | `ml-config`                                                                                                       |
+| 6    | `html-parser`                                                                                                     |
+| 7    | Framework parsers (jsx, vue, svelte, pug, astro, alpine, ejs, erb, htmx, liquid, mustache, nunjucks, php, smarty) |
+| 8    | `ml-core`                                                                                                         |
+| 9    | `rules`, `file-resolver`                                                                                          |
+| 10   | `pretenders`, `create-rule`, `rule-textlint`                                                                      |
+| 11   | `markuplint`                                                                                                      |
+
+- Within the same tier, order does not matter
+- Root config changes (`.eslintrc`, `tsconfig.base.json`, CI) should be committed before any package changes
+- Single-package changes do not need ordering -- just commit that package
+- If unsure, verify with `npx lerna list --graph`
+
 # Commit message format
 
 - You must write in English

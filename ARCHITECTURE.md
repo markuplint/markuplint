@@ -443,6 +443,45 @@ Framework-specific specs (extend base data)
 3. **Data Structure Changes**: Would require extensive migration with minimal benefits
 4. **Generator Responsibility Mixing**: Moving schema operations to spec-generator would muddy architectural boundaries
 
+## Package Operation Order
+
+When performing cross-package operations (commits, builds, releases, migrations, refactoring), always process packages **from leaves to root** -- that is, dependencies before dependents. This ensures each package is in a consistent state before anything that relies on it is modified.
+
+### Canonical Order
+
+Process packages in the following tier order. Within the same tier, order does not matter.
+
+| Tier                  | Packages                                                                                                                                                                                                                    | Rationale                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 0 (Leaf)              | `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`                                                                                                                                                                   | No internal dependencies                            |
+| 1 (Types)             | `types`                                                                                                                                                                                                                     | Depends only on `shared`                            |
+| 2 (Spec Foundation)   | `ml-spec`                                                                                                                                                                                                                   | Depends on `ml-ast`, `types`                        |
+| 3 (Spec Data)         | `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`                                                                                                                                                                        | Depend on `ml-spec`                                 |
+| 4 (Parser Foundation) | `parser-utils`, `selector`                                                                                                                                                                                                  | Depend on `ml-spec`                                 |
+| 5 (Config)            | `ml-config`                                                                                                                                                                                                                 | Depends on `ml-spec`, `selector`                    |
+| 6 (HTML Parser)       | `html-parser`                                                                                                                                                                                                               | Depends on `parser-utils`                           |
+| 7 (Framework Parsers) | `jsx-parser`, `vue-parser`, `svelte-parser`, `pug-parser`, `astro-parser`, `alpine-parser`, `ejs-parser`, `erb-parser`, `htmx-parser`, `liquid-parser`, `mustache-parser`, `nunjucks-parser`, `php-parser`, `smarty-parser` | Depend on `html-parser` and/or `parser-utils`       |
+| 8 (Core)              | `ml-core`                                                                                                                                                                                                                   | Depends on many foundation + parser packages        |
+| 9 (Rules & Resolver)  | `rules`, `file-resolver`                                                                                                                                                                                                    | Depend on `ml-core`                                 |
+| 10 (Tools)            | `pretenders`, `create-rule`, `rule-textlint`                                                                                                                                                                                | Depend on core/config packages                      |
+| 11 (Main)             | `markuplint`                                                                                                                                                                                                                | Top-level entry point; depends on almost everything |
+
+### When to Apply This Order
+
+- **Committing**: Stage and commit packages from lower tiers first
+- **Building**: Build leaf packages before dependents (`yarn build` with lerna handles this automatically, but manual builds should follow this order)
+- **Releasing**: Publish lower-tier packages first to avoid broken peer dependencies
+- **Refactoring type signatures**: Change the source of truth (lower tier) first, then propagate to consumers (higher tiers)
+- **Adding JSDoc / documentation**: Process in any order (no runtime impact), but commit in this order
+- **Reviewing PRs**: Check lower-tier changes first to understand the foundation before reviewing consumers
+
+### Exceptions
+
+- **Test-only changes**: No ordering constraint since tests do not affect other packages at build time
+- **Documentation-only changes** (README, comments): Can be batched freely, but prefer committing per-package
+- **Single-package changes**: Skip ordering -- just commit the affected package
+- **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
+
 ## Conclusion
 
 The current architecture represents a mature, well-optimized design that effectively balances:
