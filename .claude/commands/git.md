@@ -32,18 +32,28 @@ description: Git manipulation rules
 - You must write in English
 - You must use the imperative mood
 - You must use conventional commits
-  - You must use the following types:
+  - You must use the types defined by `@commitlint/config-conventional`:
+    - `build`
+    - `chore`
+    - `ci`
+    - `docs`
     - `feat`
     - `fix`
-    - `docs`
+    - `perf`
     - `refactor`
+    - `revert`
+    - `style`
     - `test`
-    - `chore`
-  - You must use the following scopes:
-    - Each package name (without namespace)
-    - `repo`
-    - `deps`
-    - `github`
+  - Scopes are dynamically generated from Lerna packages (see `.commitlintrc.js`)
+    - Package names have `-markuplint` / `markuplint-` prefixes stripped
+    - Additional scopes:
+      - `release`
+      - `deps`
+      - `changelog`
+      - `github`
+      - `lint`
+      - `website`
+    - Scope is optional — omit it when changes span multiple packages or don't belong to one
 - The message body's lines must not be longer than 100 characters
 - The subject must not be sentence-case, start-case, pascal-case, upper-case
 
