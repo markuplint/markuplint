@@ -39,10 +39,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/compiler@npm:2.13.0":
-  version: 2.13.0
-  resolution: "@astrojs/compiler@npm:2.13.0"
-  checksum: 10c0/d8f4ee217468acc03beeb1f632cad8811622f7fef9075133cb5c327ec7ce290bc04e55e74740011800618d9a06be5cc3c2a93fd574c8c3421bad00ad133625c3
+"@astrojs/compiler@npm:2.13.1":
+  version: 2.13.1
+  resolution: "@astrojs/compiler@npm:2.13.1"
+  checksum: 10c0/83d85c30c8b1bd6d2382f1bc3d99126732838dc747e3a9defa55f726ccc2276c710e6af81bfb68d8fb17fde452c69cf0187cb1d2f8eb022764f1ccc4cf3a3db1
   languageName: node
   linkType: hard
 
@@ -1876,13 +1876,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-x64@npm:0.25.12":
-  version: 0.25.12
-  resolution: "@esbuild/win32-x64@npm:0.25.12"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/win32-x64@npm:0.25.9":
   version: 0.25.9
   resolution: "@esbuild/win32-x64@npm:0.25.9"
@@ -2441,7 +2434,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/astro-parser@workspace:packages/@markuplint/astro-parser"
   dependencies:
-    "@astrojs/compiler": "npm:2.13.0"
+    "@astrojs/compiler": "npm:2.13.1"
     "@markuplint/ml-ast": "npm:4.4.10"
     "@markuplint/parser-utils": "npm:4.8.10"
     astro-eslint-parser: "npm:1.2.2"
