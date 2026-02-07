@@ -2,7 +2,27 @@ import type { Token } from '@markuplint/parser-utils';
 
 import { HtmlParser } from '@markuplint/html-parser';
 
+/**
+ * Parser for Alpine.js templates that extends the standard HTML parser.
+ *
+ * Recognizes Alpine.js directives such as `x-data`, `x-bind`, `x-on`, and
+ * `x-transition`, and classifies them as either directives (opaque to linting)
+ * or attribute bindings (with potential standard attribute names for validation).
+ */
 class AlpineParser extends HtmlParser {
+	/**
+	 * Visits an attribute token and applies Alpine.js-specific classification.
+	 *
+	 * Determines whether the attribute is an Alpine.js directive, a dynamic
+	 * binding (e.g., `:class`, `x-bind:href`), or an event listener shorthand
+	 * (e.g., `@click`, `x-on:submit`), and returns the attribute with
+	 * appropriate metadata such as `potentialName`, `isDirective`, and
+	 * `isDynamicValue`.
+	 *
+	 * @param token - The raw attribute token containing text and position information
+	 * @param options - Controls quoting behavior, value types, and the initial parser state
+	 * @returns The attribute AST node enriched with Alpine.js directive metadata
+	 */
 	visitAttr(token: Token, options: Parameters<HtmlParser['visitAttr']>[1]) {
 		const attr = super.visitAttr(token, options);
 
@@ -200,4 +220,7 @@ class AlpineParser extends HtmlParser {
 	}
 }
 
+/**
+ * Singleton Alpine.js parser instance for use by the markuplint engine.
+ */
 export const parser = new AlpineParser();

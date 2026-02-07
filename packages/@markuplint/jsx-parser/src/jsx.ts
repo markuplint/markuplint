@@ -18,15 +18,28 @@ const parserOptions = {
 	useJSXTextNode: true,
 } as const;
 
+/** Represents a JSX comment node extracted from TypeScript ESTree. */
 export type JSXComment = TSESTree.Comment;
 
+/**
+ * Union type representing any JSX node that the parser can produce,
+ * including children, elements with spread attributes, and comments.
+ * Includes internal tracking fields for deduplication and parent relationships.
+ */
 export type JSXNode = (JSXChild | JSXElementHasSpreadAttribute | JSXComment) & {
 	__alreadyNodeized?: true;
 	__parentId?: number | null;
 };
 
+/** A JSX element that has been flagged as containing one or more spread attributes. */
 export type JSXElementHasSpreadAttribute = JSXElement & { __hasSpreadAttribute?: true };
 
+/**
+ * Parses a JSX attribute expression and throws a SyntaxError with an `index`
+ * property indicating the error offset when the expression is invalid.
+ *
+ * @param code - The raw JSX attribute expression code to validate
+ */
 export function attrParser(code: string) {
 	try {
 		parse(code, parserOptions);
@@ -50,6 +63,13 @@ export function attrParser(code: string) {
 	}
 }
 
+/**
+ * Parses JSX/TSX source code and returns a flat list of all JSX nodes
+ * including elements, fragments, and comments with parent ID annotations.
+ *
+ * @param jsxCode - The raw JSX/TSX source code to parse
+ * @returns A flat array of JSX nodes found in the source code
+ */
 export function jsxParser(jsxCode: string): JSXNode[] {
 	const ast = parse(jsxCode, parserOptions);
 
@@ -64,6 +84,14 @@ export function jsxParser(jsxCode: string): JSXNode[] {
 	];
 }
 
+/**
+ * Resolves the fully qualified name of a JSX tag name expression,
+ * handling simple identifiers, member expressions (e.g., `Foo.Bar`),
+ * and namespaced names (e.g., `ns:tag`).
+ *
+ * @param tagName - The JSX tag name expression AST node
+ * @returns The resolved tag name as a dot- or colon-separated string
+ */
 export function getName(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tagName: JSXTagNameExpression,
@@ -85,6 +113,14 @@ export function getName(
 	}
 }
 
+/**
+ * Recursively traverses the TypeScript ESTree AST to collect all JSX elements
+ * and fragments, annotating each node with a parent ID for hierarchy tracking.
+ *
+ * @param tree - Array of AST nodes to traverse
+ * @param parentId - The ID of the parent JSX element, or null for top-level nodes
+ * @returns A flat array of discovered JSX elements and fragments
+ */
 function recursiveSearchJSXElements(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	tree: readonly ((Node & { __parentId?: number | null }) | null)[],
@@ -444,6 +480,11 @@ function recursiveSearchJSXElements(
 }
 
 let count = 0;
+/**
+ * Generates a monotonically increasing unique ID for tracking JSX element parentage.
+ *
+ * @returns The next unique integer ID
+ */
 function idCounter() {
 	count += 1;
 	return count;

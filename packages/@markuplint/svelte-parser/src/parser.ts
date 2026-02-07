@@ -13,6 +13,13 @@ import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 import { parseBlock } from './parse-block.js';
 import { svelteParse } from './svelte-parser/index.js';
 
+/**
+ * Parser implementation for Svelte component templates.
+ * Extends the base Parser to handle Svelte elements, text, comments,
+ * expression tags, control flow blocks (`{#if}`, `{#each}`, `{#await}`,
+ * `{#key}`, `{#snippet}`), directives (`bind:`, `class:`, `on:`),
+ * and shorthand attribute syntax.
+ */
 export class SvelteParser extends Parser<SvelteNode> {
 	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
 
@@ -59,6 +66,17 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return super.parseError(error);
 	}
 
+	/**
+	 * Converts a Svelte AST node into markuplint node tree items.
+	 * Dispatches on the node type to handle Text, Comment, ExpressionTag,
+	 * elements (Component, RegularElement), and control flow blocks
+	 * (IfBlock, EachBlock, AwaitBlock, KeyBlock, SnippetBlock).
+	 *
+	 * @param originNode - The Svelte AST node to convert
+	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
+	 * @param depth - The nesting depth of the node
+	 * @returns An array of markuplint node tree items
+	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: SvelteNode,
@@ -260,6 +278,13 @@ export class SvelteParser extends Parser<SvelteNode> {
 		}
 	}
 
+	/**
+	 * Visits a text token, converting `<script>` tags embedded in Svelte template
+	 * text into preprocessor-specific blocks rather than treating them as raw text.
+	 *
+	 * @param token - The child token representing the text content
+	 * @returns An array of markuplint node tree items
+	 */
 	visitText(token: ChildToken): readonly MLASTNodeTreeItem[] {
 		const nodes = super.visitText(token, {
 			researchTags: false,
@@ -278,6 +303,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 		});
 	}
 
+	/**
+	 * Visits a preprocessor-specific block token and enforces that exactly one
+	 * block node is produced. Throws a ParserError if the result is empty
+	 * or contains multiple nodes.
+	 *
+	 * @param token - The child token with node name and fragment flag
+	 * @param childNodes - The child Svelte AST nodes within the block
+	 * @param conditionalType - The conditional block type identifier, or null
+	 * @returns A single-element tuple containing the preprocessor-specific block
+	 */
 	visitPsBlock(
 		token: ChildToken & {
 			readonly nodeName: string;
@@ -300,6 +335,15 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return [block];
 	}
 
+	/**
+	 * Visits child nodes and verifies that no sibling nodes with differing
+	 * hierarchy levels are produced. Throws a ParserError if unexpected
+	 * sibling nodes are discovered.
+	 *
+	 * @param children - The child Svelte AST nodes to visit
+	 * @param parentNode - The parent node in the markuplint tree
+	 * @returns An empty array (all children are attached via the visitor)
+	 */
 	visitChildren(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		children: readonly SvelteNode[],
@@ -312,6 +356,14 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return [];
 	}
 
+	/**
+	 * Visits an attribute token, handling Svelte-specific syntax including
+	 * curly-brace expression values, shorthand attributes (`{name}`),
+	 * `bind:` / `class:` directives, and duplicatable class attributes.
+	 *
+	 * @param token - The token representing the attribute
+	 * @returns The parsed attribute node with Svelte-specific metadata
+	 */
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
 			quoteSet: [
@@ -384,6 +436,15 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return super.detectElementType(nodeName, /^[A-Z]|\./);
 	}
 
+	/**
+	 * Parses a Svelte `{#await}` block into its constituent preprocessor-specific blocks:
+	 * the await expression, optional `{:then}` branch, optional `{:catch}` branch,
+	 * and the closing `{/await}` tag.
+	 *
+	 * @param token - The child token representing the entire await block
+	 * @param originBlockNode - The Svelte AST AwaitBlock node
+	 * @returns An array of preprocessor-specific block nodes
+	 */
 	#parseAwaitBlock(
 		token: ChildToken,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -551,6 +612,15 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return expressions;
 	}
 
+	/**
+	 * Parses a Svelte `{#each}` block into its constituent preprocessor-specific blocks:
+	 * the each expression, optional `{:else}` fallback branch,
+	 * and the closing `{/each}` tag.
+	 *
+	 * @param token - The child token representing the entire each block
+	 * @param originBlockNode - The Svelte AST EachBlock node
+	 * @returns An array of preprocessor-specific block nodes
+	 */
 	#parseEachBlock(
 		token: ChildToken,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -641,6 +711,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 		return expressions;
 	}
 
+	/**
+	 * Recursively traverses a Svelte `{#if}` block and its chained `{:else if}` / `{:else}`
+	 * branches, producing a flat list of token segments with their conditional type labels
+	 * and child node arrays.
+	 *
+	 * @param originBlockNode - The Svelte AST IfBlock node to traverse
+	 * @param start - The source offset where this block segment begins
+	 * @param type - The conditional branch type: 'if', 'elseif', or 'else'
+	 * @returns A flat array of token segments with children and type labels
+	 */
 	#traverseIfBlock(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originBlockNode: SvelteIfBlock,

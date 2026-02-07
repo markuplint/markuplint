@@ -10,6 +10,12 @@ type State = {
 	comments: readonly ASTComment[];
 };
 
+/**
+ * Parser implementation for Vue SFC templates.
+ * Extends the base Parser to handle Vue elements, text nodes, expression containers,
+ * directives (`v-bind`, `v-on`, `v-model`, `v-slot`), and template comments.
+ * Recognizes Vue built-in components and PascalCase user components.
+ */
 class VueParser extends Parser<ASTNode, State> {
 	readonly duplicatableAttrs = new Set(['class', 'style']);
 
@@ -46,6 +52,16 @@ class VueParser extends Parser<ASTNode, State> {
 		return super.parseError(error);
 	}
 
+	/**
+	 * Converts a Vue AST node into markuplint node tree items.
+	 * Handles VText (text nodes), VExpressionContainer (template expressions),
+	 * and VElement (elements with start/end tags and children).
+	 *
+	 * @param originNode - The Vue AST node to convert
+	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
+	 * @param depth - The nesting depth of the node
+	 * @returns An array of markuplint node tree items
+	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
@@ -101,6 +117,14 @@ class VueParser extends Parser<ASTNode, State> {
 		}
 	}
 
+	/**
+	 * Extends the base flattening to inject Vue template comments between sibling nodes.
+	 * Comments from the vue-eslint-parser are inserted at the correct positions
+	 * based on their source offsets relative to adjacent nodes.
+	 *
+	 * @param nodeTree - The hierarchical node tree to flatten
+	 * @returns A flat list of nodes including interleaved comments
+	 */
 	flattenNodes(nodeTree: readonly MLASTNodeTreeItem[]) {
 		const nodeList = super.flattenNodes(nodeTree);
 		const newNodeList: MLASTNodeTreeItem[] = [];
@@ -152,6 +176,14 @@ class VueParser extends Parser<ASTNode, State> {
 		});
 	}
 
+	/**
+	 * Visits an attribute token and resolves Vue-specific directive shorthands.
+	 * Handles `v-on` / `@` (event binding), `v-bind` / `:` (property binding),
+	 * `v-model`, `v-slot` / `#`, and other `v-` prefixed directives.
+	 *
+	 * @param token - The token representing the attribute
+	 * @returns The parsed attribute node with Vue-specific metadata
+	 */
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token);
 

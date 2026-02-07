@@ -1,5 +1,11 @@
 import { HtmlParser } from '@markuplint/html-parser';
 
+/**
+ * Parser for SvelteKit app template files (e.g., `app.html`).
+ * Extends the standard HTML parser to handle SvelteKit placeholder tags
+ * such as `%sveltekit.head%` and `%sveltekit.body%`, which are treated
+ * as opaque preprocessor-specific blocks.
+ */
 class SvelteKitTemplateParser extends HtmlParser {
 	constructor() {
 		super({

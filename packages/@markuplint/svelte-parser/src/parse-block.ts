@@ -2,6 +2,17 @@ import type { SvelteParser } from './parser.js';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 import type { SvelteBlock } from './svelte-parser/index.js';
 
+/**
+ * Extracts the open and close tag tokens from a Svelte block construct
+ * (e.g., `{#each}...{/each}`, `{#key}...{/key}`).
+ * Locates the closing `{/xxx}` tag via regex and computes the opening token
+ * based on the block's child fragment boundaries.
+ *
+ * @param parser - The SvelteParser instance used to slice source fragments
+ * @param token - The child token representing the entire block range
+ * @param originBlockNode - The Svelte AST block node being parsed
+ * @returns An object containing the `openToken` and `closeToken` for the block
+ */
 export function parseBlock(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	parser: SvelteParser,

@@ -7,6 +7,11 @@ import { ParserError, Parser, AttrState, scriptParser } from '@markuplint/parser
 
 import { pugParse } from './pug-parser/index.js';
 
+/**
+ * Internal HTML parser used for inline HTML content within Pug templates.
+ * Extends the standard HTML parser to handle Pug tag interpolation syntax (`#[...]`),
+ * treating interpolated tags as preprocessor-specific blocks.
+ */
 class HtmlInPugParser extends HtmlParser {
 	constructor() {
 		super({
@@ -26,6 +31,14 @@ class HtmlInPugParser extends HtmlParser {
 	}
 }
 
+/**
+ * Parser implementation for Pug templates.
+ * Extends the base Parser to handle Pug's indentation-based syntax, including tags,
+ * inline HTML, tag interpolation (`#[...]`), Pug attributes (including shorthand
+ * `#id` and `.class`), `&attributes` spread syntax, mixins, conditionals,
+ * and other Pug-specific constructs. Uses pug-lexer and pug-parser for
+ * initial tokenization before mapping to markuplint's node tree.
+ */
 class PugParser extends Parser<ASTNode> {
 	constructor() {
 		super({
@@ -53,6 +66,18 @@ class PugParser extends Parser<ASTNode> {
 		return super.parseError(error);
 	}
 
+	/**
+	 * Converts a Pug AST node into markuplint node tree items.
+	 * Handles Doctype, Text (including inline HTML and tag interpolation),
+	 * Comment, BlockComment, Tag (with attributes and child blocks),
+	 * and other Pug-specific constructs (mixins, conditionals, etc.)
+	 * which are mapped to preprocessor-specific blocks.
+	 *
+	 * @param originNode - The Pug AST node to convert
+	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
+	 * @param depth - The nesting depth of the node
+	 * @returns An array of markuplint node tree items
+	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ASTNode,
@@ -244,6 +269,16 @@ class PugParser extends Parser<ASTNode> {
 		});
 	}
 
+	/**
+	 * Visits an element token for Pug, constructing a start tag node with
+	 * pre-parsed attributes (including `&attributes` spread syntax) and
+	 * visiting child nodes within the Pug block.
+	 *
+	 * @param token - The child token with tag metadata and namespace
+	 * @param childNodes - The child Pug AST nodes within the tag's block
+	 * @param options - Options containing pre-parsed attribute overrides
+	 * @returns An array of markuplint node tree items for the element and its children
+	 */
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
@@ -280,6 +315,14 @@ class PugParser extends Parser<ASTNode> {
 		return null;
 	}
 
+	/**
+	 * Visits an attribute token, handling Pug-specific syntax including
+	 * shorthand `#id` and `.class` notation, quoted attribute names,
+	 * unescaped attribute names (trailing `!`), and JavaScript expression values.
+	 *
+	 * @param token - The token representing the attribute
+	 * @returns The parsed attribute node with Pug-specific metadata
+	 */
 	visitAttr(token: Token): MLASTAttr {
 		if (token.raw[0] === '#' || token.raw[0] === '.') {
 			const attr = super.visitAttr(token, {
