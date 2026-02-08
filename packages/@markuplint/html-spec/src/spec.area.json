@@ -35,6 +35,11 @@
 				"missingValueDefault": "rect",
 				"invalidValueDefault": "rect"
 			}
+		},
+		// https://open-ui.org/components/interest-invokers.explainer/
+		"interestfor": {
+			"type": "DOMID",
+			"experimental": true
 		}
 	},
 	"aria": {

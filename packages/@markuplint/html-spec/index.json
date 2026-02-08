@@ -35277,6 +35277,10 @@
 				"hreflang": {
 					"description": "Hints at the human language of the linked URL. No built-in functionality. Allowed values are the same as the global lang attribute."
 				},
+				"interestfor": {
+					"type": "DOMID",
+					"experimental": true
+				},
 				"name": {
 					"description": "Was required to define a possible target location in a page. In HTML 4.01, id and name could both be used on <a>, as long as they had identical values. Note: Use the global attribute id instead.",
 					"deprecated": true
@@ -35459,6 +35463,10 @@
 				},
 				"href": {
 					"description": "The hyperlink target for the area. Its value is a valid URL. This attribute may be omitted; if so, the <area> element does not represent a hyperlink."
+				},
+				"interestfor": {
+					"type": "DOMID",
+					"experimental": true
 				},
 				"ping": {
 					"description": "Contains a space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking."
@@ -36086,6 +36094,10 @@
 				},
 				"formtarget": {
 					"description": "If the button is a submit button, this attribute is an author-defined name or standardized, underscore-prefixed keyword indicating where to display the response from submitting the form. This is the name of, or keyword for, a browsing context (a tab, window, or <iframe>). If this attribute is specified, it overrides the target attribute of the button's form owner. The following keywords have special meanings: _self: Load the response into the same browsing context as the current one. This is the default if the attribute is not specified. _blank: Load the response into a new unnamed browsing context — usually a new tab or window, depending on the user's browser settings. _parent: Load the response into the parent browsing context of the current one. If there is no parent, this option behaves the same way as _self. _top: Load the response into the top-level browsing context (that is, the browsing context that is an ancestor of the current one, and has no parent). If there is no parent, this option behaves the same way as _self."
+				},
+				"interestfor": {
+					"type": "DOMID",
+					"experimental": true
 				},
 				"name": {
 					"description": "The name of the button, submitted as a pair with the button's value as part of the form data, when that button is used to submit the form."
@@ -42023,6 +42035,10 @@
 				},
 				"hreflang": {
 					"description": "The human language of the URL or URL fragment that the hyperlink points to. Value type: <string>; Default value: none; Animatable: no"
+				},
+				"interestfor": {
+					"type": "DOMID",
+					"experimental": true
 				},
 				"ping": {
 					"description": "A space-separated list of URLs to which, when the hyperlink is followed, POST requests with the body PING will be sent by the browser (in the background). Typically used for tracking. For a more widely-supported feature addressing the same use cases, see Navigator.sendBeacon(). Value type: <list-of-URLs>; Default value: none; Animatable: no",
