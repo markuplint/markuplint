@@ -97,7 +97,13 @@
 		"#XLinkAttrs": ["xlink:href", "xlink:title"],
 		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
 	},
-	"attributes": {},
+	"attributes": {
+		// https://open-ui.org/components/interest-invokers.explainer/
+		"interestfor": {
+			"type": "DOMID",
+			"experimental": true
+		}
+	},
 	"aria": {
 		// link role if the element has a valid href or xlink:href attribute.
 		// For a elements that are not links,
