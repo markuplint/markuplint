@@ -22,6 +22,11 @@ type ExtendedPseudoClass = Readonly<
 	>
 >;
 
+/**
+ * CSS selector matcher that parses a selector string and matches it against DOM nodes.
+ *
+ * Use {@link createSelector} to create cached instances with extended pseudo-class support.
+ */
 export class Selector {
 	#ruleset: Ruleset;
 

@@ -1,3 +1,9 @@
+/**
+ * Checks whether the given node is an Element node.
+ *
+ * @param node - The DOM node to check
+ * @returns `true` if the node is an Element
+ */
 export function isElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Node,
@@ -5,6 +11,13 @@ export function isElement(
 	return node.nodeType === node.ELEMENT_NODE;
 }
 
+/**
+ * Checks whether the given node is a non-DocumentType child node
+ * (i.e., has `previousElementSibling` and `nextElementSibling` properties).
+ *
+ * @param node - The DOM node to check
+ * @returns `true` if the node is an Element or CharacterData
+ */
 export function isNonDocumentTypeChildNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Node,
