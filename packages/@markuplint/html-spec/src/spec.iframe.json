@@ -60,6 +60,11 @@
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-allowfullscreen
 		"allowfullscreen": {
 			"type": "Boolean"
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement/privateToken
+		"privateToken": {
+			"type": "Any",
+			"experimental": true
 		}
 	},
 	"aria": {
