@@ -37806,7 +37806,7 @@
 					"description": "Marks the image for observation by the PerformanceElementTiming API. The value given becomes an identifier for the observed image element. See also the elementtiming attribute page."
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Fetch the image at a high priority relative to other images. low Fetch the image at a low priority relative to other images. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLImageElement.fetchPriority for more information."
+					"description": "Provides a hint of the relative priority to use when fetching the image. Allowed values: high Fetch the image at a high priority relative to other images. low Fetch the image at a low priority relative to other images. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
 				},
 				"height": {
 					"description": "The intrinsic height of the image, in pixels. Must be an integer without a unit. Note: Including height and width enables the aspect ratio of the image to be calculated by the browser prior to the image being loaded. This aspect ratio is used to reserve the space needed to display the image, reducing or even preventing a layout shift when the image is downloaded and painted to the screen. Reducing layout shift is a major component of good user experience and web performance."
@@ -38978,7 +38978,7 @@
 					"type": "Boolean"
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLLinkElement.fetchPriority for more information."
+					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
 				},
 				"href": {
 					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
@@ -40345,7 +40345,7 @@
 					"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
 				},
 				"fetchpriority": {
-					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set. See HTMLScriptElement.fetchPriority for more information."
+					"description": "Provides a hint of the relative priority to use when fetching an external script. Allowed values: high Fetch the external script at a high priority relative to other external scripts. low Fetch the external script at a low priority relative to other external scripts. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
 				},
 				"integrity": {
 					"condition": "[src]"
