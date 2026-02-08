@@ -2817,7 +2817,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
-    "@esbuild/linux-x64": "npm:0.27.2"
+    "@esbuild/linux-x64": "npm:0.27.3"
     "@esbuild/win32-x64": "npm:0.27.3"
     "@rollup/rollup-linux-x64-gnu": "npm:4.55.1"
     "@vitest/coverage-v8": "npm:3.2.4"
