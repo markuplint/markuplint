@@ -30,6 +30,11 @@
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootserializable
 		"shadowrootserializable": {
 			"type": "Boolean"
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template#shadowrootreferencetarget
+		"shadowrootreferencetarget": {
+			"type": "DOMID",
+			"experimental": true
 		}
 	},
 	"aria": {

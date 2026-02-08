@@ -41158,6 +41158,10 @@
 						"invalidValueDefault": "none"
 					}
 				},
+				"shadowrootreferencetarget": {
+					"type": "DOMID",
+					"experimental": true
+				},
 				"shadowrootserializable": {
 					"type": "Boolean"
 				}
