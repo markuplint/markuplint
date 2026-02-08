@@ -43686,7 +43686,7 @@
 			"name": "svg:feDistantLight",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDistantLight",
-			"description": "The <feDistantLight> SVG filter primitive defines a distant light source that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
+			"description": "The <feDistantLight> SVG element defines a distant light source that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44627,7 +44627,7 @@
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
-			"description": "The <fePointLight> SVG filter primitive defines a light source which allows to create a point light effect. It that can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
+			"description": "The <fePointLight> SVG element defines a light source which allows to create a point light effect. It can be used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -44797,7 +44797,7 @@
 			"name": "svg:feSpotLight",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpotLight",
-			"description": "The <feSpotLight> SVG filter primitive defines a light source that can be used to create a spotlight effect. It is used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>. Like other filter primitives, it handles color components in the linearRGB color space by default. You can use color-interpolation-filters to use sRGB instead.",
+			"description": "The <feSpotLight> SVG element defines a light source that can be used to create a spotlight effect. It is used within a lighting filter primitive: <feDiffuseLighting> or <feSpecularLighting>.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -47308,7 +47308,7 @@
 			"name": "svg:svg",
 			"namespace": "http://www.w3.org/2000/svg",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg",
-			"description": "The <svg> SVG element is a container that defines a new coordinate system and viewport. It is used as the outermost element of SVG documents, but it can also be used to embed an SVG fragment inside an SVG or HTML document. Note: The xmlns attribute is only required on the outermost svg element of SVG documents, or inside HTML documents with XML serialization. It is unnecessary for inner svg elements or inside HTML documents with HTML serialization.",
+			"description": "The <svg> SVG element is a container that defines a new coordinate system and viewport. It is used as the outermost element of SVG documents, but it can also be used to embed an SVG fragment inside an SVG or HTML document. This element is for creating new SVG documents. If you have an existing SVG document to embed in another document via URL, use <img>, <object>, or <image>. Note: The xmlns attribute is only required on the outermost svg element of SVG documents, or inside HTML documents with XML serialization. It is unnecessary for inner svg elements or inside HTML documents with HTML serialization.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
