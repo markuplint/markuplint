@@ -38665,6 +38665,11 @@
 						"[type='range' i]"
 					]
 				},
+				"switch": {
+					"type": "Boolean",
+					"experimental": true,
+					"condition": ["[type='checkbox' i]"]
+				},
 				"tabindex": {
 					"description": "Global attribute valid for all elements, including all the input types, an integer attribute indicating if the element can take input focus (is focusable), if it should participate to sequential keyboard navigation. As all input types except for input of type hidden are focusable, this attribute should not be used on form controls, because doing so would require the management of the focus order for all elements within the document with the risk of harming usability and accessibility if done incorrectly."
 				},

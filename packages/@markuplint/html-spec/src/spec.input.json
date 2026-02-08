@@ -218,6 +218,12 @@
 			},
 			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 		},
+		// https://html.spec.whatwg.org/multipage/input.html#the-input-element:attr-input-switch
+		"switch": {
+			"type": "Boolean",
+			"experimental": true,
+			"condition": ["[type='checkbox' i]"]
+		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly
 		"readonly": {
 			"condition": [
