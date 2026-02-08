@@ -36153,7 +36153,7 @@
 		{
 			"name": "caption",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption",
-			"description": "The <caption> HTML element specifies the caption (or title) of a table, providing the table an accessible description.",
+			"description": "The <caption> HTML element specifies the caption (or title) of a table, providing the table an accessible name or accessible description.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
@@ -36890,7 +36890,7 @@
 		{
 			"name": "figcaption",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption",
-			"description": "The <figcaption> HTML element represents a caption or legend describing the rest of the contents of its parent <figure> element, providing the <figure> an accessible description.",
+			"description": "The <figcaption> HTML element represents a caption or legend describing the rest of the contents of its parent <figure> element, providing the <figure> an accessible name.",
 			"categories": [],
 			"contentModel": {
 				"contents": [
