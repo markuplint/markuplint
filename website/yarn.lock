@@ -9152,7 +9152,7 @@ __metadata:
     stylelint-order: "npm:7.0.1"
     tsx: "npm:4.21.0"
     typescript: "npm:5.9.3"
-    unist-util-visit: "npm:5.0.0"
+    unist-util-visit: "npm:5.1.0"
   languageName: unknown
   linkType: soft
 
@@ -13978,7 +13978,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unist-util-visit@npm:5.0.0, unist-util-visit@npm:^5.0.0":
+"unist-util-visit@npm:5.1.0":
+  version: 5.1.0
+  resolution: "unist-util-visit@npm:5.1.0"
+  dependencies:
+    "@types/unist": "npm:^3.0.0"
+    unist-util-is: "npm:^6.0.0"
+    unist-util-visit-parents: "npm:^6.0.0"
+  checksum: 10c0/a56e1bbbf63fcb55abe379e660b9a3367787e8be1e2473bdb7e86cfa6f32b6c1fa0092432d7040b8a30b2fc674bbbe024ffe6d03c3d6bf4839b064f584463a4e
+  languageName: node
+  linkType: hard
+
+"unist-util-visit@npm:^5.0.0":
   version: 5.0.0
   resolution: "unist-util-visit@npm:5.0.0"
   dependencies:
