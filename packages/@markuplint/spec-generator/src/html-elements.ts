@@ -111,15 +111,26 @@ export async function getElements(filePattern: string) {
 								continue;
 							}
 
-							if (typeof current === 'object' && 'name' in current) {
-								attrs[mdnAttr.name] = {
-									// @ts-ignore for key order that "name" is first
-									name: mdnAttr.name,
-									// @ts-ignore for key order that "description" is second
-									...mdnData.attributes,
-									// @ts-ignore
-									...current,
-								};
+							if (typeof current === 'object') {
+								if ('name' in current) {
+									attrs[mdnAttr.name] = {
+										// @ts-ignore for key order that "name" is first
+										name: mdnAttr.name,
+										// @ts-ignore for key order that "description" is second
+										...mdnData.attributes,
+										// @ts-ignore
+										...current,
+									};
+								} else {
+									attrs[mdnAttr.name] = {
+										description: mdnAttr.description,
+										experimental: mdnAttr.experimental,
+										obsolete: mdnAttr.obsolete,
+										deprecated: mdnAttr.deprecated,
+										nonStandard: mdnAttr.nonStandard,
+										...current,
+									};
+								}
 							}
 						}
 
