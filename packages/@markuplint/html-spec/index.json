@@ -16485,7 +16485,7 @@
 					},
 					{
 						"name": "document",
-						"description": "An element containing content that assistive technology users may want to browse in a reading mode.\n\nWhen user agent focus moves to an element assigned the role of document, assistive technologies having a reading mode for browsing static content MAY switch to that reading mode and intercept standard input events, such as Up or Down arrow keyboard events, to control the reading cursor.\n\nBecause assistive technologies that have a reading mode default to that mode for all elements except for those with either a widget or application role, the only circumstance where the document role is useful for changing assistive technology behavior is when the element with role document is a focusable accessibility child of a widget or application. For example, given an application element which contains some static rich text, the author can apply role document to the element containing the text and give it a tabindex of 0. When a screen reader user presses the Tab key and places focus on the document element, the user will be able to read the text with the screen reader's reading cursor.",
+						"description": "An element containing content that assistive technology users may want to browse in a reading mode.\n\nWhen user agent focus moves to an element assigned the role of document, assistive technologies having a reading mode for browsing static content MAY switch to that reading mode and intercept standard input events, such as Up or Down arrow keyboard events, to control the reading cursor.\n\nBecause assistive technologies that have a reading mode default to that mode for all elements except for those with either a widget or application role, the only circumstance where the document role is useful for changing assistive technology behavior is when the element with role document is a focusable child element of a widget or application. For example, given an application element which contains some static rich text, the author can apply role document to the element containing the text and give it a tabindex of 0. When a screen reader user presses the Tab key and places focus on the document element, the user will be able to read the text with the screen reader's reading cursor.",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -18563,7 +18563,7 @@
 					},
 					{
 						"name": "marquee",
-						"description": "A section of content where non-essential information changes frequently.\n\nCommon usages of marquee include stock tickers and ad banners.",
+						"description": "A type of live region where non-essential information changes frequently. See related log.\n\nCommon usages of marquee include stock tickers and ad banners. The primary difference between a marquee and a log is that logs usually have a meaningful order or sequence of important content changes.\n\nElements with the role marquee have an implicit aria-live value of off.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -23423,7 +23423,7 @@
 					},
 					{
 						"name": "timer",
-						"description": "A section of content containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point.\n\nThe text contents of the timer object indicate the current time measurement, and are updated as that amount changes. The timer value is not necessarily machine parsable, but authors SHOULD update the text contents at fixed intervals, except when the timer is paused or reaches an end-point.",
+						"description": "A type of live region containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point.\n\nThe text contents of the timer object indicate the current time measurement, and are updated as that amount changes. The timer value is not necessarily machine parsable, but authors SHOULD update the text contents at fixed intervals, except when the timer is paused or reaches an end-point.\n\nElements with the role timer have an implicit aria-live value of off.",
 						"generalization": ["status"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -24596,7 +24596,7 @@
 						"isGlobal": true,
 						"valueDescriptions": {
 							"assertive": "Indicates that updates to the region have the highest priority and should be presented the user immediately.",
-							"off": "Indicates that updates to the region will not be presented to the user.",
+							"off": "Indicates that updates to the region should not be presented to the user unless the user is currently focused on that region.",
 							"polite": "Indicates that updates to the region should be presented at the next graceful opportunity, such as at the end of speaking the current sentence or when the user pauses typing."
 						}
 					},
@@ -26997,7 +26997,7 @@
 					},
 					{
 						"name": "document",
-						"description": "An element containing content that assistive technology users may want to browse in a reading mode.\n\nWhen user agent focus moves to an element assigned the role of document, assistive technologies having a reading mode for browsing static content MAY switch to that reading mode and intercept standard input events, such as Up or Down arrow keyboard events, to control the reading cursor.\n\nBecause assistive technologies that have a reading mode default to that mode for all elements except for those with either a widget or application role, the only circumstance where the document role is useful for changing assistive technology behavior is when the element with role document is a focusable accessibility child of a widget or application. For example, given an application element which contains some static rich text, the author can apply role document to the element containing the text and give it a tabindex of 0. When a screen reader user presses the Tab key and places focus on the document element, the user will be able to read the text with the screen reader's reading cursor.",
+						"description": "An element containing content that assistive technology users may want to browse in a reading mode.\n\nWhen user agent focus moves to an element assigned the role of document, assistive technologies having a reading mode for browsing static content MAY switch to that reading mode and intercept standard input events, such as Up or Down arrow keyboard events, to control the reading cursor.\n\nBecause assistive technologies that have a reading mode default to that mode for all elements except for those with either a widget or application role, the only circumstance where the document role is useful for changing assistive technology behavior is when the element with role document is a focusable child element of a widget or application. For example, given an application element which contains some static rich text, the author can apply role document to the element containing the text and give it a tabindex of 0. When a screen reader user presses the Tab key and places focus on the document element, the user will be able to read the text with the screen reader's reading cursor.",
 						"generalization": ["structure"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -28807,7 +28807,7 @@
 					},
 					{
 						"name": "marquee",
-						"description": "A section of content where non-essential information changes frequently.\n\nCommon usages of marquee include stock tickers and ad banners.",
+						"description": "A type of live region where non-essential information changes frequently. See related log.\n\nCommon usages of marquee include stock tickers and ad banners. The primary difference between a marquee and a log is that logs usually have a meaningful order or sequence of important content changes.\n\nElements with the role marquee have an implicit aria-live value of off.",
 						"generalization": ["section"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
@@ -33050,7 +33050,7 @@
 					},
 					{
 						"name": "timer",
-						"description": "A section of content containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point.\n\nThe text contents of the timer object indicate the current time measurement, and are updated as that amount changes. The timer value is not necessarily machine parsable, but authors SHOULD update the text contents at fixed intervals, except when the timer is paused or reaches an end-point.",
+						"description": "A type of live region containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point.\n\nThe text contents of the timer object indicate the current time measurement, and are updated as that amount changes. The timer value is not necessarily machine parsable, but authors SHOULD update the text contents at fixed intervals, except when the timer is paused or reaches an end-point.\n\nElements with the role timer have an implicit aria-live value of off.",
 						"generalization": ["status"],
 						"requiredContextRole": [],
 						"requiredOwnedElements": [],
