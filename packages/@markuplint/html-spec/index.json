@@ -37616,7 +37616,7 @@
 				},
 				"browsingtopics": {
 					"description": "A boolean attribute that, if present, specifies that the selected topics for the current user should be sent with the request for the <iframe>'s source. See Using the Topics API for more details.",
-					"experimental": true,
+					"deprecated": true,
 					"nonStandard": true
 				},
 				"credentialless": {
