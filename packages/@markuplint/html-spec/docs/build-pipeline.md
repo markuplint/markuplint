@@ -102,7 +102,7 @@ When manual specifications and external data overlap:
 | `description`       | MDN only           | MDN only                    |
 | `categories`        | MDN only           | MDN only                    |
 | `cite`              | Manual spec or MDN | Manual spec if provided     |
-| Compatibility flags | MDN only           | MDN only                    |
+| Compatibility flags | Manual spec + MDN  | Manual wins; MDN fills gaps |
 
 Key points:
 
@@ -110,6 +110,15 @@ Key points:
 - For `attributes`, MDN-scraped attributes are added only when the manual spec does not define that attribute name
 - Content models and ARIA mappings are never scraped -- they come exclusively from your `src/spec.*.json` files
 - The `cite` URL defaults to the MDN page but can be overridden per element
+
+**Attribute merge behavior in detail:**
+
+1. **Attribute defined in spec file** -- MDN data (description, compatibility flags) is
+   merged in, but spec-side values take precedence. For example, if the spec file sets
+   `"deprecated": true` but MDN does not flag the attribute as deprecated, the spec
+   value wins.
+2. **Attribute exists only in MDN** -- Added to the element as-is with MDN metadata.
+3. **Attribute exists only in spec file** -- Used as-is with no MDN augmentation.
 
 ## Generated Output Structure
 

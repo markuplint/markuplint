@@ -147,6 +147,11 @@ git diff packages/@markuplint/html-spec/index.json
 description の表現変更などの表面的な変更は、更新された `index.json` をそのまま
 コミットすればよい。これらは上流の改善を反映したものであり、そのまま受け入れる。
 
+> **注意 -- ARIA バージョンの重複:** `index.json` には WAI-ARIA 1.1、1.2、1.3 の
+> ロール定義が含まれるため、多くの文字列が 3 回出現する。description やプロパティ
+> を編集する際、**`replace_all` を使用しないこと** -- 3 つのバージョンすべてが
+> 同時に変更されてしまう。変更対象のバージョンブロックを個別に指定すること。
+
 **ステップ 3: 仕様の実質的な変更の処理**
 
 差分に要素の動作、ARIA マッピング、コンテンツモデルに関する実質的な変更が含まれる
@@ -160,11 +165,34 @@ description の表現変更などの表面的な変更は、更新された `ind
    ```bash
    yarn up:gen
    ```
-4. 最終的な `index.json` の差分が正しいことを確認する
+4. **冪等性の検証** -- 仕様ファイルの変更が安定した出力を生成することをコミット前に確認する:
+   ```bash
+   # 仕様ファイルと index.json をステージ
+   git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+   # 再生成
+   yarn up:gen
+   # 変更した属性が diff に出ないことを確認（= 安定した出力）
+   git diff packages/@markuplint/html-spec/index.json | grep '"your-attr"'
+   # 安定していれば再生成ファイルを破棄し、ステージ済みの版を使う
+   git checkout packages/@markuplint/html-spec/index.json
+   ```
+   diff に予期しない変更が出る場合、仕様ファイルとジェネレータの出力が一致していない
+   ことを意味する -- コミット前に原因を調査すること。
 
-**ステップ 4: コミット**
+**ステップ 4: コミットと PR**
 
 `index.json`（および変更した `src/` ファイルがあればそれも）をステージしてコミットする。
+
+変更の性質に応じた conventional commit プレフィックスを使用する:
+
+| 変更種別                | プレフィックス | 例                                                   |
+| ----------------------- | -------------- | ---------------------------------------------------- |
+| description 更新のみ    | `chore`        | `chore(html-spec): update role descriptions`         |
+| 属性追加・仕様変更      | `feat`         | `feat(html-spec): add input switch attribute`        |
+| spec データ修正         | `fix`          | `fix(html-spec): correct ARIA mapping for button`    |
+
+**PR の分離:** 仕様変更（新属性の追加、ARIA マッピング修正など）はそれぞれ個別の
+ブランチ・PR で作成する。description のみの更新は 1 つの PR にまとめてよい。
 
 このプロセスは多少複雑だが、差分をレビューすることでウェブ標準の変更内容を把握でき、
 仕様データの正確性を維持するために重要である。
@@ -307,7 +335,7 @@ yarn workspace @markuplint/html-spec run test
 | `description`  | MDN             | MDNのみ                    |
 | `categories`   | MDN             | MDNのみ                    |
 | `cite`         | 手動仕様 or MDN | 手動仕様があれば優先       |
-| 互換性フラグ   | MDN             | MDNのみ                    |
+| 互換性フラグ   | 手動仕様 + MDN  | 手動が優先、MDNが補完      |
 
 手動仕様で定義された属性は、同名のMDN由来属性よりも常に優先される。MDNから取得された属性は、手動仕様に存在しない属性の補完にのみ使用される。
 

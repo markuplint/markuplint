@@ -184,10 +184,41 @@ The `attributes` object maps attribute names to definitions. Each definition may
 | `defaultValue` | `string`             | Default value                                   |
 | `description`  | `string`             | Human-readable description                      |
 | `animatable`   | `boolean`            | Whether the attribute is animatable (SVG)       |
-| `deprecated`   | `boolean`            | Deprecated status flag                          |
-| `obsolete`     | `boolean`            | Obsolete status flag                            |
-| `experimental` | `boolean`            | Experimental status flag                        |
-| `nonStandard`  | `boolean`            | Non-standard status flag                        |
+| `deprecated`   | `boolean`            | Deprecated status flag (see below)              |
+| `obsolete`     | `boolean`            | Obsolete status flag (see below)                |
+| `experimental` | `boolean`            | Experimental status flag (see below)            |
+| `nonStandard`  | `boolean`            | Non-standard status flag (see below)            |
+
+### Status Flags
+
+These boolean flags indicate the standardization status of an attribute:
+
+| Flag           | Meaning                                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| `experimental` | Part of an emerging specification that is not yet stable. Browsers may have partial or prefixed support.    |
+| `deprecated`   | Officially discouraged by the specification. Still recognized by browsers but should not be used in new code. |
+| `obsolete`     | Removed from the specification entirely. May not be recognized by modern browsers at all.                   |
+| `nonStandard`  | Not part of any W3C or WHATWG specification. Vendor-specific or proprietary.                                |
+
+**`deprecated` vs `obsolete`:** `deprecated` means the spec still defines the attribute
+but discourages its use (e.g., `<table border>`). `obsolete` means the attribute has been
+removed from the specification altogether (e.g., legacy presentational attributes on
+elements that have been fully obsoleted). In practice, `deprecated` attributes usually
+still work in browsers, while `obsolete` attributes may not.
+
+**Flag precedence (spec > MDN):** When a flag is set in the manual spec file
+(`src/spec.*.json`), it takes precedence over the MDN-scraped value. This allows you to
+correct cases where MDN data is inaccurate or lagging behind the specification. Flags
+from MDN are used only when the manual spec does not define the attribute or does not
+set that particular flag.
+
+**When to set flags manually:**
+
+- MDN flags an attribute as `experimental` but the spec has stabilized it -- set
+  `"experimental": false` (or omit it) in the spec file to override
+- An attribute is deprecated in the spec but MDN has not yet updated -- set
+  `"deprecated": true` in the spec file
+- A vendor-specific attribute needs to be marked -- set `"nonStandard": true`
 
 ### Attribute Value Types
 
