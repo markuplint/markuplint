@@ -4,10 +4,20 @@ import { match } from '../helpers.js';
 
 import meta from './meta.js';
 
+/** Configuration options for the `no-use-event-handler-attr` rule. */
 type Options = {
+	/** Attribute name pattern(s) to exclude from the check. */
 	ignore?: string | string[];
 };
 
+/**
+ * Rule that disallows inline event handler attributes (e.g., `onclick`,
+ * `onchange`).
+ *
+ * Reports any attribute on an HTML element whose name starts with `on`,
+ * indicating an inline event handler. An `ignore` option allows specific
+ * attribute names or patterns to be excluded from the check.
+ */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

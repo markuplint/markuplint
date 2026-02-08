@@ -8,6 +8,15 @@ type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
 const cachesBySpecs = new Map<Specs, Map<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>>();
 
+/**
+ * Retrieves the permitted content model for an element. Evaluates any conditional
+ * content models based on the element's current attributes (e.g., different content
+ * models for `<ol>` vs `<ol reversed>`). Results are cached per element and spec set.
+ *
+ * @param el - The DOM element to retrieve the content model for
+ * @param specs - The element specifications containing content model definitions
+ * @returns The permitted content patterns array, a boolean (true for any content, false for no content), or null if no spec exists
+ */
 export function getContentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,

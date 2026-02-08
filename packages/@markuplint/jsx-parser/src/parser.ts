@@ -11,6 +11,12 @@ type State = {
 	comments: readonly JSXComment[];
 };
 
+/**
+ * Parser implementation for JSX/TSX syntax.
+ * Extends the base Parser to handle JSX elements, fragments, expression containers,
+ * and spread attributes. Uses TypeScript ESTree for initial tokenization and maps
+ * the resulting JSX AST nodes to markuplint's internal node tree.
+ */
 class JSXParser extends Parser<JSXNode, State> {
 	#parentIdMap = new WeakMap<MLASTNodeTreeItem, number | null>();
 
@@ -86,6 +92,16 @@ class JSXParser extends Parser<JSXNode, State> {
 		return nodeTree;
 	}
 
+	/**
+	 * Converts a JSX AST node into markuplint node tree items.
+	 * Handles JSX text, elements, fragments, comments, and expression containers
+	 * (mapped to preprocessor-specific blocks).
+	 *
+	 * @param originNode - The JSX AST node to convert
+	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
+	 * @param depth - The nesting depth of the node
+	 * @returns An array of markuplint node tree items
+	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: JSXNode,
@@ -227,6 +243,13 @@ class JSXParser extends Parser<JSXNode, State> {
 		});
 	}
 
+	/**
+	 * Visits a comment token and marks all resulting comment nodes as non-bogus,
+	 * since JSX comments use JavaScript syntax rather than HTML bogus comments.
+	 *
+	 * @param token - The child token representing the comment
+	 * @returns An array of markuplint node tree items for the comment
+	 */
 	visitComment(token: ChildToken) {
 		return super.visitComment(token).map(node => {
 			if (node.type === 'comment') {
@@ -239,6 +262,13 @@ class JSXParser extends Parser<JSXNode, State> {
 		});
 	}
 
+	/**
+	 * Visits an attribute token, handling JSX-specific quoting (curly braces for expressions),
+	 * IDL attribute mapping, and dynamic value detection.
+	 *
+	 * @param token - The token representing the attribute
+	 * @returns The parsed attribute node
+	 */
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
 			quoteSet: [

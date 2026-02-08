@@ -1,6 +1,13 @@
 import type { TokenValue } from './types.js';
 import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types.js';
 
+/**
+ * Represents a single token within a parsed string value.
+ *
+ * Tracks the token's value, type (whitespace, comma, or identifier),
+ * offset position within the original string, and provides methods
+ * for matching and comparison operations.
+ */
 export class Token {
 	/**
 	 * @see https://github.com/csstree/csstree/blob/master/lib/tokenizer/types.js
@@ -36,6 +43,13 @@ export class Token {
 		return value.slice(0, offset).split(/\n/).length;
 	}
 
+	/**
+	 * Calculates the line and column position at the given offset within a string.
+	 *
+	 * @param value - The source string
+	 * @param offset - The character offset to calculate the position for
+	 * @returns The line number (1-based) and column number (1-based)
+	 */
 	static getPosition(value: string, offset: number) {
 		const lines = value.slice(0, offset).split(/\n/);
 		const line = lines.length;
@@ -43,6 +57,13 @@ export class Token {
 		return { line, column };
 	}
 
+	/**
+	 * Determines the token type based on the first character.
+	 *
+	 * @param value - The token string value
+	 * @param separators - Optional separator characters to detect
+	 * @returns The token type number (WhiteSpace, Comma, or Ident)
+	 */
 	static getType(value: string, separators?: readonly string[]) {
 		if (Token.whitespace.includes(value[0] ?? '')) {
 			return Token.WhiteSpace;
@@ -57,6 +78,13 @@ export class Token {
 		return Token.Ident;
 	}
 
+	/**
+	 * Calculates a new position by shifting from a token's offset.
+	 *
+	 * @param token - The base token to shift from
+	 * @param offset - The additional offset to apply
+	 * @returns The shifted offset, line, and column
+	 */
 	static shiftLocation(token: Readonly<Token>, offset: number) {
 		const shifted = token.offset + offset;
 		const { line, column } = Token.getPosition(token.originalValue, shifted);
@@ -72,6 +100,12 @@ export class Token {
 	readonly type: number;
 	readonly value: string;
 
+	/**
+	 * @param value - The token string value
+	 * @param offset - The offset position within the original string
+	 * @param originalValue - The complete original string this token was parsed from
+	 * @param separators - Optional separator characters used for type detection
+	 */
 	constructor(value: string, offset: number, originalValue: string, separators?: readonly string[]) {
 		this.type = Token.getType(value, separators);
 		this.value = value;
@@ -79,17 +113,28 @@ export class Token {
 		this.originalValue = originalValue;
 	}
 
+	/**
+	 * The character length of the token value.
+	 */
 	get length() {
 		return this.value.length;
 	}
 
+	/**
+	 * Creates a copy of this token.
+	 *
+	 * @returns A new Token instance with the same value, offset, and original value
+	 */
 	clone() {
 		return new Token(this.value, this.offset, this.originalValue);
 	}
 
 	/**
+	 * Checks whether this token's value contains the given value.
 	 *
-	 * @param value The token value or the token type or its list
+	 * @param value - The token value, type number, regex, or array to check against
+	 * @param caseInsensitive - Whether to perform case-insensitive comparison
+	 * @returns Whether this token includes the given value
 	 */
 	includes(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
@@ -108,8 +153,11 @@ export class Token {
 	}
 
 	/**
+	 * Checks whether this token exactly matches the given value.
 	 *
-	 * @param value The token value or the token type or its list
+	 * @param value - The token value, type number, regex, or array to match against
+	 * @param caseInsensitive - Whether to perform case-insensitive comparison
+	 * @returns Whether this token matches the given value
 	 */
 	matches(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
@@ -127,6 +175,11 @@ export class Token {
 		return this.type === value;
 	}
 
+	/**
+	 * Converts this token to a plain JSON-serializable object.
+	 *
+	 * @returns An object with type, value, and offset properties
+	 */
 	toJSON() {
 		return {
 			type: this.type,
@@ -135,11 +188,22 @@ export class Token {
 		};
 	}
 
+	/**
+	 * Parses the token value as a floating-point number.
+	 *
+	 * @returns The parsed number, or 0 if parsing fails
+	 */
 	toNumber() {
 		const num = Number.parseFloat(this.value);
 		return Number.isNaN(num) ? 0 : num;
 	}
 
+	/**
+	 * Creates an unmatched result positioned at this token's location.
+	 *
+	 * @param options - Optional settings including ref, reason, and expected values
+	 * @returns An unmatched result with this token's position information
+	 */
 	unmatched(
 		options?: UnmatchedResultOptions & {
 			readonly ref?: string;

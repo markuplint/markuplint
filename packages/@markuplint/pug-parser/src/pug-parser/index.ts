@@ -33,6 +33,15 @@ import type {
 	PugAST,
 } from '../types.js';
 
+/**
+ * Parses a Pug template string into an optimized AST with computed offsets
+ * and location data by lexing with pug-lexer, parsing with pug-parser,
+ * and then enriching each node with raw source, offsets, and end positions.
+ *
+ * @param pug - The raw Pug template source code
+ * @param useOffset - Whether to strip indent/outdent tokens (used when parsing at a non-zero offset)
+ * @returns The optimized Pug AST block containing enriched nodes
+ */
 export function pugParse(pug: string, useOffset = false) {
 	let lexOrigin = lexer(pug);
 
@@ -56,6 +65,13 @@ export function pugParse(pug: string, useOffset = false) {
 	return ast;
 }
 
+/**
+ * Computes the cumulative character offset at the end of each line
+ * in the given source string.
+ *
+ * @param pug - The raw Pug template source code
+ * @returns An array where each index corresponds to a line and the value is the cumulative offset
+ */
 function getOffsetsFromLines(pug: string): number[] {
 	const lines = pug.split(/\n/);
 	let chars = 0;
@@ -66,6 +82,14 @@ function getOffsetsFromLines(pug: string): number[] {
 	return result;
 }
 
+/**
+ * Merges consecutive Text nodes into a single Text node, combining
+ * their raw source and extending the end location of the first node.
+ *
+ * @param nodes - The array of AST nodes to process
+ * @param pug - The raw Pug template source code
+ * @returns A new array with adjacent Text nodes merged together
+ */
 function mergeTextNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: readonly ASTNode[],
@@ -87,10 +111,14 @@ function mergeTextNode(
 }
 
 /**
+ * Transforms the raw pug-parser AST into an optimized AST by computing
+ * accurate source offsets, raw text slices, and end positions for each node.
+ * Recursively processes child blocks and merges adjacent text nodes.
  *
- * @param originalAST
- * @param tokens Lexed token list
- * @param pug Raw code
+ * @param originalAST - The raw AST block from pug-parser, or null
+ * @param tokens - The lexed token list from pug-lexer
+ * @param pug - The raw Pug template source code
+ * @returns The optimized AST block with enriched location data
  */
 function optimizeAST(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -568,6 +596,17 @@ function optimizeAST(
 	};
 }
 
+/**
+ * Recursively processes conditional node chains (`else if` / `else`) in the Pug AST,
+ * computing location data for each alternate branch.
+ *
+ * @param node - The Pug conditional AST node with potential alternate branches
+ * @param tokens - The lexed token list from pug-lexer
+ * @param pug - The raw Pug template source code
+ * @param offsets - Precomputed line offset array
+ * @param depth - The current recursion depth for tracking nested conditionals
+ * @returns An array of optimized conditional nodes for the alternate branches
+ */
 function optimizeASTOfConditionalNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: PugAST.CodeHelpers.Conditional,
@@ -659,6 +698,17 @@ function optimizeASTOfConditionalNode(
 	return altNodes;
 }
 
+/**
+ * Finds the matching lexer token for a node at the given position and returns
+ * its end location and length.
+ *
+ * @param offset - The character offset of the node's start
+ * @param line - The 1-based line number of the node
+ * @param column - The 1-based column number of the node
+ * @param tokens - The lexed token list from pug-lexer
+ * @param tokenType - Optional token type(s) to filter by
+ * @returns An object with endLine, endColumn, endOffset, and length
+ */
 function getLocationFromToken(
 	offset: number,
 	line: number,
@@ -694,6 +744,17 @@ function getLocationFromToken(
 	};
 }
 
+/**
+ * Extracts and enriches attribute data from the original Pug AST attributes
+ * by correlating each attribute with its corresponding lexer token to compute
+ * accurate offsets and raw source slices.
+ *
+ * @param originalAttrs - The original attribute list from the Pug AST
+ * @param tokens - The lexed token list from pug-lexer
+ * @param offsets - Precomputed line offset array
+ * @param pug - The raw Pug template source code
+ * @returns An array of enriched attribute objects with computed location data
+ */
 function getAttrs(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	originalAttrs: readonly PugAST.AbstractNodeTypes.Attribute[],
@@ -741,6 +802,19 @@ function getAttrs(
 	return attrs;
 }
 
+/**
+ * Determines the end position of a tag node including its attributes
+ * by scanning lexer tokens that follow the tag's position and precede
+ * non-attribute tokens.
+ *
+ * @param nodeName - The tag name of the element
+ * @param offset - The character offset of the tag's start
+ * @param line - The 1-based line number of the tag
+ * @param column - The 1-based column number of the tag
+ * @param tokens - The lexed token list from pug-lexer
+ * @param offsets - Precomputed line offset array
+ * @returns An object with endOffset, endLine, and endColumn
+ */
 function getEndAttributeLocation(
 	nodeName: string,
 	offset: number,
@@ -779,6 +853,15 @@ function getEndAttributeLocation(
 	};
 }
 
+/**
+ * Detects whether a Text node is part of a pipeless text block (indented
+ * text content below a tag) and returns its full span if so.
+ *
+ * @param node - The Pug Text AST node to check
+ * @param pug - The raw Pug template source code
+ * @param tokens - The lexed token list from pug-lexer
+ * @returns Location data for the pipeless text span, or null if not pipeless text
+ */
 function getPipelessText(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: PugAST.Text,
@@ -821,6 +904,19 @@ function getPipelessText(
 	return null;
 }
 
+/**
+ * Extracts raw text content and computes accurate end locations for a Text node
+ * by walking through lexer tokens from the node's start position. Handles
+ * multi-line text, piped text detection, and indentation tracking.
+ *
+ * @param val - The text value from the Pug AST node
+ * @param offset - The character offset where the text starts
+ * @param line - The 1-based start line number
+ * @param column - The 1-based start column number
+ * @param tokens - The lexed token list from pug-lexer
+ * @param pug - The raw Pug template source code
+ * @returns An array of ASTText nodes with computed location data
+ */
 function getRawTextAndLocationEnd(
 	val: string,
 	offset: number,

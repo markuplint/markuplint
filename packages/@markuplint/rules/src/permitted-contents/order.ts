@@ -9,14 +9,21 @@ import { cmLog } from './debug.js';
 import { Collection, mergeHints, modelLog } from './utils.js';
 
 /**
- * Check ordered array
+ * Validates an ordered sequence of content model patterns against a list of child nodes.
+ * Each pattern in the `contents` array is matched in order against the remaining unmatched
+ * child nodes, consuming nodes as they match. This implements the sequential composition
+ * semantics of HTML content models (e.g., "a `<caption>` followed by zero or more `<colgroup>`s
+ * followed by a `<thead>`...").
  *
- * @param contents
- * @param childNodes
- * @param specs
- * @param options
- * @param depth
- * @returns
+ * Supports backtracking: when a pattern matches zero nodes (zeroMatch), the algorithm
+ * can backtrack to try the next pattern from the previous position if the current pattern fails.
+ *
+ * @param contents - An ordered array of content model patterns to match sequentially.
+ * @param childNodes - The child nodes to validate against the patterns.
+ * @param specs - The resolved spec data for content model lookups.
+ * @param options - Validation behavior options.
+ * @param depth - The current recursion depth, used for debug logging and nested pattern matching.
+ * @returns A result indicating overall match status and the matched/unmatched node partitioning.
  */
 export function order(
 	contents: ReadonlyDeep<PermittedContentPattern[]>,

@@ -6,14 +6,38 @@ import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 import { cmLog } from './debug.js';
 import { cleanObject, matches } from './utils.js';
 
+/**
+ * Extended result type for selector matching that includes additional
+ * intermediate states: a selector that did not match but allows empty content,
+ * a missing node, or unmatched selectors with partial matches.
+ */
 export type SelectorResult = Result<'UNMATCHED_SELECTOR_BUT_MAY_EMPTY' | 'MISSING_NODE' | 'UNMATCHED_SELECTORS'>;
 
+/**
+ * A parsed condition derived from a content model query string,
+ * containing the resolved CSS selector and flags indicating whether
+ * the query includes custom elements or text nodes.
+ */
 type Condition = {
 	selector: string;
 	hasCustom: boolean;
 	hasText: boolean;
 };
 
+/**
+ * Tests whether a single child node matches a content model query selector.
+ * Handles special node types (text nodes, preprocessor blocks, custom elements)
+ * and delegates standard element matching to the CSS selector engine.
+ *
+ * The query string may reference content model categories (e.g., `#phrasing`)
+ * which are expanded to concrete tag selectors via `optCondition`.
+ *
+ * @param query - The content model query string (e.g., `"div"`, `"#phrasing"`, `":model(flow)"`).
+ * @param childNode - The child node to test, or undefined if no node is available.
+ * @param specs - The resolved spec data for category-to-tag-name expansion.
+ * @param depth - The current recursion depth, used for debug logging namespacing.
+ * @returns A selector result indicating match status with diagnostic hints.
+ */
 export function matchesSelector(
 	query: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -157,6 +181,9 @@ export function matchesSelector(
 	};
 }
 
+/**
+ * Pre-computed conditions for well-known queries that do not depend on specs.
+ */
 const conditionWithoutSpecs: Record<string, Condition> = {
 	'#custom': {
 		selector: '#custom',
@@ -170,8 +197,24 @@ const conditionWithoutSpecs: Record<string, Condition> = {
 	},
 };
 
+/**
+ * Cache of parsed conditions keyed by specs instance and query string.
+ * Prevents redundant category expansion for the same query across multiple elements.
+ */
 const optConditionSpecsBaseCaches = new Map<Specs, Map<string, Condition>>();
 
+/**
+ * Parses a content model query string into a Condition object by expanding
+ * content model category references (e.g., `#phrasing`, `:model(flow)`) into
+ * concrete CSS `:is(...)` selectors. Also detects whether the query implicitly
+ * includes custom elements or text nodes.
+ *
+ * Results are cached per specs instance and query string.
+ *
+ * @param query - The raw content model query string to parse.
+ * @param specs - The spec data used to resolve category names to tag lists.
+ * @returns A readonly Condition with the resolved selector and flags.
+ */
 function optCondition(query: string, specs: Specs): Readonly<Condition> {
 	const condWithoutSpecs = conditionWithoutSpecs[query];
 	if (condWithoutSpecs) {

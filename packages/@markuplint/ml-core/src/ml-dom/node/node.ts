@@ -23,6 +23,15 @@ import { toNodeList } from './node-list.js';
 import { nodeStore } from './node-store.js';
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
+/**
+ * Abstract base class for all markuplint DOM node wrappers.
+ * Extends `MLToken` with DOM `Node` interface compliance, tree traversal,
+ * rule configuration access, and child node management.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @template A - The underlying AST node type
+ */
 export abstract class MLNode<
 		T extends RuleConfigValue,
 		O extends PlainData = undefined,
@@ -335,6 +344,13 @@ export abstract class MLNode<
 		return this.#ownerDocument;
 	}
 
+	/**
+	 * The owning `MLDocument` instance with proper generic types,
+	 * providing type-safe access to the document without the `any` type
+	 * used by the DOM-compatible `ownerDocument`.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 */
 	get ownerMLDocument(): MLDocument<T, O> {
 		return this.#ownerDocument;
 	}

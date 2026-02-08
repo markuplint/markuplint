@@ -6,6 +6,13 @@ import { resolveFiles } from '@markuplint/file-resolver';
 
 import { MLEngine } from './ml-engine.js';
 
+/**
+ * Lints multiple targets (files or inline sources) and returns results for each.
+ *
+ * @param targetList - An array of file paths/globs or inline source code targets
+ * @param options - API options for configuration, locale, rules, and behavior
+ * @returns An array of lint results, one per processed file
+ */
 export async function lint(targetList: readonly Readonly<Target>[], options?: APIOptions) {
 	const res: MLResultInfo[] = [];
 	const files = await resolveFiles(targetList);

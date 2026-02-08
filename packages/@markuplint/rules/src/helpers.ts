@@ -10,6 +10,17 @@ import structuredClone from '@ungap/structured-clone';
 
 import { attrCheck } from './attr-check.js';
 
+/**
+ * Tests whether an element matches the condition specified in an attribute spec.
+ * When the condition is `null` or `undefined`, the element is considered to match unconditionally.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param node - The element to test against the condition
+ * @param condition - A CSS selector string or array of selector strings from the attribute specification;
+ *   if `null`/`undefined`, the function returns `true`
+ * @returns `true` if the element matches the condition (or no condition is given), `false` otherwise
+ */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Element<T, O>,
@@ -24,6 +35,15 @@ export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
 	return node.matches(condSelector);
 }
 
+/**
+ * Tests whether a string matches a given pattern. The pattern can be either
+ * a plain string (tested for exact equality) or a regular expression literal
+ * in the form `/pattern/flags`.
+ *
+ * @param needle - The string to test
+ * @param pattern - A plain string or a regex literal string (e.g. `/^foo/i`)
+ * @returns `true` if the needle matches the pattern
+ */
 export function match(needle: string, pattern: string) {
 	const matches = pattern.match(/^\/(.*)\/([gim])*$/);
 	if (matches && matches[1]) {
@@ -70,6 +90,22 @@ export const rePCENChar = [
 	'[\uD800-\uDBFF][\uDC00-\uDFFF]',
 ].join('|');
 
+/**
+ * Validates an attribute name/value pair against its specification.
+ * Checks attribute existence in the spec, value validity, conditional applicability,
+ * and skips validation for dynamic (template-interpolated) values when the error
+ * relates to an invalid value.
+ *
+ * @param t - The i18n translator for generating localized error messages
+ * @param name - The attribute name to validate
+ * @param value - The attribute value to validate
+ * @param isDynamicValue - Whether the value is dynamic (e.g. from a template expression);
+ *   if `true`, invalid-value errors are suppressed
+ * @param node - The element that owns the attribute
+ * @param attrSpecs - The list of attribute specifications to validate against
+ * @param log - Optional debug logger for diagnostic output
+ * @returns `false` if valid, or an `Invalid` object (or array of them) describing the violation
+ */
 export function isValidAttr(
 	t: Translator,
 	name: string,
@@ -103,6 +139,16 @@ export function isValidAttr(
 	return invalid;
 }
 
+/**
+ * Normalizes an attribute value according to its specification rules.
+ * Applies case-folding, whitespace trimming, and separator normalization
+ * based on the attribute type definition.
+ *
+ * @param value - The raw attribute value to normalize
+ * @param spec - The attribute specification that defines normalization rules
+ *   (case sensitivity, separator type, whitespace handling)
+ * @returns The normalized attribute value
+ */
 export function toNormalizedValue(value: string, spec: Attribute) {
 	let normalized = value;
 
@@ -134,6 +180,15 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
+/**
+ * Determines whether an element's accessible name may change at runtime.
+ * Returns `true` if the element itself has mutable attributes or children,
+ * or if an associated `<label>` element has mutable content.
+ *
+ * @param el - The element whose accessible name stability is being checked
+ * @param document - The document containing the element, used to locate associated labels
+ * @returns `true` if the accessible name could change dynamically, `false` otherwise
+ */
 export function accnameMayBeMutable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
@@ -153,6 +208,18 @@ export function accnameMayBeMutable(
 }
 
 const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
+/**
+ * Finds the `<label>` element associated with a labelable form element.
+ * First checks for an ancestor `<label>`, then looks for a `<label>` whose
+ * `for` attribute references the element's `id`. Returns `null` if the
+ * element is not labelable or no associated label is found.
+ *
+ * @template V - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element to find a label for (must be a labelable element)
+ * @param document - The document to search for labels with a matching `for` attribute
+ * @returns The associated `<label>` element, or `null` if none is found
+ */
 export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<V, O>,
@@ -175,17 +242,41 @@ export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	return ownedLabel;
 }
 
+/**
+ * A generic, null-safe collection backed by a `Set`.
+ * Automatically filters out `null` and `undefined` values when items are added.
+ * Implements the iterable protocol so it can be used in `for...of` loops.
+ *
+ * @template T - The type of items stored in the collection
+ */
 export class Collection<T> {
 	#items = new Set<T>();
 
+	/**
+	 * Creates a new collection, optionally pre-populated with the given items.
+	 * Any `null` or `undefined` values are silently ignored.
+	 *
+	 * @param items - Initial items to add to the collection
+	 */
 	constructor(...items: readonly (T | null | undefined)[]) {
 		this.add(...items);
 	}
 
+	/**
+	 * Returns an iterator over the items in the collection.
+	 *
+	 * @returns An iterator that yields each item in insertion order
+	 */
 	[Symbol.iterator](): Iterator<T> {
 		return this.#items.values();
 	}
 
+	/**
+	 * Adds one or more items to the collection.
+	 * Any `null` or `undefined` values are silently ignored.
+	 *
+	 * @param items - Items to add to the collection
+	 */
 	add(...items: readonly (T | null | undefined)[]) {
 		for (const item of items) {
 			if (item == null) {
@@ -195,11 +286,24 @@ export class Collection<T> {
 		}
 	}
 
+	/**
+	 * Returns a frozen array snapshot of the collection's contents.
+	 *
+	 * @returns A read-only array containing all items in insertion order
+	 */
 	toArray() {
 		return Object.freeze([...this.#items]);
 	}
 }
 
+/**
+ * Creates a deep, writable copy of the given value using structured cloning.
+ * Strips read-only modifiers from the result type so the clone can be freely mutated.
+ *
+ * @template T - The type of the value to clone
+ * @param value - The value to deep-copy
+ * @returns A mutable deep clone of the input value
+ */
 export function deepCopy<T>(value: T): WritableDeep<T> {
 	return structuredClone(value as any) as WritableDeep<T>;
 }

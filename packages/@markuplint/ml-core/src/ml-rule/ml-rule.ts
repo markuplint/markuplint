@@ -20,6 +20,12 @@ import { isPlainObject } from 'is-plain-object';
 
 import { MLRuleContext } from './ml-rule-context.js';
 
+/**
+ * Represents a single markuplint rule that can verify documents and report violations.
+ *
+ * @template T - The type of the rule's configuration value
+ * @template O - The type of the rule's options
+ */
 export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	readonly defaultOptions: O;
 	readonly defaultSeverity: Severity;
@@ -54,6 +60,14 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		return this.#v;
 	}
 
+	/**
+	 * Resolves the full rule information from a ruleset, including node-level
+	 * and child-node-level overrides.
+	 *
+	 * @param ruleSet - The ruleset containing rule definitions and overrides
+	 * @param ruleName - The name of this rule
+	 * @returns The global rule info with node and child-node overrides
+	 */
 	getRuleInfo(ruleSet: Ruleset, ruleName: string): GlobalRuleInfo<T, O> {
 		const info = this._optimize(ruleSet.rules, ruleName);
 
@@ -64,6 +78,13 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		};
 	}
 
+	/**
+	 * Normalizes a raw rule setting into a fully resolved {@link RuleInfo} object,
+	 * applying defaults for any unspecified fields.
+	 *
+	 * @param configSettings - The raw rule configuration value
+	 * @returns The resolved rule info with defaults applied
+	 */
 	optimizeOption(configSettings: Rule<T, O> | null | undefined): RuleInfo<T, O> {
 		if (configSettings === undefined || typeof configSettings === 'boolean') {
 			return {
@@ -97,6 +118,15 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		};
 	}
 
+	/**
+	 * Executes this rule's verify (and optionally fix) function against a document,
+	 * then collects and returns the resulting violations.
+	 *
+	 * @param document - The parsed document to verify
+	 * @param locale - The locale set for translating violation messages
+	 * @param fix - Whether to also run the fix function
+	 * @returns An array of violations found by this rule
+	 */
 	async verify(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		document: MLDocument<T, O>,
@@ -162,6 +192,9 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	}
 }
 
+/**
+ * An MLRule with any value and option types. Used when the specific types are not known.
+ */
 export type AnyMLRule = MLRule<RuleConfigValue, PlainData>;
 
 function isRuleConfig<T extends RuleConfigValue, O extends PlainData = undefined>(

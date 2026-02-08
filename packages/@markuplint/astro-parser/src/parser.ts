@@ -10,6 +10,13 @@ type State = {
 	scopeNS: string;
 };
 
+/**
+ * Parser implementation for Astro component templates.
+ * Extends the base Parser to handle Astro-specific syntax including frontmatter blocks,
+ * expression containers (`{}`), component/element/fragment types, Astro directives
+ * (e.g., `class:list`, `set:html`), shorthand attributes, and namespace-aware
+ * element resolution (XHTML vs SVG).
+ */
 class AstroParser extends Parser<Node, State> {
 	constructor() {
 		super(
@@ -31,6 +38,16 @@ class AstroParser extends Parser<Node, State> {
 		};
 	}
 
+	/**
+	 * Converts an Astro AST node into markuplint node tree items.
+	 * Handles frontmatter, doctype, text, comment, component/element/fragment,
+	 * and expression nodes. Manages namespace scoping for SVG elements.
+	 *
+	 * @param originNode - The Astro AST node to convert
+	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
+	 * @param depth - The nesting depth of the node
+	 * @returns An array of markuplint node tree items
+	 */
 	nodeize(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Node,
@@ -162,6 +179,15 @@ class AstroParser extends Parser<Node, State> {
 		});
 	}
 
+	/**
+	 * Visits an element token by first parsing the raw HTML fragment to extract
+	 * the start tag, then delegating to the base visitElement with Astro-specific
+	 * options including namespace scoping and nameless fragment support.
+	 *
+	 * @param token - The child token representing the element
+	 * @param childNodes - The child Astro AST nodes within the element
+	 * @returns An array of markuplint node tree items
+	 */
 	visitElement(
 		token: ChildToken,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -200,6 +226,15 @@ class AstroParser extends Parser<Node, State> {
 		});
 	}
 
+	/**
+	 * Visits child nodes and verifies that no sibling nodes with differing
+	 * hierarchy levels are produced. Throws a ParserError if unexpected
+	 * sibling nodes are discovered.
+	 *
+	 * @param children - The child Astro AST nodes to visit
+	 * @param parentNode - The parent node in the markuplint tree
+	 * @returns An empty array (all children are attached via the visitor)
+	 */
 	visitChildren(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		children: readonly Node[],
@@ -212,6 +247,14 @@ class AstroParser extends Parser<Node, State> {
 		return [];
 	}
 
+	/**
+	 * Visits an attribute token, handling Astro-specific syntax including
+	 * curly-brace expression values, shorthand attributes (`{name}`),
+	 * and template directives (e.g., `class:list`, `set:html`).
+	 *
+	 * @param token - The token representing the attribute
+	 * @returns The parsed attribute node with Astro-specific metadata
+	 */
 	visitAttr(token: Token) {
 		const attr = super.visitAttr(token, {
 			quoteSet: [
@@ -276,6 +319,14 @@ class AstroParser extends Parser<Node, State> {
 		return super.detectElementType(nodeName, /^[A-Z]/);
 	}
 
+	/**
+	 * Updates the namespace scope based on the current node type.
+	 * Switches to SVG namespace when entering an `<svg>` element
+	 * and back to XHTML when entering a `<foreignObject>`.
+	 *
+	 * @param originNode - The Astro AST node being processed
+	 * @param parentNode - The parent node in the markuplint tree
+	 */
 	#updateScopeNS(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: Node,

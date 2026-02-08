@@ -7,6 +7,18 @@ import { contentModel } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
 
+/**
+ * The `permitted-contents` rule validates that each element's child nodes conform
+ * to the HTML content model specification. It is the most complex rule in markuplint,
+ * implementing a full content model validation engine that handles ordered sequences,
+ * quantified patterns (require, optional, oneOrMore, zeroOrMore), choice alternations,
+ * transparent content models, and conditional child node branches.
+ *
+ * For each element, it resolves the applicable content model (from the HTML spec or
+ * user-defined tag rules), evaluates the element's children against that model, and
+ * reports violations such as unexpected elements, missing required elements, or
+ * disallowed content through transparent models.
+ */
 export default createRule<TagRule[], Options>({
 	meta: meta,
 	defaultValue: [],
@@ -120,6 +132,15 @@ export default createRule<TagRule[], Options>({
 	},
 });
 
+/**
+ * Generates a localized, human-readable name for a child node based on its type.
+ * Used in error messages to describe the offending node (e.g., 'the "div" element',
+ * 'the text node', 'the comment', 'the doctype', 'the code block').
+ *
+ * @param scope - The child node to generate a name for.
+ * @param t - The translator function for localized message formatting.
+ * @returns A localized string describing the node.
+ */
 function name(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	scope: ChildNode,

@@ -2,7 +2,27 @@ import type { Token } from '@markuplint/parser-utils';
 
 import { HtmlParser } from '@markuplint/html-parser';
 
+/**
+ * Parser for htmx-enhanced HTML that extends the standard HTML parser.
+ *
+ * Recognizes `hx-on:` and `hx-on-` event handler attributes and maps them to
+ * their canonical forms, distinguishing between native DOM events and
+ * htmx-specific lifecycle events.
+ */
 class HtmxParser extends HtmlParser {
+	/**
+	 * Visits an attribute token and applies htmx-specific classification.
+	 *
+	 * Parses `hx-on:` and `hx-on-` shorthand attributes to determine whether
+	 * they reference a native DOM event or an htmx lifecycle event. Native
+	 * events are mapped to their `on*` canonical name; htmx events are
+	 * normalized to the `hx-on:htmx:*` form. All matched attributes are
+	 * marked as directives with dynamic values.
+	 *
+	 * @param token - The raw attribute token containing text and position information
+	 * @param options - Controls quoting behavior, value types, and the initial parser state
+	 * @returns The attribute AST node enriched with htmx event handler metadata
+	 */
 	visitAttr(token: Token, options: Parameters<HtmlParser['visitAttr']>[1]) {
 		const attr = super.visitAttr(token, options);
 
@@ -56,4 +76,7 @@ class HtmxParser extends HtmlParser {
 	}
 }
 
+/**
+ * Singleton htmx parser instance for use by the markuplint engine.
+ */
 export const parser = new HtmxParser();

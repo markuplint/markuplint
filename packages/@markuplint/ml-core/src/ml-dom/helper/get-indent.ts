@@ -2,9 +2,12 @@ import type { MLNode } from '../node/node.js';
 import type { MLText } from '../node/text.js';
 
 /**
+ * Computes the indentation preceding the given node by analyzing
+ * the whitespace in adjacent text nodes.
  *
  * @deprecated
- * @param node
+ * @param node - The node whose indentation to determine
+ * @returns An indentation object describing the whitespace, or null if no indentation is found
  */
 export function getIndent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

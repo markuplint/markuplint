@@ -1,6 +1,7 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
+ * Checks whether a string is a valid browsing context name.
  *
  * @see https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name
  *
@@ -8,8 +9,7 @@ import type { FormattedPrimitiveTypeCreator } from '../types.js';
  * > that does not start with a U+005F LOW LINE character.
  * > (Names starting with an underscore are reserved for special keywords.)
  *
- * @deprecated
- *
+ * @deprecated Use {@link isNavigableTargetName} instead.
  */
 export const isBrowserContextName: FormattedPrimitiveTypeCreator = () => {
 	return value => {

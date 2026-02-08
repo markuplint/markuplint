@@ -3,16 +3,32 @@ import { decodeEntities } from '@markuplint/shared';
 
 import meta from './meta.js';
 
+/** An array of characters recognized as bullet-like symbols indicating list items. */
 type Bullets = readonly string[];
 
+/**
+ * Configuration options for the use-list rule.
+ */
 type Options = {
+	/** Bullet characters that require a space after them to be considered list items. */
 	spaceNeededBullets?: string[];
+	/** Whether to report text nodes with no preceding sibling. */
 	noPrev?: boolean;
+	/** Whether to report text nodes preceded by an element node. */
 	prevElement?: boolean;
+	/** Whether to report text nodes preceded by a comment node. */
 	prevComment?: boolean;
+	/** Whether to report text nodes preceded by a preprocessor block. */
 	prevCodeBlock?: boolean;
 };
 
+/**
+ * Rule that suggests using `<li>` elements instead of text with bullet characters.
+ *
+ * Detects text nodes that start with bullet-like characters (Unicode bullets,
+ * markdown-style dashes/asterisks, etc.) and recommends converting them into
+ * proper list markup using `<li>` elements.
+ */
 export default createRule<Bullets, Options>({
 	meta: meta,
 	defaultValue: [
@@ -120,6 +136,19 @@ export default createRule<Bullets, Options>({
 	},
 });
 
+/**
+ * Determines whether a text string appears to be a list item based on its first character.
+ *
+ * Checks if the text starts with a recognized bullet character. For bullets
+ * that require a trailing space (e.g., `-`, `*`, `+`), also verifies that the
+ * second character is whitespace. Consecutive identical characters are not
+ * treated as bullets (e.g., `--` is not a list item).
+ *
+ * @param text - The text content to evaluate.
+ * @param bullets - Characters recognized as bullet symbols.
+ * @param spaceNeededBullets - Bullet characters that require a following space.
+ * @returns `true` if the text appears to be a list item.
+ */
 function isMayListItem(text: string, bullets: Bullets, spaceNeededBullets: readonly string[]) {
 	const textArray = [...text];
 	const firstLetter = textArray[0] ?? '';

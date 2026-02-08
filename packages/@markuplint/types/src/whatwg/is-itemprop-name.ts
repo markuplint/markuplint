@@ -1,6 +1,7 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
+ * Checks whether a string is a valid itemprop property name.
  *
  * @see https://html.spec.whatwg.org/multipage/microdata.html#defined-property-name
  *

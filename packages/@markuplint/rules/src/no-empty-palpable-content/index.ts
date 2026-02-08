@@ -3,11 +3,20 @@ import { isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
 
+/**
+ * Configuration options for the no-empty-palpable-content rule.
+ */
 type Options = {
+	/** Whether to extend checking to exposable elements beyond standard palpable content. */
 	extendsExposableElements?: boolean;
+	/** Whether to ignore elements marked with `aria-busy="true"`. */
 	ignoreIfAriaBusy?: boolean;
 };
 
+/**
+ * Elements that are allowed to be empty because they are filled by user
+ * interaction or are inherently palpable by themselves.
+ */
 const allowedElements = new Set([
 	// These elements are possibly empty because it to be filled by user interaction.
 	'textarea',
@@ -20,6 +29,14 @@ const allowedElements = new Set([
 	'img',
 ]);
 
+/**
+ * Rule that warns when palpable content elements are empty.
+ *
+ * Palpable content elements are expected to have visible or meaningful content.
+ * This rule reports elements that contain only whitespace text nodes, while
+ * excluding elements that are naturally empty (e.g., `<textarea>`, `<video>`)
+ * or have a nothing content model.
+ */
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',

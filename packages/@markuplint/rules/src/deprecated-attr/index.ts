@@ -2,6 +2,12 @@ import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Rule that reports the use of deprecated or obsolete HTML attributes.
+ *
+ * Checks each attribute against the HTML spec and reports any that are
+ * marked as deprecated or obsolete.
+ */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {

@@ -6,6 +6,8 @@ import { getSVGElementList } from './svg.js';
 import { getName, nameCompare, sortObjectByKey } from './utils.js';
 
 /**
+ * List of non-conforming (obsolete) HTML elements.
+ *
  * @see https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
  */
 const obsoleteList = [
@@ -40,6 +42,14 @@ const obsoleteList = [
 	'tt',
 ];
 
+/**
+ * Builds the complete list of HTML and SVG element specifications by reading local JSON spec files,
+ * enriching them with data scraped from MDN, and appending obsolete/deprecated elements.
+ * Elements are sorted alphabetically with SVG elements placed after HTML elements.
+ *
+ * @param filePattern - An absolute glob pattern matching the per-element JSON spec files
+ * @returns A sorted array of extended element specification objects
+ */
 export async function getElements(filePattern: string) {
 	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body) => {
 		const name = file.replace(/^.+spec\.([\w-]+)\.json$/i, '$1');

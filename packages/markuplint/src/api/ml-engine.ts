@@ -29,13 +29,31 @@ type MLEngineOptions = {
 	readonly watch?: boolean;
 };
 
+/**
+ * Options for creating an {@link MLEngine} from inline source code.
+ */
 export type FromCodeOptions = APIOptions &
 	MLEngineOptions & {
+		/** Optional filename for the inline source code */
 		readonly name?: string;
+		/** Optional working directory for config resolution */
 		readonly dirname?: string;
 	};
 
+/**
+ * The main markuplint engine that orchestrates file resolution, configuration loading,
+ * parsing, and linting. Supports both single-file and watch-mode operation.
+ *
+ * Emits events at each stage of the linting pipeline for monitoring and debugging.
+ */
 export class MLEngine extends Emitter<MLEngineEventMap> {
+	/**
+	 * Creates an MLEngine instance from inline source code.
+	 *
+	 * @param sourceCode - The markup source code to lint
+	 * @param options - Options for configuration, naming, and behavior
+	 * @returns A new MLEngine instance ready to lint the provided code
+	 */
 	static async fromCode(sourceCode: string, options?: FromCodeOptions) {
 		if (options?.debug) {
 			verbosely();
@@ -57,6 +75,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return engine;
 	}
 
+	/**
+	 * Converts a target (file path or inline source) into an MLFile instance.
+	 *
+	 * @param target - A file path string or inline source code target
+	 * @returns The resolved MLFile, or `undefined` if resolution failed
+	 */
 	static async toMLFile(target: Target) {
 		const files = await resolveFiles([target]);
 		return files[0];
@@ -83,6 +107,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		log('[MLEngine] Initialized: %s', this.#file.path);
 	}
 
+	/**
+	 * The parsed document, or `null` if not yet set up or if parsing failed.
+	 */
 	get document(): Document<RuleConfigValue, PlainData> | null {
 		if (this.#core?.document instanceof Error) {
 			return null;
@@ -90,11 +117,21 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return this.#core?.document ?? null;
 	}
 
+	/**
+	 * Closes the engine, removing all event listeners and stopping the file watcher.
+	 */
 	async close() {
 		this.removeAllListeners();
 		await this.#watcher.close();
 	}
 
+	/**
+	 * Executes linting on the target file and returns the results.
+	 *
+	 * Sets up the engine on first call, then verifies the document against all rules.
+	 *
+	 * @returns The lint result including violations and fixed code, or `null` if setup was skipped
+	 */
 	async exec(): Promise<MLResultInfo | null> {
 		log('exec: start');
 		const core = await this.setup();
@@ -149,6 +186,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 	}
 
+	/**
+	 * Updates the source code and re-parses the document without re-resolving configuration.
+	 *
+	 * @param code - The new markup source code
+	 */
 	async setCode(code: string) {
 		const core = await this.setup();
 
@@ -160,6 +202,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		core.setCode(code);
 	}
 
+	/**
+	 * Enables or disables watch mode. When enabled, the engine watches config files
+	 * for changes and re-lints automatically.
+	 *
+	 * @param enable - Whether to enable watch mode
+	 */
 	watchMode(enable: boolean) {
 		this.#options = {
 			...this.#options,

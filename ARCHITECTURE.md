@@ -12,15 +12,146 @@ This document outlines the design strategy and role division between core packag
 
 The Markuplint ecosystem consists of **19 packages** that depend on `@markuplint/ml-spec` and **9 packages** that depend on `@markuplint/html-spec`, forming a healthy dependency graph with no circular dependencies.
 
+### Package Dependency Tree
+
+The following diagram shows the internal runtime dependency graph. Arrows point from a package to its dependency. Dev-only dependencies and transitive edges are omitted for clarity.
+
 ```mermaid
 graph TD
-    A[ml-spec] --> B[html-spec]
-    A --> C[Framework Specs]
-    A --> D[Core Packages]
-    A --> E[Parser Packages]
-    B --> F[Rules Engine]
-    B --> G[Core Validation]
+    %% ── Main entry ──
+    markuplint["markuplint"]
+
+    %% ── Core layer ──
+    markuplint --> rules
+    markuplint --> file-resolver
+    markuplint --> ml-core
+    markuplint --> cli-utils
+
+    subgraph core ["Core Engine"]
+        rules["rules"]
+        file-resolver["file-resolver"]
+        ml-core["ml-core"]
+    end
+
+    rules --> ml-core
+    rules --> html-spec
+    rules --> types
+    file-resolver --> ml-core
+    file-resolver --> ml-config
+
+    ml-core --> ml-config
+    ml-core --> html-parser
+    ml-core --> html-spec
+    ml-core --> i18n
+    ml-core --> config-presets
+
+    %% ── Configuration ──
+    ml-config["ml-config"]
+    ml-config --> ml-spec
+    ml-config --> selector
+
+    selector["selector"]
+    selector --> ml-spec
+
+    %% ── Spec data ──
+    subgraph specs ["Specification Data"]
+        html-spec["html-spec"]
+        react-spec["react-spec"]
+        vue-spec["vue-spec"]
+        svelte-spec["svelte-spec"]
+    end
+
+    html-spec --> ml-spec
+    react-spec --> ml-spec
+    vue-spec --> ml-spec
+    svelte-spec --> ml-spec
+
+    %% ── Parser layer ──
+    subgraph parsers ["Parsers"]
+        html-parser["html-parser"]
+        jsx-parser["jsx-parser"]
+        vue-parser["vue-parser"]
+        svelte-parser["svelte-parser"]
+        pug-parser["pug-parser"]
+        astro-parser["astro-parser"]
+        simple-parsers["alpine / ejs / erb / htmx\nliquid / mustache / nunjucks\nphp / smarty"]
+    end
+
+    html-parser --> parser-utils
+    jsx-parser --> html-parser
+    jsx-parser --> parser-utils
+    vue-parser --> html-parser
+    vue-parser --> parser-utils
+    svelte-parser --> html-parser
+    svelte-parser --> parser-utils
+    pug-parser --> html-parser
+    pug-parser --> parser-utils
+    astro-parser --> parser-utils
+    simple-parsers --> html-parser
+
+    %% ── Foundation layer ──
+    subgraph foundation ["Foundation"]
+        ml-spec["ml-spec"]
+        parser-utils["parser-utils"]
+        types["types"]
+    end
+
+    ml-spec --> ml-ast
+    ml-spec --> types
+    parser-utils --> ml-ast
+    parser-utils --> ml-spec
+    types --> shared
+
+    %% ── Leaf packages ──
+    subgraph leaf ["Leaf (no internal deps)"]
+        shared["shared"]
+        ml-ast["ml-ast"]
+        i18n["i18n"]
+        cli-utils["cli-utils"]
+        config-presets["config-presets"]
+    end
+
+    %% ── Tools (side) ──
+    pretenders["pretenders"]
+    pretenders --> ml-config
+    pretenders --> parser-utils
+
+    create-rule["create-rule"]
+    create-rule --> cli-utils
+    create-rule --> ml-core
+
+    rule-textlint["rule-textlint"]
+    rule-textlint --> ml-core
+
+    %% ── Styling ──
+    classDef leafNode fill:#e8f5e9,stroke:#4caf50
+    classDef foundationNode fill:#e3f2fd,stroke:#2196f3
+    classDef coreNode fill:#fff3e0,stroke:#ff9800
+    classDef specNode fill:#f3e5f5,stroke:#9c27b0
+    classDef parserNode fill:#fce4ec,stroke:#e91e63
+    classDef mainNode fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef toolNode fill:#f5f5f5,stroke:#9e9e9e
+
+    class shared,ml-ast,i18n,cli-utils,config-presets leafNode
+    class types,ml-spec,parser-utils,ml-config,selector foundationNode
+    class ml-core,rules,file-resolver coreNode
+    class html-spec,react-spec,vue-spec,svelte-spec specNode
+    class html-parser,jsx-parser,vue-parser,svelte-parser,pug-parser,astro-parser,simple-parsers parserNode
+    class markuplint mainNode
+    class pretenders,create-rule,rule-textlint toolNode
 ```
+
+All package names omit the `@markuplint/` prefix. The 9 simple template-engine parsers (alpine, ejs, erb, htmx, liquid, mustache, nunjucks, php, smarty) are grouped into a single node since they all share the same dependency pattern: `html-parser` only.
+
+**Legend**:
+
+- **Green (Leaf)**: No internal dependencies -- `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`
+- **Blue (Foundation)**: Type system, spec algorithms, parsing -- `types`, `ml-spec`, `parser-utils`, `ml-config`, `selector`
+- **Orange (Core)**: Lint engine, rules, file resolution -- `ml-core`, `rules`, `file-resolver`
+- **Purple (Spec Data)**: HTML/framework specification datasets -- `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`
+- **Pink (Parsers)**: `html-parser` + 14 framework parsers
+- **Red (Main)**: Entry point -- `markuplint`
+- **Gray (Tools)**: Development utilities -- `pretenders`, `create-rule`, `rule-textlint`
 
 ### Package Role Definition
 
@@ -311,6 +442,45 @@ Framework-specific specs (extend base data)
 2. **Algorithm Extraction to Separate Package**: Would break specification coupling and reduce maintainability
 3. **Data Structure Changes**: Would require extensive migration with minimal benefits
 4. **Generator Responsibility Mixing**: Moving schema operations to spec-generator would muddy architectural boundaries
+
+## Package Operation Order
+
+When performing cross-package operations (commits, builds, releases, migrations, refactoring), always process packages **from leaves to root** -- that is, dependencies before dependents. This ensures each package is in a consistent state before anything that relies on it is modified.
+
+### Canonical Order
+
+Process packages in the following tier order. Within the same tier, order does not matter.
+
+| Tier                  | Packages                                                                                                                                                                                                                    | Rationale                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 0 (Leaf)              | `shared`, `ml-ast`, `i18n`, `cli-utils`, `config-presets`                                                                                                                                                                   | No internal dependencies                            |
+| 1 (Types)             | `types`                                                                                                                                                                                                                     | Depends only on `shared`                            |
+| 2 (Spec Foundation)   | `ml-spec`                                                                                                                                                                                                                   | Depends on `ml-ast`, `types`                        |
+| 3 (Spec Data)         | `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`                                                                                                                                                                        | Depend on `ml-spec`                                 |
+| 4 (Parser Foundation) | `parser-utils`, `selector`                                                                                                                                                                                                  | Depend on `ml-spec`                                 |
+| 5 (Config)            | `ml-config`                                                                                                                                                                                                                 | Depends on `ml-spec`, `selector`                    |
+| 6 (HTML Parser)       | `html-parser`                                                                                                                                                                                                               | Depends on `parser-utils`                           |
+| 7 (Framework Parsers) | `jsx-parser`, `vue-parser`, `svelte-parser`, `pug-parser`, `astro-parser`, `alpine-parser`, `ejs-parser`, `erb-parser`, `htmx-parser`, `liquid-parser`, `mustache-parser`, `nunjucks-parser`, `php-parser`, `smarty-parser` | Depend on `html-parser` and/or `parser-utils`       |
+| 8 (Core)              | `ml-core`                                                                                                                                                                                                                   | Depends on many foundation + parser packages        |
+| 9 (Rules & Resolver)  | `rules`, `file-resolver`                                                                                                                                                                                                    | Depend on `ml-core`                                 |
+| 10 (Tools)            | `pretenders`, `create-rule`, `rule-textlint`                                                                                                                                                                                | Depend on core/config packages                      |
+| 11 (Main)             | `markuplint`                                                                                                                                                                                                                | Top-level entry point; depends on almost everything |
+
+### When to Apply This Order
+
+- **Committing**: Stage and commit packages from lower tiers first
+- **Building**: Build leaf packages before dependents (`yarn build` with lerna handles this automatically, but manual builds should follow this order)
+- **Releasing**: Publish lower-tier packages first to avoid broken peer dependencies
+- **Refactoring type signatures**: Change the source of truth (lower tier) first, then propagate to consumers (higher tiers)
+- **Adding JSDoc / documentation**: Process in any order (no runtime impact), but commit in this order
+- **Reviewing PRs**: Check lower-tier changes first to understand the foundation before reviewing consumers
+
+### Exceptions
+
+- **Test-only changes**: No ordering constraint since tests do not affect other packages at build time
+- **Documentation-only changes** (README, comments): Can be batched freely, but prefer committing per-package
+- **Single-package changes**: Skip ordering -- just commit the affected package
+- **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
 
 ## Conclusion
 

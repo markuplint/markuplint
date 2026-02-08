@@ -7,6 +7,9 @@ import { input, installModule, select, confirm, font, header, xterm } from '@mar
 import { createRuleHelper } from './create-rule-helper.js';
 import { isMarkuplintRepo } from './is-markuplint-repo.js';
 
+/**
+ * Icon mapping for scaffold output display, keyed by base file name.
+ */
 const icons: Record<string, string> = {
 	README: '📝',
 	index: '📜',
@@ -15,6 +18,17 @@ const icons: Record<string, string> = {
 	tsconfig: '💎',
 };
 
+/**
+ * Interactive CLI wizard for creating a new markuplint rule.
+ *
+ * Guides the user through selecting a purpose, naming the plugin and rule,
+ * choosing a language, and optionally generating tests. After scaffolding,
+ * it prints the generated files and installs any required dependencies.
+ *
+ * This function is the main entry point invoked by the `create-rule` CLI binary.
+ *
+ * @returns Resolves when the rule has been fully scaffolded and dependencies installed.
+ */
 export async function createRule() {
 	process.stdout.write(header('Create a rule'));
 	process.stdout.write('\n');
@@ -99,6 +113,14 @@ export async function createRule() {
 	}
 }
 
+/**
+ * Prints a single scaffolded file entry to stdout with a check mark, icon, and file path.
+ *
+ * @param name - The plugin or module name used as a prefix.
+ * @param icon - The icon character to display next to the file name.
+ * @param title - The display title (typically the file name).
+ * @param path - The absolute path to the generated file.
+ */
 function output(name: string, icon: string, title: string, path: string) {
 	const _marker = xterm(39)('✔') + ' ';
 	const _title = (icon: string, title: string) => `${icon} ` + font.bold(`${name}/${title}`);

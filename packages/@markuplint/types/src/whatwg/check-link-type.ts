@@ -494,7 +494,11 @@ const ALLOWED_LINK_TYPE_MICROFORMATS = [
 ].filter(def => !DEF_LINK_TYPE_WHATWG.some(whatwg => whatwg.keyword === def.keyword));
 
 /**
- * Link Type
+ * Validates a link type attribute value against WHATWG and Microformats registries.
+ *
+ * Filters allowed keywords based on the element context (link, body link, a/area, or form).
+ * Rejects dropped, non-HTML, and rejected link types from the Microformats wiki.
+ *
  * @see https://html.spec.whatwg.org/multipage/links.html#linkTypes
  */
 export const checkLinkType: CustomSyntaxChecker<{

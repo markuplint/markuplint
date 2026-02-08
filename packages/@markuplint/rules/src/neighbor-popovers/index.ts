@@ -4,8 +4,16 @@ import { mayBeFocusable } from '@markuplint/ml-spec';
 import meta from './meta.js';
 
 // TODO: It will be received from config
+/** The ARIA specification version used for accessible name computation. */
 const ARIA_VERSION = '1.2';
 
+/**
+ * Rule that detects perceptible content between a popover trigger and its target.
+ *
+ * When a `[popovertarget]` element and its corresponding `[popover]` target exist
+ * in the DOM, any focusable elements, elements with accessible names, or non-whitespace
+ * text nodes between them are reported as violations.
+ */
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {

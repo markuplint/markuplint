@@ -5,6 +5,14 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import { MLParentNode } from './parent-node.js';
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
+/**
+ * Represents a DOM DocumentFragment node wrapper in the markuplint DOM tree.
+ * Used for JSX fragments and similar constructs where a set of nodes
+ * is grouped without a wrapping element.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O, MLASTNode>
 	implements DocumentFragment

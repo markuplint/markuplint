@@ -10,6 +10,9 @@ import meta from './meta.js';
 
 const log = ruleLog.extend('invalid-attr');
 
+/**
+ * Configuration options for the `invalid-attr` rule.
+ */
 type Option = {
 	/**
 	 * @since 3.7.0
@@ -21,7 +24,10 @@ type Option = {
 	 */
 	disallowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
 
+	/** Attribute name prefix(es) to ignore during validation. */
 	ignoreAttrNamePrefix?: string | string[];
+
+	/** Whether to allow additional properties for pretender elements (defaults to `true`). */
 	allowToAddPropertiesForPretender?: boolean;
 
 	/**
@@ -41,11 +47,20 @@ type Option = {
 	>;
 };
 
+/**
+ * Describes a single attribute with its name and expected value constraint.
+ */
 type Attr = {
+	/** The attribute name. */
 	name: string;
+	/** The expected attribute value type or validation rule. */
 	value: AttributeType | ValueRule;
 };
 
+/**
+ * A validation constraint for an attribute value, defined as either an
+ * enumerated list, a regex pattern, or a spec-based type.
+ */
 type ValueRule =
 	| {
 			enum: [string, ...string[]];
@@ -57,6 +72,16 @@ type ValueRule =
 			type: AttributeType;
 	  };
 
+/**
+ * Rule that validates attributes against the HTML spec, allowed lists,
+ * and disallowed lists.
+ *
+ * Checks each attribute for: existence in the spec, correct value type,
+ * allowed/disallowed overrides from configuration, and typo suggestions
+ * via candidate matching. Supports `allowAttrs`, `disallowAttrs`, and
+ * the deprecated `attrs` option. Non-existent attributes on elements that
+ * allow additional properties (pretenders) can be optionally permitted.
+ */
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
@@ -295,6 +320,13 @@ export default createRule<boolean, Option>({
 	},
 });
 
+/**
+ * Determines whether the given value is a {@link ValueRule} (enum, pattern,
+ * or simple type constraint) as opposed to a raw {@link AttributeType}.
+ *
+ * @param value - The value to inspect.
+ * @returns `true` if the value is a {@link ValueRule}, `false` otherwise.
+ */
 function isValueRule(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	value: AttributeType | ValueRule,

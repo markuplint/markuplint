@@ -1,5 +1,15 @@
 import { HtmlParser } from '@markuplint/html-parser';
 
+/**
+ * Parser for EJS (Embedded JavaScript) templates that extends the standard HTML parser.
+ *
+ * Configures the HTML parser to recognize all EJS tag variants as opaque blocks:
+ * - `<%_ ... %>` (whitespace-slurping scriptlets)
+ * - `<%= ... %>` (escaped output)
+ * - `<%- ... %>` (unescaped output)
+ * - `<%# ... %>` (comments)
+ * - `<% ... %>` (plain scriptlets)
+ */
 class EJSParser extends HtmlParser {
 	constructor() {
 		super({
@@ -34,4 +44,7 @@ class EJSParser extends HtmlParser {
 	}
 }
 
+/**
+ * Singleton EJS parser instance for use by the markuplint engine.
+ */
 export const parser = new EJSParser();

@@ -4,17 +4,22 @@ import type { Attr, Element, ElementChecker } from '@markuplint/ml-core';
 import { mayBeFocusable } from '@markuplint/ml-spec';
 
 /**
+ * Checks whether a focusable interactive element is inside an `aria-hidden=true` subtree.
+ *
  * Including Elements in the Accessibility Tree
  *
  * @see https://w3c.github.io/aria/#tree_inclusion
  * > Elements that are not hidden and may fire an accessibility API event, including:
  * > - Elements that are currently focused, even if the element or one of its ancestor elements has its aria-hidden attribute set to true.
  * > - Elements that are a valid target of an aria-activedescendant attribute.
+ *
+ * When a focused element exists within an `aria-hidden=true` ancestor, it is still
+ * exposed to the accessibility tree. This situation is almost always unintentional --
+ * while not strictly invalid per spec, it requires careful attention from the developer.
+ *
+ * @param el - The element node to inspect for focusability within a hidden context.
+ * @returns A violation if the element is focusable and has `aria-hidden=true` on itself or an ancestor.
  */
-// フォーカスがあたっている場合に限り、先祖がaria-hidden=trueでもアクセシビリティツリーに提示される
-// なので、aria-hidden=trueの子孫要素で且つインタラクティブ要素である場合、
-// それは開発者にとってはほとんどの場合、意図しないことが多いはずなので、
-// 仕様上不正にはならないが、十分に注意しなければならない状態である。
 export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
 	({ el }) =>
 	t => {
@@ -37,6 +42,12 @@ export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
 		};
 	};
 
+/**
+ * Traverses the element's ancestor chain to find the closest element with `aria-hidden="true"`.
+ *
+ * @param el - The element to start searching from (inclusive).
+ * @returns The `aria-hidden` attribute node if found, or `null` if no ancestor is hidden.
+ */
 function getClosestAriaHidden(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,

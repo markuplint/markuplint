@@ -12,12 +12,25 @@ import { Document } from './ml-dom/index.js';
 
 const resultLog = log.extend('result');
 
+/**
+ * Parameters for constructing an {@link MLCore} instance.
+ * Extends {@link MLFabric} with the source code, filename, and debug flag.
+ */
 export type MLCoreParams = {
+	/** The markup source code to lint */
 	readonly sourceCode: string;
+	/** The filename associated with the source code */
 	readonly filename: string;
+	/** Whether to enable debug logging */
 	readonly debug?: boolean;
 } & MLFabric;
 
+/**
+ * The core linting engine for markuplint.
+ *
+ * Parses markup source code into an AST, constructs a DOM document,
+ * and verifies it against configured rules to produce violations.
+ */
 export class MLCore {
 	#ast: MLASTDocument | null = null;
 	#document!: Document<RuleConfigValue, PlainData> | ParserError;
@@ -71,16 +84,30 @@ export class MLCore {
 		this._createDocument();
 	}
 
+	/**
+	 * The parsed document, or a {@link ParserError} if parsing failed.
+	 */
 	get document() {
 		return this.#document;
 	}
 
+	/**
+	 * Replaces the source code and re-parses the document.
+	 *
+	 * @param sourceCode - The new markup source code
+	 */
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
 		this._parse();
 		this._createDocument();
 	}
 
+	/**
+	 * Updates the linting configuration and re-creates the document.
+	 * Only re-parses if parser options have changed.
+	 *
+	 * @param fabric - Partial fabric with the properties to update
+	 */
 	update({ parser, ruleset, rules, locale, schemas, parserOptions, configErrors }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
 		this.#ruleset = {
@@ -103,6 +130,15 @@ export class MLCore {
 		this._createDocument();
 	}
 
+	/**
+	 * Runs all configured rules against the parsed document and returns violations.
+	 *
+	 * If the document failed to parse, a single parse-error violation is returned
+	 * (unless parse errors are suppressed via severity options).
+	 *
+	 * @param fix - Whether to attempt auto-fixing violations
+	 * @returns An array of violations found during verification
+	 */
 	async verify(fix = false): Promise<Violation[]> {
 		log('verify: start');
 		const violations: Violation[] = [];

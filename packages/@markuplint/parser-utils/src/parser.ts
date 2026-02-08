@@ -50,6 +50,15 @@ import { sortNodes } from './sort-nodes.js';
 
 const timer = new PerformanceTimer();
 
+/**
+ * Abstract base class for all markuplint parsers. Provides the core parsing pipeline
+ * including tokenization, tree traversal, node flattening, and error handling.
+ * Subclasses must implement `nodeize` to convert language-specific AST nodes
+ * into the markuplint AST format.
+ *
+ * @template Node - The language-specific AST node type produced by the tokenizer
+ * @template State - An optional parser state type that persists across tokenization
+ */
 export abstract class Parser<Node extends {} = {}, State extends unknown = null> implements MLParser {
 	readonly #booleanish: boolean = false;
 	readonly #defaultState: State;
@@ -68,6 +77,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	state: State;
 
+	/**
+	 * Creates a new Parser instance with the given options and initial state.
+	 *
+	 * @param options - Configuration options controlling tag handling, whitespace, and quoting behavior
+	 * @param defaultState - The initial parser state, cloned and restored after each parse call
+	 */
 	constructor(options?: ParserOptions, defaultState?: State) {
 		this.#booleanish = options?.booleanish ?? this.#booleanish;
 		this.#endTagType = options?.endTagType ?? this.#endTagType;
@@ -81,6 +96,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.state = structuredClone(this.#defaultState);
 	}
 
+	/**
+	 * The pattern used to distinguish authored (component) element names
+	 * from native HTML elements, as specified by the parse options.
+	 */
 	get authoredElementName() {
 		return this.#authoredElementName;
 	}
@@ -110,14 +129,29 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return this.#endTagType;
 	}
 
+	/**
+	 * The current raw source code being parsed, which may have been
+	 * preprocessed (e.g., ignore blocks masked, front matter removed).
+	 */
 	get rawCode() {
 		return this.#rawCode;
 	}
 
+	/**
+	 * Whether tag names should be compared in a case-sensitive manner.
+	 * When false (the default), tag name comparisons are case-insensitive (HTML behavior).
+	 */
 	get tagNameCaseSensitive() {
 		return this.#tagNameCaseSensitive;
 	}
 
+	/**
+	 * Tokenizes the raw source code into language-specific AST nodes.
+	 * Subclasses should override this method to provide actual tokenization logic.
+	 *
+	 * @param options - Parse options controlling offset, depth, and other parse-time settings
+	 * @returns The tokenized result containing the AST node array and fragment flag
+	 */
 	tokenize(options?: ParseOptions): Tokenized<Node, State> {
 		return {
 			ast: [],
@@ -125,11 +159,29 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Hook called before parsing begins, allowing subclasses to preprocess
+	 * the raw source code. The default implementation prepends offset spaces
+	 * based on the parse options.
+	 *
+	 * @param rawCode - The raw source code about to be parsed
+	 * @param options - Parse options that may specify offset positioning
+	 * @returns The preprocessed source code to be used for tokenization
+	 */
 	beforeParse(rawCode: string, options?: ParseOptions) {
 		const spaces = this.#createOffsetSpaces(options);
 		return spaces + rawCode;
 	}
 
+	/**
+	 * Parses raw source code through the full pipeline: preprocessing, tokenization,
+	 * traversal, flattening, ignore-block restoration, and post-processing.
+	 * Returns the complete markuplint AST document.
+	 *
+	 * @param rawCode - The raw source code to parse
+	 * @param options - Parse options controlling offsets, depth, front matter, and authored element names
+	 * @returns The parsed AST document containing the node list and fragment flag
+	 */
 	parse(rawCode: string, options?: ParseOptions): MLASTDocument {
 		try {
 			// Initialize raw code
@@ -221,10 +273,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 	}
 
+	/**
+	 * Hook called after the main parse pipeline completes, allowing subclasses
+	 * to perform final transformations on the node list. The default implementation
+	 * removes any offset spaces that were prepended during preprocessing.
+	 *
+	 * @param nodeList - The fully parsed and flattened node list
+	 * @param options - The parse options used for this parse invocation
+	 * @returns The post-processed node list
+	 */
 	afterParse(nodeList: readonly MLASTNodeTreeItem[], options?: ParseOptions): readonly MLASTNodeTreeItem[] {
 		return this.#removeOffsetSpaces(nodeList, options);
 	}
 
+	/**
+	 * Wraps an arbitrary error into a ParserError with source location information.
+	 * Extracts line and column numbers from common error formats.
+	 *
+	 * @param error - The original error to wrap
+	 * @returns A ParserError containing the original error's message and location data
+	 */
 	parseError(error: any): ParserError {
 		return new ParserError(error, {
 			line: error.line ?? error.lineNumber ?? 0,
@@ -234,6 +302,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
+	/**
+	 * Recursively traverses language-specific AST nodes by calling `nodeize` on each,
+	 * filtering duplicates, and separating child nodes from ancestor-level siblings.
+	 *
+	 * @param originNodes - The language-specific AST nodes to traverse
+	 * @param parentNode - The parent markuplint AST node, or null for top-level nodes
+	 * @param depth - The current nesting depth in the tree
+	 * @returns An object containing `childNodes` at the current depth and `siblings` that belong to ancestor levels
+	 */
 	traverse(
 		originNodes: readonly Node[],
 		parentNode: MLASTParentNode | null = null,
@@ -282,6 +359,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Hook called after traversal completes, used to sort the resulting node tree
+	 * by source position. Subclasses may override for custom post-traversal logic.
+	 *
+	 * @param nodeTree - The unsorted node tree produced by traversal
+	 * @returns The node tree sorted by source position
+	 */
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
 		return Array.prototype.toSorted == null
 			? // TODO: Use sort instead of toSorted until we end support for Node 18
@@ -289,10 +373,30 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			: nodeTree.toSorted(sortNodes);
 	}
 
+	/**
+	 * Converts a single language-specific AST node into one or more markuplint AST nodes.
+	 * Subclasses must override this method to provide actual node conversion logic
+	 * using visitor methods like `visitElement`, `visitText`, `visitComment`, etc.
+	 *
+	 * @param originNode - The language-specific AST node to convert
+	 * @param parentNode - The parent markuplint AST node, or null for top-level nodes
+	 * @param depth - The current nesting depth in the tree
+	 * @returns An array of markuplint AST nodes produced from the origin node
+	 */
 	nodeize(originNode: Node, parentNode: MLASTParentNode | null, depth: number): readonly MLASTNodeTreeItem[] {
 		return [];
 	}
 
+	/**
+	 * Post-processes the nodes produced by `nodeize`, separating them into siblings
+	 * at the current depth and ancestors that belong to a shallower depth level.
+	 * Doctype nodes at depth 0 are promoted to ancestors.
+	 *
+	 * @param siblings - The nodes produced by `nodeize` for a single origin node
+	 * @param parentNode - The parent markuplint AST node, or null for top-level nodes
+	 * @param depth - The current nesting depth
+	 * @returns An object with `siblings` at the current depth and `ancestors` at shallower depths
+	 */
 	afterNodeize(
 		siblings: readonly MLASTNodeTreeItem[],
 		parentNode: MLASTParentNode | null,
@@ -330,10 +434,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Flattens a hierarchical node tree into a flat, sorted list by walking
+	 * the tree depth-first and removing duplicated nodes.
+	 *
+	 * @param nodeTree - The hierarchical node tree to flatten
+	 * @returns A flat array of all nodes in source order
+	 */
 	flattenNodes(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
 		return this.#arrayize(nodeTree);
 	}
 
+	/**
+	 * Post-processes the flattened node list by exposing remnant whitespace and
+	 * invalid nodes between known nodes, converting orphan end tags to bogus markers,
+	 * concatenating adjacent text nodes, and trimming overlapping text.
+	 *
+	 * @param nodeList - The flat node list to post-process
+	 * @param options - Controls which post-processing steps are applied
+	 * @returns The cleaned-up flat node list
+	 */
 	afterFlattenNodes(
 		nodeList: readonly MLASTNodeTreeItem[],
 		options?: {
@@ -355,6 +475,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return nodeList;
 	}
 
+	/**
+	 * Creates an AST doctype node from a token containing the doctype
+	 * name, public ID, and system ID.
+	 *
+	 * @param token - The child token with doctype-specific properties
+	 * @returns An array containing the single doctype AST node
+	 */
 	visitDoctype(
 		token: ChildToken & {
 			readonly name: string;
@@ -372,6 +499,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return [node];
 	}
 
+	/**
+	 * Creates an AST comment node from a token. Automatically detects whether
+	 * the comment is a bogus comment (not starting with `<!--`).
+	 *
+	 * @param token - The child token containing the comment's raw text and position
+	 * @param options - Optional settings to override the bogus detection
+	 * @returns An array containing the single comment AST node
+	 */
 	visitComment(
 		token: ChildToken,
 		options?: {
@@ -390,6 +525,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return [node];
 	}
 
+	/**
+	 * Creates AST text node(s) from a token. Optionally re-parses the text content
+	 * to discover embedded HTML tags within it.
+	 *
+	 * @param token - The child token containing the text content and position
+	 * @param options - Controls whether to search for embedded tags and how to handle invalid ones
+	 * @returns An array of AST nodes; a single text node or multiple tag/text nodes if tags were found
+	 */
 	visitText(
 		token: ChildToken,
 		options?: {
@@ -420,6 +563,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return [node];
 	}
 
+	/**
+	 * Creates AST element node(s) from a token, including the start tag, optional end tag,
+	 * and recursively traversed child nodes. Handles ghost elements (empty raw),
+	 * self-closing tags, and nameless fragments (e.g., JSX `<>`).
+	 *
+	 * @param token - The child token with the element's node name and namespace
+	 * @param childNodes - The language-specific child AST nodes to traverse
+	 * @param options - Controls end tag creation, fragment handling, and property overrides
+	 * @returns An array of AST nodes including the start tag, optional end tag, and any sibling nodes
+	 */
 	visitElement(
 		token: ChildToken & {
 			readonly nodeName: string;
@@ -488,6 +641,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return [startTag, ...siblings];
 	}
 
+	/**
+	 * Creates an AST preprocessor-specific block node (e.g., for template directives
+	 * like `{#if}`, `{#each}`, or front matter). Recursively traverses child nodes.
+	 *
+	 * @param token - The child token with the block's node name and fragment flag
+	 * @param childNodes - The language-specific child AST nodes to traverse
+	 * @param conditionalType - The conditional type if this is a conditional block (e.g., "if", "else")
+	 * @param originBlockNode - The original language-specific block node for reference
+	 * @returns An array of AST nodes including the block node and any sibling nodes
+	 */
 	visitPsBlock(
 		token: ChildToken & {
 			readonly nodeName: string;
@@ -513,6 +676,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return [block, ...siblings];
 	}
 
+	/**
+	 * Traverses a list of child nodes under the given parent, appending the resulting
+	 * child AST nodes to the parent and returning any sibling nodes that belong
+	 * to ancestor levels. Skips traversal for raw text elements (e.g., `<script>`, `<style>`).
+	 *
+	 * @param children - The language-specific child AST nodes to traverse
+	 * @param parentNode - The parent markuplint AST node to which children will be appended
+	 * @returns An array of sibling nodes that belong to ancestor depth levels
+	 */
 	visitChildren(children: readonly Node[], parentNode: MLASTParentNode | null): readonly MLASTNodeTreeItem[] {
 		if (children.length === 0) {
 			return [];
@@ -528,6 +700,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return traversed.siblings;
 	}
 
+	/**
+	 * Attempts to parse a token as a JSX spread attribute (e.g., `{...props}`).
+	 * Returns null if the token does not match the spread attribute pattern.
+	 *
+	 * @param token - The token to inspect for spread attribute syntax
+	 * @returns A spread attribute AST node, or null if the token is not a spread attribute
+	 */
 	visitSpreadAttr(token: Token): MLASTSpreadAttr | null {
 		timer.push('visitSpreadAttr');
 		const raw = token.raw.trim();
@@ -555,6 +734,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Parses a token into a fully structured attribute AST node, breaking it down
+	 * into its constituent parts: spaces, name, equal sign, quotes, and value.
+	 * Also detects spread attributes. If there is leftover text after the attribute,
+	 * it is returned in the `__rightText` property for further processing.
+	 *
+	 * @param token - The token containing the raw attribute text and position
+	 * @param options - Controls quoting behavior, value types, and the initial parser state
+	 * @returns The parsed attribute AST node with an optional `__rightText` for remaining unparsed content
+	 */
 	visitAttr(
 		token: Token,
 		options?: {
@@ -663,6 +852,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return spread ?? htmlAttr;
 	}
 
+	/**
+	 * Re-parses a text token to discover embedded HTML/XML tags within it,
+	 * splitting the content into a sequence of tag and text AST nodes.
+	 * Handles self-closing detection, depth tracking, and void element recognition.
+	 *
+	 * @param token - The child token containing the code fragment to re-parse
+	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
+	 * @returns An array of tag and text AST nodes discovered in the code fragment
+	 */
 	parseCodeFragment(
 		token: ChildToken,
 		options?: {
@@ -775,6 +973,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return nodes;
 	}
 
+	/**
+	 * Updates the position and depth properties of an AST node, recalculating
+	 * end offsets, lines, and columns based on the new start values.
+	 *
+	 * @param node - The AST node whose location should be updated
+	 * @param props - The new position and depth values to apply (only provided values are changed)
+	 */
 	updateLocation(
 		node: MLASTNodeTreeItem,
 		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
@@ -817,12 +1022,27 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
+	/**
+	 * Updates the node name and/or element type of an element or close tag AST node.
+	 * Useful for renaming elements or changing their classification after initial parsing.
+	 *
+	 * @param el - The element or close tag AST node to update
+	 * @param props - The properties to overwrite on the element
+	 */
 	updateElement(el: MLASTElement, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void;
 	updateElement(el: MLASTElementCloseTag, props: Partial<Pick<MLASTElementCloseTag, 'nodeName'>>): void;
 	updateElement(el: MLASTTag, props: Partial<Pick<MLASTElement, 'nodeName' | 'elementType'>>): void {
 		Object.assign(el, props);
 	}
 
+	/**
+	 * Updates metadata properties on an HTML attribute AST node, such as marking
+	 * it as a directive, dynamic value, or setting its potential name/value
+	 * for preprocessor-specific attribute transformations.
+	 *
+	 * @param attr - The HTML attribute AST node to update
+	 * @param props - The metadata properties to overwrite on the attribute
+	 */
 	updateAttr(
 		attr: MLASTHTMLAttr,
 		props: Partial<
@@ -841,10 +1061,28 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		Object.assign(attr, props);
 	}
 
+	/**
+	 * Determines the element type (e.g., "html", "web-component", "authored") for a
+	 * given tag name, using the parser's authored element name distinguishing pattern.
+	 *
+	 * @param nodeName - The tag name to classify
+	 * @param defaultPattern - A fallback pattern if no authored element name pattern is set
+	 * @returns The element type classification
+	 */
 	detectElementType(nodeName: string, defaultPattern?: ParserAuthoredElementNameDistinguishing): ElementType {
 		return detectElementType(nodeName, this.#authoredElementName, defaultPattern);
 	}
 
+	/**
+	 * Creates a new MLASTToken with a generated UUID and computed end position.
+	 * Accepts either a Token object or a raw string with explicit start coordinates.
+	 *
+	 * @param token - A Token object or raw string to create the AST token from
+	 * @param startOffset - The byte offset where the token starts (required when token is a string)
+	 * @param startLine - The line number where the token starts (required when token is a string)
+	 * @param startCol - The column number where the token starts (required when token is a string)
+	 * @returns A fully populated AST token with UUID, start/end positions, and raw content
+	 */
 	createToken(token: Token): MLASTToken;
 	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
 	createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
@@ -865,6 +1103,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Extracts a Token from the current raw code at the given byte offset range,
+	 * computing the line and column from the source position.
+	 *
+	 * @param start - The starting byte offset (inclusive) in the raw code
+	 * @param end - The ending byte offset (exclusive) in the raw code; if omitted, slices to the end
+	 * @returns A Token containing the sliced raw content and its start position
+	 */
 	sliceFragment(start: number, end?: number): Token {
 		const raw = this.rawCode.slice(start, end);
 		const { line, column } = getPosition(this.rawCode, start);
@@ -876,10 +1122,30 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 	}
 
+	/**
+	 * Calculates start and end byte offsets from line/column positions
+	 * within the current raw source code.
+	 *
+	 * @param startLine - The starting line number (1-based)
+	 * @param startCol - The starting column number (1-based)
+	 * @param endLine - The ending line number (1-based)
+	 * @param endCol - The ending column number (1-based)
+	 * @returns The computed start and end byte offsets
+	 */
 	getOffsetsFromCode(startLine: number, startCol: number, endLine: number, endCol: number) {
 		return getOffsetsFromCode(this.rawCode, startLine, startCol, endLine, endCol);
 	}
 
+	/**
+	 * Walks through a node list depth-first, invoking the walker callback for each node.
+	 * The walker receives the current node, the sequentially previous node, and the depth.
+	 * Automatically recurses into child nodes of parent elements and preprocessor blocks.
+	 *
+	 * @template Node - The specific AST node type being walked
+	 * @param nodeList - The list of nodes to walk
+	 * @param walker - The callback invoked for each node during the walk
+	 * @param depth - The current depth (starts at 0 for top-level calls)
+	 */
 	walk<Node extends MLASTNodeTreeItem>(nodeList: readonly Node[], walker: Walker<Node>, depth = 0) {
 		for (const node of nodeList) {
 			walker(node, this.#walkMethodSequentailPrevNode, depth);
@@ -893,6 +1159,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 	}
 
+	/**
+	 * Appends child nodes to a parent node, updating parent references and
+	 * maintaining sorted order by source position. If a child already exists
+	 * in the parent (by UUID), it is replaced in place rather than duplicated.
+	 *
+	 * @param parentNode - The parent node to append children to, or null (no-op)
+	 * @param childNodes - The child nodes to append
+	 */
 	appendChild(parentNode: MLASTParentNode | null, ...childNodes: readonly MLASTChildNode[]) {
 		if (!parentNode || childNodes.length === 0) {
 			return;
@@ -922,6 +1196,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		});
 	}
 
+	/**
+	 * Replaces a child node within a parent's child list with one or more replacement nodes.
+	 * If the old child is not found in the parent, the operation is a no-op.
+	 *
+	 * @param parentNode - The parent node containing the child to replace
+	 * @param oldChildNode - The existing child node to be replaced
+	 * @param replacementChildNodes - The replacement nodes to insert at the old child's position
+	 */
 	replaceChild(
 		parentNode: MLASTParentNode,
 		oldChildNode: MLASTChildNode,

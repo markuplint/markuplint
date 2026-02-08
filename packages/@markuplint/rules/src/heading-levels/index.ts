@@ -2,6 +2,12 @@ import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
 
+/**
+ * Rule that validates heading levels (h1-h6) are not skipped.
+ *
+ * Ensures that heading elements appear in a sequential order without
+ * gaps (e.g., an h4 must not follow an h2 directly without an h3 in between).
+ */
 export default createRule<boolean, null>({
 	meta: meta,
 	defaultValue: true,

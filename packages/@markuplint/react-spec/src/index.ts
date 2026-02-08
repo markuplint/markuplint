@@ -1,5 +1,24 @@
+/**
+ * @module @markuplint/react-spec
+ *
+ * Provides React-specific extended specifications for markuplint.
+ * Defines React's JSX global attributes (such as `key`, `ref`,
+ * `dangerouslySetInnerHTML`, and hydration/contentEditable warning
+ * suppression flags) as well as element-level attribute overrides
+ * for controlled and uncontrolled form components (`input`, `select`,
+ * `textarea`).
+ */
+
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
+/**
+ * The React framework extended specification.
+ *
+ * Registers global JSX attributes available on every element and
+ * provides per-element attribute definitions for React's controlled
+ * and uncontrolled form component patterns (`defaultChecked`,
+ * `defaultValue`, `value`).
+ */
 const spec: ExtendedSpec = {
 	def: {
 		'#globalAttrs': {

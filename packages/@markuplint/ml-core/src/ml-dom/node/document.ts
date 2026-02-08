@@ -41,6 +41,15 @@ const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
 const ruleLog = docLog.extend('rule');
 
+/**
+ * Represents a DOM Document node wrapper in the markuplint DOM tree.
+ * Serves as the root node of the parsed document, managing the node list,
+ * rule mappings, pretender initialization, accessibility computation,
+ * and document-level configuration (end tag handling, booleanish values, etc.).
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLParentNode<T, O>
 	implements Document
@@ -60,7 +69,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly booleanish: boolean;
 
 	/**
-	 *
+	 * The rule currently being evaluated during a lint pass.
+	 * Set by the linting engine before rule evaluation begins and used by nodes
+	 * to retrieve their rule configuration. Null when no rule is being evaluated.
 	 */
 	currentRule: Readonly<MLRule<T, O>> | null = null;
 
@@ -72,17 +83,19 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly endTag: EndTagType;
 
 	/**
-	 *
+	 * The file path of the source document, if available.
 	 */
 	readonly #filename?: string;
 
 	/**
-	 *
+	 * Whether this document represents a fragment rather than a complete document.
+	 * Fragment documents may lack root-level elements like `<html>`, `<head>`, or `<body>`.
 	 */
 	readonly isFragment: boolean;
 
 	/**
-	 * An array of markuplint DOM nodes
+	 * A flat, ordered array of all markuplint DOM nodes in the document,
+	 * used for sequential traversal and token-level operations.
 	 */
 	readonly nodeList: ReadonlyArray<MLNode<T, O>>;
 
@@ -127,10 +140,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		| undefined;
 
 	/**
-	 *
+	 * The ML specification data used for element/attribute lookups, ARIA role resolution,
+	 * and other spec-driven computations.
 	 */
 	readonly specs: MLMLSpec;
 
+	/**
+	 * Whether tag name comparisons should be case-sensitive.
+	 * When false (default for HTML), tag names are compared case-insensitively.
+	 */
 	readonly tagNameCaseSensitive: boolean;
 
 	#tokenList: ReadonlyArray<MLToken> | null = null;
@@ -2851,7 +2869,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Returns a debug-friendly string array representing the structure of the document's
+	 * node list, useful for debugging and test assertions.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @returns An array of strings describing each node in the document
 	 */
 	debugMap(): string[] {
 		return nodeListToDebugMaps(this.nodeList, true);
@@ -2937,6 +2959,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		throw new UnexpectedCallError('Not supported "exitPointerLock" method');
 	}
 
+	/**
+	 * Computes the accessibility properties for the given node, including its
+	 * ARIA role, accessible name, focusability, and ARIA property values.
+	 * Returns null for non-element nodes.
+	 *
+	 * @param node - The node to compute accessibility properties for
+	 * @param ariaVersion - The ARIA specification version to use for computation
+	 * @returns The computed accessibility properties, or null for non-element nodes
+	 */
 	getAccessibilityProp(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: MLNode<T, O>,
@@ -3073,7 +3104,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Returns a flat, offset-sorted list of all tokens in the document,
+	 * including element close tags. The result is cached after the first call.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @returns A frozen array of tokens sorted by their starting offset
 	 */
 	getTokenList() {
 		if (this.#tokenList) {
@@ -3208,7 +3243,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Searches for a node at the given source location (line and column).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @param line - The 1-based line number to search at
+	 * @param col - The 1-based column number to search at
+	 * @returns The node at the given location, or null if not found
 	 */
 	searchNodeByLocation(line: number, col: number) {
 		for (const node of this.nodeList) {
@@ -3220,7 +3260,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Sets the currently active rule for this document. Called by the linting engine
+	 * before each rule evaluation pass.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @param rule - The rule to set as current, or null to clear
 	 */
 	setRule(rule: Readonly<MLRule<T, O>> | null) {
 		this.currentRule = rule;
@@ -3237,7 +3281,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Returns a string representation of the entire document. When `fixed` is true,
+	 * returns the document with all lint fixes applied by substituting
+	 * fixed token content at the appropriate offsets.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
+	 * @returns The string content of the document
 	 */
 	toString(fixed = false) {
 		if (!fixed) {
@@ -3257,7 +3307,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Walks the document tree, visiting nodes of the specified type and invoking
+	 * the walker callback for each one. Supports walking Element, Text, Comment,
+	 * Attr, and ElementCloseTag node types.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
+	 * @param type - The node type to walk over
+	 * @param walker - The callback to invoke for each matching node
+	 * @param skipWhenRuleIsDisabled - When true, skips nodes where the current rule is disabled
+	 * @returns A promise that resolves when all matching nodes have been visited
 	 */
 	walkOn(type: 'Element', walker: Walker<T, O, MLElement<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
 	walkOn(type: 'Text', walker: Walker<T, O, MLText<T, O>>, skipWhenRuleIsDisabled?: boolean): Promise<void>;
@@ -3311,6 +3369,11 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		throw new UnexpectedCallError('Not supported "writeln" method');
 	}
 
+	/**
+	 * Initializes pretender contexts for all element nodes in the document.
+	 *
+	 * @param pretenders - Optional pretender configurations from the document options
+	 */
 	private _pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
 			docLog('Pretending: %O', pretenders);
@@ -3322,6 +3385,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		}
 	}
 
+	/**
+	 * Maps the ruleset configuration to each node in the document.
+	 * Applies global rules, node-specific rules (by selector), and
+	 * child-node rules to build the per-node rule configuration.
+	 *
+	 * @param ruleset - The ruleset containing rules, nodeRules, and childNodeRules
+	 */
 	private _ruleMapping(ruleset: Ruleset) {
 		if (docLog.enabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));

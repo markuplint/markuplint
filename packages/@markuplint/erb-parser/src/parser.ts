@@ -1,5 +1,15 @@
 import { HtmlParser } from '@markuplint/html-parser';
 
+/**
+ * Parser for ERB (Embedded Ruby) templates that extends the standard HTML parser.
+ *
+ * Configures the HTML parser to recognize ERB tag variants as opaque blocks:
+ * - `<%= ... %>` (Ruby expression output)
+ * - `<%# ... %>` (comments)
+ * - `<% ... %>` (Ruby code execution)
+ *
+ * Note: trim_mode (`%`-prefixed lines) is not currently supported.
+ */
 class ERubyParser extends HtmlParser {
 	constructor() {
 		super({
@@ -31,4 +41,7 @@ class ERubyParser extends HtmlParser {
 	}
 }
 
+/**
+ * Singleton ERB parser instance for use by the markuplint engine.
+ */
 export const parser = new ERubyParser();

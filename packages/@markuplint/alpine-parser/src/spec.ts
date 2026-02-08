@@ -1,6 +1,8 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 /**
+ * Attribute specification for the Alpine.js `x-model` directive.
+ *
  * > `x-model` works with the following input elements:
  * > - `<input type="text">`
  * > - `<textarea>`
@@ -16,6 +18,14 @@ const xModel = {
 	description: 'The x-model directive is used to bind a variable to a form input.',
 } as const;
 
+/**
+ * Extended specification for Alpine.js directive attributes.
+ *
+ * Defines which Alpine.js-specific attributes are allowed on which HTML elements,
+ * their expected value types, and any element-level conditions. This enables
+ * markuplint to validate Alpine.js attributes as if they were part of the
+ * standard HTML spec.
+ */
 const spec: ExtendedSpec = {
 	specs: [
 		{

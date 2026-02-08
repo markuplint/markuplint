@@ -11,6 +11,17 @@ const MIMIC_TAG_L = 'mimiccases---';
 const MIMIC_TAG_R = '---mimiccases';
 const MIMIC_LENGTH = (MIMIC_TAG_L + MIMIC_TAG_R).length;
 
+/**
+ * Matches a value against a CSS syntax definition using css-tree.
+ *
+ * Supports both standard CSS syntax types (e.g., `<color>`) and custom syntax
+ * definitions with extended types, properties, and case-sensitive matching.
+ * Uses css-tree's lexer for syntax validation.
+ *
+ * @param value - The string value to match
+ * @param type - The CSS syntax identifier or custom syntax definition
+ * @returns The validation result
+ */
 export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax): Result {
 	log('Search CSS Syntax: "%s"', type);
 

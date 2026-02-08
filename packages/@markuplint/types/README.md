@@ -31,6 +31,41 @@ check('2020-02-30', 'DateTime');
 // }
 ```
 
+### `checkBase`
+
+Validates a value against a type definition object (enum, list, number, directive, or keyword type).
+
+```ts
+import { checkBase } from '@markuplint/types';
+
+checkBase('hello', { enum: ['hello', 'world'] }, {});
+// => { matched: true }
+```
+
+### `isCustomElementName`
+
+Checks whether a string is a valid custom element name according to the WHATWG specification.
+
+```ts
+import { isCustomElementName } from '@markuplint/types';
+
+isCustomElementName()('my-element'); // => true
+isCustomElementName()('div'); // => false
+```
+
+### Type Exports
+
+The package also exports the following types:
+
+| Type                  | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| `Result`              | Union type of `MatchedResult` and `UnmatchedResult`        |
+| `MatchedResult`       | Represents a successful match (`{ matched: true }`)        |
+| `UnmatchedResult`     | Represents a failed match with location and reason details |
+| `Type`                | Union of all type definition shapes (enum, list, etc.)     |
+| `Defs`                | Registry mapping type identifiers to their definitions     |
+| `CustomSyntaxChecker` | Factory function type for creating value checkers          |
+
 ## Type Identifiers
 
 | Identifier                         | Use on                                      | Spec                                                                                                                                                               | Supported |
@@ -54,8 +89,8 @@ check('2020-02-30', 'DateTime');
 | `HashName`                         | `img[usemap]`                               | [WHATWG](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference)                                                               | ✅        |
 | `OneCodePointChar`                 | The `accesskey` attribute (as list)         | [WHATWG](https://html.spec.whatwg.org/multipage/interaction.html#the-accesskey-attribute)                                                                          | ✅        |
 | `CustomElementName`                | The `is` attribute                          | [WHATWG](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)                                                                    | ✅        |
-| ~~`BrowsingContextName`~~          | Use `NavigableTargetName` instead.          | **Obsolated**                                                                                                                                                      | ✅        |
-| ~~`BrowsingContextNameOrKeyword`~~ | Use `NavigableTargetNameOrKeyword` instead. | **Obsolated**                                                                                                                                                      | ✅        |
+| ~~`BrowsingContextName`~~          | Use `NavigableTargetName` instead.          | **Obsoleted**                                                                                                                                                      | ✅        |
+| ~~`BrowsingContextNameOrKeyword`~~ | Use `NavigableTargetNameOrKeyword` instead. | **Obsoleted**                                                                                                                                                      | ✅        |
 | `NavigableTargetName`              | `iframe[name]` and more                     | [WHATWG](https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name)                                                               | ✅        |
 | `NavigableTargetNameOrKeyword`     | `a[target]` and more                        | [WHATWG](https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)                                                    | ✅        |
 | `HTTPSchemaURL`                    | `a[ping]` (as list) and more                | [WHATWG](https://html.spec.whatwg.org/multipage/links.html#ping)                                                                                                   | ✅        |

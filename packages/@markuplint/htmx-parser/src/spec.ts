@@ -1,6 +1,11 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 /**
+ * Set of known htmx extension identifiers used for validating the `hx-ext` attribute.
+ *
+ * Each entry corresponds to an official or commonly used htmx extension. The set is
+ * also used to generate `ignore:*` variants for disabling inherited extensions.
+ *
  * @see https://htmx.org/extensions/#reference
  */
 const extensionList = new Set([
@@ -28,6 +33,14 @@ const extensionList = new Set([
 	'path-params',
 ]);
 
+/**
+ * Extended specification for htmx global attributes.
+ *
+ * Defines all htmx-specific attributes as global HTML attributes, including their
+ * expected value types (URLs, JSON, boolean flags, CSS selectors, enumerations, etc.).
+ * This enables markuplint to validate htmx attributes alongside standard HTML
+ * attribute specifications.
+ */
 const spec: ExtendedSpec = {
 	def: {
 		'#globalAttrs': {

@@ -4,6 +4,13 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLCharacterData } from './character-data.js';
 
+/**
+ * Represents a DOM Comment node wrapper in the markuplint DOM tree.
+ * Wraps an AST comment token and implements the standard DOM `Comment` interface.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ */
 export class MLComment<T extends RuleConfigValue, O extends PlainData = undefined>
 	extends MLCharacterData<T, O, MLASTComment>
 	implements Comment

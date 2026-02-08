@@ -4,15 +4,32 @@ import type { ARIARole } from '@markuplint/ml-spec';
 
 import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
 
+/**
+ * Represents a classified child node when checking required owned elements.
+ *
+ * - `REQUIRED`: the child fulfills one of the role's required owned element roles.
+ * - `BUSY`: the child has `aria-busy="true"`, indicating content is still loading.
+ * - `OTHER`: the child is an element but does not satisfy any required owned role.
+ * - `PB`: the child is a preprocessor block (template syntax), which may produce required elements.
+ * - `NO_ELEMENT`: the child is not an element node (e.g., text or comment).
+ */
 type OwnedElement =
 	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER']
 	| [node: Block<boolean, Options>, type: 'PB']
 	| [node: null, type: 'NO_ELEMENT'];
 
 /**
- * Required Owned Elements
+ * Checks whether an element with a role that requires specific owned elements
+ * actually contains children with the expected roles.
+ *
+ * For example, a `list` role must own at least one element with the `listitem` role.
+ * This checker respects `aria-busy="true"` (which signals that content is still loading),
+ * preprocessor blocks, and mutable children from template engines.
  *
  * @see https://w3c.github.io/aria/#mustContain
+ * @param el - The element node to inspect for required owned elements.
+ * @param role - The computed ARIA role of the element, which defines required owned elements.
+ * @returns A violation if the role requires owned elements and none are found.
  */
 export const checkingRequiredOwnedElements: ElementChecker<
 	boolean,
@@ -135,6 +152,13 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		};
 	};
 
+/**
+ * Determines whether the element's children may not yet exist (e.g., empty or
+ * containing only `<script>` / `<template>` elements that could dynamically create content).
+ *
+ * @param el - The element to inspect.
+ * @returns `true` if the element is empty or only contains script/template children.
+ */
 function mayBeBeforeCreated(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,

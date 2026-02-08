@@ -5,6 +5,9 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 import { getComputedRole } from '@markuplint/ml-spec';
 
 /**
+ * Checks whether ARIA attributes are applied to descendants of an element whose
+ * role has the `childrenArePresentational` characteristic.
+ *
  * Presentational Children
  *
  * @see https://www.w3.org/TR/wai-aria/#childrenArePresentational
@@ -26,9 +29,12 @@ import { getComputedRole } from '@markuplint/ml-spec';
  *
  * @see https://w3c.github.io/aria/#tree_inclusion
  *
- *  > Text equivalents for hidden referenced objects
+ * > Text equivalents for hidden referenced objects
  * > may still be used in the name and description computation
  * > even when not included in the accessibility tree.
+ *
+ * @param el - The element node to inspect for presentational ancestor context.
+ * @returns A violation if the element has ARIA attributes and an ancestor with presentational children.
  */
 export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 	({ el }) =>
@@ -56,6 +62,13 @@ export const checkingPresentationalChildren: ElementChecker<boolean, Options> =
 		};
 	};
 
+/**
+ * Traverses the element's ancestor chain to find one whose computed role
+ * has the `childrenArePresentational` characteristic.
+ *
+ * @param el - The element to start searching from (exclusive, starts from parent).
+ * @returns The computed role of the ancestor with presentational children, or `null` if none found.
+ */
 function getAncestorHasPresentationalChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,

@@ -13,6 +13,13 @@ export type {
 	Node,
 } from '@astrojs/compiler/types';
 
+/**
+ * Parses an Astro component source string into the Astro compiler's root AST node.
+ * Delegates to astro-eslint-parser and converts any diagnostics into ParserErrors.
+ *
+ * @param code - The raw Astro component source code
+ * @returns The root AST node produced by the Astro compiler
+ */
 export function astroParse(code: string): RootNode {
 	const { result } = parseTemplate(code);
 

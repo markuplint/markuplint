@@ -1,3 +1,12 @@
+/**
+ * @module @markuplint/pretenders/jsx
+ *
+ * JSX/TSX scanner for discovering pretender mappings. Analyzes component source
+ * files using the TypeScript compiler API to determine which native HTML elements
+ * each component renders, including support for styled-components, HOC wrappers,
+ * and fragment providers.
+ */
+
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 import type {
@@ -39,6 +48,10 @@ const {
 	JsxEmit,
 } = ts;
 
+/**
+ * Default options for the JSX scanner, including built-in patterns
+ * for styled-components and provider components.
+ */
 const defaultOptions: Required<PretenderScanJSXOptions> = {
 	cwd: process.cwd(),
 	asFragment: [/(?:^|\.)provider$/i],
@@ -52,6 +65,18 @@ const defaultOptions: Required<PretenderScanJSXOptions> = {
 	extendingWrapper: [],
 };
 
+/**
+ * A scanner function that analyzes JSX/TSX source files to discover pretender mappings.
+ * Uses the TypeScript compiler API to parse and traverse the AST, identifying component
+ * definitions and the native HTML elements they render.
+ *
+ * Supports:
+ * - Function components (function declarations and arrow functions)
+ * - Styled-components (`styled.element` tagged templates)
+ * - HOC / wrapper function patterns
+ * - Fragment and provider component transparency
+ * - `@pretends null` JSDoc tag to opt out a component
+ */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {
 		const {

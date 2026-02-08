@@ -1,3 +1,7 @@
+/**
+ * Positional and contextual information associated with a parser error,
+ * used to construct meaningful error messages with source locations.
+ */
 export type ParserErrorInfo = {
 	readonly line?: number;
 	readonly col?: number;
@@ -5,6 +9,10 @@ export type ParserErrorInfo = {
 	readonly stack?: string;
 };
 
+/**
+ * An error that occurs during parsing, carrying the source line, column,
+ * and raw text where the error was encountered.
+ */
 export class ParserError extends Error {
 	readonly col: number;
 	readonly line: number;
@@ -20,6 +28,10 @@ export class ParserError extends Error {
 	}
 }
 
+/**
+ * A parser error specific to a particular HTML element, including
+ * the node name of the element that caused the error in the message.
+ */
 export class TargetParserError extends ParserError {
 	name = 'TargetParserError';
 	readonly nodeName: string | null;
@@ -39,6 +51,10 @@ export class TargetParserError extends ParserError {
 	}
 }
 
+/**
+ * A parser error that occurs while reading a configuration file,
+ * including the file path in the error message for easier debugging.
+ */
 export class ConfigParserError extends ParserError {
 	readonly filePath: string;
 	name = 'ConfigParserError';

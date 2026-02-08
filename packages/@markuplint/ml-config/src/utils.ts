@@ -13,11 +13,14 @@ import { isPlainObject } from 'is-plain-object';
 import mustache from 'mustache';
 
 /**
- * Return undefined if the template doesn't include the variable that is set as a property in data.
- * But return template string without changes if it doesn't have a variable.
+ * Renders a Mustache template with the provided data.
  *
- * @param template Mustache template string
- * @param data Captured string for replacement
+ * Returns `undefined` if the template contains variables but none of them
+ * are present in `data`. Returns the template unchanged if it has no variables.
+ *
+ * @param template - A Mustache template string with `{{variable}}` placeholders
+ * @param data - Key-value pairs for template variable replacement
+ * @returns The rendered string, or `undefined` if no matching variables were found
  */
 export function provideValue(template: string, data: Readonly<Record<string, string>>) {
 	const ast = mustache.parse(template);
@@ -34,6 +37,14 @@ export function provideValue(template: string, data: Readonly<Record<string, str
 	return result;
 }
 
+/**
+ * Applies Mustache template rendering to all string values within a rule configuration,
+ * including the rule's value, options, and reason fields.
+ *
+ * @param rule - The rule configuration containing potential template strings
+ * @param data - Key-value pairs for template variable replacement
+ * @returns The rule with all template strings rendered, or `undefined` if rendering fails
+ */
 export function exchangeValueOnRule(
 	rule: AnyRule | AnyRuleV2,
 	data: Readonly<Record<string, string>>,
@@ -71,6 +82,14 @@ export function exchangeValueOnRule(
 	return result;
 }
 
+/**
+ * Normalizes a rule configuration by extracting the standard fields
+ * (`severity`, `value`, `options`, `reason`) and removing `undefined` properties.
+ * Also handles the deprecated `option` field by mapping it to `options`.
+ *
+ * @param rule - The rule configuration to normalize
+ * @returns A clean rule configuration with only defined properties
+ */
 export function cleanOptions(
 	rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>,
 ): RuleConfig<RuleConfigValue, PlainData> {
@@ -84,6 +103,13 @@ export function cleanOptions(
 	return res;
 }
 
+/**
+ * Type guard that checks whether a value is a {@link RuleConfigValue}
+ * (i.e. a primitive, `null`, or an array) rather than a full {@link RuleConfig} object.
+ *
+ * @param v - The value to check
+ * @returns `true` if `v` is a rule config value (string, number, boolean, null, or array)
+ */
 export function isRuleConfigValue(v: any): v is RuleConfigValue {
 	switch (typeof v) {
 		case 'string':
@@ -99,9 +125,10 @@ export function isRuleConfigValue(v: any): v is RuleConfigValue {
 }
 
 /**
+ * Removes all properties with `undefined` values from a plain object in-place.
+ * Has no effect on non-plain-object values.
  *
- * @param obj
- * @returns
+ * @param obj - The object to clean up
  */
 export function deleteUndefProp(obj: any) {
 	if (!isPlainObject(obj)) {

@@ -14,6 +14,12 @@ import type { WritableDeep } from 'type-fest';
 import { fetch } from './fetch.js';
 import { arrayUnique, nameCompare } from './utils.js';
 
+/**
+ * Fetches and assembles the complete ARIA specification data for all supported versions (1.1, 1.2, 1.3).
+ * For each version, gathers roles, properties/states, and graphics ARIA roles by scraping the W3C specs.
+ *
+ * @returns An object keyed by ARIA version, each containing `roles`, `props`, and `graphicsRoles`
+ */
 export async function getAria() {
 	const roles13 = await getRoles('1.3');
 	const roles12 = await getRoles('1.2');
@@ -38,6 +44,13 @@ export async function getAria() {
 	};
 }
 
+/**
+ * Returns the URL of the WAI-ARIA specification for a given version.
+ *
+ * @param version - The ARIA specification version
+ * @param graphicsAria - Whether to return the Graphics ARIA module URL instead
+ * @returns The specification URL string
+ */
 function getARIASpecURLByVersion(version: ARIAVersion, graphicsAria = false) {
 	switch (version) {
 		case '1.3': {
@@ -61,6 +74,15 @@ function getARIASpecURLByVersion(version: ARIAVersion, graphicsAria = false) {
 	}
 }
 
+/**
+ * Scrapes ARIA role definitions from the W3C specification page for a given version.
+ * Extracts role metadata including generalization, owned properties, required context,
+ * accessible name requirements, and more. Handles role synonyms (e.g., `none`/`presentation`).
+ *
+ * @param version - The ARIA specification version to scrape
+ * @param graphicsAria - Whether to scrape the Graphics ARIA module instead
+ * @returns A sorted array of ARIA role schema objects
+ */
 async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	const $ = await fetch(getARIASpecURLByVersion(version, graphicsAria));
 	const $roleList = $('#role_definitions section.role');
@@ -211,6 +233,15 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	return roles;
 }
 
+/**
+ * Scrapes ARIA properties and states from the specification for a given version.
+ * Builds a list of all ARIA properties referenced by the provided roles, enriches each
+ * with value types, enum values, default values, global status, and equivalent HTML attributes.
+ *
+ * @param version - The ARIA specification version to scrape
+ * @param roles - The array of role definitions used to discover which properties exist
+ * @returns A sorted array of ARIA property definitions
+ */
 async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]) {
 	const $ = await fetch(getARIASpecURLByVersion(version));
 
@@ -330,6 +361,12 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 	return arias;
 }
 
+/**
+ * Scrapes the W3C HTML-ARIA specification to extract the mapping between
+ * HTML attributes and their equivalent implicit ARIA properties.
+ *
+ * @returns An object containing `implicitProps`, an array of mappings from HTML attribute names to ARIA property names and values
+ */
 async function getAriaInHtml() {
 	const $ = await fetch('https://www.w3.org/TR/html-aria/');
 	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
@@ -362,6 +399,14 @@ async function getAriaInHtml() {
 	};
 }
 
+/**
+ * Tries multiple CSS selectors on a Cheerio element and returns the first non-empty match.
+ * Falls back to the last selector's result if none match.
+ *
+ * @param $el - The Cheerio element to search within
+ * @param selectors - An ordered list of CSS selectors to try
+ * @returns The Cheerio selection from the first matching selector, or the last selector's (empty) result
+ */
 function $$(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	$el: cheerio.Cheerio<Element>,

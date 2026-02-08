@@ -2,15 +2,19 @@ import type { DateTime, DateTimeData, DateTimeKey, Lang } from './types.js';
 
 import * as chrono from 'chrono-node';
 
+/** Default set of languages to try when parsing natural language datetime text. */
 const defaultLangs: Lang[] = ['en', 'ja', 'fr', 'nl', 'ru', 'de', 'pt', 'zh'];
 
 /**
- * Datetime-ish text to a datetime data
+ * Parses natural language datetime text into structured datetime data.
  *
- * @param content
- * @param langs
- * @param base Reference date for a test
- * @returns
+ * Tries multiple locale parsers and returns the first successful parse result
+ * with only the certain (non-implied) date/time components included.
+ *
+ * @param content - The text content to parse as a datetime.
+ * @param langs - Locale codes to attempt parsing with.
+ * @param base - Optional reference date for relative date parsing (e.g., "tomorrow").
+ * @returns Parsed datetime data with timezone, or `null` if parsing fails.
  */
 export function parseADatetime(content: string, langs: readonly Lang[], base?: Readonly<Date>) {
 	const date = parseTryMultipleLangs(content, langs, base);
@@ -54,6 +58,16 @@ export function parseADatetime(content: string, langs: readonly Lang[], base?: R
 	return datetime;
 }
 
+/**
+ * Generates an HTML `datetime` attribute value from natural language text.
+ *
+ * Parses the text content using chrono-node and formats the result as an
+ * ISO 8601-like datetime string suitable for the `datetime` attribute.
+ *
+ * @param content - The text content to parse.
+ * @param langs - Locale codes to use for parsing. Defaults to all supported languages.
+ * @returns A formatted datetime string, or `null` if the content cannot be parsed.
+ */
 export function getCandidateDatetimeString(content: string, langs: Lang[] = defaultLangs) {
 	const date = parseADatetime(content, langs);
 
@@ -77,6 +91,15 @@ export function getCandidateDatetimeString(content: string, langs: Lang[] = defa
 	return datetimeStr;
 }
 
+/**
+ * Converts parsed datetime data into an ISO 8601-like string.
+ *
+ * Produces different formats depending on which components are present
+ * (e.g., date-only, time-only, or combined date-time).
+ *
+ * @param date - The parsed date/time component data.
+ * @returns A formatted datetime string, or `null` if the components do not match any known format.
+ */
 function toDatetimeString(date: Readonly<DateTimeData>) {
 	if (only(date, ['year', 'month'])) {
 		return `${f(date.year, 4)}-${f(date.month, 2)}`;
@@ -123,6 +146,17 @@ function toDatetimeString(date: Readonly<DateTimeData>) {
 	return null;
 }
 
+/**
+ * Attempts to parse datetime text using multiple locale parsers sequentially.
+ *
+ * Returns the parsed start component from the first locale that produces a
+ * valid result (non-range, single datetime).
+ *
+ * @param content - The text content to parse.
+ * @param langs - Locale codes to try in order.
+ * @param base - Optional reference date for relative date parsing.
+ * @returns The parsed start component, or `null` if no locale succeeds.
+ */
 function parseTryMultipleLangs(content: string, langs: readonly Lang[], base?: Readonly<Date>) {
 	for (const lang of langs) {
 		const results =
@@ -151,6 +185,16 @@ function parseTryMultipleLangs(content: string, langs: readonly Lang[], base?: R
 	return null;
 }
 
+/**
+ * Type guard that checks if the given datetime data contains only the specified keys.
+ *
+ * @template K - The array of datetime keys to check for.
+ * @template U - Union of the key types.
+ * @template R - The resulting narrowed type with required properties.
+ * @param date - The datetime data to check.
+ * @param keys - The keys that should be the only ones present.
+ * @returns `true` if the date contains only the specified keys (and narrows the type).
+ */
 function only<K extends DateTimeKey[], U extends K[number], R extends Required<Pick<DateTimeData, U>>>(
 	date: Readonly<DateTimeData>,
 	keys: K,
@@ -165,11 +209,11 @@ function only<K extends DateTimeKey[], U extends K[number], R extends Required<P
 }
 
 /**
- * Formatter
+ * Formats a number with zero-padding to the specified width.
  *
- * @param n
- * @param pad zero padding
- * @returns
+ * @param n - The number to format.
+ * @param pad - The minimum number of digits in the output string.
+ * @returns The zero-padded string representation.
  */
 function f(n: number, pad: number) {
 	return n.toString(10).padStart(pad, '0');
