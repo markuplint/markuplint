@@ -185,11 +185,11 @@ description の表現変更などの表面的な変更は、更新された `ind
 
 変更の性質に応じた conventional commit プレフィックスを使用する:
 
-| 変更種別                | プレフィックス | 例                                                   |
-| ----------------------- | -------------- | ---------------------------------------------------- |
-| description 更新のみ    | `chore`        | `chore(html-spec): update role descriptions`         |
-| 属性追加・仕様変更      | `feat`         | `feat(html-spec): add input switch attribute`        |
-| spec データ修正         | `fix`          | `fix(html-spec): correct ARIA mapping for button`    |
+| 変更種別             | プレフィックス | 例                                                |
+| -------------------- | -------------- | ------------------------------------------------- |
+| description 更新のみ | `chore`        | `chore(html-spec): update role descriptions`      |
+| 属性追加・仕様変更   | `feat`         | `feat(html-spec): add input switch attribute`     |
+| spec データ修正      | `fix`          | `fix(html-spec): correct ARIA mapping for button` |
 
 **PR の分離:** 仕様変更（新属性の追加、ARIA マッピング修正など）はそれぞれ個別の
 ブランチ・PR で作成する。description のみの更新は 1 つの PR にまとめてよい。

@@ -225,11 +225,11 @@ Stage and commit `index.json` (and any modified `src/` files if applicable).
 
 Use conventional commit prefixes based on the nature of the change:
 
-| Change type               | Prefix  | Example                                              |
-| ------------------------- | ------- | ---------------------------------------------------- |
-| Description updates only  | `chore` | `chore(html-spec): update role descriptions`         |
-| Attribute/spec additions  | `feat`  | `feat(html-spec): add input switch attribute`        |
-| Spec data corrections     | `fix`   | `fix(html-spec): correct ARIA mapping for button`    |
+| Change type              | Prefix  | Example                                           |
+| ------------------------ | ------- | ------------------------------------------------- |
+| Description updates only | `chore` | `chore(html-spec): update role descriptions`      |
+| Attribute/spec additions | `feat`  | `feat(html-spec): add input switch attribute`     |
+| Spec data corrections    | `fix`   | `fix(html-spec): correct ARIA mapping for button` |
 
 **PR separation:** Each specification change (new attribute, ARIA mapping fix, etc.)
 should be on its own branch and PR. Description-only updates can be batched into a
