@@ -4,7 +4,13 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
 
 /**
- * Version Syntax is not support yet.
+ * Creates the `:aria()` extended pseudo-class handler.
+ *
+ * Matches elements by accessible name presence using `getAccname()`.
+ * Supports `has name` and `has no name` syntax.
+ * Version syntax is parsed but not yet used for filtering.
+ *
+ * @returns An extended pseudo-class handler function
  */
 export function ariaPseudoClass() {
 	return (content: string) =>

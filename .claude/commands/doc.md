@@ -15,6 +15,7 @@ Thoroughly identify any omissions or inconsistencies in the documentation. **The
 
 - Use the language specified in each document
 - **NEVER modify the implementation** — do not change function bodies, type definitions, export statements, or even the ordering of functions and type definitions
+- **NEVER include specific dependency version numbers** (e.g., `postcss-selector-parser 7.1.1`) in documentation — versions change frequently and cause maintenance burden. Refer to `package.json` as the source of truth. Note: specification versions like ARIA 1.3 are not dependencies and may be mentioned.
 - If the intent of code or documentation is unclear, ask the user rather than guessing
 
 # JSDoc

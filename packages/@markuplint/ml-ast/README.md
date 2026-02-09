@@ -16,3 +16,9 @@ $ yarn add @markuplint/ml-ast
 ```
 
 </details>
+
+## Documentation
+
+- [Architecture](ARCHITECTURE.md) -- Package overview, type hierarchy diagrams, and integration points
+- [Node Reference](docs/node-reference.md) -- Detailed documentation of each AST node type
+- [Maintenance Guide](docs/maintenance.md) -- Commands, recipes, and troubleshooting
