@@ -1326,7 +1326,7 @@ test('Multiple Type', async () => {
 			col: 18,
 			line: 1,
 			message:
-				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
 			raw: 'invalid',
 		},
 	]);
