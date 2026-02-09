@@ -2413,7 +2413,7 @@ __metadata:
     eslint-plugin-import-x: "npm:4.16.1"
     eslint-plugin-jsdoc: "npm:61.7.1"
     eslint-plugin-n: "npm:17.23.2"
-    eslint-plugin-regexp: "npm:2.10.0"
+    eslint-plugin-regexp: "npm:3.0.0"
     eslint-plugin-sort-class-members: "npm:1.21.0"
     eslint-plugin-unicorn: "npm:60.0.0"
     typescript-eslint: "npm:8.54.0"
@@ -8600,20 +8600,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-regexp@npm:2.10.0":
-  version: 2.10.0
-  resolution: "eslint-plugin-regexp@npm:2.10.0"
+"eslint-plugin-regexp@npm:3.0.0":
+  version: 3.0.0
+  resolution: "eslint-plugin-regexp@npm:3.0.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.2.0"
     "@eslint-community/regexpp": "npm:^4.11.0"
     comment-parser: "npm:^1.4.0"
-    jsdoc-type-pratt-parser: "npm:^4.0.0"
+    jsdoc-type-pratt-parser: "npm:^7.0.0"
     refa: "npm:^0.12.1"
     regexp-ast-analysis: "npm:^0.7.1"
     scslre: "npm:^0.3.0"
   peerDependencies:
-    eslint: ">=8.44.0"
-  checksum: 10c0/61283bf1a8e1fd5e4b867de52db5c4b53fbba509c336bb1017c5e116978e85d9c836aa01f4f03620eeaa89f0ace7961cfd71dc34dc0e5d8ddee6351e35f702fe
+    eslint: ">=9.38.0"
+  checksum: 10c0/99b751dcb0a746e62d0ed8307c3e56b20f15eebd0103988c892119e1579dc760cd510b52874f81bb055503bd36011aa7ea1d4d53a957b75b01266ddb76c42b07
   languageName: node
   linkType: hard
 
@@ -11465,10 +11465,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdoc-type-pratt-parser@npm:^4.0.0":
-  version: 4.8.0
-  resolution: "jsdoc-type-pratt-parser@npm:4.8.0"
-  checksum: 10c0/c2b77751d35e3931db9da96720b544b215830722b748b58ee8ce51ec72092006a4a03c5a59c86a4552d0094975c8d3bcc21a7241a0e47860e127d3fba5b55f33
+"jsdoc-type-pratt-parser@npm:^7.0.0":
+  version: 7.1.1
+  resolution: "jsdoc-type-pratt-parser@npm:7.1.1"
+  checksum: 10c0/5a5216a75962b3a8a3a1e7e09a19b31b5a373c06c726a00b081480daee00196250d4acc8dfbecc0a7846d439a5bcf4a326df6348b879cf95f60c62ce5818dadb
   languageName: node
   linkType: hard
 
