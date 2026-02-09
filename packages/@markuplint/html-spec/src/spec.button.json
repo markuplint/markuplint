@@ -29,7 +29,7 @@
 		"command": {
 			"type": [
 				{
-					"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "show-modal"],
+					"enum": ["toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal"],
 					"invalidValueDefault": "unknown",
 					"missingValueDefault": "unknown"
 				},

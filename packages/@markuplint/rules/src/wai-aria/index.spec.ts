@@ -1387,3 +1387,29 @@ describe('button element permitted roles', () => {
 		]);
 	});
 });
+
+describe('meter element implicit role', () => {
+	test('meter has implicit role "meter"', async () => {
+		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100">50%</meter>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('meter with explicit role="meter" is redundant', async () => {
+		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100" role="meter">50%</meter>');
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('meter does not permit role overwriting', async () => {
+		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100" role="button">50%</meter>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 43,
+				message:
+					'Cannot overwrite the "button" role to the "meter" element according to ARIA in HTML specification',
+				raw: 'button',
+			},
+		]);
+	});
+});

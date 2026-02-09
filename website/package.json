@@ -37,9 +37,9 @@
     "@types/glob": "9.0.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
-    "stylelint": "16.26.1",
+    "stylelint": "17.1.1",
     "stylelint-config-recess-order": "7.6.1",
-    "stylelint-config-standard": "39.0.1",
+    "stylelint-config-standard": "40.0.0",
     "stylelint-order": "7.0.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
