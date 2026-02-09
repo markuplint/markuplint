@@ -243,6 +243,10 @@ describe('Issues', () => {
 				start: 0,
 				end: 65,
 				attributes: [],
+				name_loc: {
+					start: { character: 1, column: 1, line: 1 },
+					end: { character: 14, column: 14, line: 1 },
+				},
 				fragment: {
 					type: 'Fragment',
 					nodes: [
@@ -252,6 +256,10 @@ describe('Issues', () => {
 							start: 15,
 							end: 49,
 							attributes: [],
+							name_loc: {
+								start: { character: 16, column: 16, line: 1 },
+								end: { character: 19, column: 19, line: 1 },
+							},
 							fragment: {
 								type: 'Fragment',
 								nodes: [
@@ -466,6 +474,10 @@ describe('Issues', () => {
 					name: 'func',
 					start: 69,
 					end: 73,
+					loc: {
+						start: { character: 69, column: 10, line: 5 },
+						end: { character: 73, column: 14, line: 5 },
+					},
 				},
 				parameters: [
 					{
@@ -597,6 +609,10 @@ describe('Issues', () => {
 										start: 120,
 										end: 131,
 										attributes: [],
+										name_loc: {
+											start: { character: 121, column: 5, line: 7 },
+											end: { character: 124, column: 8, line: 7 },
+										},
 										fragment: {
 											type: 'Fragment',
 											nodes: [],
