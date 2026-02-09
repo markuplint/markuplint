@@ -193,12 +193,12 @@ The `attributes` object maps attribute names to definitions. Each definition may
 
 These boolean flags indicate the standardization status of an attribute:
 
-| Flag           | Meaning                                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------------------- |
-| `experimental` | Part of an emerging specification that is not yet stable. Browsers may have partial or prefixed support.    |
+| Flag           | Meaning                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| `experimental` | Part of an emerging specification that is not yet stable. Browsers may have partial or prefixed support.      |
 | `deprecated`   | Officially discouraged by the specification. Still recognized by browsers but should not be used in new code. |
-| `obsolete`     | Removed from the specification entirely. May not be recognized by modern browsers at all.                   |
-| `nonStandard`  | Not part of any W3C or WHATWG specification. Vendor-specific or proprietary.                                |
+| `obsolete`     | Removed from the specification entirely. May not be recognized by modern browsers at all.                     |
+| `nonStandard`  | Not part of any W3C or WHATWG specification. Vendor-specific or proprietary.                                  |
 
 **`deprecated` vs `obsolete`:** `deprecated` means the spec still defines the attribute
 but discourages its use (e.g., `<table border>`). `obsolete` means the attribute has been
