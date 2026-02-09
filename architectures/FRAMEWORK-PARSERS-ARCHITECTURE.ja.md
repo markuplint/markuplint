@@ -51,11 +51,11 @@ flowchart TD
 
 フレームワークサポートを追加する際の最初の判断は、カスタムパーサーが必要かどうかです:
 
-| シナリオ | アプローチ | 例 |
-| --- | --- | --- |
-| フレームワークが追加属性付きの有効な HTML を使用 | スペックのみ | React（JSX 属性は jsx-parser が処理するが、`key` のような React 固有属性は react-spec で定義） |
-| フレームワークが HTML にテンプレート式を埋め込む | テンプレートパーサー（HtmlParser を拡張） | EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty |
-| フレームワークが html-parser で処理できない独自構文を持つ | フルパーサー（Parser を拡張） | JSX, Vue SFC, Svelte, Pug, Astro |
+| シナリオ                                                  | アプローチ                                | 例                                                                                             |
+| --------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| フレームワークが追加属性付きの有効な HTML を使用          | スペックのみ                              | React（JSX 属性は jsx-parser が処理するが、`key` のような React 固有属性は react-spec で定義） |
+| フレームワークが HTML にテンプレート式を埋め込む          | テンプレートパーサー（HtmlParser を拡張） | EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty                                              |
+| フレームワークが html-parser で処理できない独自構文を持つ | フルパーサー（Parser を拡張）             | JSX, Vue SFC, Svelte, Pug, Astro                                                               |
 
 ### 主要な原則
 
@@ -88,11 +88,11 @@ flowchart LR
 
 各テンプレートパーサーは3つのソースファイルのみで構成されます:
 
-| ファイル | 用途 |
-| --- | --- |
-| `src/index.ts` | パーサーインスタンスを再エクスポート |
-| `src/parser.ts` | `HtmlParser` を拡張し、`ignoreTags` を設定 |
-| `src/index.spec.ts` | パーサー統合テスト |
+| ファイル            | 用途                                       |
+| ------------------- | ------------------------------------------ |
+| `src/index.ts`      | パーサーインスタンスを再エクスポート       |
+| `src/parser.ts`     | `HtmlParser` を拡張し、`ignoreTags` を設定 |
+| `src/index.spec.ts` | パーサー統合テスト                         |
 
 外部パースライブラリは不要 -- `ignoreTags` が唯一の設定です。
 
@@ -113,15 +113,15 @@ flowchart LR
 
 ### オーバーライドメソッド
 
-| メソッド | 用途 |
-| --- | --- |
-| `tokenize()` | 外部パーサーライブラリを呼び出してフレームワーク固有の AST を生成 |
-| `nodeize()` | 各フレームワーク AST ノードを markuplint ノード型（element, text, comment, psblock）にマッピング |
-| `visitElement()` | フレームワーク固有のオプション（名前空間、フラグメント）で要素ノードを処理 |
-| `visitAttr()` | フレームワーク固有の属性構文（ディレクティブ、ショートハンド、動的値）を処理 |
-| `visitChildren()` | 子ノードをトラバース |
-| `detectElementType()` | コンポーネントとネイティブ HTML 要素を区別（通常は命名規則による） |
-| `afterFlattenNodes()` | 後処理オプション（ホワイトスペースの公開、無効ノードの公開） |
+| メソッド              | 用途                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `tokenize()`          | 外部パーサーライブラリを呼び出してフレームワーク固有の AST を生成                                |
+| `nodeize()`           | 各フレームワーク AST ノードを markuplint ノード型（element, text, comment, psblock）にマッピング |
+| `visitElement()`      | フレームワーク固有のオプション（名前空間、フラグメント）で要素ノードを処理                       |
+| `visitAttr()`         | フレームワーク固有の属性構文（ディレクティブ、ショートハンド、動的値）を処理                     |
+| `visitChildren()`     | 子ノードをトラバース                                                                             |
+| `detectElementType()` | コンポーネントとネイティブ HTML 要素を区別（通常は命名規則による）                               |
+| `afterFlattenNodes()` | 後処理オプション（ホワイトスペースの公開、無効ノードの公開）                                     |
 
 ## スペック拡張パターン
 
@@ -168,20 +168,20 @@ flowchart LR
 
 ## パーサーとスペックの対応関係
 
-| パーサー | スペック | 外部ライブラリ | 継承元 |
-| --- | --- | --- | --- |
-| `@markuplint/jsx-parser` | `@markuplint/react-spec` | `@typescript-eslint/typescript-estree` | Parser |
-| `@markuplint/vue-parser` | `@markuplint/vue-spec` | `vue-eslint-parser` | Parser |
-| `@markuplint/svelte-parser` | `@markuplint/svelte-spec` | `svelte/compiler` | Parser |
-| `@markuplint/astro-parser` | -- | `astro-eslint-parser` | Parser |
-| `@markuplint/pug-parser` | -- | `pug-lexer` + `pug-parser` | Parser |
-| `@markuplint/ejs-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/erb-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/liquid-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/mustache-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/nunjucks-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/php-parser` | -- | --（ignoreTags のみ） | HtmlParser |
-| `@markuplint/smarty-parser` | -- | --（ignoreTags のみ） | HtmlParser |
+| パーサー                      | スペック                  | 外部ライブラリ                         | 継承元     |
+| ----------------------------- | ------------------------- | -------------------------------------- | ---------- |
+| `@markuplint/jsx-parser`      | `@markuplint/react-spec`  | `@typescript-eslint/typescript-estree` | Parser     |
+| `@markuplint/vue-parser`      | `@markuplint/vue-spec`    | `vue-eslint-parser`                    | Parser     |
+| `@markuplint/svelte-parser`   | `@markuplint/svelte-spec` | `svelte/compiler`                      | Parser     |
+| `@markuplint/astro-parser`    | --                        | `astro-eslint-parser`                  | Parser     |
+| `@markuplint/pug-parser`      | --                        | `pug-lexer` + `pug-parser`             | Parser     |
+| `@markuplint/ejs-parser`      | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/erb-parser`      | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/liquid-parser`   | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/mustache-parser` | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/nunjucks-parser` | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/php-parser`      | --                        | --（ignoreTags のみ）                  | HtmlParser |
+| `@markuplint/smarty-parser`   | --                        | --（ignoreTags のみ）                  | HtmlParser |
 
 ## バージョン互換性
 

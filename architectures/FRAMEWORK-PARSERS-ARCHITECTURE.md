@@ -51,11 +51,11 @@ flowchart TD
 
 When adding framework support, the first question is whether a custom parser is needed:
 
-| Scenario | Approach | Example |
-| --- | --- | --- |
-| Framework uses valid HTML with extra attributes | Spec only | React (JSX attributes are handled by jsx-parser, but React-specific attributes like `key` are defined in react-spec) |
-| Framework embeds template expressions in HTML | Template Parser (extends HtmlParser) | EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty |
-| Framework has its own syntax that html-parser cannot handle | Full Parser (extends Parser) | JSX, Vue SFC, Svelte, Pug, Astro |
+| Scenario                                                    | Approach                             | Example                                                                                                              |
+| ----------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Framework uses valid HTML with extra attributes             | Spec only                            | React (JSX attributes are handled by jsx-parser, but React-specific attributes like `key` are defined in react-spec) |
+| Framework embeds template expressions in HTML               | Template Parser (extends HtmlParser) | EJS, ERB, Liquid, Mustache, Nunjucks, PHP, Smarty                                                                    |
+| Framework has its own syntax that html-parser cannot handle | Full Parser (extends Parser)         | JSX, Vue SFC, Svelte, Pug, Astro                                                                                     |
 
 ### Key Principles
 
@@ -88,11 +88,11 @@ flowchart LR
 
 Each template parser consists of only 3 source files:
 
-| File | Purpose |
-| --- | --- |
-| `src/index.ts` | Re-exports the parser instance |
-| `src/parser.ts` | Extends `HtmlParser`, configures `ignoreTags` |
-| `src/index.spec.ts` | Parser integration tests |
+| File                | Purpose                                       |
+| ------------------- | --------------------------------------------- |
+| `src/index.ts`      | Re-exports the parser instance                |
+| `src/parser.ts`     | Extends `HtmlParser`, configures `ignoreTags` |
+| `src/index.spec.ts` | Parser integration tests                      |
 
 No external parsing library is needed -- `ignoreTags` is the only configuration.
 
@@ -113,15 +113,15 @@ flowchart LR
 
 ### Override Methods
 
-| Method | Purpose |
-| --- | --- |
-| `tokenize()` | Invokes the external parser library to produce a framework-specific AST |
-| `nodeize()` | Maps each framework AST node to markuplint node types (element, text, comment, psblock) |
-| `visitElement()` | Processes element nodes with framework-specific options (namespace, fragments) |
-| `visitAttr()` | Handles framework-specific attribute syntax (directives, shorthands, dynamic values) |
-| `visitChildren()` | Traverses child nodes |
-| `detectElementType()` | Distinguishes components from native HTML elements (typically by naming convention) |
-| `afterFlattenNodes()` | Post-processing options (expose whitespace, expose invalid nodes) |
+| Method                | Purpose                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| `tokenize()`          | Invokes the external parser library to produce a framework-specific AST                 |
+| `nodeize()`           | Maps each framework AST node to markuplint node types (element, text, comment, psblock) |
+| `visitElement()`      | Processes element nodes with framework-specific options (namespace, fragments)          |
+| `visitAttr()`         | Handles framework-specific attribute syntax (directives, shorthands, dynamic values)    |
+| `visitChildren()`     | Traverses child nodes                                                                   |
+| `detectElementType()` | Distinguishes components from native HTML elements (typically by naming convention)     |
+| `afterFlattenNodes()` | Post-processing options (expose whitespace, expose invalid nodes)                       |
 
 ## Spec Extension Pattern
 
@@ -168,20 +168,20 @@ flowchart LR
 
 ## Parser-Spec Pairs
 
-| Parser | Spec | External Library | Inheritance |
-| --- | --- | --- | --- |
-| `@markuplint/jsx-parser` | `@markuplint/react-spec` | `@typescript-eslint/typescript-estree` | Parser |
-| `@markuplint/vue-parser` | `@markuplint/vue-spec` | `vue-eslint-parser` | Parser |
-| `@markuplint/svelte-parser` | `@markuplint/svelte-spec` | `svelte/compiler` | Parser |
-| `@markuplint/astro-parser` | -- | `astro-eslint-parser` | Parser |
-| `@markuplint/pug-parser` | -- | `pug-lexer` + `pug-parser` | Parser |
-| `@markuplint/ejs-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/erb-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/liquid-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/mustache-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/nunjucks-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/php-parser` | -- | -- (ignoreTags only) | HtmlParser |
-| `@markuplint/smarty-parser` | -- | -- (ignoreTags only) | HtmlParser |
+| Parser                        | Spec                      | External Library                       | Inheritance |
+| ----------------------------- | ------------------------- | -------------------------------------- | ----------- |
+| `@markuplint/jsx-parser`      | `@markuplint/react-spec`  | `@typescript-eslint/typescript-estree` | Parser      |
+| `@markuplint/vue-parser`      | `@markuplint/vue-spec`    | `vue-eslint-parser`                    | Parser      |
+| `@markuplint/svelte-parser`   | `@markuplint/svelte-spec` | `svelte/compiler`                      | Parser      |
+| `@markuplint/astro-parser`    | --                        | `astro-eslint-parser`                  | Parser      |
+| `@markuplint/pug-parser`      | --                        | `pug-lexer` + `pug-parser`             | Parser      |
+| `@markuplint/ejs-parser`      | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/erb-parser`      | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/liquid-parser`   | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/mustache-parser` | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/nunjucks-parser` | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/php-parser`      | --                        | -- (ignoreTags only)                   | HtmlParser  |
+| `@markuplint/smarty-parser`   | --                        | -- (ignoreTags only)                   | HtmlParser  |
 
 ## Version Compatibility
 
