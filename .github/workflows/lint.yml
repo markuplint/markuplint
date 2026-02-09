@@ -1,0 +1,57 @@
+name: Lint
+
+on:
+    pull_request:
+        branches:
+            - dev
+            - v3
+            - next
+        paths:
+            - '.github/workflows/lint.yml'
+            - 'packages/**'
+            - 'vscode/**'
+            - 'yarn.lock'
+            - '.yarnrc.yml'
+            - '.prettierrc'
+            - '.cspell.json'
+
+env:
+    NODE_BUILD_VERSION: 24
+    NX_DISABLE_DB: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Prettier
+              run: yarn lint-check:prettier
+
+            - name: Spellcheck
+              run: yarn lint:spellcheck
