@@ -37576,9 +37576,14 @@
 				]
 			},
 			"aria": {
-				"implicitRole": "document",
-				"permittedRoles": false,
-				"properties": false
+				"implicitRole": "generic",
+				"permittedRoles": ["document", "generic"],
+				"namingProhibited": true,
+				"properties": false,
+				"1.1": {
+					"implicitRole": "document",
+					"permittedRoles": false
+				}
 			},
 			"omission": false,
 			"globalAttrs": {
