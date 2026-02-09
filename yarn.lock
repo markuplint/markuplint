@@ -2475,7 +2475,7 @@ __metadata:
     detect-installed: "npm:2.0.4"
     eastasianwidth: "npm:0.3.0"
     enquirer: "npm:2.4.1"
-    has-yarn: "npm:3.0.0"
+    has-yarn: "npm:4.0.0"
     picocolors: "npm:1.1.1"
     strip-ansi: "npm:7.1.2"
   languageName: unknown
@@ -10095,10 +10095,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-yarn@npm:3.0.0":
-  version: 3.0.0
-  resolution: "has-yarn@npm:3.0.0"
-  checksum: 10c0/38c76618cb764e4a98ea114a3938e0bed6ceafb6bacab2ffb32e7c7d1e18b5e09cd03387d507ee87072388e1f20b1f80947fee62c41fc450edfbbdc02a665787
+"has-yarn@npm:4.0.0":
+  version: 4.0.0
+  resolution: "has-yarn@npm:4.0.0"
+  dependencies:
+    find-up-simple: "npm:^1.0.1"
+  checksum: 10c0/c7012d973db4b2f7d50e126f3c8294eb8c6d2c8dc5b1474a34fdeb17bbda6d8ceef5808ffc8aecf8c25405c5487039828ac6ddb532ee26505f4023eb3c9e6ddf
   languageName: node
   linkType: hard
 
