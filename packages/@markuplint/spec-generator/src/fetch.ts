@@ -49,7 +49,7 @@ export async function fetch(url: string) {
 export async function fetchText(url: string) {
 	total += 1;
 	bar.setTotal(total);
-	let text = '';
+	let text: string;
 	if (cache.has(url)) {
 		text = cache.get(url)!;
 	} else {

@@ -1645,9 +1645,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		offset = endSpace.endOffset;
 
 		const selfClosingSolidus = this.createToken(selfClosingSolidusChar, offset, line, col);
-		line = selfClosingSolidus.endLine;
-		col = selfClosingSolidus.endCol;
-		offset = selfClosingSolidus.endOffset;
 
 		const rawCodeFragment = raw.slice(beforeOpenTagChars.length, raw.length - leftover.length);
 

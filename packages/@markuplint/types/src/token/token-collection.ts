@@ -59,7 +59,7 @@ export class TokenCollection extends Array<Token> {
 			return token;
 		}
 
-		let isBroken = false;
+		let isBroken: boolean;
 		do {
 			isBroken = false;
 			for (const pattern of patterns) {

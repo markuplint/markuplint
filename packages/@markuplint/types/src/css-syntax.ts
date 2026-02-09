@@ -32,7 +32,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	let propsExtended: Record<string, string>;
 	let ref: string | undefined = undefined;
 	let caseSensitive = false;
-	let ebnf: Record<string, string | readonly string[]> | null = null;
+	let ebnf: Record<string, string | readonly string[]> | null;
 
 	if (typeof type === 'string') {
 		defName = type;
