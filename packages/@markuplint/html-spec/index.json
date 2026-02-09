@@ -39486,7 +39486,7 @@
 				]
 			},
 			"aria": {
-				"implicitRole": "mater",
+				"implicitRole": "meter",
 				"permittedRoles": false,
 				"properties": {
 					"global": true,
