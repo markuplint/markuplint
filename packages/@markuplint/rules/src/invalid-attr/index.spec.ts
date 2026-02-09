@@ -1710,3 +1710,38 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 		]);
 	});
 });
+
+describe('button command attribute', () => {
+	test('command="request-close" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dialog id="d"><button command="request-close" commandfor="d">Close</button></dialog>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('command="close" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dialog id="d"><button command="close" commandfor="d">Close</button></dialog>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('command="invalid-value" is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dialog id="d"><button command="invalid-value" commandfor="d">Close</button></dialog>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message:
+					'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid-value"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+				raw: 'invalid-value',
+			},
+		]);
+	});
+});
