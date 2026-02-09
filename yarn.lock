@@ -2486,7 +2486,7 @@ __metadata:
   resolution: "@markuplint/config-presets@workspace:packages/@markuplint/config-presets"
   dependencies:
     "@isaacs/brace-expansion": "npm:5.0.1"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     jsonc-parser: "npm:3.3.1"
     mustache: "npm:4.2.0"
   languageName: unknown
@@ -2500,7 +2500,7 @@ __metadata:
     "@markuplint/ml-core": "npm:4.13.2"
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.3.3"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     prettier: "npm:3.6.2"
     typescript: "npm:5.9.3"
   bin:
@@ -2541,7 +2541,7 @@ __metadata:
     "@types/node": "npm:24.5.1"
     cosmiconfig: "npm:9.0.0"
     debug: "npm:4.4.3"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     ignore: "npm:7.0.5"
     import-meta-resolve: "npm:4.2.0"
     jsonc: "npm:2.0.0"
@@ -2713,7 +2713,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-config": "npm:4.8.14"
     "@markuplint/parser-utils": "npm:4.8.10"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     meow: "npm:13.2.0"
     typescript: "npm:5.9.3"
   bin:
@@ -2815,7 +2815,7 @@ __metadata:
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
     fast-xml-parser: "npm:5.3.5"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     strip-json-comments: "npm:5.0.3"
     type-fest: "npm:4.41.0"
   languageName: unknown
@@ -2851,7 +2851,7 @@ __metadata:
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
     execa: "npm:9.6.1"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     jsdom: "npm:26.1.0"
     strip-json-comments: "npm:5.0.3"
     textlint-rule-prh: "npm:5.3.0"
@@ -9802,19 +9802,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:11.1.0":
-  version: 11.1.0
-  resolution: "glob@npm:11.1.0"
+"glob@npm:13.0.1":
+  version: 13.0.1
+  resolution: "glob@npm:13.0.1"
   dependencies:
-    foreground-child: "npm:^3.3.1"
-    jackspeak: "npm:^4.1.1"
-    minimatch: "npm:^10.1.1"
+    minimatch: "npm:^10.1.2"
     minipass: "npm:^7.1.2"
-    package-json-from-dist: "npm:^1.0.0"
     path-scurry: "npm:^2.0.0"
-  bin:
-    glob: dist/esm/bin.mjs
-  checksum: 10c0/1ceae07f23e316a6fa74581d9a74be6e8c2e590d2f7205034dd5c0435c53f5f7b712c2be00c3b65bf0a49294a1c6f4b98cd84c7637e29453b5aa13b79f1763a2
+  checksum: 10c0/af7b863dec8dff74f61d7d6e53104e1f6bbdd482157a196cade8ed857481e876ec35181b38a059b2a7b93ea3b08248f4ff0792fef6dc91814fd5097a716f48e4
   languageName: node
   linkType: hard
 
@@ -12991,7 +12986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.1.2":
+"minimatch@npm:10.1.2, minimatch@npm:^10.1.2":
   version: 10.1.2
   resolution: "minimatch@npm:10.1.2"
   dependencies:
@@ -18680,7 +18675,7 @@ __metadata:
     "@vscode/vsce": "npm:3.7.1"
     debug: "npm:4.4.3"
     esbuild: "npm:0.27.3"
-    glob: "npm:11.1.0"
+    glob: "npm:13.0.1"
     markuplint: "npm:4.13.0"
     mocha: "npm:11.7.5"
     semver: "npm:7.7.4"
