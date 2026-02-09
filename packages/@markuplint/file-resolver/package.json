@@ -37,7 +37,7 @@
 		"@markuplint/shared": "4.4.12",
 		"cosmiconfig": "9.0.0",
 		"debug": "4.4.3",
-		"glob": "11.1.0",
+		"glob": "13.0.1",
 		"ignore": "7.0.5",
 		"import-meta-resolve": "4.2.0",
 		"jsonc": "2.0.0",
