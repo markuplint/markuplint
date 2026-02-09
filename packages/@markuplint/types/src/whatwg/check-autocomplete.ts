@@ -227,6 +227,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	}
 
 	if (head.matches(contactingTokens, true)) {
+		// eslint-disable-next-line no-useless-assignment
 		hasContactingToken = true;
 		const contactableFiledToken = tail[0];
 		if (!contactableFiledToken) {

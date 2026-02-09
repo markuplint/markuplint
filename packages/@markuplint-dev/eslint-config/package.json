@@ -12,6 +12,8 @@
 	},
 	"dependencies": {
 		"@eslint-community/eslint-plugin-eslint-comments": "4.6.0",
+		"@eslint/compat": "2.0.2",
+		"@eslint/js": "10.0.1",
 		"@typescript-eslint/eslint-plugin": "8.54.0",
 		"@typescript-eslint/parser": "8.54.0",
 		"eslint": "10.0.0",
@@ -22,6 +24,7 @@
 		"eslint-plugin-regexp": "3.0.0",
 		"eslint-plugin-sort-class-members": "1.21.0",
 		"eslint-plugin-unicorn": "60.0.0",
+		"globals": "17.3.0",
 		"typescript-eslint": "8.54.0"
 	}
 }

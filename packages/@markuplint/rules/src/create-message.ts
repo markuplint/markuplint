@@ -183,7 +183,7 @@ export function __createMessageValueExpected(
 				switch (matches.reason.type) {
 					case 'out-of-range-length-digit': {
 						const { gte, lte } = matches.reason;
-						let expectedDigits: string | null = null;
+						let expectedDigits: string | null;
 						if (lte != null && gte === lte) {
 							expectedDigits = t('{0} digits', gte);
 						} else if (lte == null) {

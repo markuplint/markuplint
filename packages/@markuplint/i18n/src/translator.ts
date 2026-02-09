@@ -21,8 +21,6 @@ const defaultListFormat: ListFormat = {
  */
 export function translator(localeSet?: LocaleSet): Translator {
 	return (messageTmpl, ...keywords) => {
-		let message = messageTmpl;
-
 		if (typeof messageTmpl !== 'string') {
 			if (messageTmpl.length === 0) {
 				return '';
@@ -63,7 +61,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 		messageTmpl =
 			removeNoTranslateMark(input.toLowerCase()) === messageTmpl ? removeNoTranslateMark(input) : messageTmpl;
 
-		message = messageTmpl.replaceAll(
+		const message = messageTmpl.replaceAll(
 			// eslint-disable-next-line regexp/strict
 			/{(\d+)(?::(c))?}/g,
 			($0, number, flag) => {

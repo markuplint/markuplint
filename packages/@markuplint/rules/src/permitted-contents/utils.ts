@@ -100,6 +100,7 @@ function descendants(
 				nodes = dep.nodes as ChildNode[];
 				continue;
 			}
+			// eslint-disable-next-line no-useless-assignment
 			selectorResult = dep;
 			continue;
 		}

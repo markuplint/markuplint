@@ -117,10 +117,9 @@ export function isValidAttr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	log?: Log,
 ) {
-	let invalid: ReturnType<typeof attrCheck> = false;
 	const spec = attrSpecs.find(s => s.name.toLowerCase() === name.toLowerCase());
 	log?.('Spec of the %s attr: %o', name, spec);
-	invalid = attrCheck(t, name, value, false, spec);
+	let invalid: ReturnType<typeof attrCheck> = attrCheck(t, name, value, false, spec);
 	if (
 		invalid === false &&
 		spec &&

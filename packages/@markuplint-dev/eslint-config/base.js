@@ -1,3 +1,4 @@
+import { fixupPluginRules } from '@eslint/compat';
 import js from '@eslint/js';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import importX from 'eslint-plugin-import-x';
@@ -17,9 +18,9 @@ export const base = [
 	importX.flatConfigs.recommended,
 	unicorn.configs['flat/recommended'],
 	regexp.configs['flat/recommended'],
-	sortClassMembers.configs['flat/recommended'],
 	{
 		plugins: {
+			'sort-class-members': fixupPluginRules(sortClassMembers),
 			jsdoc,
 		},
 		languageOptions: {

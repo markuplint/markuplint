@@ -1,7 +1,7 @@
-import { confing } from '@markuplint-dev/eslint-config';
+import { config } from '@markuplint-dev/eslint-config';
 
 export default [
-	...confing,
+	...config,
 	{
 		rules: {
 			'no-restricted-globals': 0,
