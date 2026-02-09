@@ -186,6 +186,11 @@ For description rewording and other cosmetic changes, no action is needed beyond
 committing the updated `index.json`. These changes reflect upstream improvements
 and should be accepted as-is.
 
+> **Caution -- ARIA version duplication:** `index.json` contains role definitions for
+> WAI-ARIA 1.1, 1.2, and 1.3, so many strings appear three times. When editing
+> descriptions or properties, **do not use `replace_all`** -- it will modify all three
+> versions simultaneously. Always target the specific version block you intend to change.
+
 **Step 3: Handle significant specification changes**
 
 If the diff reveals a substantive change to element behavior, ARIA mappings, or
@@ -199,11 +204,36 @@ content models, the manual spec files may need updating:
    ```bash
    yarn up:gen
    ```
-4. Verify the final `index.json` diff is correct
+4. **Idempotency verification** -- Confirm your spec file changes produce stable
+   output before committing:
+   ```bash
+   # Stage spec files and index.json
+   git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+   # Regenerate
+   yarn up:gen
+   # Check that the attributes you changed are NOT in the diff (= stable output)
+   git diff packages/@markuplint/html-spec/index.json | grep '"your-attr"'
+   # If stable, discard the regenerated file and use the staged version
+   git checkout packages/@markuplint/html-spec/index.json
+   ```
+   If the diff shows unexpected changes for your attribute, it means the spec file
+   and the generator produce different values -- investigate before committing.
 
-**Step 4: Commit**
+**Step 4: Commit and PR**
 
 Stage and commit `index.json` (and any modified `src/` files if applicable).
+
+Use conventional commit prefixes based on the nature of the change:
+
+| Change type              | Prefix  | Example                                           |
+| ------------------------ | ------- | ------------------------------------------------- |
+| Description updates only | `chore` | `chore(html-spec): update role descriptions`      |
+| Attribute/spec additions | `feat`  | `feat(html-spec): add input switch attribute`     |
+| Spec data corrections    | `fix`   | `fix(html-spec): correct ARIA mapping for button` |
+
+**PR separation:** Each specification change (new attribute, ARIA mapping fix, etc.)
+should be on its own branch and PR. Description-only updates can be batched into a
+single PR.
 
 This process may seem involved, but reviewing the diff is essential for understanding
 what has changed in web standards and ensuring the spec data remains accurate.

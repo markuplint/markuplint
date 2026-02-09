@@ -65,6 +65,11 @@ Categorize each change:
 | **Significant spec changes**    | ARIA property `required` → `inherited`, content model restructured | Requires manual spec update (go to Step 3)                                                                                |
 | **ARIA 1.3 updates**            | New/revised role definitions, property requirement changes         | WAI-ARIA 1.3 is a Working Draft -- expect ongoing changes. 1.1 and 1.2 are finalized Recommendations and will not change. |
 
+> **Caution -- ARIA version duplication:** `index.json` contains role definitions for
+> WAI-ARIA 1.1, 1.2, and 1.3, so many strings appear three times. When editing
+> descriptions or properties, **do not use `replace_all`** -- it will modify all three
+> versions simultaneously. Always target the specific version block you intend to change.
+
 ### Step 3: Handle significant changes (if any)
 
 If the diff contains substantive changes to element behavior, ARIA mappings, or
@@ -85,6 +90,31 @@ content models:
    yarn up:gen
    ```
 5. Verify the final diff is correct
+
+### Step 3b: Idempotency verification (when spec files are modified)
+
+When you modify `src/spec.*.json` files, verify that your changes produce stable output
+before committing. This ensures the generated `index.json` does not contain unintended
+drift:
+
+```bash
+# 1. Stage spec files and index.json
+git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+
+# 2. Regenerate
+yarn up:gen
+
+# 3. Check that the attributes you changed are NOT in the diff (= stable output)
+git diff packages/@markuplint/html-spec/index.json | grep '"your-attr"'
+
+# 4. If stable, discard the regenerated file and use the staged version
+git checkout packages/@markuplint/html-spec/index.json
+
+# 5. Proceed to commit
+```
+
+If the diff shows unexpected changes for your attribute, it means the spec file and
+the generator produce different values -- investigate before committing.
 
 ### Step 4: Test and commit
 
@@ -252,3 +282,12 @@ Report results as:
 4. **Content model category membership is critical.** A missing element in a category causes `permitted-contents` rule false positives in downstream linting.
 5. **Always run tests after changes.** Schema validation catches structural errors before they propagate to downstream packages.
 6. **Reference authoritative specs for significant changes.** Use WebSearch to verify against HTML Living Standard, WAI-ARIA, and HTML-ARIA before modifying manual spec files.
+7. **Use conventional commit prefixes based on the nature of the change:**
+
+   | Change type              | Prefix  | Example                                           |
+   | ------------------------ | ------- | ------------------------------------------------- |
+   | Description updates only | `chore` | `chore(html-spec): update role descriptions`      |
+   | Attribute/spec additions | `feat`  | `feat(html-spec): add input switch attribute`     |
+   | Spec data corrections    | `fix`   | `fix(html-spec): correct ARIA mapping for button` |
+
+8. **Separate spec changes into individual PRs.** Each specification change (new attribute, ARIA mapping fix, etc.) should be on its own branch and PR. Description-only updates can be batched into a single PR.

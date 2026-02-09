@@ -31,7 +31,7 @@
 		"type-fest": "4.41.0"
 	},
 	"devDependencies": {
-		"@types/jsdom": "21.1.7",
+		"@types/jsdom": "27.0.0",
 		"jsdom": "26.1.0"
 	}
 }

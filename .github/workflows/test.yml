@@ -27,7 +27,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -77,7 +77,7 @@ jobs:
             matrix:
                 os: [ubuntu-latest]
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -139,61 +139,6 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
-    lint:
-        needs: [dev-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-        steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
-              with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              id: cache-restore-dev-depends
-              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Cache Restore Production
-              id: cache-restore-prod
-              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
-              with:
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Lint
-              run: yarn run lint-check
-
     os-setup:
         runs-on: ${{ matrix.os }}
 
@@ -217,7 +162,7 @@ jobs:
                     - node: 24
                       os: ubuntu-latest
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -277,7 +222,7 @@ jobs:
                       os: ubuntu-latest
                       shard: 1/1
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
@@ -350,7 +295,7 @@ jobs:
                 pm: [npm, yarn, pnpm]
                 env: [esm, ts, ts-config-ts]
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'

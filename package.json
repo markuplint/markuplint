@@ -71,7 +71,7 @@
 		"@commitlint/config-conventional": "20.4.1",
 		"@commitlint/config-lerna-scopes": "20.4.0",
 		"commitizen": "4.3.1",
-		"cspell": "9.4.0",
+		"cspell": "9.6.4",
 		"cz-conventional-changelog": "3.3.0",
 		"eslint-plugin-react": "7.37.5",
 		"eslint-plugin-react-hooks": "7.0.1",
@@ -89,7 +89,7 @@
 		"ts-node": "10.9.2",
 		"tsx": "4.21.0",
 		"typedoc": "0.28.16",
-		"typedoc-plugin-mdn-links": "5.0.10",
+		"typedoc-plugin-mdn-links": "5.1.1",
 		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "5.9.3",
 		"vitest": "3.2.4"

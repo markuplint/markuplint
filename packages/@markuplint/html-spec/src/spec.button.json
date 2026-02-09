@@ -40,6 +40,11 @@
 		"commandfor": {
 			"type": "DOMID"
 		},
+		// https://open-ui.org/components/interest-invokers.explainer/
+		"interestfor": {
+			"type": "DOMID",
+			"experimental": true
+		},
 		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
 		"popovertarget": {
 			"type": "DOMID"
