@@ -1462,3 +1462,48 @@ describe('html element implicit role', () => {
 		]);
 	});
 });
+
+describe('img element permitted roles', () => {
+	test('img with role="math" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="equation.png" alt="x²+y²=z²" role="math">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('img with role="meter" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<img src="progress.png" alt="75% complete" role="meter" aria-valuenow="75">',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('img with role="math" is not permitted in ARIA 1.1', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="equation.png" alt="x²+y²=z²" role="math">', {
+			rule: { options: { version: '1.1' } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message:
+					'Cannot overwrite the "math" role to the "img" element according to ARIA in HTML specification',
+				raw: 'math',
+			},
+		]);
+	});
+
+	test('img with role="navigation" is not permitted', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="navigation">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 38,
+				message:
+					'Cannot overwrite the "navigation" role to the "img" element according to ARIA in HTML specification',
+				raw: 'navigation',
+			},
+		]);
+	});
+});
