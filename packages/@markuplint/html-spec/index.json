@@ -275,6 +275,16 @@
 						"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
 					}
 				},
+				"headingoffset": {
+					"type": {
+						"type": "integer",
+						"gte": 0,
+						"lte": 8
+					}
+				},
+				"headingreset": {
+					"type": "Boolean"
+				},
 				"hidden": {
 					"type": {
 						"enum": ["", "hidden", "until-found"]

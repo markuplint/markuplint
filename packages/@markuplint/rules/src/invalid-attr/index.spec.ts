@@ -1745,3 +1745,39 @@ describe('button command attribute', () => {
 		]);
 	});
 });
+
+describe('headingoffset and headingreset attributes', () => {
+	test('headingoffset with valid value is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<section headingoffset="1"><h2>Title</h2></section>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('headingoffset="0" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div headingoffset="0"><h1>Title</h1></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('headingoffset="8" is valid (max)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div headingoffset="8"><h1>Title</h1></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('headingoffset with non-integer value is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div headingoffset="abc"><h1>Title</h1></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message:
+					'It includes unexpected characters. the "headingoffset" attribute expects integer greater than or equal to 0 less than or equal to 8',
+				raw: 'abc',
+			},
+		]);
+	});
+
+	test('headingreset is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div headingreset><h1>Title</h1></div>');
+		expect(violations).toStrictEqual([]);
+	});
+});

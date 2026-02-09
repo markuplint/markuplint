@@ -71,6 +71,18 @@
 				"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/sections.html#attr-heading-offset
+		"headingoffset": {
+			"type": {
+				"type": "integer",
+				"gte": 0,
+				"lte": 8
+			}
+		},
+		// https://html.spec.whatwg.org/multipage/sections.html#attr-heading-reset
+		"headingreset": {
+			"type": "Boolean"
+		},
 		// https://html.spec.whatwg.org/multipage/interaction.html#attr-hidden
 		"hidden": {
 			"type": {
