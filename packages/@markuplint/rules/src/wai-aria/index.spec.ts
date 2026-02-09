@@ -1316,6 +1316,78 @@ aria-checked={isChecked}
 	});
 });
 
+describe('button element permitted roles', () => {
+	test('button with role="separator" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button role="separator" aria-valuenow="50">Drag to resize</button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('button with role="gridcell" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button role="gridcell">Cell</button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('button with role="slider" is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50</button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('button with role="treeitem" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button role="treeitem">Item</button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('button with role="tab" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<button role="tab">Tab 1</button>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('button with role="navigation" is not permitted', async () => {
+		const { violations } = await mlRuleTest(rule, '<button role="navigation">Nav</button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message:
+					'Cannot overwrite the "navigation" role to the "button" element according to ARIA in HTML specification',
+				raw: 'navigation',
+			},
+		]);
+	});
+
+	test('button with role="separator" is not permitted in ARIA 1.1', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button role="separator" aria-valuenow="50">Drag to resize</button>',
+			{ rule: { options: { version: '1.1' } } },
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message:
+					'Cannot overwrite the "separator" role to the "button" element according to ARIA in HTML specification',
+				raw: 'separator',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "aria-valuenow" ARIA property is disallowed on the "button" role',
+				raw: 'aria-valuenow="50"',
+			},
+		]);
+	});
+});
+
 describe('meter element implicit role', () => {
 	test('meter has implicit role "meter"', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100">50%</meter>');

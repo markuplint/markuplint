@@ -76,14 +76,18 @@
 		"permittedRoles": [
 			"checkbox",
 			"combobox",
+			"gridcell",
 			"link",
 			"menuitem",
 			"menuitemcheckbox",
 			"menuitemradio",
 			"option",
 			"radio",
+			"separator",
+			"slider",
 			"switch",
-			"tab"
+			"tab",
+			"treeitem"
 		],
 		"1.1": {
 			"permittedRoles": [
