@@ -1341,3 +1341,52 @@ describe('meter element implicit role', () => {
 		]);
 	});
 });
+
+describe('html element implicit role', () => {
+	test('html with role="document" is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<html role="document"><head></head><body></body></html>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('html with role="generic" is implicit role (redundant)', async () => {
+		const { violations } = await mlRuleTest(rule, '<html role="generic"><head></head><body></body></html>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				message: 'The "generic" role is the implicit role of the "html" element',
+				raw: 'generic',
+			},
+		]);
+	});
+
+	test('html with role="banner" is not permitted', async () => {
+		const { violations } = await mlRuleTest(rule, '<html role="banner"><head></head><body></body></html>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				message:
+					'Cannot overwrite the "banner" role to the "html" element according to ARIA in HTML specification',
+				raw: 'banner',
+			},
+		]);
+	});
+
+	test('html with role="document" is implicit role in ARIA 1.1 (redundant)', async () => {
+		const { violations } = await mlRuleTest(rule, '<html role="document"><head></head><body></body></html>', {
+			rule: { options: { version: '1.1' } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				message: 'The "document" role is the implicit role of the "html" element',
+				raw: 'document',
+			},
+		]);
+	});
+});
