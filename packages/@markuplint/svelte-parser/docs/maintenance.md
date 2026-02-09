@@ -70,6 +70,8 @@ expect(debugMaps).toStrictEqual([
 
 ### 3. Updating SvelteKit Placeholders
 
+> **Architectural note:** `SvelteKitTemplateParser` extends `HtmlParser` (template engine pattern), **not** `Parser` like `SvelteParser`. It is an entirely separate implementation that handles SvelteKit's `app.html` via the `ignoreTags` mechanism. The parser is exported via the `./kit` subpath (`@markuplint/svelte-parser/kit`). See `ARCHITECTURE.md` § SvelteKit Parser for the full architectural distinction.
+
 1. Read `src/sveltekit-parser.ts`
 2. Add or modify entries in the `ignoreTags` array:
    ```ts
@@ -82,9 +84,15 @@ expect(debugMaps).toStrictEqual([
        // add new placeholder patterns here
    ],
    ```
-3. Build: `yarn build --scope @markuplint/svelte-parser`
-4. Add test cases to `src/sveltekit-parser.spec.ts`
-5. Test: `yarn test --scope @markuplint/svelte-parser`
+3. The current single pattern matches all `%sveltekit.*%` placeholders:
+   - `%sveltekit.head%` — `<head>` content
+   - `%sveltekit.body%` — Rendered page body
+   - `%sveltekit.assets%` — Assets base path
+   - `%sveltekit.nonce%` — CSP nonce
+   - `%sveltekit.env.[NAME]%` — Environment variables
+4. Build: `yarn build --scope @markuplint/svelte-parser`
+5. Add test cases to `src/sveltekit-parser.spec.ts` (this is a separate test file from `src/index.spec.ts`)
+6. Test: `yarn test --scope @markuplint/svelte-parser`
 
 ### 4. Modifying the specificBindDirective Set
 

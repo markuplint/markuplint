@@ -337,7 +337,32 @@ export function svelteParse(template: string): SvelteNode[] {
 
 ## SvelteKit パーサー
 
-`SvelteKitTemplateParser` は `HtmlParser`（`SvelteParser` ではない）を拡張して SvelteKit アプリテンプレートファイル（`app.html`）を処理します:
+### アーキテクチャ上の区別
+
+`SvelteKitTemplateParser` は `SvelteParser` とは**完全に別のパーサー**です。同じパッケージからエクスポートされますが、継承チェーンが異なり、用途も異なります:
+
+|                          | SvelteParser                | SvelteKitTemplateParser                         |
+| ------------------------ | --------------------------- | ----------------------------------------------- |
+| **基底クラス**           | `Parser`（抽象）            | `HtmlParser`                                    |
+| **パターン**             | フルフレームワークパーサー  | テンプレートエンジンパーサー（ignoreTags のみ） |
+| **対象ファイル**         | `.svelte` コンポーネント    | `app.html`（SvelteKit アプリテンプレート）      |
+| **外部ライブラリ**       | `svelte/compiler`           | なし                                            |
+| **サブパスエクスポート** | `@markuplint/svelte-parser` | `@markuplint/svelte-parser/kit`                 |
+
+SvelteKit アプリテンプレート（`src/app.html`）は特殊な `%sveltekit.*%` プレースホルダーを含む標準 HTML です。基盤構文が埋め込みトークン付きのプレーン HTML であるため、テンプレートエンジンパーサーパターン（`HtmlParser` を `ignoreTags` で拡張）が正しいアーキテクチャ上の選択です — Svelte コンパイラは不要です。
+
+### 設定方法
+
+```json
+{
+  "parser": {
+    ".svelte$": "@markuplint/svelte-parser",
+    ".html$": "@markuplint/svelte-parser/kit"
+  }
+}
+```
+
+### 実装
 
 ```ts
 class SvelteKitTemplateParser extends HtmlParser {
@@ -355,11 +380,19 @@ class SvelteKitTemplateParser extends HtmlParser {
 }
 ```
 
-`ignoreTags` オプションが SvelteKit プレースホルダータグをプリプロセッサ固有ブロックとしてマスクします:
+### ignoreTags 設定
 
-- `%sveltekit.head%` — `<head>` コンテンツのプレースホルダー
-- `%sveltekit.body%` — レンダリングされたページボディのプレースホルダー
-- `%sveltekit.assets%` — アセットパスのプレースホルダー
+| タイプ                  | 開始          | 終了 | AST ノード名                | 説明                                   |
+| ----------------------- | ------------- | ---- | --------------------------- | -------------------------------------- |
+| `sveltekit-placeholder` | `%sveltekit.` | `%`  | `#ps:sveltekit-placeholder` | SvelteKit テンプレートプレースホルダー |
+
+単一のパターンですべての SvelteKit プレースホルダーにマッチします:
+
+- `%sveltekit.head%` — ビルド時に `<head>` コンテンツに置換
+- `%sveltekit.body%` — ビルド時にレンダリングされたページボディに置換
+- `%sveltekit.assets%` — ビルド時にアセットのベースパスに置換
+- `%sveltekit.nonce%` — ビルド時に CSP nonce に置換（設定されている場合）
+- `%sveltekit.env.[NAME]%` — ビルド時に環境変数に置換
 
 これらのプレースホルダーはビルド時に SvelteKit によって置換されるため、リンティング中はマスクする必要があります。このパーサーは `package.json` の `./kit` サブパスエクスポートを通じてエクスポートされます。
 

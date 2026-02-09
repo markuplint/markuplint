@@ -337,7 +337,32 @@ When `super.visitAttr()` returns an attribute with `type: 'spread'`, it is retur
 
 ## SvelteKit Parser
 
-`SvelteKitTemplateParser` extends `HtmlParser` (not `SvelteParser`) to handle SvelteKit app template files (`app.html`):
+### Architectural Distinction
+
+`SvelteKitTemplateParser` is an **entirely separate parser** from `SvelteParser`. While both are exported from the same package, they have different inheritance chains and serve different purposes:
+
+|                      | SvelteParser                | SvelteKitTemplateParser                  |
+| -------------------- | --------------------------- | ---------------------------------------- |
+| **Base class**       | `Parser` (abstract)         | `HtmlParser`                             |
+| **Pattern**          | Full framework parser       | Template engine parser (ignoreTags only) |
+| **Target files**     | `.svelte` components        | `app.html` (SvelteKit app template)      |
+| **External library** | `svelte/compiler`           | None                                     |
+| **Subpath export**   | `@markuplint/svelte-parser` | `@markuplint/svelte-parser/kit`          |
+
+The SvelteKit app template (`src/app.html`) is standard HTML with special `%sveltekit.*%` placeholders. Since the underlying syntax is plain HTML with embedded tokens, the template engine parser pattern (extending `HtmlParser` with `ignoreTags`) is the correct architectural choice — no Svelte compiler is needed.
+
+### Configuration
+
+```json
+{
+  "parser": {
+    ".svelte$": "@markuplint/svelte-parser",
+    ".html$": "@markuplint/svelte-parser/kit"
+  }
+}
+```
+
+### Implementation
 
 ```ts
 class SvelteKitTemplateParser extends HtmlParser {
@@ -355,11 +380,19 @@ class SvelteKitTemplateParser extends HtmlParser {
 }
 ```
 
-The `ignoreTags` option masks SvelteKit placeholder tags as preprocessor-specific blocks:
+### ignoreTags Configuration
 
-- `%sveltekit.head%` — Placeholder for the `<head>` content
-- `%sveltekit.body%` — Placeholder for the rendered page body
-- `%sveltekit.assets%` — Placeholder for the assets path
+| Type                    | Start         | End | AST Node Name               | Description                     |
+| ----------------------- | ------------- | --- | --------------------------- | ------------------------------- |
+| `sveltekit-placeholder` | `%sveltekit.` | `%` | `#ps:sveltekit-placeholder` | SvelteKit template placeholders |
+
+The single pattern matches all SvelteKit placeholders:
+
+- `%sveltekit.head%` — Replaced with the `<head>` content at build time
+- `%sveltekit.body%` — Replaced with the rendered page body at build time
+- `%sveltekit.assets%` — Replaced with the assets base path at build time
+- `%sveltekit.nonce%` — Replaced with a CSP nonce at build time (if configured)
+- `%sveltekit.env.[NAME]%` — Replaced with environment variables at build time
 
 These placeholders are replaced by SvelteKit at build time and need to be masked during linting. The parser is exported via the `./kit` subpath export in `package.json`.
 

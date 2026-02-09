@@ -70,6 +70,8 @@ expect(debugMaps).toStrictEqual([
 
 ### 3. SvelteKit プレースホルダーの更新
 
+> **アーキテクチャ上の注意:** `SvelteKitTemplateParser` は `HtmlParser` を継承（テンプレートエンジンパターン）しており、`SvelteParser` のように `Parser` を継承しているわけでは**ありません**。SvelteKit の `app.html` を `ignoreTags` メカニズムで処理する、完全に別の実装です。パーサーは `./kit` サブパス（`@markuplint/svelte-parser/kit`）でエクスポートされます。詳細は `ARCHITECTURE.ja.md` § SvelteKit パーサー を参照してください。
+
 1. `src/sveltekit-parser.ts` を読む
 2. `ignoreTags` 配列のエントリを追加または変更:
    ```ts
@@ -82,9 +84,15 @@ expect(debugMaps).toStrictEqual([
        // 新しいプレースホルダーパターンをここに追加
    ],
    ```
-3. ビルド: `yarn build --scope @markuplint/svelte-parser`
-4. `src/sveltekit-parser.spec.ts` にテストケースを追加
-5. テスト: `yarn test --scope @markuplint/svelte-parser`
+3. 現在の単一パターンはすべての `%sveltekit.*%` プレースホルダーにマッチ:
+   - `%sveltekit.head%` — `<head>` コンテンツ
+   - `%sveltekit.body%` — レンダリングされたページ本文
+   - `%sveltekit.assets%` — アセットのベースパス
+   - `%sveltekit.nonce%` — CSP ナンス
+   - `%sveltekit.env.[NAME]%` — 環境変数
+4. ビルド: `yarn build --scope @markuplint/svelte-parser`
+5. `src/sveltekit-parser.spec.ts` にテストケースを追加（`src/index.spec.ts` とは別のテストファイル）
+6. テスト: `yarn test --scope @markuplint/svelte-parser`
 
 ### 4. specificBindDirective セットの変更
 
