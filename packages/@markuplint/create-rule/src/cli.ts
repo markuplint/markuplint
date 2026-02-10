@@ -35,6 +35,9 @@ const icons: Record<string, string> = {
 	tsconfig: '💎',
 };
 
+/**
+ * Prints the CLI usage information, options, and examples to stdout.
+ */
 function printHelp() {
 	process.stdout.write(`
 Usage: create-rule [options]
@@ -69,17 +72,31 @@ Examples:
 `);
 }
 
+/**
+ * Sentinel class thrown when `--help` is requested to signal a
+ * successful early exit without using `process.exit`.
+ */
 class HelpRequested {
 	readonly code = 0;
 }
 
+/**
+ * Throws an error with the given message and a usage hint.
+ * Used for CLI argument validation failures.
+ *
+ * @param message - The validation error message to include.
+ */
 function fail(message: string): never {
 	throw new Error(`${message}\nRun 'create-rule --help' for usage.`);
 }
 
 /**
- * Parse CLI arguments and build CreateRuleHelperParams.
- * Returns null if no arguments were provided (indicating interactive mode).
+ * Parses `process.argv` into validated {@link CreateRuleHelperParams}.
+ *
+ * @returns The parsed parameters and output format flag, or `null` when
+ *          no arguments are provided (indicating interactive mode).
+ * @throws {HelpRequested} When `--help` is passed.
+ * @throws {Error} When required options are missing or values are invalid.
  */
 function parseCliArgs(): { params: CreateRuleHelperParams; json: boolean } | null {
 	const { values } = parseArgs({
@@ -214,7 +231,12 @@ export async function createRule() {
 }
 
 /**
- * Non-interactive rule creation from parsed CLI options.
+ * Creates a rule non-interactively from pre-validated CLI options.
+ * Runs the scaffold, prints results (or JSON), and installs dependencies.
+ *
+ * @param params - The validated rule creation parameters.
+ * @param json - When `true`, outputs the result as JSON instead of
+ *               the human-readable file list.
  */
 async function createRuleNonInteractive(params: CreateRuleHelperParams, json: boolean) {
 	const result = await createRuleHelper(params);
