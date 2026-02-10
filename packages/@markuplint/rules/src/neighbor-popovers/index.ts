@@ -8,18 +8,36 @@ import meta from './meta.js';
 const ARIA_VERSION = '1.2';
 
 /**
+ * Command values from the Invoker Commands API that relate to popover behavior.
+ * Comparison is case-insensitive per the HTML spec.
+ */
+const POPOVER_COMMANDS = new Set(['toggle-popover', 'show-popover', 'hide-popover']);
+
+/**
  * Rule that detects perceptible content between a popover trigger and its target.
  *
- * When a `[popovertarget]` element and its corresponding `[popover]` target exist
- * in the DOM, any focusable elements, elements with accessible names, or non-whitespace
- * text nodes between them are reported as violations.
+ * When a `[popovertarget]` element or a `[commandfor]` element with a popover-related
+ * `command` attribute and its corresponding `[popover]` target exist in the DOM, any
+ * focusable elements, elements with accessible names, or non-whitespace text nodes
+ * between them are reported as violations.
  */
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {
-		const triggers = document.querySelectorAll('[popovertarget]');
+		const triggers = document.querySelectorAll('[popovertarget], [commandfor]');
 		Triggers: for (const trigger of triggers) {
-			const targetId = trigger.getAttribute('popovertarget');
+			let targetId: string | null = null;
+
+			const popovertarget = trigger.getAttribute('popovertarget');
+			if (popovertarget) {
+				targetId = popovertarget;
+			} else {
+				const command = trigger.getAttribute('command');
+				if (command && POPOVER_COMMANDS.has(command.toLowerCase())) {
+					targetId = trigger.getAttribute('commandfor');
+				}
+			}
+
 			if (!targetId) {
 				continue;
 			}
