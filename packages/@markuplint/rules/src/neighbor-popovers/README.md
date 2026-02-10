@@ -11,10 +11,21 @@ Warns when popover triggers and their corresponding targets are not adjacent.
 
 Cite: [HTML Living Standard 6.12.1 The popover target attributes](https://html.spec.whatwg.org/multipage/popover.html#the-popover-target-attributes:~:text=Whenever%20possible%20ensure%20the%20popover%20element%20is%20placed%20immediately%20after%20its%20triggering%20element%20in%20the%20DOM.%20Doing%20so%20will%20help%20ensure%20that%20the%20popover%20is%20exposed%20in%20a%20logical%20programmatic%20reading%20order%20for%20users%20of%20assistive%20technology%2C%20such%20as%20screen%20readers.)
 
+This rule detects popover triggers using both:
+
+- The `popovertarget` attribute
+- The [Invoker Commands API](https://open-ui.org/components/invokers.explainer/) (`commandfor` attribute with a popover-related `command` value: `toggle-popover`, `show-popover`, or `hide-popover`)
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html
 <button popovertarget="foo">Trigger</button>
+<p>There are perceptible nodes between the trigger and corresponding target.</p>
+<div id="foo" popover>Popover</div>
+```
+
+```html
+<button command="toggle-popover" commandfor="foo">Trigger</button>
 <p>There are perceptible nodes between the trigger and corresponding target.</p>
 <div id="foo" popover>Popover</div>
 ```
@@ -36,6 +47,11 @@ Cite: [HTML Living Standard 6.12.1 The popover target attributes](https://html.s
 
 ```html
 <button popovertarget="foo">Trigger</button>
+<div id="foo" popover>Popover</div>
+```
+
+```html
+<button command="toggle-popover" commandfor="foo">Trigger</button>
 <div id="foo" popover>Popover</div>
 ```
 
