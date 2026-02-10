@@ -62,3 +62,25 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
   ]
 }
 ```
+
+### Setting `ignoreOmittedElements` option {#setting-ignore-omitted-elements}
+
+HTML allows certain tags to be omitted (e.g., `<tbody>`). The HTML parser implicitly creates these omitted elements as ghost nodes. By default, these ghost elements satisfy the requirement. Set `ignoreOmittedElements` to `true` to require that elements are explicitly written in the source.
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "table",
+      "rules": {
+        "required-element": {
+          "value": ["tbody"],
+          "options": {
+            "ignoreOmittedElements": true
+          }
+        }
+      }
+    }
+  ]
+}
+```
