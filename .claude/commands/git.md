@@ -126,3 +126,15 @@ git commit -m 'type(scope): subject line'
 ```
 
 For multi-line non-breaking commits, use heredoc format as well to ensure proper formatting
+
+# Pre-commit verification for spec changes
+
+When committing changes to spec packages (Tier 2–3), run the full test suite:
+
+```bash
+yarn test
+yarn lint
+```
+
+Spec data propagates to `@markuplint/rules` and `@markuplint/ml-spec` tests.
+Package-level tests alone will miss cross-package regressions.
