@@ -255,6 +255,40 @@ These boolean flags indicate the standardization status of an attribute:
 5. Verify the flag change in `index.json`
 6. Run tests: `yarn workspace @markuplint/html-spec run test`
 
+## ARIA Version System
+
+### Resolution Logic
+
+`resolveVersion()` (`@markuplint/ml-spec/src/utils/resolve-version.ts`) checks
+`aria[version]` first, falls back to top-level `aria`. The runtime default is
+`ARIA_RECOMMENDED_VERSION = '1.2'` (`@markuplint/ml-spec/src/utils/aria-version.ts`).
+
+### Key Placement Rules
+
+| Key              | Meaning                                                   | Mutability                                   |
+| ---------------- | --------------------------------------------------------- | -------------------------------------------- |
+| Top-level `aria` | Default / latest. Fallback for versions without overrides | Mutable — update to match current W3C Rec    |
+| `"1.1"`          | ARIA 1.1 snapshot                                         | **Frozen** — never add new roles             |
+| `"1.2"`          | ARIA 1.2 snapshot (rarely needed)                         | Only create when top-level diverges from 1.2 |
+
+### Decision: Where to add new permittedRoles
+
+1. Is the role in the W3C Recommendation "ARIA in HTML" (ARIA 1.2 based, Aug 2025)?
+   → Add to **top-level only**
+2. Is the role ARIA 1.3 draft-only (not in W3C Rec)?
+   → Add to **top-level**, AND create `"1.2"` key with the current 1.2 list to freeze it
+3. Was the role in the original ARIA 1.1 spec for this element?
+   → It should already be in `"1.1"`. **Never add new roles to `"1.1"`**.
+
+### permittedRoles Quick Reference
+
+| Pattern                                  | Meaning                             |
+| ---------------------------------------- | ----------------------------------- |
+| `true`                                   | Any role allowed                    |
+| `false`                                  | No roles allowed                    |
+| `["role1", "role2"]`                     | Specific roles (alphabetical order) |
+| `[{"name": "role", "deprecated": true}]` | Deprecated role                     |
+
 ## Task: check
 
 Verify cross-package consistency between `@markuplint/html-spec` and related packages.
@@ -274,6 +308,35 @@ Report results as:
 | # | Check | Status | Notes |
 ```
 
+## Testing Requirements for Spec Changes
+
+Spec data changes propagate to multiple test suites. Always run `yarn test`
+(full suite) before committing.
+
+### Test Matrix
+
+| Change type                         | Primary test file                            | Also check                                                    |
+| ----------------------------------- | -------------------------------------------- | ------------------------------------------------------------- |
+| ARIA (implicitRole, permittedRoles) | `rules/src/wai-aria/index.spec.ts`           | `ml-spec/src/algorithm/aria/get-permitted-roles-spec.spec.ts` |
+| Attributes (new/changed)            | `rules/src/invalid-attr/index.spec.ts`       | Existing tests with changed enum error messages               |
+| Content model                       | `rules/src/permitted-contents/index.spec.ts` | —                                                             |
+
+### Cross-Package Impact
+
+- **Hardcoded role arrays**: `ml-spec/.../get-permitted-roles-spec.spec.ts` has
+  hardcoded `permittedRoles` for img, button, input, form, etc. Update these
+  when changing `permittedRoles` in html-spec.
+- **Enum error messages**: Adding a value to an enum (e.g., button `command`)
+  changes the error message string in existing `invalid-attr` tests.
+
+### Test Conventions
+
+- `toStrictEqual` with exact `{ severity, line, col, message, raw }` — never `toBeGreaterThan(0)`
+- Always include both valid (empty violations) and invalid (exact violation) cases
+- ARIA version in tests: `{ rule: { options: { version: '1.1' } } }`
+- Some roles require ARIA attributes: focusable `separator` → `aria-valuenow`,
+  `meter` → `aria-valuenow`
+
 ## Rules
 
 1. **`index.json` is generated -- never edit it directly.** Always modify `src/` files and regenerate.
@@ -291,3 +354,5 @@ Report results as:
    | Spec data corrections    | `fix`   | `fix(html-spec): correct ARIA mapping for button` |
 
 8. **Separate spec changes into individual PRs.** Each specification change (new attribute, ARIA mapping fix, etc.) should be on its own branch and PR. Description-only updates can be batched into a single PR.
+9. **Run `yarn test` (full suite) before committing.** Spec changes affect `@markuplint/rules` and `@markuplint/ml-spec` tests.
+10. **Keep `permittedRoles` arrays in alphabetical order.**

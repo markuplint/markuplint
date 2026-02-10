@@ -101,3 +101,16 @@ For WARN items, produce an advisory note with a suggested improvement (not manda
 4. **Numeric claims must be exact.** Count arrays, enum values, union members, and Set entries in the source code to verify numbers stated in documentation.
 5. **Algorithm descriptions must match the actual code flow.** Verify that documented step orders, condition checks, and branching logic correspond to the implementation.
 6. **Use WebSearch for spec verification.** Always fetch the latest version of the referenced specification — do not rely on cached knowledge.
+
+## Hardcoded Test Data
+
+The following test files contain hardcoded spec data that must stay in sync
+with `@markuplint/html-spec`:
+
+| Test file                                             | Data                                                       | Trigger                                                 |
+| ----------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------- |
+| `src/algorithm/aria/get-permitted-roles-spec.spec.ts` | `permittedRoles` arrays for img, button, input, form, etc. | `permittedRoles` changes in `html-spec/src/spec.*.json` |
+
+When `@markuplint/html-spec` ARIA mappings change, update these arrays.
+The arrays are version-specific — update only the correct version's expectations
+(e.g., `'1.2'` tests but not `'1.1'` tests for newly added roles).
