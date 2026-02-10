@@ -36,19 +36,19 @@ $ npx @markuplint/create-rule -p project -n my-plugin -r no-empty-alt --json
 
 ### Options
 
-| Option | Short | Description | Default |
-| --- | --- | --- | --- |
-| `--purpose <type>` | `-p` | Purpose: `project`, `package`, or `core` | _(required)_ |
-| `--plugin-name <name>` | `-n` | Plugin/directory name in kebab-case | _(required for project/package)_ |
-| `--rule-name <name>` | `-r` | Rule name in kebab-case | _(required)_ |
-| `--lang <lang>` | `-l` | Language: `ts` or `js` | `ts` |
-| `--test` | `-t` | Generate test files | `true` |
-| `--no-test` | | Skip test file generation | |
-| `--description <text>` | `-d` | Rule description | _(required for core)_ |
-| `--category <cat>` | `-c` | Category (see below) | _(required for core)_ |
-| `--severity <level>` | `-s` | Severity: `error` or `warning` | _(required for core)_ |
-| `--json` | | Output result as JSON | `false` |
-| `--help` | `-h` | Show help message | |
+| Option                 | Short | Description                              | Default                          |
+| ---------------------- | ----- | ---------------------------------------- | -------------------------------- |
+| `--purpose <type>`     | `-p`  | Purpose: `project`, `package`, or `core` | _(required)_                     |
+| `--plugin-name <name>` | `-n`  | Plugin/directory name in kebab-case      | _(required for project/package)_ |
+| `--rule-name <name>`   | `-r`  | Rule name in kebab-case                  | _(required)_                     |
+| `--lang <lang>`        | `-l`  | Language: `ts` or `js`                   | `ts`                             |
+| `--test`               | `-t`  | Generate test files                      | `true`                           |
+| `--no-test`            |       | Skip test file generation                |                                  |
+| `--description <text>` | `-d`  | Rule description                         | _(required for core)_            |
+| `--category <cat>`     | `-c`  | Category (see below)                     | _(required for core)_            |
+| `--severity <level>`   | `-s`  | Severity: `error` or `warning`           | _(required for core)_            |
+| `--json`               |       | Output result as JSON                    | `false`                          |
+| `--help`               | `-h`  | Show help message                        |                                  |
 
 Available categories: `validation`, `a11y`, `naming-convention`, `maintainability`, `style`
 

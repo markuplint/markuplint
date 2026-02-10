@@ -81,13 +81,14 @@ class HelpRequested {
 }
 
 /**
- * Throws an error with the given message and a usage hint.
- * Used for CLI argument validation failures.
- *
- * @param message - The validation error message to include.
+ * Error thrown when CLI arguments are invalid or missing.
+ * Includes a usage hint directing users to `--help`.
  */
-function fail(message: string): never {
-	throw new Error(`${message}\nRun 'create-rule --help' for usage.`);
+class UsageHintError extends Error {
+	constructor(message: string) {
+		super(`${message}\nRun 'create-rule --help' for usage.`);
+		this.name = 'UsageHintError';
+	}
 }
 
 /**
@@ -96,7 +97,7 @@ function fail(message: string): never {
  * @returns The parsed parameters and output format flag, or `null` when
  *          no arguments are provided (indicating interactive mode).
  * @throws {HelpRequested} When `--help` is passed.
- * @throws {Error} When required options are missing or values are invalid.
+ * @throws {UsageHintError} When required options are missing or values are invalid.
  */
 function parseCliArgs(): { params: CreateRuleHelperParams; json: boolean } | null {
 	const { values } = parseArgs({
@@ -128,45 +129,52 @@ function parseCliArgs(): { params: CreateRuleHelperParams; json: boolean } | nul
 
 	// Validate purpose
 	if (!values.purpose) {
-		fail('--purpose is required in non-interactive mode');
+		throw new UsageHintError('--purpose is required in non-interactive mode');
 	}
 	const purpose = PURPOSE_MAP[values.purpose];
 	if (!purpose) {
-		fail(`Invalid --purpose "${values.purpose}". Must be one of: project, package, core`);
+		throw new UsageHintError(`Invalid --purpose "${values.purpose}". Must be one of: project, package, core`);
 	}
 
 	// Validate rule name
 	if (!values['rule-name']) {
-		fail('--rule-name is required');
+		throw new UsageHintError('--rule-name is required');
 	}
 	const ruleName = values['rule-name'];
 	if (!KEBAB_CASE.test(ruleName)) {
-		fail(`Invalid --rule-name "${ruleName}". Must be kebab-case (e.g., "no-empty-alt")`);
+		throw new UsageHintError(`Invalid --rule-name "${ruleName}". Must be kebab-case (e.g., "no-empty-alt")`);
 	}
 
 	// Validate plugin name
 	let pluginName = '';
 	if (purpose !== 'CONTRIBUTE_TO_CORE') {
 		if (!values['plugin-name']) {
-			fail('--plugin-name is required for project/package purpose');
+			throw new UsageHintError('--plugin-name is required for project/package purpose');
 		}
 		pluginName = values['plugin-name'];
 		if (!KEBAB_CASE.test(pluginName)) {
-			fail(`Invalid --plugin-name "${pluginName}". Must be kebab-case (e.g., "my-plugin")`);
+			throw new UsageHintError(`Invalid --plugin-name "${pluginName}". Must be kebab-case (e.g., "my-plugin")`);
 		}
 	}
 
 	// Language
-	const langInput = values.lang ?? 'ts';
 	let lang: CreateRuleLanguage;
 	if (purpose === 'CONTRIBUTE_TO_CORE') {
 		lang = 'TYPESCRIPT';
-	} else if (langInput === 'ts') {
-		lang = 'TYPESCRIPT';
-	} else if (langInput === 'js') {
-		lang = 'JAVASCRIPT';
 	} else {
-		fail(`Invalid --lang "${langInput}". Must be "ts" or "js"`);
+		switch (values.lang ?? 'ts') {
+			case 'ts': {
+				lang = 'TYPESCRIPT';
+				break;
+			}
+			case 'js': {
+				lang = 'JAVASCRIPT';
+				break;
+			}
+			default: {
+				throw new UsageHintError(`Invalid --lang "${values.lang}". Must be "ts" or "js"`);
+			}
+		}
 	}
 
 	// Test
@@ -176,19 +184,23 @@ function parseCliArgs(): { params: CreateRuleHelperParams; json: boolean } | nul
 	let core: CreateRuleCreatorCoreParams | undefined;
 	if (purpose === 'CONTRIBUTE_TO_CORE') {
 		if (!values.description) {
-			fail('--description is required for core purpose');
+			throw new UsageHintError('--description is required for core purpose');
 		}
 		if (!values.category) {
-			fail('--category is required for core purpose');
+			throw new UsageHintError('--category is required for core purpose');
 		}
 		if (!(CATEGORIES as readonly string[]).includes(values.category)) {
-			fail(`Invalid --category "${values.category}". Must be one of: ${CATEGORIES.join(', ')}`);
+			throw new UsageHintError(
+				`Invalid --category "${values.category}". Must be one of: ${CATEGORIES.join(', ')}`,
+			);
 		}
 		if (!values.severity) {
-			fail('--severity is required for core purpose');
+			throw new UsageHintError('--severity is required for core purpose');
 		}
 		if (!(SEVERITIES as readonly string[]).includes(values.severity)) {
-			fail(`Invalid --severity "${values.severity}". Must be one of: ${SEVERITIES.join(', ')}`);
+			throw new UsageHintError(
+				`Invalid --severity "${values.severity}". Must be one of: ${SEVERITIES.join(', ')}`,
+			);
 		}
 		core = {
 			description: values.description,
