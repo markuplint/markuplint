@@ -102,6 +102,56 @@ describe('React', () => {
 	});
 });
 
+describe('ghost/omitted elements', () => {
+	test('ghost tbody should not satisfy the requirement with ignoreOmittedElements', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tr><th>Heading</th><td>Text</td></tr></table>', {
+			nodeRule: [
+				{
+					selector: 'table',
+					rule: { value: ['tbody'], options: { ignoreOmittedElements: true } },
+				},
+			],
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0].message).toBe('Require the "tbody" element');
+	});
+
+	test('explicit tbody should satisfy the requirement', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><tbody><tr><th>Heading</th><td>Text</td></tr></tbody></table>',
+			{
+				nodeRule: [
+					{
+						selector: 'table',
+						rule: { value: ['tbody'], options: { ignoreOmittedElements: true } },
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('ghost tbody should satisfy the requirement by default (backwards compat)', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tr><th>Heading</th><td>Text</td></tr></table>', {
+			nodeRule: [
+				{
+					selector: 'table',
+					rule: ['tbody'],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('global rule: ghost tbody ignored with option', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tr><td>Text</td></tr></table>', {
+			rule: { value: ['tbody'], options: { ignoreOmittedElements: true } },
+		});
+		expect(violations.length).toBe(1);
+	});
+});
+
 describe('Pretenders Option', () => {
 	test('Outer', async () => {
 		const { violations } = await mlRuleTest(rule, '<html><Head><title>Title</title></Head></html>', {

@@ -64,4 +64,26 @@ h1要素が必要な場合は[`required-h1`](../required-h1/)ルールを使用�
 }
 ```
 
+### `ignoreOmittedElements`オプションの設定 {#setting-ignore-omitted-elements}
+
+HTMLでは特定のタグを省略できます（例：`<tbody>`）。HTMLパーサーはこれらの省略された要素をゴーストノードとして暗黙的に生成します。デフォルトでは、これらのゴースト要素も要件を満たすものとして扱われます。`ignoreOmittedElements`を`true`に設定すると、ソースコードに明示的に記述された要素のみが要件を満たすようになります。
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "table",
+      "rules": {
+        "required-element": {
+          "value": ["tbody"],
+          "options": {
+            "ignoreOmittedElements": true
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
