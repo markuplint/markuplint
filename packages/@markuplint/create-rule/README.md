@@ -4,13 +4,55 @@
 
 ## Overview
 
-A CLI scaffolding tool for creating new markuplint rules. It provides an interactive wizard that generates all the boilerplate files needed for rule development, including source files, tests, and configuration.
+A CLI scaffolding tool for creating new markuplint rules. It provides both an interactive wizard and a non-interactive CLI mode that generates all the boilerplate files needed for rule development, including source files, tests, and configuration.
 
 ## Usage
+
+### Interactive mode
+
+Run without arguments to start the guided wizard:
 
 ```shell
 $ npx @markuplint/create-rule
 ```
+
+### Non-interactive mode
+
+Pass CLI options to create a rule in a single command:
+
+```shell
+# Add a rule to this project
+$ npx @markuplint/create-rule -p project -n my-plugin -r no-empty-alt
+
+# Create a publishable package (JavaScript, no tests)
+$ npx @markuplint/create-rule -p package -n my-plugin -r no-empty-alt -l js --no-test
+
+# Contribute to core
+$ npx @markuplint/create-rule -p core -r no-empty-alt -d "Disallow empty alt" -c a11y -s error
+
+# JSON output (useful for scripting and AI tooling)
+$ npx @markuplint/create-rule -p project -n my-plugin -r no-empty-alt --json
+```
+
+### Options
+
+| Option                 | Short | Description                              | Default                          |
+| ---------------------- | ----- | ---------------------------------------- | -------------------------------- |
+| `--purpose <type>`     | `-p`  | Purpose: `project`, `package`, or `core` | _(required)_                     |
+| `--plugin-name <name>` | `-n`  | Plugin/directory name in kebab-case      | _(required for project/package)_ |
+| `--rule-name <name>`   | `-r`  | Rule name in kebab-case                  | _(required)_                     |
+| `--lang <lang>`        | `-l`  | Language: `ts` or `js`                   | `ts`                             |
+| `--test`               | `-t`  | Generate test files                      | `true`                           |
+| `--no-test`            |       | Skip test file generation                |                                  |
+| `--description <text>` | `-d`  | Rule description                         | _(required for core)_            |
+| `--category <cat>`     | `-c`  | Category (see below)                     | _(required for core)_            |
+| `--severity <level>`   | `-s`  | Severity: `error` or `warning`           | _(required for core)_            |
+| `--json`               |       | Output result as JSON                    | `false`                          |
+| `--help`               | `-h`  | Show help message                        |                                  |
+
+Available categories: `validation`, `a11y`, `naming-convention`, `maintainability`, `style`
+
+> When contributing to core (`--purpose core`), `--lang` is always TypeScript and `--test` is always enabled regardless of the options provided.
 
 ## Modes
 
