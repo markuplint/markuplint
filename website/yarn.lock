@@ -3186,12 +3186,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@markuplint-dev/prettier-config@npm:1.0.13":
-  version: 1.0.13
-  resolution: "@markuplint-dev/prettier-config@npm:1.0.13"
+"@markuplint-dev/prettier-config@npm:1.0.14":
+  version: 1.0.14
+  resolution: "@markuplint-dev/prettier-config@npm:1.0.14"
   dependencies:
     prettier: "npm:3.6.2"
-  checksum: 10c0/6391de87b70216271adbcb27acb286a17f320141584a82413df5aae667065fdb87638a2e6376ff652895613fe8c30fb948363ba86a5d093c21528a0152d0b429
+  checksum: 10c0/1d2444df68489f064fe7f8e798709262417fc89a355a068c4012adcc7ff8382d42f9b1b093fc0d60eb83e91af5758165048701d02368c49743a5eff8b4651d90
   languageName: node
   linkType: hard
 
@@ -9234,7 +9234,7 @@ __metadata:
     "@docusaurus/remark-plugin-npm2yarn": "npm:3.8.1"
     "@docusaurus/tsconfig": "npm:3.8.1"
     "@imgix/js-core": "npm:3.8.0"
-    "@markuplint-dev/prettier-config": "npm:1.0.13"
+    "@markuplint-dev/prettier-config": "npm:1.0.14"
     "@octokit/rest": "npm:22.0.1"
     "@tsconfig/strictest": "npm:2.0.8"
     "@types/glob": "npm:9.0.0"
