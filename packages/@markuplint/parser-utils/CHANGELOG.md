@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.11](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.10...@markuplint/parser-utils@4.8.11) (2026-02-10)
+
+**Note:** Version bump only for package @markuplint/parser-utils
+
 ## [4.8.10](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.9...@markuplint/parser-utils@4.8.10) (2025-11-05)
 
 **Note:** Version bump only for package @markuplint/parser-utils

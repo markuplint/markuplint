@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.1](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.7.0...@markuplint/i18n@4.7.1) (2026-02-10)
+
+**Note:** Version bump only for package @markuplint/i18n
+
 # [4.7.0](https://github.com/markuplint/markuplint/compare/@markuplint/i18n@4.6.0...@markuplint/i18n@4.7.0) (2025-08-13)
 
 ### Bug Fixes
