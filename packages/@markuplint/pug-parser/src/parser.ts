@@ -1,5 +1,11 @@
 import type { ASTNode } from './types.js';
-import type { MLASTAttr, MLASTElement, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
+import type {
+	MLASTAttr,
+	MLASTBlockBehavior,
+	MLASTElement,
+	MLASTNodeTreeItem,
+	MLASTParentNode,
+} from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { HtmlParser, getNamespace } from '@markuplint/html-parser';
@@ -244,6 +250,18 @@ class PugParser extends Parser<ASTNode> {
 					tokenIncludesFile = this.sliceFragment(originNode.offset, fileEndOffset);
 				}
 
+				let blockBehavior: MLASTBlockBehavior | null = null;
+
+				switch (originNode.type) {
+					case 'Each': {
+						blockBehavior = {
+							type: 'each',
+							expression: originNode.val,
+						};
+						break;
+					}
+				}
+
 				return this.visitPsBlock(
 					{
 						...tokenIncludesFile,
@@ -257,6 +275,7 @@ class PugParser extends Parser<ASTNode> {
 						: 'nodes' in originNode
 							? originNode.nodes
 							: [],
+					blockBehavior,
 				);
 			}
 		}
