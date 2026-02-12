@@ -5,6 +5,9 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
 	"main": "./cjs/index.js",
 	"types": "./cjs/index.d.ts",
 	"exports": {
