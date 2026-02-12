@@ -100,7 +100,7 @@ flowchart TD
 | `parser-error.ts`        | エラークラス                               | `ParserError`, `TargetParserError`, `ConfigParserError`                                                                                   |
 | `sort-nodes.ts`          | ノードの位置ソート                         | `sortNodes`                                                                                                                               |
 | `const.ts`               | 定数                                       | `MASK_CHAR`, `svgElementList`, `defaultSpaces`                                                                                            |
-| `get-location.ts`        | 位置計算                                   | `getPosition`, `getEndLine`, `getEndCol`, `getOffsetsFromCode`                                                                            |
+| `get-location.ts`        | 位置計算                                   | `getPosition`, `getEndLine`, `getEndCol`, `getEndPosition`, `getOffsetsFromCode`                                                          |
 | `decision.ts`            | カスタム要素名判定                         | `isPotentialCustomElementName`, `isSVGElement`                                                                                            |
 
 ## パースパイプライン概要

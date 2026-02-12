@@ -1039,14 +1039,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Creates a new MLASTToken with a generated UUID and computed end position.
+	 * Creates a new MLASTToken with a generated UUID.
 	 * Accepts either a Token object or a raw string with explicit start coordinates.
 	 *
 	 * @param token - A Token object or raw string to create the AST token from
-	 * @param offset - The byte offset where the token starts (required when token is a string)
-	 * @param line - The line number where the token starts (required when token is a string)
-	 * @param col - The column number where the token starts (required when token is a string)
-	 * @returns A fully populated AST token with UUID, position, and raw content
+	 * @param offset - The zero-based byte offset where the token starts (required when token is a string)
+	 * @param line - The one-based line number where the token starts (required when token is a string)
+	 * @param col - The one-based column number where the token starts (required when token is a string)
+	 * @returns An AST token with UUID, start position, and raw content
 	 */
 	createToken(token: Token): MLASTToken;
 	createToken(token: string, offset: number, line: number, col: number): MLASTToken;

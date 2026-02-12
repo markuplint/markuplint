@@ -255,12 +255,12 @@ doctype 名、パブリック ID、システム ID を含むトークンから d
 visitPsBlock(
   token: ChildToken & { nodeName: string; isFragment: boolean },
   childNodes?: readonly Node[],
-  conditionalType?: MLASTPreprocessorSpecificBlockConditionalType,
+  blockBehavior?: MLASTBlockBehavior | null,
   originBlockNode?: Node
 ): readonly MLASTNodeTreeItem[]
 ```
 
-プリプロセッサ固有のブロックノードを作成します。`nodeName` には自動的に `#ps:` プレフィックスが付加されます（例: `#ps:if`、`#ps:each`、`#ps:front-matter`）。`visitChildren()` を通じて子ノードを再帰的にトラバースします。
+プリプロセッサ固有のブロックノードを作成します。`nodeName` には自動的に `#ps:` プレフィックスが付加されます（例: `#ps:if`、`#ps:each`、`#ps:front-matter`）。`blockBehavior` パラメータはブロックの制御フロー（型と式）を記述します。`visitChildren()` を通じて子ノードを再帰的にトラバースします。
 
 ### visitAttr()
 
@@ -347,10 +347,10 @@ stateDiagram-v2
 
 ```ts
 createToken(token: Token): MLASTToken;
-createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
+createToken(token: string, offset: number, line: number, col: number): MLASTToken;
 ```
 
-生成された UUID（8 文字）と計算された終了位置を持つ新しい `MLASTToken` を作成します。`Token` オブジェクトまたは明示的な座標を持つ生の文字列を受け取ります。
+生成された UUID（8 文字）を持つ新しい `MLASTToken` を作成します。`Token` オブジェクトまたは明示的な座標を持つ生の文字列を受け取ります。
 
 ### sliceFragment()
 
@@ -412,11 +412,11 @@ walk<Node extends MLASTNodeTreeItem>(
 ```ts
 updateLocation(
   node: MLASTNodeTreeItem,
-  props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>
+  props: Partial<Pick<MLASTNodeTreeItem, 'offset' | 'line' | 'col' | 'depth'>>
 ): void
 ```
 
-AST ノードの位置と深さのプロパティを更新し、新しい開始値から終了オフセット/行/列を再計算します。
+AST ノードの位置と深さのプロパティを更新します。
 
 ### updateRaw()
 
