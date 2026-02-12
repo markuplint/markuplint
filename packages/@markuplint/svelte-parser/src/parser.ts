@@ -3,7 +3,7 @@ import type {
 	MLASTNodeTreeItem,
 	MLASTParentNode,
 	MLASTPreprocessorSpecificBlock,
-	MLASTPreprocessorSpecificBlockConditionalType,
+	MLASTBlockBehavior,
 } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
@@ -118,8 +118,8 @@ export class SvelteParser extends Parser<SvelteNode> {
 				const startTagEndOffset =
 					children.length > 0
 						? (children[0]?.start ?? 0)
-						: token.raw.replace(reEndTag, '').length + token.startOffset;
-				const startTagLocation = this.sliceFragment(token.startOffset, startTagEndOffset);
+						: token.raw.replace(reEndTag, '').length + token.offset;
+				const startTagLocation = this.sliceFragment(token.offset, startTagEndOffset);
 
 				return this.visitElement(
 					{
@@ -140,7 +140,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 								throw new Error('Parse error');
 							}
 							const endTagRaw = endTagRawMatched[0];
-							const endTagStartOffset = token.startOffset + token.raw.lastIndexOf(endTagRaw);
+							const endTagStartOffset = token.offset + token.raw.lastIndexOf(endTagRaw);
 							const endTagEndOffset = endTagStartOffset + endTagRaw.length;
 							const endTagLocation = this.sliceFragment(endTagStartOffset, endTagEndOffset);
 
@@ -155,7 +155,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			}
 			case 'IfBlock': {
 				const expressions: MLASTPreprocessorSpecificBlock[] = [];
-				const ifElseBlocks = this.#traverseIfBlock(originNode, token.startOffset);
+				const ifElseBlocks = this.#traverseIfBlock(originNode, token.offset);
 				for (const ifElseBlock of ifElseBlocks) {
 					const expression = this.visitPsBlock(
 						{
@@ -166,14 +166,17 @@ export class SvelteParser extends Parser<SvelteNode> {
 							isFragment: false,
 						},
 						ifElseBlock.children,
-						(
-							{
-								if: 'if',
-								elseif: 'if:elseif',
-								else: 'if:else',
-								'/if': 'end',
-							} as const
-						)[ifElseBlock.type],
+						{
+							type: (
+								{
+									if: 'if',
+									elseif: 'if:elseif',
+									else: 'if:else',
+									'/if': 'end',
+								} as const
+							)[ifElseBlock.type],
+							expression: ifElseBlock.raw,
+						},
 					)[0];
 					expressions.push(expression);
 				}
@@ -310,7 +313,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	 *
 	 * @param token - The child token with node name and fragment flag
 	 * @param childNodes - The child Svelte AST nodes within the block
-	 * @param conditionalType - The conditional block type identifier, or null
+	 * @param blockBehavior - The block behavior, or null
 	 * @returns A single-element tuple containing the preprocessor-specific block
 	 */
 	visitPsBlock(
@@ -319,9 +322,9 @@ export class SvelteParser extends Parser<SvelteNode> {
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly SvelteNode[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		blockBehavior: MLASTBlockBehavior | null = null,
 	): readonly [MLASTPreprocessorSpecificBlock] {
-		const nodes = super.visitPsBlock(token, childNodes, conditionalType);
+		const nodes = super.visitPsBlock(token, childNodes, blockBehavior);
 		const block = nodes.at(0);
 
 		if (!block || block.type !== 'psblock') {
@@ -478,7 +481,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 		/**
 		 * `{#await expression}`
 		 */
-		const awaitExpToken = this.sliceFragment(token.startOffset, awaitExpEnd);
+		const awaitExpToken = this.sliceFragment(token.offset, awaitExpEnd);
 
 		let thenToken: Token | null = null;
 
@@ -507,7 +510,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				thenExpEndCharOffset = thenExpStart + rawPendingNodesBelow.indexOf('}') + 1;
 			}
-			thenToken = this.sliceFragment(token.startOffset + thenExpStart, thenExpEndCharOffset);
+			thenToken = this.sliceFragment(token.offset + thenExpStart, thenExpEndCharOffset);
 		}
 
 		let catchToken: Token | null = null;
@@ -522,7 +525,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 *                 find___^
 		 */
 		const catchExpStart = thenToken
-			? (thenEnd ?? thenToken.startOffset + thenToken.raw.length)
+			? (thenEnd ?? thenToken.offset + thenToken.raw.length)
 			: (pendingEnd ?? awaitExpEnd);
 
 		/**
@@ -544,7 +547,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			} else {
 				catchExpEndCharOffset = catchExpStart + rawThenNodesBelow.indexOf('}') + 1;
 			}
-			catchToken = this.sliceFragment(token.startOffset + catchExpStart, catchExpEndCharOffset);
+			catchToken = this.sliceFragment(token.offset + catchExpStart, catchExpEndCharOffset);
 		}
 
 		const expressions: MLASTPreprocessorSpecificBlock[] = [
@@ -557,7 +560,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				originBlockNode.pending?.nodes,
-				'await',
+				{
+					type: 'await',
+					expression: awaitExpToken.raw,
+				},
 			)[0],
 		];
 
@@ -572,7 +578,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.then?.nodes,
-					'await:then',
+					{
+						type: 'await:then',
+						expression: thenToken.raw,
+					},
 				)[0],
 			);
 		}
@@ -588,7 +597,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.catch?.nodes,
-					'await:catch',
+					{
+						type: 'await:catch',
+						expression: catchToken.raw,
+					},
 				)[0],
 			);
 		}
@@ -603,7 +615,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				undefined,
-				'end',
+				{
+					type: 'end',
+					expression: closeToken.raw,
+				},
 			)[0],
 		);
 
@@ -635,18 +650,18 @@ export class SvelteParser extends Parser<SvelteNode> {
 		 * `{#each expression as name}...{:else}...{/each}`
 		 *                     find___^
 		 */
-		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.startOffset;
+		const bodyStart = originBlockNode.body.nodes.at(0)?.start ?? closeToken.offset;
 
 		/**
 		 * `{#each expression as name}...{:else}...{/each}`
 		 *                               find___^
 		 */
-		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.startOffset;
+		const fallbackScopeStart = originBlockNode.fallback?.nodes.at(0)?.start ?? closeToken.offset;
 
 		/**
 		 * `{#each expression as name}...{:else}`
 		 */
-		const rawUntilFallbackScope = this.rawCode.slice(token.startOffset, fallbackScopeStart);
+		const rawUntilFallbackScope = this.rawCode.slice(token.offset, fallbackScopeStart);
 
 		let elseToken: Token | null = null;
 
@@ -657,10 +672,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 		// eslint-disable-next-line regexp/strict
 		const elseTokenStart = rawUntilFallbackScope.match(/{\s*:else\s*}$/)?.index;
 		if (elseTokenStart != null) {
-			elseToken = this.sliceFragment(token.startOffset + elseTokenStart, fallbackScopeStart);
+			elseToken = this.sliceFragment(token.offset + elseTokenStart, fallbackScopeStart);
 		}
 
-		const eachToken = this.sliceFragment(token.startOffset, bodyStart);
+		const eachToken = this.sliceFragment(token.offset, bodyStart);
 
 		expressions.push(
 			this.visitPsBlock(
@@ -672,7 +687,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				originBlockNode.body.nodes,
-				'each',
+				{ type: 'each', expression: eachToken.raw },
 			)[0],
 		);
 
@@ -687,7 +702,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 						isFragment: false,
 					},
 					originBlockNode.fallback?.nodes,
-					'each:empty',
+					{ type: 'each:empty', expression: elseToken.raw },
 				)[0],
 			);
 		}
@@ -702,7 +717,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 					isFragment: false,
 				},
 				undefined,
-				'end',
+				{ type: 'end', expression: closeToken.raw },
 			)[0],
 		);
 
