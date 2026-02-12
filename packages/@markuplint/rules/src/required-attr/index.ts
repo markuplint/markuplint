@@ -95,15 +95,15 @@ export default createRule<RequiredAttributes>({
 					invalid = el.matches(selector) && didntHave;
 				}
 
-				candidate.sort();
+				const sortedCandidate = candidate.toSorted();
 
 				if (invalid) {
 					const expects =
-						candidate.length === 1
+						sortedCandidate.length === 1
 							? t('the "{0*}" {1}', spec.name, 'attribute')
 							: t(
 									'{0} {1}',
-									candidate
+									sortedCandidate
 										.map(attrName => t('the "{0*}"', attrName))
 										// eslint-disable-next-line unicorn/no-array-reduce
 										.reduce((a, b) => t('{0} or {1}', a, b)),

@@ -5,9 +5,6 @@ import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-// @ts-ignore
-import structuredClone from '@ungap/structured-clone';
-
 import { attrCheck } from './attr-check.js';
 
 /**
