@@ -180,7 +180,7 @@ export abstract class MLNode<
 	#prevToken: MLNode<T, O> | null | undefined;
 
 	/**
-	 * Cached `conditionalChildNodes` mothod
+	 * Cached `conditionalChildNodes` method
 	 */
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 

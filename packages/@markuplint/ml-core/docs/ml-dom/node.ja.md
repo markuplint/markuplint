@@ -103,7 +103,7 @@ div
 #### アルゴリズム
 
 1. `childNodes` を順番に走査する
-2. `MLBlock` に遭遇した場合、その `conditionalType` から分岐 `mode` を決定する：
+2. `MLBlock` に遭遇した場合、その `blockBehavior?.type` から分岐 `mode` を決定する：
    - `'if'` または `'if:elseif'` → mode `'if'`
    - `'each'` → mode `'each'`
    - `'switch:case'` → mode `'switch'`
@@ -168,7 +168,7 @@ function processNode(node: MLNode<any, any>) {
     console.log(node.isWhitespace());
   } else if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
     // node は MLBlock<any, any> に絞り込まれる
-    console.log(node.conditionalType);
+    console.log(node.blockBehavior?.type);
   }
 }
 ```

@@ -15,19 +15,19 @@ MLBlock はテンプレート構文と HTML コンテンツモデル検証の橋
 
 ## プロパティ
 
-| プロパティ        | 型                                              | 説明                                                                                         |
-| ----------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `conditionalType` | `MLASTPreprocessorSpecificBlockConditionalType` | 条件構文の種類（下表参照）、非条件ブロックの場合は `null`                                    |
-| `isTransparent`   | `boolean`                                       | ツリー走査で透過的かどうか。現在は常に `true`（ソースの TODO を参照）                        |
-| `isFragment`      | `boolean`                                       | ブロックが透過フラグメントとして機能するか（MLNode から継承、`astNode.isFragment` から設定） |
+| プロパティ      | 型                           | 説明                                                                                         |
+| --------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `blockBehavior` | `MLASTBlockBehavior \| null` | ブロックの動作を示す構文の種類（下表参照）、非条件ブロックの場合は `null`                    |
+| `isTransparent` | `boolean`                    | ツリー走査で透過的かどうか。現在は常に `true`（ソースの TODO を参照）                        |
+| `isFragment`    | `boolean`                    | ブロックが透過フラグメントとして機能するか（MLNode から継承、`astNode.isFragment` から設定） |
 
-## conditionalType の値
+## blockBehavior の型
 
-`conditionalType` は、ブロックが条件分岐子ノードパターン生成にどのように参加するかを決定します（後述の[条件分岐子ノード](#条件分岐子ノード)を参照）。
+`blockBehavior` は、ブロックが条件分岐子ノードパターン生成にどのように参加するかを決定します（後述の[条件分岐子ノード](#条件分岐子ノード)を参照）。`type` プロパティを持つオブジェクト、または非条件ブロックの場合は `null` です。
 
 ### 条件グループ
 
-認識された `conditionalType` を持つブロックは条件グループを形成します。各グループは「開始」型で始まり、「分岐」型を含む場合があります：
+認識された `blockBehavior.type` を持つブロックは条件グループを形成します。各グループは「開始」型で始まり、「分岐」型を含む場合があります：
 
 | グループ   | 開始            | 分岐                            | 終了               |
 | ---------- | --------------- | ------------------------------- | ------------------ |
@@ -38,20 +38,20 @@ MLBlock はテンプレート構文と HTML コンテンツモデル検証の橋
 
 ### すべての値
 
-| 値                 | 説明                                                   | 役割                                                           |
-| ------------------ | ------------------------------------------------------ | -------------------------------------------------------------- |
-| `'if'`             | 条件ブロックの開始                                     | 新しい条件グループを開始                                       |
-| `'if:elseif'`      | 代替条件分岐                                           | 新しい条件グループを開始（パターン生成では `'if'` と同じ扱い） |
-| `'if:else'`        | デフォルト（else）分岐                                 | 現在のグループ内の分岐                                         |
-| `'switch:case'`    | switch の case 分岐                                    | 新しい条件グループを開始                                       |
-| `'switch:default'` | switch のデフォルト分岐                                | 現在のグループ内の分岐                                         |
-| `'each'`           | イテレーション（ループ）ブロックの開始                 | 新しい条件グループを開始                                       |
-| `'each:empty'`     | イテレーションブロックの空状態                         | 現在のグループ内の分岐                                         |
-| `'await'`          | 非同期ブロック（pending 状態）                         | 現在のグループ内の分岐                                         |
-| `'await:then'`     | 非同期ブロックの resolved 状態                         | 現在のグループ内の分岐                                         |
-| `'await:catch'`    | 非同期ブロックの rejected 状態                         | 現在のグループ内の分岐                                         |
-| `'end'`            | ブロック終了マーカー                                   | 無視される（switch の `default` でフィルタされる）             |
-| `null`             | 条件セマンティクスなし（例: `{value}` のような式出力） | 条件グループではない。ミュータブルな子として扱われる           |
+| `blockBehavior.type` | 説明                                             | 役割                                                                              |
+| -------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `'if'`               | 条件ブロックの開始                               | 新しい条件グループを開始                                                          |
+| `'if:elseif'`        | 代替条件分岐                                     | 新しい条件グループを開始（パターン生成では `'if'` と同じ扱い）                    |
+| `'if:else'`          | デフォルト（else）分岐                           | 現在のグループ内の分岐                                                            |
+| `'switch:case'`      | switch の case 分岐                              | 新しい条件グループを開始                                                          |
+| `'switch:default'`   | switch のデフォルト分岐                          | 現在のグループ内の分岐                                                            |
+| `'each'`             | イテレーション（ループ）ブロックの開始           | 新しい条件グループを開始                                                          |
+| `'each:empty'`       | イテレーションブロックの空状態                   | 現在のグループ内の分岐                                                            |
+| `'await'`            | 非同期ブロック（pending 状態）                   | 現在のグループ内の分岐                                                            |
+| `'await:then'`       | 非同期ブロックの resolved 状態                   | 現在のグループ内の分岐                                                            |
+| `'await:catch'`      | 非同期ブロックの rejected 状態                   | 現在のグループ内の分岐                                                            |
+| `'end'`              | ブロック終了マーカー                             | 無視される（switch の `default` でフィルタされる）                                |
+| `null`               | ブロック動作なし（例: `{value}` のような式出力） | 条件グループではない。ミュータブルな子として扱われる（`blockBehavior` が `null`） |
 
 ## 透過性
 
@@ -111,12 +111,12 @@ if (parentNode.is(parentNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 
 ## 条件分岐子ノード
 
-`MLNode` の `conditionalChildNodes()` メソッドは、MLBlock の `conditionalType` を使用して、レンダリングされた出力に現れうるすべての子ノードパターンを列挙します。これはテンプレート分岐がある場合のコンテンツモデル検証に不可欠です。
+`MLNode` の `conditionalChildNodes()` メソッドは、MLBlock の `blockBehavior?.type` を使用して、レンダリングされた出力に現れうるすべての子ノードパターンを列挙します。これはテンプレート分岐がある場合のコンテンツモデル検証に不可欠です。
 
 ### アルゴリズム
 
 1. 現在のノードの `childNodes` を走査する
-2. 認識された `conditionalType` を持つ各 MLBlock 子に対して：
+2. 認識された `blockBehavior?.type` を持つ各 MLBlock 子に対して：
    - `mode` を判定（`'if'`、`'each'`、または `'switch'`）
    - ブロックに対して再帰的に `conditionalChildNodes()` を呼び出してサブパターンを取得
    - すべての分岐の代替を `subBranches` 配列に収集
@@ -162,9 +162,9 @@ AST 構造：
 
 ```
 MLElement <ul>
-  ├── MLBlock (conditionalType: 'if')
+  ├── MLBlock (blockBehavior.type: 'if')
   │     └── MLElement <li>A</li>
-  ├── MLBlock (conditionalType: 'if:else')
+  ├── MLBlock (blockBehavior.type: 'if:else')
   │     └── MLElement <li>B</li>
   └── MLElement <li>C</li>
 ```
@@ -203,15 +203,15 @@ branches = [[<li>A</li>, <li>B</li>, null], <li>C</li>]
 
 ## `hasMutableChildren()` との相互作用
 
-`MLElement.hasMutableChildren()` は `conditionalType` を使用して MLBlock を2つのカテゴリに区別します：
+`MLElement.hasMutableChildren()` は `blockBehavior` を使用して MLBlock を2つのカテゴリに区別します：
 
-- **`conditionalType` を持つブロック**（例: `'if'`、`'each'`、`'switch:case'`）：スキップ（`continue`）— `conditionalChildNodes()` がすべての可能なパターンを列挙して処理する
-- **`conditionalType` を持たないブロック**（`null`）：即座に `true` を返す — `{value}` のような式出力やその他の非条件テンプレート構文を表し、内容が静的に決定できない
+- **`blockBehavior` を持つブロック**（例: type `'if'`、`'each'`、`'switch:case'`）：スキップ（`continue`）— `conditionalChildNodes()` がすべての可能なパターンを列挙して処理する
+- **`blockBehavior` を持たないブロック**（`null`）：即座に `true` を返す — `{value}` のような式出力やその他の非条件テンプレート構文を表し、内容が静的に決定できない
 
 ```typescript
 for (const child of this.getPureChildNodes()) {
   if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-    if (child.conditionalType) {
+    if (child.blockBehavior) {
       continue; // 条件セマンティクスあり → 別の場所で処理
     }
     return true; // 条件セマンティクスなし → 本当にミュータブル
@@ -230,7 +230,7 @@ MLBlock はリンティングパイプラインの複数のレベルで参加し
 
 テンプレートエンジンパーサー（Svelte、Nunjucks、EJS、Pug など）が `MLASTPreprocessorSpecificBlock` AST ノードを生成します。各パーサーは以下を担当します：
 
-- `conditionalType` の適切な設定（例: Svelte `{#if}` → `'if'`、`{#each}` → `'each'`）
+- `blockBehavior` の適切な設定（例: Svelte `{#if}` → `{ type: 'if' }`、`{#each}` → `{ type: 'each' }`）
 - ブロック内への子 AST ノードのネスト
 - フラグメントコンテナとして機能すべきブロックの `isFragment` 設定
 

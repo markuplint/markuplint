@@ -173,7 +173,7 @@ MLToken<A extends MLASTToken>
 | `MLText`             | `Text`             | Text nodes, `isWhitespace()`, `isRawTextElementContent()`                                   |
 | `MLComment`          | `Comment`          | Comment nodes with `textContent`                                                            |
 | `MLDocumentType`     | `DocumentType`     | `<!DOCTYPE>` with `name`, `publicId`, `systemId`                                            |
-| `MLBlock`            | —                  | Preprocessor-specific blocks (if/each/switch), `conditionalType`, `isTransparent`           |
+| `MLBlock`            | —                  | Preprocessor-specific blocks (if/each/switch), `blockBehavior`, `isTransparent`             |
 | `MLElementCloseTag`  | —                  | Close tag paired with its open tag element                                                  |
 | `MLParentNode`       | `ParentNode`       | `querySelector()`, `querySelectorAll()`, `children`, `childElementCount`                    |
 | `MLElement`          | `Element`          | Attributes, selectors, namespaces, pretender context, `elementType`, `closeTag`             |
@@ -338,16 +338,16 @@ type Pretender = {
 
 Template engines (Pug, EJS, Nunjucks, etc.) produce preprocessor-specific blocks represented by `MLBlock` nodes. These blocks can wrap child nodes conditionally:
 
-| `conditionalType` | Template Construct | Description                |
-| ----------------- | ------------------ | -------------------------- |
-| `'if:start'`      | `{% if %}`         | Start of conditional block |
-| `'if:else'`       | `{% else %}`       | Alternative branch         |
-| `'if:end'`        | `{% endif %}`      | End of conditional block   |
-| `'each:start'`    | `{% for %}`        | Start of loop              |
-| `'each:end'`      | `{% endfor %}`     | End of loop                |
-| `'switch:start'`  | `{% switch %}`     | Start of switch            |
-| `'switch:case'`   | `{% case %}`       | Switch case                |
-| `'switch:end'`    | `{% endswitch %}`  | End of switch              |
+| `blockBehavior.type` | Template Construct | Description                |
+| -------------------- | ------------------ | -------------------------- |
+| `'if'`               | `{% if %}`         | Start of conditional block |
+| `'if:else'`          | `{% else %}`       | Alternative branch         |
+| `'end'`              | `{% endif %}`      | End of conditional block   |
+| `'each'`             | `{% for %}`        | Start of loop              |
+| `'end'`              | `{% endfor %}`     | End of loop                |
+| `'switch:case'`      | `{% switch %}`     | Start of switch            |
+| `'switch:default'`   | `{% case %}`       | Switch case                |
+| `'end'`              | `{% endswitch %}`  | End of switch              |
 
 `MLNode.conditionalChildNodes()` returns an array of `NodeListOf` arrays — one per conditional branch — so rules can analyze each branch independently.
 

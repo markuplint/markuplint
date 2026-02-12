@@ -15,19 +15,19 @@ MLBlock serves as the bridge between template syntax and HTML content model vali
 
 ## Properties
 
-| Property          | Type                                            | Description                                                                                              |
-| ----------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `conditionalType` | `MLASTPreprocessorSpecificBlockConditionalType` | The type of conditional construct (see table below), or `null` for non-conditional blocks                |
-| `isTransparent`   | `boolean`                                       | Whether the block is transparent in tree traversal; currently always `true` (see source TODO)            |
-| `isFragment`      | `boolean`                                       | Whether this block acts as a transparent fragment (inherited from MLNode, set from `astNode.isFragment`) |
+| Property        | Type                         | Description                                                                                                 |
+| --------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `blockBehavior` | `MLASTBlockBehavior \| null` | The block behavior describing the type of construct (see table below), or `null` for non-conditional blocks |
+| `isTransparent` | `boolean`                    | Whether the block is transparent in tree traversal; currently always `true` (see source TODO)               |
+| `isFragment`    | `boolean`                    | Whether this block acts as a transparent fragment (inherited from MLNode, set from `astNode.isFragment`)    |
 
-## conditionalType Values
+## blockBehavior Types
 
-`conditionalType` determines how the block participates in conditional child node pattern generation (see [Conditional Child Nodes](#conditional-child-nodes) below).
+`blockBehavior` determines how the block participates in conditional child node pattern generation (see [Conditional Child Nodes](#conditional-child-nodes) below). It is an object with a `type` property, or `null` for non-conditional blocks.
 
 ### Conditional Groups
 
-Blocks with a recognized `conditionalType` form conditional groups. Each group starts with a "start" type and may include "branch" types:
+Blocks with a recognized `blockBehavior.type` form conditional groups. Each group starts with a "start" type and may include "branch" types:
 
 | Group      | Start           | Branches                        | End                 |
 | ---------- | --------------- | ------------------------------- | ------------------- |
@@ -38,20 +38,20 @@ Blocks with a recognized `conditionalType` form conditional groups. Each group s
 
 ### All Values
 
-| Value              | Description                                                      | Role                                                                              |
-| ------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `'if'`             | Start of conditional block                                       | Starts a new conditional group                                                    |
-| `'if:elseif'`      | Alternative conditional branch                                   | Starts a new conditional group (treated the same as `'if'` in pattern generation) |
-| `'if:else'`        | Default (else) branch                                            | Branch within current group                                                       |
-| `'switch:case'`    | Switch case branch                                               | Starts a new conditional group                                                    |
-| `'switch:default'` | Switch default branch                                            | Branch within current group                                                       |
-| `'each'`           | Start of iteration (loop) block                                  | Starts a new conditional group                                                    |
-| `'each:empty'`     | Empty state for an iteration block                               | Branch within current group                                                       |
-| `'await'`          | Asynchronous block (pending state)                               | Branch within current group                                                       |
-| `'await:then'`     | Resolved state of async block                                    | Branch within current group                                                       |
-| `'await:catch'`    | Rejected state of async block                                    | Branch within current group                                                       |
-| `'end'`            | Closing block marker                                             | Ignored (filtered out by `default` in the switch)                                 |
-| `null`             | No conditional semantic (e.g., expression output like `{value}`) | Not a conditional group; treated as a mutable child                               |
+| `blockBehavior.type` | Description                                                | Role                                                                              |
+| -------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `'if'`               | Start of conditional block                                 | Starts a new conditional group                                                    |
+| `'if:elseif'`        | Alternative conditional branch                             | Starts a new conditional group (treated the same as `'if'` in pattern generation) |
+| `'if:else'`          | Default (else) branch                                      | Branch within current group                                                       |
+| `'switch:case'`      | Switch case branch                                         | Starts a new conditional group                                                    |
+| `'switch:default'`   | Switch default branch                                      | Branch within current group                                                       |
+| `'each'`             | Start of iteration (loop) block                            | Starts a new conditional group                                                    |
+| `'each:empty'`       | Empty state for an iteration block                         | Branch within current group                                                       |
+| `'await'`            | Asynchronous block (pending state)                         | Branch within current group                                                       |
+| `'await:then'`       | Resolved state of async block                              | Branch within current group                                                       |
+| `'await:catch'`      | Rejected state of async block                              | Branch within current group                                                       |
+| `'end'`              | Closing block marker                                       | Ignored (filtered out by `default` in the switch)                                 |
+| `null`               | No block behavior (e.g., expression output like `{value}`) | Not a conditional group; treated as a mutable child (`blockBehavior` is `null`)   |
 
 ## Transparency
 
@@ -111,12 +111,12 @@ This ensures that rules validating parent-child relationships (like `permitted-c
 
 ## Conditional Child Nodes
 
-The `conditionalChildNodes()` method on `MLNode` uses MLBlock's `conditionalType` to enumerate all possible child node patterns that could appear in the rendered output. This is critical for content model validation in the presence of template branching.
+The `conditionalChildNodes()` method on `MLNode` uses MLBlock's `blockBehavior?.type` to enumerate all possible child node patterns that could appear in the rendered output. This is critical for content model validation in the presence of template branching.
 
 ### Algorithm
 
 1. Walk through `childNodes` of the current node
-2. For each MLBlock child with a recognized `conditionalType`:
+2. For each MLBlock child with a recognized `blockBehavior?.type`:
    - Determine the `mode` (`'if'`, `'each'`, or `'switch'`)
    - Recursively call `conditionalChildNodes()` on the block to get its sub-patterns
    - Collect all branch alternatives into a `subBranches` array
@@ -162,9 +162,9 @@ The AST structure is:
 
 ```
 MLElement <ul>
-  ├── MLBlock (conditionalType: 'if')
+  ├── MLBlock (blockBehavior.type: 'if')
   │     └── MLElement <li>A</li>
-  ├── MLBlock (conditionalType: 'if:else')
+  ├── MLBlock (blockBehavior.type: 'if:else')
   │     └── MLElement <li>B</li>
   └── MLElement <li>C</li>
 ```
@@ -203,15 +203,15 @@ The inner `{#if b}` block recursively generates its patterns `[<span>X</span>]`,
 
 ## Interaction with `hasMutableChildren()`
 
-`MLElement.hasMutableChildren()` uses `conditionalType` to distinguish between two categories of MLBlock:
+`MLElement.hasMutableChildren()` uses `blockBehavior` to distinguish between two categories of MLBlock:
 
-- **Blocks WITH `conditionalType`** (e.g., `'if'`, `'each'`, `'switch:case'`): Skipped (`continue`) — these are handled by `conditionalChildNodes()` which enumerates all possible patterns
-- **Blocks WITHOUT `conditionalType`** (`null`): Return `true` immediately — these represent expression outputs like `{value}` or other non-conditional template constructs whose content cannot be statically determined
+- **Blocks WITH `blockBehavior`** (e.g., type `'if'`, `'each'`, `'switch:case'`): Skipped (`continue`) — these are handled by `conditionalChildNodes()` which enumerates all possible patterns
+- **Blocks WITHOUT `blockBehavior`** (`null`): Return `true` immediately — these represent expression outputs like `{value}` or other non-conditional template constructs whose content cannot be statically determined
 
 ```typescript
 for (const child of this.getPureChildNodes()) {
   if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-    if (child.conditionalType) {
+    if (child.blockBehavior) {
       continue; // Has conditional semantics → handled elsewhere
     }
     return true; // No conditional semantics → truly mutable
@@ -230,7 +230,7 @@ MLBlock participates at multiple levels of the linting pipeline:
 
 Template engine parsers (Svelte, Nunjucks, EJS, Pug, etc.) produce `MLASTPreprocessorSpecificBlock` AST nodes. Each parser is responsible for:
 
-- Setting `conditionalType` appropriately (e.g., Svelte `{#if}` → `'if'`, `{#each}` → `'each'`)
+- Setting `blockBehavior` appropriately (e.g., Svelte `{#if}` → `{ type: 'if' }`, `{#each}` → `{ type: 'each' }`)
 - Nesting child AST nodes within the block
 - Setting `isFragment` when the block should act as a fragment container
 

@@ -103,7 +103,7 @@ Generates all possible child node combinations from template engine conditional 
 #### Algorithm
 
 1. Walk `childNodes` sequentially
-2. When an `MLBlock` is encountered, determine the branch `mode` from its `conditionalType`:
+2. When an `MLBlock` is encountered, determine the branch `mode` from its `blockBehavior?.type`:
    - `'if'` or `'if:elseif'` → mode `'if'`
    - `'each'` → mode `'each'`
    - `'switch:case'` → mode `'switch'`
@@ -168,7 +168,7 @@ function processNode(node: MLNode<any, any>) {
     console.log(node.isWhitespace());
   } else if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
     // node is narrowed to MLBlock<any, any>
-    console.log(node.conditionalType);
+    console.log(node.blockBehavior?.type);
   }
 }
 ```

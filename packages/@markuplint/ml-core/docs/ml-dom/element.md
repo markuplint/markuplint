@@ -110,7 +110,7 @@ For comprehensive documentation on the pretender system's architecture, initiali
 
 Returns `true` if the element's children are non-deterministic. Iterates `getPureChildNodes()`:
 
-- An `MLBlock` child exists **without** a `conditionalType` (i.e., `conditionalType` is `null` -- blocks with recognized conditional types like `'if'`, `'each'` are skipped because they are handled by `conditionalChildNodes()`)
+- An `MLBlock` child exists **without** a `blockBehavior` (i.e., `blockBehavior` is `null` -- blocks with recognized block behavior types like `'if'`, `'each'` are skipped because they are handled by `conditionalChildNodes()`)
 - A `<slot>` child element exists (content is injected at runtime)
 - If `attr` is `true`: any child element has `hasMutableAttributes() === true`
 - Recursively checks `hasMutableChildren()` on child elements
@@ -139,10 +139,9 @@ Elements with `isOmitted === true` were implicitly inserted by the parser (e.g.,
 
 ## Close Tag
 
-| Property             | Type                        | Description                                                                                      |
-| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
-| `closeTag`           | `MLElementCloseTag \| null` | Paired close tag. `null` for void elements, self-closing elements, or when `endTag === 'never'`. |
-| `selfClosingSolidus` | `MLToken \| null`           | The `/` token in `<br />`. `null` if not self-closing.                                           |
+| Property   | Type                        | Description                                                                                      |
+| ---------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
+| `closeTag` | `MLElementCloseTag \| null` | Paired close tag. `null` for void elements, self-closing elements, or when `endTag === 'never'`. |
 
 ## `toString(fixed?)`
 
@@ -162,15 +161,16 @@ Fixed:    <div class="foo" >
 
 ## Other Properties
 
-| Property           | Type             | Description                                   |
-| ------------------ | ---------------- | --------------------------------------------- |
-| `namespaceURI`     | `NamespaceURI`   | Element namespace (HTML, SVG, MathML)         |
-| `isForeignElement` | `boolean`        | `true` for SVG/MathML elements                |
-| `elementType`      | `ElementType`    | `'html'` \| `'web-component'` \| `'authored'` |
-| `isOmitted`        | `boolean`        | `true` for implicitly inserted elements       |
-| `classList`        | `MLDomTokenList` | CSS class list from `class` attribute         |
-| `className`        | `string`         | Class attribute value                         |
-| `id`               | `string`         | ID attribute value (empty string if absent)   |
-| `hasSpreadAttr`    | `boolean`        | Whether element has spread attributes         |
-| `tagOpenChar`      | `string`         | Opening tag delimiter (e.g., `<` or `<%`)     |
-| `tagCloseChar`     | `string`         | Closing tag delimiter (e.g., `>` or `%>`)     |
+| Property           | Type                         | Description                                   |
+| ------------------ | ---------------------------- | --------------------------------------------- |
+| `namespaceURI`     | `NamespaceURI`               | Element namespace (HTML, SVG, MathML)         |
+| `isForeignElement` | `boolean`                    | `true` for SVG/MathML elements                |
+| `elementType`      | `ElementType`                | `'html'` \| `'web-component'` \| `'authored'` |
+| `isOmitted`        | `boolean`                    | `true` for implicitly inserted elements       |
+| `blockBehavior`    | `MLASTBlockBehavior \| null` | Block behavior from the AST, if any           |
+| `classList`        | `MLDomTokenList`             | CSS class list from `class` attribute         |
+| `className`        | `string`                     | Class attribute value                         |
+| `id`               | `string`                     | ID attribute value (empty string if absent)   |
+| `hasSpreadAttr`    | `boolean`                    | Whether element has spread attributes         |
+| `tagOpenChar`      | `string`                     | Opening tag delimiter (e.g., `<` or `<%`)     |
+| `tagCloseChar`     | `string`                     | Closing tag delimiter (e.g., `>` or `%>`)     |

@@ -206,5 +206,5 @@ Changes to `@markuplint/ml-core` can affect:
 1. Compare `document.debugMap()` output with expected structure
 2. Check the parser output: parse the same source with the parser directly and inspect the AST
 3. Verify ghost elements (implicit HTML/head/body) are handled correctly
-4. For template engines, check that `MLBlock` nodes with `conditionalType` wrap the expected children
+4. For template engines, check that `MLBlock` nodes with `blockBehavior` wrap the expected children
 5. Use `document.nodeList` to inspect the flat node list and verify parent-child relationships

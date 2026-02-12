@@ -206,5 +206,5 @@ pretender は `MLDocument` コンストラクタ（`src/ml-dom/node/document.ts`
 1. `document.debugMap()` の出力を期待される構造と比較
 2. パーサー出力を確認：同じソースをパーサーで直接パースして AST を検査
 3. ゴースト要素（暗黙の HTML/head/body）が正しく処理されているか確認
-4. テンプレートエンジンの場合、`conditionalType` 付きの `MLBlock` ノードが期待される子をラップしているか確認
+4. テンプレートエンジンの場合、`blockBehavior` 付きの `MLBlock` ノードが期待される子をラップしているか確認
 5. `document.nodeList` でフラットノードリストを検査し、親子関係を確認
