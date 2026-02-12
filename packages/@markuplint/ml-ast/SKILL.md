@@ -102,7 +102,6 @@ Modify the `MLParser` interface. Follow recipe #5 in `docs/maintenance.md`.
 
 1. Read `src/types.ts` and find `MLParser`
 2. Make changes (prefer adding optional fields for backward compatibility)
-3. Update `MLMarkupLanguageParser` (deprecated) if needed for consistency
 
 ### Step 2: Update all parsers
 

@@ -149,7 +149,6 @@ When changing the parser interface:
 2. **Consider backward compatibility**:
    - Adding optional fields is safe
    - Adding required fields or changing signatures is a breaking change
-   - Update `MLMarkupLanguageParser` (deprecated) if needed for consistency
 
 3. **Update all parser implementations**:
    - `@markuplint/html-parser`

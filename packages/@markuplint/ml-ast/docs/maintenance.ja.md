@@ -116,22 +116,21 @@ yarn build --scope @markuplint/ml-ast
 
 5. **ビルドして検証**
 
-### 4. `PreprocessorSpecificBlockConditionalType` の値追加
+### 4. `MLASTBlockBehaviorType` の値追加
 
-プリプロセッサブロックの新しい conditional type 値を追加する場合：
+プリプロセッサブロックの新しいブロック動作種別を追加する場合：
 
-1. **`src/types.ts` の `MLASTPreprocessorSpecificBlockConditionalType` に値を追加**：
+1. **`src/types.ts` の `MLASTBlockBehaviorType` に値を追加**：
 
    ```typescript
-   export type MLASTPreprocessorSpecificBlockConditionalType =
+   export type MLASTBlockBehaviorType =
      | 'if'
      | 'if:elseif'
      // ... 既存の値
-     | 'newvalue' // ここに追加
-     | null;
+     | 'newvalue'; // ここに追加
    ```
 
-2. **この conditional type でブロックを生成するパーサーを更新**
+2. **この動作種別で `blockBehavior` を設定するパーサーを更新**
 
 3. **新しい値が DOM 作成時に特別な処理を必要とする場合は `ml-core` を更新**
 
@@ -149,7 +148,6 @@ yarn build --scope @markuplint/ml-ast
 2. **後方互換性を考慮**：
    - オプションフィールドの追加は安全
    - 必須フィールドの追加やシグネチャの変更は破壊的変更
-   - 一貫性のため必要に応じて `MLMarkupLanguageParser`（非推奨）も更新
 
 3. **すべてのパーサー実装を更新**：
    - `@markuplint/html-parser`

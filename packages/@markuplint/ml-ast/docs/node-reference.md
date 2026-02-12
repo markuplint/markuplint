@@ -61,18 +61,17 @@ The mapping is performed by `createNode()` in `ml-core`:
 
 The foundational interface for all positional information. Every AST node and sub-token extends this.
 
-| Field         | Type     | Description                                    |
-| ------------- | -------- | ---------------------------------------------- |
-| `uuid`        | `string` | Unique identifier for this token instance      |
-| `raw`         | `string` | The original raw source text                   |
-| `startOffset` | `number` | Zero-based character offset of the token start |
-| `endOffset`   | `number` | Zero-based character offset of the token end   |
-| `startLine`   | `number` | One-based line number where the token starts   |
-| `endLine`     | `number` | One-based line number where the token ends     |
-| `startCol`    | `number` | One-based column number where the token starts |
-| `endCol`      | `number` | One-based column number where the token ends   |
+| Field    | Type     | Description                                    |
+| -------- | -------- | ---------------------------------------------- |
+| `uuid`   | `string` | Unique identifier for this token instance      |
+| `raw`    | `string` | The original raw source text                   |
+| `offset` | `number` | Zero-based character offset of the token start |
+| `line`   | `number` | One-based line number where the token starts   |
+| `col`    | `number` | One-based column number where the token starts |
 
-**Coordinate system:** Offsets are zero-based (counting from 0), while lines and columns are one-based (counting from 1). This matches the conventions used by most text editors and error reporters.
+End positions can be derived: `endOffset = offset + raw.length`. For `endLine` and `endCol`, use the helper functions from `@markuplint/parser-utils`.
+
+**Coordinate system:** `offset` is zero-based (counting from 0), while `line` and `col` are one-based (counting from 1).
 
 ### MLASTAbstractNode
 
@@ -125,21 +124,21 @@ Produces a node with `name: "html"`, `publicId: ""`, `systemId: ""`.
 
 **Role:** Represents an opening element tag (e.g., `<div class="foo">`). This is the primary element representation in the AST and is the most feature-rich node type. It owns child nodes, attributes, and maintains a reference to its matching closing tag.
 
-| Field                | Type                           | Description                                                                 |
-| -------------------- | ------------------------------ | --------------------------------------------------------------------------- |
-| `type`               | `'starttag'`                   | Discriminant tag                                                            |
-| `depth`              | `number`                       | Nesting depth in the document tree                                          |
-| `namespace`          | `string`                       | Namespace URI (e.g., `"http://www.w3.org/1999/xhtml"`)                      |
-| `elementType`        | `ElementType`                  | Whether the element is `'html'`, `'web-component'`, or `'authored'`         |
-| `isFragment`         | `boolean`                      | Whether the element acts as a fragment (e.g., React `<>`, Vue `<template>`) |
-| `attributes`         | `readonly MLASTAttr[]`         | Attributes on this element                                                  |
-| `hasSpreadAttr`      | `boolean \| undefined`         | Whether the element has one or more spread attributes                       |
-| `childNodes`         | `readonly MLASTChildNode[]`    | Direct child nodes of this element                                          |
-| `pairNode`           | `MLASTElementCloseTag \| null` | The matching closing tag, or `null` for void/self-closing elements          |
-| `selfClosingSolidus` | `MLASTToken \| undefined`      | The self-closing solidus token (`/`), if present (e.g., `<br />`)           |
-| `tagOpenChar`        | `string`                       | The characters that open this tag (usually `"<"`)                           |
-| `tagCloseChar`       | `string`                       | The characters that close this tag (usually `">"`)                          |
-| `isGhost`            | `boolean`                      | Whether this is a ghost node (omitted tag inferred by the parser)           |
+| Field           | Type                           | Description                                                                 |
+| --------------- | ------------------------------ | --------------------------------------------------------------------------- |
+| `type`          | `'starttag'`                   | Discriminant tag                                                            |
+| `depth`         | `number`                       | Nesting depth in the document tree                                          |
+| `namespace`     | `string`                       | Namespace URI (e.g., `"http://www.w3.org/1999/xhtml"`)                      |
+| `elementType`   | `ElementType`                  | Whether the element is `'html'`, `'web-component'`, or `'authored'`         |
+| `isFragment`    | `boolean`                      | Whether the element acts as a fragment (e.g., React `<>`, Vue `<template>`) |
+| `attributes`    | `readonly MLASTAttr[]`         | Attributes on this element                                                  |
+| `hasSpreadAttr` | `boolean \| undefined`         | Whether the element has one or more spread attributes                       |
+| `childNodes`    | `readonly MLASTChildNode[]`    | Direct child nodes of this element                                          |
+| `blockBehavior` | `MLASTBlockBehavior \| null`   | Block behavior associated with this element, if any                         |
+| `pairNode`      | `MLASTElementCloseTag \| null` | The matching closing tag, or `null` for void/self-closing elements          |
+| `tagOpenChar`   | `string`                       | The characters that open this tag (usually `"<"`)                           |
+| `tagCloseChar`  | `string`                       | The characters that close this tag (usually `">"`)                          |
+| `isGhost`       | `boolean`                      | Whether this is a ghost node (omitted tag inferred by the parser)           |
 
 ### Element Type Classification
 
@@ -256,34 +255,37 @@ The text `Hello, world!` is represented as an `MLASTText` node with `raw: "Hello
 
 **Role:** Represents control-flow and iteration constructs from template engines and frameworks. These are syntax constructs that do not exist in standard HTML but are used by preprocessors like Svelte, Vue, EJS, ERB, and others.
 
-| Field             | Type                                            | Description                                           |
-| ----------------- | ----------------------------------------------- | ----------------------------------------------------- |
-| `type`            | `'psblock'`                                     | Discriminant tag                                      |
-| `conditionalType` | `MLASTPreprocessorSpecificBlockConditionalType` | The kind of conditional or iteration construct        |
-| `depth`           | `number`                                        | Nesting depth in the document tree                    |
-| `nodeName`        | `string`                                        | The block's name as determined by the parser          |
-| `isFragment`      | `boolean`                                       | Whether this block acts as a transparent fragment     |
-| `childNodes`      | `readonly MLASTChildNode[]`                     | Direct child nodes within this block                  |
-| `isBogus`         | `boolean`                                       | Whether this block is bogus (unparsable or malformed) |
+| Field           | Type                         | Description                                                  |
+| --------------- | ---------------------------- | ------------------------------------------------------------ |
+| `type`          | `'psblock'`                  | Discriminant tag                                             |
+| `blockBehavior` | `MLASTBlockBehavior \| null` | Block behavior describing the control-flow construct, if any |
+| `depth`         | `number`                     | Nesting depth in the document tree                           |
+| `nodeName`      | `string`                     | The block's name as determined by the parser                 |
+| `isFragment`    | `boolean`                    | Whether this block acts as a transparent fragment            |
+| `childNodes`    | `readonly MLASTChildNode[]`  | Direct child nodes within this block                         |
+| `isBogus`       | `boolean`                    | Whether this block is bogus (unparsable or malformed)        |
 
-### Conditional Type Values
+### Block Behavior Types
 
-The `conditionalType` field indicates the semantic role of the block:
+The `blockBehavior` field is an `MLASTBlockBehavior` object (or `null` for blocks with no control-flow semantic). When present, `blockBehavior.type` indicates the semantic role of the block, and `blockBehavior.expression` contains the source expression that drives the construct:
 
-| Value              | Description                        | Example (Svelte)        | Example (EJS/ERB)   |
-| ------------------ | ---------------------------------- | ----------------------- | ------------------- |
-| `'if'`             | Conditional branch (opening)       | `{#if condition}`       | `<% if (x) { %>`    |
-| `'if:elseif'`      | Alternative conditional branch     | `{:else if condition}`  | `<% } else if { %>` |
-| `'if:else'`        | Default (else) branch              | `{:else}`               | `<% } else { %>`    |
-| `'switch:case'`    | Switch case branch                 | --                      | --                  |
-| `'switch:default'` | Switch default branch              | --                      | --                  |
-| `'each'`           | Iteration (loop) block             | `{#each items as item}` | `<% for (...) { %>` |
-| `'each:empty'`     | Empty state for an iteration block | `{:else}` (in `#each`)  | --                  |
-| `'await'`          | Asynchronous block (pending state) | `{#await promise}`      | --                  |
-| `'await:then'`     | Resolved state of an async block   | `{:then value}`         | --                  |
-| `'await:catch'`    | Rejected state of an async block   | `{:catch error}`        | --                  |
-| `'end'`            | Closing block                      | `{/if}`, `{/each}`      | `<% } %>`           |
-| `null`             | No specific conditional semantic   | --                      | `<%= expr %>`       |
+| `blockBehavior.type` | Description                        | Example (Svelte)        | Example (EJS/ERB)   |
+| -------------------- | ---------------------------------- | ----------------------- | ------------------- |
+| `'if'`               | Conditional branch (opening)       | `{#if condition}`       | `<% if (x) { %>`    |
+| `'if:elseif'`        | Alternative conditional branch     | `{:else if condition}`  | `<% } else if { %>` |
+| `'if:else'`          | Default (else) branch              | `{:else}`               | `<% } else { %>`    |
+| `'switch:case'`      | Switch case branch                 | --                      | --                  |
+| `'switch:default'`   | Switch default branch              | --                      | --                  |
+| `'each'`             | Iteration (loop) block             | `{#each items as item}` | `<% for (...) { %>` |
+| `'each:empty'`       | Empty state for an iteration block | `{:else}` (in `#each`)  | --                  |
+| `'await'`            | Asynchronous block (pending state) | `{#await promise}`      | --                  |
+| `'await:then'`       | Resolved state of an async block   | `{:then value}`         | --                  |
+| `'await:catch'`      | Rejected state of an async block   | `{:catch error}`        | --                  |
+| `'end'`              | Closing block                      | `{/if}`, `{/each}`      | `<% } %>`           |
+
+When `blockBehavior` is `null`, the block has no specific control-flow semantic (e.g., `<%= expr %>` in EJS is a pure expression output).
+
+The `expression` field in `MLASTBlockBehavior` contains the raw source expression associated with the block (e.g., `'{#if loggedIn}'` for a Svelte if-block).
 
 ### Framework-Specific Examples
 
@@ -299,9 +301,9 @@ The `conditionalType` field indicates the semantic role of the block:
 
 Produces three `psblock` nodes:
 
-1. `conditionalType: 'if'` for `{#if loggedIn}`
-2. `conditionalType: 'if:else'` for `{:else}`
-3. `conditionalType: 'end'` for `{/if}`
+1. `blockBehavior: { type: 'if', expression: '{#if loggedIn}' }` for `{#if loggedIn}`
+2. `blockBehavior: { type: 'if:else', expression: '{:else}' }` for `{:else}`
+3. `blockBehavior: { type: 'end', expression: '{/if}' }` for `{/if}`
 
 **Vue (v-if directive is handled differently -- via element attributes, not psblock).**
 
@@ -315,9 +317,9 @@ Produces three `psblock` nodes:
 
 Produces:
 
-1. `conditionalType: 'if'` for `<% if (user) { %>`
-2. `conditionalType: 'end'` for `<% } %>`
-3. `conditionalType: null` for `<%= user.name %>` (expression output, no conditional semantic)
+1. `blockBehavior: { type: 'if', expression: '<% if (user) { %>' }` for `<% if (user) { %>`
+2. `blockBehavior: { type: 'end', expression: '<% } %>' }` for `<% } %>`
+3. `blockBehavior: null` for `<%= user.name %>` (expression output, no control-flow semantic)
 
 ## MLASTInvalid
 
@@ -412,7 +414,7 @@ These fields are set by framework-specific parsers:
 | `type`     | `'spread'`  | Discriminant tag   |
 | `nodeName` | `'#spread'` | Always `'#spread'` |
 
-Note that `MLASTSpreadAttr` extends `MLASTToken` directly (not `MLASTAbstractNode`), so it has positional information (`uuid`, `raw`, `startOffset`, etc.) but no `parentNode` or `depth`.
+Note that `MLASTSpreadAttr` extends `MLASTToken` directly (not `MLASTAbstractNode`), so it has positional information (`uuid`, `raw`, `offset`, etc.) but no `parentNode` or `depth`.
 
 ## Union Types Reference
 
@@ -449,7 +451,7 @@ function processChild(node: MLASTChildNode) {
       console.log(`Comment (bogus: ${node.isBogus})`);
       break;
     case 'psblock':
-      console.log(`Block: ${node.nodeName}, conditional: ${node.conditionalType}`);
+      console.log(`Block: ${node.nodeName}, behavior: ${node.blockBehavior?.type ?? 'none'}`);
       break;
     case 'invalid':
       console.log(`Invalid: kind=${node.kind}`);
