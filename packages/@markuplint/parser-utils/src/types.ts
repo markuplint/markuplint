@@ -45,9 +45,9 @@ export type Tokenized<N extends {} = {}, State extends unknown = null> = {
  */
 export type Token = {
 	readonly raw: string;
-	readonly startOffset: number;
-	readonly startLine: number;
-	readonly startCol: number;
+	readonly offset: number;
+	readonly line: number;
+	readonly col: number;
 };
 
 /**

@@ -53,12 +53,9 @@ classDiagram
         <<interface>>
         +uuid: string
         +raw: string
-        +startOffset: number
-        +endOffset: number
-        +startLine: number
-        +endLine: number
-        +startCol: number
-        +endCol: number
+        +offset: number
+        +line: number
+        +col: number
     }
 
     class MLASTAbstractNode {
@@ -85,6 +82,7 @@ classDiagram
         +elementType: ElementType
         +attributes: MLASTAttr[]
         +childNodes: MLASTChildNode[]
+        +blockBehavior: MLASTBlockBehavior | null
         +pairNode: MLASTElementCloseTag | null
         +isGhost: boolean
         +isFragment: boolean
@@ -114,7 +112,7 @@ classDiagram
     class MLASTPreprocessorSpecificBlock {
         <<interface>>
         +type: "psblock"
-        +conditionalType: ...ConditionalType
+        +blockBehavior: MLASTBlockBehavior | null
         +depth: number
         +childNodes: MLASTChildNode[]
         +isBogus: boolean
@@ -242,12 +240,10 @@ This enables lint rules to validate whitespace around `=`, quoting style, and at
 
 ## Parser Interface
 
-| Type                     | Description                                            |
-| ------------------------ | ------------------------------------------------------ |
-| `MLParser`               | Interface for a markuplint-compatible parser           |
-| `MLParserModule`         | Module wrapper that exports a parser instance          |
-| `MLMarkupLanguageParser` | Deprecated (v5 removal). Use `MLParser` instead        |
-| `Parse`                  | Deprecated type alias for the parse function signature |
+| Type             | Description                                   |
+| ---------------- | --------------------------------------------- |
+| `MLParser`       | Interface for a markuplint-compatible parser  |
+| `MLParserModule` | Module wrapper that exports a parser instance |
 
 `MLParser` requires a `parse(sourceCode, options?)` method that returns an `MLASTDocument`. Optional fields include `endTag` (end tag handling strategy), `booleanish` (boolean attribute detection), and `tagNameCaseSensitive` (for XHTML/JSX).
 

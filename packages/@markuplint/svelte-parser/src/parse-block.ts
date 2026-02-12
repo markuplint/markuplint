@@ -35,7 +35,7 @@ export function parseBlock(
 	/**
 	 * `{/xxx}`
 	 */
-	const closeToken = parser.sliceFragment(token.startOffset + eachCloseStartIndex, originBlockNode.end);
+	const closeToken = parser.sliceFragment(token.offset + eachCloseStartIndex, originBlockNode.end);
 
 	const fragment =
 		originBlockNode.type === 'IfBlock'
@@ -60,9 +60,9 @@ export function parseBlock(
 	 */
 	let openToken: Token;
 	if (fragStart != null && fragEnd != null) {
-		openToken = parser.sliceFragment(token.startOffset, fragStart);
+		openToken = parser.sliceFragment(token.offset, fragStart);
 	} else {
-		openToken = parser.sliceFragment(token.startOffset, eachCloseStartIndex);
+		openToken = parser.sliceFragment(token.offset, eachCloseStartIndex);
 	}
 
 	return {

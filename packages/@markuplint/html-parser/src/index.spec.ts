@@ -128,7 +128,7 @@ describe('parser', () => {
 		expect(doc.nodeList[2]?.nodeName).toBe('head');
 		expect(doc.nodeList[3]?.nodeName).toBe('body');
 		expect(doc.nodeList[4]?.type).toBe('text');
-		expect(doc.nodeList[4]?.startCol).toBe(16);
+		expect(doc.nodeList[4]?.col).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
 	});
 
@@ -140,7 +140,7 @@ describe('parser', () => {
 		expect(doc.nodeList[3]?.nodeName).toBe('body');
 		expect(doc.nodeList[4]?.type).toBe('text');
 		expect(doc.nodeList[4]?.raw).toBe(' text');
-		expect(doc.nodeList[4]?.startCol).toBe(16);
+		expect(doc.nodeList[4]?.col).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
 	});
 
@@ -152,7 +152,7 @@ describe('parser', () => {
 		expect(doc.nodeList[3]?.nodeName).toBe('body');
 		expect(doc.nodeList[4]?.type).toBe('text');
 		expect(doc.nodeList[4]?.raw).toBe('\ntext');
-		expect(doc.nodeList[4]?.startCol).toBe(16);
+		expect(doc.nodeList[4]?.col).toBe(16);
 		expect(doc.nodeList.length).toBe(5);
 	});
 
@@ -166,7 +166,7 @@ describe('parser', () => {
 		expect(doc.nodeList[5]?.nodeName).toBe('p');
 		expect(doc.nodeList[6]?.type).toBe('text');
 		expect(doc.nodeList[6]?.raw).toBe('text');
-		expect(doc.nodeList[6]?.startCol).toBe(4);
+		expect(doc.nodeList[6]?.col).toBe(4);
 		expect(doc.nodeList.length).toBe(7);
 	});
 
@@ -179,7 +179,7 @@ describe('parser', () => {
 		expect(doc.nodeList[4]?.nodeName).toBe('p');
 		expect(doc.nodeList[5]?.type).toBe('text');
 		expect(doc.nodeList[5]?.raw).toBe('\ntext');
-		expect(doc.nodeList[5]?.startCol).toBe(19);
+		expect(doc.nodeList[5]?.col).toBe(19);
 		expect(doc.nodeList.length).toBe(6);
 	});
 
@@ -192,7 +192,7 @@ describe('parser', () => {
 		expect(doc.nodeList[4]?.nodeName).toBe('body');
 		expect(doc.nodeList[5]?.type).toBe('text');
 		expect(doc.nodeList[5]?.raw).toBe('text');
-		expect(doc.nodeList[5]?.startCol).toBe(7);
+		expect(doc.nodeList[5]?.col).toBe(7);
 		expect(doc.nodeList.length).toBe(6);
 	});
 
@@ -204,7 +204,7 @@ describe('parser', () => {
 		expect(doc.nodeList[3]?.nodeName).toBe('body');
 		expect(doc.nodeList[4]?.type).toBe('text');
 		expect(doc.nodeList[4]?.raw).toBe('\ntext');
-		expect(doc.nodeList[4]?.startCol).toBe(22);
+		expect(doc.nodeList[4]?.col).toBe(22);
 		expect(doc.nodeList.length).toBe(5);
 	});
 
@@ -989,12 +989,9 @@ describe('parser', () => {
 		]);
 
 		const node: MLASTElement = doc.nodeList[2] as MLASTElement;
-		expect(node.attributes[0]?.startOffset).toBe(30);
-		expect(node.attributes[0]?.endOffset).toBe(43);
-		expect(node.attributes[0]?.startLine).toBe(3);
-		expect(node.attributes[0]?.endLine).toBe(3);
-		expect(node.attributes[0]?.startCol).toBe(9);
-		expect(node.attributes[0]?.endCol).toBe(22);
+		expect(node.attributes[0]?.offset).toBe(30);
+		expect(node.attributes[0]?.line).toBe(3);
+		expect(node.attributes[0]?.col).toBe(9);
 	});
 
 	test('Offset 2', () => {

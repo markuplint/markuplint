@@ -110,7 +110,7 @@ Pretender システムのアーキテクチャ、初期化フロー、プロパ�
 
 要素の子が非決定的な場合に `true` を返します。`getPureChildNodes()` を反復します：
 
-- `conditionalType` を**持たない** `MLBlock` の子が存在する（つまり `conditionalType` が `null` -- `'if'` や `'each'` のような認識された条件分岐型を持つブロックは `conditionalChildNodes()` で処理されるためスキップされる）
+- `blockBehavior` を**持たない** `MLBlock` の子が存在する（つまり `blockBehavior` が `null` -- `'if'` や `'each'` のような認識されたブロック動作型を持つブロックは `conditionalChildNodes()` で処理されるためスキップされる）
 - `<slot>` の子要素が存在する（コンテンツは実行時に注入される）
 - `attr` が `true` の場合：子要素のいずれかが `hasMutableAttributes() === true` を持つ
 - 子要素に対して再帰的に `hasMutableChildren()` をチェックする
@@ -139,10 +139,9 @@ Pretender システムのアーキテクチャ、初期化フロー、プロパ�
 
 ## 閉じタグ
 
-| プロパティ           | 型                          | 説明                                                                                 |
-| -------------------- | --------------------------- | ------------------------------------------------------------------------------------ |
-| `closeTag`           | `MLElementCloseTag \| null` | ペアの閉じタグ。void 要素、自己閉じ要素、または `endTag === 'never'` の場合は `null` |
-| `selfClosingSolidus` | `MLToken \| null`           | `<br />` の `/` トークン。自己閉じでない場合は `null`                                |
+| プロパティ | 型                          | 説明                                                                                 |
+| ---------- | --------------------------- | ------------------------------------------------------------------------------------ |
+| `closeTag` | `MLElementCloseTag \| null` | ペアの閉じタグ。void 要素、自己閉じ要素、または `endTag === 'never'` の場合は `null` |
 
 ## `toString(fixed?)`
 
@@ -162,15 +161,16 @@ Fixed:    <div class="foo" >
 
 ## その他のプロパティ
 
-| プロパティ         | 型               | 説明                                          |
-| ------------------ | ---------------- | --------------------------------------------- |
-| `namespaceURI`     | `NamespaceURI`   | 要素の名前空間（HTML, SVG, MathML）           |
-| `isForeignElement` | `boolean`        | SVG/MathML 要素の場合 `true`                  |
-| `elementType`      | `ElementType`    | `'html'` \| `'web-component'` \| `'authored'` |
-| `isOmitted`        | `boolean`        | 暗黙的に挿入された要素の場合 `true`           |
-| `classList`        | `MLDomTokenList` | `class` 属性からの CSS クラスリスト           |
-| `className`        | `string`         | class 属性値                                  |
-| `id`               | `string`         | ID 属性値（存在しない場合は空文字列）         |
-| `hasSpreadAttr`    | `boolean`        | 要素にスプレッド属性があるかどうか            |
-| `tagOpenChar`      | `string`         | 開始タグ区切り文字（例: `<` または `<%`）     |
-| `tagCloseChar`     | `string`         | 閉じタグ区切り文字（例: `>` または `%>`）     |
+| プロパティ         | 型                           | 説明                                          |
+| ------------------ | ---------------------------- | --------------------------------------------- |
+| `namespaceURI`     | `NamespaceURI`               | 要素の名前空間（HTML, SVG, MathML）           |
+| `isForeignElement` | `boolean`                    | SVG/MathML 要素の場合 `true`                  |
+| `elementType`      | `ElementType`                | `'html'` \| `'web-component'` \| `'authored'` |
+| `isOmitted`        | `boolean`                    | 暗黙的に挿入された要素の場合 `true`           |
+| `blockBehavior`    | `MLASTBlockBehavior \| null` | AST からのブロック動作（存在する場合）        |
+| `classList`        | `MLDomTokenList`             | `class` 属性からの CSS クラスリスト           |
+| `className`        | `string`                     | class 属性値                                  |
+| `id`               | `string`                     | ID 属性値（存在しない場合は空文字列）         |
+| `hasSpreadAttr`    | `boolean`                    | 要素にスプレッド属性があるかどうか            |
+| `tagOpenChar`      | `string`                     | 開始タグ区切り文字（例: `<` または `<%`）     |
+| `tagCloseChar`     | `string`                     | 閉じタグ区切り文字（例: `>` または `%>`）     |

@@ -180,7 +180,7 @@ export abstract class MLNode<
 	#prevToken: MLNode<T, O> | null | undefined;
 
 	/**
-	 * Cached `conditionalChildNodes` mothod
+	 * Cached `conditionalChildNodes` method
 	 */
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 
@@ -668,7 +668,7 @@ export abstract class MLNode<
 
 		for (const child of this.childNodes) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				switch (child.conditionalType) {
+				switch (child.blockBehavior?.type) {
 					case 'if':
 					case 'if:elseif': {
 						mode = 'if';

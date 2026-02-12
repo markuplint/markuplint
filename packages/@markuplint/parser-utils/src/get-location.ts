@@ -15,6 +15,13 @@ export function getCol(rawCodeFragment: string, startOffset: number) {
 	return (lines.at(-1) ?? '').length + 1;
 }
 
+/**
+ * Computes the line and column of a position within a code fragment.
+ *
+ * @param rawCodeFragment - The full raw source text
+ * @param startOffset - The zero-based byte offset to compute the position of
+ * @returns An object containing one-based `line` and `column`
+ */
 export function getPosition(rawCodeFragment: string, startOffset: number) {
 	const lines = rawCodeFragment.slice(0, startOffset).split(LINE_BREAK);
 	const line = lines.length;
@@ -33,6 +40,33 @@ export function getEndCol(rawCodeFragment: string, startCol: number) {
 	return lineCount > 1 ? lastLine.length + 1 : startCol + rawCodeFragment.length;
 }
 
+/**
+ * Computes the end position of a code fragment given its start position.
+ *
+ * @param rawCodeFragment - The raw source text of the fragment
+ * @param startOffset - The zero-based byte offset where the fragment starts
+ * @param startLine - The one-based line number where the fragment starts
+ * @param startCol - The one-based column number where the fragment starts
+ * @returns An object containing `endOffset`, `endLine`, and `endCol`
+ */
+export function getEndPosition(rawCodeFragment: string, startOffset: number, startLine: number, startCol: number) {
+	return {
+		endOffset: startOffset + rawCodeFragment.length,
+		endLine: getEndLine(rawCodeFragment, startLine),
+		endCol: getEndCol(rawCodeFragment, startCol),
+	};
+}
+
+/**
+ * Converts line/column ranges to byte offsets within a code string.
+ *
+ * @param rawCode - The full raw source text
+ * @param startLine - The one-based start line number
+ * @param startCol - The one-based start column number
+ * @param endLine - The one-based end line number
+ * @param endCol - The one-based end column number
+ * @returns An object containing zero-based `offset` and `endOffset`
+ */
 export function getOffsetsFromCode(
 	rawCode: string,
 	startLine: number,

@@ -61,16 +61,15 @@ function handle(node: MLASTNode) {
 
 すべての位置情報の基盤となるインターフェースです。すべての AST ノードとサブトークンがこれを継承します。
 
-| フィールド    | 型       | 説明                                       |
-| ------------- | -------- | ------------------------------------------ |
-| `uuid`        | `string` | このトークンインスタンスの一意識別子       |
-| `raw`         | `string` | 元のソーステキスト                         |
-| `startOffset` | `number` | トークン開始位置のゼロベース文字オフセット |
-| `endOffset`   | `number` | トークン終了位置のゼロベース文字オフセット |
-| `startLine`   | `number` | トークン開始位置の1ベース行番号            |
-| `endLine`     | `number` | トークン終了位置の1ベース行番号            |
-| `startCol`    | `number` | トークン開始位置の1ベース列番号            |
-| `endCol`      | `number` | トークン終了位置の1ベース列番号            |
+| フィールド | 型       | 説明                                       |
+| ---------- | -------- | ------------------------------------------ |
+| `uuid`     | `string` | このトークンインスタンスの一意識別子       |
+| `raw`      | `string` | 元のソーステキスト                         |
+| `offset`   | `number` | トークン開始位置のゼロベース文字オフセット |
+| `line`     | `number` | トークン開始位置の1ベース行番号            |
+| `col`      | `number` | トークン開始位置の1ベース列番号            |
+
+**終了位置の導出：** 終了位置のプロパティはありません。終了位置は開始位置と `raw` から導出できます。ユーティリティ関数 `getEndLine()`、`getEndCol()`、`getEndPosition()`（`@markuplint/parser-utils` 提供）が利用可能です。
 
 **座標系について：** オフセットはゼロベース（0から数える）、行と列は1ベース（1から数える）です。これはほとんどのテキストエディタやエラーレポーターの慣例に一致しています。
 
@@ -125,21 +124,21 @@ function handle(node: MLASTNode) {
 
 **役割：** 開始タグ（例：`<div class="foo">`）を表します。AST における主要な要素表現であり、最も機能豊富なノード型です。子ノード、属性を所有し、対応する閉じタグへの参照を保持します。
 
-| フィールド           | 型                             | 説明                                                             |
-| -------------------- | ------------------------------ | ---------------------------------------------------------------- |
-| `type`               | `'starttag'`                   | 判別タグ                                                         |
-| `depth`              | `number`                       | ドキュメントツリーでのネストの深さ                               |
-| `namespace`          | `string`                       | 名前空間 URI（例：`"http://www.w3.org/1999/xhtml"`）             |
-| `elementType`        | `ElementType`                  | `'html'`、`'web-component'`、`'authored'` のいずれか             |
-| `isFragment`         | `boolean`                      | フラグメントとして機能するか（例：React `<>`、Vue `<template>`） |
-| `attributes`         | `readonly MLASTAttr[]`         | この要素の属性                                                   |
-| `hasSpreadAttr`      | `boolean \| undefined`         | スプレッド属性を持つかどうか                                     |
-| `childNodes`         | `readonly MLASTChildNode[]`    | この要素の直接の子ノード                                         |
-| `pairNode`           | `MLASTElementCloseTag \| null` | 対応する閉じタグ、void/自己閉じ要素の場合は `null`               |
-| `selfClosingSolidus` | `MLASTToken \| undefined`      | 自己閉じスラッシュトークン（`/`）（例：`<br />`）                |
-| `tagOpenChar`        | `string`                       | タグを開く文字（通常 `"<"`）                                     |
-| `tagCloseChar`       | `string`                       | タグを閉じる文字（通常 `">"`）                                   |
-| `isGhost`            | `boolean`                      | ゴーストノード（パーサーが推定した省略タグ）かどうか             |
+| フィールド      | 型                             | 説明                                                             |
+| --------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `type`          | `'starttag'`                   | 判別タグ                                                         |
+| `depth`         | `number`                       | ドキュメントツリーでのネストの深さ                               |
+| `namespace`     | `string`                       | 名前空間 URI（例：`"http://www.w3.org/1999/xhtml"`）             |
+| `elementType`   | `ElementType`                  | `'html'`、`'web-component'`、`'authored'` のいずれか             |
+| `isFragment`    | `boolean`                      | フラグメントとして機能するか（例：React `<>`、Vue `<template>`） |
+| `attributes`    | `readonly MLASTAttr[]`         | この要素の属性                                                   |
+| `hasSpreadAttr` | `boolean \| undefined`         | スプレッド属性を持つかどうか                                     |
+| `childNodes`    | `readonly MLASTChildNode[]`    | この要素の直接の子ノード                                         |
+| `blockBehavior` | `MLASTBlockBehavior \| null`   | この要素に関連するブロック動作（ある場合）                       |
+| `pairNode`      | `MLASTElementCloseTag \| null` | 対応する閉じタグ、void/自己閉じ要素の場合は `null`               |
+| `tagOpenChar`   | `string`                       | タグを開く文字（通常 `"<"`）                                     |
+| `tagCloseChar`  | `string`                       | タグを閉じる文字（通常 `">"`）                                   |
+| `isGhost`       | `boolean`                      | ゴーストノード（パーサーが推定した省略タグ）かどうか             |
 
 ### 要素タイプの分類
 
@@ -256,34 +255,37 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 
 **役割：** テンプレートエンジンやフレームワークの制御フロー・反復構文を表します。標準 HTML には存在しないが、Svelte、Vue、EJS、ERB などのプリプロセッサで使用される構文です。
 
-| フィールド        | 型                                              | 説明                                     |
-| ----------------- | ----------------------------------------------- | ---------------------------------------- |
-| `type`            | `'psblock'`                                     | 判別タグ                                 |
-| `conditionalType` | `MLASTPreprocessorSpecificBlockConditionalType` | 条件分岐・反復構文の種別                 |
-| `depth`           | `number`                                        | ドキュメントツリーでのネストの深さ       |
-| `nodeName`        | `string`                                        | パーサーが決定したブロック名             |
-| `isFragment`      | `boolean`                                       | 透過的なフラグメントとして機能するか     |
-| `childNodes`      | `readonly MLASTChildNode[]`                     | このブロック内の直接の子ノード           |
-| `isBogus`         | `boolean`                                       | ボーガス（パース不能・不正形式）かどうか |
+| フィールド      | 型                           | 説明                                                 |
+| --------------- | ---------------------------- | ---------------------------------------------------- |
+| `type`          | `'psblock'`                  | 判別タグ                                             |
+| `blockBehavior` | `MLASTBlockBehavior \| null` | ブロックの制御フロー構文の動作を記述する（ある場合） |
+| `depth`         | `number`                     | ドキュメントツリーでのネストの深さ                   |
+| `nodeName`      | `string`                     | パーサーが決定したブロック名                         |
+| `isFragment`    | `boolean`                    | 透過的なフラグメントとして機能するか                 |
+| `childNodes`    | `readonly MLASTChildNode[]`  | このブロック内の直接の子ノード                       |
+| `isBogus`       | `boolean`                    | ボーガス（パース不能・不正形式）かどうか             |
 
-### conditionalType の値
+### ブロック動作の種別
 
-`conditionalType` フィールドはブロックの意味的な役割を示します：
+`blockBehavior` フィールドは `MLASTBlockBehavior` オブジェクト（制御フローセマンティクスを持たないブロックの場合は `null`）です。存在する場合、`blockBehavior.type` はブロックのセマンティックな役割を示し、`blockBehavior.expression` は構文を駆動するソース式を含みます：
 
-| 値                 | 説明                         | 例（Svelte）            | 例（EJS/ERB）       |
-| ------------------ | ---------------------------- | ----------------------- | ------------------- |
-| `'if'`             | 条件分岐（開始）             | `{#if condition}`       | `<% if (x) { %>`    |
-| `'if:elseif'`      | 代替条件分岐                 | `{:else if condition}`  | `<% } else if { %>` |
-| `'if:else'`        | デフォルト（else）分岐       | `{:else}`               | `<% } else { %>`    |
-| `'switch:case'`    | switch case 分岐             | --                      | --                  |
-| `'switch:default'` | switch default 分岐          | --                      | --                  |
-| `'each'`           | 反復（ループ）ブロック       | `{#each items as item}` | `<% for (...) { %>` |
-| `'each:empty'`     | 反復ブロックの空状態         | `{:else}`（`#each` 内） | --                  |
-| `'await'`          | 非同期ブロック（保留状態）   | `{#await promise}`      | --                  |
-| `'await:then'`     | 非同期ブロックの解決状態     | `{:then value}`         | --                  |
-| `'await:catch'`    | 非同期ブロックの拒否状態     | `{:catch error}`        | --                  |
-| `'end'`            | 閉じブロック                 | `{/if}`, `{/each}`      | `<% } %>`           |
-| `null`             | 特定の条件セマンティクスなし | --                      | `<%= expr %>`       |
+| `blockBehavior.type` | 説明                       | 例（Svelte）            | 例（EJS/ERB）       |
+| -------------------- | -------------------------- | ----------------------- | ------------------- |
+| `'if'`               | 条件分岐（開始）           | `{#if condition}`       | `<% if (x) { %>`    |
+| `'if:elseif'`        | 代替条件分岐               | `{:else if condition}`  | `<% } else if { %>` |
+| `'if:else'`          | デフォルト（else）分岐     | `{:else}`               | `<% } else { %>`    |
+| `'switch:case'`      | switch case 分岐           | --                      | --                  |
+| `'switch:default'`   | switch default 分岐        | --                      | --                  |
+| `'each'`             | 反復（ループ）ブロック     | `{#each items as item}` | `<% for (...) { %>` |
+| `'each:empty'`       | 反復ブロックの空状態       | `{:else}`（`#each` 内） | --                  |
+| `'await'`            | 非同期ブロック（保留状態） | `{#await promise}`      | --                  |
+| `'await:then'`       | 非同期ブロックの解決状態   | `{:then value}`         | --                  |
+| `'await:catch'`      | 非同期ブロックの拒否状態   | `{:catch error}`        | --                  |
+| `'end'`              | 閉じブロック               | `{/if}`, `{/each}`      | `<% } %>`           |
+
+`blockBehavior` が `null` の場合、ブロックには特定の制御フローセマンティクスがありません（例：EJS の `<%= expr %>` は純粋な式出力です）。
+
+`MLASTBlockBehavior` の `expression` フィールドには、ブロックに関連するソース式が格納されます（例：Svelte の if ブロックでは `'{#if loggedIn}'`）。
 
 ### フレームワーク固有の例
 
@@ -299,9 +301,9 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 
 3つの `psblock` ノードが生成されます：
 
-1. `conditionalType: 'if'`：`{#if loggedIn}`
-2. `conditionalType: 'if:else'`：`{:else}`
-3. `conditionalType: 'end'`：`{/if}`
+1. `blockBehavior: { type: 'if', expression: '{#if loggedIn}' }`：`{#if loggedIn}`
+2. `blockBehavior: { type: 'if:else', expression: '{:else}' }`：`{:else}`
+3. `blockBehavior: { type: 'end', expression: '{/if}' }`：`{/if}`
 
 **Vue（v-if ディレクティブは異なる方法で処理されます -- psblock ではなく要素属性経由）。**
 
@@ -315,9 +317,9 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 
 生成されるノード：
 
-1. `conditionalType: 'if'`：`<% if (user) { %>`
-2. `conditionalType: 'end'`：`<% } %>`
-3. `conditionalType: null`：`<%= user.name %>`（式出力、条件セマンティクスなし）
+1. `blockBehavior: { type: 'if', expression: '<% if (user) { %>' }`：`<% if (user) { %>`
+2. `blockBehavior: { type: 'end', expression: '<% } %>' }`：`<% } %>`
+3. `blockBehavior: null`：`<%= user.name %>`（式出力、制御フローセマンティクスなし）
 
 ## MLASTInvalid
 
@@ -412,7 +414,7 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 | `type`     | `'spread'`  | 判別タグ         |
 | `nodeName` | `'#spread'` | 常に `'#spread'` |
 
-`MLASTSpreadAttr` は `MLASTAbstractNode` ではなく `MLASTToken` を直接継承するため、位置情報（`uuid`、`raw`、`startOffset` など）はありますが、`parentNode` や `depth` はありません。
+`MLASTSpreadAttr` は `MLASTAbstractNode` ではなく `MLASTToken` を直接継承するため、位置情報（`uuid`、`raw`、`offset` など）はありますが、`parentNode` や `depth` はありません。
 
 ## 共用体型リファレンス
 
@@ -449,7 +451,7 @@ function processChild(node: MLASTChildNode) {
       console.log(`コメント (bogus: ${node.isBogus})`);
       break;
     case 'psblock':
-      console.log(`ブロック: ${node.nodeName}, conditional: ${node.conditionalType}`);
+      console.log(`ブロック: ${node.nodeName}, behavior: ${node.blockBehavior?.type ?? 'none'}`);
       break;
     case 'invalid':
       console.log(`不正: kind=${node.kind}`);

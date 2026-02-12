@@ -5,7 +5,7 @@ description: Warn if there is not an end tag.
 
 # `end-tag`
 
-Warn if there is not an end tag. It doesn't warn if a tag has self-closing solidus and doesn't need the end tag, or the tag is a void element.
+Warn if there is not an end tag. It doesn't warn if a tag is self-closing and doesn't need the end tag, or the tag is a void element.
 
 :::note
 

@@ -5,7 +5,7 @@ import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
-import type { ElementType, MLASTAttr, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type { ElementType, MLASTAttr, MLASTBlockBehavior, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
 import type {
 	PlainData,
 	Pretender,
@@ -29,8 +29,6 @@ import {
 	remove,
 	replaceWith,
 } from '../manipulations/child-node-methods.js';
-import { MLToken } from '../token/token.js';
-
 import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
@@ -136,9 +134,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
 	/**
-	 * The self-closing solidus token (`/`), or null if the element is not self-closing.
+	 * Block behavior associated with this element, if any.
 	 */
-	readonly selfClosingSolidus: MLToken | null;
+	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
 	 * The tag close character string (e.g., `>` or `/>` or `%>`).
@@ -163,7 +161,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	) {
 		super(astNode, document, astNode.isFragment);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.selfClosingSolidus = astNode.selfClosingSolidus ? new MLToken(astNode.selfClosingSolidus) : null;
 		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = ns.namespaceURI;
@@ -176,6 +173,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 		this.tagOpenChar = astNode.tagOpenChar;
 		this.tagCloseChar = astNode.tagCloseChar;
+
+		this.blockBehavior = astNode.blockBehavior;
 	}
 
 	/**
@@ -3674,7 +3673,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	hasMutableChildren(attr = false) {
 		for (const child of this.getPureChildNodes()) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				if (child.conditionalType) {
+				if (child.blockBehavior) {
 					continue;
 				}
 				return true;

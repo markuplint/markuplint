@@ -173,7 +173,7 @@ MLToken<A extends MLASTToken>
 | `MLText`             | `Text`               | テキストノード、`isWhitespace()`, `isRawTextElementContent()`                        |
 | `MLComment`          | `Comment`            | コメントノード（`textContent`）                                                      |
 | `MLDocumentType`     | `DocumentType`       | `<!DOCTYPE>`（`name`, `publicId`, `systemId`）                                       |
-| `MLBlock`            | —                    | プリプロセッサ固有ブロック（if/each/switch）、`conditionalType`, `isTransparent`     |
+| `MLBlock`            | —                    | プリプロセッサ固有ブロック（if/each/switch）、`blockBehavior`, `isTransparent`       |
 | `MLElementCloseTag`  | —                    | 開始タグ要素とペアになる閉じタグ                                                     |
 | `MLParentNode`       | `ParentNode`         | `querySelector()`, `querySelectorAll()`, `children`, `childElementCount`             |
 | `MLElement`          | `Element`            | 属性、セレクタ、名前空間、pretender コンテキスト、`elementType`, `closeTag`          |
@@ -338,16 +338,16 @@ type Pretender = {
 
 テンプレートエンジン（Pug, EJS, Nunjucks など）はプリプロセッサ固有のブロックを生成し、`MLBlock` ノードで表現されます。これらのブロックは子ノードを条件付きでラップできます：
 
-| `conditionalType` | テンプレート構文  | 説明               |
-| ----------------- | ----------------- | ------------------ |
-| `'if:start'`      | `{% if %}`        | 条件ブロックの開始 |
-| `'if:else'`       | `{% else %}`      | 代替分岐           |
-| `'if:end'`        | `{% endif %}`     | 条件ブロックの終了 |
-| `'each:start'`    | `{% for %}`       | ループの開始       |
-| `'each:end'`      | `{% endfor %}`    | ループの終了       |
-| `'switch:start'`  | `{% switch %}`    | switch の開始      |
-| `'switch:case'`   | `{% case %}`      | switch ケース      |
-| `'switch:end'`    | `{% endswitch %}` | switch の終了      |
+| `blockBehavior.type` | テンプレート構文  | 説明               |
+| -------------------- | ----------------- | ------------------ |
+| `'if'`               | `{% if %}`        | 条件ブロックの開始 |
+| `'if:else'`          | `{% else %}`      | 代替分岐           |
+| `'end'`              | `{% endif %}`     | 条件ブロックの終了 |
+| `'each'`             | `{% for %}`       | ループの開始       |
+| `'end'`              | `{% endfor %}`    | ループの終了       |
+| `'switch:case'`      | `{% switch %}`    | switch の開始      |
+| `'switch:default'`   | `{% case %}`      | switch ケース      |
+| `'end'`              | `{% endswitch %}` | switch の終了      |
 
 `MLNode.conditionalChildNodes()` は `NodeListOf` 配列の配列を返します（条件分岐ごとに 1 つ）。これにより、ルールは各分岐を独立して分析できます。
 

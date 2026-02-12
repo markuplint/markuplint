@@ -31,7 +31,7 @@ import type {
 	MLASTInvalid,
 	Walker,
 	MLASTHTMLAttr,
-	MLASTPreprocessorSpecificBlockConditionalType,
+	MLASTBlockBehavior,
 } from '@markuplint/ml-ast';
 
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
@@ -338,7 +338,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const filteredNodes: MLASTNodeTreeItem[] = [];
 			for (const node of nodes) {
 				// Remove duplicated nodes
-				const id = `${node.startOffset}:${node.endOffset}:${node.nodeName}:${node.type}:${node.raw}`;
+				const id = `${node.offset}:${node.offset + node.raw.length}:${node.nodeName}:${node.type}:${node.raw}`;
 				if (existence.has(id)) {
 					continue;
 				}
@@ -599,6 +599,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				elementType: 'html',
 				attributes: [],
 				childNodes: [],
+				blockBehavior: null,
 				parentNode: token.parentNode,
 				pairNode: null,
 				tagCloseChar: '',
@@ -647,7 +648,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 *
 	 * @param token - The child token with the block's node name and fragment flag
 	 * @param childNodes - The language-specific child AST nodes to traverse
-	 * @param conditionalType - The conditional type if this is a conditional block (e.g., "if", "else")
+	 * @param blockBehavior - The block behavior if this is a control-flow block (e.g., "if", "each")
 	 * @param originBlockNode - The original language-specific block node for reference
 	 * @returns An array of AST nodes including the block node and any sibling nodes
 	 */
@@ -657,7 +658,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			readonly isFragment: boolean;
 		},
 		childNodes: readonly Node[] = [],
-		conditionalType: MLASTPreprocessorSpecificBlockConditionalType = null,
+		blockBehavior: MLASTBlockBehavior | null = null,
 		originBlockNode?: Node,
 	): readonly MLASTNodeTreeItem[] {
 		timer.push('visitPsBlock');
@@ -665,7 +666,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...token,
 			...this.createToken(token),
 			type: 'psblock',
-			conditionalType,
+			blockBehavior,
 			nodeName: `#ps:${token.nodeName}`,
 			childNodes: [],
 			isBogus: false,
@@ -724,11 +725,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			return null;
 		}
 
-		const node = this.createToken(raw, token.startOffset, token.startLine, token.startCol);
+		const node = this.createToken(raw, token.offset, token.line, token.col);
 
 		return {
 			...node,
-			...this.#getEndLocation(node),
 			type: 'spread',
 			nodeName: '#spread',
 		};
@@ -761,9 +761,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const noQuoteValueType = options?.noQuoteValueType;
 		const endOfUnquotedValueChars = options?.endOfUnquotedValueChars;
 
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let curOffset = token.offset;
+		let curLine = token.line;
+		let curCol = token.col;
 
 		let tokens: ReturnType<typeof attrTokenizer>;
 		try {
@@ -775,42 +775,28 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			throw error;
 		}
 
-		const spacesBeforeName = this.createToken(tokens.spacesBeforeAttrName, startOffset, startLine, startCol);
-		startLine = spacesBeforeName.endLine;
-		startCol = spacesBeforeName.endCol;
-		startOffset = spacesBeforeName.endOffset;
+		const spacesBeforeName = this.createToken(tokens.spacesBeforeAttrName, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesBeforeName));
 
-		const name = this.createToken(tokens.attrName, startOffset, startLine, startCol);
-		startLine = name.endLine;
-		startCol = name.endCol;
-		startOffset = name.endOffset;
+		const name = this.createToken(tokens.attrName, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(name));
 
-		const spacesBeforeEqual = this.createToken(tokens.spacesBeforeEqual, startOffset, startLine, startCol);
-		startLine = spacesBeforeEqual.endLine;
-		startCol = spacesBeforeEqual.endCol;
-		startOffset = spacesBeforeEqual.endOffset;
+		const spacesBeforeEqual = this.createToken(tokens.spacesBeforeEqual, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesBeforeEqual));
 
-		const equal = this.createToken(tokens.equal, startOffset, startLine, startCol);
-		startLine = equal.endLine;
-		startCol = equal.endCol;
-		startOffset = equal.endOffset;
+		const equal = this.createToken(tokens.equal, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(equal));
 
-		const spacesAfterEqual = this.createToken(tokens.spacesAfterEqual, startOffset, startLine, startCol);
-		startLine = spacesAfterEqual.endLine;
-		startCol = spacesAfterEqual.endCol;
-		startOffset = spacesAfterEqual.endOffset;
+		const spacesAfterEqual = this.createToken(tokens.spacesAfterEqual, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(spacesAfterEqual));
 
-		const startQuote = this.createToken(tokens.quoteStart, startOffset, startLine, startCol);
-		startLine = startQuote.endLine;
-		startCol = startQuote.endCol;
-		startOffset = startQuote.endOffset;
+		const startQuote = this.createToken(tokens.quoteStart, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(startQuote));
 
-		const value = this.createToken(tokens.attrValue, startOffset, startLine, startCol);
-		startLine = value.endLine;
-		startCol = value.endCol;
-		startOffset = value.endOffset;
+		const value = this.createToken(tokens.attrValue, curOffset, curLine, curCol);
+		({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(value));
 
-		const endQuote = this.createToken(tokens.quoteEnd, startOffset, startLine, startCol);
+		const endQuote = this.createToken(tokens.quoteEnd, curOffset, curLine, curCol);
 
 		const attrToken = this.createToken(
 			tokens.attrName +
@@ -820,9 +806,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tokens.quoteStart +
 				tokens.attrValue +
 				tokens.quoteEnd,
-			name.startOffset,
-			name.startLine,
-			name.startCol,
+			name.offset,
+			name.line,
+			name.col,
 		);
 
 		const htmlAttr: MLASTAttr = {
@@ -870,9 +856,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const nodes: (MLASTTag | MLASTText)[] = [];
 
 		let raw = token.raw;
-		let startOffset = token.startOffset;
-		let startLine = token.startLine;
-		let startCol = token.startCol;
+		let curOffset = token.offset;
+		let curLine = token.line;
+		let curCol = token.col;
 		let depth = token.depth;
 
 		const depthStack = new Map<
@@ -886,9 +872,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const parsed = this.#parseTag(
 				{
 					raw,
-					startOffset,
-					startLine,
-					startCol,
+					offset: curOffset,
+					line: curLine,
+					col: curCol,
 					depth,
 					parentNode: null,
 				},
@@ -898,7 +884,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			);
 
 			if (parsed.__left) {
-				const token = this.createToken(parsed.__left, startOffset, startLine, startCol);
+				const token = this.createToken(parsed.__left, curOffset, curLine, curCol);
 				const textNode: MLASTText = {
 					...token,
 					type: 'text',
@@ -917,11 +903,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			const tag = parsed.token;
 
-			startLine = tag.endLine;
-			startCol = tag.endCol;
-			startOffset = tag.endOffset;
+			({ offset: curOffset, line: curLine, col: curCol } = this.#getEndLocation(tag));
 
-			let isSelfClose = tag.type === 'starttag' && tag.selfClosingSolidus?.raw === '/';
+			let isSelfClose = tag.type === 'starttag' && tag.tagCloseChar.startsWith('/');
 			const isVoidElement = detectVoidElement({ localName: tag.nodeName.toLowerCase() });
 
 			switch (this.#selfCloseType) {
@@ -974,23 +958,19 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Updates the position and depth properties of an AST node, recalculating
-	 * end offsets, lines, and columns based on the new start values.
+	 * Updates the position and depth properties of an AST node.
 	 *
 	 * @param node - The AST node whose location should be updated
 	 * @param props - The new position and depth values to apply (only provided values are changed)
 	 */
 	updateLocation(
 		node: MLASTNodeTreeItem,
-		props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>,
+		props: Partial<Pick<MLASTNodeTreeItem, 'offset' | 'line' | 'col' | 'depth'>>,
 	) {
 		Object.assign(node, {
-			startOffset: props.startOffset ?? node.startOffset,
-			startLine: props.startLine ?? node.startLine,
-			startCol: props.startCol ?? node.startCol,
-			endOffset: props.startOffset == null ? node.endOffset : props.startOffset + node.raw.length,
-			endLine: props.startLine == null ? node.endLine : getEndLine(node.raw, props.startLine),
-			endCol: props.startCol == null ? node.endCol : getEndCol(node.raw, props.startCol),
+			offset: props.offset ?? node.offset,
+			line: props.line ?? node.line,
+			col: props.col ?? node.col,
 			depth: props.depth ?? node.depth,
 		});
 	}
@@ -998,27 +978,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	/**
 	 * Set new raw code to target node.
 	 *
-	 * Replace the raw code and update the start/end offset/line/column.
-	 *
 	 * @param node target node
 	 * @param raw new raw code
 	 */
 	updateRaw(node: MLASTToken, raw: string) {
-		const startOffset = node.startOffset;
-		const startLine = node.startLine;
-		const startCol = node.startCol;
-		const endOffset = startOffset + raw.length;
-		const endLine = getEndLine(raw, startLine);
-		const endCol = getEndCol(raw, startCol);
-
 		Object.assign(node, {
 			raw,
-			startOffset,
-			endOffset,
-			startLine,
-			endLine,
-			startCol,
-			endCol,
 		});
 	}
 
@@ -1074,32 +1039,31 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Creates a new MLASTToken with a generated UUID and computed end position.
+	 * Creates a new MLASTToken with a generated UUID.
 	 * Accepts either a Token object or a raw string with explicit start coordinates.
 	 *
 	 * @param token - A Token object or raw string to create the AST token from
-	 * @param startOffset - The byte offset where the token starts (required when token is a string)
-	 * @param startLine - The line number where the token starts (required when token is a string)
-	 * @param startCol - The column number where the token starts (required when token is a string)
-	 * @returns A fully populated AST token with UUID, start/end positions, and raw content
+	 * @param offset - The zero-based byte offset where the token starts (required when token is a string)
+	 * @param line - The one-based line number where the token starts (required when token is a string)
+	 * @param col - The one-based column number where the token starts (required when token is a string)
+	 * @returns An AST token with UUID, start position, and raw content
 	 */
 	createToken(token: Token): MLASTToken;
-	createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
-	createToken(token: string | Token, startOffset?: number, startLine?: number, startCol?: number): MLASTToken {
+	createToken(token: string, offset: number, line: number, col: number): MLASTToken;
+	createToken(token: string | Token, offset?: number, line?: number, col?: number): MLASTToken {
 		const props =
 			typeof token === 'string'
 				? {
 						raw: token,
-						startOffset: startOffset ?? 0,
-						startLine: startLine ?? 1,
-						startCol: startCol ?? 1,
+						offset: offset ?? 0,
+						line: line ?? 1,
+						col: col ?? 1,
 					}
 				: token;
 
 		return {
 			uuid: uuid().slice(0, 8),
 			...props,
-			...this.#getEndLocation(props),
 		};
 	}
 
@@ -1113,12 +1077,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	sliceFragment(start: number, end?: number): Token {
 		const raw = this.rawCode.slice(start, end);
-		const { line, column } = getPosition(this.rawCode, start);
+		const { line: l, column } = getPosition(this.rawCode, start);
 		return {
 			raw,
-			startOffset: start,
-			startLine: line,
-			startCol: column,
+			offset: start,
+			line: l,
+			col: column,
 		};
 	}
 
@@ -1245,7 +1209,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				prevNode?.nodeName === '#text' &&
 				node.type === 'text' &&
 				node.nodeName === '#text' &&
-				prevNode?.endOffset === node.startOffset
+				prevNode.offset + prevNode.raw.length === node.offset
 			) {
 				const newNode = this.#concatTextNodes(prevNode, node);
 				newNodeList.pop();
@@ -1273,9 +1237,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...firstNode,
 			uuid: uuid().slice(0, 8),
 			raw: nodes.map(n => n.raw).join(''),
-			endOffset: lastNode.endOffset,
-			endLine: lastNode.endLine,
-			endCol: lastNode.endCol,
 		};
 
 		for (const node of nodes) {
@@ -1366,10 +1327,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const sequentailPrevNode = nodeList[i - 1] ?? null;
 
 			if (!this.#rawTextElements.includes(node.nodeName.toLowerCase())) {
-				const endOffset = sequentailPrevNode?.endOffset ?? 0;
+				const prevEndOffset = sequentailPrevNode
+					? sequentailPrevNode.offset + sequentailPrevNode.raw.length
+					: 0;
 				const remnantNodes = this.#createRemnantNode(
-					endOffset,
-					node.startOffset,
+					prevEndOffset,
+					node.offset,
 					node.depth,
 					node.parentNode,
 					invalidNode,
@@ -1390,7 +1353,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		const remnantNodes = this.#createRemnantNode(
-			lastNode.endOffset,
+			lastNode.offset + lastNode.raw.length,
 			undefined,
 			lastNode.depth,
 			lastNode.parentNode,
@@ -1408,11 +1371,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#getEndLocation(token: Token) {
-		const endOffset = token.startOffset + token.raw.length;
 		return {
-			endOffset,
-			endLine: getEndLine(token.raw, token.startLine),
-			endCol: getEndCol(token.raw, token.startCol),
+			offset: token.offset + token.raw.length,
+			line: getEndLine(token.raw, token.line),
+			col: getEndCol(token.raw, token.col),
 		} as const;
 	}
 
@@ -1468,9 +1430,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#parseTag(token: ChildToken, praseAttr: boolean, failSafe: boolean, namelessFragment: boolean) {
 		const raw = token.raw;
 		const depth = token.depth;
-		const initialOffset = token.startOffset;
-		const initialLine = token.startLine;
-		const initialCol = token.startCol;
+		const initialOffset = token.offset;
+		const initialLine = token.line;
+		const initialCol = token.col;
 
 		let offset = initialOffset;
 		let line = initialLine;
@@ -1483,7 +1445,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		let state: TagState = TagState.BeforeOpenTag;
 		let beforeOpenTagChars = '';
 		let tagName = '';
-		let afterAttrsSpaceChars = '';
 		let selfClosingSolidusChar = '';
 		let isOpenTag = true;
 		const attrs: MLASTAttr[] = [];
@@ -1500,9 +1461,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				case TagState.BeforeOpenTag: {
 					if (char === '<') {
 						const beforeOpenTag = this.createToken(beforeOpenTagChars, offset, line, col);
-						line = beforeOpenTag.endLine;
-						col = beforeOpenTag.endCol;
-						offset = beforeOpenTag.endOffset;
+						({ offset, line, col } = this.#getEndLocation(beforeOpenTag));
 
 						tagStartOffset = offset;
 						tagStartLine = line;
@@ -1582,14 +1541,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 						const attr = this.visitAttr({
 							raw: leftover,
-							startOffset: offset,
-							startLine: line,
-							startCol: col,
+							offset,
+							line,
+							col,
 						});
 
-						line = attr.endLine;
-						col = attr.endCol;
-						offset = attr.endOffset;
+						({ offset, line, col } = this.#getEndLocation(attr));
 
 						if (leftover === attr.__rightText) {
 							throw new SyntaxError(`Invalid attribute syntax: ${leftover}`);
@@ -1611,7 +1568,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					}
 
 					if (this.#spaceChars.includes(char)) {
-						afterAttrsSpaceChars += char;
 						break;
 					}
 
@@ -1638,13 +1594,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (!failSafe && !namelessFragment && tagName === '') {
 			throw new SyntaxError(`No tag name: "${raw}"`);
 		}
-
-		const endSpace = this.createToken(afterAttrsSpaceChars, offset, line, col);
-		line = endSpace.endLine;
-		col = endSpace.endCol;
-		offset = endSpace.endOffset;
-
-		const selfClosingSolidus = this.createToken(selfClosingSolidusChar, offset, line, col);
 
 		const rawCodeFragment = raw.slice(beforeOpenTagChars.length, raw.length - leftover.length);
 
@@ -1677,7 +1626,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					pairNode: null,
 					tagOpenChar: '<',
 					tagCloseChar: selfClosingSolidusChar + '>',
-					selfClosingSolidus,
+					blockBehavior: null,
 					isGhost: false,
 					isFragment,
 				}
@@ -1726,7 +1675,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const stack: { [pos: string]: number } = {};
 		const removeIndexes: number[] = [];
 		for (const [i, node] of sorted.entries()) {
-			const id = `${node.startOffset}::${node.nodeName}`;
+			const id = `${node.offset}::${node.nodeName}`;
 			if (stack[id] != null) {
 				removeIndexes.push(i);
 			}
@@ -1771,9 +1720,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		this.updateRaw(firstNode, raw);
 		this.updateLocation(firstNode, {
-			startOffset: offsetOffset,
-			startLine: offsetLine,
-			startCol: offsetColumn,
+			offset: offsetOffset,
+			line: offsetLine,
+			col: offsetColumn,
 		});
 
 		return nodeList;
@@ -1803,13 +1752,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			if (
 				prevNode?.type === 'text' &&
 				// Empty node
-				node.startOffset !== node.endOffset
+				node.raw.length > 0
 			) {
-				const prevNodeEndOffset = prevNode.endOffset;
-				const nodeStartOffset = node.startOffset;
+				const prevNodeEndOffset = prevNode.offset + prevNode.raw.length;
+				const nodeStartOffset = node.offset;
 				if (prevNodeEndOffset > nodeStartOffset) {
 					const prevNodeRaw = prevNode.raw;
-					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.startOffset);
+					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.offset);
 					this.updateRaw(prevNode, prevNodeTrimmedRaw);
 				}
 			}

@@ -113,7 +113,7 @@ flowchart TD
 | `parser-error.ts`        | Error classes with positional information                                       | `ParserError`, `TargetParserError`, `ConfigParserError`                                                                                   |
 | `sort-nodes.ts`          | Node position sorting by offset                                                 | `sortNodes`                                                                                                                               |
 | `const.ts`               | Constants used across the package                                               | `MASK_CHAR`, `svgElementList`, `defaultSpaces`                                                                                            |
-| `get-location.ts`        | Line/column/offset position calculations                                        | `getPosition`, `getEndLine`, `getEndCol`, `getOffsetsFromCode`                                                                            |
+| `get-location.ts`        | Line/column/offset position calculations                                        | `getPosition`, `getEndLine`, `getEndCol`, `getEndPosition`, `getOffsetsFromCode`                                                          |
 | `decision.ts`            | Custom element name detection and SVG element lookup                            | `isPotentialCustomElementName`, `isSVGElement`                                                                                            |
 
 ## Parse Pipeline Overview

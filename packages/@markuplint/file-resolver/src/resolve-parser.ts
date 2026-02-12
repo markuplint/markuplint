@@ -1,5 +1,5 @@
 import type { MLFile } from './ml-file/index.js';
-import type { MLMarkupLanguageParser, MLParser, MLParserModule, ParserOptions } from '@markuplint/ml-ast';
+import type { MLParser, MLParserModule, ParserOptions } from '@markuplint/ml-ast';
 import type { ParserConfig } from '@markuplint/ml-config';
 
 import path from 'node:path';
@@ -7,7 +7,7 @@ import path from 'node:path';
 import { generalImport } from './general-import.js';
 import { toRegexp } from './utils.js';
 
-const parsers = new Map<string, MLParser | MLMarkupLanguageParser>();
+const parsers = new Map<string, MLParser>();
 
 /**
  * Resolves the appropriate parser for a given file based on the parser configuration.
@@ -57,20 +57,15 @@ export async function resolveParser(
 	};
 }
 
-async function importParser(parserModName: string): Promise<MLParser | MLMarkupLanguageParser> {
+async function importParser(parserModName: string): Promise<MLParser> {
 	const entity = parsers.get(parserModName);
 	if (entity) {
 		return entity;
 	}
-	const parserMod = await generalImport<MLParserModule | MLMarkupLanguageParser>(parserModName);
+	const parserMod = await generalImport<MLParserModule>(parserModName);
 
 	if (!parserMod) {
 		throw new Error(`Parser module "${parserModName}" is not found.`);
-	}
-
-	// TODO: To be dropped in v5
-	if (!('parser' in parserMod)) {
-		return parserMod;
 	}
 
 	return parserMod.parser;

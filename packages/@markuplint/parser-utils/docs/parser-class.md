@@ -255,12 +255,12 @@ Creates a doctype node from a token containing the doctype name, public ID, and 
 visitPsBlock(
   token: ChildToken & { nodeName: string; isFragment: boolean },
   childNodes?: readonly Node[],
-  conditionalType?: MLASTPreprocessorSpecificBlockConditionalType,
+  blockBehavior?: MLASTBlockBehavior | null,
   originBlockNode?: Node
 ): readonly MLASTNodeTreeItem[]
 ```
 
-Creates a preprocessor-specific block node. The `nodeName` is automatically prefixed with `#ps:` (e.g., `#ps:if`, `#ps:each`, `#ps:front-matter`). Recursively traverses child nodes via `visitChildren()`.
+Creates a preprocessor-specific block node. The `nodeName` is automatically prefixed with `#ps:` (e.g., `#ps:if`, `#ps:each`, `#ps:front-matter`). The `blockBehavior` parameter describes the control-flow semantics (type and expression) of the block. Recursively traverses child nodes via `visitChildren()`.
 
 ### visitAttr()
 
@@ -347,10 +347,10 @@ stateDiagram-v2
 
 ```ts
 createToken(token: Token): MLASTToken;
-createToken(token: string, startOffset: number, startLine: number, startCol: number): MLASTToken;
+createToken(token: string, offset: number, line: number, col: number): MLASTToken;
 ```
 
-Creates a new `MLASTToken` with a generated UUID (8 chars) and computed end position. Accepts either a `Token` object or a raw string with explicit coordinates.
+Creates a new `MLASTToken` with a generated UUID (8 chars). Accepts either a `Token` object or a raw string with explicit coordinates.
 
 ### sliceFragment()
 
@@ -412,11 +412,11 @@ Walks a node list depth-first, invoking the walker callback for each node. The w
 ```ts
 updateLocation(
   node: MLASTNodeTreeItem,
-  props: Partial<Pick<MLASTNodeTreeItem, 'startOffset' | 'startLine' | 'startCol' | 'depth'>>
+  props: Partial<Pick<MLASTNodeTreeItem, 'offset' | 'line' | 'col' | 'depth'>>
 ): void
 ```
 
-Updates position and depth properties of an AST node, recalculating end offsets/lines/columns from the new start values.
+Updates position and depth properties of an AST node.
 
 ### updateRaw()
 

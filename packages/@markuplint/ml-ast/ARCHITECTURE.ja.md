@@ -53,12 +53,9 @@ classDiagram
         <<interface>>
         +uuid: string
         +raw: string
-        +startOffset: number
-        +endOffset: number
-        +startLine: number
-        +endLine: number
-        +startCol: number
-        +endCol: number
+        +offset: number
+        +line: number
+        +col: number
     }
 
     class MLASTAbstractNode {
@@ -85,6 +82,7 @@ classDiagram
         +elementType: ElementType
         +attributes: MLASTAttr[]
         +childNodes: MLASTChildNode[]
+        +blockBehavior: MLASTBlockBehavior | null
         +pairNode: MLASTElementCloseTag | null
         +isGhost: boolean
         +isFragment: boolean
@@ -114,7 +112,7 @@ classDiagram
     class MLASTPreprocessorSpecificBlock {
         <<interface>>
         +type: "psblock"
-        +conditionalType: ...ConditionalType
+        +blockBehavior: MLASTBlockBehavior | null
         +depth: number
         +childNodes: MLASTChildNode[]
         +isBogus: boolean
@@ -242,12 +240,10 @@ flowchart TD
 
 ## パーサーインターフェース
 
-| 型                       | 説明                                                     |
-| ------------------------ | -------------------------------------------------------- |
-| `MLParser`               | markuplint 互換パーサーのインターフェース                |
-| `MLParserModule`         | パーサーインスタンスをエクスポートするモジュールラッパー |
-| `MLMarkupLanguageParser` | 非推奨（v5 で削除予定）。代わりに `MLParser` を使用      |
-| `Parse`                  | 非推奨。パース関数シグネチャの型エイリアス               |
+| 型               | 説明                                                     |
+| ---------------- | -------------------------------------------------------- |
+| `MLParser`       | markuplint 互換パーサーのインターフェース                |
+| `MLParserModule` | パーサーインスタンスをエクスポートするモジュールラッパー |
 
 `MLParser` は `MLASTDocument` を返す `parse(sourceCode, options?)` メソッドを必要とします。オプションフィールドには `endTag`（終了タグ処理戦略）、`booleanish`（ブール属性検出）、`tagNameCaseSensitive`（XHTML/JSX 用）があります。
 
