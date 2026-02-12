@@ -85,7 +85,7 @@ export const base = [
 			'import-x/resolver-next': [createTypeScriptImportResolver()],
 		},
 	},
-	// for Node.js v18 — TODO: Re-enable in v5 when dropping Node.js 18 support (#3143)
+	// for Node.js v18 — TODO: Re-enable in v5 when dropping Node.js 18 support (#3144)
 	{
 		rules: {
 			'unicorn/no-array-reverse': 0,
