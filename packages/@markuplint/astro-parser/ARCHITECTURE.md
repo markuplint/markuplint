@@ -109,9 +109,9 @@ A simple expression like `{name}` has a single text child. The entire expression
 
 When an expression contains HTML elements (e.g., `{list.map(item => <li>{item}</li>)}`), the parser splits it into multiple nodes:
 
-1. **Opening expression fragment**: `{list.map(item => ` — a MustacheTag psblock containing the child nodes
+1. **Opening expression fragment**: `{list.map(item => ` — a MustacheTag psblock containing the child nodes. If the expression contains a `.map()` or `.filter()` call (detected by `detectBlockBehavior()`), the opening fragment receives `blockBehavior: { type: 'each' }` or `{ type: 'if' }` respectively
 2. **Nested HTML elements**: `<li>{item}</li>` — processed as normal elements
-3. **Closing expression fragment**: `)}` — a separate MustacheTag psblock with `isFragment: false`
+3. **Closing expression fragment**: `)}` — a separate MustacheTag psblock with `isFragment: false`. If the opening fragment had a `blockBehavior`, the closing fragment receives `blockBehavior: { type: 'end' }`
 
 The splitting logic checks whether `firstChild !== lastChild` in the expression's children array. If so:
 

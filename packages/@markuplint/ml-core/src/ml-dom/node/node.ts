@@ -646,7 +646,7 @@ export abstract class MLNode<
 	/**
 	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
 	 * Conditional child nodes are nodes that are nested within
-	 * **preprocessor blocks** such as `if`, `each`, or `switch`.
+	 * **preprocessor blocks** such as `if` or `switch`.
 	 * Each NodeList represents a branch of conditional child nodes.
 	 *
 	 * Note: NodeList doesn't include whitespace nodes.
@@ -662,7 +662,7 @@ export abstract class MLNode<
 		}
 
 		const branches: (MLChildNode<T, O> | (MLChildNode<T, O> | null)[])[] = [];
-		let mode: 'if' | 'each' | 'switch' | null = null;
+		let mode: 'if' | 'switch' | null = null;
 		let openConditional = false;
 		let subBranches: (MLChildNode<T, O> | null)[] = [];
 
@@ -674,10 +674,6 @@ export abstract class MLNode<
 						mode = 'if';
 						break;
 					}
-					case 'each': {
-						mode = 'each';
-						break;
-					}
 					case 'switch:case': {
 						mode = 'switch';
 						break;
@@ -685,6 +681,7 @@ export abstract class MLNode<
 
 					/* No default mode */
 					case 'if:else':
+					case 'each':
 					case 'each:empty':
 					case 'switch:default':
 					case 'await':
@@ -706,7 +703,7 @@ export abstract class MLNode<
 			}
 
 			if (openConditional) {
-				if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+				if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 					subBranches.push(null);
 				}
 				branches.push(subBranches);
@@ -724,7 +721,7 @@ export abstract class MLNode<
 		}
 
 		if (subBranches.length > 0) {
-			if ((['if', 'each', 'switch'] as (typeof mode)[]).includes(mode)) {
+			if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
 				subBranches.push(null);
 			}
 			branches.push(subBranches);

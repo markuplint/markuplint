@@ -211,7 +211,7 @@ html
 		// console.log(map);
 		expect(map).toStrictEqual([
 			'[1:1]>[1:3](0,2)ul: ul',
-			'[2:2]>[2:15](4,17)#ps:Each: each␣i␣in␣obj',
+			'[2:2]>[2:15](4,17)#ps:Each (each): each␣i␣in␣obj',
 			'[3:3]>[3:5](20,22)li: li',
 			'[3:5]>[3:8](22,25)#ps:Code: =␣i',
 		]);

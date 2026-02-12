@@ -117,11 +117,11 @@ if (parentNode.is(parentNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 
 1. 現在のノードの `childNodes` を走査する
 2. 認識された `blockBehavior?.type` を持つ各 MLBlock 子に対して：
-   - `mode` を判定（`'if'`、`'each'`、または `'switch'`）
+   - `mode` を判定（`'if'` または `'switch'`）。`'each'` ブロックは新しいモードを開始しない
    - ブロックに対して再帰的に `conditionalChildNodes()` を呼び出してサブパターンを取得
    - すべての分岐の代替を `subBranches` 配列に収集
 3. 条件グループ終了後に非ブロックの子が出現したとき：
-   - mode が `'if'`、`'each'`、または `'switch'` の場合：`null` をセンチネルとしてプッシュ（どの分岐もレンダリングされない「空」ケースを表現）
+   - mode が `'if'` または `'switch'` の場合：`null` をセンチネルとしてプッシュ（どの分岐もレンダリングされない「空」ケースを表現）
    - 現在のグループを閉じ、`subBranches` を `branches` にプッシュ
 4. 空白のみのテキストノードはスキップ
 5. 非ブロックの子は直接 `branches` に追加

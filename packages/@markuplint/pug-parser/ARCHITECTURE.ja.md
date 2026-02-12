@@ -181,6 +181,8 @@ case 'Doctype':
 
 その他すべてのノードタイプ — `Conditional`、`Code`、`Each`、`Mixin`、`MixinBlock`、`Include`、`RawInclude`、`Extends`、`NamedBlock`、`Case`、`When`、`While`、`Filter`、`YieldBlock`、`InterpolatedTag`、`FileReference` — は `visitPsBlock()` を通じてプリプロセッサ固有ブロックにマッピングされます。
 
+`Each` ノードでは、`blockBehavior` に `{ type: 'each', expression }` が設定されます。`expression` はイテレーション式（例: `i in obj`）です。これによりコアエンジンが Pug のループを認識できるようになります。
+
 `file` プロパティを持つノード（例: `Include`、`Extends`）では、ノードの終了位置からファイル参照オフセットを計算して、生ソースにファイルパスを含むようトークンが拡張されます。
 
 子ノードはノードタイプに応じて `block.nodes` または `nodes` から抽出されます。

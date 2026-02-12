@@ -293,7 +293,9 @@ This is the most complex branch:
 default:
 ```
 
-All other node types (primarily `JSXExpressionContainer`, `JSXSpreadChild`) are handled as preprocessor-specific blocks via `this.visitPsBlock()`. The `nodeName` is set to `originNode.type` (e.g., `JSXExpressionContainer`), resulting in `#ps:JSXExpressionContainer` in the AST. Empty child arrays and `null` conditional type are passed. Each resulting node is registered in `#parentIdMap`.
+All other node types (primarily `JSXExpressionContainer`, `JSXSpreadChild`) are handled as preprocessor-specific blocks via `this.visitPsBlock()`. The `nodeName` is set to `originNode.type` (e.g., `JSXExpressionContainer`), resulting in `#ps:JSXExpressionContainer` in the AST.
+
+For `.map()` calls that return JSX (e.g., `{items.map(item => <li>{item}</li>)}`), the `extractJSXFromCall()` utility detects the pattern and sets `blockBehavior: { type: 'each', expression }`. The returned JSX element or fragment is passed as a child node so that the core engine can traverse into the loop body. Each resulting node is registered in `#parentIdMap`.
 
 ## afterTraverse()
 

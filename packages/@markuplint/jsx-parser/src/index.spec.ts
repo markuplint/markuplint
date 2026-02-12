@@ -148,7 +148,7 @@ describe('parse', () => {
 		expect(maps).toStrictEqual([
 			'[3:3]>[3:7](38,42)ul: <ul>',
 			'[3:7]>[4:4](42,46)#text: ⏎→→→',
-			'[4:4]>[6:7](46,108)#ps:JSXExpressionContainer: {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
+			'[4:4]>[6:7](46,108)#ps:JSXExpressionContainer (each): {[1,␣2,␣3].map(item␣=>␣(⏎→→→→<li␣key={item}>{item}</li>⏎→→→))}',
 			'[5:5]>[5:20](75,90)li: <li␣key={item}>',
 			'[5:20]>[5:26](90,96)#ps:JSXExpressionContainer: {item}',
 			'[5:26]>[5:31](96,101)li: </li>',
@@ -313,7 +313,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		const maps = nodeListToDebugMaps(ast.nodeList);
 		expect(maps).toStrictEqual([
 			'[1:1]>[1:4](0,3)p: <p>',
-			'[1:4]>[1:27](3,26)#ps:JSXExpressionContainer: {array.map(_␣=>␣<></>)}',
+			'[1:4]>[1:27](3,26)#ps:JSXExpressionContainer (each): {array.map(_␣=>␣<></>)}',
 			'[1:20]>[1:22](19,21)#jsx-fragment: <>',
 			'[1:22]>[1:25](21,24)#jsx-fragment: </>',
 			'[1:27]>[1:31](26,30)p: </p>',
@@ -489,7 +489,7 @@ key
 		expect(nodeListToDebugMaps(ast.nodeList)).toStrictEqual([
 			'[4:3]>[5:2](41,47)ul: <ul␣⏎>',
 			'[5:2]>[6:1](47,49)#text: ␣⏎',
-			'[6:1]>[16:7](49,126)#ps:JSXExpressionContainer: {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
+			'[6:1]>[16:7](49,126)#ps:JSXExpressionContainer (each): {[1,␣2,␣3]␣⏎.map(item␣=>␣(␣⏎<li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>{␣⏎→item␣⏎}</li>␣⏎→→→))}',
 			'[8:1]>[13:3](77,102)li: <li␣⏎key␣⏎=␣⏎{␣⏎→item␣⏎}>',
 			'[13:3]>[15:2](102,113)#ps:JSXExpressionContainer: {␣⏎→item␣⏎}',
 			'[15:2]>[15:7](113,118)li: </li>',

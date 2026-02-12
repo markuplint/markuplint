@@ -181,6 +181,8 @@ Tag processing is the most complex path:
 
 All other node types — `Conditional`, `Code`, `Each`, `Mixin`, `MixinBlock`, `Include`, `RawInclude`, `Extends`, `NamedBlock`, `Case`, `When`, `While`, `Filter`, `YieldBlock`, `InterpolatedTag`, `FileReference` — are mapped to preprocessor-specific blocks via `visitPsBlock()`.
 
+For `Each` nodes, a `blockBehavior` of `{ type: 'each', expression }` is set, where `expression` is the iteration expression (e.g., `i in obj`). This enables the core engine to recognize Pug loops.
+
 For nodes with a `file` property (e.g., `Include`, `Extends`), the token is extended to include the file path in the raw source by computing the file reference offset from the node's end position.
 
 Child nodes are extracted from either `block.nodes` or `nodes`, depending on the node type.

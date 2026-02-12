@@ -105,14 +105,13 @@ Generates all possible child node combinations from template engine conditional 
 1. Walk `childNodes` sequentially
 2. When an `MLBlock` is encountered, determine the branch `mode` from its `blockBehavior?.type`:
    - `'if'` or `'if:elseif'` → mode `'if'`
-   - `'each'` → mode `'each'`
    - `'switch:case'` → mode `'switch'`
-   - `'if:else'`, `'each:empty'`, `'switch:default'`, `'await'`, `'await:catch'`, `'await:then'` → continue in current mode
+   - `'if:else'`, `'each'`, `'each:empty'`, `'switch:default'`, `'await'`, `'await:catch'`, `'await:then'` → continue in current mode (no new mode set)
    - Other types → skip (not a conditional branch)
 3. Recursively call `conditionalChildNodes()` on the block to get its sub-patterns
 4. Collect branches; when a non-block child is reached, close the current branch group
 5. Whitespace-only text nodes are skipped
-6. For `'if'`, `'each'`, `'switch'` modes: a `null` sentinel is appended to represent the "empty branch" (the case where nothing is rendered)
+6. For `'if'` and `'switch'` modes: a `null` sentinel is appended to represent the "empty branch" (the case where nothing is rendered)
 7. Pass the collected branches to `branchesToPatterns()` to generate the Cartesian product of all combinations
 
 #### Example
