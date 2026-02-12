@@ -73,6 +73,10 @@ export type MLASTAttr = MLASTHTMLAttr | MLASTSpreadAttr;
 /**
  * Base token representing a span of source text with positional information.
  * Every AST node ultimately extends this interface.
+ *
+ * End positions (`endOffset`, `endLine`, `endCol`) are not stored;
+ * they can be derived from `offset + raw.length`, or via helper utilities
+ * in `@markuplint/parser-utils`.
  */
 export interface MLASTToken {
 	/** Unique identifier for this token instance */
@@ -80,17 +84,11 @@ export interface MLASTToken {
 	/** The original raw source text of this token */
 	readonly raw: string;
 	/** Zero-based character offset of the token start in the source */
-	readonly startOffset: number;
-	/** Zero-based character offset of the token end in the source */
-	readonly endOffset: number;
+	readonly offset: number;
 	/** One-based line number where the token starts */
-	readonly startLine: number;
-	/** One-based line number where the token ends */
-	readonly endLine: number;
+	readonly line: number;
 	/** One-based column number where the token starts */
-	readonly startCol: number;
-	/** One-based column number where the token ends */
-	readonly endCol: number;
+	readonly col: number;
 }
 
 /**
@@ -142,10 +140,10 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly hasSpreadAttr?: boolean;
 	/** Direct child nodes of this element */
 	readonly childNodes: readonly MLASTChildNode[];
+	/** Block behavior associated with this element, if any */
+	readonly blockBehavior: MLASTBlockBehavior | null;
 	/** The matching closing tag, or `null` for void / self-closing elements */
 	readonly pairNode: MLASTElementCloseTag | null;
-	/** The self-closing solidus token (`/`), if present (e.g. `<br />`) */
-	readonly selfClosingSolidus?: MLASTToken;
 	/** The characters that open this tag (usually `"<"`) */
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
@@ -179,8 +177,6 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
  */
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
-	/** The kind of conditional or iteration construct this block represents */
-	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
 	/** Nesting depth in the document tree */
 	readonly depth: number;
 	/** The block's name as determined by the parser */
@@ -189,16 +185,28 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly isFragment: boolean;
 	/** Direct child nodes within this block */
 	readonly childNodes: readonly MLASTChildNode[];
+	/** Block behavior associated with this block, if any */
+	readonly blockBehavior: MLASTBlockBehavior | null;
 	/** Whether this block is bogus (unparsable or malformed) */
 	readonly isBogus: boolean;
 }
 
 /**
- * The type of conditional or iteration construct represented by a
- * {@link MLASTPreprocessorSpecificBlock}. `null` indicates a block
- * without a specific conditional semantic.
+ * Describes the behavior of a preprocessor block or element,
+ * capturing both the kind of control-flow construct and the
+ * source expression that drives it.
  */
-export type MLASTPreprocessorSpecificBlockConditionalType =
+export interface MLASTBlockBehavior {
+	/** The kind of block behavior (e.g. `'if'`, `'each'`, `'await'`) */
+	readonly type: MLASTBlockBehaviorType;
+	/** The source expression associated with this block */
+	readonly expression: string;
+}
+
+/**
+ * The type of control-flow construct represented by a block behavior.
+ */
+export type MLASTBlockBehaviorType =
 	| 'if'
 	| 'if:elseif'
 	| 'if:else'
@@ -209,8 +217,7 @@ export type MLASTPreprocessorSpecificBlockConditionalType =
 	| 'await'
 	| 'await:then'
 	| 'await:catch'
-	| 'end'
-	| null;
+	| 'end';
 
 /**
  * An HTML comment node (e.g. `<!-- ... -->`).
@@ -313,43 +320,6 @@ export interface MLASTDocument {
 }
 
 /**
- * @deprecated Use `MLParser` instead. This will be dropped in v5.
- */
-export interface MLMarkupLanguageParser {
-	/**
-	 * @deprecated
-	 */
-	parse(
-		sourceCode: string,
-		options?: ParserOptions & {
-			readonly offsetOffset?: number;
-			readonly offsetLine?: number;
-			readonly offsetColumn?: number;
-		},
-	): MLASTDocument;
-
-	/**
-	 * @default "omittable"
-	 * @deprecated
-	 */
-	endTag?: EndTagType;
-
-	/**
-	 * Detect value as a true if its attribute is booleanish value and omitted.
-	 *
-	 * Ex:
-	 * ```jsx
-	 * <Component aria-hidden />
-	 * ```
-	 *
-	 * In the above, the `aria-hidden` is `true`.
-	 *
-	 * @deprecated
-	 */
-	booleanish?: boolean;
-}
-
-/**
  * Interface for a markuplint-compatible parser.
  * Implementations parse markup source code and produce an {@link MLASTDocument}.
  */
@@ -429,11 +399,6 @@ export type ParserAuthoredElementNameDistinguishing =
  * @returns `true` if the name represents an authored element
  */
 export type ParserAuthoredElementNameDistinguishingFunction = (name: string) => boolean;
-
-/**
- * @deprecated
- */
-export type Parse = MLMarkupLanguageParser['parse'];
 
 /**
  * Callback function used for walking through AST nodes.
