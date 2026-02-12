@@ -1,6 +1,6 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
-import { isPresentational } from './is-presentational.js';
+import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
 import { getExplicitRole } from './get-explicit-role.js';
@@ -114,7 +114,7 @@ function getClosestNonPresentationalDescendants(
 	for (const child of el.children) {
 		const explicitRole = getExplicitRole(specs, child, version);
 		const computed = explicitRole.role ? explicitRole : getImplicitRole(specs, child, version);
-		if (isPresentational(computed.role?.name)) {
+		if (isTransparentForOwnership(computed.role?.name, version)) {
 			owned.push(...getClosestNonPresentationalDescendants(child, specs, version));
 			continue;
 		}

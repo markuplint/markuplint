@@ -1,5 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { isTransparentForOwnership } from './is-presentational.js';
+
 import { getComputedRole } from './get-computed-role.js';
 
 /**
@@ -37,8 +39,21 @@ function matchesCondition(
 			return false;
 		}
 
-		const condition = conditions.shift()!;
 		const parentRole = getComputedRole(specs, parentEl, version, true).role;
+
+		/**
+		 * In ARIA 1.3, elements with `generic` role (e.g., `<div>`, `<span>`)
+		 * are transparent for required context role matching.
+		 * Skip them without consuming the condition token.
+		 *
+		 * @see https://w3c.github.io/aria/#tree_exclusion
+		 */
+		if (isTransparentForOwnership(parentRole?.name, version)) {
+			parentEl = parentEl.parentElement;
+			continue;
+		}
+
+		const condition = conditions.shift()!;
 
 		if (condition !== parentRole?.name) {
 			return false;

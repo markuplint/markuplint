@@ -1,6 +1,6 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
-import { isPresentational } from './is-presentational.js';
+import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
 
@@ -21,7 +21,7 @@ export function getNonPresentationalAncestor(
 
 	while (ancestor) {
 		const ancestorRole = getComputedRole(specs, ancestor, version, assumeSingleNode);
-		if (!isPresentational(ancestorRole.role?.name)) {
+		if (!isTransparentForOwnership(ancestorRole.role?.name, version)) {
 			return ancestorRole;
 		}
 		ancestor = ancestor.parentElement;

@@ -87,7 +87,11 @@ export function getPermittedRoles(
 	}
 
 	const implicitRoles: string[] =
-		implicitRole === 'presentation' || implicitRole === 'none' ? ['none', 'presentation'] : [implicitRole];
+		implicitRole === 'presentation' || implicitRole === 'none'
+			? ['none', 'presentation']
+			: version === '1.3' && (implicitRole === 'img' || implicitRole === 'image')
+				? ['image', 'img']
+				: [implicitRole];
 	return mergeArray(
 		implicitRoles.map(r => ({ name: r })),
 		permittedRoleList,
