@@ -117,11 +117,11 @@ The `conditionalChildNodes()` method on `MLNode` uses MLBlock's `blockBehavior?.
 
 1. Walk through `childNodes` of the current node
 2. For each MLBlock child with a recognized `blockBehavior?.type`:
-   - Determine the `mode` (`'if'`, `'each'`, or `'switch'`)
+   - Determine the `mode` (`'if'` or `'switch'`); `'each'` blocks do not start a new mode
    - Recursively call `conditionalChildNodes()` on the block to get its sub-patterns
    - Collect all branch alternatives into a `subBranches` array
 3. When a non-block child is encountered after a conditional group ends:
-   - If the mode was `'if'`, `'each'`, or `'switch'`: push `null` as a sentinel (representing the "empty" case where none of the branches render)
+   - If the mode was `'if'` or `'switch'`: push `null` as a sentinel (representing the "empty" case where none of the branches render)
    - Close the current group and push `subBranches` to `branches`
 4. Skip whitespace-only text nodes
 5. Non-block children are added directly to `branches`

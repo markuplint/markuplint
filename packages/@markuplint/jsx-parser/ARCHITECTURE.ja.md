@@ -215,6 +215,8 @@ TypeScript ESTree AST 全体を走査して JSX 要素とフラグメントを�
 
 その他すべてのノード型（主に `JSXExpressionContainer`、`JSXSpreadChild`）は `this.visitPsBlock()` 経由でプリプロセッサ固有ブロック（psblock）として処理されます。`nodeName` は `originNode.type`（例: `JSXExpressionContainer`）に設定され、AST 内では `#ps:JSXExpressionContainer` となります。
 
+JSX を返す `.map()` 呼び出し（例: `{items.map(item => <li>{item}</li>)}`）では、`extractJSXFromCall()` ユーティリティがパターンを検出し、`blockBehavior: { type: 'each', expression }` を設定します。返された JSX 要素またはフラグメントは子ノードとして渡され、コアエンジンがループ本体を走査できるようになります。各結果ノードは `#parentIdMap` に登録されます。
+
 ## afterTraverse()
 
 `afterTraverse()` メソッドは psblock ノードの親子関係を再構築します。これは JSX 式コンテナ（`{items.map(item => <li>{item}</li>)}` のような）が再帰走査中に個別に収集された子要素を「養子」にする必要があるためです。

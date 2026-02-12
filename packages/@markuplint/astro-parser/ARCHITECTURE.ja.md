@@ -109,9 +109,9 @@ Astro の式（`{expression}`）は Astro AST で `type: 'expression'` ノード
 
 式が HTML 要素を含む場合（例: `{list.map(item => <li>{item}</li>)}`）、パーサーは複数のノードに分割します:
 
-1. **開始式フラグメント**: `{list.map(item => ` — 子ノードを含む MustacheTag psblock
+1. **開始式フラグメント**: `{list.map(item => ` — 子ノードを含む MustacheTag psblock。式が `.map()` または `.filter()` 呼び出しを含む場合（`detectBlockBehavior()` で検出）、開始フラグメントにはそれぞれ `blockBehavior: { type: 'each' }` または `{ type: 'if' }` が設定される
 2. **ネストされた HTML 要素**: `<li>{item}</li>` — 通常の要素として処理
-3. **終了式フラグメント**: `)}` — `isFragment: false` の別の MustacheTag psblock
+3. **終了式フラグメント**: `)}` — `isFragment: false` の別の MustacheTag psblock。開始フラグメントに `blockBehavior` がある場合、終了フラグメントには `blockBehavior: { type: 'end' }` が設定される
 
 分割ロジックは式の children 配列で `firstChild !== lastChild` かどうかを確認します。該当する場合:
 

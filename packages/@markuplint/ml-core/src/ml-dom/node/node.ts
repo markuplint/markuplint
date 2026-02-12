@@ -646,7 +646,7 @@ export abstract class MLNode<
 	/**
 	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
 	 * Conditional child nodes are nodes that are nested within
-	 * **preprocessor blocks** such as `if`, `each`, or `switch`.
+	 * **preprocessor blocks** such as `if` or `switch`.
 	 * Each NodeList represents a branch of conditional child nodes.
 	 *
 	 * Note: NodeList doesn't include whitespace nodes.

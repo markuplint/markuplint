@@ -11,6 +11,17 @@ import { HtmlParser } from '@markuplint/html-parser';
  * or attribute bindings (with potential standard attribute names for validation).
  */
 class AlpineParser extends HtmlParser {
+	/**
+	 * Overrides the base element visitor to convert `<template x-for="...">` elements
+	 * into preprocessor-specific blocks with `blockBehavior: { type: 'each' }`.
+	 * The matching closing tag receives `{ type: 'end' }`. Non-template elements
+	 * and templates without `x-for` are passed through unchanged.
+	 *
+	 * @param token - The element token with tag metadata
+	 * @param childNodes - The child AST nodes within the element
+	 * @param options - Options forwarded to the base `visitElement`
+	 * @returns An array of markuplint node tree items, with `x-for` templates replaced by psblock nodes
+	 */
 	visitElement(
 		token: Parameters<HtmlParser['visitElement']>[0],
 		childNodes: Parameters<HtmlParser['visitElement']>[1] = [],

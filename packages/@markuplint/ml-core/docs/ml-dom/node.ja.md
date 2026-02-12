@@ -105,14 +105,13 @@ div
 1. `childNodes` を順番に走査する
 2. `MLBlock` に遭遇した場合、その `blockBehavior?.type` から分岐 `mode` を決定する：
    - `'if'` または `'if:elseif'` → mode `'if'`
-   - `'each'` → mode `'each'`
    - `'switch:case'` → mode `'switch'`
-   - `'if:else'`、`'each:empty'`、`'switch:default'`、`'await'`、`'await:catch'`、`'await:then'` → 現在のモードを継続
+   - `'if:else'`、`'each'`、`'each:empty'`、`'switch:default'`、`'await'`、`'await:catch'`、`'await:then'` → 現在のモードを継続（新しいモードは設定されない）
    - その他の型 → スキップ（条件分岐ではない）
 3. ブロックに対して再帰的に `conditionalChildNodes()` を呼び出し、サブパターンを取得する
 4. 分岐を収集する。非ブロックの子に到達したら、現在の分岐グループを閉じる
 5. 空白のみのテキストノードはスキップされる
-6. `'if'`、`'each'`、`'switch'` モードの場合：「空の分岐」（何もレンダリングされないケース）を表す `null` センチネルが追加される
+6. `'if'`、`'switch'` モードの場合：「空の分岐」（何もレンダリングされないケース）を表す `null` センチネルが追加される
 7. 収集した分岐を `branchesToPatterns()` に渡し、すべての組み合わせの直積を生成する
 
 #### 例
