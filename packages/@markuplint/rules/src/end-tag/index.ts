@@ -27,7 +27,7 @@ export default createRule<boolean>({
 			if (el.closeTag != null) {
 				return;
 			}
-			if ((document.endTag === 'xml' || el.isForeignElement) && el.selfClosingSolidus?.raw) {
+			if ((document.endTag === 'xml' || el.isForeignElement) && el.tagCloseChar.startsWith('/')) {
 				return;
 			}
 
