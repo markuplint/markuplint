@@ -1,10 +1,11 @@
 import type { Node } from './astro-parser.js';
-import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
 import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
 
 import { astroParse } from './astro-parser.js';
+import { detectBlockBehavior } from './detect-block-behavior.js';
 
 type State = {
 	scopeNS: string;
@@ -125,6 +126,8 @@ class AstroParser extends Parser<Node, State> {
 
 				const nodes: MLASTNodeTreeItem[] = [];
 
+				let closeExpressionLocation: Token | null = null;
+
 				if (firstChild && lastChild && firstChild !== lastChild) {
 					const startExpressionEndOffset = firstChild.position?.end?.offset ?? endOffset ?? offset;
 					const startExpressionLocation = this.sliceFragment(offset, startExpressionEndOffset);
@@ -133,21 +136,10 @@ class AstroParser extends Parser<Node, State> {
 					startExpressionStartLine = startExpressionLocation.line;
 					startExpressionStartCol = startExpressionLocation.col;
 
-					const closeExpressionLocation = this.sliceFragment(
-						lastChild.position?.start.offset ?? offset,
-						endOffset,
-					);
-
-					nodes.push(
-						...this.visitPsBlock({
-							...closeExpressionLocation,
-							depth,
-							parentNode,
-							nodeName: 'MustacheTag',
-							isFragment: false,
-						}),
-					);
+					closeExpressionLocation = this.sliceFragment(lastChild.position?.start.offset ?? offset, endOffset);
 				}
+
+				const blockBehavior = detectBlockBehavior(startExpressionRaw);
 
 				nodes.push(
 					...this.visitPsBlock(
@@ -162,7 +154,26 @@ class AstroParser extends Parser<Node, State> {
 							isFragment: true,
 						},
 						originNode.children,
+						blockBehavior,
 					),
+					...(closeExpressionLocation
+						? this.visitPsBlock(
+								{
+									...closeExpressionLocation,
+									depth,
+									parentNode,
+									nodeName: 'MustacheTag',
+									isFragment: false,
+								},
+								[],
+								blockBehavior
+									? {
+											type: 'end',
+											expression: closeExpressionLocation.raw,
+										}
+									: undefined,
+							)
+						: []),
 				);
 
 				return nodes;
