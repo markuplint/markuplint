@@ -3,7 +3,7 @@ import { rm, writeFile, readdir } from 'node:fs/promises';
 import { resolve, dirname, basename, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import syncGlob from 'glob';
+import { glob as asyncGlob } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,14 +85,7 @@ export async function importFileData(filePath: string): Promise<any> {
  * Async Glob
  */
 export function glob(dir: string): Promise<string[]> {
-  return new Promise((res, rej) => {
-    syncGlob(dir, (err, matches) => {
-      if (err) {
-        return rej(err);
-      }
-      res(matches);
-    });
-  });
+  return asyncGlob(dir);
 }
 
 /**
