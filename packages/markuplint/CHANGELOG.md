@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.14.1](https://github.com/markuplint/markuplint/compare/markuplint@4.14.0...markuplint@4.14.1) (2026-02-10)
+
+**Note:** Version bump only for package markuplint
+
 # [4.14.0](https://github.com/markuplint/markuplint/compare/markuplint@4.13.1...markuplint@4.14.0) (2025-11-05)
 
 ### Features

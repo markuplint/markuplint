@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.17.0](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.16.1...@markuplint/html-spec@4.17.0) (2026-02-10)
+
+### Bug Fixes
+
+- **html-spec:** add math and meter to img permitted roles ([97c9de0](https://github.com/markuplint/markuplint/commit/97c9de0596d2b9b17f91c875e853def4e45ec36b))
+- **html-spec:** add permitted roles to button per html-aria ([1bcdf1b](https://github.com/markuplint/markuplint/commit/1bcdf1b2894908a4d05d80458cfb5ccbbc1029b8))
+- **html-spec:** correct implicit role typo for meter element ([c7dc7c9](https://github.com/markuplint/markuplint/commit/c7dc7c9174047248f9170925b22d4fea5984b49d))
+- **html-spec:** revert over-applied role description changes ([fbc8a46](https://github.com/markuplint/markuplint/commit/fbc8a46f570ccebcafda7825305285002573df31))
+- **html-spec:** update html element implicit role to generic ([862a67d](https://github.com/markuplint/markuplint/commit/862a67d9283cec6854b0ab7ef678d3fa3516f3fe)), closes [w3c/aria#2504](https://github.com/w3c/aria/issues/2504) [w3c/html-aria#550](https://github.com/w3c/html-aria/issues/550)
+- **spec-generator:** merge MDN data into spec-defined attributes ([ae4db37](https://github.com/markuplint/markuplint/commit/ae4db37b109bac3daed22d8ba0a147acf2d71787))
+
+### Features
+
+- **html-spec:** add headingoffset and headingreset attributes ([49aa8e7](https://github.com/markuplint/markuplint/commit/49aa8e72346ea61cb62db8239ef9fe99b8a4eac3)), closes [whatwg/html#11086](https://github.com/whatwg/html/issues/11086) [whatwg/html#11979](https://github.com/whatwg/html/issues/11979)
+- **html-spec:** add iframe privateToken attribute ([6d6a45d](https://github.com/markuplint/markuplint/commit/6d6a45d2615f95b964e479c26e13ed3904ecfeb8))
+- **html-spec:** add input switch attribute ([3f77351](https://github.com/markuplint/markuplint/commit/3f773515c12349b88524991ddbefc8bd7206a2c9))
+- **html-spec:** add interestfor attribute (Interest Invokers API) ([1230b8b](https://github.com/markuplint/markuplint/commit/1230b8be720a78d615c1d5ca5873e6c725e6bb92))
+- **html-spec:** add request-close to button command attribute ([46c6093](https://github.com/markuplint/markuplint/commit/46c60938ceb37f094ab58ff034d01d4489c1ffa6))
+- **html-spec:** add svg:switch requiredExtensions and systemLanguage attributes ([481a836](https://github.com/markuplint/markuplint/commit/481a83693ccfc6b7147783c9d841ea2d96fadfef))
+- **html-spec:** add template shadowrootreferencetarget attribute ([dd78b8a](https://github.com/markuplint/markuplint/commit/dd78b8a75e4a034555741b4595c95cb535370ad0))
+- **html-spec:** deprecate attributionsrc attribute ([e12cf46](https://github.com/markuplint/markuplint/commit/e12cf4625e778e9e64ba6aef08b0e7c5b18b8c29))
+- **html-spec:** deprecate browsingtopics attribute on iframe ([27f54cf](https://github.com/markuplint/markuplint/commit/27f54cf3d349089ef2a972d14a386bfd9b2909c9))
+- **html-spec:** update scrollbar aria-controls from required to inherited ([14aeec5](https://github.com/markuplint/markuplint/commit/14aeec5e4e01ef32ba147a9ff49a5d5c44558901))
+
 ## [4.16.1](https://github.com/markuplint/markuplint/compare/@markuplint/html-spec@4.16.0...@markuplint/html-spec@4.16.1) (2025-11-05)
 
 **Note:** Version bump only for package @markuplint/html-spec

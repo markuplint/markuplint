@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.8.1...@markuplint/spec-generator@4.8.2) (2026-02-10)
+
+### Bug Fixes
+
+- **spec-generator:** merge MDN data into spec-defined attributes ([ae4db37](https://github.com/markuplint/markuplint/commit/ae4db37b109bac3daed22d8ba0a147acf2d71787))
+
 ## [4.8.1](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.8.0...@markuplint/spec-generator@4.8.1) (2025-11-05)
 
 **Note:** Version bump only for package @markuplint/spec-generator
