@@ -223,7 +223,7 @@ class JSXParser extends Parser<JSXNode, State> {
 						isFragment: true,
 					},
 					[],
-					null, // TODO: Infer conditionalType
+					null, // TODO: Infer blockBehavior
 					originNode,
 				);
 
