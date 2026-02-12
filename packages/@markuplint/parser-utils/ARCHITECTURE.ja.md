@@ -95,7 +95,7 @@ flowchart TD
 | `ignore-block.ts`        | テンプレート式のマスキングと復元           | `ignoreBlock`, `restoreNode`                                                                                                              |
 | `ignore-front-matter.ts` | YAML フロントマター処理                    | `ignoreFrontMatter`                                                                                                                       |
 | `detect-element-type.ts` | 要素の分類                                 | `detectElementType`                                                                                                                       |
-| `idl-attributes.ts`      | IDL ↔ コンテンツ属性名マッピング          | `searchIDLAttribute`                                                                                                                      |
+| `idl-attributes.ts`      | IDL ↔ コンテンツ属性名マッピング           | `searchIDLAttribute`                                                                                                                      |
 | `debugger.ts`            | テスト・デバッグユーティリティ             | `nodeListToDebugMaps`, `attributesToDebugMaps`, `nodeTreeDebugView`                                                                       |
 | `parser-error.ts`        | エラークラス                               | `ParserError`, `TargetParserError`, `ConfigParserError`                                                                                   |
 | `sort-nodes.ts`          | ノードの位置ソート                         | `sortNodes`                                                                                                                               |

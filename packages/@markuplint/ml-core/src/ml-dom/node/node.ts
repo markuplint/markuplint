@@ -33,10 +33,10 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
  * @template A - The underlying AST node type
  */
 export abstract class MLNode<
-		T extends RuleConfigValue,
-		O extends PlainData = undefined,
-		A extends MLASTNode = MLASTNode,
-	>
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+	A extends MLASTNode = MLASTNode,
+>
 	extends MLToken<A>
 	implements Node
 {

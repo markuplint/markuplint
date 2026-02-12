@@ -2673,7 +2673,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint-dev/prettier-config@workspace:packages/@markuplint-dev/prettier-config"
   dependencies:
-    prettier: "npm:3.6.2"
+    prettier: "npm:3.8.1"
   languageName: unknown
   linkType: soft
 
@@ -2745,7 +2745,7 @@ __metadata:
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.3.3"
     glob: "npm:13.0.2"
-    prettier: "npm:3.6.2"
+    prettier: "npm:3.8.1"
     typescript: "npm:5.9.3"
   bin:
     create-rule: ./bin/create-rule.mjs
@@ -15103,7 +15103,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.6.2, prettier@npm:^3.2.5":
+"prettier@npm:3.8.1":
+  version: 3.8.1
+  resolution: "prettier@npm:3.8.1"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 10c0/33169b594009e48f570471271be7eac7cdcf88a209eed39ac3b8d6d78984039bfa9132f82b7e6ba3b06711f3bfe0222a62a1bfb87c43f50c25a83df1b78a2c42
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.2.5":
   version: 3.6.2
   resolution: "prettier@npm:3.6.2"
   bin:

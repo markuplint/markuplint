@@ -15,10 +15,10 @@ import { MLNode } from './node.js';
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
 export abstract class MLCharacterData<
-		T extends RuleConfigValue,
-		O extends PlainData = undefined,
-		A extends MLASTNode = MLASTNode,
-	>
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+	A extends MLASTNode = MLASTNode,
+>
 	extends MLNode<T, O, A>
 	implements CharacterData
 {

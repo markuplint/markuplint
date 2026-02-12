@@ -14,10 +14,10 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
  * @see https://dom.spec.whatwg.org/#interface-parentnode
  */
 export abstract class MLParentNode<
-		T extends RuleConfigValue,
-		O extends PlainData = undefined,
-		A extends MLASTNode = MLASTNode,
-	>
+	T extends RuleConfigValue,
+	O extends PlainData = undefined,
+	A extends MLASTNode = MLASTNode,
+>
 	extends MLNode<T, O, A>
 	implements ParentNode
 {
