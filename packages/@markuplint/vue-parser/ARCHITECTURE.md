@@ -228,6 +228,22 @@ These settings reflect that Vue's template parser handles whitespace and node va
 
 The vue-eslint-parser dependency supports both Vue 2 and Vue 3 template syntax. The parser does not distinguish between Vue versions at the AST level -- both produce the same `VElement`, `VText`, and `VExpressionContainer` node types. Vue 3-specific features like `<Teleport>` and `<Suspense>` are handled through element type detection rather than parser-level changes.
 
+## Limitations
+
+### No `blockBehavior` support for `v-if` / `v-for`
+
+Other framework parsers (Svelte, Pug, Alpine, JSX, Astro) set `blockBehavior` on their conditional/loop constructs so that the core engine can enumerate all possible child node patterns via `conditionalChildNodes()`. The Vue parser does **not** support this. As a result, rules like `permitted-contents` cannot validate content models across `v-if`/`v-else` branches or `v-for` iterations in Vue templates.
+
+**Why this is difficult to implement:**
+
+In Alpine.js, conditionals and loops use a fixed pattern — `<template x-for="...">` / `<template x-if="...">` — where the `<template>` element can be cleanly converted into a PSBlock. Vue's directives work fundamentally differently:
+
+1. **Directives attach to arbitrary elements**: `v-if`, `v-for`, `v-else`, and `v-else-if` can appear on any element (e.g., `<div v-if="...">`, `<li v-for="...">`). The element must remain a valid HTML element for attribute validation while simultaneously acting as a block for content model analysis — a dual role the current parser architecture does not support.
+
+2. **Sibling-based branching**: `v-else` and `v-else-if` are attributes on **sibling** elements, not child constructs of a wrapper block. Building conditional groups requires cross-sibling analysis that goes beyond the current per-node `nodeize()` model.
+
+The current Vue parser handles these directives at the attribute level only (`isDirective: true`), which suppresses attribute validation errors but does not provide structural block information to the core engine.
+
 ## Key Source Files
 
 | File                      | Purpose                                                              |
