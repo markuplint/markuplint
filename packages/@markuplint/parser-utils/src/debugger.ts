@@ -10,8 +10,7 @@ import type { MLASTAttr, MLASTNode, MLASTToken } from '@markuplint/ml-ast';
  */
 export function nodeListToDebugMaps(nodeList: readonly (MLASTNode | null)[], withAttr = false) {
 	return nodeList.flatMap(n => {
-		const r: string[] = [];
-		r.push(tokenDebug(n));
+		const r: string[] = [tokenDebug(n)];
 		if (withAttr && n && n.type === 'starttag') {
 			r.push(...attributesToDebugMaps(n.attributes).flat());
 		}

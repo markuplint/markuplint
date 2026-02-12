@@ -547,9 +547,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			catchToken = this.sliceFragment(token.startOffset + catchExpStart, catchExpEndCharOffset);
 		}
 
-		const expressions: MLASTPreprocessorSpecificBlock[] = [];
-
-		expressions.push(
+		const expressions: MLASTPreprocessorSpecificBlock[] = [
 			this.visitPsBlock(
 				{
 					...awaitExpToken,
@@ -561,7 +559,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 				originBlockNode.pending?.nodes,
 				'await',
 			)[0],
-		);
+		];
 
 		if (thenToken) {
 			expressions.push(

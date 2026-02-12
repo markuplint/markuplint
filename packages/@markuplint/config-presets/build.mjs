@@ -73,11 +73,10 @@ presets.sort((a, b) => {
 
 const renderMd = mustache.render(md, {
 	presets: () => {
-		const line = [];
-		line.push(
+		const line = [
 			`Ruleset|Description|${presets.map(p => `\`${p}\``).join('|')}|`,
 			`---|---|${'---|'.repeat(presets.length)}`,
-		);
+		];
 
 		for (const [name, context] of Object.entries(rules)) {
 			const title = context.url ? `[${name}](${context.url})` : name;

@@ -70,5 +70,6 @@ function mergeConfig(...configs) {
 			},
 		};
 	}
+	// eslint-disable-next-line unicorn/no-array-reduce
 	return configs.reduce(mergeConfig);
 }
