@@ -34,6 +34,16 @@ describe('1.2', () => {
 		const el = _('<table><tbody><tr><td></td></tr></tbody></table>', 'tr');
 		expect(matchesContextRole(['grid > rowgroup'], el, specs, version)).toBe(false);
 	});
+
+	test('presentation parent is NOT transparent in 1.2', () => {
+		const el = _('<ul><div role="presentation"><li></li></div></ul>', 'li');
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(false);
+	});
+
+	test('none parent is NOT transparent in 1.2', () => {
+		const el = _('<ul><div role="none"><li></li></div></ul>', 'li');
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(false);
+	});
 });
 
 describe('1.3', () => {
@@ -83,5 +93,15 @@ describe('1.3', () => {
 	test('generic parent with explicit role context in 1.3', () => {
 		const el = _('<div role="listbox"><div><div role="option">Item</div></div></div>', '[role=option]');
 		expect(matchesContextRole(['listbox'], el, specs, version)).toBe(true);
+	});
+
+	test('presentation parent is transparent in 1.3', () => {
+		const el = _('<ul><div role="presentation"><li></li></div></ul>', 'li');
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(true);
+	});
+
+	test('none parent is transparent in 1.3', () => {
+		const el = _('<ul><div role="none"><li></li></div></ul>', 'li');
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(true);
 	});
 });

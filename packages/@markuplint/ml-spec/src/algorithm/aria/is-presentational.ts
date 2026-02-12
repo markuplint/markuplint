@@ -16,16 +16,26 @@ export function isPresentational(roleName?: string) {
 }
 
 /**
- * Determines whether a given role is transparent for ownership/context
- * traversal. In ARIA 1.3, `generic` role elements are transparent in
- * addition to `presentation`/`none` when determining parent-child
- * relationships for required owned elements and required context roles.
+ * Determines whether a given role is transparent for ownership traversal.
  *
- * @see https://w3c.github.io/aria/#tree_exclusion
+ * **Version behavior:**
+ * - **ARIA 1.1/1.2:** Only `presentation`/`none` are transparent.
+ *   This matches the pre-existing behavior of `getClosestNonPresentationalDescendants`
+ *   and `getNonPresentationalAncestor`.
+ * - **ARIA 1.3:** `generic` is additionally transparent per the spec:
+ *   "user agents MUST ignore any intervening elements with the role
+ *   `generic` or `none`."
+ *
+ * **Important:** For `matchesContextRole`, the caller gates this function
+ * behind a version check (`version !== '1.1' && version !== '1.2'`)
+ * because ARIA 1.1/1.2 did not define context role transparency at all.
+ *
+ * @see https://w3c.github.io/aria/#mustContain
+ * @see https://w3c.github.io/aria/#scope
  *
  * @param roleName - The ARIA role name to check, or undefined
  * @param version - The ARIA specification version
- * @returns `true` if the role should be skipped during ownership/context traversal
+ * @returns `true` if the role should be skipped during ownership traversal
  */
 export function isTransparentForOwnership(roleName: string | undefined, version: ARIAVersion): boolean {
 	if (isPresentational(roleName)) {

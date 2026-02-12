@@ -42,13 +42,17 @@ function matchesCondition(
 		const parentRole = getComputedRole(specs, parentEl, version, true).role;
 
 		/**
-		 * In ARIA 1.3, elements with `generic` role (e.g., `<div>`, `<span>`)
-		 * are transparent for required context role matching.
-		 * Skip them without consuming the condition token.
+		 * ARIA 1.3: "To determine whether an element has a parent with
+		 * the required role, user agents MUST ignore any elements with
+		 * the role `generic` or `none`."
 		 *
-		 * @see https://w3c.github.io/aria/#tree_exclusion
+		 * This transparency is gated to ARIA 1.3+ only.
+		 * In ARIA 1.1/1.2, the spec did not define this behavior,
+		 * so parent elements are matched strictly without skipping.
+		 *
+		 * @see https://w3c.github.io/aria/#scope
 		 */
-		if (isTransparentForOwnership(parentRole?.name, version)) {
+		if (version !== '1.1' && version !== '1.2' && isTransparentForOwnership(parentRole?.name, version)) {
 			parentEl = parentEl.parentElement;
 			continue;
 		}

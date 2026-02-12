@@ -59,19 +59,21 @@ export function getComputedRole(
 	 * > causes the accessibility tree to be malformed,
 	 * > the expected results are undefined.
 	 *
-	 * Determines whether the context is valid.
-	 * ⚠ THE SPECIFICATION HAS AN ISSUE
-	 * that has not decided whether the context is a parent or an ancestor.
+	 * Determines whether the context is valid
+	 * (called "Required Accessibility Parent Role" in ARIA 1.3).
 	 *
+	 * In ARIA 1.1/1.2, the spec had not decided whether the context
+	 * is a parent or an ancestor. This implementation interprets that
+	 * as A PARENT, but `presentation`/`none` elements are treated as
+	 * transparent by `getNonPresentationalAncestor`.
+	 *
+	 * ARIA 1.3 formally resolves this with the definitions of
+	 * "accessibility child" and "accessibility parent", and
+	 * `matchesContextRole` additionally skips `generic` elements.
+	 *
+	 * @see https://w3c.github.io/aria/#scope
 	 * @see https://github.com/w3c/aria/issues/1033
-	 * @see https://github.com/w3c/aria/issues/748
-	 * @see https://github.com/w3c/aria/pull/1162
-	 * @see https://github.com/w3c/aria/pull/1213
-	 *
-	 * Currently, this process interprets that as A PARENT
-	 * because it wants to be near to HTML semantics.
-	 * However, the presentational role behaves transparently
-	 * according to the sample code in WAI-ARIA specification.
+	 * @see https://github.com/w3c/aria/pull/1454
 	 */
 	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
 		/**

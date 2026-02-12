@@ -90,19 +90,20 @@ export function isRequiredOwnedElement(
 }
 
 /**
- * Gets the list of closest non-presentational descendants.
- * ⚠ THE SPECIFICATION HAS AN ISSUE
- * that has not decided whether the owned element is a child or a descendant.
+ * Gets the list of closest non-presentational descendants
+ * (called "Allowed Accessibility Child Roles" in ARIA 1.3).
  *
+ * In ARIA 1.1/1.2, the spec had not decided whether the owned element
+ * is a child or a descendant. This implementation interprets that as
+ * A CHILD, but `presentation`/`none` elements are treated as transparent.
+ *
+ * ARIA 1.3 formally resolves this with the definitions of
+ * "accessibility child" and "accessibility parent", and additionally
+ * makes `generic` elements transparent.
+ *
+ * @see https://w3c.github.io/aria/#mustContain
  * @see https://github.com/w3c/aria/issues/1033
- * @see https://github.com/w3c/aria/issues/748
- * @see https://github.com/w3c/aria/pull/1162
- * @see https://github.com/w3c/aria/pull/1213
- *
- * Currently, this process interprets that as A CHILD
- * because it wants to be near to HTML semantics.
- * However, the presentational role behaves transparently
- * according to the sample code in WAI-ARIA specification.
+ * @see https://github.com/w3c/aria/pull/1454
  */
 function getClosestNonPresentationalDescendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
