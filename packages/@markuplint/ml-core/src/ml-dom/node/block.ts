@@ -1,7 +1,7 @@
 import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType } from './types.js';
-import type { MLASTPreprocessorSpecificBlock, MLASTPreprocessorSpecificBlockConditionalType } from '@markuplint/ml-ast';
+import type { MLASTPreprocessorSpecificBlock, MLASTBlockBehavior } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
@@ -22,9 +22,9 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	MLASTPreprocessorSpecificBlock
 > {
 	/**
-	 * The type of conditional this block represents (e.g., `if`, `each`, `switch:case`).
+	 * Block behavior associated with this block, if any.
 	 */
-	readonly conditionalType: MLASTPreprocessorSpecificBlockConditionalType;
+	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
 	 * Whether this block is transparent, meaning its children are treated
@@ -46,7 +46,7 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		super(astNode, document, astNode.isFragment);
 		// TODO:
 		this.isTransparent = true;
-		this.conditionalType = astNode.conditionalType;
+		this.blockBehavior = astNode.blockBehavior;
 	}
 
 	/**

@@ -28,8 +28,8 @@ class NodeStore {
 				})),
 			);
 			throw new TargetParserError('Broke mapping nodes.', {
-				line: astNode.startLine,
-				col: astNode.startCol,
+				line: astNode.line,
+				col: astNode.col,
 				raw: astNode.raw,
 				nodeName: astNode.nodeName,
 			});

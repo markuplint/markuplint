@@ -42,6 +42,7 @@ export function createNode<N extends MLASTNode, T extends RuleConfigValue, O ext
 							elementType: 'web-component',
 							attributes: [],
 							childNodes: [],
+							blockBehavior: null,
 							pairNode: null,
 							tagOpenChar: '',
 							tagCloseChar: '',
