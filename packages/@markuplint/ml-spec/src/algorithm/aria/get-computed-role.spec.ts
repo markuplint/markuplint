@@ -164,6 +164,13 @@ describe('1.2', () => {
 			'presentation',
 		);
 	});
+
+	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
+		// In 1.2, generic <div> is NOT transparent. The non-presentational
+		// ancestor is <div> (generic), which has no requiredOwnedElements.
+		// Conflict resolution does not trigger → presentation is kept.
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.2', 'li').role?.name).toBe('presentation');
+	});
 });
 
 describe('1.3', () => {
@@ -255,6 +262,8 @@ describe('1.3', () => {
 			['td', 'cell'],
 		]);
 		// TODO: https://github.com/markuplint/markuplint/issues/1265
+		// <td> gets null because its implicit role condition requires
+		// table:is(:not([role]), [role=table]), which doesn't match role="none".
 		expect(tree('<table role="none"><tr><td>foo</td></tr></table>', '1.3')).toStrictEqual([
 			['table', 'none'],
 			['tbody', null, 'NO_OWNER'],
@@ -294,6 +303,16 @@ describe('1.3', () => {
 		);
 		expect(c('<h1 role="presentation" aria-level="2"> Sample Content </h1>', '1.3').role?.name).toBe(
 			'presentation',
+		);
+	});
+
+	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
+		// In 1.3, generic <div> is transparent for getNonPresentationalAncestor,
+		// so <ul> (list) is found as the ancestor with requiredOwnedElements.
+		// <li role="presentation"> matches listitem → conflict resolution triggers.
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').role?.name).toBe('listitem');
+		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').errorType).toBe(
+			'REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
 		);
 	});
 });
