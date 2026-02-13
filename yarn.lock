@@ -2977,7 +2977,7 @@ __metadata:
     "@markuplint/html-parser": "npm:4.6.23"
     "@markuplint/ml-ast": "npm:4.4.11"
     "@markuplint/parser-utils": "npm:4.8.11"
-    vue-eslint-parser: "npm:10.2.0"
+    vue-eslint-parser: "npm:10.3.0"
   languageName: unknown
   linkType: soft
 
@@ -8686,7 +8686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-scope@npm:^8.0.1, eslint-scope@npm:^8.2.0":
+"eslint-scope@npm:^8.0.1":
   version: 8.4.0
   resolution: "eslint-scope@npm:8.4.0"
   dependencies:
@@ -8696,7 +8696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-scope@npm:^9.1.0":
+"eslint-scope@npm:^8.2.0 || ^9.0.0, eslint-scope@npm:^9.1.0":
   version: 9.1.0
   resolution: "eslint-scope@npm:9.1.0"
   dependencies:
@@ -8715,14 +8715,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^4.0.0, eslint-visitor-keys@npm:^4.2.0, eslint-visitor-keys@npm:^4.2.1":
+"eslint-visitor-keys@npm:^4.0.0, eslint-visitor-keys@npm:^4.2.1":
   version: 4.2.1
   resolution: "eslint-visitor-keys@npm:4.2.1"
   checksum: 10c0/fcd43999199d6740db26c58dbe0c2594623e31ca307e616ac05153c9272f12f1364f5a0b1917a8e962268fdecc6f3622c1c2908b4fcc2e047a106fe6de69dc43
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^5.0.0":
+"eslint-visitor-keys@npm:^4.2.0 || ^5.0.0, eslint-visitor-keys@npm:^5.0.0":
   version: 5.0.0
   resolution: "eslint-visitor-keys@npm:5.0.0"
   checksum: 10c0/5ec68b7ae350f6e7813a9ab469f8c64e01e5a954e6e6ee6dc441cc24d315eb342e5fb81ab5fc21f352cf0125096ab4ed93ca892f602a1576ad1eedce591fe64a
@@ -8781,7 +8781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"espree@npm:11.1.0, espree@npm:^11.1.0":
+"espree@npm:11.1.0, espree@npm:^10.3.0 || ^11.0.0, espree@npm:^11.1.0":
   version: 11.1.0
   resolution: "espree@npm:11.1.0"
   dependencies:
@@ -8792,7 +8792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"espree@npm:^10.0.0, espree@npm:^10.3.0":
+"espree@npm:^10.0.0":
   version: 10.4.0
   resolution: "espree@npm:10.4.0"
   dependencies:
@@ -18683,19 +18683,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-eslint-parser@npm:10.2.0":
-  version: 10.2.0
-  resolution: "vue-eslint-parser@npm:10.2.0"
+"vue-eslint-parser@npm:10.3.0":
+  version: 10.3.0
+  resolution: "vue-eslint-parser@npm:10.3.0"
   dependencies:
     debug: "npm:^4.4.0"
-    eslint-scope: "npm:^8.2.0"
-    eslint-visitor-keys: "npm:^4.2.0"
-    espree: "npm:^10.3.0"
+    eslint-scope: "npm:^8.2.0 || ^9.0.0"
+    eslint-visitor-keys: "npm:^4.2.0 || ^5.0.0"
+    espree: "npm:^10.3.0 || ^11.0.0"
     esquery: "npm:^1.6.0"
     semver: "npm:^7.6.3"
   peerDependencies:
-    eslint: ^8.57.0 || ^9.0.0
-  checksum: 10c0/44424733b9a75cde2c7c3ad03427264cc39eb0c1300f3157d4476b7faf9ff3d567b725b17a60bcfb03f42eb6c32a190473d27f4e1866081e019b3e1cd0e53799
+    eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
+  checksum: 10c0/139e52d8d6fbf2c686455b746ad3b3b111d4a2e0ed2a3a92db4daf31500ed86c77934aad27f114d1de46672d9a83ec5266dc3df59da8656ce0f877a5cc6ca155
   languageName: node
   linkType: hard
 
