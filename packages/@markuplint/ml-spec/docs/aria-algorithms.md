@@ -284,8 +284,10 @@ Retrieves the full ARIA role specification for a given role name, including the 
   name: string;
   isAbstract: boolean;          // default: false
   deprecated: boolean;          // default: false
-  requiredContextRole: string[];     // default: []
-  requiredOwnedElements: string[];   // default: []
+  requiredAccessibilityParentRole: string[];  // default: []
+  allowedAccessibilityChildRoles: string[];   // default: []
+  requiredContextRole: string[];     // @deprecated alias — same as requiredAccessibilityParentRole
+  requiredOwnedElements: string[];   // @deprecated alias — same as allowedAccessibilityChildRoles
   accessibleNameRequired: boolean;   // default: false
   accessibleNameFromAuthor: boolean; // default: false
   accessibleNameFromContent: boolean;// default: false

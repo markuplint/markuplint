@@ -134,16 +134,26 @@ getPermittedRoles(specs, 'img', null, '1.3', matches);
 // → [{ name: 'image' }, { name: 'img' }, ...]
 ```
 
-## Terminology Changes
+## Terminology and Property Name Changes
 
-ARIA 1.3 renames several concepts. The codebase retains the ARIA 1.2 property names for backward compatibility but adopts the ARIA 1.3 terminology in documentation and JSDoc.
+ARIA 1.3 renames several concepts. The `ARIARole` type now exposes **both** the new ARIA 1.3 property names and the deprecated ARIA 1.2 names for backward compatibility:
 
-| ARIA 1.2 (property name)  | ARIA 1.3 (canonical name)              |
-| -------------------------- | --------------------------------------- |
-| `requiredContextRole`      | Required Accessibility Parent Role      |
-| `requiredOwnedElements`    | Allowed Accessibility Child Roles       |
+| ARIA 1.3 property (new)                     | ARIA 1.2 property (deprecated)   |
+| -------------------------------------------- | -------------------------------- |
+| `requiredAccessibilityParentRole`            | `requiredContextRole`            |
+| `allowedAccessibilityChildRoles`             | `requiredOwnedElements`          |
 
-The `ARIARole` type properties are unchanged to avoid breaking the public API.
+Both properties hold the same values. Internal code uses the new names; the old names are retained as `@deprecated` aliases.
+
+### Rule Option Rename
+
+The `wai-aria` rule option has also been renamed:
+
+| ARIA 1.3 option (new)                         | ARIA 1.2 option (deprecated)      |
+| ----------------------------------------------- | --------------------------------- |
+| `checkingAllowedAccessibilityChildRoles`       | `checkingRequiredOwnedElements`   |
+
+Both options default to `true`. The check runs only when **both** are `true`, so setting either to `false` disables it. This ensures backward compatibility — existing configs that set `checkingRequiredOwnedElements: false` continue to work.
 
 ## Version Gating Summary
 
@@ -156,4 +166,4 @@ All ARIA 1.3 behaviors are gated by the `version` parameter:
 | `image` / `img` synonym              | No                  | Yes          |
 | `presentation` / `none` transparent   | Yes                 | Yes          |
 
-Existing users who do not change their `ARIAVersion` setting will see no behavioral differences.
+The `wai-aria` rule's `version` option now accepts `'1.3'` in addition to `'1.1'` and `'1.2'`. The default remains `'1.2'`, so existing users will see no behavioral differences.

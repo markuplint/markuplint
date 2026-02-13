@@ -38,10 +38,10 @@ export function hasRequiredOwnedElement(
 	 * Otherwise, traverses descendants to find owned elements.
 	 */
 	const computed = getComputedRole(specs, el, version);
-	if (!computed.role || computed.role.requiredOwnedElements.length === 0) {
+	if (!computed.role || computed.role.allowedAccessibilityChildRoles.length === 0) {
 		return true;
 	}
-	for (const expectRole of computed.role.requiredOwnedElements) {
+	for (const expectRole of computed.role.allowedAccessibilityChildRoles) {
 		for (const owned of getClosestNonPresentationalDescendants(el, specs, version)) {
 			if (isRequiredOwnedElement(owned.el, owned.role, expectRole, specs, version)) {
 				return true;

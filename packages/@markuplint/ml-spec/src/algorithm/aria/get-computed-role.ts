@@ -75,7 +75,7 @@ export function getComputedRole(
 	 * @see https://github.com/w3c/aria/issues/1033
 	 * @see https://github.com/w3c/aria/pull/1454
 	 */
-	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
+	if (computedRole.role && computedRole.role.requiredAccessibilityParentRole.length > 0) {
 		/**
 		 * An element fragment that serves as the root without a parent element
 		 * cannot satisfy the "Required Accessibility Parent Role" condition.
@@ -98,7 +98,7 @@ export function getComputedRole(
 				errorType: 'NO_OWNER',
 			};
 		}
-		if (!matchesContextRole(computedRole.role.requiredContextRole, el, specs, version)) {
+		if (!matchesContextRole(computedRole.role.requiredAccessibilityParentRole, el, specs, version)) {
 			return {
 				el,
 				role: null,
@@ -217,8 +217,8 @@ export function getComputedRole(
 		const nonPresentationalAncestor = getNonPresentationalAncestor(el, specs, version);
 		if (
 			nonPresentationalAncestor.role &&
-			nonPresentationalAncestor.role?.requiredOwnedElements.length > 0 &&
-			nonPresentationalAncestor.role.requiredOwnedElements.some(expected => {
+			nonPresentationalAncestor.role?.allowedAccessibilityChildRoles.length > 0 &&
+			nonPresentationalAncestor.role.allowedAccessibilityChildRoles.some(expected => {
 				// const ancestor = nonPresentationalAncestor.el;
 				// const ancestorImplicitRole = getImplicitRole(specs, ancestor, version);
 				// console.log({ nonPresentationalAncestor, ancestorImplicitRole });

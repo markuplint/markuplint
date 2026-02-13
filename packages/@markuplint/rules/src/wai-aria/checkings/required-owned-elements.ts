@@ -44,7 +44,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		if (!role) {
 			return;
 		}
-		if (role.requiredOwnedElements.length === 0) {
+		if (role.allowedAccessibilityChildRoles.length === 0) {
 			return;
 		}
 		/**
@@ -70,7 +70,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				}
 				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
 				if (
-					role.requiredOwnedElements.some(ownedRole =>
+					role.allowedAccessibilityChildRoles.some(ownedRole =>
 						isRequiredOwnedElement(
 							computedChild.el,
 							computedChild.role,
@@ -132,9 +132,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 					t(
 						'{0} requires {1}',
 						t('the {0}', 'child element'),
-						role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
-							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+						role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
+							? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
+							: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
 					),
 					t('require {0}', 'aria-busy="true"'),
 				),
@@ -146,9 +146,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			message: t(
 				'{0} expects {1}',
 				t('the "{0*}" {1}', role.name, 'role'),
-				role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
-					? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-					: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+				role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
+					? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
+					: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
 			),
 		};
 	};

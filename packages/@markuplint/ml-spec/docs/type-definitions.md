@@ -137,9 +137,13 @@ type ARIARole = {
   readonly isAbstract: boolean; // Whether this is an abstract role
   readonly deprecated: boolean; // Whether this role is deprecated
 
-  // Context requirements (ARIA 1.3 terminology; property names use ARIA 1.2 names)
-  readonly requiredContextRole: readonly string[]; // "Required Accessibility Parent Role"
-  readonly requiredOwnedElements: readonly string[]; // "Allowed Accessibility Child Roles"
+  // Context requirements (ARIA 1.3 names)
+  readonly requiredAccessibilityParentRole: readonly string[];
+  readonly allowedAccessibilityChildRoles: readonly string[];
+
+  // Backward compatibility (ARIA 1.2 names, deprecated)
+  readonly requiredContextRole: readonly string[];     // @deprecated
+  readonly requiredOwnedElements: readonly string[];   // @deprecated
 
   // Accessible name constraints
   readonly accessibleNameRequired: boolean; // Must have an accessible name

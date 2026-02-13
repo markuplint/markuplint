@@ -14,6 +14,12 @@
 					"description": "Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.",
 					"description:ja": "プロパティ/ステートの値をチェックします。このオプションは、Markuplintが許可リストに追加するよりも先にWAI-ARIAの仕様が更新された場合などに、必要に応じて一時的に無効化できるようにしています。基本的に無効化を推奨しません。"
 				},
+				"checkingAllowedAccessibilityChildRoles": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Verify that roles with \"Allowed Accessibility Child Roles\" (called \"Required Owned Elements\" in ARIA 1.2) contain the expected child roles.",
+					"description:ja": "\"Allowed Accessibility Child Roles\"（ARIA 1.2では\"Required Owned Elements\"）を持つロールが期待される子ロールを含んでいるかチェックします。"
+				},
 				"checkingDeprecatedRole": {
 					"type": "boolean",
 					"default": "true",
@@ -52,7 +58,7 @@
 				},
 				"version": {
 					"type": "string",
-					"enum": ["1.1", "1.2"],
+					"enum": ["1.1", "1.2", "1.3"],
 					"default": "1.2",
 					"description": "Choose the version of WAI-ARIA to evaluate.",
 					"description:ja": "評価するWAI-ARIAのバージョンを指定します。"
