@@ -36,7 +36,7 @@
 		"@markuplint/types": "4.8.2",
 		"debug": "4.4.3",
 		"espree": "11.1.0",
-		"type-fest": "4.41.0"
+		"type-fest": "5.4.4"
 	},
 	"devDependencies": {
 		"@typescript-eslint/typescript-estree": "8.55.0"
