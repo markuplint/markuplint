@@ -31,7 +31,7 @@
 		"@markuplint/ml-config": "4.8.15",
 		"@markuplint/parser-utils": "4.8.11",
 		"glob": "13.0.3",
-		"meow": "13.2.0",
+		"meow": "14.0.0",
 		"typescript": "5.9.3"
 	}
 }
