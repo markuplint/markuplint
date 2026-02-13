@@ -217,6 +217,8 @@ export abstract class MLNode<
 
 	/**
 	 * The list of child nodes that contains `Element`, `Text`, and `Comment`.
+	 * Fragment nodes and preprocessor blocks with `each` or `end` block behavior
+	 * are transparent — their child nodes are flattened into this list.
 	 *
 	 * @readonly
 	 * @implements DOM API: `Node`
@@ -226,7 +228,11 @@ export abstract class MLNode<
 		const pureChildNodes = [...this.getPureChildNodes()];
 
 		const childNodes = pureChildNodes.flatMap(node => {
-			if (node.isFragment) {
+			if (
+				node.isFragment ||
+				(node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK) &&
+					['each', 'end'].includes(node.blockBehavior?.type ?? ''))
+			) {
 				return [...node.childNodes];
 			}
 			return [node];
