@@ -65,7 +65,7 @@ If specified to `nodeRules` or `childNodeRules`, It searches the element from ch
 
 ### Setting `ignoreOmittedElements` option {#setting-ignore-omitted-elements}
 
-HTML allows certain tags to be omitted (e.g., `<tbody>`). The HTML parser implicitly creates these omitted elements as ghost nodes. By default, these ghost elements satisfy the requirement. Set `ignoreOmittedElements` to `true` to require that elements are explicitly written in the source.
+HTML allows certain tags to be omitted (e.g., `<tbody>`). The HTML parser implicitly creates these omitted elements as ghost nodes. By default, these ghost elements are **ignored** — only elements explicitly written in the source satisfy the requirement. Set `ignoreOmittedElements` to `false` if you want ghost elements to count as satisfying the requirement.
 
 ```json class=config
 {
@@ -76,7 +76,7 @@ HTML allows certain tags to be omitted (e.g., `<tbody>`). The HTML parser implic
         "required-element": {
           "value": ["tbody"],
           "options": {
-            "ignoreOmittedElements": true
+            "ignoreOmittedElements": false
           }
         }
       }
