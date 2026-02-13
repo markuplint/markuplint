@@ -129,7 +129,7 @@ export interface MLASTElement extends MLASTAbstractNode {
 	/** Nesting depth in the document tree */
 	readonly depth: number;
 	/** Namespace URI of the element (e.g. `"http://www.w3.org/1999/xhtml"`) */
-	readonly namespace: string;
+	readonly namespace: NamespaceURI;
 	/** Whether the element is native HTML, a Web Component, or an authored component */
 	readonly elementType: ElementType;
 	/** Whether this element acts as a fragment (no actual DOM node) */
