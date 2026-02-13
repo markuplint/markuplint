@@ -287,7 +287,7 @@ class PugParser extends Parser<ASTNode> {
 	 * pre-parsed attributes (including `&attributes` spread syntax) and
 	 * visiting child nodes within the Pug block.
 	 *
-	 * @param token - The child token with tag metadata and namespace
+	 * @param token - The child token with tag metadata
 	 * @param childNodes - The child Pug AST nodes within the tag's block
 	 * @param options - Options containing pre-parsed attribute overrides
 	 * @returns An array of markuplint node tree items for the element and its children

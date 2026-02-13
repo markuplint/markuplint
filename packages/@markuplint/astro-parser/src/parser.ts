@@ -11,8 +11,7 @@ import { detectBlockBehavior } from './detect-block-behavior.js';
  * Parser implementation for Astro component templates.
  * Extends the base Parser to handle Astro-specific syntax including frontmatter blocks,
  * expression containers (`{}`), component/element/fragment types, Astro directives
- * (e.g., `class:list`, `set:html`), shorthand attributes, and namespace-aware
- * element resolution (XHTML vs SVG).
+ * (e.g., `class:list`, `set:html`), and shorthand attributes.
  */
 class AstroParser extends Parser<Node> {
 	constructor() {
@@ -33,7 +32,7 @@ class AstroParser extends Parser<Node> {
 	/**
 	 * Converts an Astro AST node into markuplint node tree items.
 	 * Handles frontmatter, doctype, text, comment, component/element/fragment,
-	 * and expression nodes. Manages namespace scoping for SVG elements.
+	 * and expression nodes.
 	 *
 	 * @param originNode - The Astro AST node to convert
 	 * @param parentNode - The parent node in the markuplint tree, or null for root nodes
@@ -182,7 +181,7 @@ class AstroParser extends Parser<Node> {
 	/**
 	 * Visits an element token by first parsing the raw HTML fragment to extract
 	 * the start tag, then delegating to the base visitElement with Astro-specific
-	 * options including namespace scoping and nameless fragment support.
+	 * options including nameless fragment support.
 	 *
 	 * @param token - The child token representing the element
 	 * @param childNodes - The child Astro AST nodes within the element
