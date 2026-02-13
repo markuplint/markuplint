@@ -2802,7 +2802,7 @@ __metadata:
     "@markuplint/ml-config": "npm:4.8.15"
     "@markuplint/parser-utils": "npm:4.8.11"
     glob: "npm:13.0.3"
-    meow: "npm:13.2.0"
+    meow: "npm:14.0.0"
     typescript: "npm:5.9.3"
   bin:
     pretenders: ./bin/pretenders.mjs
@@ -12642,7 +12642,7 @@ __metadata:
     "@types/debug": "npm:4.1.12"
     chokidar: "npm:5.0.0"
     debug: "npm:4.4.3"
-    meow: "npm:13.2.0"
+    meow: "npm:14.0.0"
     os-locale: "npm:6.0.2"
     strict-event-emitter: "npm:0.5.1"
     strip-ansi: "npm:7.1.2"
@@ -12823,10 +12823,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meow@npm:13.2.0, meow@npm:^13.0.0":
-  version: 13.2.0
-  resolution: "meow@npm:13.2.0"
-  checksum: 10c0/d5b339ae314715bcd0b619dd2f8a266891928e21526b4800d49b4fba1cc3fff7e2c1ff5edd3344149fac841bc2306157f858e8c4d5eaee4d52ce52ad925664ce
+"meow@npm:14.0.0":
+  version: 14.0.0
+  resolution: "meow@npm:14.0.0"
+  checksum: 10c0/dbe4e136e0f858472d8b8c24d382054fe9898f6f47c58a42be25e6b1985e5ae31048573bf399f6e5877bf9d5b89cb840beae7350682019f998ff30baaa5e4106
   languageName: node
   linkType: hard
 
@@ -12834,6 +12834,13 @@ __metadata:
   version: 12.1.1
   resolution: "meow@npm:12.1.1"
   checksum: 10c0/a125ca99a32e2306e2f4cbe651a0d27f6eb67918d43a075f6e80b35e9bf372ebf0fc3a9fbc201cbbc9516444b6265fb3c9f80c5b7ebd32f548aa93eb7c28e088
+  languageName: node
+  linkType: hard
+
+"meow@npm:^13.0.0":
+  version: 13.2.0
+  resolution: "meow@npm:13.2.0"
+  checksum: 10c0/d5b339ae314715bcd0b619dd2f8a266891928e21526b4800d49b4fba1cc3fff7e2c1ff5edd3344149fac841bc2306157f858e8c4d5eaee4d52ce52ad925664ce
   languageName: node
   linkType: hard
 

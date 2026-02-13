@@ -40,7 +40,7 @@
 		"@types/debug": "4.1.12",
 		"chokidar": "5.0.0",
 		"debug": "4.4.3",
-		"meow": "13.2.0",
+		"meow": "14.0.0",
 		"os-locale": "6.0.2",
 		"strict-event-emitter": "0.5.1",
 		"strip-ansi": "7.1.2",
