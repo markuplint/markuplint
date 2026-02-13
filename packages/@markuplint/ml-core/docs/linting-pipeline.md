@@ -32,17 +32,18 @@ Where `MLCoreParams` extends `MLFabric` with:
 
 The `MLFabric` type defines the full linting configuration:
 
-| Field           | Type                              | Description                                       |
-| --------------- | --------------------------------- | ------------------------------------------------- |
-| `parser`        | `MLParser`                        | Parser instance (e.g., `@markuplint/html-parser`) |
-| `ruleset`       | `Ruleset`                         | Resolved rule configuration                       |
-| `rules`         | `readonly MLRule[]`               | Array of rule instances                           |
-| `locale`        | `LocaleSet`                       | Locale for violation messages                     |
-| `schemas`       | `MLSchema`                        | HTML/ARIA specification tuple                     |
-| `parserOptions` | `ParserOptions`                   | Parser configuration options                      |
-| `severity`      | `{ parseError?: SeverityOption }` | Severity overrides                                |
-| `pretenders`    | `readonly Pretender[]`            | Component-to-HTML mappings                        |
-| `configErrors`  | `readonly ConfigError[]`          | Configuration errors to report                    |
+| Field                | Type                              | Description                                       |
+| -------------------- | --------------------------------- | ------------------------------------------------- |
+| `parser`             | `MLParser`                        | Parser instance (e.g., `@markuplint/html-parser`) |
+| `ruleset`            | `Ruleset`                         | Resolved rule configuration                       |
+| `rules`              | `readonly MLRule[]`               | Array of rule instances                           |
+| `locale`             | `LocaleSet`                       | Locale for violation messages                     |
+| `schemas`            | `MLSchema`                        | HTML/ARIA specification tuple                     |
+| `parserOptions`      | `ParserOptions`                   | Parser configuration options                      |
+| `severity`           | `{ parseError?: SeverityOption }` | Severity overrides                                |
+| `pretenders`         | `readonly Pretender[]`            | Component-to-HTML mappings                        |
+| `ruleCommonSettings` | `RuleCommonSettings`              | Common settings applied globally to all rules     |
+| `configErrors`       | `readonly ConfigError[]`          | Configuration errors to report                    |
 
 ### Properties
 

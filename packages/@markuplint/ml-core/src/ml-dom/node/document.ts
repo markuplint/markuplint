@@ -151,14 +151,20 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly tagNameCaseSensitive: boolean;
 
+	/**
+	 * Common settings applied globally to all rules, such as the ARIA version.
+	 * Rules use this as a fallback when their own options do not specify a value.
+	 */
 	readonly ruleCommonSettings: RuleCommonSettings;
 
 	#tokenList: ReadonlyArray<MLToken> | null = null;
 
 	/**
-	 *
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
+	 * @param schemas base HTML/ARIA spec with optional framework-specific extensions
+	 * @param ruleCommonSettings common settings applied globally to all rules
+	 * @param options optional configuration for document behavior
 	 */
 	constructor(
 		ast: MLASTDocument,
