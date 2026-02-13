@@ -911,6 +911,24 @@ describe('Conditional Child Nodes', () => {
 	});
 });
 
+describe('ChildNode with blockBehavior', () => {
+	test('each', async () => {
+		const dom = createTestDocument(
+			`
+<dl>
+  {#each collection.items as item}
+    <dt>{item.name}</dt>
+  {/each}
+</dl>
+`.replaceAll(/\t|\n/g, ''),
+			{ parser: await import('@markuplint/svelte-parser') },
+		);
+
+		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
+		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
+	});
+});
+
 describe('Fix', () => {
 	test('HTML', () => {
 		const doc = createTestDocument(
