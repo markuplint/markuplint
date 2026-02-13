@@ -85,9 +85,10 @@ This affects:
 
 | Behavior | `'1.1'` / `'1.2'` | `'1.3'` |
 | --- | --- | --- |
-| `generic` transparent for ownership | No | Yes |
-| `generic` transparent for context role | No | Yes |
-| `presentation` / `none` transparent | Yes | Yes |
+| `generic` transparent for child roles | No | Yes |
+| `generic` transparent for parent role | No | Yes |
+| `presentation` / `none` transparent for child roles | Yes | Yes |
+| `presentation` / `none` transparent for parent role | No | Yes |
 
 ## Image / IMG Role Synonym
 
