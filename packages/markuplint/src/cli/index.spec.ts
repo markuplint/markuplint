@@ -68,17 +68,21 @@ describe('STDOUT Test', () => {
 		});
 		expect(stdout).toBe('');
 		expect(stderr.split('\n').length).toBe(30);
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 	});
 
 	test('allow warnings', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--allow-warnings', escape(targetFilePath)], {
-			reject: false,
-		});
+		const { stdout, stderr, exitCode } = await execa(
+			entryFilePath,
+			['--no-allow-warnings', escape(targetFilePath)],
+			{
+				reject: false,
+			},
+		);
 		expect(stdout).toBe('');
 		expect(stderr.split('\n').length).toBe(24);
-		expect(exitCode).toBe(0);
+		expect(exitCode).toBe(1);
 	});
 
 	test('format', async () => {
@@ -139,7 +143,7 @@ describe('STDOUT Test', () => {
 		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'warning', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect(exitCode).toBe(1);
+		expect(exitCode).toBe(0);
 	});
 
 	test('--severity-parse-error off', async () => {
@@ -188,7 +192,7 @@ describe('STDOUT Test', () => {
 		const violationCount = stderr.split('\n').filter(line => line.includes('<markuplint>')).length;
 
 		expect(violationCount).toBe(1);
-		expect(exitCode).toBe(1); // Still should exit with error
+		expect(exitCode).toBe(0); // allowWarnings defaults to true, so warnings-only exits with 0
 	});
 
 	test('--max-count=0 (no limit)', async () => {
@@ -328,8 +332,8 @@ describe('--max-warnings option', () => {
 			reject: false,
 		});
 
-		// Should behave same as without --max-warnings
-		expect(exitCode).toBe(1); // Has violations, so exit code 1
+		// Should behave same as without --max-warnings (allowWarnings defaults to true)
+		expect(exitCode).toBe(0);
 	});
 
 	test('--max-warnings=0 exits with code 1 when warnings exist', async () => {
@@ -389,15 +393,15 @@ describe('--max-warnings option', () => {
 		expect(exitCode3).toBe(1);
 	});
 
-	test('--max-warnings with errors still returns exit code 1', async () => {
-		// Use a file that has both errors and warnings
+	test('--max-warnings with warnings-only file still returns exit code 0', async () => {
+		// Use a file that has warnings only (allowWarnings defaults to true)
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 
 		const { exitCode } = await execa(entryFilePath, ['--max-warnings=100', escape(targetFilePath)], {
 			reject: false,
 		});
 
-		// Errors take precedence, so should still be exit code 1
-		expect(exitCode).toBe(1);
+		// allowWarnings defaults to true, and 6 warnings < 100 limit
+		expect(exitCode).toBe(0);
 	});
 });
