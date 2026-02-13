@@ -25,7 +25,7 @@ export default createRule<string[], Options>({
 	defaultValue: [],
 	defaultOptions: {
 		ignoreHasMutableContents: true,
-		ignoreOmittedElements: false,
+		ignoreOmittedElements: true,
 	},
 	async verify({ document, report, t }) {
 		const hasMutableContent = document.nodeList.some(n => n.is(n.ELEMENT_NODE) && n.hasMutableChildren());

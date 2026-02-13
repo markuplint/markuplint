@@ -19,7 +19,7 @@
 				},
 				"ignoreOmittedElements": {
 					"type": "boolean",
-					"default": "false",
+					"default": "true",
 					"description": "Ignore omitted (ghost) elements that are implicitly created by the HTML parser. When true, only explicitly written elements satisfy the requirement.",
 					"description:ja": "HTMLパーサーが暗黙的に生成した省略要素（ゴースト要素）を無視します。trueの場合、明示的に記述された要素のみが要件を満たします。"
 				}
