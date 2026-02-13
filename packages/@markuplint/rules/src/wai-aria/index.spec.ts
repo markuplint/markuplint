@@ -506,7 +506,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 });
 
-describe('Required Owned Elements', () => {
+describe('Allowed Accessibility Child Roles', () => {
 	test('Empty content', async () => {
 		expect((await mlRuleTest(rule, '<div role="list"></div>')).violations).toStrictEqual([
 			{

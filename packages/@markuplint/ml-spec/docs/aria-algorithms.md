@@ -39,7 +39,7 @@ flowchart TB
     GCR --> CR{Computed Role}
     CR -->|presentational| PCR["Presentational Roles<br/>Conflict Resolution"]
 
-    PCR --> Check1["1. Required Context Role<br/>validation"]
+    PCR --> Check1["1. Required Accessibility<br/>Parent Role validation"]
     PCR --> Check2["2. SVG accessibility<br/>tree inclusion"]
     PCR --> Check3["3. Interactive element<br/>protection"]
     PCR --> Check4["4. Required owned element<br/>check"]
@@ -448,7 +448,7 @@ Determines whether an element is included in (exposed to) the Accessibility Tree
 
 **Source:** `src/algorithm/aria/has-required-owned-elements.ts`
 
-Two related functions for validating the "Required Owned Elements" constraint.
+Two related functions for validating the "Allowed Accessibility Child Roles" constraint (called "Required Owned Elements" in ARIA 1.2).
 
 #### `hasRequiredOwnedElement`
 

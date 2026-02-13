@@ -149,8 +149,8 @@ For each role section:
 | Required Properties          | `.role-required-properties li` (fallback to parent) |
 | Inherited Properties         | `.role-inherited li`                                |
 | Owned Properties             | `.role-properties li` or `.role-properties > a`     |
-| Required Context Role        | `.role-scope li` or `.role-scope a`                 |
-| Required Owned Elements      | `.role-mustcontain li` or `.role-mustcontain a`     |
+| Required Accessibility Parent Role | `.role-scope li` or `.role-scope a`            |
+| Allowed Accessibility Child Roles  | `.role-mustcontain li` or `.role-mustcontain a` |
 | Accessible Name Required     | `.role-namerequired` contains "true"                |
 | Accessible Name From Author  | `.role-namefrom` contains "author"                  |
 | Accessible Name From Content | `.role-namefrom` contains "content"                 |

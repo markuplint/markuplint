@@ -7,7 +7,8 @@ import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 
 /**
- * Checks whether an element satisfies the "Required Owned Elements" constraint
+ * Checks whether an element satisfies the "Allowed Accessibility Child Roles"
+ * constraint (called "Required Owned Elements" in ARIA 1.2)
  * defined by its computed ARIA role. An element satisfies this constraint if it
  * has `aria-owns`, or if any of its closest non-presentational descendants match
  * the required owned element roles.
@@ -90,8 +91,9 @@ export function isRequiredOwnedElement(
 }
 
 /**
- * Gets the list of closest non-presentational descendants
- * (called "Allowed Accessibility Child Roles" in ARIA 1.3).
+ * Gets the list of closest non-presentational descendants.
+ * This corresponds to the "Allowed Accessibility Child Roles" validation
+ * (called "Required Owned Elements" in ARIA 1.2).
  *
  * In ARIA 1.1/1.2, the spec had not decided whether the owned element
  * is a child or a descendant. This implementation interprets that as

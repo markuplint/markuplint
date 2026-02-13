@@ -59,8 +59,8 @@ export function getComputedRole(
 	 * > causes the accessibility tree to be malformed,
 	 * > the expected results are undefined.
 	 *
-	 * Determines whether the context is valid
-	 * (called "Required Accessibility Parent Role" in ARIA 1.3).
+	 * Determines whether the "Required Accessibility Parent Role" is valid
+	 * (called "Required Context Role" in ARIA 1.2).
 	 *
 	 * In ARIA 1.1/1.2, the spec had not decided whether the context
 	 * is a parent or an ancestor. This implementation interprets that
@@ -78,7 +78,7 @@ export function getComputedRole(
 	if (computedRole.role && computedRole.role.requiredContextRole.length > 0) {
 		/**
 		 * An element fragment that serves as the root without a parent element
-		 * cannot satisfy the "Required Context Role" condition.
+		 * cannot satisfy the "Required Accessibility Parent Role" condition.
 		 * Therefore, under normal circumstances, the `role` will disappear.
 		 * However, in this specific case, it will fall back to both explicit
 		 * and implicit roles. Note that the explicit role takes precedence.

@@ -30,8 +30,8 @@ export function isPresentational(roleName?: string) {
  * behind a version check (`version !== '1.1' && version !== '1.2'`)
  * because ARIA 1.1/1.2 did not define context role transparency at all.
  *
- * @see https://w3c.github.io/aria/#mustContain
- * @see https://w3c.github.io/aria/#scope
+ * @see https://w3c.github.io/aria/#mustContain — "Allowed Accessibility Child Roles" (called "Required Owned Elements" in ARIA 1.2)
+ * @see https://w3c.github.io/aria/#scope — "Required Accessibility Parent Role" (called "Required Context Role" in ARIA 1.2)
  *
  * @param roleName - The ARIA role name to check, or undefined
  * @param version - The ARIA specification version

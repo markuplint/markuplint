@@ -19,16 +19,17 @@ type OwnedElement =
 	| [node: null, type: 'NO_ELEMENT'];
 
 /**
- * Checks whether an element with a role that requires specific owned elements
- * actually contains children with the expected roles.
+ * Checks whether an element with a role that has "Allowed Accessibility Child Roles"
+ * (called "Required Owned Elements" in ARIA 1.2) actually contains children
+ * with the expected roles.
  *
  * For example, a `list` role must own at least one element with the `listitem` role.
  * This checker respects `aria-busy="true"` (which signals that content is still loading),
  * preprocessor blocks, and mutable children from template engines.
  *
  * @see https://w3c.github.io/aria/#mustContain
- * @param el - The element node to inspect for required owned elements.
- * @param role - The computed ARIA role of the element, which defines required owned elements.
+ * @param el - The element node to inspect for allowed accessibility child roles.
+ * @param role - The computed ARIA role of the element, which defines allowed accessibility child roles.
  * @returns A violation if the role requires owned elements and none are found.
  */
 export const checkingRequiredOwnedElements: ElementChecker<
