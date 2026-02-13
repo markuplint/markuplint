@@ -142,8 +142,8 @@ type ARIARole = {
   readonly allowedAccessibilityChildRoles: readonly string[];
 
   // Backward compatibility (ARIA 1.2 names, deprecated)
-  readonly requiredContextRole: readonly string[];     // @deprecated
-  readonly requiredOwnedElements: readonly string[];   // @deprecated
+  readonly requiredContextRole: readonly string[]; // @deprecated
+  readonly requiredOwnedElements: readonly string[]; // @deprecated
 
   // Accessible name constraints
   readonly accessibleNameRequired: boolean; // Must have an accessible name

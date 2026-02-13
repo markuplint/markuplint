@@ -140,23 +140,23 @@ https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 
 For each role section:
 
-| Data                         | Selector                                            |
-| ---------------------------- | --------------------------------------------------- |
-| Name                         | `.role-name[title]`                                 |
-| Description                  | `.role-description p` (joined with `\n\n`)          |
-| Is Abstract                  | `.role-abstract` text equals "true"                 |
-| Generalization               | `.role-parent a`                                    |
-| Required Properties          | `.role-required-properties li` (fallback to parent) |
-| Inherited Properties         | `.role-inherited li`                                |
-| Owned Properties             | `.role-properties li` or `.role-properties > a`     |
-| Required Accessibility Parent Role | `.role-scope li` or `.role-scope a`            |
-| Allowed Accessibility Child Roles  | `.role-mustcontain li` or `.role-mustcontain a` |
-| Accessible Name Required     | `.role-namerequired` contains "true"                |
-| Accessible Name From Author  | `.role-namefrom` contains "author"                  |
-| Accessible Name From Content | `.role-namefrom` contains "content"                 |
-| Accessible Name Prohibited   | `.role-namefrom` contains "prohibited"              |
-| Children Presentational      | `.role-childpresentational` "true"/"false"          |
-| Prohibited Properties        | `.role-disallowed li code`                          |
+| Data                               | Selector                                            |
+| ---------------------------------- | --------------------------------------------------- |
+| Name                               | `.role-name[title]`                                 |
+| Description                        | `.role-description p` (joined with `\n\n`)          |
+| Is Abstract                        | `.role-abstract` text equals "true"                 |
+| Generalization                     | `.role-parent a`                                    |
+| Required Properties                | `.role-required-properties li` (fallback to parent) |
+| Inherited Properties               | `.role-inherited li`                                |
+| Owned Properties                   | `.role-properties li` or `.role-properties > a`     |
+| Required Accessibility Parent Role | `.role-scope li` or `.role-scope a`                 |
+| Allowed Accessibility Child Roles  | `.role-mustcontain li` or `.role-mustcontain a`     |
+| Accessible Name Required           | `.role-namerequired` contains "true"                |
+| Accessible Name From Author        | `.role-namefrom` contains "author"                  |
+| Accessible Name From Content       | `.role-namefrom` contains "content"                 |
+| Accessible Name Prohibited         | `.role-namefrom` contains "prohibited"              |
+| Children Presentational            | `.role-childpresentational` "true"/"false"          |
+| Prohibited Properties              | `.role-disallowed li code`                          |
 
 **Role synonym handling:**
 

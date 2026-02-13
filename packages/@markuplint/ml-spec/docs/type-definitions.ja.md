@@ -142,8 +142,8 @@ type ARIARole = {
   readonly allowedAccessibilityChildRoles: readonly string[];
 
   // 後方互換性（ARIA 1.2 名、非推奨）
-  readonly requiredContextRole: readonly string[];     // @deprecated
-  readonly requiredOwnedElements: readonly string[];   // @deprecated
+  readonly requiredContextRole: readonly string[]; // @deprecated
+  readonly requiredOwnedElements: readonly string[]; // @deprecated
 
   // アクセシブル名の制約
   readonly accessibleNameRequired: boolean; // アクセシブル名が必須

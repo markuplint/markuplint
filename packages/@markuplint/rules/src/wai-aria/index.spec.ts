@@ -1541,9 +1541,9 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 	});
 
 	test('nested generic wrappers are transparent in 1.3', async () => {
-		expect(
-			(await mlRuleTest(rule, '<ul><div><div><li>item</li></div></div></ul>', v13)).violations,
-		).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul><div><div><li>item</li></div></div></ul>', v13)).violations).toStrictEqual(
+			[],
+		);
 	});
 
 	test('non-generic wrapper still blocks in 1.3', async () => {
@@ -1564,9 +1564,7 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 	test('list > listitem via context role is valid in 1.3 with generic wrapper', async () => {
 		// <li> has requiredAccessibilityParentRole: ["list", "list > group"]
 		// In 1.3, the <div> (generic) is transparent so <ul> (list) is found as the parent
-		expect(
-			(await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations,
-		).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations).toStrictEqual([]);
 	});
 });
 
@@ -1623,8 +1621,11 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 		// The implicit role of <img alt=""> is "presentation". Although "none" and "presentation"
 		// are synonyms, the implicit role checker compares strings, so no violation is raised.
 		expect(
-			(await mlRuleTest(rule, '<img src="spacer.gif" alt="" role="none">', { rule: { options: { version: '1.3' } } }))
-				.violations,
+			(
+				await mlRuleTest(rule, '<img src="spacer.gif" alt="" role="none">', {
+					rule: { options: { version: '1.3' } },
+				})
+			).violations,
 		).toStrictEqual([]);
 	});
 });

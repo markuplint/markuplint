@@ -577,18 +577,18 @@ Determines whether a given role is transparent for ownership traversal. Used by 
 
 **Parameters:**
 
-| Parameter  | Type                  | Description                        |
-| ---------- | --------------------- | ---------------------------------- |
-| `roleName` | `string \| undefined` | The ARIA role name to check        |
-| `version`  | `ARIAVersion`         | The ARIA specification version     |
+| Parameter  | Type                  | Description                    |
+| ---------- | --------------------- | ------------------------------ |
+| `roleName` | `string \| undefined` | The ARIA role name to check    |
+| `version`  | `ARIAVersion`         | The ARIA specification version |
 
 **Returns:** `true` if the role should be skipped during ownership traversal.
 
 **Version behavior:**
 
-| ARIA Version     | Transparent roles               |
-| ---------------- | ------------------------------- |
-| `'1.1'`, `'1.2'` | `presentation`, `none`         |
+| ARIA Version     | Transparent roles                 |
+| ---------------- | --------------------------------- |
+| `'1.1'`, `'1.2'` | `presentation`, `none`            |
 | `'1.3'`          | `presentation`, `none`, `generic` |
 
 ---
