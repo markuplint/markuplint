@@ -11,6 +11,7 @@
 |---------|---------|
 | 新しい `ruleCommonSettings` 設定プロパティ | 設定ファイル |
 | ARIA バージョンの解決優先度の変更 | `ariaVersion` / `version` オプションを使用するルール |
+| ARIA 1.3 サポートの追加 | `ariaVersion` / `version` オプションを使用するルール |
 
 ## `ruleCommonSettings`
 
@@ -102,3 +103,7 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` は、ルールの `verify()` コールバックに渡される `MLDocument` インスタンスで利用可能です。
+
+## ARIA 1.3 サポート
+
+v5 では `ariaVersion` の有効な値として `"1.3"` が追加されました。デフォルトは `"1.2"` のままなので、既存の設定への影響はありません。ARIA 1.3 では `generic` ロールの透過性や `image`/`img` ロールの同義語など、重要な動作変更が導入されています。詳細は [ARIA 移行ガイド](./aria.ja.md)を参照してください。

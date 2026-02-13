@@ -16,6 +16,7 @@
 | `selfClosingSolidus` removed | Parser plugins |
 | `conditionalType` replaced by `blockBehavior` | Parser plugins |
 | `MLMarkupLanguageParser` / `Parse` types removed | Parser plugins |
+| `getNamespace` moved to `@markuplint/parser-utils` | Parser plugins |
 
 ## Token Position Properties
 
@@ -109,6 +110,30 @@ import type { MLParser } from '@markuplint/ml-ast';
 
 const parser: MLParser = { ... };
 ```
+
+## `getNamespace` Moved to `@markuplint/parser-utils`
+
+The `getNamespace()` function has been removed from `@markuplint/html-parser` and centralized in `@markuplint/parser-utils`. The function signature has also changed to use AST nodes instead of raw strings.
+
+```ts
+// v4
+import { getNamespace } from '@markuplint/html-parser';
+
+const ns = getNamespace(tagName, parentNamespace);
+
+// v5
+import { getNamespace } from '@markuplint/parser-utils';
+
+const ns = getNamespace(currentNodeName, parentNode);
+```
+
+| | v4 | v5 |
+|---|---|---|
+| Package | `@markuplint/html-parser` | `@markuplint/parser-utils` |
+| First parameter | `tagName: string` | `currentNodeName: string \| null` |
+| Second parameter | `parentNamespace?: string` | `parentNode: MLASTParentNode \| null` |
+
+Custom parsers that imported `getNamespace` from `@markuplint/html-parser` must update the import path and call site. The base `Parser` class in `@markuplint/parser-utils` now handles namespace detection automatically, so most parsers no longer need to call `getNamespace` directly.
 
 ## DOM Layer Impact
 
