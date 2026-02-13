@@ -41,6 +41,6 @@
 		"debug": "4.4.3",
 		"leven": "4.1.0",
 		"type-fest": "4.41.0",
-		"whatwg-mimetype": "4.0.0"
+		"whatwg-mimetype": "5.0.0"
 	}
 }
