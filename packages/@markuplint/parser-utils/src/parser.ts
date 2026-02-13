@@ -567,7 +567,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * and recursively traversed child nodes. Handles ghost elements (empty raw),
 	 * self-closing tags, and nameless fragments (e.g., JSX `<>`).
 	 *
-	 * @param token - The child token with the element's node name and namespace
+	 * @param token - The child token with the element's node name; namespace is auto-detected from tag name and parent node
 	 * @param childNodes - The language-specific child AST nodes to traverse
 	 * @param options - Controls end tag creation, fragment handling, and property overrides
 	 * @returns An array of AST nodes including the start tag, optional end tag, and any sibling nodes
