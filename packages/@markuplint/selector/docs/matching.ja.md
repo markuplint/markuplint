@@ -9,7 +9,7 @@
 1. **CSS セレクタマッチング** -- `postcss-selector-parser` でパースされる標準 CSS セレクタ
 2. **Regex セレクタマッチング** -- 正規表現を使用したパターンベースのマッチング
 
-両システムとも詳細度情報を返し、統合関数 `matchSelector()` を通じて使用できます。
+両システムとも DOM `Element` ではなく純粋データインターフェース（`SelectorNode`/`SelectorElement`）上で動作し、詳細度情報を返し、統合関数 `matchSelector()` を通じて使用できます。
 
 ## CSS セレクタマッチングフロー
 
@@ -83,7 +83,7 @@ div > .class:not(.other) span
 
 ### 拡張擬似クラス
 
-拡張擬似クラスは `ExtendedPseudoClass` レジストリを通じてディスパッチされます:
+拡張擬似クラスは `ExtendedPseudoClass` レジストリを通じてディスパッチされます。ハンドラは `SelectorElement` を受け取り、`@markuplint/ml-spec` API を呼び出す際に `Element` にキャストします:
 
 #### `:aria(syntax)`
 

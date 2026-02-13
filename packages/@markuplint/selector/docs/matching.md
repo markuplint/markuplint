@@ -9,7 +9,7 @@ The package provides two independent matching systems:
 1. **CSS Selector Matching** -- Standard CSS selectors parsed via `postcss-selector-parser`
 2. **Regex Selector Matching** -- Pattern-based matching using regular expressions
 
-Both systems return specificity information and can be used through the unified `matchSelector()` function.
+Both systems operate on pure data interfaces (`SelectorNode`/`SelectorElement`) rather than DOM `Element` directly, return specificity information, and can be used through the unified `matchSelector()` function.
 
 ## CSS Selector Matching Flow
 
@@ -83,7 +83,7 @@ Walks up the ancestor chain and matches if any ancestor matches the inner select
 
 ### Extended Pseudo-Classes
 
-Extended pseudo-classes are dispatched through the `ExtendedPseudoClass` registry:
+Extended pseudo-classes are dispatched through the `ExtendedPseudoClass` registry. Handlers receive a `SelectorElement` and cast to `Element` when calling `@markuplint/ml-spec` APIs:
 
 #### `:aria(syntax)`
 

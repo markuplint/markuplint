@@ -29,8 +29,8 @@ export function isNonDocumentTypeChildNode(node: SelectorNode): node is Selector
  * If a pure HTML element, `localName` returns lowercase,
  * `nodeName` returns uppercase.
  *
- * @param el The element to check.
- * @returns Returns true if the element is a pure HTML element, otherwise returns false.
+ * @param el - The element to check
+ * @returns `true` if the element is a pure HTML element, `false` otherwise
  */
 export function isPureHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

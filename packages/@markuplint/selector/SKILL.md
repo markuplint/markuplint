@@ -40,7 +40,7 @@ Add a new markuplint-specific extended pseudo-class. Follow recipe #1 in `docs/m
 2. Create `src/extended-selector/<name>-pseudo-class.ts`
 3. Implement the handler following the `ExtendedPseudoClass` signature:
    ```typescript
-   (content: string) => (el: Element) => SelectorResult;
+   (content: string) => (el: SelectorElement) => SelectorResult;
    ```
 4. Return specificity `[0, 1, 0]` for consistency with other extended pseudo-classes
 

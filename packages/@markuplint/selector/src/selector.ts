@@ -12,6 +12,13 @@ import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.j
 const selLog = coreLog.extend('selector');
 const resLog = coreLog.extend('result');
 
+/**
+ * Registry of extended pseudo-class handlers keyed by pseudo-class name.
+ *
+ * Each handler is a curried function: given the pseudo-class content string,
+ * it returns a matcher that tests a {@link SelectorElement} and produces
+ * a {@link SelectorResult}.
+ */
 export type ExtendedPseudoClass = Readonly<
 	Record<
 		string,
@@ -30,6 +37,10 @@ export type ExtendedPseudoClass = Readonly<
 export class Selector {
 	#ruleset: Ruleset;
 
+	/**
+	 * @param selector - The CSS selector string to parse
+	 * @param extended - Extended pseudo-class handlers to register
+	 */
 	constructor(selector: string, extended: ExtendedPseudoClass = {}) {
 		this.#ruleset = Ruleset.parse(selector, extended);
 	}
