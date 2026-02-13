@@ -27,6 +27,10 @@ export type Config = {
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
 };
 
+/**
+ * Common settings applied globally to all rules.
+ * These values serve as fallbacks when individual rules do not specify their own.
+ */
 export type RuleCommonSettings = {
 	readonly ariaVersion?: ARIAVersion;
 };
