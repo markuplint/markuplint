@@ -149,8 +149,8 @@ https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 | 必須プロパティ                   | `.role-required-properties li`（親にフォールバック） |
 | 継承プロパティ                   | `.role-inherited li`                                 |
 | 所有プロパティ                   | `.role-properties li` または `.role-properties > a`  |
-| 必須コンテキストロール           | `.role-scope li` または `.role-scope a`              |
-| 必須所有要素                     | `.role-mustcontain li` または `.role-mustcontain a`  |
+| Required Accessibility Parent Role | `.role-scope li` または `.role-scope a`            |
+| Allowed Accessibility Child Roles  | `.role-mustcontain li` または `.role-mustcontain a` |
 | アクセシブル名必須               | `.role-namerequired` に "true" を含む                |
 | アクセシブル名（著者から）       | `.role-namefrom` に "author" を含む                  |
 | アクセシブル名（コンテンツから） | `.role-namefrom` に "content" を含む                 |

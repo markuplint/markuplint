@@ -137,9 +137,13 @@ type ARIARole = {
   readonly isAbstract: boolean; // 抽象ロールかどうか
   readonly deprecated: boolean; // 非推奨のロールかどうか
 
-  // コンテキスト要件
-  readonly requiredContextRole: readonly string[]; // 必要な親ロール
-  readonly requiredOwnedElements: readonly string[]; // 必要な子ロール
+  // コンテキスト要件（ARIA 1.3 名）
+  readonly requiredAccessibilityParentRole: readonly string[];
+  readonly allowedAccessibilityChildRoles: readonly string[];
+
+  // 後方互換性（ARIA 1.2 名、非推奨）
+  readonly requiredContextRole: readonly string[];     // @deprecated
+  readonly requiredOwnedElements: readonly string[];   // @deprecated
 
   // アクセシブル名の制約
   readonly accessibleNameRequired: boolean; // アクセシブル名が必須
