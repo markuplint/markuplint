@@ -2,6 +2,9 @@
 	"name": "markuplint-packages",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"all": "run-s up lint clean build test site:up",
 		"build": "lerna run build",

@@ -4,6 +4,9 @@
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"type": "module",
 	"exports": {

@@ -57,7 +57,7 @@ flowchart TD
         mlAst["@markuplint/ml-ast\n型定義"]
         mlSpec["@markuplint/ml-spec\nvoid 要素"]
         espree["espree\nJS トークナイザ"]
-        uuidLib["uuid\nノード ID"]
+        cryptoLib["node:crypto\nノード ID"]
     end
 
     parser --> attrTokenizer
@@ -79,7 +79,7 @@ flowchart TD
 
     parser --> mlAst
     parser --> mlSpec
-    parser --> uuidLib
+    parser --> cryptoLib
     decision --> mlAst
 ```
 
@@ -157,7 +157,7 @@ ParserError (基底クラス)
 | `@markuplint/ml-ast`  | AST 型定義                         |
 | `@markuplint/ml-spec` | void 要素判定                      |
 | `@markuplint/types`   | カスタム要素名検証                 |
-| `uuid`                | AST ノード UUID 生成               |
+| `node:crypto`         | AST ノード UUID 生成               |
 | `debug`               | パフォーマンスタイミング・ロギング |
 | `espree`              | JavaScript トークン化・パース      |
 | `type-fest`           | TypeScript ユーティリティ型        |

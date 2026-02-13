@@ -342,7 +342,7 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 		}
 	} else if (!hasPartOfAddress) {
 		expects.unshift(
-			...[...partOfAddress].reverse().map(token => ({
+			...[...partOfAddress].toReversed().map(token => ({
 				type: 'const' as const,
 				value: token,
 			})),

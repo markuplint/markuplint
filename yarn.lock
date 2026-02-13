@@ -2733,12 +2733,10 @@ __metadata:
     "@markuplint/ml-ast": "npm:4.4.11"
     "@markuplint/ml-spec": "npm:4.10.2"
     "@markuplint/types": "npm:4.8.2"
-    "@types/uuid": "npm:11.0.0"
     "@typescript-eslint/typescript-estree": "npm:8.55.0"
     debug: "npm:4.4.3"
     espree: "npm:11.1.0"
     type-fest: "npm:4.41.0"
-    uuid: "npm:13.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2808,7 +2806,6 @@ __metadata:
     "@markuplint/shared": "npm:4.4.13"
     "@markuplint/types": "npm:4.8.2"
     "@types/debug": "npm:4.1.12"
-    "@ungap/structured-clone": "npm:1.3.0"
     ansi-colors: "npm:4.1.3"
     chrono-node: "npm:2.9.0"
     debug: "npm:4.4.3"
@@ -4719,15 +4716,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:11.0.0":
-  version: 11.0.0
-  resolution: "@types/uuid@npm:11.0.0"
-  dependencies:
-    uuid: "npm:*"
-  checksum: 10c0/6ebf1448d8fdc78d348a8a84389b74083f2f58bed75a5a6cf3be8419d33dcf757735c8b2de746b066ff8ef07f4384d02549774dc84195ffa46b24745471e9d8e
-  languageName: node
-  linkType: hard
-
 "@types/vscode@npm:1.99.1":
   version: 1.99.1
   resolution: "@types/vscode@npm:1.99.1"
@@ -4926,13 +4914,6 @@ __metadata:
     https-proxy-agent: "npm:^7.0.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/fe6121ce9015d32a38755244ecabd7f44ff7e40cc07a5656e84d19a0ea8a644a67b49804c5e851ad768d774194221accf8388ac834e1f9f1e148a03c054355dd
-  languageName: node
-  linkType: hard
-
-"@ungap/structured-clone@npm:1.3.0":
-  version: 1.3.0
-  resolution: "@ungap/structured-clone@npm:1.3.0"
-  checksum: 10c0/0fc3097c2540ada1fc340ee56d58d96b5b536a2a0dab6e3ec17d4bfc8c4c86db345f61a375a8185f9da96f01c69678f836a2b57eeaa9e4b8eeafd26428e57b0a
   languageName: node
   linkType: hard
 
@@ -18330,15 +18311,6 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 10c0/41a5bdd214df2f6c3ecf8622745e4a366c4adced864bc3c833739791aeeeb1838119af7daed4ba36428114b5c67dcda034a79c882e97e43c03e66a4dd7389942
-  languageName: node
-  linkType: hard
-
-"uuid@npm:*, uuid@npm:13.0.0":
-  version: 13.0.0
-  resolution: "uuid@npm:13.0.0"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10c0/950e4c18d57fef6c69675344f5700a08af21e26b9eff2bf2180427564297368c538ea11ac9fb2e6528b17fc3966a9fd2c5049361b0b63c7d654f3c550c9b3d67
   languageName: node
   linkType: hard
 

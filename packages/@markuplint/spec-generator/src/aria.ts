@@ -171,7 +171,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				? false
 				: undefined;
 		const ownedProperties = arrayUnique(
-			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].sort(nameCompare),
+			[...ownedRequiredProps, ...ownedInheritedProps, ...ownedProps].toSorted(nameCompare),
 		);
 		const prohibitedProperties = $features
 			.find('.role-disallowed li code')
@@ -228,9 +228,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		}
 	}
 
-	roles.sort(nameCompare);
-
-	return roles;
+	return roles.toSorted(nameCompare);
 }
 
 /**
@@ -266,7 +264,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			})
 			.filter((s): s is string => !!s),
 	);
-	const arias = [...ariaNameList].sort().map((name): ARIAProperty => {
+	const arias = [...ariaNameList].toSorted().map((name): ARIAProperty => {
 		const $section = $(`#${name}`);
 		const className = $section.attr('class');
 		const type = className && /property/i.test(className) ? 'property' : 'state';
@@ -356,9 +354,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 		return aria;
 	});
 
-	arias.sort(nameCompare);
-
-	return arias;
+	return arias.toSorted(nameCompare);
 }
 
 /**

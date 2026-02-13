@@ -67,7 +67,7 @@ flowchart TD
         mlSpec["@markuplint/ml-spec\n(void element detection)"]
         mlTypes["@markuplint/types\n(custom element validation)"]
         espree["espree\n(JS tokenization)"]
-        uuidLib["uuid\n(node ID generation)"]
+        cryptoLib["node:crypto\n(node ID generation)"]
         debugLib["debug\n(logging)"]
     end
 
@@ -90,7 +90,7 @@ flowchart TD
     decision --> mlTypes
     parser --> mlAst
     parser --> mlSpec
-    parser --> uuidLib
+    parser --> cryptoLib
     scriptParser --> espree
     debugMod --> debugLib
 ```
@@ -189,7 +189,7 @@ The lookup handles camelCase IDL names, lowercase content attribute names, and h
 | `@markuplint/ml-ast`  | AST type definitions (`MLASTDocument`, `MLASTElement`, `MLASTToken`, etc.) |
 | `@markuplint/ml-spec` | Void element detection (`isVoidElement`) for self-closing tag handling     |
 | `@markuplint/types`   | Custom element name validation (`isCustomElementName`)                     |
-| `uuid`                | AST node UUID generation for unique node identification                    |
+| `node:crypto`         | AST node UUID generation via `crypto.randomUUID()`                         |
 | `debug`               | Performance timing and structured logging                                  |
 | `espree`              | JavaScript tokenization and parsing for embedded script content            |
 | `type-fest`           | TypeScript utility types                                                   |

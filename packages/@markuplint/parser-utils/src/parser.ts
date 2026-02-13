@@ -34,8 +34,8 @@ import type {
 	MLASTBlockBehavior,
 } from '@markuplint/ml-ast';
 
+import { randomUUID } from 'node:crypto';
 import { isVoidElement as detectVoidElement } from '@markuplint/ml-spec';
-import { v4 as uuid } from 'uuid';
 
 import { attrTokenizer } from './attr-tokenizer.js';
 import { defaultSpaces } from './const.js';
@@ -367,10 +367,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @returns The node tree sorted by source position
 	 */
 	afterTraverse(nodeTree: readonly MLASTNodeTreeItem[]): readonly MLASTNodeTreeItem[] {
-		return Array.prototype.toSorted == null
-			? // TODO: Use sort instead of toSorted until we end support for Node 18
-				[...nodeTree].sort(sortNodes)
-			: nodeTree.toSorted(sortNodes);
+		return nodeTree.toSorted(sortNodes);
 	}
 
 	/**
@@ -1062,7 +1059,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				: token;
 
 		return {
-			uuid: uuid().slice(0, 8),
+			uuid: randomUUID().slice(0, 8),
 			...props,
 		};
 	}
@@ -1152,11 +1149,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 
 		Object.assign(parentNode, {
-			childNodes:
-				Array.prototype.toSorted == null
-					? // TODO: Use sort instead of toSorted until we end support for Node 18
-						[...newChildNodes].sort(sortNodes)
-					: newChildNodes.toSorted(sortNodes),
+			childNodes: newChildNodes.toSorted(sortNodes),
 		});
 	}
 
@@ -1175,13 +1168,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	) {
 		const index = parentNode.childNodes.findIndex(childNode => childNode.uuid === oldChildNode.uuid);
 		if (index === -1) {
-			return;
-		}
-		if (Array.prototype.toSpliced == null) {
-			const newChildNodes = [...parentNode.childNodes];
-			// TODO: Use splice instead of toSpliced until we end support for Node 18
-			newChildNodes.splice(index, 1, ...replacementChildNodes);
-			Object.assign(parentNode, { childNodes: newChildNodes });
 			return;
 		}
 		const newChildNodes = parentNode.childNodes.toSpliced(index, 1, ...replacementChildNodes);
@@ -1235,7 +1221,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const textNode: MLASTText = {
 			...firstNode,
-			uuid: uuid().slice(0, 8),
+			uuid: randomUUID().slice(0, 8),
 			raw: nodes.map(n => n.raw).join(''),
 		};
 
@@ -1663,11 +1649,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		/**
 		 * sorting
 		 */
-		const sorted =
-			Array.prototype.toSorted == null
-				? // TODO: Use sort instead of toSorted until we end support for Node 18
-					[...nodeOrders].sort(sortNodes)
-				: nodeOrders.toSorted(sortNodes);
+		const sorted = nodeOrders.toSorted(sortNodes);
 
 		/**
 		 * remove duplicated node
@@ -1709,12 +1691,6 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const raw = firstNode.raw.slice(offsetOffset);
 
 		if (!raw) {
-			if (Array.prototype.toSpliced == null) {
-				const newNodeList = [...nodeList];
-				// TODO: Use splice instead of toSpliced until we end support for Node 18
-				newNodeList.splice(0, 1);
-				return newNodeList;
-			}
 			return nodeList.toSpliced(0, 1);
 		}
 

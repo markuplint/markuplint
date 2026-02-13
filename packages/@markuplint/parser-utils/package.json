@@ -5,6 +5,9 @@
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
 	"type": "module",
 	"exports": {
 		".": {
@@ -31,11 +34,9 @@
 		"@markuplint/ml-ast": "4.4.11",
 		"@markuplint/ml-spec": "4.10.2",
 		"@markuplint/types": "4.8.2",
-		"@types/uuid": "11.0.0",
 		"debug": "4.4.3",
 		"espree": "11.1.0",
-		"type-fest": "4.41.0",
-		"uuid": "13.0.0"
+		"type-fest": "4.41.0"
 	},
 	"devDependencies": {
 		"@typescript-eslint/typescript-estree": "8.55.0"
