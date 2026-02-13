@@ -25,12 +25,16 @@ export function getRoleSpec(
 		return null;
 	}
 	const superClassRoles = recursiveTraverseSuperClassRoles(specs, roleName, namespace, version);
+	const requiredAccessibilityParentRole = role.requiredContextRole ?? role.requiredAccessibilityParentRole ?? [];
+	const allowedAccessibilityChildRoles = role.requiredOwnedElements ?? role.allowedAccessibilityChildRoles ?? [];
 	return {
 		name: role.name,
 		isAbstract: !!role.isAbstract,
 		deprecated: !!role.deprecated,
-		requiredContextRole: role.requiredContextRole ?? [],
-		requiredOwnedElements: role.requiredOwnedElements ?? [],
+		requiredAccessibilityParentRole,
+		allowedAccessibilityChildRoles,
+		requiredContextRole: requiredAccessibilityParentRole,
+		requiredOwnedElements: allowedAccessibilityChildRoles,
 		accessibleNameRequired: !!role.accessibleNameRequired,
 		accessibleNameFromAuthor: !!role.accessibleNameFromAuthor,
 		accessibleNameFromContent: !!role.accessibleNameFromContent,

@@ -251,7 +251,7 @@ A critical finding of this analysis is the tight coupling between specifications
 - Accessible Name Computation (W3C AccName 1.1)
 - Role Computation with conflict resolution
 - Accessibility Tree inclusion/exclusion
-- Required Owned Elements validation
+- Allowed Accessibility Child Roles validation
 
 **Implementation Fidelity**:
 

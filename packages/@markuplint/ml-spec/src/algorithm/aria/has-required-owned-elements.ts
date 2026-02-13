@@ -1,13 +1,14 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
-import { isPresentational } from './is-presentational.js';
+import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 
 /**
- * Checks whether an element satisfies the "Required Owned Elements" constraint
+ * Checks whether an element satisfies the "Allowed Accessibility Child Roles"
+ * constraint (called "Required Owned Elements" in ARIA 1.2)
  * defined by its computed ARIA role. An element satisfies this constraint if it
  * has `aria-owns`, or if any of its closest non-presentational descendants match
  * the required owned element roles.
@@ -37,10 +38,10 @@ export function hasRequiredOwnedElement(
 	 * Otherwise, traverses descendants to find owned elements.
 	 */
 	const computed = getComputedRole(specs, el, version);
-	if (!computed.role || computed.role.requiredOwnedElements.length === 0) {
+	if (!computed.role || computed.role.allowedAccessibilityChildRoles.length === 0) {
 		return true;
 	}
-	for (const expectRole of computed.role.requiredOwnedElements) {
+	for (const expectRole of computed.role.allowedAccessibilityChildRoles) {
 		for (const owned of getClosestNonPresentationalDescendants(el, specs, version)) {
 			if (isRequiredOwnedElement(owned.el, owned.role, expectRole, specs, version)) {
 				return true;
@@ -91,18 +92,20 @@ export function isRequiredOwnedElement(
 
 /**
  * Gets the list of closest non-presentational descendants.
- * ⚠ THE SPECIFICATION HAS AN ISSUE
- * that has not decided whether the owned element is a child or a descendant.
+ * This corresponds to the "Allowed Accessibility Child Roles" validation
+ * (called "Required Owned Elements" in ARIA 1.2).
  *
+ * In ARIA 1.1/1.2, the spec had not decided whether the owned element
+ * is a child or a descendant. This implementation interprets that as
+ * A CHILD, but `presentation`/`none` elements are treated as transparent.
+ *
+ * ARIA 1.3 formally resolves this with the definitions of
+ * "accessibility child" and "accessibility parent", and additionally
+ * makes `generic` elements transparent.
+ *
+ * @see https://w3c.github.io/aria/#mustContain
  * @see https://github.com/w3c/aria/issues/1033
- * @see https://github.com/w3c/aria/issues/748
- * @see https://github.com/w3c/aria/pull/1162
- * @see https://github.com/w3c/aria/pull/1213
- *
- * Currently, this process interprets that as A CHILD
- * because it wants to be near to HTML semantics.
- * However, the presentational role behaves transparently
- * according to the sample code in WAI-ARIA specification.
+ * @see https://github.com/w3c/aria/pull/1454
  */
 function getClosestNonPresentationalDescendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -114,7 +117,7 @@ function getClosestNonPresentationalDescendants(
 	for (const child of el.children) {
 		const explicitRole = getExplicitRole(specs, child, version);
 		const computed = explicitRole.role ? explicitRole : getImplicitRole(specs, child, version);
-		if (isPresentational(computed.role?.name)) {
+		if (isTransparentForOwnership(computed.role?.name, version)) {
 			owned.push(...getClosestNonPresentationalDescendants(child, specs, version));
 			continue;
 		}

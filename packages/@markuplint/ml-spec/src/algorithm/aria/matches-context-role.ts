@@ -1,13 +1,16 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { isTransparentForOwnership } from './is-presentational.js';
+
 import { getComputedRole } from './get-computed-role.js';
 
 /**
- * Checks whether an element's parent hierarchy satisfies at least one of the
- * required context role conditions. Each condition string may describe a chain
- * of ancestor roles separated by ` > ` (e.g., `"list > group"`).
+ * Checks whether an element's parent hierarchy satisfies the
+ * "Required Accessibility Parent Role" (called "Required Context Role" in ARIA 1.2).
+ * Each condition string may describe a chain of ancestor roles separated by
+ * ` > ` (e.g., `"list > group"`).
  *
- * @param conditions - An array of required context role condition strings to match against
+ * @param conditions - An array of required accessibility parent role condition strings to match against
  * @param ownedEl - The owned DOM element whose parent context is being validated
  * @param specs - The full markup language specification
  * @param version - The ARIA specification version to use
@@ -37,8 +40,25 @@ function matchesCondition(
 			return false;
 		}
 
-		const condition = conditions.shift()!;
 		const parentRole = getComputedRole(specs, parentEl, version, true).role;
+
+		/**
+		 * ARIA 1.3 ("Required Accessibility Parent Role"): "To determine
+		 * whether an element has a parent with the required role, user agents
+		 * MUST ignore any elements with the role `generic` or `none`."
+		 *
+		 * This transparency is gated to ARIA 1.3+ only.
+		 * In ARIA 1.1/1.2 ("Required Context Role"), the spec did not define
+		 * this behavior, so parent elements are matched strictly without skipping.
+		 *
+		 * @see https://w3c.github.io/aria/#scope
+		 */
+		if (version !== '1.1' && version !== '1.2' && isTransparentForOwnership(parentRole?.name, version)) {
+			parentEl = parentEl.parentElement;
+			continue;
+		}
+
+		const condition = conditions.shift()!;
 
 		if (condition !== parentRole?.name) {
 			return false;

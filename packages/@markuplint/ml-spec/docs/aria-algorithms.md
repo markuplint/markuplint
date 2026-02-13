@@ -39,7 +39,7 @@ flowchart TB
     GCR --> CR{Computed Role}
     CR -->|presentational| PCR["Presentational Roles<br/>Conflict Resolution"]
 
-    PCR --> Check1["1. Required Context Role<br/>validation"]
+    PCR --> Check1["1. Required Accessibility<br/>Parent Role validation"]
     PCR --> Check2["2. SVG accessibility<br/>tree inclusion"]
     PCR --> Check3["3. Interactive element<br/>protection"]
     PCR --> Check4["4. Required owned element<br/>check"]
@@ -86,13 +86,13 @@ The core function of the ARIA algorithm suite. It computes the final ARIA role f
 
 **Conflict Resolution checks (in order):**
 
-1. **Required context role validation** -- If the role has `requiredContextRole` entries, the function checks the parent hierarchy. If no parent element exists, returns `NO_OWNER`. If the parent hierarchy does not satisfy the context role conditions (via `matchesContextRole()`), returns `INVALID_REQUIRED_CONTEXT_ROLE`. Presentational ancestors are traversed transparently via `getNonPresentationalAncestor()`.
+1. **Required context role validation** -- If the role has `requiredAccessibilityParentRole` entries (called `requiredContextRole` in ARIA 1.2), the function checks the parent hierarchy. If no parent element exists, returns `NO_OWNER`. If the parent hierarchy does not satisfy the context role conditions (via `matchesContextRole()`), returns `INVALID_REQUIRED_CONTEXT_ROLE`. Presentational ancestors are traversed transparently via `getNonPresentationalAncestor()`.
 
 2. **SVG accessibility tree inclusion** -- For SVG namespace elements without a valid explicit role, the function checks whether the element has an accessible name (via `getAccname()`) or a `<title>`/`<desc>` child element. If neither exists, the SVG element is excluded from the accessibility tree (returns `role: null`). This implements the SVG-AAM rules for including normally-omitted SVG elements.
 
 3. **Interactive element protection** -- Focusable elements cannot be presentational. The function checks `mayBeFocusable()` and ensures the element is not `disabled`, `inert`, or `hidden` (traversing ancestors for each attribute). If the element is interactive and not disabled/inert/hidden, the presentational role is overridden with the implicit role and `INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` error.
 
-4. **Required owned element check** -- If a non-presentational ancestor has `requiredOwnedElements` and the current element's implicit role matches one of those required owned elements, the presentational role is overridden. Returns `REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL`.
+4. **Required owned element check** -- If a non-presentational ancestor has `allowedAccessibilityChildRoles` (called `requiredOwnedElements` in ARIA 1.2) and the current element's implicit role matches one of those required owned elements, the presentational role is overridden. Returns `REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL`.
 
 5. **Global ARIA property check** -- If the element has any global ARIA properties (e.g., `aria-label`, `aria-describedby`), the presentational role is overridden with the implicit role. Returns `GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL`.
 
@@ -247,7 +247,7 @@ The spec-level implementation for computing permitted ARIA roles. Operates on ta
 | Array of strings/objects      | The specific listed roles are permitted.                                                                                 |
 | `false`                       | No roles are permitted (empty list before implicit role).                                                                |
 
-4. Always includes the implicit role in the result. If the implicit role is `"presentation"` or `"none"`, both equivalents are included.
+4. Always includes the implicit role in the result. If the implicit role is `"presentation"` or `"none"`, both equivalents are included. In ARIA 1.3, if the implicit role is `"img"` or `"image"`, both synonyms are included.
 5. Returns the merged, deduplicated list.
 
 ---
@@ -274,7 +274,7 @@ Retrieves the full ARIA role specification for a given role name, including the 
 1. Searches for the role by name in the ARIA roles list for the given version.
 2. For SVG namespace (`http://www.w3.org/2000/svg`), also searches `graphicsRoles` if not found in core roles.
 3. Recursively traverses super-class roles via the `generalization` property, building the complete inheritance chain.
-4. Normalizes all optional fields to non-undefined defaults (e.g., `!!role.isAbstract`, `role.requiredContextRole ?? []`).
+4. Normalizes all optional fields to non-undefined defaults (e.g., `!!role.isAbstract`). Resolves `requiredAccessibilityParentRole` from the schema's `requiredContextRole` (ARIA 1.2 name) or `requiredAccessibilityParentRole` (ARIA 1.3 name), and similarly `allowedAccessibilityChildRoles` from `requiredOwnedElements` or `allowedAccessibilityChildRoles`. Both the new and deprecated property names are populated with the same values.
 5. Returns `null` if the role name does not exist in the spec.
 
 **Normalized fields in the return value:**
@@ -284,8 +284,10 @@ Retrieves the full ARIA role specification for a given role name, including the 
   name: string;
   isAbstract: boolean;          // default: false
   deprecated: boolean;          // default: false
-  requiredContextRole: string[];     // default: []
-  requiredOwnedElements: string[];   // default: []
+  requiredAccessibilityParentRole: string[];  // default: []
+  allowedAccessibilityChildRoles: string[];   // default: []
+  requiredContextRole: string[];     // @deprecated alias — same as requiredAccessibilityParentRole
+  requiredOwnedElements: string[];   // @deprecated alias — same as allowedAccessibilityChildRoles
   accessibleNameRequired: boolean;   // default: false
   accessibleNameFromAuthor: boolean; // default: false
   accessibleNameFromContent: boolean;// default: false
@@ -322,7 +324,7 @@ Gets the version-resolved ARIA specification for an element, evaluating conditio
 1. Calls `getVersionResolvedARIA()` which:
    - Looks up the element spec by tag name and namespace.
    - Applies `resolveVersion()` to merge version-specific overrides on top of the base ARIA spec.
-   - Optimizes permitted roles: if `"presentation"` is in the permitted roles array, `"none"` is added, and vice versa (per WAI-ARIA 1.2 note on the `none` role).
+   - Optimizes permitted roles: if `"presentation"` is in the permitted roles array, `"none"` is added, and vice versa (per WAI-ARIA 1.2 note on the `none` role). In ARIA 1.3, if `"image"` is present, `"img"` is added, and vice versa (per the ARIA 1.3 `image`/`img` synonym).
    - Caches results by `localName + namespace + version`.
 
 2. Evaluates conditional overrides (the `conditions` block in the ARIA spec):
@@ -448,19 +450,19 @@ Determines whether an element is included in (exposed to) the Accessibility Tree
 
 **Source:** `src/algorithm/aria/has-required-owned-elements.ts`
 
-Two related functions for validating the "Required Owned Elements" constraint.
+Two related functions for validating the "Allowed Accessibility Child Roles" constraint (called "Required Owned Elements" in ARIA 1.2).
 
 #### `hasRequiredOwnedElement`
 
-Checks whether an element satisfies the required owned elements constraint defined by its computed role.
+Checks whether an element satisfies the "Allowed Accessibility Child Roles" constraint defined by its computed role.
 
 **Algorithm:**
 
 1. If the element has an `aria-owns` attribute, returns `true` (partial support -- the referenced elements are not validated).
 2. Computes the element's role via `getComputedRole()`.
-3. If the role has no `requiredOwnedElements`, returns `true`.
-4. Traverses the element's closest non-presentational descendants (children, transparently passing through presentational elements).
-5. For each required owned element pattern, checks if any descendant matches via `isRequiredOwnedElement()`.
+3. If the role has no `allowedAccessibilityChildRoles`, returns `true`.
+4. Traverses the element's closest non-presentational descendants (children, transparently passing through elements with ownership-transparent roles via `isTransparentForOwnership()`). In ARIA 1.3, `generic` elements are additionally transparent.
+5. For each allowed accessibility child role pattern, checks if any descendant matches via `isRequiredOwnedElement()`.
 
 #### `isRequiredOwnedElement`
 
@@ -478,7 +480,7 @@ Determines whether an element matches a required owned element query.
 
 **Query syntax:** Supports chains with `>` notation. For example, `"group > listitem"` means the element must have role `"group"` and contain a descendant with role `"listitem"`.
 
-**Spec issue:** The WAI-ARIA specification has not decided whether "owned" means child or descendant. This implementation interprets "owned" as **child** (not descendant), to align with HTML semantics. Presentational children are traversed transparently.
+**Ownership traversal:** In ARIA 1.1/1.2, the spec had not decided whether "owned" means child or descendant. This implementation interprets "owned" as **child** (not descendant), to align with HTML semantics. `presentation`/`none` children are traversed transparently. ARIA 1.3 formally resolves this with the definitions of "accessibility child" and "accessibility parent", and additionally makes `generic` elements transparent (via `isTransparentForOwnership()`).
 
 ---
 
@@ -506,6 +508,8 @@ Validates whether an element's parent hierarchy satisfies at least one of the re
 3. The condition string is split and reversed, then matched against the parent hierarchy from the immediate parent upward.
 4. For each level, calls `getComputedRole()` with `assumeSingleNode = true` to get the parent's role independently.
 5. Returns `true` if any condition string fully matches the ancestor chain.
+
+**ARIA 1.3 transparency:** In ARIA 1.3+, parent elements with `generic` or `none` roles are transparently skipped during matching (via `isTransparentForOwnership()`). In ARIA 1.1/1.2, parents are matched strictly without skipping.
 
 **Example:** For a `listitem` role with `requiredContextRole: ["list", "list > group"]`:
 
@@ -557,13 +561,39 @@ Traverses the parent element chain to find the nearest ancestor with a non-prese
 
 1. Starts from `el.parentElement`.
 2. For each ancestor, computes the role via `getComputedRole()`.
-3. If the ancestor's role is not presentational, returns that ancestor's computed role.
+3. If the ancestor's role is not transparent for ownership traversal (via `isTransparentForOwnership()`), returns that ancestor's computed role.
 4. Otherwise, continues to the next parent.
 5. If no non-presentational ancestor is found, returns `{ el: null, role: null }`.
 
+**ARIA 1.3 transparency:** In ARIA 1.3, `generic` role elements are additionally skipped (alongside `presentation`/`none`), per the WAI-ARIA definitions of "accessibility child" and "accessibility parent".
+
 ---
 
-### 16. `ariaSpecs(specs, version)`
+### 16. `isTransparentForOwnership(roleName, version): boolean`
+
+**Source:** `src/algorithm/aria/is-presentational.ts`
+
+Determines whether a given role is transparent for ownership traversal. Used by `getNonPresentationalAncestor`, `getClosestNonPresentationalDescendants`, and `matchesContextRole` to decide which elements to skip.
+
+**Parameters:**
+
+| Parameter  | Type                  | Description                    |
+| ---------- | --------------------- | ------------------------------ |
+| `roleName` | `string \| undefined` | The ARIA role name to check    |
+| `version`  | `ARIAVersion`         | The ARIA specification version |
+
+**Returns:** `true` if the role should be skipped during ownership traversal.
+
+**Version behavior:**
+
+| ARIA Version     | Transparent roles                 |
+| ---------------- | --------------------------------- |
+| `'1.1'`, `'1.2'` | `presentation`, `none`            |
+| `'1.3'`          | `presentation`, `none`, `generic` |
+
+---
+
+### 17. `ariaSpecs(specs, version)`
 
 **Source:** `src/algorithm/aria/aria-specs.ts`
 
@@ -636,6 +666,8 @@ This design allows the schema to define a base ARIA spec that works across versi
 ### Version Impact on Behavior
 
 - **`getNonPresentationalAncestor`**: In ARIA 1.1/1.2, ancestor role computation uses full context (`assumeSingleNode = false`). In ARIA 1.3+, each ancestor is computed independently (`assumeSingleNode = true`).
+- **`isTransparentForOwnership`**: In ARIA 1.1/1.2, only `presentation`/`none` are transparent. In ARIA 1.3, `generic` is additionally transparent per the WAI-ARIA definitions of "accessibility child" and "accessibility parent".
+- **`matchesContextRole`**: In ARIA 1.1/1.2, parent elements are matched strictly. In ARIA 1.3+, `generic`/`none` parents are transparently skipped.
 - **`namingProhibited`**: Only applicable in ARIA 1.2 and later. Version 1.1 always uses the base value.
 - **Role and property definitions**: The available roles and their properties may differ across versions (e.g., new roles added in 1.2 or 1.3).
 

@@ -1,8 +1,8 @@
 import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
-import type { ARIARole } from '@markuplint/ml-spec';
+import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
-import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
+import { getComputedRole, isRequiredOwnedElement, isTransparentForOwnership } from '@markuplint/ml-spec';
 
 /**
  * Represents a classified child node when checking required owned elements.
@@ -19,16 +19,17 @@ type OwnedElement =
 	| [node: null, type: 'NO_ELEMENT'];
 
 /**
- * Checks whether an element with a role that requires specific owned elements
- * actually contains children with the expected roles.
+ * Checks whether an element with a role that has "Allowed Accessibility Child Roles"
+ * (called "Required Owned Elements" in ARIA 1.2) actually contains children
+ * with the expected roles.
  *
  * For example, a `list` role must own at least one element with the `listitem` role.
  * This checker respects `aria-busy="true"` (which signals that content is still loading),
  * preprocessor blocks, and mutable children from template engines.
  *
  * @see https://w3c.github.io/aria/#mustContain
- * @param el - The element node to inspect for required owned elements.
- * @param role - The computed ARIA role of the element, which defines required owned elements.
+ * @param el - The element node to inspect for allowed accessibility child roles.
+ * @param role - The computed ARIA role of the element, which defines allowed accessibility child roles.
  * @returns A violation if the role requires owned elements and none are found.
  */
 export const checkingRequiredOwnedElements: ElementChecker<
@@ -43,7 +44,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		if (!role) {
 			return;
 		}
-		if (role.requiredOwnedElements.length === 0) {
+		if (role.allowedAccessibilityChildRoles.length === 0) {
 			return;
 		}
 		/**
@@ -62,31 +63,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		const children: OwnedElement[] = [...el.childNodes].map<OwnedElement>(child => {
-			if (child.is(child.ELEMENT_NODE)) {
-				if (child.matches('[aria-busy="true" i]')) {
-					return [child, 'BUSY'];
-				}
-				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
-				if (
-					role.requiredOwnedElements.some(ownedRole =>
-						isRequiredOwnedElement(
-							computedChild.el,
-							computedChild.role,
-							ownedRole,
-							child.ownerMLDocument.specs,
-							child.rule.options.version,
-						),
-					)
-				) {
-					return [child, 'REQUIRED'];
-				}
-				return [child, 'OTHER'];
-			} else if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				return [child, 'PB'];
-			}
-			return [null, 'NO_ELEMENT'];
-		});
+		const children: OwnedElement[] = classifyChildren(el, role, el.rule.options.version);
 
 		if (children.some(([, type]) => type === 'BUSY')) {
 			return;
@@ -131,9 +108,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 					t(
 						'{0} requires {1}',
 						t('the {0}', 'child element'),
-						role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
-							? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-							: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+						role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
+							? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
+							: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
 					),
 					t('require {0}', 'aria-busy="true"'),
 				),
@@ -145,9 +122,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			message: t(
 				'{0} expects {1}',
 				t('the "{0*}" {1}', role.name, 'role'),
-				role.requiredOwnedElements.length === 1 && role.requiredOwnedElements[0]
-					? t('the "{0*}" {1}', role.requiredOwnedElements[0], 'role')
-					: t('the {0}', 'roles') + `: ${t(role.requiredOwnedElements)}`,
+				role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
+					? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
+					: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
 			),
 		};
 	};
@@ -170,4 +147,58 @@ function mayBeBeforeCreated(
 	return [...el.children].every(child => {
 		return ['script', 'template'].includes(child.localName);
 	});
+}
+
+/**
+ * Classifies the child nodes of an element for "Allowed Accessibility Child Roles" validation.
+ *
+ * In ARIA 1.3, elements whose computed role is transparent for ownership
+ * (e.g., `generic`) are traversed recursively so that their descendants
+ * are evaluated as if they were direct children of the owning element.
+ *
+ * @param el - The parent element whose children to classify.
+ * @param role - The ARIA role of the parent, which defines allowed child roles.
+ * @param version - The WAI-ARIA version for version-gated transparency behavior.
+ * @returns An array of classified child nodes.
+ */
+function classifyChildren(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+	role: ARIARole,
+	version: ARIAVersion,
+): OwnedElement[] {
+	const result: OwnedElement[] = [];
+	for (const child of el.childNodes) {
+		if (child.is(child.ELEMENT_NODE)) {
+			if (child.matches('[aria-busy="true" i]')) {
+				result.push([child, 'BUSY']);
+				continue;
+			}
+			const computedChild = getComputedRole(child.ownerMLDocument.specs, child, version);
+			if (
+				role.allowedAccessibilityChildRoles.some(ownedRole =>
+					isRequiredOwnedElement(
+						computedChild.el,
+						computedChild.role,
+						ownedRole,
+						child.ownerMLDocument.specs,
+						version,
+					),
+				)
+			) {
+				result.push([child, 'REQUIRED']);
+				continue;
+			}
+			if (isTransparentForOwnership(computedChild.role?.name, version)) {
+				result.push(...classifyChildren(child, role, version));
+				continue;
+			}
+			result.push([child, 'OTHER']);
+		} else if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+			result.push([child, 'PB']);
+		} else {
+			result.push([null, 'NO_ELEMENT']);
+		}
+	}
+	return result;
 }

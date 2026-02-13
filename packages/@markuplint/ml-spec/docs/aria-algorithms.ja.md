@@ -86,13 +86,13 @@ ARIA アルゴリズム群の中核となる関数です。明示的ロール解
 
 **競合解決チェック（順序通り）:**
 
-1. **必須コンテキストロールの検証** -- ロールに `requiredContextRole` エントリがある場合、親階層をチェックします。親要素が存在しない場合は `NO_OWNER` を返します。親階層がコンテキストロール条件を満たさない場合（`matchesContextRole()` 経由）、`INVALID_REQUIRED_CONTEXT_ROLE` を返します。プレゼンテーショナルな祖先は `getNonPresentationalAncestor()` 経由で透過的に走査されます。
+1. **必須コンテキストロールの検証** -- ロールに `requiredAccessibilityParentRole` エントリ（ARIA 1.2 では `requiredContextRole`）がある場合、親階層をチェックします。親要素が存在しない場合は `NO_OWNER` を返します。親階層がコンテキストロール条件を満たさない場合（`matchesContextRole()` 経由）、`INVALID_REQUIRED_CONTEXT_ROLE` を返します。プレゼンテーショナルな祖先は `getNonPresentationalAncestor()` 経由で透過的に走査されます。
 
 2. **SVG アクセシビリティツリー包含** -- 有効な明示的ロールを持たない SVG 名前空間要素について、アクセシブル名があるか（`getAccname()` 経由）、または `<title>`/`<desc>` 子要素があるかをチェックします。どちらも存在しない場合、その SVG 要素はアクセシビリティツリーから除外されます（`role: null` を返す）。これは、通常省略される SVG 要素を含めるための SVG-AAM ルールを実装しています。
 
 3. **インタラクティブ要素の保護** -- フォーカス可能な要素はプレゼンテーショナルになれません。`mayBeFocusable()` をチェックし、要素が `disabled`、`inert`、`hidden` でないことを確認します（各属性について祖先を走査）。要素がインタラクティブで disabled/inert/hidden でない場合、プレゼンテーショナルロールは暗黙のロールで上書きされ、`INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` エラーが返されます。
 
-4. **必須所有要素のチェック** -- 非プレゼンテーショナルな祖先が `requiredOwnedElements` を持ち、現在の要素の暗黙のロールがその必須所有要素のいずれかに一致する場合、プレゼンテーショナルロールは上書きされます。`REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` を返します。
+4. **必須所有要素のチェック** -- 非プレゼンテーショナルな祖先が `allowedAccessibilityChildRoles`（ARIA 1.2 では `requiredOwnedElements`）を持ち、現在の要素の暗黙のロールがその必須所有要素のいずれかに一致する場合、プレゼンテーショナルロールは上書きされます。`REQUIRED_OWNED_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` を返します。
 
 5. **グローバル ARIA プロパティのチェック** -- 要素がグローバル ARIA プロパティ（例: `aria-label`、`aria-describedby`）を持つ場合、プレゼンテーショナルロールは暗黙のロールで上書きされます。`GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL` を返します。
 
@@ -247,7 +247,7 @@ if (result.role) {
 | 文字列/オブジェクトの配列           | リストに記載された特定のロールが許可されます。                                                                                       |
 | `false`                             | ロールは許可されません（暗黙のロール追加前は空リスト）。                                                                             |
 
-4. 結果には常に暗黙のロールを含めます。暗黙のロールが `"presentation"` または `"none"` の場合、両方の等価ロールが含まれます。
+4. 結果には常に暗黙のロールを含めます。暗黙のロールが `"presentation"` または `"none"` の場合、両方の等価ロールが含まれます。ARIA 1.3 では、暗黙のロールが `"img"` または `"image"` の場合、両方のシノニムが含まれます。
 5. マージおよび重複排除されたリストを返します。
 
 ---
@@ -274,7 +274,7 @@ if (result.role) {
 1. 指定されたバージョンの ARIA ロールリストからロール名で検索します。
 2. SVG 名前空間（`http://www.w3.org/2000/svg`）の場合、コアロールで見つからなければ `graphicsRoles` も検索します。
 3. `generalization` プロパティ経由でスーパークラスロールを再帰的に走査し、完全な継承チェーンを構築します。
-4. すべてのオプションフィールドを未定義でないデフォルト値に正規化します（例: `!!role.isAbstract`、`role.requiredContextRole ?? []`）。
+4. すべてのオプションフィールドを未定義でないデフォルト値に正規化します（例: `!!role.isAbstract`）。`requiredAccessibilityParentRole` はスキーマの `requiredContextRole`（ARIA 1.2 名）または `requiredAccessibilityParentRole`（ARIA 1.3 名）から解決され、同様に `allowedAccessibilityChildRoles` は `requiredOwnedElements` または `allowedAccessibilityChildRoles` から解決されます。新旧両方のプロパティ名に同じ値が設定されます。
 5. ロール名が仕様に存在しない場合は `null` を返します。
 
 **戻り値の正規化されたフィールド:**
@@ -284,8 +284,10 @@ if (result.role) {
   name: string;
   isAbstract: boolean;          // デフォルト: false
   deprecated: boolean;          // デフォルト: false
-  requiredContextRole: string[];     // デフォルト: []
-  requiredOwnedElements: string[];   // デフォルト: []
+  requiredAccessibilityParentRole: string[];  // デフォルト: []
+  allowedAccessibilityChildRoles: string[];   // デフォルト: []
+  requiredContextRole: string[];     // @deprecated エイリアス — requiredAccessibilityParentRole と同値
+  requiredOwnedElements: string[];   // @deprecated エイリアス — allowedAccessibilityChildRoles と同値
   accessibleNameRequired: boolean;   // デフォルト: false
   accessibleNameFromAuthor: boolean; // デフォルト: false
   accessibleNameFromContent: boolean;// デフォルト: false
@@ -322,7 +324,7 @@ if (result.role) {
 1. `getVersionResolvedARIA()` を呼び出します。この関数は：
    - タグ名と名前空間で要素仕様を検索します。
    - `resolveVersion()` を適用して、ベース ARIA 仕様の上にバージョン固有のオーバーライドをマージします。
-   - 許可ロールの最適化：許可ロール配列に `"presentation"` がある場合は `"none"` を追加し、逆も同様です（WAI-ARIA 1.2 の `none` ロールに関する注記に準拠）。
+   - 許可ロールの最適化：許可ロール配列に `"presentation"` がある場合は `"none"` を追加し、逆も同様です（WAI-ARIA 1.2 の `none` ロールに関する注記に準拠）。ARIA 1.3 では、`"image"` がある場合は `"img"` を追加し、逆も同様です（ARIA 1.3 の `image`/`img` シノニムに準拠）。
    - 結果を `localName + namespace + version` をキーとしてキャッシュします。
 
 2. 条件付きオーバーライド（ARIA 仕様の `conditions` ブロック）を評価します：
@@ -448,19 +450,19 @@ WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素�
 
 **ソース:** `src/algorithm/aria/has-required-owned-elements.ts`
 
-「必須所有要素」制約を検証するための関連する 2 つの関数です。
+「Allowed Accessibility Child Roles」制約（ARIA 1.2 では「Required Owned Elements」）を検証するための関連する 2 つの関数です。
 
 #### `hasRequiredOwnedElement`
 
-要素がその計算ロールで定義された必須所有要素の制約を満たしているかどうかをチェックします。
+要素がその計算ロールで定義された「Allowed Accessibility Child Roles」制約を満たしているかどうかをチェックします。
 
 **アルゴリズム:**
 
 1. 要素が `aria-owns` 属性を持つ場合、`true` を返します（部分的サポート -- 参照される要素は検証されません）。
 2. `getComputedRole()` 経由で要素のロールを計算します。
-3. ロールに `requiredOwnedElements` がない場合、`true` を返します。
-4. 要素の最も近い非プレゼンテーショナルな子孫を走査します（子要素を対象とし、プレゼンテーショナルな要素は透過的に通過）。
-5. 各必須所有要素パターンについて、いずれかの子孫が `isRequiredOwnedElement()` 経由でマッチするかをチェックします。
+3. ロールに `allowedAccessibilityChildRoles` がない場合、`true` を返します。
+4. 要素の最も近い非プレゼンテーショナルな子孫を走査します（子要素を対象とし、所有権において透過的なロールを持つ要素は `isTransparentForOwnership()` 経由で透過的に通過）。ARIA 1.3 では `generic` 要素も透過的になります。
+5. 各 Allowed Accessibility Child Role パターンについて、いずれかの子孫が `isRequiredOwnedElement()` 経由でマッチするかをチェックします。
 
 #### `isRequiredOwnedElement`
 
@@ -478,7 +480,7 @@ WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素�
 
 **クエリ構文:** `>` 記法によるチェーンをサポートします。例えば、`"group > listitem"` は要素がロール `"group"` を持ち、ロール `"listitem"` を持つ子孫を含む必要があることを意味します。
 
-**仕様上の課題:** WAI-ARIA 仕様は「所有（owned）」が子か子孫かを決定していません。この実装では HTML セマンティクスに合わせるため、「所有」を**子**（子孫ではなく）として解釈しています。プレゼンテーショナルな子は透過的に走査されます。
+**所有権の走査:** ARIA 1.1/1.2 では、WAI-ARIA 仕様は「所有（owned）」が子か子孫かを決定していません。この実装では HTML セマンティクスに合わせるため、「所有」を**子**（子孫ではなく）として解釈しています。`presentation`/`none` の子は透過的に走査されます。ARIA 1.3 では「accessibility child」と「accessibility parent」の定義が正式に導入され、さらに `generic` 要素も透過的になります（`isTransparentForOwnership()` 経由）。
 
 ---
 
@@ -506,6 +508,8 @@ WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素�
 3. 条件文字列を分割・反転し、直近の親から上方に向かって親階層と照合します。
 4. 各レベルで、`getComputedRole()` を `assumeSingleNode = true` として呼び出し、親のロールを独立して取得します。
 5. いずれかの条件文字列が祖先チェーンと完全に一致すれば `true` を返します。
+
+**ARIA 1.3 の透過性:** ARIA 1.3 以降では、`generic` または `none` ロールを持つ親要素はマッチング中に透過的にスキップされます（`isTransparentForOwnership()` 経由）。ARIA 1.1/1.2 では、親要素はスキップされずに厳密にマッチされます。
 
 **例:** `requiredContextRole: ["list", "list > group"]` を持つ `listitem` ロールの場合：
 
@@ -557,13 +561,37 @@ WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素�
 
 1. `el.parentElement` から開始します。
 2. 各祖先について、`getComputedRole()` 経由でロールを計算します。
-3. 祖先のロールがプレゼンテーショナルでない場合、その祖先の計算ロールを返します。
+3. 祖先のロールが所有権走査において透過的でない場合（`isTransparentForOwnership()` 経由）、その祖先の計算ロールを返します。
 4. そうでなければ、次の親へ続行します。
 5. 非プレゼンテーショナルな祖先が見つからない場合、`{ el: null, role: null }` を返します。
 
 ---
 
-### 16. `ariaSpecs(specs, version)`
+### 16. `isTransparentForOwnership(roleName, version): boolean`
+
+**ソース:** `src/algorithm/aria/is-presentational.ts`
+
+指定されたロールが所有権走査において透過的かどうかを判定します。`getNonPresentationalAncestor`、`getClosestNonPresentationalDescendants`、`matchesContextRole` がスキップすべき要素を決定するために使用します。
+
+**パラメータ:**
+
+| パラメータ | 型                    | 説明                       |
+| ---------- | --------------------- | -------------------------- |
+| `roleName` | `string \| undefined` | チェックする ARIA ロール名 |
+| `version`  | `ARIAVersion`         | ARIA 仕様バージョン        |
+
+**戻り値:** ロールが所有権走査中にスキップされるべき場合は `true`。
+
+**バージョンごとの動作:**
+
+| ARIA バージョン  | 透過的なロール                    |
+| ---------------- | --------------------------------- |
+| `'1.1'`、`'1.2'` | `presentation`、`none`            |
+| `'1.3'`          | `presentation`、`none`、`generic` |
+
+---
+
+### 17. `ariaSpecs(specs, version)`
 
 **ソース:** `src/algorithm/aria/aria-specs.ts`
 
@@ -636,6 +664,8 @@ function resolveVersion(aria: ARIA, version: ARIAVersion): ResolvedARIA {
 ### バージョンが動作に与える影響
 
 - **`getNonPresentationalAncestor`**: ARIA 1.1/1.2 では、祖先のロール計算に完全なコンテキストを使用します（`assumeSingleNode = false`）。ARIA 1.3 以降では、各祖先が独立して計算されます（`assumeSingleNode = true`）。
+- **`isTransparentForOwnership`**: ARIA 1.1/1.2 では `presentation`/`none` のみが透過的です。ARIA 1.3 では、WAI-ARIA の「accessibility child」と「accessibility parent」の定義に従い、`generic` も透過的になります。
+- **`matchesContextRole`**: ARIA 1.1/1.2 では、親要素は厳密にマッチされます。ARIA 1.3 以降では、`generic`/`none` の親は透過的にスキップされます。
 - **`namingProhibited`**: ARIA 1.2 以降でのみ適用されます。バージョン 1.1 は常にベース値を使用します。
 - **ロールとプロパティの定義**: 利用可能なロールとそのプロパティはバージョン間で異なる場合があります（例: 1.2 や 1.3 で追加された新しいロール）。
 
