@@ -8,10 +8,9 @@
 
 ```
 src/
-├── index.ts                              — Re-exports HtmlParser, parser, getNamespace
+├── index.ts                              — Re-exports HtmlParser and parser
 ├── parser.ts                             — HtmlParser class extending Parser<Node, State>
 ├── types.ts                              — Re-exports parse5 types (Node, Element, etc.)
-├── get-namespace.ts                      — Namespace URI resolution (HTML/SVG/MathML)
 ├── is-document-fragment.ts               — Regex-based fragment vs document detection
 └── optimize-starts-head-or-body.ts       — Head/body tag placeholder optimization
 ```
@@ -28,7 +27,6 @@ flowchart TD
 
     subgraph pkg ["@markuplint/html-parser"]
         htmlParser["HtmlParser\nextends Parser‹Node, State›"]
-        getNs["getNamespace()\nNamespace resolution"]
         isFragment["isDocumentFragment()\nFragment detection"]
         optimize["optimizeStartsHeadTagOrBodyTag\nHead/body optimization"]
         types["types.ts\nparse5 type re-exports"]
@@ -44,11 +42,8 @@ flowchart TD
     mlAst -->|"AST types"| htmlParser
     parserUtils -->|"Parser base class"| htmlParser
     parse5 -->|"parse / parseFragment"| htmlParser
-    parse5 -->|"parseFragment"| getNs
-
     htmlParser --> isFragment
     htmlParser --> optimize
-    htmlParser --> getNs
 
     htmlParser -->|"extends / imports"| downstream
 ```
@@ -73,15 +68,15 @@ The parser maintains internal state through the `State` type:
 
 ### Override Methods
 
-| Method              | Purpose                                                                                                  |
-| ------------------- | -------------------------------------------------------------------------------------------------------- |
-| `tokenize()`        | Invokes parse5 `parse()` or `parseFragment()` based on fragment detection                                |
-| `beforeParse()`     | Sets up head/body optimization and offset tracking                                                       |
-| `afterParse()`      | Restores original head/body tag names from placeholders                                                  |
-| `nodeize()`         | Converts parse5 nodes to markuplint AST nodes, handling ghost elements, template content, and namespaces |
-| `afterNodeize()`    | Updates `afterPosition` state for ghost element positioning                                              |
-| `visitText()`       | Delegates to parent with `researchTags: true` and `invalidTagAsText: true`                               |
-| `visitSpreadAttr()` | Returns `null` (HTML does not support spread attributes)                                                 |
+| Method              | Purpose                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| `tokenize()`        | Invokes parse5 `parse()` or `parseFragment()` based on fragment detection                   |
+| `beforeParse()`     | Sets up head/body optimization and offset tracking                                          |
+| `afterParse()`      | Restores original head/body tag names from placeholders                                     |
+| `nodeize()`         | Converts parse5 nodes to markuplint AST nodes, handling ghost elements and template content |
+| `afterNodeize()`    | Updates `afterPosition` state for ghost element positioning                                 |
+| `visitText()`       | Delegates to parent with `researchTags: true` and `invalidTagAsText: true`                  |
+| `visitSpreadAttr()` | Returns `null` (HTML does not support spread attributes)                                    |
 
 ## Parse Pipeline
 
@@ -91,7 +86,7 @@ The HTML-specific pipeline extends the base `Parser` pipeline:
 flowchart LR
     A["beforeParse\n- super.beforeParse()\n- head/body optimization setup\n- offset tracking"]
     B["tokenize\n- isDocumentFragment() check\n- parse5 parse/parseFragment"]
-    C["nodeize\n- Ghost element handling\n- Doctype/text/comment/element dispatch\n- Template content extraction\n- Namespace resolution"]
+    C["nodeize\n- Ghost element handling\n- Doctype/text/comment/element dispatch\n- Template content extraction"]
     D["afterNodeize\n- Update afterPosition state"]
     E["afterParse\n- Restore head/body names"]
 
@@ -132,12 +127,7 @@ The optimization uses a placeholder replacement strategy:
 
 ## Namespace Resolution
 
-`getNamespace()` determines the namespace URI for an element:
-
-- **Default**: `http://www.w3.org/1999/xhtml` (HTML namespace)
-- **SVG context**: When the parent namespace is `http://www.w3.org/2000/svg`, wraps the tag in `<svg>` and parses to determine the resolved namespace
-- **MathML context**: When the parent namespace is `http://www.w3.org/1998/Math/MathML`, wraps in `<math>` and parses
-- **Fallback**: For tags that produce no nodes as fragments, falls back to `parse()` (full document mode)
+Namespace resolution is handled by `getNamespace()` in `@markuplint/parser-utils`. The HTML parser delegates namespace detection to the base `Parser` class, which automatically determines namespaces from tag names and parent node context.
 
 ## Fragment vs Document Detection
 
