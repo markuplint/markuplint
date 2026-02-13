@@ -1,7 +1,7 @@
 import type { CustomSyntaxChecker } from '../types.js';
 
-// @ts-ignore
-import MIMEType from 'whatwg-mimetype';
+// @ts-ignore -- whatwg-mimetype v5 has no type definitions
+import { MIMEType } from 'whatwg-mimetype';
 
 import { matched, unmatched } from '../match-result.js';
 import { Token } from '../token/index.js';
