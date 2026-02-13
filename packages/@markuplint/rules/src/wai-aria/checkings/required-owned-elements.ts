@@ -1,8 +1,8 @@
 import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
-import type { ARIARole } from '@markuplint/ml-spec';
+import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
-import { getComputedRole, isRequiredOwnedElement } from '@markuplint/ml-spec';
+import { getComputedRole, isRequiredOwnedElement, isTransparentForOwnership } from '@markuplint/ml-spec';
 
 /**
  * Represents a classified child node when checking required owned elements.
@@ -63,31 +63,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		const children: OwnedElement[] = [...el.childNodes].map<OwnedElement>(child => {
-			if (child.is(child.ELEMENT_NODE)) {
-				if (child.matches('[aria-busy="true" i]')) {
-					return [child, 'BUSY'];
-				}
-				const computedChild = getComputedRole(child.ownerMLDocument.specs, child, child.rule.options.version);
-				if (
-					role.allowedAccessibilityChildRoles.some(ownedRole =>
-						isRequiredOwnedElement(
-							computedChild.el,
-							computedChild.role,
-							ownedRole,
-							child.ownerMLDocument.specs,
-							child.rule.options.version,
-						),
-					)
-				) {
-					return [child, 'REQUIRED'];
-				}
-				return [child, 'OTHER'];
-			} else if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				return [child, 'PB'];
-			}
-			return [null, 'NO_ELEMENT'];
-		});
+		const children: OwnedElement[] = classifyChildren(el, role, el.rule.options.version);
 
 		if (children.some(([, type]) => type === 'BUSY')) {
 			return;
@@ -171,4 +147,58 @@ function mayBeBeforeCreated(
 	return [...el.children].every(child => {
 		return ['script', 'template'].includes(child.localName);
 	});
+}
+
+/**
+ * Classifies the child nodes of an element for "Allowed Accessibility Child Roles" validation.
+ *
+ * In ARIA 1.3, elements whose computed role is transparent for ownership
+ * (e.g., `generic`) are traversed recursively so that their descendants
+ * are evaluated as if they were direct children of the owning element.
+ *
+ * @param el - The parent element whose children to classify.
+ * @param role - The ARIA role of the parent, which defines allowed child roles.
+ * @param version - The WAI-ARIA version for version-gated transparency behavior.
+ * @returns An array of classified child nodes.
+ */
+function classifyChildren(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+	role: ARIARole,
+	version: ARIAVersion,
+): OwnedElement[] {
+	const result: OwnedElement[] = [];
+	for (const child of el.childNodes) {
+		if (child.is(child.ELEMENT_NODE)) {
+			if (child.matches('[aria-busy="true" i]')) {
+				result.push([child, 'BUSY']);
+				continue;
+			}
+			const computedChild = getComputedRole(child.ownerMLDocument.specs, child, version);
+			if (
+				role.allowedAccessibilityChildRoles.some(ownedRole =>
+					isRequiredOwnedElement(
+						computedChild.el,
+						computedChild.role,
+						ownedRole,
+						child.ownerMLDocument.specs,
+						version,
+					),
+				)
+			) {
+				result.push([child, 'REQUIRED']);
+				continue;
+			}
+			if (isTransparentForOwnership(computedChild.role?.name, version)) {
+				result.push(...classifyChildren(child, role, version));
+				continue;
+			}
+			result.push([child, 'OTHER']);
+		} else if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+			result.push([child, 'PB']);
+		} else {
+			result.push([null, 'NO_ELEMENT']);
+		}
+	}
+	return result;
 }
