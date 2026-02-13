@@ -7,10 +7,6 @@ import { AttrState, Parser, ParserError } from '@markuplint/parser-utils';
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
 
-type State = {
-	scopeNS: string;
-};
-
 /**
  * Parser implementation for Astro component templates.
  * Extends the base Parser to handle Astro-specific syntax including frontmatter blocks,
@@ -18,18 +14,13 @@ type State = {
  * (e.g., `class:list`, `set:html`), shorthand attributes, and namespace-aware
  * element resolution (XHTML vs SVG).
  */
-class AstroParser extends Parser<Node, State> {
+class AstroParser extends Parser<Node> {
 	constructor() {
-		super(
-			{
-				endTagType: 'xml',
-				selfCloseType: 'html+xml',
-				tagNameCaseSensitive: true,
-			},
-			{
-				scopeNS: 'http://www.w3.org/1999/xhtml',
-			},
-		);
+		super({
+			endTagType: 'xml',
+			selfCloseType: 'html+xml',
+			tagNameCaseSensitive: true,
+		});
 	}
 
 	tokenize() {
@@ -62,8 +53,6 @@ class AstroParser extends Parser<Node, State> {
 		const offset = originNode.position.start.offset;
 		const endOffset = originNode.position.end?.offset;
 		const token = this.sliceFragment(offset, endOffset);
-
-		this.#updateScopeNS(originNode, parentNode);
 
 		switch (originNode.type) {
 			case 'frontmatter': {
@@ -218,9 +207,6 @@ class AstroParser extends Parser<Node, State> {
 		return super.visitElement(startTagNode, childNodes, {
 			// https://docs.astro.build/en/basics/astro-syntax/#fragments
 			namelessFragment: true,
-			overwriteProps: {
-				namespace: this.state.scopeNS,
-			},
 			createEndTagToken: () => {
 				if (startTagNode.tagCloseChar.startsWith('/')) {
 					return null;
@@ -328,32 +314,6 @@ class AstroParser extends Parser<Node, State> {
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, /^[A-Z]/);
-	}
-
-	/**
-	 * Updates the namespace scope based on the current node type.
-	 * Switches to SVG namespace when entering an `<svg>` element
-	 * and back to XHTML when entering a `<foreignObject>`.
-	 *
-	 * @param originNode - The Astro AST node being processed
-	 * @param parentNode - The parent node in the markuplint tree
-	 */
-	#updateScopeNS(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		originNode: Node,
-		parentNode: MLASTParentNode | null,
-	) {
-		const parentNS = this.state.scopeNS;
-
-		if (
-			parentNS === 'http://www.w3.org/1999/xhtml' &&
-			originNode.type === 'element' &&
-			originNode.name?.toLowerCase() === 'svg'
-		) {
-			this.state.scopeNS = 'http://www.w3.org/2000/svg';
-		} else if (parentNS === 'http://www.w3.org/2000/svg' && parentNode && parentNode.nodeName === 'foreignObject') {
-			this.state.scopeNS = 'http://www.w3.org/1999/xhtml';
-		}
 	}
 }
 

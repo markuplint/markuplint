@@ -88,7 +88,6 @@ export class HtmlParser extends Parser<Node, State> {
 		parentNode: MLASTParentNode | null,
 		depth: number,
 	) {
-		const namespace = 'namespaceURI' in originNode ? originNode.namespaceURI : '';
 		const location = originNode.sourceCodeLocation;
 
 		if (!location) {
@@ -114,7 +113,6 @@ export class HtmlParser extends Parser<Node, State> {
 					depth,
 					parentNode,
 					nodeName: originNode.nodeName,
-					namespace,
 				},
 				childNodes,
 			);
@@ -173,7 +171,6 @@ export class HtmlParser extends Parser<Node, State> {
 						depth,
 						parentNode,
 						nodeName: originNode.nodeName,
-						namespace,
 					},
 					childNodes,
 					{
