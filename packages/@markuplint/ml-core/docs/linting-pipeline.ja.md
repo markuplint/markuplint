@@ -76,7 +76,7 @@ constructor(params: MLCoreParams)
 パースされた AST から `MLDocument` を作成します：
 
 ```typescript
-new Document(ast, ruleset, schemas, {
+new Document(ast, ruleset, schemas, ruleCommonSettings, {
   filename,
   endTag,
   booleanish,

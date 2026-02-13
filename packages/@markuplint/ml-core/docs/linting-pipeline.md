@@ -76,7 +76,7 @@ If the parser throws:
 Creates `MLDocument` from the parsed AST:
 
 ```typescript
-new Document(ast, ruleset, schemas, {
+new Document(ast, ruleset, schemas, ruleCommonSettings, {
   filename,
   endTag,
   booleanish,

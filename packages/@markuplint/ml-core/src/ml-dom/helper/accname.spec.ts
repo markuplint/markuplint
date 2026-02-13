@@ -1,4 +1,5 @@
 import { parser } from '@markuplint/html-parser';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
@@ -12,7 +13,7 @@ function c(sourceCode: string) {
 	const ast = parser.parse(sourceCode);
 	const astNode = ast.nodeList[0]!;
 	const ruleset = convertRuleset({});
-	const document = new MLDocument(ast, ruleset, dummySchemas());
+	const document = new MLDocument(ast, ruleset, dummySchemas(), { ariaVersion: ARIA_RECOMMENDED_VERSION });
 	const node = createNode(astNode, document);
 	if (node.is(node.ELEMENT_NODE)) {
 		return node;
