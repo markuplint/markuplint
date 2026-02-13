@@ -11,11 +11,15 @@ import { ariaSpecs } from './aria-specs.js';
 import { getARIA } from './get-aria.js';
 
 /**
- * Getting permitted ARIA roles.
+ * Computes the list of permitted ARIA roles for an element at the spec level,
+ * operating on tag name and namespace rather than a DOM element.
  *
- * - If an array, it is role list.
- * - If `true`, this mean is "Any".
- * - If `false`, this mean is "No".
+ * @param specs - The full markup language specification
+ * @param localName - The element's local tag name
+ * @param namespace - The element's namespace URI
+ * @param version - The ARIA specification version to use
+ * @param matches - A function that tests CSS selector matches for conditional role resolution
+ * @returns A list of permitted roles, each with a `name` and optional `deprecated` flag
  */
 export function getPermittedRoles(
 	specs: MLMLSpec,

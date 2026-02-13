@@ -4,6 +4,18 @@ import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
 
+/**
+ * Traverses the parent element chain to find the nearest ancestor with a
+ * non-presentational role, skipping elements that are transparent for
+ * ownership traversal (via `isTransparentForOwnership`).
+ *
+ * In ARIA 1.3, `generic` role elements are additionally transparent.
+ *
+ * @param el - The DOM element whose ancestors to traverse
+ * @param specs - The full markup language specification
+ * @param version - The ARIA specification version to use
+ * @returns The nearest non-presentational ancestor's `ComputedRole`, or `{ el: null, role: null }` if none exists
+ */
 export function getNonPresentationalAncestor(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,

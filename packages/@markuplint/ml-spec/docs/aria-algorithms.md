@@ -507,6 +507,8 @@ Validates whether an element's parent hierarchy satisfies at least one of the re
 4. For each level, calls `getComputedRole()` with `assumeSingleNode = true` to get the parent's role independently.
 5. Returns `true` if any condition string fully matches the ancestor chain.
 
+**ARIA 1.3 transparency:** In ARIA 1.3+, parent elements with `generic` or `none` roles are transparently skipped during matching (via `isTransparentForOwnership()`). In ARIA 1.1/1.2, parents are matched strictly without skipping.
+
 **Example:** For a `listitem` role with `requiredContextRole: ["list", "list > group"]`:
 
 - `"list"` matches if the parent has the `list` role.
@@ -557,13 +559,39 @@ Traverses the parent element chain to find the nearest ancestor with a non-prese
 
 1. Starts from `el.parentElement`.
 2. For each ancestor, computes the role via `getComputedRole()`.
-3. If the ancestor's role is not presentational, returns that ancestor's computed role.
+3. If the ancestor's role is not transparent for ownership traversal (via `isTransparentForOwnership()`), returns that ancestor's computed role.
 4. Otherwise, continues to the next parent.
 5. If no non-presentational ancestor is found, returns `{ el: null, role: null }`.
 
+**ARIA 1.3 transparency:** In ARIA 1.3, `generic` role elements are additionally skipped (alongside `presentation`/`none`), per the WAI-ARIA definitions of "accessibility child" and "accessibility parent".
+
 ---
 
-### 16. `ariaSpecs(specs, version)`
+### 16. `isTransparentForOwnership(roleName, version): boolean`
+
+**Source:** `src/algorithm/aria/is-presentational.ts`
+
+Determines whether a given role is transparent for ownership traversal. Used by `getNonPresentationalAncestor`, `getClosestNonPresentationalDescendants`, and `matchesContextRole` to decide which elements to skip.
+
+**Parameters:**
+
+| Parameter  | Type                  | Description                        |
+| ---------- | --------------------- | ---------------------------------- |
+| `roleName` | `string \| undefined` | The ARIA role name to check        |
+| `version`  | `ARIAVersion`         | The ARIA specification version     |
+
+**Returns:** `true` if the role should be skipped during ownership traversal.
+
+**Version behavior:**
+
+| ARIA Version     | Transparent roles               |
+| ---------------- | ------------------------------- |
+| `'1.1'`, `'1.2'` | `presentation`, `none`         |
+| `'1.3'`          | `presentation`, `none`, `generic` |
+
+---
+
+### 17. `ariaSpecs(specs, version)`
 
 **Source:** `src/algorithm/aria/aria-specs.ts`
 
@@ -636,6 +664,8 @@ This design allows the schema to define a base ARIA spec that works across versi
 ### Version Impact on Behavior
 
 - **`getNonPresentationalAncestor`**: In ARIA 1.1/1.2, ancestor role computation uses full context (`assumeSingleNode = false`). In ARIA 1.3+, each ancestor is computed independently (`assumeSingleNode = true`).
+- **`isTransparentForOwnership`**: In ARIA 1.1/1.2, only `presentation`/`none` are transparent. In ARIA 1.3, `generic` is additionally transparent per the WAI-ARIA definitions of "accessibility child" and "accessibility parent".
+- **`matchesContextRole`**: In ARIA 1.1/1.2, parent elements are matched strictly. In ARIA 1.3+, `generic`/`none` parents are transparently skipped.
 - **`namingProhibited`**: Only applicable in ARIA 1.2 and later. Version 1.1 always uses the base value.
 - **Role and property definitions**: The available roles and their properties may differ across versions (e.g., new roles added in 1.2 or 1.3).
 
