@@ -16,6 +16,7 @@
 | `selfClosingSolidus` の削除 | パーサープラグイン |
 | `conditionalType` を `blockBehavior` に置換 | パーサープラグイン |
 | `MLMarkupLanguageParser` / `Parse` 型の削除 | パーサープラグイン |
+| `getNamespace` を `@markuplint/parser-utils` に移動 | パーサープラグイン |
 
 ## トークン位置プロパティ
 
@@ -109,6 +110,30 @@ import type { MLParser } from '@markuplint/ml-ast';
 
 const parser: MLParser = { ... };
 ```
+
+## `getNamespace` の `@markuplint/parser-utils` への移動
+
+`getNamespace()` 関数は `@markuplint/html-parser` から削除され、`@markuplint/parser-utils` に集約されました。関数のシグネチャも、生の文字列ではなく AST ノードを使用するように変更されています。
+
+```ts
+// v4
+import { getNamespace } from '@markuplint/html-parser';
+
+const ns = getNamespace(tagName, parentNamespace);
+
+// v5
+import { getNamespace } from '@markuplint/parser-utils';
+
+const ns = getNamespace(currentNodeName, parentNode);
+```
+
+| | v4 | v5 |
+|---|---|---|
+| パッケージ | `@markuplint/html-parser` | `@markuplint/parser-utils` |
+| 第1引数 | `tagName: string` | `currentNodeName: string \| null` |
+| 第2引数 | `parentNamespace?: string` | `parentNode: MLASTParentNode \| null` |
+
+`@markuplint/html-parser` から `getNamespace` をインポートしていたカスタムパーサーは、インポートパスと呼び出し箇所を更新する必要があります。`@markuplint/parser-utils` の基底 `Parser` クラスが名前空間検出を自動的に処理するようになったため、ほとんどのパーサーでは `getNamespace` を直接呼び出す必要がなくなりました。
 
 ## DOM レイヤーへの影響
 

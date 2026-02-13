@@ -11,6 +11,7 @@
 |--------|--------|
 | New `ruleCommonSettings` config property | Config files |
 | ARIA version resolution priority changed | Rules using `ariaVersion` / `version` option |
+| ARIA 1.3 support added | Rules using `ariaVersion` / `version` option |
 
 ## `ruleCommonSettings`
 
@@ -102,3 +103,7 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` is available on the `MLDocument` instance passed to rule `verify()` callbacks.
+
+## ARIA 1.3 Support
+
+v5 adds `"1.3"` as a valid value for `ariaVersion`. The default remains `"1.2"`, so existing configs are unaffected. ARIA 1.3 introduces significant behavioral changes such as `generic` role transparency and the `image`/`img` role synonym. See the [ARIA migration guide](./aria.md) for full details.
