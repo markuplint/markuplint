@@ -240,8 +240,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return core;
 	}
 
-	private async i18n() {
-		const i18nSettings = await i18n(this.#options?.locale);
+	private i18n() {
+		const i18nSettings = i18n(this.#options?.locale);
 		this.emit('i18n', this.#file.path, i18nSettings);
 		return i18nSettings;
 	}
@@ -344,7 +344,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const rules = await this.resolveRules(configSet.plugins, ruleset);
 		fileLog('Resolved rules: %O', rules);
 
-		const locale = await i18n(this.#options?.locale);
+		const locale = i18n(this.#options?.locale);
 
 		if (fileLog.enabled) {
 			fileLog(
