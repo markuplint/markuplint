@@ -13,7 +13,7 @@ import { getJsonModule } from './get-json-module.js';
  * @param locale - An optional BCP 47 locale string (e.g., `"ja"`, `"en-US"`).
  * @returns The loaded locale set containing translated messages and the resolved locale code.
  */
-export async function i18n(locale?: string): Promise<LocaleSet> {
+export function i18n(locale?: string): LocaleSet {
 	locale = locale ?? osLocale() ?? 'en';
 	const langCode = locale.split('-')[0] ?? locale;
 	const loadLocaleSet = getJsonModule<LocaleSet>(`@markuplint/i18n/locales/${langCode}.json`);
