@@ -1,4 +1,4 @@
-import type { SelectorMatchedResult, SelectorResult } from '../types.js';
+import type { SelectorElement, SelectorMatchedResult, SelectorResult } from '../types.js';
 import type { Category, MLMLSpec } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
@@ -18,7 +18,7 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 	return (category: string) =>
 		(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			el: Element,
+			el: SelectorElement,
 		): SelectorResult => {
 			category = category.trim().toLowerCase();
 

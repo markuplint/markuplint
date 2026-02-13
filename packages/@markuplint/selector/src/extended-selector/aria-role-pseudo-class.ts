@@ -1,4 +1,4 @@
-import type { SelectorResult } from '../types.js';
+import type { SelectorElement, SelectorResult } from '../types.js';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
@@ -16,11 +16,11 @@ export function ariaRolePseudoClass(specs: MLMLSpec) {
 	return (content: string) =>
 		(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			el: Element,
+			el: SelectorElement,
 		): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
 
-			const computed = getComputedRole(specs, el, aria.version ?? ARIA_RECOMMENDED_VERSION);
+			const computed = getComputedRole(specs, el as Element, aria.version ?? ARIA_RECOMMENDED_VERSION);
 
 			if (computed.role?.name === aria.role) {
 				return {

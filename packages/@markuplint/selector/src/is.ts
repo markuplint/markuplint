@@ -1,27 +1,25 @@
+import type { SelectorElement, SelectorNode } from './types.js';
+
+const ELEMENT_NODE = 1;
+
 /**
  * Checks whether the given node is an Element node.
  *
- * @param node - The DOM node to check
+ * @param node - The node to check
  * @returns `true` if the node is an Element
  */
-export function isElement(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: Node,
-): node is Element {
-	return node.nodeType === node.ELEMENT_NODE;
+export function isElement(node: SelectorNode): node is SelectorElement {
+	return node.nodeType === ELEMENT_NODE;
 }
 
 /**
  * Checks whether the given node is a non-DocumentType child node
  * (i.e., has `previousElementSibling` and `nextElementSibling` properties).
  *
- * @param node - The DOM node to check
+ * @param node - The node to check
  * @returns `true` if the node is an Element or CharacterData
  */
-export function isNonDocumentTypeChildNode(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: Node,
-): node is Element | CharacterData {
+export function isNonDocumentTypeChildNode(node: SelectorNode): node is SelectorElement {
 	return 'previousElementSibling' in node && 'nextElementSibling' in node;
 }
 
@@ -36,7 +34,7 @@ export function isNonDocumentTypeChildNode(
  */
 export function isPureHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SelectorElement,
 ) {
 	return el.localName !== el.nodeName;
 }

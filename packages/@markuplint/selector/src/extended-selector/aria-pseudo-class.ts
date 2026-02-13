@@ -1,4 +1,4 @@
-import type { SelectorResult } from '../types.js';
+import type { SelectorElement, SelectorResult } from '../types.js';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
@@ -16,10 +16,10 @@ export function ariaPseudoClass() {
 	return (content: string) =>
 		(
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			el: Element,
+			el: SelectorElement,
 		): SelectorResult => {
 			const aria = ariaPseudoClassParser(content);
-			const name = getAccname(el);
+			const name = getAccname(el as Element);
 			switch (aria.type) {
 				case 'hasName': {
 					if (name) {
