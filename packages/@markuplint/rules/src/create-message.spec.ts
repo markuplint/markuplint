@@ -8,8 +8,8 @@ import { __createMessageValueExpected } from './create-message.js';
 
 let t: Translator;
 
-beforeAll(async () => {
-	const locale = await i18n('en');
+beforeAll(() => {
+	const locale = i18n('en');
 	t = translator(locale);
 });
 
