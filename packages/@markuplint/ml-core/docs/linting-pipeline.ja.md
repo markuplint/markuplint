@@ -32,17 +32,18 @@ constructor(params: MLCoreParams)
 
 `MLFabric` 型はリンティング設定全体を定義します：
 
-| フィールド      | 型                                | 説明                                                  |
-| --------------- | --------------------------------- | ----------------------------------------------------- |
-| `parser`        | `MLParser`                        | パーサーインスタンス（例：`@markuplint/html-parser`） |
-| `ruleset`       | `Ruleset`                         | 解決済みルール設定                                    |
-| `rules`         | `readonly MLRule[]`               | ルールインスタンスの配列                              |
-| `locale`        | `LocaleSet`                       | 違反メッセージのロケール                              |
-| `schemas`       | `MLSchema`                        | HTML/ARIA 仕様タプル                                  |
-| `parserOptions` | `ParserOptions`                   | パーサー設定オプション                                |
-| `severity`      | `{ parseError?: SeverityOption }` | 重大度オーバーライド                                  |
-| `pretenders`    | `readonly Pretender[]`            | コンポーネントから HTML へのマッピング                |
-| `configErrors`  | `readonly ConfigError[]`          | 報告する設定エラー                                    |
+| フィールド           | 型                                | 説明                                                  |
+| -------------------- | --------------------------------- | ----------------------------------------------------- |
+| `parser`             | `MLParser`                        | パーサーインスタンス（例：`@markuplint/html-parser`） |
+| `ruleset`            | `Ruleset`                         | 解決済みルール設定                                    |
+| `rules`              | `readonly MLRule[]`               | ルールインスタンスの配列                              |
+| `locale`             | `LocaleSet`                       | 違反メッセージのロケール                              |
+| `schemas`            | `MLSchema`                        | HTML/ARIA 仕様タプル                                  |
+| `parserOptions`      | `ParserOptions`                   | パーサー設定オプション                                |
+| `severity`           | `{ parseError?: SeverityOption }` | 重大度オーバーライド                                  |
+| `pretenders`         | `readonly Pretender[]`            | コンポーネントから HTML へのマッピング                |
+| `ruleCommonSettings` | `RuleCommonSettings`              | すべてのルールにグローバルに適用される共通設定        |
+| `configErrors`       | `readonly ConfigError[]`          | 報告する設定エラー                                    |
 
 ### プロパティ
 
@@ -76,7 +77,7 @@ constructor(params: MLCoreParams)
 パースされた AST から `MLDocument` を作成します：
 
 ```typescript
-new Document(ast, ruleset, schemas, {
+new Document(ast, ruleset, schemas, ruleCommonSettings, {
   filename,
   endTag,
   booleanish,

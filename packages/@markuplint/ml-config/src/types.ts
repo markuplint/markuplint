@@ -1,4 +1,5 @@
 import type { ParserOptions } from '@markuplint/ml-ast';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { RegexSelector } from '@markuplint/selector';
 import type { Nullable } from '@markuplint/shared';
 
@@ -10,6 +11,7 @@ export type { RegexSelector } from '@markuplint/selector';
  */
 export type Config = {
 	readonly $schema?: string;
+	readonly ruleCommonSettings?: RuleCommonSettings;
 	readonly extends?: string | readonly string[];
 	readonly plugins?: readonly (PluginConfig | string)[];
 	readonly parser?: ParserConfig;
@@ -23,6 +25,14 @@ export type Config = {
 	readonly childNodeRules?: readonly ChildNodeRule[];
 	readonly overrideMode?: 'merge' | 'reset';
 	readonly overrides?: Readonly<Record<string, OverrideConfig>>;
+};
+
+/**
+ * Common settings applied globally to all rules.
+ * These values serve as fallbacks when individual rules do not specify their own.
+ */
+export type RuleCommonSettings = {
+	readonly ariaVersion?: ARIAVersion;
 };
 
 /**

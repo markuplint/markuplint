@@ -2,7 +2,12 @@ import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block } from '@markuplint/ml-core';
 import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
-import { getComputedRole, isRequiredOwnedElement, isTransparentForOwnership } from '@markuplint/ml-spec';
+import {
+	ARIA_RECOMMENDED_VERSION,
+	getComputedRole,
+	isRequiredOwnedElement,
+	isTransparentForOwnership,
+} from '@markuplint/ml-spec';
 
 /**
  * Represents a classified child node when checking required owned elements.
@@ -63,7 +68,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 
 		// TODO: Needs to resolve `aria-own`
 
-		const children: OwnedElement[] = classifyChildren(el, role, el.rule.options.version);
+		const ariaVersion =
+			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		const children: OwnedElement[] = classifyChildren(el, role, ariaVersion);
 
 		if (children.some(([, type]) => type === 'BUSY')) {
 			return;

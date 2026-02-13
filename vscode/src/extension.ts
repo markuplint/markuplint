@@ -25,6 +25,7 @@ import {
 	warningToPopup,
 } from './lsp.js';
 import { StatusBar } from './status-bar.js';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 let client: LanguageClient;
 let logger: Logger;
@@ -77,7 +78,7 @@ export function activate(
 			hover: {
 				accessibility: {
 					enable: true,
-					ariaVersion: '1.2',
+					ariaVersion: ARIA_RECOMMENDED_VERSION,
 				},
 			},
 		};

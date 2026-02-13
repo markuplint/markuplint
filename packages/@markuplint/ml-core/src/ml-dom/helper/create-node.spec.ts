@@ -1,4 +1,5 @@
 import { parser } from '@markuplint/html-parser';
+import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { describe, test, expect } from 'vitest';
 
 import { Document, convertRuleset } from '../../index.js';
@@ -12,7 +13,7 @@ describe('create Node', () => {
 		const ast = parser.parse(sourceCode);
 		const astNode = ast.nodeList[0];
 		const ruleset = convertRuleset({});
-		const document = new Document(ast, ruleset, dummySchemas());
+		const document = new Document(ast, ruleset, dummySchemas(), { ariaVersion: ARIA_RECOMMENDED_VERSION });
 		const node = createNode(astNode!, document);
 		expect(node.raw).toBe('<div>');
 	});
