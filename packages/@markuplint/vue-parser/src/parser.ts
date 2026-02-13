@@ -30,7 +30,7 @@ class VueParser extends Parser<ASTNode, State> {
 		);
 	}
 
-	tokenize() {
+	tokenize(): { readonly ast: ASTNode[]; readonly isFragment: boolean } {
 		const ast = vueParse(this.rawCode);
 		if (ast.templateBody?.comments) {
 			this.state.comments = ast.templateBody.comments;

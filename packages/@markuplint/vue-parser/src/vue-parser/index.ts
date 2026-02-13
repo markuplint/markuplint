@@ -14,11 +14,12 @@ export function vueParse(vueTemplate: string): VueTokens {
 	return ast;
 }
 
+export type VElement = VueESLintParser.AST.VElement;
+export type VText = VueESLintParser.AST.VText;
+export type VExpressionContainer = VueESLintParser.AST.VExpressionContainer;
+
 /** Union of AST node types that can appear as children in a Vue template. */
-export type ASTNode =
-	| VueESLintParser.AST.VElement
-	| VueESLintParser.AST.VText
-	| VueESLintParser.AST.VExpressionContainer;
+export type ASTNode = VElement | VText | VExpressionContainer;
 
 /** Represents a comment token in the Vue template AST with location information. */
 export type ASTComment = VueESLintParser.AST.Token & VueESLintParser.AST.HasLocation;
