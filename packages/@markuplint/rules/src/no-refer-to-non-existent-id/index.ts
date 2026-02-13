@@ -20,7 +20,7 @@ const HYPERLINK_SELECTOR = 'a[href], area[href]';
 export default createRule({
 	meta: meta,
 	defaultOptions: {
-		ariaVersion: ARIA_RECOMMENDED_VERSION as ARIAVersion,
+		ariaVersion: undefined as ARIAVersion | undefined,
 		fragmentRefersNameAttr: false,
 	},
 	async verify({ document, report, t }) {
@@ -122,7 +122,10 @@ export default createRule({
 				}
 			}
 
-			const { props } = ariaSpecs(document.specs, attr.rule.options.ariaVersion);
+			const { props } = ariaSpecs(
+				document.specs,
+				attr.rule.options.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION,
+			);
 
 			const aria = props.find(prop => prop.name === name);
 			if (aria) {

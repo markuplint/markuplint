@@ -1,11 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
-import { mayBeFocusable } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, mayBeFocusable } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
-
-// TODO: It will be received from config
-/** The ARIA specification version used for accessible name computation. */
-const ARIA_VERSION = '1.2';
 
 /**
  * Command values from the Invoker Commands API that relate to popover behavior.
@@ -24,6 +20,8 @@ const POPOVER_COMMANDS = new Set(['toggle-popover', 'show-popover', 'hide-popove
 export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {
+		const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+
 		const triggers = document.querySelectorAll('[popovertarget], [commandfor]');
 		Triggers: for (const trigger of triggers) {
 			let targetId: string | null = null;
@@ -58,7 +56,7 @@ export default createRule({
 				if (
 					(node.is(node.ELEMENT_NODE) &&
 						// Element has accessible name
-						(node.getAccessibleName(ARIA_VERSION) ||
+						(node.getAccessibleName(ariaVersion) ||
 							// Element is focusable
 							mayBeFocusable(node, node.ownerMLDocument.specs))) ||
 					(node.is(node.TEXT_NODE) &&

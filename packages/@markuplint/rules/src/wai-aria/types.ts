@@ -28,5 +28,5 @@ export type Options = {
 	/** Whether to disallow explicitly setting an ARIA property to its default value. */
 	disallowDefaultValue: boolean;
 	/** The WAI-ARIA specification version to validate against. */
-	version: ARIAVersion;
+	version?: ARIAVersion;
 };
