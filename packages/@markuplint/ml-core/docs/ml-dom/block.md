@@ -45,7 +45,7 @@ Blocks with a recognized `blockBehavior.type` form conditional groups. Each grou
 | `'if:else'`          | Default (else) branch                                      | Branch within current group                                                       |
 | `'switch:case'`      | Switch case branch                                         | Starts a new conditional group                                                    |
 | `'switch:default'`   | Switch default branch                                      | Branch within current group                                                       |
-| `'each'`             | Start of iteration (loop) block                            | Starts a new conditional group                                                    |
+| `'each'`             | Start of iteration (loop) block                            | Continues in current mode (no new mode set); flattened into `childNodes`          |
 | `'each:empty'`       | Empty state for an iteration block                         | Branch within current group                                                       |
 | `'await'`            | Asynchronous block (pending state)                         | Branch within current group                                                       |
 | `'await:then'`       | Resolved state of async block                              | Branch within current group                                                       |
@@ -205,7 +205,7 @@ The inner `{#if b}` block recursively generates its patterns `[<span>X</span>]`,
 
 `MLElement.hasMutableChildren()` uses `blockBehavior` to distinguish between two categories of MLBlock:
 
-- **Blocks WITH `blockBehavior`** (e.g., type `'if'`, `'each'`, `'switch:case'`): Skipped (`continue`) — these are handled by `conditionalChildNodes()` which enumerates all possible patterns
+- **Blocks WITH `blockBehavior`** (e.g., type `'if'`, `'switch:case'`): Skipped (`continue`) — these are handled by `conditionalChildNodes()` which enumerates all possible patterns. Note that `'each'` and `'end'` blocks are flattened into `childNodes` (their children are inlined), so they do not reach `hasMutableChildren()` as blocks
 - **Blocks WITHOUT `blockBehavior`** (`null`): Return `true` immediately — these represent expression outputs like `{value}` or other non-conditional template constructs whose content cannot be statically determined
 
 ```typescript

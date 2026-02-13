@@ -349,7 +349,7 @@ Template engines (Pug, EJS, Nunjucks, etc.) produce preprocessor-specific blocks
 | `'switch:default'`   | `{% case %}`       | Switch case                |
 | `'end'`              | `{% endswitch %}`  | End of switch              |
 
-`MLNode.conditionalChildNodes()` returns an array of `NodeListOf` arrays — one per conditional branch — so rules can analyze each branch independently.
+`MLNode.conditionalChildNodes()` returns an array of `NodeListOf` arrays — one per conditional branch — so rules can analyze each branch independently. Note that `'each'` blocks do not start a new conditional mode (`'if'` or `'switch'`); they are flattened into `childNodes` and their content is treated as always-present rather than as an alternative branch. Only `'if'`/`'if:elseif'` and `'switch:case'` start new modes that generate null sentinels for the "empty branch" case.
 
 ## Plugin System
 
