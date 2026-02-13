@@ -236,6 +236,17 @@ describe('getPermittedRoles', () => {
 		expect(c('<img aria-label="foo" />', '1.2')).toStrictEqual(imgPermitted);
 	});
 
+	test('the img element (1.3: image/img synonym)', () => {
+		// In ARIA 1.3, `image` and `img` are synonyms.
+		// When `img` appears in permitted roles, `image` should also appear.
+		expect(c('<img />', '1.3')).toStrictEqual(['image', 'img']);
+		expect(c('<img alt />', '1.3')).toStrictEqual(['none', 'presentation']);
+		expect(c('<img alt="" />', '1.3')).toStrictEqual(['none', 'presentation']);
+		const permitted13 = c('<img alt="foo" />', '1.3');
+		expect(permitted13).toContain('img');
+		expect(permitted13).toContain('image');
+	});
+
 	test('the form element', () => {
 		expect(c('<form></form>', '1.2')).toStrictEqual(['none', 'presentation', 'search']);
 		expect(c('<form></form>', '1.1')).toStrictEqual(['none', 'presentation', 'search']);

@@ -14,6 +14,19 @@
 					"description": "Warn if use an invalid value of the property/state. You can temporarily disable this option if the WAI-ARIA spec update rather than markuplint add new value to the allowed list ahead. Don't recommend disabling basically.",
 					"description:ja": "プロパティ/ステートの値をチェックします。このオプションは、Markuplintが許可リストに追加するよりも先にWAI-ARIAの仕様が更新された場合などに、必要に応じて一時的に無効化できるようにしています。基本的に無効化を推奨しません。"
 				},
+				"checkingAllowedAccessibilityChildRoles": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Verify that roles with \"Allowed Accessibility Child Roles\" (called \"Required Owned Elements\" in ARIA 1.2) contain the expected child roles.",
+					"description:ja": "\"Allowed Accessibility Child Roles\"（ARIA 1.2では\"Required Owned Elements\"）を持つロールが期待される子ロールを含んでいるかチェックします。"
+				},
+				"checkingRequiredOwnedElements": {
+					"type": "boolean",
+					"default": "true",
+					"deprecated": true,
+					"description": "Deprecated: Use checkingAllowedAccessibilityChildRoles instead. Both must be true for the check to run.",
+					"description:ja": "非推奨: 代わりにcheckingAllowedAccessibilityChildRolesを使用してください。チェックが実行されるには両方がtrueである必要があります。"
+				},
 				"checkingDeprecatedRole": {
 					"type": "boolean",
 					"default": "true",
@@ -44,9 +57,21 @@
 					"description": "Disallow set the implicit property/state explicitly. This is based on the spec ARIA in HTML and is not strictly the spec WAI-ARIA, so it is an option.",
 					"description:ja": "暗黙的なプロパティ/ステートの明示的な設定を禁止します。ARIA in HTMLによるもので厳密にはWAI-ARIAの仕様ではないためオプションとしています。"
 				},
+				"checkingPresentationalChildren": {
+					"type": "boolean",
+					"default": "false",
+					"description": "Warn when ARIA attributes are set on descendants of roles with childrenPresentational.",
+					"description:ja": "childrenPresentationalを持つロールの子孫要素にARIA属性が設定されている場合に警告します。"
+				},
+				"checkingInteractionInHidden": {
+					"type": "boolean",
+					"default": "false",
+					"description": "Warn about focusable interactive elements hidden via aria-hidden.",
+					"description:ja": "aria-hiddenで非表示にされたフォーカス可能なインタラクティブ要素について警告します。"
+				},
 				"disallowDefaultValue": {
 					"type": "boolean",
-					"default": "true",
+					"default": "false",
 					"description": "Disallow set the default value of the property/state explicitly.",
 					"description:ja": "プロパティ/ステートのデフォルト値の明示的な設定を禁止します。"
 				},

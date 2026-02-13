@@ -140,23 +140,23 @@ https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 
 各ロールセクションについて:
 
-| データ                           | セレクタ                                             |
-| -------------------------------- | ---------------------------------------------------- |
-| 名前                             | `.role-name[title]`                                  |
-| 説明                             | `.role-description p`（`\n\n` で結合）               |
-| 抽象かどうか                     | `.role-abstract` テキストが "true"                   |
-| 汎化                             | `.role-parent a`                                     |
-| 必須プロパティ                   | `.role-required-properties li`（親にフォールバック） |
-| 継承プロパティ                   | `.role-inherited li`                                 |
-| 所有プロパティ                   | `.role-properties li` または `.role-properties > a`  |
-| 必須コンテキストロール           | `.role-scope li` または `.role-scope a`              |
-| 必須所有要素                     | `.role-mustcontain li` または `.role-mustcontain a`  |
-| アクセシブル名必須               | `.role-namerequired` に "true" を含む                |
-| アクセシブル名（著者から）       | `.role-namefrom` に "author" を含む                  |
-| アクセシブル名（コンテンツから） | `.role-namefrom` に "content" を含む                 |
-| アクセシブル名禁止               | `.role-namefrom` に "prohibited" を含む              |
-| 子の表示                         | `.role-childpresentational` "true"/"false"           |
-| 禁止プロパティ                   | `.role-disallowed li code`                           |
+| データ                             | セレクタ                                             |
+| ---------------------------------- | ---------------------------------------------------- |
+| 名前                               | `.role-name[title]`                                  |
+| 説明                               | `.role-description p`（`\n\n` で結合）               |
+| 抽象かどうか                       | `.role-abstract` テキストが "true"                   |
+| 汎化                               | `.role-parent a`                                     |
+| 必須プロパティ                     | `.role-required-properties li`（親にフォールバック） |
+| 継承プロパティ                     | `.role-inherited li`                                 |
+| 所有プロパティ                     | `.role-properties li` または `.role-properties > a`  |
+| Required Accessibility Parent Role | `.role-scope li` または `.role-scope a`              |
+| Allowed Accessibility Child Roles  | `.role-mustcontain li` または `.role-mustcontain a`  |
+| アクセシブル名必須                 | `.role-namerequired` に "true" を含む                |
+| アクセシブル名（著者から）         | `.role-namefrom` に "author" を含む                  |
+| アクセシブル名（コンテンツから）   | `.role-namefrom` に "content" を含む                 |
+| アクセシブル名禁止                 | `.role-namefrom` に "prohibited" を含む              |
+| 子の表示                           | `.role-childpresentational` "true"/"false"           |
+| 禁止プロパティ                     | `.role-disallowed li code`                           |
 
 **ロール同義語の処理:**
 

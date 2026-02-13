@@ -506,7 +506,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 	});
 });
 
-describe('Required Owned Elements', () => {
+describe('Allowed Accessibility Child Roles', () => {
 	test('Empty content', async () => {
 		expect((await mlRuleTest(rule, '<div role="list"></div>')).violations).toStrictEqual([
 			{
@@ -1505,5 +1505,127 @@ describe('img element permitted roles', () => {
 				raw: 'navigation',
 			},
 		]);
+	});
+
+	test('img with role="image" is valid in ARIA 1.3 (image/img synonym)', async () => {
+		// In ARIA 1.3, "image" is a synonym of "img". The implicit role of <img> is "img",
+		// so "image" is technically a distinct string and the implicit role checker does not flag it.
+		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
+			rule: { options: { version: '1.3' } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('ARIA 1.3 — Generic role transparency', () => {
+	const v13 = { rule: { options: { version: '1.3' as const } } };
+	const v12 = { rule: { options: { version: '1.2' as const } } };
+
+	test('generic wrapper is transparent for owned elements in 1.3', async () => {
+		// In 1.3, <div> (generic) is transparent — <li> is reachable as owned element of <ul>
+		expect((await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations).toStrictEqual([]);
+	});
+
+	test('generic wrapper is NOT transparent for owned elements in 1.2', async () => {
+		// In 1.2, <div> blocks the list > listitem relationship
+		const { violations } = await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v12);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" role',
+				raw: '<ul>',
+			},
+		]);
+	});
+
+	test('nested generic wrappers are transparent in 1.3', async () => {
+		expect((await mlRuleTest(rule, '<ul><div><div><li>item</li></div></div></ul>', v13)).violations).toStrictEqual(
+			[],
+		);
+	});
+
+	test('non-generic wrapper still blocks in 1.3', async () => {
+		// <section> has implicit role "region" (when named) or "generic" (when unnamed in some cases)
+		// but actually <nav> has implicit role "navigation" — not transparent
+		const { violations } = await mlRuleTest(rule, '<ul><nav><li>item</li></nav></ul>', v13);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" role',
+				raw: '<ul>',
+			},
+		]);
+	});
+
+	test('list > listitem via context role is valid in 1.3 with generic wrapper', async () => {
+		// <li> has requiredAccessibilityParentRole: ["list", "list > group"]
+		// In 1.3, the <div> (generic) is transparent so <ul> (list) is found as the parent
+		expect((await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations).toStrictEqual([]);
+	});
+});
+
+describe('ARIA 1.3 — checkingAllowedAccessibilityChildRoles option', () => {
+	test('new option false disables the check', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul></ul>', {
+			rule: { options: { checkingAllowedAccessibilityChildRoles: false } },
+		});
+		// Should NOT report "The child element requires the listitem role"
+		expect(violations.filter(v => v.message.includes('listitem'))).toStrictEqual([]);
+	});
+
+	test('old option false still disables the check (backward compat)', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul></ul>', {
+			rule: { options: { checkingRequiredOwnedElements: false } },
+		});
+		expect(violations.filter(v => v.message.includes('listitem'))).toStrictEqual([]);
+	});
+
+	test('both options true enables the check (default)', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul></ul>');
+		expect(violations.some(v => v.message.includes('listitem'))).toBe(true);
+	});
+});
+
+describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
+	test('img element with role="image" is permitted in 1.3', async () => {
+		// In ARIA 1.3, "image" is a synonym for "img", so it's a valid permitted role
+		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
+			rule: { options: { version: '1.3', disallowSetImplicitRole: false } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('img element with role="image" is NOT permitted in 1.2', async () => {
+		// In ARIA 1.2, the "image" role does not exist (only "img" does),
+		// so the non-existent role check fires first.
+		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
+			rule: { options: { version: '1.2' } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 38,
+				message:
+					'The "image" role does not exist according to the WAI-ARIA specification. This "image" role does not exist in WAI-ARIA.',
+				raw: 'image',
+			},
+		]);
+	});
+
+	test('img[alt=""] with role="none" is valid in 1.3', async () => {
+		// The implicit role of <img alt=""> is "presentation". Although "none" and "presentation"
+		// are synonyms, the implicit role checker compares strings, so no violation is raised.
+		expect(
+			(
+				await mlRuleTest(rule, '<img src="spacer.gif" alt="" role="none">', {
+					rule: { options: { version: '1.3' } },
+				})
+			).violations,
+		).toStrictEqual([]);
 	});
 });

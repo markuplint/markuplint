@@ -74,14 +74,14 @@ function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: s
 	if (aria.permittedRoles !== false) {
 		aria = {
 			...aria,
-			permittedRoles: optimizePermittedRoles(aria.permittedRoles),
+			permittedRoles: optimizePermittedRoles(aria.permittedRoles, version),
 		};
 	}
 	cache.set(key, aria);
 	return aria;
 }
 
-function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
+function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>, version: ARIAVersion) {
 	if (!Array.isArray(permittedRoles)) {
 		return permittedRoles;
 	}
@@ -93,6 +93,17 @@ function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>) {
 	}
 	if (unique.has('none')) {
 		unique.add('presentation');
+	}
+
+	// https://w3c.github.io/aria/#ref-for-image
+	// In ARIA 1.3, `image` is the primary role name and `img` is a synonym.
+	if (version === '1.3') {
+		if (unique.has('image')) {
+			unique.add('img');
+		}
+		if (unique.has('img')) {
+			unique.add('image');
+		}
 	}
 
 	return [...unique].toSorted();

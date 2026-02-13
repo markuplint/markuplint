@@ -40,6 +40,7 @@ export default createRule<boolean, Options>({
 		checkingDeprecatedRole: true,
 		checkingDeprecatedProps: true,
 		permittedAriaRoles: true,
+		checkingAllowedAccessibilityChildRoles: true,
 		checkingRequiredOwnedElements: true,
 		checkingPresentationalChildren: false,
 		checkingInteractionInHidden: false,
@@ -131,7 +132,10 @@ export default createRule<boolean, Options>({
 				}
 			}
 
-			if (el.rule.options.checkingRequiredOwnedElements) {
+			if (
+				el.rule.options.checkingAllowedAccessibilityChildRoles &&
+				el.rule.options.checkingRequiredOwnedElements
+			) {
 				report(checkingRequiredOwnedElements({ el, role: computed.role }));
 			}
 

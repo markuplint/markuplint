@@ -187,7 +187,19 @@ export type ARIARole = {
 	readonly name: string;
 	readonly isAbstract: boolean;
 	readonly deprecated: boolean;
+	/** Required Accessibility Parent Role (ARIA 1.3 name) */
+	readonly requiredAccessibilityParentRole: readonly string[];
+	/** Allowed Accessibility Child Roles (ARIA 1.3 name) */
+	readonly allowedAccessibilityChildRoles: readonly string[];
+	/**
+	 * @deprecated Use {@link ARIARole.requiredAccessibilityParentRole} instead.
+	 * Retained for ARIA 1.2 backward compatibility.
+	 */
 	readonly requiredContextRole: readonly string[];
+	/**
+	 * @deprecated Use {@link ARIARole.allowedAccessibilityChildRoles} instead.
+	 * Retained for ARIA 1.2 backward compatibility.
+	 */
 	readonly requiredOwnedElements: readonly string[];
 	readonly accessibleNameRequired: boolean;
 	readonly accessibleNameFromAuthor: boolean;
