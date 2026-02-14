@@ -10,6 +10,7 @@ Use the following skills and commands for common tasks. **Always invoke the appr
 | `/pr`      | Create and push a pull request via `gh pr create`      | [pr.md](.claude/commands/pr.md)           |
 | `/doc`     | Update documentation (README, ARCHITECTURE, JSDoc)     | [doc.md](.claude/commands/doc.md)         |
 | `/release` | Create GitHub Release notes                            | [release.md](.claude/commands/release.md) |
+| `/issue`   | Analyze a GitHub Issue and create a resolution plan    | [issue.md](.claude/commands/issue.md)     |
 
 ## Skills
 
