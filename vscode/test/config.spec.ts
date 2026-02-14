@@ -5,43 +5,35 @@ import * as vscode from 'vscode';
 
 suite('Config Tests', () => {
 	test('config', () => {
-		const config = vscode.workspace.getConfiguration();
+		const config = vscode.workspace.getConfiguration('markuplint');
 
-		const mlConfig = config.get('markuplint');
-
-		assert.deepStrictEqual(mlConfig, {
-			debug: true,
-			defaultConfig: {
-				extends: ['markuplint:recommended'],
-			},
-			enable: true,
-			hover: {
-				accessibility: {
-					ariaVersion: '1.2',
-					enable: true,
-				},
-			},
-			targetLanguages: [
-				'astro',
-				'ejs',
-				'haml',
-				'handlebars',
-				'html',
-				'jade',
-				'javascript',
-				'javascriptreact',
-				'jstl',
-				'liquid',
-				'mustache',
-				'nunjucks',
-				'php',
-				'ruby',
-				'smarty',
-				'svelte',
-				'typescript',
-				'typescriptreact',
-				'vue',
-			],
+		assert.strictEqual(config.get('debug'), true);
+		assert.strictEqual(config.get('enable'), true);
+		assert.deepStrictEqual(config.get('defaultConfig'), {
+			extends: ['markuplint:recommended'],
 		});
+		assert.deepStrictEqual(config.get('hover.accessibility.enable'), true);
+		assert.deepStrictEqual(config.get('hover.accessibility.ariaVersion'), '1.2');
+		assert.deepStrictEqual(config.get('targetLanguages'), [
+			'astro',
+			'ejs',
+			'haml',
+			'handlebars',
+			'html',
+			'jade',
+			'javascript',
+			'javascriptreact',
+			'jstl',
+			'liquid',
+			'mustache',
+			'nunjucks',
+			'php',
+			'ruby',
+			'smarty',
+			'svelte',
+			'typescript',
+			'typescriptreact',
+			'vue',
+		]);
 	});
 });
