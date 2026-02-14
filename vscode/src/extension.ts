@@ -62,17 +62,19 @@ export function activate(
 		},
 	};
 
-	const customLanguageList: string[] = config.get('targetLanguages') ?? [];
+	const customLanguageList: string[] = config.get('targetLanguages') ?? ['html'];
 	const languageList = [...new Set(customLanguageList)];
 
 	const langConfigs: LangConfigs = {};
 	for (const languageId of languageList) {
 		const langConfig = workspace.getConfiguration(ID, { languageId });
 
+		const defaultConfig = langConfig.get('defaultConfig') ?? { extends: ['markuplint:recommended'] };
+
 		langConfigs[languageId] = {
 			enable: langConfig.get('enable') ?? true,
 			debug: langConfig.get('debug') ?? false,
-			defaultConfig: langConfig.get('defaultConfig') ?? {},
+			defaultConfig: JSON.parse(JSON.stringify(defaultConfig)),
 			hover: {
 				accessibility: {
 					enable: langConfig.get('hover.accessibility.enable') ?? true,
