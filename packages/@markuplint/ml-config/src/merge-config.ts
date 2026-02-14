@@ -71,8 +71,9 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
  * Merges two rule configurations with right-side precedence.
  *
  * If `b` is `false`, the rule is unconditionally disabled.
- * If `b` is a direct value, it replaces or extends `a`.
- * If both are full config objects, their properties are merged.
+ * If `b` is a direct value (including arrays), it overrides `a`.
+ * If both are full config objects, their properties are merged
+ * (severity/value/reason: right-side wins, options: shallow-merged).
  *
  * @param a - The base rule configuration (may be `null` or `undefined`)
  * @param b - The rule configuration to merge on top
@@ -99,13 +100,9 @@ export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 
 	if (isRuleConfigValue(oB)) {
 		if (isRuleConfigValue(oA)) {
-			if (Array.isArray(oA) && Array.isArray(oB)) {
-				return [...oA, ...oB];
-			}
 			return oB;
 		}
-		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
-		const res = cleanOptions({ ...oA, value });
+		const res = cleanOptions({ ...oA, value: oB });
 		deleteUndefProp(res);
 		return res;
 	}

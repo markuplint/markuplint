@@ -311,6 +311,65 @@ describe('mergeRule', () => {
 			options: {},
 		});
 	});
+
+	test('array value overrides instead of concatenating', () => {
+		expect(mergeRule(['a', 'b'], ['c', 'd'])).toStrictEqual(['c', 'd']);
+	});
+
+	test('array value overrides when base is config object', () => {
+		expect(
+			mergeRule(
+				{
+					value: ['a', 'b'],
+					severity: 'warning',
+				},
+				['c', 'd'],
+			),
+		).toStrictEqual({
+			value: ['c', 'd'],
+			severity: 'warning',
+		});
+	});
+
+	test('shorthand value overrides config object value', () => {
+		expect(
+			mergeRule(
+				{
+					value: 'always',
+					severity: 'error',
+				},
+				'never',
+			),
+		).toStrictEqual({
+			value: 'never',
+			severity: 'error',
+		});
+	});
+
+	test('{options} shallow merged', () => {
+		expect(
+			mergeRule(
+				{
+					options: {
+						a: 1,
+						b: 2,
+					},
+				},
+				{
+					options: {
+						b: 3,
+						c: 4,
+					},
+				},
+			),
+		).toStrictEqual({
+			options: {
+				a: 1,
+				b: 3,
+				c: 4,
+			},
+		});
+	});
 });
 
 describe('Preteners', () => {
