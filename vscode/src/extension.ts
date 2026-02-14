@@ -94,7 +94,8 @@ export function activate(
 		langConfigs[languageId] = {
 			enable: langConfig.get('enable') ?? true,
 			debug: langConfig.get('debug') ?? false,
-			defaultConfig: structuredClone(defaultConfig),
+			// eslint-disable-next-line unicorn/prefer-structured-clone
+			defaultConfig: JSON.parse(JSON.stringify(defaultConfig)),
 			hover: {
 				accessibility: {
 					enable: langConfig.get('hover.accessibility.enable') ?? true,
