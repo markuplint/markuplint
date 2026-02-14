@@ -8,6 +8,8 @@ on:
             - next
         paths:
             - '.github/workflows/test.yml'
+            - 'vitest.config.ts'
+            - 'vitest.cross-os.config.ts'
             - 'packages/**'
             - '!**/*.md'
             - 'packages/@markuplint/config-presets/src/README.md'
@@ -26,16 +28,17 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
+                node: [22, 24]
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+            - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
               with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
+                  node-version: ${{ matrix.node }}
 
             - name: Enable Corepack and setup Yarn v4
               run: |
@@ -53,7 +56,7 @@ jobs:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Install dependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
@@ -67,7 +70,7 @@ jobs:
                   path: |
                       '**/node_modules'
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     build:
         needs: dev-setup
@@ -185,7 +188,7 @@ jobs:
             - name: ESLint
               run: yarn lint-check:eslint
 
-    os-setup:
+    cross-os-setup:
         runs-on: ${{ matrix.os }}
 
         # For PRs from Renovate, update production dependencies only and then run tests.
@@ -202,11 +205,6 @@ jobs:
                     - macos-latest
                     - windows-latest
                 node: [24]
-                include:
-                    - node: 22
-                      os: ubuntu-latest
-                    - node: 24
-                      os: ubuntu-latest
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
@@ -250,7 +248,67 @@ jobs:
                   key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
     test:
-        needs: [os-setup, build]
+        needs: [dev-setup, build]
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [22, 24]
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Test
+              uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: npx vitest run
+
+    test-cross-os:
+        # Implicitly skipped when cross-os-setup is skipped (Renovate devDeps PRs).
+        needs: [cross-os-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
@@ -259,14 +317,6 @@ jobs:
                     - macos-latest
                     - windows-latest
                 node: [24]
-                shard: [1/4, 2/4, 3/4, 4/4]
-                include:
-                    - node: 22
-                      os: ubuntu-latest
-                      shard: 1/1
-                    - node: 24
-                      os: ubuntu-latest
-                      shard: 1/1
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:
@@ -311,28 +361,16 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
-            - name: Show directories
-              run: |
-                  pwd
-                  find . -maxdepth 1 \( -type f -o -type d \) | sort
-                  find ./packages/markuplint -maxdepth 1 2>/dev/null || true
-                  find ./packages/markuplint/lib -maxdepth 1 2>/dev/null || true
-                  find ./packages/@markuplint -maxdepth 1 2>/dev/null || true
-                  find ./packages/@markuplint -mindepth 1 -maxdepth 1 -type d 2>/dev/null || true
-                  find ./packages/@markuplint -mindepth 2 -maxdepth 2 -name lib -type d 2>/dev/null || true
-                  find ./packages/@markuplint/config-presets -maxdepth 1 2>/dev/null || true
-              shell: bash
-
-            - name: Test
+            - name: Test (cross-OS path-sensitive packages)
               uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
               with:
-                  timeout_minutes: 20
-                  max_attempts: 3
+                  timeout_minutes: 10
+                  max_attempts: 2
                   shell: bash
-                  command: npx vitest run --shard=${{ matrix.shard }}
+                  command: npx vitest run --config vitest.cross-os.config.ts
 
     isolated-env:
-        needs: [os-setup, build]
+        needs: [dev-setup, build]
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
