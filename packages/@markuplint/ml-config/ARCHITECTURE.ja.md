@@ -310,4 +310,5 @@ ESLint の Flat Config アプローチを評価した結果、markuplint には�
 
 ## ドキュメントマップ
 
+- [マイグレーションガイド](../../docs/migration/v4-v5/config.ja.md) -- メジャーバージョン間の破壊的変更
 - [メンテナンスガイド](docs/maintenance.ja.md) -- コマンド、レシピ、トラブルシューティング

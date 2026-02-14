@@ -12,6 +12,9 @@
 | 新しい `ruleCommonSettings` 設定プロパティ | 設定ファイル |
 | ARIA バージョンの解決優先度の変更 | `ariaVersion` / `version` オプションを使用するルール |
 | ARIA 1.3 サポートの追加 | `ariaVersion` / `version` オプションを使用するルール |
+| ルールの配列値が連結から上書きに変更 | `extends` で配列ルール値を使用する設定ファイル |
+| ルール options が deep merge から shallow merge に変更 | `extends` でネストされた options を使用する設定ファイル |
+| Pretender の `data` 配列が上書きから追加に変更 | `extends` で pretenders を使用する設定ファイル |
 
 ## `ruleCommonSettings`
 
@@ -103,6 +106,72 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` は、ルールの `verify()` コールバックに渡される `MLDocument` インスタンスで利用可能です。
+
+## マージ動作の変更
+
+v5 ではマージアルゴリズムが変更されました。これらの変更は `extends` を使用して設定を結合する際に影響します。
+
+### ルールの配列値: 連結から上書きに変更
+
+**v4:** 2つの設定をマージする際、配列のルール値は連結されていました。
+
+```json
+// ベース設定
+{ "rules": { "allowed-tags": ["div", "span"] } }
+// オーバーライド設定
+{ "rules": { "allowed-tags": ["section", "article"] } }
+// v4 の結果: ["div", "span", "section", "article"]
+```
+
+**v5:** 配列のルール値は上書きされます（右辺優先）。ESLint や Biome と一貫した動作です。
+
+```json
+// v5 の結果: ["section", "article"]
+```
+
+**移行方法:** 配列の連結に依存していた場合は、単一の設定内で手動で値を統合してください:
+
+```json
+{ "rules": { "allowed-tags": ["div", "span", "section", "article"] } }
+```
+
+### ルール options: Deep Merge から Shallow Merge に変更
+
+**v4:** ルール options は `deepmerge` ライブラリを使用して deep merge されていました。
+
+```json
+// ベース設定
+{ "rules": { "my-rule": { "options": { "nested": { "a": 1, "b": 2 } } } } }
+// オーバーライド設定
+{ "rules": { "my-rule": { "options": { "nested": { "b": 3 } } } } }
+// v4 の結果 options: { "nested": { "a": 1, "b": 3 } }
+```
+
+**v5:** ルール options は shallow merge（`{...a, ...b}`）を使用します。ネストされたオブジェクトは完全に置き換えられます。
+
+```json
+// v5 の結果 options: { "nested": { "b": 3 } }
+```
+
+**移行方法:** ネストされたオプションオブジェクトの deep merge に依存していた場合は、オーバーライド側で完全なオブジェクトを指定してください:
+
+```json
+{ "rules": { "my-rule": { "options": { "nested": { "a": 1, "b": 3 } } } } }
+```
+
+### Pretender `data` 配列: 上書きから追加に変更
+
+**v4:** Pretender の `data` 配列は上書きされていました（右辺優先）。
+
+**v5:** Pretender の `data` 配列は追加（連結）されるようになりました。`files` と `imports` は引き続き上書きされます。
+
+| プロパティ | v4 の動作 | v5 の動作 |
+| ---------- | --------- | --------- |
+| `files`    | 上書き    | 上書き    |
+| `imports`  | 上書き    | 上書き    |
+| `data`     | 上書き    | 追加      |
+
+**移行方法:** これは一般的に非破壊的な改善です。pretender データを完全に置き換える必要がある場合は、`extends` を使用せず、単一の設定ですべての pretenders を定義してください。
 
 ## ARIA 1.3 サポート
 

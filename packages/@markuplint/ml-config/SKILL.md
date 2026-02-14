@@ -49,7 +49,7 @@ Add a new property to the Config type and implement its merge strategy. Follow r
 
 1. Read `src/merge-config.ts`
 2. Add the merge logic inside `mergeConfig()`, choosing the appropriate strategy:
-   - `mergeObject()` for object deep merge
+   - `mergeObject()` for object shallow merge
    - `concatArray()` for array concatenation
    - `b.prop ?? a.prop` for simple right-side precedence
 3. If the property needs format conversion (like plugins or pretenders), implement a conversion helper
@@ -94,8 +94,8 @@ Modify the rule merge logic in `mergeRule()`. Follow recipe #3 in `docs/maintena
 
 1. Make changes to `mergeRule()`, paying attention to:
    - The `false` absolute disable behavior
-   - Array concatenation for value arrays
-   - Deep merge for options via `mergeObject()`
+   - Array values override (right-side wins)
+   - Shallow merge for options via `mergeObject()`
    - Right-side precedence for severity, value, reason
 
 ### Step 3: Verify

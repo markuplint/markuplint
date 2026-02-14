@@ -310,4 +310,5 @@ The `deepmerge` library was removed in favor of simple object spread (`{...a, ..
 
 ## Documentation Map
 
+- [Migration Guide](../../docs/migration/v4-v5/config.md) -- Breaking changes between major versions
 - [Maintenance Guide](docs/maintenance.md) -- Commands, recipes, and troubleshooting

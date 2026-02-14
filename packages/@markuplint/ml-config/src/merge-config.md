@@ -12,7 +12,10 @@
 | [rules](https://markuplint.dev/configuration#rules)                           | Object | †1                  | -               |
 | [nodeRules](https://markuplint.dev/configuration#nodeRules)                   | Array  | Add                 | -               |
 | [childNodeRules](https://markuplint.dev/configuration#childNodeRules)         | Array  | Add                 | -               |
+| [severity](https://markuplint.dev/configuration#severity)                     | Object | Shallow Merge       | -               |
 | [pretenders](https://markuplint.dev/configuration#pretenders)                 | Object | †3                  | -               |
+| [overrideMode](https://markuplint.dev/configuration#overrideMode)             | String | Overwrite           | -               |
+| [overrides](https://markuplint.dev/configuration#overrides)                   | Object | Per-key merge       | -               |
 
 ## †1 Merge Rules
 

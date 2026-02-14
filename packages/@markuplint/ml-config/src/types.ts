@@ -114,6 +114,10 @@ export type SeverityOptions = {
 	readonly parseError?: Severity | 'off' | boolean;
 };
 
+/**
+ * Normalized form of pretender configuration used after merging.
+ * Contains optional file references, import paths, and inline pretender data.
+ */
 export type PretenderDetails = {
 	/**
 	 * @experimental
@@ -135,6 +139,11 @@ export type PretenderFileData = {
 	readonly data: readonly Pretender[];
 };
 
+/**
+ * Defines a mapping from a custom element (matched by CSS selector) to a standard
+ * HTML element for linting purposes, allowing rules to treat custom components
+ * as if they were native elements.
+ */
 export type Pretender = {
 	/**
 	 * Target node selectors
