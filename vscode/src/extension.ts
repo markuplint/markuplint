@@ -74,11 +74,14 @@ export function activate(
 		langConfigs[languageId] = {
 			enable: langConfig.get('enable') ?? true,
 			debug: langConfig.get('debug') ?? false,
-			defaultConfig: JSON.parse(JSON.stringify(defaultConfig)),
+			defaultConfig: structuredClone(defaultConfig),
 			hover: {
 				accessibility: {
 					enable: langConfig.get('hover.accessibility.enable') ?? true,
-					ariaVersion: langConfig.get<Config['hover']['accessibility']['ariaVersion']>('hover.accessibility.ariaVersion') ?? ARIA_RECOMMENDED_VERSION,
+					ariaVersion:
+						langConfig.get<Config['hover']['accessibility']['ariaVersion']>(
+							'hover.accessibility.ariaVersion',
+						) ?? ARIA_RECOMMENDED_VERSION,
 				},
 			},
 		};
