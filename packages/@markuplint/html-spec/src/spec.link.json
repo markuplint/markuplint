@@ -58,33 +58,28 @@
 			"required": "[imagesrcset]"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
+		// https://html.spec.whatwg.org/multipage/links.html#link-type-preload
+		// https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
+		// The enumerated values are the union of preload destinations and module preload destinations.
+		// Preload destinations: fetch, font, image, script, style, track
+		// Module preload destinations: json, style, and script-like destinations (audioworklet, paintworklet, script, serviceworker, sharedworker, worker)
 		"as": {
 			"type": {
 				"enum": [
-					"fetch",
-					"audio",
 					"audioworklet",
-					"document",
-					"embed",
+					"fetch",
 					"font",
-					"frame",
-					"iframe",
 					"image",
-					"manifest",
-					"object",
+					"json",
 					"paintworklet",
-					"report",
 					"script",
 					"serviceworker",
 					"sharedworker",
 					"style",
 					"track",
-					"video",
-					"worker",
-					"xslt"
+					"worker"
 				]
 			},
-			// If the rel attribute is modulepreload, invalidValueDefault and missingValueDefault will be `script`
 			"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
