@@ -150,8 +150,7 @@ describe('mergeConfig', () => {
 				{
 					rules: {
 						a: {
-							// @ts-ignore
-							option: {
+							options: {
 								ruleA: true,
 							},
 						},

@@ -69,7 +69,7 @@ test('exchangeValueOnRule', () => {
 		exchangeValueOnRule(
 			{
 				value: 'The name is {{ dataName }}',
-				option: {
+				options: {
 					propA: 'The name is {{ dataName }}',
 					propB: ['The name is {{ dataName }}'],
 					propC: {
