@@ -1,12 +1,4 @@
-import type {
-	AnyRule,
-	AnyRuleV2,
-	PlainData,
-	PrimitiveScalar,
-	RuleConfig,
-	RuleConfigV2,
-	RuleConfigValue,
-} from './types.js';
+import type { AnyRule, PlainData, PrimitiveScalar, RuleConfig, RuleConfigValue } from './types.js';
 
 // @ts-ignore
 import { isPlainObject } from 'is-plain-object';
@@ -45,10 +37,7 @@ export function provideValue(template: string, data: Readonly<Record<string, str
  * @param data - Key-value pairs for template variable replacement
  * @returns The rule with all template strings rendered, or `undefined` if rendering fails
  */
-export function exchangeValueOnRule(
-	rule: AnyRule | AnyRuleV2,
-	data: Readonly<Record<string, string>>,
-): AnyRule | undefined {
+export function exchangeValueOnRule(rule: AnyRule, data: Readonly<Record<string, string>>): AnyRule | undefined {
 	if (isRuleConfigValue(rule)) {
 		return exchangeValue(rule, data);
 	}
@@ -59,7 +48,7 @@ export function exchangeValueOnRule(
 			value: exchangeValue(result.value, data),
 		};
 	}
-	const options = extractOptions(result);
+	const options = result.options;
 	if (options != null && options !== '' && options !== 0) {
 		const newOptions = exchangeOption(options, data);
 		result = {
@@ -85,18 +74,15 @@ export function exchangeValueOnRule(
 /**
  * Normalizes a rule configuration by extracting the standard fields
  * (`severity`, `value`, `options`, `reason`) and removing `undefined` properties.
- * Also handles the deprecated `option` field by mapping it to `options`.
  *
  * @param rule - The rule configuration to normalize
  * @returns A clean rule configuration with only defined properties
  */
-export function cleanOptions(
-	rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>,
-): RuleConfig<RuleConfigValue, PlainData> {
+export function cleanOptions(rule: RuleConfig<RuleConfigValue, PlainData>): RuleConfig<RuleConfigValue, PlainData> {
 	const res = {
 		severity: rule.severity,
 		value: rule.value,
-		options: extractOptions(rule),
+		options: rule.options,
 		reason: rule.reason,
 	};
 	deleteUndefProp(res);
@@ -138,21 +124,6 @@ export function deleteUndefProp(obj: any) {
 		if (obj[key] === undefined) {
 			delete obj[key];
 		}
-	}
-}
-
-/**
- * Return options from `options` or `option`
- *
- * @param rule
- * @returns
- */
-function extractOptions(rule: RuleConfig<RuleConfigValue, PlainData> | RuleConfigV2<RuleConfigValue, PlainData>) {
-	if ('options' in rule && rule.options != null) {
-		return rule.options;
-	}
-	if ('option' in rule && rule.option != null) {
-		return rule.option;
 	}
 }
 

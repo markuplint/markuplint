@@ -1,7 +1,6 @@
 import type {
 	Config,
 	AnyRule,
-	AnyRuleV2,
 	Rules,
 	OptimizedConfig,
 	OverrideConfig,
@@ -12,17 +11,16 @@ import type {
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import deepmerge from 'deepmerge';
-
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
 /**
- * Deep-merges two markuplint configurations into an optimized result.
+ * Merges two markuplint configurations into an optimized result.
  *
  * Plugins, arrays, and rules are merged with specific strategies:
- * - Plugins are concatenated and deduplicated by name
+ * - Plugins are concatenated and deduplicated by name (settings shallow-merged)
  * - Arrays (excludeFiles, nodeRules, childNodeRules) are concatenated
  * - Rules are merged per-key with right-side precedence
+ * - Objects (parser, specs, etc.) are shallow-merged
  * - The `extends` property is removed from the result when `b` is provided
  *
  * @param a - The base configuration
@@ -73,14 +71,15 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
  * Merges two rule configurations with right-side precedence.
  *
  * If `b` is `false`, the rule is unconditionally disabled.
- * If `b` is a direct value, it replaces or extends `a`.
- * If both are full config objects, their properties are merged.
+ * If `b` is a direct value (including arrays), it overrides `a`.
+ * If both are full config objects, their properties are merged
+ * (severity/value/reason: right-side wins, options: shallow-merged).
  *
  * @param a - The base rule configuration (may be `null` or `undefined`)
  * @param b - The rule configuration to merge on top
  * @returns The merged rule configuration
  */
-export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRuleV2): AnyRule {
+export function mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule {
 	const oA = optimizeRule(a);
 	const oB = optimizeRule(b);
 
@@ -101,13 +100,9 @@ export function mergeRule(a: Nullable<AnyRule | AnyRuleV2>, b: AnyRule | AnyRule
 
 	if (isRuleConfigValue(oB)) {
 		if (isRuleConfigValue(oA)) {
-			if (Array.isArray(oA) && Array.isArray(oB)) {
-				return [...oA, ...oB];
-			}
 			return oB;
 		}
-		const value = Array.isArray(oA.value) && Array.isArray(oB) ? [...oA.value, ...oB] : oB;
-		const res = cleanOptions({ ...oA, value });
+		const res = cleanOptions({ ...oA, value: oB });
 		deleteUndefProp(res);
 		return res;
 	}
@@ -133,14 +128,28 @@ function mergePretenders(
 	if (!a && !b) {
 		return;
 	}
-	const aDetails = a ? convertPretenersToDetails(a) : undefined;
-	const bDetails = b ? convertPretenersToDetails(b) : undefined;
-	const details = mergeObject(aDetails, bDetails) ?? {};
+	const aDetails = a ? toPretenderDetails(a) : undefined;
+	const bDetails = b ? toPretenderDetails(b) : undefined;
+
+	if (!aDetails) {
+		return bDetails;
+	}
+	if (!bDetails) {
+		return aDetails;
+	}
+
+	// files/imports: override (right-side wins)
+	// data: append (concatenate)
+	const details: PretenderDetails = {
+		files: bDetails.files ?? aDetails.files,
+		imports: bDetails.imports ?? aDetails.imports,
+		data: concatArray(aDetails.data, bDetails.data),
+	};
 	deleteUndefProp(details);
 	return details;
 }
 
-function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
+function toPretenderDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
 	if (isReadonlyArray(pretenders)) {
 		return {
 			data: pretenders,
@@ -185,12 +194,12 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (b == null) {
 		return a ?? undefined;
 	}
-	const res = deepmerge<T>(a, b);
+	const res = { ...a, ...b } as T;
 	deleteUndefProp(res);
 	return res;
 }
 
-function concatArray<T extends any>(
+function concatArray<T>(
 	a: Nullable<readonly T[]>,
 	b: Nullable<readonly T[]>,
 	uniquely = false,
@@ -228,13 +237,7 @@ function concatArray<T extends any>(
 		}
 
 		const existed = newArray[existedIndex];
-		const merged = mergeObject(existed, item);
-		if (!merged) {
-			newArray.push(item);
-			return;
-		}
-
-		newArray.splice(existedIndex, 1, merged);
+		newArray.splice(existedIndex, 1, { ...existed, ...item });
 	}
 
 	// eslint-disable-next-line unicorn/no-array-for-each
@@ -287,7 +290,7 @@ function optimizeRules(rules: Rules) {
 	return res;
 }
 
-function optimizeRule(rule: Nullable<AnyRule | AnyRuleV2>): AnyRule | undefined {
+function optimizeRule(rule: Nullable<AnyRule>): AnyRule | undefined {
 	if (rule === undefined) {
 		return;
 	}

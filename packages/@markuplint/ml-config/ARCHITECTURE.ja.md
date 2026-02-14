@@ -124,21 +124,21 @@ flowchart TD
 
 ### プロパティ別マージ戦略テーブル
 
-| プロパティ       | 戦略                    | ヘルパー関数                                         | 詳細                                          |
-| ---------------- | ----------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `plugins`        | 結合+重複排除+正規化    | `concatArray(uniquely=true, comparePropName='name')` | 同名プラグインは settings を deep merge       |
-| `parser`         | オブジェクト deep merge | `mergeObject()`                                      | 右辺優先、deepmerge ライブラリ使用            |
-| `parserOptions`  | オブジェクト deep merge | `mergeObject()`                                      | 同上                                          |
-| `specs`          | オブジェクト deep merge | `mergeObject()`                                      | 同上                                          |
-| `excludeFiles`   | 結合+重複排除           | `concatArray(uniquely=true)`                         | 単純な値の重複排除                            |
-| `severity`       | オブジェクト deep merge | `mergeObject()`                                      | parser と同様                                 |
-| `pretenders`     | 形式変換+deep merge     | `mergePretenders()`                                  | 配列を PretenderDetails に変換後にマージ      |
-| `rules`          | ルール別マージ          | `mergeRules()` → `mergeRule()`                       | **最も複雑 -- 次節で詳述**                    |
-| `nodeRules`      | 結合（重複排除なし）    | `concatArray()`                                      | 両配列を単純連結                              |
-| `childNodeRules` | 結合（重複排除なし）    | `concatArray()`                                      | nodeRules と同様                              |
-| `overrideMode`   | 右辺優先                | `b.overrideMode ?? a.overrideMode`                   | 単純な優先順位                                |
-| `overrides`      | キー別再帰マージ        | `mergeOverrides()`                                   | 各キーに対して `mergeConfig()` を再帰呼び出し |
-| `extends`        | 結合→削除               | `concatArray()`                                      | マージ後に結果から削除                        |
+| プロパティ       | 戦略                       | ヘルパー関数                                         | 詳細                                          |
+| ---------------- | -------------------------- | ---------------------------------------------------- | --------------------------------------------- |
+| `plugins`        | 結合+重複排除+正規化       | `concatArray(uniquely=true, comparePropName='name')` | 同名プラグインは settings を shallow merge    |
+| `parser`         | オブジェクト shallow merge | `mergeObject()`                                      | `{...a, ...b}` で右辺優先                     |
+| `parserOptions`  | オブジェクト shallow merge | `mergeObject()`                                      | 同上                                          |
+| `specs`          | オブジェクト shallow merge | `mergeObject()`                                      | 同上                                          |
+| `excludeFiles`   | 結合+重複排除              | `concatArray(uniquely=true)`                         | 単純な値の重複排除                            |
+| `severity`       | オブジェクト shallow merge | `mergeObject()`                                      | parser と同様                                 |
+| `pretenders`     | セマンティックマージ       | `mergePretenders()`                                  | files/imports: 上書き、data: 追加             |
+| `rules`          | ルール別マージ             | `mergeRules()` → `mergeRule()`                       | **最も複雑 -- 次節で詳述**                    |
+| `nodeRules`      | 結合（重複排除なし）       | `concatArray()`                                      | 両配列を単純連結                              |
+| `childNodeRules` | 結合（重複排除なし）       | `concatArray()`                                      | nodeRules と同様                              |
+| `overrideMode`   | 右辺優先                   | `b.overrideMode ?? a.overrideMode`                   | 単純な優先順位                                |
+| `overrides`      | キー別再帰マージ           | `mergeOverrides()`                                   | 各キーに対して `mergeConfig()` を再帰呼び出し |
+| `extends`        | 結合→削除                  | `concatArray()`                                      | マージ後に結果から削除                        |
 
 ### mergeRule() -- ルールマージの詳細
 
@@ -146,7 +146,7 @@ flowchart TD
 mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule
 ```
 
-最も複雑なマージロジックを処理する関数です。両方の入力はまず `optimizeRule()` で正規化されます（非推奨の `option` から `options` への移行を含む）。
+最も複雑なマージロジックを処理する関数です。両方の入力はまず `optimizeRule()` で正規化されます。
 
 ```mermaid
 flowchart TD
@@ -159,18 +159,16 @@ flowchart TD
     ChkBUndef -->|Yes| RetA["return a"]
     ChkBUndef -->|No| ChkBVal{"b は Value?\n(primitive/null/array)"}
     ChkBVal -->|Yes| ChkAVal{"a は Value?"}
-    ChkAVal -->|Yes| ChkBothArr{"両方とも配列?"}
-    ChkBothArr -->|Yes| RetConcat["return [...a, ...b]\n(連結)"]
-    ChkBothArr -->|No| RetBVal["return b\n(右辺優先)"]
-    ChkAVal -->|No| MergeValObj["a の severity/reason を保持\nvalue を置換\n(配列は連結)"]
+    ChkAVal -->|Yes| RetBVal["return b\n(右辺優先、\n配列も上書き)"]
+    ChkAVal -->|No| MergeValObj["a の severity/reason を保持\nvalue を b で上書き"]
     ChkBVal -->|No| MergeObj["severity: b ?? a\nvalue: b ?? a\noptions: mergeObject(a, b)\nreason: b ?? a"]
 ```
 
 **重要な設計判断:**
 
 1. **`false` は絶対無効化** -- override が `false`（または `{value: false}`）なら、base が何であっても結果は常に `false`
-2. **配列値は連結** -- `["a","b"]` + `["c","d"]` は `["a","b","c","d"]` になり、extends チェーンでルールを段階的に追加可能
-3. **options は deep merge** -- severity、value、reason は右辺優先だが、options のみ `mergeObject()`（deepmerge ライブラリによる deep merge）を使用
+2. **配列値は上書き** -- `["a","b"]` + `["c","d"]` は `["c","d"]` になる（右辺優先）。ESLint や Biome と一貫した動作
+3. **options は shallow merge** -- severity、value、reason は右辺優先だが、options のみ `mergeObject()`（`{...a, ...b}` による shallow merge）を使用
 
 ### ヘルパー関数
 
@@ -180,12 +178,12 @@ flowchart TD
 
 - `uniquely=false` -- 単純な連結、重複排除なし
 - `uniquely=true`、`comparePropName` なし -- 完全一致で重複排除
-- `uniquely=true`、`comparePropName` あり -- 指定プロパティ名で重複排除。同名オブジェクトは `mergeObject()` でマージ（例: プラグインの settings）
+- `uniquely=true`、`comparePropName` あり -- 指定プロパティ名で重複排除。同名オブジェクトはオブジェクトスプレッドで shallow merge（例: プラグインの settings）
 - 空の結果には `undefined` を返す
 
 #### mergeObject(a, b)
 
-`deepmerge` ライブラリを使用した再帰的な deep merge。右辺の値が優先。結果から undefined プロパティを除去。
+`{...a, ...b}` による shallow merge。トップレベルで右辺の値が優先。結果から undefined プロパティを除去。
 
 #### mergeOverrides(a, b)
 
@@ -193,7 +191,7 @@ flowchart TD
 
 #### mergePretenders(a, b)
 
-配列形式の pretenders を正規化形式 `PretenderDetails`（`{data: [...]}`）に変換してから `mergeObject()` で deep merge。
+配列形式の pretenders を正規化形式 `PretenderDetails`（`{data: [...]}`）に変換してからセマンティックマージ: `files`/`imports` は上書き（右辺優先）、`data` は追加（連結）。
 
 ## テンプレートレンダリングシステム
 
@@ -217,11 +215,11 @@ Mustache テンプレート文字列を提供されたデータでレンダリ�
 
 ## ユーティリティ関数
 
-| 関数                  | 目的                                                                                                     |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `cleanOptions()`      | 非推奨の `option` フィールドを `options` に正規化し、標準フィールドを抽出して undefined プロパティを除去 |
-| `isRuleConfigValue()` | 型ガード: プリミティブ、`null`、配列（= `RuleConfig` オブジェクトではない）に対して `true` を返す        |
-| `deleteUndefProp()`   | プレーンオブジェクトから `undefined` 値のプロパティをすべて in-place で削除                              |
+| 関数                  | 目的                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `cleanOptions()`      | 標準フィールド（`severity`、`value`、`options`、`reason`）を抽出して undefined プロパティを除去   |
+| `isRuleConfigValue()` | 型ガード: プリミティブ、`null`、配列（= `RuleConfig` オブジェクトではない）に対して `true` を返す |
+| `deleteUndefProp()`   | プレーンオブジェクトから `undefined` 値のプロパティをすべて in-place で削除                       |
 
 ## 主要ソースファイル
 
@@ -239,7 +237,6 @@ Mustache テンプレート文字列を提供されたデータでレンダリ�
 | `@markuplint/ml-ast`   | `ParserOptions` 型（型のみ）                        |
 | `@markuplint/selector` | `RegexSelector` 型（再エクスポート）                |
 | `@markuplint/shared`   | `Nullable` ユーティリティ型                         |
-| `deepmerge`            | `mergeObject()` の deep merge 実装                  |
 | `is-plain-object`      | `deleteUndefProp()` でのプレーンオブジェクト判定    |
 | `mustache`             | `provideValue()` のテンプレートレンダリングエンジン |
 | `type-fest`            | `Writable` ユーティリティ型                         |
@@ -277,6 +274,41 @@ flowchart LR
 - **`@markuplint/ml-core`** -- マージ済みの `OptimizedConfig` を受け取り、パース済みドキュメントにルールを適用
 - **`@markuplint/rules`** -- `Rule<T,O>` と `RuleConfig<T,O>` 型を使用してルール実装を定義
 
+## 設計判断
+
+### Flat Config を採用しない理由
+
+ESLint の Flat Config アプローチを評価した結果、markuplint には不適と判断しました:
+
+- **ESLint 自体が 2025年3月に Flat Config へ `extends` を再追加** -- 純粋な Flat アプローチは JavaScript ツールでも不十分だった
+- **markuplint は JSON ベース** -- Flat Config は JavaScript を前提とする。HTML/マークアップ開発者（主要ユーザー層）にとって、JSON のスキーマ検証と言語非依存性は大きなメリット
+- **markuplint の `nodeRules`/`childNodeRules` は CSS セレクタベース** -- Flat Config のファイルパターンモデルに対応する仕組みがない
+- **ESLint v9 への移行はコミュニティに大きな痛みを与えた** -- 段階的な移行には自動化ツールと数年のエコシステム適応が必要だった
+
+**結論:** JSON ベースの `extends` マージ戦略の改善が markuplint にとって最適なアプローチ。
+
+### マージ戦略の原則
+
+配列の扱いには論理的な区別があります:
+
+| 配列の種類                     | 例                                     | マージ動作 | 根拠                   |
+| ------------------------------ | -------------------------------------- | ---------- | ---------------------- |
+| **トップレベルのコレクション** | `plugins`, `excludeFiles`, `nodeRules` | 累積       | 独立したアイテムの集合 |
+| **ルール値**                   | `["allowed-tag-1", "allowed-tag-2"]`   | 上書き     | 1つのルールの設定値    |
+
+これは ESLint と Biome の動作と一貫しており、ルール値はより具体的な設定で常に上書きされます。
+
+### Deep Merge ではなく Shallow Merge
+
+| ツール     | ルール options のマージ       | 根拠                                                                       |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------- |
+| ESLint     | 完全リプレース                | 最もシンプルだが驚きがある                                                 |
+| Biome      | Deep merge（Merge trait経由） | 完全な柔軟性、高い複雑性                                                   |
+| markuplint | **Shallow merge**             | 中間地点: トップレベルのキーはマージ、ネストされたオブジェクトはリプレース |
+
+`deepmerge` ライブラリを削除し、シンプルなオブジェクトスプレッド（`{...a, ...b}`）に置き換えました。markuplint の設定でマージされるすべてのオブジェクト（parser、specs、parserOptions、severity、プラグイン設定、ルールオプション）はフラットなキーバリューマップであるため、これで十分です。
+
 ## ドキュメントマップ
 
+- [マイグレーションガイド](../../docs/migration/v4-v5/config.ja.md) -- メジャーバージョン間の破壊的変更
 - [メンテナンスガイド](docs/maintenance.ja.md) -- コマンド、レシピ、トラブルシューティング

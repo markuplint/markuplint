@@ -61,7 +61,7 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
    - If it should be top-level only (like `$schema`, `extends`), add the property name to the `NoInherit` union type
    - If it should be overridable per file pattern, leave it as-is (it inherits from `Config` via `Omit<Config, NoInherit>`)
 5. Read `src/merge-config.ts` and add the merge logic inside the `mergeConfig()` function's config object:
-   - For object deep merge: `newProp: mergeObject(a.newProp, b.newProp)`
+   - For object shallow merge: `newProp: mergeObject(a.newProp, b.newProp)`
    - For array concatenation: `newProp: concatArray(a.newProp, b.newProp)`
    - For array with deduplication: `newProp: concatArray(a.newProp, b.newProp, true)`
    - For simple right-side precedence: `newProp: b.newProp ?? a.newProp` (handled by the spread, but explicit is clearer)
@@ -74,7 +74,7 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. Read `src/merge-config.ts` and locate the property in the `mergeConfig()` function
 2. Identify the current strategy (see the strategy table in `ARCHITECTURE.md`)
 3. Replace the merge call. Available strategies:
-   - `mergeObject(a.prop, b.prop)` -- Deep merge with right-side precedence
+   - `mergeObject(a.prop, b.prop)` -- Shallow merge with right-side precedence
    - `concatArray(a.prop, b.prop)` -- Simple array concatenation
    - `concatArray(a.prop, b.prop, true)` -- Concat with deduplication
    - `concatArray(a.prop, b.prop, true, 'name')` -- Concat with deduplication by named property, merging same-name objects
@@ -88,15 +88,15 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 
 1. Read `src/merge-config.ts` and locate the `mergeRule()` function
 2. Understand the current flow:
-   - `optimizeRule()` normalizes both inputs (handles deprecated `option` -> `options`)
+   - `optimizeRule()` normalizes both inputs
    - `false` check: override `false` or `{value: false}` always returns `false`
    - `undefined` checks: missing side returns the other side
-   - Value type check: if override is a direct value (primitive/null/array), it replaces or concatenates
-   - Object type merge: severity/value/reason use right-side precedence, options use deep merge
+   - Value type check: if override is a direct value (primitive/null/array), it replaces the base value
+   - Object type merge: severity/value/reason use right-side precedence, options use shallow merge
 3. Make changes, preserving the key invariants:
    - `false` must always result in absolute disable
-   - Array values must be concatenated (not replaced)
-   - `options` must use deep merge via `mergeObject()`
+   - Array values must override (right-side wins), not concatenate
+   - `options` must use shallow merge via `mergeObject()`
 4. Verify existing tests pass in `src/merge-config.spec.ts`
 5. Add new test cases for the modified behavior
 6. Build: `yarn build --scope @markuplint/ml-config`
@@ -107,10 +107,10 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. Read `src/types.ts` and locate `Pretender`, `PretenderDetails`, and `OriginalNode`
 2. Add new fields to the appropriate type
 3. Read `src/merge-config.ts` and check `mergePretenders()`:
-   - It converts array form to `{data: [...]}` via `convertPretenersToDetails()`
-   - Then deep merges with `mergeObject()`
-   - New fields on `PretenderDetails` are automatically deep merged
-   - New fields on `Pretender` (inside `data` array) are handled by deepmerge's array merge
+   - It converts array form to `{data: [...]}` via `toPretenderDetails()`
+   - `files`/`imports` are overridden (right-side wins)
+   - `data` arrays are concatenated (appended)
+   - New fields on `PretenderDetails` need explicit handling in `mergePretenders()`
 4. Add test cases in `src/merge-config.spec.ts`
 5. Build: `yarn build --scope @markuplint/ml-config`
 6. Test: `yarn test --scope @markuplint/ml-config`
@@ -145,19 +145,17 @@ yarn test --scope @markuplint/ml-config
 2. Verify the helper function does not return `undefined` when both inputs have values
 3. `concatArray()` returns `undefined` for empty arrays -- ensure the inputs are not empty
 
-### Rule values are concatenated instead of replaced
+### Rule values unexpectedly replaced
 
-**Symptom:** A rule's array value keeps growing instead of being overwritten.
+**Symptom:** A rule's array value is replaced entirely instead of keeping both base and override values.
 
-**Cause:** `mergeRule()` concatenates array values by design when both base and override are arrays.
+**Cause:** `mergeRule()` overrides array values by design (right-side wins). This is consistent with ESLint and Biome behavior.
 
-**Solution:** To completely replace an array value, use the object form in the override:
+**Solution:** This is the expected behavior. If you need both sets of values, manually combine the arrays in a single config:
 
 ```json
-{ "value": ["new", "values"], "options": {} }
+{ "value": ["base-tag-1", "base-tag-2", "new-tag-1"], "options": {} }
 ```
-
-This replaces the value entirely instead of concatenating.
 
 ### Plugin settings are not merged
 

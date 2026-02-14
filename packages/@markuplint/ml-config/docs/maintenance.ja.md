@@ -61,7 +61,7 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
    - トップレベル専用（`$schema`、`extends` のように）なら、`NoInherit` ユニオン型にプロパティ名を追加
    - ファイルパターンごとにオーバーライド可能にする場合はそのまま（`Omit<Config, NoInherit>` 経由で `Config` から継承）
 5. `src/merge-config.ts` を読み、`mergeConfig()` 関数の config オブジェクト内にマージロジックを追加:
-   - オブジェクト deep merge: `newProp: mergeObject(a.newProp, b.newProp)`
+   - オブジェクト shallow merge: `newProp: mergeObject(a.newProp, b.newProp)`
    - 配列結合: `newProp: concatArray(a.newProp, b.newProp)`
    - 配列結合+重複排除: `newProp: concatArray(a.newProp, b.newProp, true)`
    - 単純な右辺優先: `newProp: b.newProp ?? a.newProp`（スプレッドで処理されるが、明示的な方が分かりやすい）
@@ -74,7 +74,7 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. `src/merge-config.ts` を読み、`mergeConfig()` 関数内のプロパティを確認
 2. 現在の戦略を特定（`ARCHITECTURE.md` の戦略テーブルを参照）
 3. マージ呼び出しを置換。利用可能な戦略:
-   - `mergeObject(a.prop, b.prop)` -- 右辺優先の deep merge
+   - `mergeObject(a.prop, b.prop)` -- 右辺優先の shallow merge
    - `concatArray(a.prop, b.prop)` -- 単純な配列結合
    - `concatArray(a.prop, b.prop, true)` -- 重複排除付き結合
    - `concatArray(a.prop, b.prop, true, 'name')` -- 名前付きプロパティで重複排除、同名オブジェクトをマージ
@@ -88,15 +88,15 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 
 1. `src/merge-config.ts` を読み、`mergeRule()` 関数を確認
 2. 現在のフローを理解:
-   - `optimizeRule()` が両方の入力を正規化（非推奨の `option` -> `options` を処理）
+   - `optimizeRule()` が両方の入力を正規化
    - `false` チェック: override が `false` または `{value: false}` なら常に `false` を返す
    - `undefined` チェック: 片方がない場合はもう片方を返す
-   - 値型チェック: override が直接値（primitive/null/array）なら置換または連結
-   - オブジェクト型マージ: severity/value/reason は右辺優先、options は deep merge
+   - 値型チェック: override が直接値（primitive/null/array）ならベース値を上書き
+   - オブジェクト型マージ: severity/value/reason は右辺優先、options は shallow merge
 3. 変更を加える際、主要な不変条件を保持:
    - `false` は常に絶対無効化になる必要がある
-   - 配列値は連結される（置換ではない）
-   - `options` は `mergeObject()` による deep merge が必要
+   - 配列値は上書き（右辺優先）であり、連結ではない
+   - `options` は `mergeObject()` による shallow merge が必要
 4. `src/merge-config.spec.ts` の既存テストが通ることを確認
 5. 変更後の動作に対する新しいテストケースを追加
 6. ビルド: `yarn build --scope @markuplint/ml-config`
@@ -107,10 +107,10 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. `src/types.ts` を読み、`Pretender`、`PretenderDetails`、`OriginalNode` を確認
 2. 適切な型に新しいフィールドを追加
 3. `src/merge-config.ts` を読み、`mergePretenders()` を確認:
-   - 配列形式を `{data: [...]}` に変換（`convertPretenersToDetails()`）
-   - `mergeObject()` で deep merge
-   - `PretenderDetails` の新しいフィールドは自動的に deep merge される
-   - `Pretender`（`data` 配列内）の新しいフィールドは deepmerge の配列マージで処理
+   - 配列形式を `{data: [...]}` に変換（`toPretenderDetails()`）
+   - `files`/`imports` は上書き（右辺優先）
+   - `data` 配列は連結（追加）
+   - `PretenderDetails` の新しいフィールドは `mergePretenders()` 内で明示的に処理が必要
 4. `src/merge-config.spec.ts` にテストケースを追加
 5. ビルド: `yarn build --scope @markuplint/ml-config`
 6. テスト: `yarn test --scope @markuplint/ml-config`
@@ -145,19 +145,17 @@ yarn test --scope @markuplint/ml-config
 2. 両方の入力に値がある場合にヘルパー関数が `undefined` を返していないか検証
 3. `concatArray()` は空配列に対して `undefined` を返す -- 入力が空でないことを確認
 
-### ルール値が上書きではなく連結される
+### ルール値が予期しない上書きになる
 
-**症状:** ルールの配列値が上書きされずに増え続ける。
+**症状:** ルールの配列値がベースの値を保持せず、完全に置き換えられる。
 
-**原因:** `mergeRule()` はベースとオーバーライドの両方が配列の場合、設計上連結する。
+**原因:** `mergeRule()` は設計上、配列値を上書きする（右辺優先）。これは ESLint や Biome と一貫した動作。
 
-**解決策:** 配列値を完全に上書きするには、override 側でオブジェクト形式を使用:
+**解決策:** これは期待される動作です。両方の値が必要な場合は、単一の設定で手動で配列を統合:
 
 ```json
-{ "value": ["new", "values"], "options": {} }
+{ "value": ["base-tag-1", "base-tag-2", "new-tag-1"], "options": {} }
 ```
-
-これにより連結ではなく値が完全に置換される。
 
 ### プラグインの settings がマージされない
 

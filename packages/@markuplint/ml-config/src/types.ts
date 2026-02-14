@@ -114,6 +114,10 @@ export type SeverityOptions = {
 	readonly parseError?: Severity | 'off' | boolean;
 };
 
+/**
+ * Normalized form of pretender configuration used after merging.
+ * Contains optional file references, import paths, and inline pretender data.
+ */
 export type PretenderDetails = {
 	/**
 	 * @experimental
@@ -135,6 +139,11 @@ export type PretenderFileData = {
 	readonly data: readonly Pretender[];
 };
 
+/**
+ * Defines a mapping from a custom element (matched by CSS selector) to a standard
+ * HTML element for linting purposes, allowing rules to treat custom components
+ * as if they were native elements.
+ */
 export type Pretender = {
 	/**
 	 * Target node selectors
@@ -320,22 +329,9 @@ export interface PretenderScanOptions {
 export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = RuleConfig<T, O> | Readonly<T> | boolean;
 
 /**
- * @deprecated
- */
-export type RuleV2<T extends RuleConfigValue, O extends PlainData = undefined> =
-	| RuleConfigV2<T, O>
-	| Readonly<T>
-	| boolean;
-
-/**
  * A rule setting with any value and option types.
  */
 export type AnyRule = Rule<RuleConfigValue, PlainData>;
-
-/**
- * @deprecated
- */
-export type AnyRuleV2 = RuleV2<RuleConfigValue, PlainData>;
 
 /**
  * A dictionary mapping rule names to their configurations.
@@ -359,23 +355,6 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly options?: Readonly<O>;
 	/** A human-readable reason for this rule configuration, included in violation messages */
 	readonly reason?: string;
-};
-
-/**
- * @deprecated
- */
-export type RuleConfigV2<T extends RuleConfigValue, O extends PlainData = undefined> = {
-	readonly severity?: Severity;
-	readonly value?: Readonly<T>;
-	readonly reason?: string;
-
-	/**
-	 * Old property
-	 *
-	 * @deprecated
-	 * @see {this.options}
-	 */
-	readonly option?: Readonly<O>;
 };
 
 /**

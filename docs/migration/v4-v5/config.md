@@ -12,6 +12,9 @@
 | New `ruleCommonSettings` config property | Config files |
 | ARIA version resolution priority changed | Rules using `ariaVersion` / `version` option |
 | ARIA 1.3 support added | Rules using `ariaVersion` / `version` option |
+| Rule array values now override instead of concatenate | Config files using `extends` with array rule values |
+| Rule options now use shallow merge instead of deep merge | Config files using `extends` with nested option objects |
+| Pretender `data` arrays now append instead of override | Config files using `extends` with pretenders |
 
 ## `ruleCommonSettings`
 
@@ -103,6 +106,72 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` is available on the `MLDocument` instance passed to rule `verify()` callbacks.
+
+## Merge Behavior Changes
+
+The merge algorithm has changed in v5. These changes affect how configurations are combined when using `extends`.
+
+### Rule Array Values: Override Instead of Concatenate
+
+**v4:** Array rule values were concatenated when merging two configs.
+
+```json
+// base config
+{ "rules": { "allowed-tags": ["div", "span"] } }
+// override config
+{ "rules": { "allowed-tags": ["section", "article"] } }
+// v4 result: ["div", "span", "section", "article"]
+```
+
+**v5:** Array rule values are overridden (right-side wins), consistent with ESLint and Biome.
+
+```json
+// v5 result: ["section", "article"]
+```
+
+**Migration:** If you relied on array concatenation, manually combine the values into a single config:
+
+```json
+{ "rules": { "allowed-tags": ["div", "span", "section", "article"] } }
+```
+
+### Rule Options: Shallow Merge Instead of Deep Merge
+
+**v4:** Rule options were deep-merged using the `deepmerge` library.
+
+```json
+// base config
+{ "rules": { "my-rule": { "options": { "nested": { "a": 1, "b": 2 } } } } }
+// override config
+{ "rules": { "my-rule": { "options": { "nested": { "b": 3 } } } } }
+// v4 result options: { "nested": { "a": 1, "b": 3 } }
+```
+
+**v5:** Rule options use shallow merge (`{...a, ...b}`). Nested objects are replaced entirely.
+
+```json
+// v5 result options: { "nested": { "b": 3 } }
+```
+
+**Migration:** If you relied on deep merge for nested option objects, provide the full object in the override:
+
+```json
+{ "rules": { "my-rule": { "options": { "nested": { "a": 1, "b": 3 } } } } }
+```
+
+### Pretender `data` Arrays: Append Instead of Override
+
+**v4:** Pretender `data` arrays were overridden (right-side wins).
+
+**v5:** Pretender `data` arrays are appended (concatenated), while `files` and `imports` continue to be overridden.
+
+| Property  | v4 Behavior | v5 Behavior |
+| --------- | ----------- | ----------- |
+| `files`   | Override    | Override    |
+| `imports` | Override    | Override    |
+| `data`    | Override    | Append      |
+
+**Migration:** This is generally a non-breaking improvement. If you need to replace pretender data entirely, avoid using `extends` and define all pretenders in a single config.
 
 ## ARIA 1.3 Support
 

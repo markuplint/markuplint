@@ -124,21 +124,21 @@ flowchart TD
 
 ### Per-Property Merge Strategy Table
 
-| Property         | Strategy                         | Helper Function                                      | Details                                           |
-| ---------------- | -------------------------------- | ---------------------------------------------------- | ------------------------------------------------- |
-| `plugins`        | Concat + deduplicate + normalize | `concatArray(uniquely=true, comparePropName='name')` | Same-name plugins have their settings deep-merged |
-| `parser`         | Object deep merge                | `mergeObject()`                                      | Right-side wins, uses deepmerge library           |
-| `parserOptions`  | Object deep merge                | `mergeObject()`                                      | Same as above                                     |
-| `specs`          | Object deep merge                | `mergeObject()`                                      | Same as above                                     |
-| `excludeFiles`   | Concat + deduplicate             | `concatArray(uniquely=true)`                         | Simple value deduplication                        |
-| `severity`       | Object deep merge                | `mergeObject()`                                      | Same as parser                                    |
-| `pretenders`     | Format conversion + deep merge   | `mergePretenders()`                                  | Array converted to PretenderDetails, then merged  |
-| `rules`          | Per-rule merge                   | `mergeRules()` then `mergeRule()`                    | **Most complex -- see next section**              |
-| `nodeRules`      | Concat (no deduplicate)          | `concatArray()`                                      | Both arrays simply concatenated                   |
-| `childNodeRules` | Concat (no deduplicate)          | `concatArray()`                                      | Same as nodeRules                                 |
-| `overrideMode`   | Right-side wins                  | `b.overrideMode ?? a.overrideMode`                   | Simple precedence                                 |
-| `overrides`      | Per-key recursive merge          | `mergeOverrides()`                                   | Calls `mergeConfig()` recursively for each key    |
-| `extends`        | Concat then delete               | `concatArray()`                                      | Removed from result after merge                   |
+| Property         | Strategy                         | Helper Function                                      | Details                                              |
+| ---------------- | -------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| `plugins`        | Concat + deduplicate + normalize | `concatArray(uniquely=true, comparePropName='name')` | Same-name plugins have their settings shallow-merged |
+| `parser`         | Object shallow merge             | `mergeObject()`                                      | Right-side wins via `{...a, ...b}`                   |
+| `parserOptions`  | Object shallow merge             | `mergeObject()`                                      | Same as above                                        |
+| `specs`          | Object shallow merge             | `mergeObject()`                                      | Same as above                                        |
+| `excludeFiles`   | Concat + deduplicate             | `concatArray(uniquely=true)`                         | Simple value deduplication                           |
+| `severity`       | Object shallow merge             | `mergeObject()`                                      | Same as parser                                       |
+| `pretenders`     | Semantic merge                   | `mergePretenders()`                                  | files/imports: override, data: append                |
+| `rules`          | Per-rule merge                   | `mergeRules()` then `mergeRule()`                    | **Most complex -- see next section**                 |
+| `nodeRules`      | Concat (no deduplicate)          | `concatArray()`                                      | Both arrays simply concatenated                      |
+| `childNodeRules` | Concat (no deduplicate)          | `concatArray()`                                      | Same as nodeRules                                    |
+| `overrideMode`   | Right-side wins                  | `b.overrideMode ?? a.overrideMode`                   | Simple precedence                                    |
+| `overrides`      | Per-key recursive merge          | `mergeOverrides()`                                   | Calls `mergeConfig()` recursively for each key       |
+| `extends`        | Concat then delete               | `concatArray()`                                      | Removed from result after merge                      |
 
 ### mergeRule() -- Rule Merge Details
 
@@ -146,7 +146,7 @@ flowchart TD
 mergeRule(a: Nullable<AnyRule>, b: AnyRule): AnyRule
 ```
 
-This function handles the most complex merge logic. Both inputs are first normalized via `optimizeRule()` (which handles the deprecated `option` to `options` migration).
+This function handles the most complex merge logic. Both inputs are first normalized via `optimizeRule()`.
 
 ```mermaid
 flowchart TD
@@ -159,18 +159,16 @@ flowchart TD
     ChkBUndef -->|Yes| RetA["return a"]
     ChkBUndef -->|No| ChkBVal{"b is Value?\n(primitive/null/array)"}
     ChkBVal -->|Yes| ChkAVal{"a is Value?"}
-    ChkAVal -->|Yes| ChkBothArr{"Both arrays?"}
-    ChkBothArr -->|Yes| RetConcat["return [...a, ...b]\n(concatenate)"]
-    ChkBothArr -->|No| RetBVal["return b\n(right-side wins)"]
-    ChkAVal -->|No| MergeValObj["Keep a's severity/reason\nReplace value\n(arrays concatenated)"]
+    ChkAVal -->|Yes| RetBVal["return b\n(right-side wins,\narrays override)"]
+    ChkAVal -->|No| MergeValObj["Keep a's severity/reason\nOverride value with b"]
     ChkBVal -->|No| MergeObj["severity: b ?? a\nvalue: b ?? a\noptions: mergeObject(a, b)\nreason: b ?? a"]
 ```
 
 **Key Design Decisions:**
 
 1. **`false` is absolute disable** -- If the override is `false` (or `{value: false}`), the result is always `false`, regardless of what the base config says
-2. **Array values are concatenated** -- `["a","b"]` + `["c","d"]` results in `["a","b","c","d"]`, enabling incremental rule additions across extends chains
-3. **options uses deep merge** -- While severity, value, and reason use right-side-wins precedence, options alone uses `mergeObject()` (deep merge via deepmerge library)
+2. **Array values override** -- `["a","b"]` + `["c","d"]` results in `["c","d"]` (right-side wins), consistent with ESLint and Biome behavior
+3. **options uses shallow merge** -- While severity, value, and reason use right-side-wins precedence, options uses `mergeObject()` (shallow merge via `{...a, ...b}`)
 
 ### Helper Functions
 
@@ -180,12 +178,12 @@ Concatenates two arrays with optional deduplication:
 
 - `uniquely=false` -- Simple concatenation, no deduplication
 - `uniquely=true`, no `comparePropName` -- Exact-match deduplication
-- `uniquely=true`, with `comparePropName` -- Deduplicates by the specified property name; when two objects share the same name, they are merged via `mergeObject()` (e.g., plugin settings)
+- `uniquely=true`, with `comparePropName` -- Deduplicates by the specified property name; when two objects share the same name, they are shallow-merged via object spread (e.g., plugin settings)
 - Returns `undefined` for empty results
 
 #### mergeObject(a, b)
 
-Deep merges two objects using the `deepmerge` library. Right-side values take precedence. Removes undefined properties from the result.
+Shallow merges two objects via `{...a, ...b}`. Right-side values take precedence at the top level. Removes undefined properties from the result.
 
 #### mergeOverrides(a, b)
 
@@ -193,7 +191,7 @@ Collects the union of all keys from both override records. For each key, calls `
 
 #### mergePretenders(a, b)
 
-Converts array-form pretenders to the normalized `PretenderDetails` form (`{data: [...]}`) before deep merging with `mergeObject()`.
+Converts array-form pretenders to the normalized `PretenderDetails` form (`{data: [...]}`) then applies semantic merge: `files`/`imports` are overridden (right-side wins), `data` is appended (concatenated).
 
 ## Template Rendering System
 
@@ -217,11 +215,11 @@ This function is used by `nodeRules` and `childNodeRules` with `regexSelector`, 
 
 ## Utility Functions
 
-| Function              | Purpose                                                                                                   |
-| --------------------- | --------------------------------------------------------------------------------------------------------- |
-| `cleanOptions()`      | Normalizes deprecated `option` field to `options`, extracts standard fields, removes undefined properties |
-| `isRuleConfigValue()` | Type guard: returns `true` for primitives, `null`, and arrays (i.e., not a `RuleConfig` object)           |
-| `deleteUndefProp()`   | Removes all properties with `undefined` values from a plain object in-place                               |
+| Function              | Purpose                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `cleanOptions()`      | Extracts standard fields (`severity`, `value`, `options`, `reason`), removes undefined properties |
+| `isRuleConfigValue()` | Type guard: returns `true` for primitives, `null`, and arrays (i.e., not a `RuleConfig` object)   |
+| `deleteUndefProp()`   | Removes all properties with `undefined` values from a plain object in-place                       |
 
 ## Key Source Files
 
@@ -234,15 +232,14 @@ This function is used by `nodeRules` and `childNodeRules` with `regexSelector`, 
 
 ## External Dependencies
 
-| Dependency             | Purpose                                           |
-| ---------------------- | ------------------------------------------------- |
-| `@markuplint/ml-ast`   | `ParserOptions` type (type-only)                  |
-| `@markuplint/selector` | `RegexSelector` type (re-exported)                |
-| `@markuplint/shared`   | `Nullable` utility type                           |
-| `deepmerge`            | Deep merge implementation used by `mergeObject()` |
-| `is-plain-object`      | Plain object detection in `deleteUndefProp()`     |
-| `mustache`             | Template rendering engine for `provideValue()`    |
-| `type-fest`            | `Writable` utility type                           |
+| Dependency             | Purpose                                        |
+| ---------------------- | ---------------------------------------------- |
+| `@markuplint/ml-ast`   | `ParserOptions` type (type-only)               |
+| `@markuplint/selector` | `RegexSelector` type (re-exported)             |
+| `@markuplint/shared`   | `Nullable` utility type                        |
+| `is-plain-object`      | Plain object detection in `deleteUndefProp()`  |
+| `mustache`             | Template rendering engine for `provideValue()` |
+| `type-fest`            | `Writable` utility type                        |
 
 ## Integration Points
 
@@ -277,6 +274,41 @@ flowchart LR
 - **`@markuplint/ml-core`** -- Receives the merged `OptimizedConfig` and applies rules to the parsed document
 - **`@markuplint/rules`** -- Uses `Rule<T,O>` and `RuleConfig<T,O>` types to define rule implementations
 
+## Design Decisions
+
+### Why Not Flat Config?
+
+ESLint's Flat Config approach was evaluated and rejected for markuplint:
+
+- **ESLint itself re-added `extends` to Flat Config in March 2025** -- The pure flat approach proved insufficient even for JavaScript tooling
+- **markuplint is JSON-based** -- Flat Config assumes JavaScript. HTML/markup developers (the primary audience) benefit from JSON's schema validation and language-agnostic editing
+- **markuplint's `nodeRules`/`childNodeRules` are CSS-selector-based** -- These have no equivalent in Flat Config's file-pattern model
+- **ESLint v9 migration caused significant community pain** -- The gradual transition required automated migration tools and years of ecosystem adaptation
+
+**Conclusion:** Improving the JSON-based `extends` merge strategy is the optimal approach for markuplint.
+
+### Merge Strategy Principles
+
+There is a logical distinction between how arrays are handled:
+
+| Array Type                | Examples                               | Merge Behavior | Rationale                              |
+| ------------------------- | -------------------------------------- | -------------- | -------------------------------------- |
+| **Top-level collections** | `plugins`, `excludeFiles`, `nodeRules` | Accumulate     | Independent items forming a collection |
+| **Rule values**           | `["allowed-tag-1", "allowed-tag-2"]`   | Override       | A single rule's configuration value    |
+
+This aligns with ESLint and Biome, where rule values are always overridden by the more specific config.
+
+### Shallow Merge over Deep Merge
+
+| Tool       | Rule options merge           | Rationale                                                             |
+| ---------- | ---------------------------- | --------------------------------------------------------------------- |
+| ESLint     | Complete replacement         | Simplest, but can be surprising                                       |
+| Biome      | Deep merge (via Merge trait) | Full flexibility, higher complexity                                   |
+| markuplint | **Shallow merge**            | Middle ground: top-level keys are merged, nested objects are replaced |
+
+The `deepmerge` library was removed in favor of simple object spread (`{...a, ...b}`). This is sufficient because all merged objects in markuplint config (parser, specs, parserOptions, severity, plugin settings, rule options) are flat key-value maps.
+
 ## Documentation Map
 
+- [Migration Guide](../../docs/migration/v4-v5/config.md) -- Breaking changes between major versions
 - [Maintenance Guide](docs/maintenance.md) -- Commands, recipes, and troubleshooting
