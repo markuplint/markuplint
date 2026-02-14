@@ -36,4 +36,42 @@ suite('Config Tests', () => {
 			'vue',
 		]);
 	});
+
+	test('per-language scoped config resolves defaults', () => {
+		const languages = ['html', 'javascript', 'vue'];
+
+		for (const languageId of languages) {
+			const langConfig = vscode.workspace.getConfiguration('markuplint', { languageId });
+
+			const config = {
+				enable: langConfig.get('enable'),
+				debug: langConfig.get('debug'),
+				defaultConfig: langConfig.get('defaultConfig'),
+				hover: {
+					accessibility: {
+						enable: langConfig.get('hover.accessibility.enable'),
+						ariaVersion: langConfig.get('hover.accessibility.ariaVersion'),
+					},
+				},
+			};
+
+			assert.deepStrictEqual(
+				config,
+				{
+					enable: true,
+					debug: true,
+					defaultConfig: {
+						extends: ['markuplint:recommended'],
+					},
+					hover: {
+						accessibility: {
+							enable: true,
+							ariaVersion: '1.2',
+						},
+					},
+				},
+				`Config for language "${languageId}" should have all defaults resolved`,
+			);
+		}
+	});
 });
