@@ -128,14 +128,28 @@ function mergePretenders(
 	if (!a && !b) {
 		return;
 	}
-	const aDetails = a ? convertPretenersToDetails(a) : undefined;
-	const bDetails = b ? convertPretenersToDetails(b) : undefined;
-	const details = mergeObject(aDetails, bDetails) ?? {};
+	const aDetails = a ? toPretenderDetails(a) : undefined;
+	const bDetails = b ? toPretenderDetails(b) : undefined;
+
+	if (!aDetails) {
+		return bDetails;
+	}
+	if (!bDetails) {
+		return aDetails;
+	}
+
+	// files/imports: override (right-side wins)
+	// data: append (concatenate)
+	const details: PretenderDetails = {
+		files: bDetails.files ?? aDetails.files,
+		imports: bDetails.imports ?? aDetails.imports,
+		data: concatArray(aDetails.data, bDetails.data),
+	};
 	deleteUndefProp(details);
 	return details;
 }
 
-function convertPretenersToDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
+function toPretenderDetails(pretenders: readonly Pretender[] | PretenderDetails): PretenderDetails {
 	if (isReadonlyArray(pretenders)) {
 		return {
 			data: pretenders,

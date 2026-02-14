@@ -430,7 +430,7 @@ describe('Preteners', () => {
 		});
 	});
 
-	test('test', () => {
+	test('data is appended, files is overridden', () => {
 		expect(
 			mergeConfig(
 				{
@@ -458,8 +458,45 @@ describe('Preteners', () => {
 				files: ['../pretenders.json'],
 				data: [
 					{
+						selector: 'MyComponent',
+						as: 'div',
+					},
+					{
 						selector: 'MyComponent2',
 						as: 'section',
+					},
+				],
+			},
+		});
+	});
+
+	test('files override', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						files: ['./base-pretenders.json'],
+						data: [
+							{
+								selector: 'BaseComponent',
+								as: 'span',
+							},
+						],
+					},
+				},
+				{
+					pretenders: {
+						files: ['./override-pretenders.json'],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				files: ['./override-pretenders.json'],
+				data: [
+					{
+						selector: 'BaseComponent',
+						as: 'span',
 					},
 				],
 			},
