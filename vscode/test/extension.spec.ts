@@ -1,9 +1,31 @@
 import assert from 'node:assert';
 
-import { suite, test } from 'mocha';
+import { suite, suiteSetup, test } from 'mocha';
 import * as vscode from 'vscode';
 
+const EXTENSION_ID = 'yusukehirao.vscode-markuplint';
+
+async function waitForExtension(timeout = 5000): Promise<vscode.Extension<unknown>> {
+	const start = Date.now();
+	while (Date.now() - start < timeout) {
+		const extension = vscode.extensions.getExtension(EXTENSION_ID);
+		if (extension) {
+			if (!extension.isActive) {
+				await extension.activate();
+			}
+			return extension;
+		}
+		await new Promise(resolve => setTimeout(resolve, 100));
+	}
+	throw new Error(`Extension ${EXTENSION_ID} not found within ${timeout}ms`);
+}
+
 suite('Extension Tests', () => {
+	suiteSetup(async function () {
+		this.timeout(10_000);
+		await waitForExtension();
+	});
+
 	suite('Command Registration', () => {
 		test('markuplint.restartServer command should be registered', async () => {
 			const commands = await vscode.commands.getCommands(true);
@@ -18,56 +40,44 @@ suite('Extension Tests', () => {
 
 	suite('Restart Server Command', () => {
 		test('should execute without throwing error', async () => {
-			// Open an HTML file to activate the extension
 			const doc = await vscode.workspace.openTextDocument({
 				language: 'html',
 				content: '<html><body><h1>Test</h1></body></html>',
 			});
 			await vscode.window.showTextDocument(doc);
 
-			// Wait for extension activation
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
-			// Execute restart command - should not throw an error
 			await vscode.commands.executeCommand('markuplint.restartServer');
 
-			// Clean up
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
 		test('should work after restart', async function () {
-			// Increase timeout for this test
 			this.timeout(10_000);
 
-			// Open an HTML file
 			const doc = await vscode.workspace.openTextDocument({
 				language: 'html',
 				content: '<html><body><h1>Test</h1></body></html>',
 			});
 			await vscode.window.showTextDocument(doc);
 
-			// Wait for extension activation
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
-			// Execute restart command
 			await vscode.commands.executeCommand('markuplint.restartServer');
 
-			// Wait for restart to complete
 			await new Promise(resolve => setTimeout(resolve, 3000));
 
-			// Verify diagnostics still work after restart
-			// Note: This is a basic check that the extension is still functional
 			const diagnostics = vscode.languages.getDiagnostics(doc.uri);
 			assert.ok(Array.isArray(diagnostics), 'Diagnostics should be available after restart');
 
-			// Clean up
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 	});
 
 	suite('Extension Activation', () => {
 		test('extension should be active', () => {
-			const extension = vscode.extensions.getExtension('yusukehirao.vscode-markuplint');
+			const extension = vscode.extensions.getExtension(EXTENSION_ID);
 			assert.ok(extension, 'Extension should be installed');
 			assert.strictEqual(extension.isActive, true, 'Extension should be active');
 		});

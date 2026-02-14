@@ -35,9 +35,29 @@ export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
 ) {
+	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
+		logger?.show();
+	});
+	context.subscriptions.push(openLogCommand);
+
+	const restartServerCommand = commands.registerCommand(COMMAND_NAME_RESTART_SERVER, async () => {
+		if (client === undefined) {
+			return;
+		}
+		try {
+			void window.showInformationMessage('Restarting Markuplint language server...');
+			await client.stop();
+			await client.start();
+			void window.showInformationMessage('Markuplint language server restarted successfully.');
+		} catch (error) {
+			void window.showErrorMessage(`Failed to restart Markuplint language server: ${String(error)}`);
+		}
+	});
+	context.subscriptions.push(restartServerCommand);
+
 	const config = workspace.getConfiguration(ID);
 
-	if (!config.get('enable')) {
+	if (config.get('enable') === false) {
 		return;
 	}
 
@@ -62,23 +82,27 @@ export function activate(
 		},
 	};
 
-	const customLanguageList: string[] = config.get('targetLanguages') ?? [];
+	const customLanguageList: string[] = config.get('targetLanguages') ?? ['html'];
 	const languageList = [...new Set(customLanguageList)];
 
 	const langConfigs: LangConfigs = {};
 	for (const languageId of languageList) {
-		const workspaceConfig = workspace.getConfiguration('', { languageId }).get(ID);
-		// eslint-disable-next-line unicorn/prefer-structured-clone
-		const config: Config = JSON.parse(JSON.stringify(workspaceConfig));
+		const langConfig = workspace.getConfiguration(ID, { languageId });
 
-		langConfigs[languageId] = config ?? {
-			enable: true,
-			debug: false,
-			defaultConfig: {},
+		const defaultConfig = langConfig.get('defaultConfig') ?? { extends: ['markuplint:recommended'] };
+
+		langConfigs[languageId] = {
+			enable: langConfig.get('enable') ?? true,
+			debug: langConfig.get('debug') ?? false,
+			// eslint-disable-next-line unicorn/prefer-structured-clone
+			defaultConfig: JSON.parse(JSON.stringify(defaultConfig)),
 			hover: {
 				accessibility: {
-					enable: true,
-					ariaVersion: ARIA_RECOMMENDED_VERSION,
+					enable: langConfig.get('hover.accessibility.enable') ?? true,
+					ariaVersion:
+						langConfig.get<Config['hover']['accessibility']['ariaVersion']>(
+							'hover.accessibility.ariaVersion',
+						) ?? ARIA_RECOMMENDED_VERSION,
 				},
 			},
 		};
@@ -132,23 +156,6 @@ export function activate(
 			void window.showInformationMessage(message);
 		});
 	});
-
-	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
-		logger.show();
-	});
-	context.subscriptions.push(openLogCommand);
-
-	const restartServerCommand = commands.registerCommand(COMMAND_NAME_RESTART_SERVER, async () => {
-		try {
-			void window.showInformationMessage('Restarting Markuplint language server...');
-			await client.stop();
-			await client.start();
-			void window.showInformationMessage('Markuplint language server restarted successfully.');
-		} catch (error) {
-			void window.showErrorMessage(`Failed to restart Markuplint language server: ${String(error)}`);
-		}
-	});
-	context.subscriptions.push(restartServerCommand);
 }
 
 export function deactivate() {

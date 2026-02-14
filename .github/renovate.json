@@ -49,6 +49,12 @@
 			"matchPackageNames": ["node"],
 			"matchManagers": ["dockerfile"],
 			"enabled": false
+		},
+		{
+			"description": "Do not update engines.vscode — must stay pinned for Cursor and other forks",
+			"matchPackageNames": ["vscode"],
+			"matchDepTypes": ["engines"],
+			"enabled": false
 		}
 	]
 }
