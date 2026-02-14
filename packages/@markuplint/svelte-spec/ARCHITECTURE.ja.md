@@ -2,7 +2,7 @@
 
 ## 概要
 
-`@markuplint/svelte-spec` は markuplint 向けの Svelte 固有の拡張仕様を提供します。Svelte のフォーム要素における双方向バインディング動作に対応するため、要素レベルの属性オーバーライドを定義する `ExtendedSpec` オブジェクトをエクスポートします。具体的には、`<select>` と `<textarea>` 要素の `value` 属性の型を `Any` に拡張し、文字列だけでなく任意の型のバインド変数を許容します。
+`@markuplint/svelte-spec` は markuplint 向けの Svelte 固有の拡張仕様を提供します。Svelte のフォーム要素における双方向バインディング動作と IDL プロパティ属性に対応するため、要素レベルの属性オーバーライドを定義する `ExtendedSpec` オブジェクトをエクスポートします。`<select>` と `<textarea>` 要素の `value` 属性の型を `Any` に拡張するほか、`<input>`、`<select>`、`<textarea>` 要素で `defaultValue`、`defaultChecked`、`indeterminate` などの IDL プロパティ属性をサポートします。
 
 ## ExtendedSpec の内容
 
@@ -10,10 +10,15 @@
 
 ### 要素固有のオーバーライド
 
-| 要素         | 属性    | 型オーバーライド | 理由                                                    |
-| ------------ | ------- | ---------------- | ------------------------------------------------------- |
-| `<select>`   | `value` | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容 |
-| `<textarea>` | `value` | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容 |
+| 要素         | 属性             | 型オーバーライド | 理由                                                           |
+| ------------ | ---------------- | ---------------- | -------------------------------------------------------------- |
+| `<input>`    | `defaultChecked` | `Boolean`        | チェックボックス/ラジオの非制御初期状態を表す IDL プロパティ   |
+| `<input>`    | `defaultValue`   | `Any`            | 入力要素の非制御初期値を表す IDL プロパティ                    |
+| `<input>`    | `indeterminate`  | `Boolean`        | チェックボックスの不定状態を表す IDL プロパティ                |
+| `<select>`   | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容        |
+| `<select>`   | `defaultValue`   | `Any`            | セレクト要素の非制御初期値を表す IDL プロパティ                |
+| `<textarea>` | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容        |
+| `<textarea>` | `defaultValue`   | `Any`            | テキストエリアの非制御初期値を表す IDL プロパティ              |
 
 これらのオーバーライドにより、markuplint が Svelte 固有の属性使用を不正としてフラグ付けすることなく、標準 HTML 仕様を拡張します。
 
@@ -40,7 +45,7 @@ flowchart TD
     end
 
     subgraph pkg ["@markuplint/svelte-spec"]
-        spec["ExtendedSpec オブジェクト\n(select, textarea オーバーライド)"]
+        spec["ExtendedSpec オブジェクト\n(input, select, textarea オーバーライド)"]
     end
 
     subgraph downstream ["下流"]

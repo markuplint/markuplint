@@ -2,7 +2,7 @@
 
 ## Overview
 
-`@markuplint/svelte-spec` provides Svelte-specific extended specifications for markuplint. It exports an `ExtendedSpec` object that defines element-level attribute overrides to accommodate Svelte's two-way binding behavior on form elements. Specifically, the `<select>` and `<textarea>` elements have their `value` attribute type broadened to `Any`, allowing bound variables of any type rather than only strings.
+`@markuplint/svelte-spec` provides Svelte-specific extended specifications for markuplint. It exports an `ExtendedSpec` object that defines element-level attribute overrides to accommodate Svelte's two-way binding behavior and IDL property attributes on form elements. The `<select>` and `<textarea>` elements have their `value` attribute type broadened to `Any`, and the `<input>`, `<select>`, and `<textarea>` elements support IDL property attributes such as `defaultValue`, `defaultChecked`, and `indeterminate`.
 
 ## ExtendedSpec Content
 
@@ -10,10 +10,15 @@ The package exports a single `ExtendedSpec` object with element-specific overrid
 
 ### Element-Specific Overrides
 
-| Element      | Attribute | Type Override | Reason                                                  |
-| ------------ | --------- | ------------- | ------------------------------------------------------- |
-| `<select>`   | `value`   | `Any`         | Svelte's `bind:value` allows any type, not just strings |
-| `<textarea>` | `value`   | `Any`         | Svelte's `bind:value` allows any type, not just strings |
+| Element      | Attribute        | Type Override | Reason                                                         |
+| ------------ | ---------------- | ------------- | -------------------------------------------------------------- |
+| `<input>`    | `defaultChecked` | `Boolean`     | IDL property for uncontrolled checkbox/radio initial state      |
+| `<input>`    | `defaultValue`   | `Any`         | IDL property for uncontrolled input initial value               |
+| `<input>`    | `indeterminate`  | `Boolean`     | IDL property for checkbox indeterminate state                   |
+| `<select>`   | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings        |
+| `<select>`   | `defaultValue`   | `Any`         | IDL property for uncontrolled select initial value              |
+| `<textarea>` | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings        |
+| `<textarea>` | `defaultValue`   | `Any`         | IDL property for uncontrolled textarea initial value            |
 
 These overrides extend the standard HTML spec so that markuplint does not flag Svelte-specific attribute usage as invalid.
 
@@ -40,7 +45,7 @@ flowchart TD
     end
 
     subgraph pkg ["@markuplint/svelte-spec"]
-        spec["ExtendedSpec object\n(select, textarea overrides)"]
+        spec["ExtendedSpec object\n(input, select, textarea overrides)"]
     end
 
     subgraph downstream ["Downstream"]
