@@ -39057,27 +39057,18 @@
 					"description": "This attribute is required when rel=\"preload\" has been set on the <link> element, optional when rel=\"modulepreload\" has been set, and otherwise should not be used. It specifies the type of content being loaded by the <link>, which is necessary for request matching, application of correct content security policy, and setting of correct Accept request header. Furthermore, rel=\"preload\" uses this as a signal for request prioritization. The table below lists the valid values for this attribute and the elements or resources they apply to. Value Applies To audio <audio> elements document <iframe> and <frame> elements embed <embed> elements fetch fetch, XHR Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. font CSS @font-face Note: This value also requires <link> to contain the crossorigin attribute, see CORS-enabled fetches. image <img> and <picture> elements with srcset or imageset attributes, SVG <image> elements, CSS *-image rules object <object> elements script <script> elements, Worker importScripts style <link rel=stylesheet> elements, CSS @import track <track> elements video <video> elements worker Worker, SharedWorker",
 					"type": {
 						"enum": [
-							"fetch",
-							"audio",
 							"audioworklet",
-							"document",
-							"embed",
+							"fetch",
 							"font",
-							"frame",
-							"iframe",
 							"image",
-							"manifest",
-							"object",
+							"json",
 							"paintworklet",
-							"report",
 							"script",
 							"serviceworker",
 							"sharedworker",
 							"style",
 							"track",
-							"video",
-							"worker",
-							"xslt"
+							"worker"
 						]
 					},
 					"condition": ["[rel='preload' i]", "[rel='modulepreload' i]"]
