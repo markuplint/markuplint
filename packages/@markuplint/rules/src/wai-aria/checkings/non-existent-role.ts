@@ -9,6 +9,7 @@ import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
  *
  * Validates each token in the role attribute against the known ARIA roles list.
  * For SVG elements, the WAI-ARIA Graphics Module roles are also accepted.
+ * DPub ARIA roles (Digital Publishing WAI-ARIA Module) are accepted for all elements.
  *
  * @param attr - The `role` attribute node to inspect.
  * @returns A violation if any token does not correspond to a defined ARIA role.
