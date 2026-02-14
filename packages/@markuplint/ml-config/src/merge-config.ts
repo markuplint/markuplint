@@ -199,7 +199,7 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	return res;
 }
 
-function concatArray<T extends any>(
+function concatArray<T>(
 	a: Nullable<readonly T[]>,
 	b: Nullable<readonly T[]>,
 	uniquely = false,
@@ -237,13 +237,7 @@ function concatArray<T extends any>(
 		}
 
 		const existed = newArray[existedIndex];
-		const merged = mergeObject(existed, item);
-		if (!merged) {
-			newArray.push(item);
-			return;
-		}
-
-		newArray.splice(existedIndex, 1, merged);
+		newArray.splice(existedIndex, 1, { ...existed, ...item });
 	}
 
 	// eslint-disable-next-line unicorn/no-array-for-each
