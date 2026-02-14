@@ -35,6 +35,16 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * Returns `true` if this text node originated from an invalid (bogus) AST
+	 * node, such as an orphaned end tag.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLText`
+	 */
+	get isBogus(): boolean {
+		return (this._astToken as MLASTText & { readonly isBogus?: boolean }).isBogus ?? false;
+	}
+
+	/**
 	 * Returns a string appropriate for the type of node as `Text`
 	 *
 	 * @see https://dom.spec.whatwg.org/#ref-for-attr%E2%91%A4

@@ -27,8 +27,9 @@ MLBlock のドキュメントは専用の [MLBlock](./block.ja.md) リファレ�
 - `nodeName`: `'#text'`
 - `nodeType`: `3`（`TEXT_NODE`）
 
-| メソッド                    | 戻り値    | 説明                                               |
+| プロパティ / メソッド       | 戻り値    | 説明                                               |
 | --------------------------- | --------- | -------------------------------------------------- |
+| `isBogus`                   | `boolean` | 不正な AST ノードから生成されたノードの場合 `true` |
 | `isWhitespace()`            | `boolean` | テキストが `/^\s+$/` にマッチする場合 `true`       |
 | `isRawTextElementContent()` | `boolean` | 親要素が `<script>` または `<style>` の場合 `true` |
 

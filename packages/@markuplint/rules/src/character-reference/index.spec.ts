@@ -58,6 +58,11 @@ test('in EJS', async () => {
 });
 
 describe('Issues', () => {
+	test('#1575: no false positive on orphaned end tag', async () => {
+		const { violations } = await mlRuleTest(rule, '<div></p></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
 	test('#1074', async () => {
 		const { violations } = await mlRuleTest(rule, '<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>');
 		expect(violations).toStrictEqual([

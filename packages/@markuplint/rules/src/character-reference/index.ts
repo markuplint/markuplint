@@ -22,7 +22,8 @@ const ignoreParentElement = new Set(['script', 'style']);
  *
  * Scans text nodes and attribute values for the characters `"`, `&`, `<`,
  * and `>` that are not already part of a valid character reference. Text
- * inside `<script>` and `<style>` elements is excluded.
+ * inside `<script>` and `<style>` elements is excluded, as are bogus
+ * text nodes (e.g., orphaned end tags).
  */
 export default createRule({
 	meta: meta,
@@ -30,6 +31,9 @@ export default createRule({
 		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
+			if (node.isBogus) {
+				return;
+			}
 			if (node.parentNode && ignoreParentElement.has(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}
