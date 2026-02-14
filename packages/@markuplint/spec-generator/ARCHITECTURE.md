@@ -42,6 +42,7 @@ flowchart TD
         mdnSVG["MDN SVG Element Index\n(svg.ts)"]
         ariaSpecs["W3C ARIA 1.1 / 1.2 / 1.3\n(aria.ts)"]
         graphicsAria["Graphics ARIA\n(aria.ts)"]
+        dpubAria["DPub ARIA\n(aria.ts)"]
         htmlAria["HTML-ARIA Mapping\n(aria.ts)"]
     end
 
@@ -65,6 +66,7 @@ flowchart TD
     getGlobalAttrs --> commonAttrs
     getAria --> ariaSpecs
     getAria --> graphicsAria
+    getAria --> dpubAria
     getAria --> htmlAria
 
     getElements --> extendedSpec
@@ -108,12 +110,12 @@ export async function main(options: Options): Promise<void>;
 1. **Parallel data gathering** -- `main()` launches three tasks concurrently via `Promise.all`:
    - `getElements(htmlFilePattern)` -- reads local spec files, scrapes MDN for each element, appends obsolete elements
    - `getGlobalAttrs(commonAttrsFilePath)` -- reads global attribute definitions
-   - `getAria()` -- scrapes W3C ARIA specs (1.1, 1.2, 1.3) plus Graphics ARIA and HTML-ARIA
+   - `getAria()` -- scrapes W3C ARIA specs (1.1, 1.2, 1.3) plus Graphics ARIA, DPub ARIA, and HTML-ARIA
 
 2. **Assembly** -- The results are combined into an `ExtendedSpec` object:
    - `cites` -- sorted list of all fetched URLs (from `getReferences()`)
    - `def["#globalAttrs"]` -- global attribute categories
-   - `def["#aria"]` -- ARIA roles, properties, and graphics roles per version
+   - `def["#aria"]` -- ARIA roles, properties, graphics roles, and DPub roles per version
    - `def["#contentModels"]` -- content model categories (from `readJson()`)
    - `specs` -- element specification array
 
@@ -155,7 +157,7 @@ flowchart LR
 
     subgraph external ["External Sources"]
         mdn["MDN Web Docs"]
-        w3c["W3C ARIA / HTML-ARIA"]
+        w3c["W3C ARIA / DPub ARIA / HTML-ARIA"]
     end
 
     mlSpec -->|"types"| pkg

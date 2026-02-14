@@ -206,6 +206,20 @@ The same CSS selectors used for standard ARIA roles apply to Graphics ARIA roles
 
 ---
 
+## DPub ARIA Scraping
+
+**Module:** `aria.ts`
+
+DPub ARIA roles (Digital Publishing WAI-ARIA Module) are fetched using the `getDpubRoles()` function.
+
+| URL                                |
+| ---------------------------------- |
+| `https://w3c.github.io/dpub-aria/` |
+
+The DPub ARIA specification uses the same HTML structure and CSS selectors as the standard WAI-ARIA specification (`#role_definitions section.role`, `.role-name[title]`, `.role-parent a`, etc.). The `getDpubRoles()` function is called once and the 41 roles are shared across all ARIA versions.
+
+---
+
 ## HTML-ARIA Mapping
 
 **Module:** `aria.ts` (`getAriaInHtml()`)

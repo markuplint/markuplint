@@ -111,13 +111,14 @@ MDN 要素リファレンスページからメタデータをスクレイピン�
 
 W3C ARIA 仕様からロールとプロパティの定義をスクレイピングします。URL パターンとセレクタの詳細は[スクレイピング詳細](scraping.ja.md)を参照。
 
-### `getAria(): Promise<Record<ARIAVersion, { roles, props, graphicsRoles }>>`
+### `getAria(): Promise<Record<ARIAVersion, { roles, props, graphicsRoles, dpubRoles }>>`
 
 サポートされている3つのバージョンすべての ARIA データを返します。各バージョンについて:
 
 1. `getRoles(version)` でロールを取得
 2. `getProps(version, roles)` でプロパティ/ステートを取得
 3. `getRoles(version, true)` でグラフィックス ARIA ロールを取得
+4. `getDpubRoles()` で DPub ARIA ロールを取得（1回だけフェッチし、全バージョンで共有）
 
 **実行順序:** バージョンは順次処理されます（1.3 → 1.2 → 1.1）。各バージョン内では、プロパティの前にロールを取得する必要があります（プロパティはロールの `ownedProperties` から検出されるため）。
 
@@ -129,9 +130,12 @@ W3C ARIA 仕様からロールとプロパティの定義をスクレイピン�
 | 1.2        | `https://www.w3.org/TR/wai-aria-1.2/` | `https://w3c.github.io/graphics-aria/`     |
 | 1.3        | `https://w3c.github.io/aria/`         | `https://w3c.github.io/graphics-aria/`     |
 
+**DPub ARIA URL:** `https://w3c.github.io/dpub-aria/`（全バージョン共通）
+
 ### プライベート関数
 
 - `getRoles(version, graphicsAria?)` -- `#role_definitions section.role` 要素をスクレイピング。抽出内容: name, description, generalization, owned properties（required/inherited/general）, required context roles, required owned elements, accessible name 設定, children presentational フラグ, prohibited properties。ロールの同義語を処理（`none`/`presentation`, `image`/`img`）
+- `getDpubRoles()` -- DPub ARIA 仕様からデジタル出版ロール（例: `doc-abstract`, `doc-chapter`）をスクレイピング。`getRoles()` と同じ CSS セレクタを使用。41個の DPub ロールは1回だけフェッチされ、全 ARIA バージョンで共有される
 - `getProps(version, roles)` -- 全ロールの `ownedProperties` からプロパティリストを構築し、各プロパティのセクションをスクレイピング: type（property/state）, value type, enum values, default value, global フラグ, 同等の HTML 属性。`aria-checked` と `aria-hidden` の条件付き値オーバーライドを適用
 - `getAriaInHtml()` -- `https://www.w3.org/TR/html-aria/` から HTML 属性と ARIA プロパティのマッピングテーブルをスクレイピング。`contenteditable` はスキップ（祖先の評価が必要なため）
 - `$$(el, selectors)` -- 複数の CSS セレクタを試し、最初の非空マッチを返す

@@ -111,13 +111,14 @@ Generates minimal spec stubs for obsolete elements not already present in the ex
 
 Scrapes W3C ARIA specifications for role and property definitions. See [Scraping Details](scraping.md) for URL patterns and selectors.
 
-### `getAria(): Promise<Record<ARIAVersion, { roles, props, graphicsRoles }>>`
+### `getAria(): Promise<Record<ARIAVersion, { roles, props, graphicsRoles, dpubRoles }>>`
 
 Returns ARIA data for all three supported versions. For each version:
 
 1. Fetch roles via `getRoles(version)`
 2. Fetch properties/states via `getProps(version, roles)`
 3. Fetch graphics ARIA roles via `getRoles(version, true)`
+4. Fetch DPub ARIA roles via `getDpubRoles()` (fetched once, shared across all versions)
 
 **Execution order:** Versions are processed sequentially (1.3, then 1.2, then 1.1). Within each version, roles must be fetched before properties (properties are discovered from the roles' `ownedProperties`).
 
@@ -129,9 +130,12 @@ Returns ARIA data for all three supported versions. For each version:
 | 1.2     | `https://www.w3.org/TR/wai-aria-1.2/` | `https://w3c.github.io/graphics-aria/`     |
 | 1.3     | `https://w3c.github.io/aria/`         | `https://w3c.github.io/graphics-aria/`     |
 
+**DPub ARIA URL:** `https://w3c.github.io/dpub-aria/` (same for all versions)
+
 ### Private functions
 
 - `getRoles(version, graphicsAria?)` -- Scrapes `#role_definitions section.role` elements. Extracts: name, description, generalization, owned properties (required/inherited/general), required context roles, required owned elements, accessible name settings, children presentational flag, prohibited properties. Handles role synonyms (`none`/`presentation`, `image`/`img`)
+- `getDpubRoles()` -- Scrapes the DPub ARIA specification for Digital Publishing roles (e.g., `doc-abstract`, `doc-chapter`). Uses the same CSS selectors as `getRoles()`. The 41 DPub roles are fetched once and shared across all ARIA versions
 - `getProps(version, roles)` -- Builds a property list from all role `ownedProperties`, then scrapes each property's section for: type (property/state), value type, enum values, default value, global flag, equivalent HTML attributes. Applies conditional value overrides for `aria-checked` and `aria-hidden`
 - `getAriaInHtml()` -- Scrapes `https://www.w3.org/TR/html-aria/` for the HTML attribute to ARIA property mapping table. Skips `contenteditable` (requires ancestor evaluation)
 - `$$(el, selectors)` -- Tries multiple CSS selectors and returns the first non-empty match

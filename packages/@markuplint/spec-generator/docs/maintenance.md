@@ -109,6 +109,7 @@ When a new ARIA specification version is published (e.g., 1.4):
      roles: roles14,
      props: await getProps('1.4', roles14),
      graphicsRoles: await getRoles('1.4', true),
+     dpubRoles,
    },
    ```
 4. **Cross-package:** The `ARIAVersion` type in `@markuplint/ml-spec` must also be updated to include `'1.4'`
