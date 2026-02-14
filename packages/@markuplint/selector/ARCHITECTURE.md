@@ -4,7 +4,7 @@
 
 `@markuplint/selector` is an extended [W3C Selectors Level 4](https://www.w3.org/TR/selectors-4/) matcher for markuplint. It provides two independent matching systems:
 
-1. **CSS Selector Matching** -- Parses standard CSS selectors via `postcss-selector-parser` and matches them against DOM nodes with full specificity tracking.
+1. **CSS Selector Matching** -- Parses standard CSS selectors via `postcss-selector-parser` and matches them against elements with full specificity tracking.
 2. **Regex Selector Matching** -- Matches elements using regular expression patterns on node names and attributes, with captured group data extraction.
 
 The package also defines markuplint-specific extended pseudo-classes (`:aria()`, `:role()`, `:model()`) that integrate HTML/ARIA specification data into selector matching.
@@ -14,13 +14,13 @@ The package also defines markuplint-specific extended pseudo-classes (`:aria()`,
 ```
 src/
 ├── index.ts                                — Export entry point
-├── types.ts                                — Type definitions (Specificity, SelectorResult, RegexSelector, etc.)
+├── types.ts                                — Type definitions (SelectorElement, SelectorNode, SelectorAttr, Specificity, SelectorResult, etc.)
 ├── selector.ts                             — Core Selector/Ruleset/StructuredSelector/SelectorTarget classes
 ├── create-selector.ts                      — Selector factory with instance caching and extended pseudo-class registration
 ├── match-selector.ts                       — CSS/Regex selector matching public function
 ├── compare-specificity.ts                  — Specificity comparison utility
 ├── regex-selector-matches.ts               — Regex pattern matching helper
-├── is.ts                                   — DOM node type guards
+├── is.ts                                   — Node type guards (SelectorNode/SelectorElement)
 ├── invalid-selector-error.ts               — Custom error class for invalid selectors
 ├── debug.ts                                — Debug log configuration (using debug package)
 └── extended-selector/
@@ -78,21 +78,21 @@ flowchart TD
 
 ## Module Overview
 
-| Module                          | Role                   | Key Exports                                                                                                       |
-| ------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `index.ts`                      | Entry point            | Re-exports all public API                                                                                         |
-| `types.ts`                      | Type definitions       | `Specificity`, `SelectorResult`, `RegexSelector`, `RegexSelectorCombinator`                                       |
-| `selector.ts`                   | CSS selector engine    | `Selector` class (not re-exported from entry point), `Ruleset`, `StructuredSelector`, `SelectorTarget` (internal) |
-| `create-selector.ts`            | Factory with caching   | `createSelector()`                                                                                                |
-| `match-selector.ts`             | Unified matching       | `matchSelector()`, `SelectorMatches`                                                                              |
-| `compare-specificity.ts`        | Specificity comparison | `compareSpecificity()`                                                                                            |
-| `regex-selector-matches.ts`     | Regex matching helper  | `regexSelectorMatches()`                                                                                          |
-| `is.ts`                         | DOM type guards        | `isElement()`, `isNonDocumentTypeChildNode()`, `isPureHTMLElement()`                                              |
-| `invalid-selector-error.ts`     | Error class            | `InvalidSelectorError`                                                                                            |
-| `debug.ts`                      | Debug logging          | `log` (debug instance), `enableDebug()`                                                                           |
-| `aria-pseudo-class.ts`          | `:aria()` handler      | `ariaPseudoClass()`                                                                                               |
-| `aria-role-pseudo-class.ts`     | `:role()` handler      | `ariaRolePseudoClass()`                                                                                           |
-| `content-model-pseudo-class.ts` | `:model()` handler     | `contentModelPseudoClass()`                                                                                       |
+| Module                          | Role                   | Key Exports                                                                                                                    |
+| ------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `index.ts`                      | Entry point            | Re-exports all public API                                                                                                      |
+| `types.ts`                      | Type definitions       | `Specificity`, `SelectorResult`, `RegexSelector`, `RegexSelectorCombinator`, `SelectorAttr`, `SelectorNode`, `SelectorElement` |
+| `selector.ts`                   | CSS selector engine    | `Selector` class, `ExtendedPseudoClass` type, `Ruleset`, `StructuredSelector`, `SelectorTarget` (internal)                     |
+| `create-selector.ts`            | Factory with caching   | `createSelector()`                                                                                                             |
+| `match-selector.ts`             | Unified matching       | `matchSelector()`, `SelectorMatches`                                                                                           |
+| `compare-specificity.ts`        | Specificity comparison | `compareSpecificity()`                                                                                                         |
+| `regex-selector-matches.ts`     | Regex matching helper  | `regexSelectorMatches()`                                                                                                       |
+| `is.ts`                         | Node type guards       | `isElement()`, `isNonDocumentTypeChildNode()`, `isPureHTMLElement()`                                                           |
+| `invalid-selector-error.ts`     | Error class            | `InvalidSelectorError`                                                                                                         |
+| `debug.ts`                      | Debug logging          | `log` (debug instance), `enableDebug()`                                                                                        |
+| `aria-pseudo-class.ts`          | `:aria()` handler      | `ariaPseudoClass()`                                                                                                            |
+| `aria-role-pseudo-class.ts`     | `:role()` handler      | `ariaRolePseudoClass()`                                                                                                        |
+| `content-model-pseudo-class.ts` | `:model()` handler     | `contentModelPseudoClass()`                                                                                                    |
 
 ## Public API
 
@@ -102,7 +102,7 @@ Creates a cached `Selector` instance. When `specs` is provided, the extended pse
 
 ### `matchSelector(el, selector, scope?, specs?)`
 
-Unified matching function that accepts either a CSS selector string or a `RegexSelector` object. Returns `{ matched: true, selector, specificity, data? }` or `{ matched: false }`.
+Unified matching function that accepts either a CSS selector string or a `RegexSelector` object. The `el` and `scope` parameters accept any `SelectorNode`. Returns `{ matched: true, selector, specificity, data? }` or `{ matched: false }`.
 
 ### `compareSpecificity(a, b)`
 
@@ -115,6 +115,20 @@ Union type for selector match results: `{ matched: true, selector, specificity, 
 ### `InvalidSelectorError`
 
 Custom error thrown when a CSS selector string cannot be parsed.
+
+## Pure Data Interfaces
+
+The selector engine operates on pure data interfaces rather than DOM `Element`/`Node` directly. This decouples the matching logic from the ~200-property DOM API, making it portable (e.g., to Rust/WASM) and testable with plain objects.
+
+| Interface         | Extends        | Purpose                                                         |
+| ----------------- | -------------- | --------------------------------------------------------------- |
+| `SelectorAttr`    | —              | Minimal attribute: `name`, `localName`, `value`, `namespaceURI` |
+| `SelectorNode`    | —              | Minimal node: `nodeType`, `nodeName`, `parentNode`              |
+| `SelectorElement` | `SelectorNode` | Element with the ~12 properties the engine actually reads       |
+
+DOM `Element`, JSDOM elements, and `MLElement` all satisfy `SelectorElement` via structural typing — no adapter code is needed.
+
+Extended pseudo-classes (`:aria()`, `:role()`, `:model()`) receive a `SelectorElement` and cast to `Element` at the `@markuplint/ml-spec` boundary where full DOM APIs are required.
 
 ## Core Internal Classes
 
@@ -136,7 +150,7 @@ Selector
 
 ### CSS Selector Matching
 
-Standard CSS selectors are parsed by `postcss-selector-parser` into an AST, then matched against DOM nodes. The matching process:
+Standard CSS selectors are parsed by `postcss-selector-parser` into an AST, then matched against `SelectorNode`/`SelectorElement` instances. The matching process:
 
 1. `createSelector()` creates or retrieves a cached `Selector` instance
 2. `Selector.match()` delegates to `Ruleset.match()`
@@ -161,7 +175,7 @@ See [Selector Matching](docs/matching.md) for detailed algorithm documentation.
 Extended pseudo-classes are registered through the `ExtendedPseudoClass` type:
 
 ```typescript
-type ExtendedPseudoClass = Record<string, (content: string) => (el: Element) => SelectorResult>;
+type ExtendedPseudoClass = Record<string, (content: string) => (el: SelectorElement) => SelectorResult>;
 ```
 
 Three pseudo-classes are built in:

@@ -4,7 +4,7 @@
 
 `@markuplint/selector` は markuplint のための拡張 [W3C Selectors Level 4](https://www.w3.org/TR/selectors-4/) マッチャーです。2 つの独立したマッチングシステムを提供します:
 
-1. **CSS セレクタマッチング** -- `postcss-selector-parser` を使用して標準 CSS セレクタをパースし、DOM ノードに対して完全な詳細度追跡付きでマッチングします。
+1. **CSS セレクタマッチング** -- `postcss-selector-parser` を使用して標準 CSS セレクタをパースし、要素に対して完全な詳細度追跡付きでマッチングします。
 2. **Regex セレクタマッチング** -- ノード名と属性に対する正規表現パターンでマッチングし、キャプチャグループデータを抽出します。
 
 また、markuplint 固有の拡張擬似クラス（`:aria()`、`:role()`、`:model()`）を定義し、HTML/ARIA 仕様データをセレクタマッチングに統合します。
@@ -14,13 +14,13 @@
 ```
 src/
 ├── index.ts                                — エクスポートエントリーポイント
-├── types.ts                                — 型定義（Specificity, SelectorResult, RegexSelector 等）
+├── types.ts                                — 型定義（SelectorElement, SelectorNode, SelectorAttr, Specificity, SelectorResult 等）
 ├── selector.ts                             — コア Selector/Ruleset/StructuredSelector/SelectorTarget クラス
 ├── create-selector.ts                      — インスタンスキャッシュと拡張擬似クラス登録を持つ Selector ファクトリ
 ├── match-selector.ts                       — CSS/Regex セレクタマッチング公開関数
 ├── compare-specificity.ts                  — 詳細度比較ユーティリティ
 ├── regex-selector-matches.ts               — 正規表現パターンマッチングヘルパー
-├── is.ts                                   — DOM ノード型ガード
+├── is.ts                                   — ノード型ガード（SelectorNode/SelectorElement）
 ├── invalid-selector-error.ts               — 無効セレクタ用カスタムエラークラス
 ├── debug.ts                                — デバッグログ設定（debug パッケージ使用）
 └── extended-selector/
@@ -81,13 +81,13 @@ flowchart TD
 | モジュール                      | 役割                     | 主要エクスポート                                                                                                               |
 | ------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `index.ts`                      | エントリーポイント       | 全公開 API の再エクスポート                                                                                                    |
-| `types.ts`                      | 型定義                   | `Specificity`, `SelectorResult`, `RegexSelector`, `RegexSelectorCombinator`                                                    |
-| `selector.ts`                   | CSS セレクタエンジン     | `Selector` クラス（エントリーポイントからは再エクスポートされない）、`Ruleset`, `StructuredSelector`, `SelectorTarget`（内部） |
+| `types.ts`                      | 型定義                   | `Specificity`, `SelectorResult`, `RegexSelector`, `RegexSelectorCombinator`, `SelectorAttr`, `SelectorNode`, `SelectorElement` |
+| `selector.ts`                   | CSS セレクタエンジン     | `Selector` クラス、`ExtendedPseudoClass` 型、`Ruleset`, `StructuredSelector`, `SelectorTarget`（内部）                         |
 | `create-selector.ts`            | キャッシュ付きファクトリ | `createSelector()`                                                                                                             |
 | `match-selector.ts`             | 統合マッチング           | `matchSelector()`, `SelectorMatches`                                                                                           |
 | `compare-specificity.ts`        | 詳細度比較               | `compareSpecificity()`                                                                                                         |
 | `regex-selector-matches.ts`     | Regex マッチングヘルパー | `regexSelectorMatches()`                                                                                                       |
-| `is.ts`                         | DOM 型ガード             | `isElement()`, `isNonDocumentTypeChildNode()`, `isPureHTMLElement()`                                                           |
+| `is.ts`                         | ノード型ガード           | `isElement()`, `isNonDocumentTypeChildNode()`, `isPureHTMLElement()`                                                           |
 | `invalid-selector-error.ts`     | エラークラス             | `InvalidSelectorError`                                                                                                         |
 | `debug.ts`                      | デバッグログ             | `log`（debug インスタンス）, `enableDebug()`                                                                                   |
 | `aria-pseudo-class.ts`          | `:aria()` ハンドラ       | `ariaPseudoClass()`                                                                                                            |
@@ -102,7 +102,7 @@ flowchart TD
 
 ### `matchSelector(el, selector, scope?, specs?)`
 
-CSS セレクタ文字列または `RegexSelector` オブジェクトの両方を受け付ける統合マッチング関数です。`{ matched: true, selector, specificity, data? }` または `{ matched: false }` を返します。
+CSS セレクタ文字列または `RegexSelector` オブジェクトの両方を受け付ける統合マッチング関数です。`el` および `scope` パラメータは任意の `SelectorNode` を受け取ります。`{ matched: true, selector, specificity, data? }` または `{ matched: false }` を返します。
 
 ### `compareSpecificity(a, b)`
 
@@ -115,6 +115,20 @@ CSS セレクタ文字列または `RegexSelector` オブジェクトの両方�
 ### `InvalidSelectorError`
 
 CSS セレクタ文字列がパースできない場合にスローされるカスタムエラーです。
+
+## 純粋データインターフェース
+
+セレクタエンジンは DOM `Element`/`Node` を直接使用せず、純粋なデータインターフェース上で動作します。これにより、マッチングロジックが約200プロパティの DOM API から分離され、移植性（例: Rust/WASM）とプレーンオブジェクトによるテストが可能になります。
+
+| インターフェース  | 継承元         | 用途                                                   |
+| ----------------- | -------------- | ------------------------------------------------------ |
+| `SelectorAttr`    | —              | 最小属性: `name`, `localName`, `value`, `namespaceURI` |
+| `SelectorNode`    | —              | 最小ノード: `nodeType`, `nodeName`, `parentNode`       |
+| `SelectorElement` | `SelectorNode` | エンジンが実際に読み取る約12のプロパティを持つ要素     |
+
+DOM `Element`、JSDOM 要素、`MLElement` はすべて構造的型付けにより `SelectorElement` を満たします — アダプタコードは不要です。
+
+拡張擬似クラス（`:aria()`、`:role()`、`:model()`）は `SelectorElement` を受け取り、完全な DOM API が必要な `@markuplint/ml-spec` 境界で `Element` にキャストします。
 
 ## コア内部クラス
 
@@ -136,7 +150,7 @@ Selector
 
 ### CSS セレクタマッチング
 
-標準 CSS セレクタは `postcss-selector-parser` により AST にパースされ、DOM ノードに対してマッチングされます:
+標準 CSS セレクタは `postcss-selector-parser` により AST にパースされ、`SelectorNode`/`SelectorElement` インスタンスに対してマッチングされます:
 
 1. `createSelector()` がキャッシュされた `Selector` インスタンスを作成または取得
 2. `Selector.match()` が `Ruleset.match()` に委譲
@@ -161,7 +175,7 @@ Regex セレクタは `RegexSelector` 型を使用してパターンで要素を
 拡張擬似クラスは `ExtendedPseudoClass` 型を通じて登録されます:
 
 ```typescript
-type ExtendedPseudoClass = Record<string, (content: string) => (el: Element) => SelectorResult>;
+type ExtendedPseudoClass = Record<string, (content: string) => (el: SelectorElement) => SelectorResult>;
 ```
 
 3 つの擬似クラスが組み込まれています:

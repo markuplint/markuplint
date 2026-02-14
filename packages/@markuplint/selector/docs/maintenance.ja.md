@@ -41,12 +41,14 @@ yarn workspace @markuplint/selector run vitest run src/selector.spec.ts
 1. `src/extended-selector/custom-pseudo-class.ts` を作成:
 
    ```typescript
-   import type { SelectorResult } from '../types.js';
+   import type { SelectorElement, SelectorResult } from '../types.js';
 
    export function customPseudoClass() {
      return (content: string) =>
-       (el: Element): SelectorResult => {
+       (el: SelectorElement): SelectorResult => {
          // content 文字列をパースして el に対してマッチング
+         // 完全な DOM API（例: @markuplint/ml-spec）が必要な場合は、
+         // その境界で `el as Element` とキャストしてください。
          const matched = /* マッチングロジック */;
          return {
            specificity: [0, 1, 0],
@@ -206,4 +208,4 @@ Regex セレクタに新しいコンビネータを追加するには:
 ### jsdom（開発）
 
 - テストで DOM 環境を作成するための `JSDOM` を提供
-- `jsdom` で作成された要素はセレクタマッチングロジックが使用する標準 DOM API を持つ
+- `jsdom` で作成された要素はセレクタマッチングロジックが使用する `SelectorElement` インターフェースを満たす

@@ -41,12 +41,14 @@ To add a new markuplint-specific pseudo-class (e.g., `:custom()`):
 1. Create `src/extended-selector/custom-pseudo-class.ts`:
 
    ```typescript
-   import type { SelectorResult } from '../types.js';
+   import type { SelectorElement, SelectorResult } from '../types.js';
 
    export function customPseudoClass() {
      return (content: string) =>
-       (el: Element): SelectorResult => {
+       (el: SelectorElement): SelectorResult => {
          // Parse content string and match against el
+         // If you need full DOM APIs (e.g., from @markuplint/ml-spec),
+         // cast with `el as Element` at that boundary.
          const matched = /* your matching logic */;
          return {
            specificity: [0, 1, 0],
@@ -206,4 +208,4 @@ To add a new combinator for regex selectors:
 ### jsdom (dev)
 
 - Provides `JSDOM` for creating DOM environments in tests
-- Elements created via `jsdom` have standard DOM APIs used by the selector matching logic
+- Elements created via `jsdom` satisfy the `SelectorElement` interface used by the selector matching logic
