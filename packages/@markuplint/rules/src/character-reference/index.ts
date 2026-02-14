@@ -30,6 +30,9 @@ export default createRule({
 		const targetNodes: Report<RuleConfigValue>[] = [];
 
 		await document.walkOn('Text', node => {
+			if (node.isBogus) {
+				return;
+			}
 			if (node.parentNode && ignoreParentElement.has(node.parentNode.nodeName.toLowerCase())) {
 				return;
 			}

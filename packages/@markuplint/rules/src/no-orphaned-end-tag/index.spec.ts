@@ -29,3 +29,16 @@ test('It is test', async () => {
 		},
 	]);
 });
+
+test('#1575: orphaned end tag with newlines', async () => {
+	const { violations } = await mlRuleTest(rule, '<div>\n  </p>\n</div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 2,
+			col: 3,
+			raw: '</p>',
+			message: 'Orphaned end tag detected',
+		},
+	]);
+});
