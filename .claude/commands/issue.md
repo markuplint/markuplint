@@ -34,12 +34,13 @@ Read through the Issue body and comments carefully, then organize the following:
 
 ## Step 4: Propose a Resolution Plan
 
-Based on the analysis, present a resolution plan:
+Based on the analysis, present a resolution plan following **TDD (Test-Driven Development)**:
 
 1. **Approach**: The chosen solution and rationale
 2. **Files to Change**: List of files to modify or add
-3. **Implementation Steps**: Concrete steps in dependency order
-4. **Testing Strategy**: Test cases and validation methods to add
-5. **Risks**: Side effects and caveats
+3. **Implementation Steps**: Follow the **Red-Green** cycle for each behavior unit:
+   1. **Red**: Write failing tests first that define the expected behavior
+   2. **Green**: Implement the minimal code to make the tests pass
+4. **Risks**: Side effects and caveats
 
 Present the plan to the user and wait for approval before proceeding with implementation.
