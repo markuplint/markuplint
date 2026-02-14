@@ -52204,6 +52204,7 @@
 				"switch": {
 					"description": "Valid for checkbox input only, switch is a Boolean attribute that indicates whether the checkbox input should be rendered as a switch. Note: This attribute is still experimental and has limited browser support. The attribute is ignored on unsupported browsers.",
 					"experimental": true,
+					"nonStandard": true,
 					"type": "Boolean",
 					"condition": ["[type='checkbox' i]"]
 				},
