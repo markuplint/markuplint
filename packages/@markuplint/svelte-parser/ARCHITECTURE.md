@@ -335,6 +335,12 @@ When an attribute is a shorthand expression like `{items}`:
 
 When `super.visitAttr()` returns an attribute with `type: 'spread'`, it is returned directly without further processing.
 
+### IDL Attribute Mapping
+
+After all directive and shorthand processing, the parser applies `searchIDLAttribute()` from `@markuplint/parser-utils` to map camelCase IDL property names to their corresponding content attribute names. For example, `tabIndex` is mapped to `tabindex` and `contentEditable` to `contenteditable`. This mapping applies to both regular attributes and `bind:` directive sub-names.
+
+The mapping only updates `potentialName` when the content attribute name differs from the looked-up name, so attributes that already match their content attribute form (e.g., `value`, `class`) are unaffected. IDL-only properties that have no corresponding content attribute (e.g., `defaultValue`, `indeterminate`) are not in the mapping and are instead handled by the paired `@markuplint/svelte-spec` package.
+
 ## SvelteKit Parser
 
 ### Architectural Distinction
@@ -421,7 +427,7 @@ These Svelte 5 constructs are handled by the parser: `SnippetBlock` has dedicate
 | Dependency                 | Purpose                                                                    |
 | -------------------------- | -------------------------------------------------------------------------- |
 | `@markuplint/ml-ast`       | AST type definitions (`MLASTPreprocessorSpecificBlock`, etc.)              |
-| `@markuplint/parser-utils` | Abstract `Parser` class, `ChildToken`, `Token`, `AttrState`, `ParserError` |
+| `@markuplint/parser-utils` | Abstract `Parser` class, `ChildToken`, `Token`, `AttrState`, `ParserError`, `searchIDLAttribute` |
 | `@markuplint/html-parser`  | `HtmlParser` (base for SvelteKit parser), `getNamespace()`                 |
 | `svelte`                   | `svelte/compiler` `parse()` function for tokenization                      |
 

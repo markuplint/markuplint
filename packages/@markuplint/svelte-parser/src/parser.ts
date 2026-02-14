@@ -358,7 +358,8 @@ export class SvelteParser extends Parser<SvelteNode> {
 	/**
 	 * Visits an attribute token, handling Svelte-specific syntax including
 	 * curly-brace expression values, shorthand attributes (`{name}`),
-	 * `bind:` / `class:` directives, and duplicatable class attributes.
+	 * `bind:` / `class:` directives, duplicatable class attributes,
+	 * and IDL-to-content attribute name mapping via `searchIDLAttribute`.
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Svelte-specific metadata

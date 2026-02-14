@@ -335,6 +335,12 @@ export function svelteParse(template: string): SvelteNode[] {
 
 `super.visitAttr()` が `type: 'spread'` の属性を返した場合、追加処理なしでそのまま返されます。
 
+### IDL 属性マッピング
+
+すべてのディレクティブ・省略形処理の後、パーサーは `@markuplint/parser-utils` の `searchIDLAttribute()` を適用して、camelCase の IDL プロパティ名を対応するコンテンツ属性名にマッピングします。例えば、`tabIndex` は `tabindex` に、`contentEditable` は `contenteditable` にマッピングされます。このマッピングは通常の属性と `bind:` ディレクティブのサブ名の両方に適用されます。
+
+マッピングはコンテンツ属性名がルックアップ名と異なる場合にのみ `potentialName` を更新するため、すでにコンテンツ属性形式と一致している属性（例: `value`、`class`）は影響を受けません。対応するコンテンツ属性を持たない IDL 専用プロパティ（例: `defaultValue`、`indeterminate`）はマッピングに含まれず、対となる `@markuplint/svelte-spec` パッケージで処理されます。
+
 ## SvelteKit パーサー
 
 ### アーキテクチャ上の区別
@@ -421,7 +427,7 @@ class SvelteKitTemplateParser extends HtmlParser {
 | 依存パッケージ             | 用途                                                                    |
 | -------------------------- | ----------------------------------------------------------------------- |
 | `@markuplint/ml-ast`       | AST 型定義（`MLASTPreprocessorSpecificBlock` 等）                       |
-| `@markuplint/parser-utils` | 抽象 `Parser` クラス、`ChildToken`、`Token`、`AttrState`、`ParserError` |
+| `@markuplint/parser-utils` | 抽象 `Parser` クラス、`ChildToken`、`Token`、`AttrState`、`ParserError`、`searchIDLAttribute` |
 | `@markuplint/html-parser`  | `HtmlParser`（SvelteKit パーサーの基底）、`getNamespace()`              |
 | `svelte`                   | `svelte/compiler` の `parse()` 関数（トークン化用）                     |
 
