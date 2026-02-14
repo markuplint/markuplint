@@ -2554,7 +2554,7 @@ __metadata:
     "@astrojs/compiler": "npm:2.13.1"
     "@markuplint/ml-ast": "npm:4.4.11"
     "@markuplint/parser-utils": "npm:4.8.11"
-    astro-eslint-parser: "npm:1.2.2"
+    astro-eslint-parser: "npm:1.3.0"
   languageName: unknown
   linkType: soft
 
@@ -5828,9 +5828,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro-eslint-parser@npm:1.2.2":
-  version: 1.2.2
-  resolution: "astro-eslint-parser@npm:1.2.2"
+"astro-eslint-parser@npm:1.3.0":
+  version: 1.3.0
+  resolution: "astro-eslint-parser@npm:1.3.0"
   dependencies:
     "@astrojs/compiler": "npm:^2.0.0"
     "@typescript-eslint/scope-manager": "npm:^7.0.0 || ^8.0.0"
@@ -5844,7 +5844,7 @@ __metadata:
     fast-glob: "npm:^3.3.3"
     is-glob: "npm:^4.0.3"
     semver: "npm:^7.3.8"
-  checksum: 10c0/e4010f5506bc0be29f8f119a6e10d91d6186f18715a14f02f2b5921d79311620015ed02a68bb352e90ce2d1766a5b3118083d526ba30d2eac3db841ea631822e
+  checksum: 10c0/f0ad459711aebfd089880dd5580d51f24e62027bca9abd871111306f6e70e82fc64417901a1052489e1414cdb7fa312a1608dfc51de1e6d44007fc8bbf388066
   languageName: node
   linkType: hard
 
