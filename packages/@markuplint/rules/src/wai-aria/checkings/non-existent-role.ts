@@ -20,7 +20,7 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 			attr.rule.options?.version ??
 			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
 			ARIA_RECOMMENDED_VERSION;
-		const { roles, graphicsRoles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
+		const { roles, graphicsRoles, dpubRoles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {
 			return;
@@ -29,6 +29,9 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 			let role = roles.find(r => r.name === token.raw);
 			if (!role && attr.ownerElement.namespaceURI === 'http://www.w3.org/2000/svg') {
 				role = graphicsRoles.find(r => r.name === token.raw);
+			}
+			if (!role) {
+				role = dpubRoles.find(r => r.name === token.raw);
 			}
 			if (!role) {
 				return {
