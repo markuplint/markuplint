@@ -242,7 +242,7 @@ The spec-level implementation for computing permitted ARIA roles. Operates on ta
 
 | `permittedRoles` value        | Behavior                                                                                                                 |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `true`                        | All non-abstract roles from the ARIA spec are permitted.                                                                 |
+| `true`                        | All non-abstract roles from the ARIA spec (including DPub roles) are permitted.                                          |
 | `PermittedARIAAAMInfo` object | If `core-aam` is `true`, adds all non-abstract roles. If `graphics-aam` is `true`, adds all non-abstract graphics roles. |
 | Array of strings/objects      | The specific listed roles are permitted.                                                                                 |
 | `false`                       | No roles are permitted (empty list before implicit role).                                                                |
@@ -273,9 +273,10 @@ Retrieves the full ARIA role specification for a given role name, including the 
 
 1. Searches for the role by name in the ARIA roles list for the given version.
 2. For SVG namespace (`http://www.w3.org/2000/svg`), also searches `graphicsRoles` if not found in core roles.
-3. Recursively traverses super-class roles via the `generalization` property, building the complete inheritance chain.
-4. Normalizes all optional fields to non-undefined defaults (e.g., `!!role.isAbstract`). Resolves `requiredAccessibilityParentRole` from the schema's `requiredContextRole` (ARIA 1.2 name) or `requiredAccessibilityParentRole` (ARIA 1.3 name), and similarly `allowedAccessibilityChildRoles` from `requiredOwnedElements` or `allowedAccessibilityChildRoles`. Both the new and deprecated property names are populated with the same values.
-5. Returns `null` if the role name does not exist in the spec.
+3. If still not found, searches `dpubRoles` (DPub ARIA roles are accepted for all elements regardless of namespace).
+4. Recursively traverses super-class roles via the `generalization` property, building the complete inheritance chain.
+5. Normalizes all optional fields to non-undefined defaults (e.g., `!!role.isAbstract`). Resolves `requiredAccessibilityParentRole` from the schema's `requiredContextRole` (ARIA 1.2 name) or `requiredAccessibilityParentRole` (ARIA 1.3 name), and similarly `allowedAccessibilityChildRoles` from `requiredOwnedElements` or `allowedAccessibilityChildRoles`. Both the new and deprecated property names are populated with the same values.
+6. Returns `null` if the role name does not exist in the spec.
 
 **Normalized fields in the return value:**
 
@@ -606,9 +607,9 @@ A simple accessor function that retrieves the ARIA specification data for a spec
 | `specs`   | `MLMLSpec`    | The full markup language specification |
 | `version` | `ARIAVersion` | The ARIA specification version         |
 
-**Returns:** `{ roles: ARIARoleInSchema[], graphicsRoles: ARIARoleInSchema[], props: ARIAProperty[] }`
+**Returns:** `{ roles: ARIARoleInSchema[], graphicsRoles: ARIARoleInSchema[], dpubRoles: ARIARoleInSchema[], props: ARIAProperty[] }`
 
-**Implementation:** Returns `specs.def['#aria'][version]`, providing direct access to the roles, graphics roles, and properties defined for the requested ARIA version.
+**Implementation:** Returns `specs.def['#aria'][version]`, providing direct access to the roles, graphics roles, DPub roles, and properties defined for the requested ARIA version.
 
 ## RoleComputationError Reference
 
@@ -680,4 +681,5 @@ The ARIA algorithms implement behavior defined in the following W3C specificatio
 - [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) -- HTML Accessibility API Mappings (implicit role mappings)
 - [AccName 1.1](https://www.w3.org/TR/accname-1.1/) -- Accessible Name and Description Computation
 - [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/) -- SVG Accessibility API Mappings
+- [DPub-ARIA 1.1](https://w3c.github.io/dpub-aria/) -- Digital Publishing WAI-ARIA Module (DPub roles)
 - [ARIA in HTML](https://www.w3.org/TR/html-aria/) -- Permitted roles and ARIA attribute constraints per HTML element
