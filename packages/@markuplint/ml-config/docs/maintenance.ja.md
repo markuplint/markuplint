@@ -107,10 +107,10 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. `src/types.ts` を読み、`Pretender`、`PretenderDetails`、`OriginalNode` を確認
 2. 適切な型に新しいフィールドを追加
 3. `src/merge-config.ts` を読み、`mergePretenders()` を確認:
-   - 配列形式を `{data: [...]}` に変換（`convertPretenersToDetails()`）
-   - `mergeObject()` で deep merge
-   - `PretenderDetails` の新しいフィールドは自動的に deep merge される
-   - `Pretender`（`data` 配列内）の新しいフィールドは deepmerge の配列マージで処理
+   - 配列形式を `{data: [...]}` に変換（`toPretenderDetails()`）
+   - `files`/`imports` は上書き（右辺優先）
+   - `data` 配列は連結（追加）
+   - `PretenderDetails` の新しいフィールドは `mergePretenders()` 内で明示的に処理が必要
 4. `src/merge-config.spec.ts` にテストケースを追加
 5. ビルド: `yarn build --scope @markuplint/ml-config`
 6. テスト: `yarn test --scope @markuplint/ml-config`

@@ -107,10 +107,10 @@ expect(exchangeValueOnRule({ value: '{{ var }}' }, { var: 'x' })).toStrictEqual(
 1. Read `src/types.ts` and locate `Pretender`, `PretenderDetails`, and `OriginalNode`
 2. Add new fields to the appropriate type
 3. Read `src/merge-config.ts` and check `mergePretenders()`:
-   - It converts array form to `{data: [...]}` via `convertPretenersToDetails()`
-   - Then deep merges with `mergeObject()`
-   - New fields on `PretenderDetails` are automatically deep merged
-   - New fields on `Pretender` (inside `data` array) are handled by deepmerge's array merge
+   - It converts array form to `{data: [...]}` via `toPretenderDetails()`
+   - `files`/`imports` are overridden (right-side wins)
+   - `data` arrays are concatenated (appended)
+   - New fields on `PretenderDetails` need explicit handling in `mergePretenders()`
 4. Add test cases in `src/merge-config.spec.ts`
 5. Build: `yarn build --scope @markuplint/ml-config`
 6. Test: `yarn test --scope @markuplint/ml-config`
