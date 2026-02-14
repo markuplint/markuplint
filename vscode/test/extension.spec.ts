@@ -1,9 +1,16 @@
 import assert from 'node:assert';
 
-import { suite, test } from 'mocha';
+import { suite, suiteSetup, test } from 'mocha';
 import * as vscode from 'vscode';
 
 suite('Extension Tests', () => {
+	suiteSetup(async () => {
+		const extension = vscode.extensions.getExtension('yusukehirao.vscode-markuplint');
+		if (extension && !extension.isActive) {
+			await extension.activate();
+		}
+	});
+
 	suite('Command Registration', () => {
 		test('markuplint.restartServer command should be registered', async () => {
 			const commands = await vscode.commands.getCommands(true);
