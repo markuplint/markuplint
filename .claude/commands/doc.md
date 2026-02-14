@@ -26,3 +26,7 @@ Thoroughly identify any omissions or inconsistencies in the documentation. **The
   - `@returns` — description of the return value is mandatory
   - `@template` — for each type parameter; include a description
 - Do not add redundant type annotations that TypeScript already provides — focus on describing the purpose and semantics
+
+# Final Step (MANDATORY)
+
+After all documentation changes are complete, **always run `yarn lint`** to verify formatting, spelling, and style. Fix any errors before committing.
