@@ -8,7 +8,6 @@ import { MarkupKind } from 'vscode-languageserver/node.js';
 
 import { t } from '../i18n.js';
 
-import * as v1 from './v1.js';
 import * as v2 from './v2.js';
 import * as v3 from './v3.js';
 import * as v4 from './v4.js';
@@ -53,10 +52,6 @@ export function createEventHandlers(
 			if (!uiInitialized) {
 				options.initUI();
 				uiInitialized = true;
-			}
-
-			if (satisfies(options.mod.version, '1.x')) {
-				return;
 			}
 
 			if (satisfies(options.mod.version, '2.x')) {
@@ -105,11 +100,6 @@ export function createEventHandlers(
 			const langConfig = options.langConfigs[languageId] ?? null;
 
 			if (!langConfig?.enable) {
-				return;
-			}
-
-			if (satisfies(options.mod.version, '1.x')) {
-				void v1.onDidChangeContent(document, options.mod.markuplint, langConfig, options.sendDiagnostics);
 				return;
 			}
 
