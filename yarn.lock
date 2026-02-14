@@ -2976,7 +2976,7 @@ __metadata:
     "@markuplint/html-parser": "npm:4.6.23"
     "@markuplint/ml-ast": "npm:4.4.11"
     "@markuplint/parser-utils": "npm:4.8.11"
-    vue-eslint-parser: "npm:10.3.0"
+    vue-eslint-parser: "npm:10.4.0"
   languageName: unknown
   linkType: soft
 
@@ -18699,9 +18699,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-eslint-parser@npm:10.3.0":
-  version: 10.3.0
-  resolution: "vue-eslint-parser@npm:10.3.0"
+"vue-eslint-parser@npm:10.4.0":
+  version: 10.4.0
+  resolution: "vue-eslint-parser@npm:10.4.0"
   dependencies:
     debug: "npm:^4.4.0"
     eslint-scope: "npm:^8.2.0 || ^9.0.0"
@@ -18711,7 +18711,7 @@ __metadata:
     semver: "npm:^7.6.3"
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
-  checksum: 10c0/139e52d8d6fbf2c686455b746ad3b3b111d4a2e0ed2a3a92db4daf31500ed86c77934aad27f114d1de46672d9a83ec5266dc3df59da8656ce0f877a5cc6ca155
+  checksum: 10c0/ded1c52dfa6e08c384da43b8369814bd105e2dc3bbb04e95faa8365af0fcba70293ff8b3749824ae3cc98988aeaaa261d5a205febff23e15667176392dcfee4a
   languageName: node
   linkType: hard
 
