@@ -11,6 +11,7 @@
 |---------|---------|
 | `--allow-warnings` のデフォルトが `true` に変更 | 終了コードの動作 |
 | `--allow-warnings` が `--no-allow-warnings` にリネーム | CLI フラグ名 |
+| `--config` 指定時にデフォルト設定ファイルの自動読み込みを停止 | 設定ファイルの読み込み動作 |
 
 ## `--allow-warnings` のデフォルト変更
 
@@ -63,3 +64,34 @@ markuplint index.html
 ```
 
 > **ヒント**: 許容する警告数をより細かく制御するには `--max-warnings=N` を使用してください。
+
+## `--config` 指定時のデフォルト設定ファイル自動読み込みの停止
+
+v4 では、`--config` で設定ファイルを指定しても、デフォルトの設定ファイル（`.markuplintrc` など）が自動検索・読み込みされ、マージされていました。v5 では、`--config` を指定すると `--no-search-config` と同じ動作になり、指定したファイルのみが使用されます。
+
+### v4 の動作
+
+```bash
+# custom.json と .markuplintrc の両方が読み込まれてマージされる
+markuplint --config custom.json index.html
+```
+
+### v5 の動作
+
+```bash
+# custom.json のみ読み込まれ、.markuplintrc は無視される
+markuplint --config custom.json index.html
+```
+
+### 移行方法
+
+`--config` で指定したファイルとプロジェクトの `.markuplintrc` のマージに依存していた場合、設定ファイルの `extends` フィールドを使用してください:
+
+```json
+{
+  "extends": ["./.markuplintrc"],
+  "rules": {
+    "your-custom-rule": true
+  }
+}
+```

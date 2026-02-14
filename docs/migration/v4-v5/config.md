@@ -15,6 +15,7 @@
 | Rule array values now override instead of concatenate | Config files using `extends` with array rule values |
 | Rule options now use shallow merge instead of deep merge | Config files using `extends` with nested option objects |
 | Pretender `data` arrays now append instead of override | Config files using `extends` with pretenders |
+| `--config` no longer merges with auto-discovered config | CLI users specifying `--config` |
 
 ## `ruleCommonSettings`
 
@@ -172,6 +173,37 @@ The merge algorithm has changed in v5. These changes affect how configurations a
 | `data`    | Override    | Append      |
 
 **Migration:** This is generally a non-breaking improvement. If you need to replace pretender data entirely, avoid using `extends` and define all pretenders in a single config.
+
+## `--config` No Longer Merges with Auto-Discovered Config
+
+In v4, using the CLI `--config` option to specify a config file still searched for and loaded the default config file (e.g., `.markuplintrc`) and merged them together. In v5, specifying `--config` now implicitly skips the default config file search — only the specified file is used.
+
+**v4:** Both configs loaded and merged.
+
+```bash
+# Loads custom.json AND .markuplintrc, then merges
+markuplint --config custom.json index.html
+```
+
+**v5:** Only the specified config is loaded.
+
+```bash
+# Loads only custom.json; .markuplintrc is ignored
+markuplint --config custom.json index.html
+```
+
+**Migration:** If you relied on merging your `--config` file with the project's `.markuplintrc`, use `extends` in your config file:
+
+```json
+{
+  "extends": ["./.markuplintrc"],
+  "rules": {
+    "your-custom-rule": true
+  }
+}
+```
+
+See the [CLI migration guide](./cli.md) for more details on CLI flag changes.
 
 ## ARIA 1.3 Support
 
