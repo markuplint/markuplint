@@ -10,15 +10,15 @@
 
 ### 要素固有のオーバーライド
 
-| 要素         | 属性             | 型オーバーライド | 理由                                                           |
-| ------------ | ---------------- | ---------------- | -------------------------------------------------------------- |
-| `<input>`    | `defaultChecked` | `Boolean`        | チェックボックス/ラジオの非制御初期状態を表す IDL プロパティ   |
-| `<input>`    | `defaultValue`   | `Any`            | 入力要素の非制御初期値を表す IDL プロパティ                    |
-| `<input>`    | `indeterminate`  | `Boolean`        | チェックボックスの不定状態を表す IDL プロパティ                |
-| `<select>`   | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容        |
-| `<select>`   | `defaultValue`   | `Any`            | セレクト要素の非制御初期値を表す IDL プロパティ                |
-| `<textarea>` | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容        |
-| `<textarea>` | `defaultValue`   | `Any`            | テキストエリアの非制御初期値を表す IDL プロパティ              |
+| 要素         | 属性             | 型オーバーライド | 理由                                                         |
+| ------------ | ---------------- | ---------------- | ------------------------------------------------------------ |
+| `<input>`    | `defaultChecked` | `Boolean`        | チェックボックス/ラジオの非制御初期状態を表す IDL プロパティ |
+| `<input>`    | `defaultValue`   | `Any`            | 入力要素の非制御初期値を表す IDL プロパティ                  |
+| `<input>`    | `indeterminate`  | `Boolean`        | チェックボックスの不定状態を表す IDL プロパティ              |
+| `<select>`   | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容      |
+| `<select>`   | `defaultValue`   | `Any`            | セレクト要素の非制御初期値を表す IDL プロパティ              |
+| `<textarea>` | `value`          | `Any`            | Svelte の `bind:value` は文字列だけでなく任意の型を許容      |
+| `<textarea>` | `defaultValue`   | `Any`            | テキストエリアの非制御初期値を表す IDL プロパティ            |
 
 これらのオーバーライドにより、markuplint が Svelte 固有の属性使用を不正としてフラグ付けすることなく、標準 HTML 仕様を拡張します。
 

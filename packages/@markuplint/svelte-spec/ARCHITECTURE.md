@@ -10,15 +10,15 @@ The package exports a single `ExtendedSpec` object with element-specific overrid
 
 ### Element-Specific Overrides
 
-| Element      | Attribute        | Type Override | Reason                                                         |
-| ------------ | ---------------- | ------------- | -------------------------------------------------------------- |
-| `<input>`    | `defaultChecked` | `Boolean`     | IDL property for uncontrolled checkbox/radio initial state      |
-| `<input>`    | `defaultValue`   | `Any`         | IDL property for uncontrolled input initial value               |
-| `<input>`    | `indeterminate`  | `Boolean`     | IDL property for checkbox indeterminate state                   |
-| `<select>`   | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings        |
-| `<select>`   | `defaultValue`   | `Any`         | IDL property for uncontrolled select initial value              |
-| `<textarea>` | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings        |
-| `<textarea>` | `defaultValue`   | `Any`         | IDL property for uncontrolled textarea initial value            |
+| Element      | Attribute        | Type Override | Reason                                                     |
+| ------------ | ---------------- | ------------- | ---------------------------------------------------------- |
+| `<input>`    | `defaultChecked` | `Boolean`     | IDL property for uncontrolled checkbox/radio initial state |
+| `<input>`    | `defaultValue`   | `Any`         | IDL property for uncontrolled input initial value          |
+| `<input>`    | `indeterminate`  | `Boolean`     | IDL property for checkbox indeterminate state              |
+| `<select>`   | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings    |
+| `<select>`   | `defaultValue`   | `Any`         | IDL property for uncontrolled select initial value         |
+| `<textarea>` | `value`          | `Any`         | Svelte's `bind:value` allows any type, not just strings    |
+| `<textarea>` | `defaultValue`   | `Any`         | IDL property for uncontrolled textarea initial value       |
 
 These overrides extend the standard HTML spec so that markuplint does not flag Svelte-specific attribute usage as invalid.
 
