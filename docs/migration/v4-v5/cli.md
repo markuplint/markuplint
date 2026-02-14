@@ -11,6 +11,7 @@
 |--------|--------|
 | `--allow-warnings` default changed to `true` | Exit code behavior |
 | `--allow-warnings` renamed to `--no-allow-warnings` | CLI flag name |
+| `--config` no longer merges with auto-discovered config | Config loading behavior |
 
 ## `--allow-warnings` Default Changed
 
@@ -63,3 +64,34 @@ markuplint index.html
 ```
 
 > **Tip**: Use `--max-warnings=N` for finer control over the allowed number of warnings.
+
+## `--config` No Longer Merges with Auto-Discovered Config
+
+In v4, using `--config` to specify a config file still loaded the default config file (e.g., `.markuplintrc`) and merged them. In v5, `--config` now implies `--no-search-config` — only the specified file is used.
+
+### v4 Behavior
+
+```bash
+# Both custom.json AND .markuplintrc are loaded and merged
+markuplint --config custom.json index.html
+```
+
+### v5 Behavior
+
+```bash
+# Only custom.json is loaded; .markuplintrc is ignored
+markuplint --config custom.json index.html
+```
+
+### Migration
+
+If you relied on merging your `--config` file with the project's `.markuplintrc`, use the `extends` field in your config file instead:
+
+```json
+{
+  "extends": ["./.markuplintrc"],
+  "rules": {
+    "your-custom-rule": true
+  }
+}
+```

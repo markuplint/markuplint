@@ -15,6 +15,7 @@
 | ルールの配列値が連結から上書きに変更 | `extends` で配列ルール値を使用する設定ファイル |
 | ルール options が deep merge から shallow merge に変更 | `extends` でネストされた options を使用する設定ファイル |
 | Pretender の `data` 配列が上書きから追加に変更 | `extends` で pretenders を使用する設定ファイル |
+| `--config` 指定時にデフォルト設定ファイルの自動読み込みを停止 | `--config` を指定する CLI ユーザー |
 
 ## `ruleCommonSettings`
 
@@ -172,6 +173,37 @@ v5 ではマージアルゴリズムが変更されました。これらの変�
 | `data`     | 上書き    | 追加      |
 
 **移行方法:** これは一般的に非破壊的な改善です。pretender データを完全に置き換える必要がある場合は、`extends` を使用せず、単一の設定ですべての pretenders を定義してください。
+
+## `--config` 指定時のデフォルト設定ファイル自動読み込みの停止
+
+v4 では、CLI の `--config` オプションで設定ファイルを指定しても、デフォルトの設定ファイル（`.markuplintrc` など）が自動検索・読み込みされ、マージされていました。v5 では、`--config` を指定するとデフォルト設定ファイルの検索がスキップされ、指定したファイルのみが使用されます。
+
+**v4:** 両方の設定が読み込まれてマージされる。
+
+```bash
+# custom.json と .markuplintrc の両方が読み込まれてマージされる
+markuplint --config custom.json index.html
+```
+
+**v5:** 指定した設定のみが読み込まれる。
+
+```bash
+# custom.json のみ読み込まれ、.markuplintrc は無視される
+markuplint --config custom.json index.html
+```
+
+**移行方法:** `--config` で指定したファイルとプロジェクトの `.markuplintrc` のマージに依存していた場合、設定ファイルの `extends` を使用してください:
+
+```json
+{
+  "extends": ["./.markuplintrc"],
+  "rules": {
+    "your-custom-rule": true
+  }
+}
+```
+
+CLI フラグの変更の詳細は [CLI 移行ガイド](./cli.ja.md)を参照してください。
 
 ## ARIA 1.3 サポート
 

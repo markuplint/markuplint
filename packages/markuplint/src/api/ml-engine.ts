@@ -382,9 +382,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const targetConfig = await this.#configProvider.search(this.#file);
 		this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
 
-		const configFilePathsFromTarget = this.#options?.noSearchConfig
-			? (defaultConfigKey ?? null)
-			: (targetConfig ?? defaultConfigKey);
+		const configFilePathsFromTarget =
+			this.#options?.noSearchConfig || this.#options?.configFile
+				? (defaultConfigKey ?? null)
+				: (targetConfig ?? defaultConfigKey);
 		configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 		this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
@@ -393,7 +394,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
 
 		let defaultRecommended: string | null = null;
-		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey) {
+		if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
 			// No configured
 			// Default: set recommended
 			defaultRecommended = this.#configProvider.set({ extends: ['markuplint:recommended'] });
