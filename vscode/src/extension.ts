@@ -67,18 +67,16 @@ export function activate(
 
 	const langConfigs: LangConfigs = {};
 	for (const languageId of languageList) {
-		const workspaceConfig = workspace.getConfiguration('', { languageId }).get(ID);
-		// eslint-disable-next-line unicorn/prefer-structured-clone
-		const config: Config = JSON.parse(JSON.stringify(workspaceConfig));
+		const langConfig = workspace.getConfiguration(ID, { languageId });
 
-		langConfigs[languageId] = config ?? {
-			enable: true,
-			debug: false,
-			defaultConfig: {},
+		langConfigs[languageId] = {
+			enable: langConfig.get('enable') ?? true,
+			debug: langConfig.get('debug') ?? false,
+			defaultConfig: langConfig.get('defaultConfig') ?? {},
 			hover: {
 				accessibility: {
-					enable: true,
-					ariaVersion: ARIA_RECOMMENDED_VERSION,
+					enable: langConfig.get('hover.accessibility.enable') ?? true,
+					ariaVersion: langConfig.get<Config['hover']['accessibility']['ariaVersion']>('hover.accessibility.ariaVersion') ?? ARIA_RECOMMENDED_VERSION,
 				},
 			},
 		};
