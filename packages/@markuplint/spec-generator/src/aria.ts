@@ -24,24 +24,99 @@ export async function getAria() {
 	const roles13 = await getRoles('1.3');
 	const roles12 = await getRoles('1.2');
 	const roles11 = await getRoles('1.1');
+	const dpubRoles = await getDpubRoles();
 
 	return {
 		'1.3': {
 			roles: roles13,
 			props: await getProps('1.3', roles13),
 			graphicsRoles: await getRoles('1.3', true),
+			dpubRoles,
 		},
 		'1.2': {
 			roles: roles12,
 			props: await getProps('1.2', roles12),
 			graphicsRoles: await getRoles('1.2', true),
+			dpubRoles,
 		},
 		'1.1': {
 			roles: roles11,
 			props: await getProps('1.1', roles11),
 			graphicsRoles: await getRoles('1.1', true),
+			dpubRoles,
 		},
 	};
+}
+
+const DPUB_ARIA_URL = 'https://w3c.github.io/dpub-aria/';
+
+/**
+ * Scrapes DPub (Digital Publishing) ARIA role definitions from the W3C specification.
+ * DPub ARIA is a single-version module independent of WAI-ARIA versioning, so the same
+ * roles are shared across all ARIA versions.
+ *
+ * @returns A sorted array of DPub ARIA role schema objects
+ */
+async function getDpubRoles() {
+	const $ = await fetch(DPUB_ARIA_URL);
+	const $roleList = $('#role_definitions section.role');
+	const roles: ARIARoleInSchema[] = [];
+
+	$roleList.each((_, el) => {
+		const $el = $(el);
+		const name = $el.find('.role-name').attr('title')?.trim() ?? '';
+		const description = $el
+			.find('.role-description p')
+			.toArray()
+			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
+			.join('\n\n');
+		const generalization = $el
+			.find('table.def .role-parent a')
+			.toArray()
+			.map(a => $(a).text().trim());
+		const ownedInheritedProps = $el
+			.find('table.def .role-inherited li')
+			.toArray()
+			.map(li => {
+				const $li = $(li);
+				const $a = $li.find('a');
+				const text = $li.text();
+				const propName =
+					$a.length > 0
+						? $a
+								.text()
+								.replace(/\s*\(\s*state\s*\)\s*/i, '')
+								.trim()
+						: text.trim();
+				return {
+					name: propName,
+					inherited: true as const,
+				};
+			});
+		const accessibleNameRequired = !!/true/i.test($el.find('table.def .role-namerequired').text());
+		const accessibleNameFromAuthor = !!/author/i.test($el.find('table.def .role-namefrom').text());
+		const accessibleNameFromContent = !!/content/i.test($el.find('table.def .role-namefrom').text());
+		const accessibleNameProhibited = !!/prohibited/i.test($el.find('table.def .role-namefrom').text());
+		const $childrenPresentational = $el.find('table.def .role-childpresentational').text();
+		const childrenPresentational = /true/i.test($childrenPresentational)
+			? true
+			: /false/i.test($childrenPresentational)
+				? false
+				: undefined;
+		roles.push({
+			name,
+			description,
+			generalization,
+			ownedProperties: ownedInheritedProps.toSorted(nameCompare),
+			accessibleNameRequired,
+			accessibleNameFromAuthor,
+			accessibleNameFromContent,
+			accessibleNameProhibited,
+			childrenPresentational,
+		});
+	});
+
+	return roles.toSorted(nameCompare);
 }
 
 /**
