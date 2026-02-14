@@ -27,10 +27,11 @@ Text node. Extends `MLCharacterData` and implements DOM `Text`.
 - `nodeName`: `'#text'`
 - `nodeType`: `3` (`TEXT_NODE`)
 
-| Method                      | Returns   | Description                                         |
-| --------------------------- | --------- | --------------------------------------------------- |
-| `isWhitespace()`            | `boolean` | `true` if text matches `/^\s+$/`                    |
-| `isRawTextElementContent()` | `boolean` | `true` if parent element is `<script>` or `<style>` |
+| Property / Method           | Returns   | Description                                             |
+| --------------------------- | --------- | ------------------------------------------------------- |
+| `isBogus`                   | `boolean` | `true` if this node originated from an invalid AST node |
+| `isWhitespace()`            | `boolean` | `true` if text matches `/^\s+$/`                        |
+| `isRawTextElementContent()` | `boolean` | `true` if parent element is `<script>` or `<style>`     |
 
 ## MLComment
 
