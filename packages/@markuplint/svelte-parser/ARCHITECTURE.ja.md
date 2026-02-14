@@ -424,12 +424,12 @@ class SvelteKitTemplateParser extends HtmlParser {
 
 ## 外部依存
 
-| 依存パッケージ             | 用途                                                                    |
-| -------------------------- | ----------------------------------------------------------------------- |
-| `@markuplint/ml-ast`       | AST 型定義（`MLASTPreprocessorSpecificBlock` 等）                       |
+| 依存パッケージ             | 用途                                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| `@markuplint/ml-ast`       | AST 型定義（`MLASTPreprocessorSpecificBlock` 等）                                             |
 | `@markuplint/parser-utils` | 抽象 `Parser` クラス、`ChildToken`、`Token`、`AttrState`、`ParserError`、`searchIDLAttribute` |
-| `@markuplint/html-parser`  | `HtmlParser`（SvelteKit パーサーの基底）、`getNamespace()`              |
-| `svelte`                   | `svelte/compiler` の `parse()` 関数（トークン化用）                     |
+| `@markuplint/html-parser`  | `HtmlParser`（SvelteKit パーサーの基底）、`getNamespace()`                                    |
+| `svelte`                   | `svelte/compiler` の `parse()` 関数（トークン化用）                                           |
 
 ## ドキュメントマップ
 

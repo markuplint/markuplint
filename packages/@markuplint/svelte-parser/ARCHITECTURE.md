@@ -424,12 +424,12 @@ These Svelte 5 constructs are handled by the parser: `SnippetBlock` has dedicate
 
 ## External Dependencies
 
-| Dependency                 | Purpose                                                                    |
-| -------------------------- | -------------------------------------------------------------------------- |
-| `@markuplint/ml-ast`       | AST type definitions (`MLASTPreprocessorSpecificBlock`, etc.)              |
+| Dependency                 | Purpose                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `@markuplint/ml-ast`       | AST type definitions (`MLASTPreprocessorSpecificBlock`, etc.)                                    |
 | `@markuplint/parser-utils` | Abstract `Parser` class, `ChildToken`, `Token`, `AttrState`, `ParserError`, `searchIDLAttribute` |
-| `@markuplint/html-parser`  | `HtmlParser` (base for SvelteKit parser), `getNamespace()`                 |
-| `svelte`                   | `svelte/compiler` `parse()` function for tokenization                      |
+| `@markuplint/html-parser`  | `HtmlParser` (base for SvelteKit parser), `getNamespace()`                                       |
+| `svelte`                   | `svelte/compiler` `parse()` function for tokenization                                            |
 
 ## Documentation Map
 
