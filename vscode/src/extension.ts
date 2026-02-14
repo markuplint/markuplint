@@ -37,7 +37,7 @@ export function activate(
 ) {
 	const config = workspace.getConfiguration(ID);
 
-	if (!config.get('enable')) {
+	if (config.get('enable') === false) {
 		return;
 	}
 
