@@ -4,7 +4,7 @@
 
 `@markuplint/html-spec` is the canonical HTML Living Standard dataset provider for markuplint. It is a pure data package with no TypeScript source code. It contains 177 per-element JSON specification files and 2 common definition files that are processed by `@markuplint/spec-generator` to produce a single consolidated `index.json` (48K+ lines, 1.4MB).
 
-During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), the HTML Living Standard, and SVG specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
+During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, and SVG specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
 
 ## Directory Structure
 
@@ -43,6 +43,9 @@ flowchart TD
     subgraph external ["External Data Sources"]
         mdn["MDN Web Docs\n(compatibility, descriptions)"]
         aria["W3C ARIA Specs\n(1.1 / 1.2 / 1.3)"]
+        graphicsAria["Graphics ARIA"]
+        dpubAria["DPub ARIA"]
+        htmlAria["HTML-ARIA Mappings"]
         htmlLS["HTML Living Standard\n(elements, attributes)"]
         svg["SVG Specification\n(elements, attributes)"]
     end
@@ -64,6 +67,9 @@ flowchart TD
 
     mdn --> specGen
     aria --> specGen
+    graphicsAria --> specGen
+    dpubAria --> specGen
+    htmlAria --> specGen
     htmlLS --> specGen
     svg --> specGen
 
@@ -86,11 +92,11 @@ A sorted list of all URLs fetched during generation. This provides traceability 
 
 Global definitions shared across all element specifications.
 
-| Key              | Description                                                                                        |
-| ---------------- | -------------------------------------------------------------------------------------------------- |
-| `#globalAttrs`   | 19 global attribute categories defining attributes available on all or specific groups of elements |
-| `#aria`          | ARIA role and property definitions per specification version (1.1, 1.2, 1.3)                       |
-| `#contentModels` | Content model category macros mapping category names to their member elements                      |
+| Key              | Description                                                                                                          |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `#globalAttrs`   | 19 global attribute categories defining attributes available on all or specific groups of elements                   |
+| `#aria`          | ARIA role and property definitions per specification version (1.1, 1.2, 1.3), plus Graphics ARIA and DPub ARIA roles |
+| `#contentModels` | Content model category macros mapping category names to their member elements                                        |
 
 **Global Attribute Categories** (`#globalAttrs`):
 
@@ -181,7 +187,7 @@ flowchart LR
 ### Upstream
 
 - **`@markuplint/ml-spec`** provides the TypeScript type definitions (`MLMLSpec`, `ElementSpec`, `SpecDefs`) and JSON schemas used to validate the generated output. The `index.d.ts` re-exports these types.
-- **`@markuplint/spec-generator`** is the build tool invoked by `build.mjs`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), the HTML Living Standard, and SVG specifications, then merges everything into `index.json`.
+- **`@markuplint/spec-generator`** is the build tool invoked by `build.mjs`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, and SVG specifications, then merges everything into `index.json`.
 
 ### Downstream
 

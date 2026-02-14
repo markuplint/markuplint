@@ -42,7 +42,7 @@ Core packages (Application Layer)
 ### Build System
 
 - **`build.mjs`** - Generation script that invokes `@markuplint/spec-generator`
-- Fetches live data from MDN, W3C ARIA specs, and HTML Living Standard
+- Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, and SVG specs
 
 ## Relationship to @markuplint/ml-spec
 
