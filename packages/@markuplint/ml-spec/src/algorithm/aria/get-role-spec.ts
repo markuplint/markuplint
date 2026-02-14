@@ -74,10 +74,13 @@ function getSuperClassRoles(specs: MLMLSpec, roleName: string, namespace: Namesp
 }
 
 function getRoleByName(specs: MLMLSpec, roleName: string, namespace: NamespaceURI, version: ARIAVersion) {
-	const { roles, graphicsRoles } = ariaSpecs(specs, version);
+	const { roles, graphicsRoles, dpubRoles } = ariaSpecs(specs, version);
 	let role = roles.find(r => r.name === roleName);
 	if (!role && namespace === 'http://www.w3.org/2000/svg') {
 		role = graphicsRoles.find(r => r.name === roleName);
+	}
+	if (!role) {
+		role = dpubRoles.find(r => r.name === roleName);
 	}
 	return role;
 }

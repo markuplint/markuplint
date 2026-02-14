@@ -36,7 +36,7 @@ export function getPermittedRoles(
 		return [];
 	}
 	const { implicitRole, permittedRoles } = aria;
-	const { roles, graphicsRoles } = ariaSpecs(specs, version);
+	const { roles, graphicsRoles, dpubRoles } = ariaSpecs(specs, version);
 
 	let permittedRoleList: readonly { readonly name: string }[] = [];
 
@@ -44,6 +44,14 @@ export function getPermittedRoles(
 		permittedRoleList = mergeArray(
 			permittedRoleList,
 			roles
+				.filter(role => !role.isAbstract)
+				.map(role => ({
+					name: role.name,
+				})),
+		);
+		permittedRoleList = mergeArray(
+			permittedRoleList,
+			dpubRoles
 				.filter(role => !role.isAbstract)
 				.map(role => ({
 					name: role.name,

@@ -40,6 +40,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 							def['#aria']['1.1'].graphicsRoles,
 							extendedSpec.def['#aria']['1.1'].graphicsRoles,
 						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.1'].dpubRoles,
+							extendedSpec.def['#aria']['1.1'].dpubRoles,
+						),
 					},
 					'1.2': {
 						roles: mergeArray(def['#aria']['1.2'].roles, extendedSpec.def['#aria']['1.2'].roles),
@@ -48,6 +52,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 							def['#aria']['1.2'].graphicsRoles,
 							extendedSpec.def['#aria']['1.2'].graphicsRoles,
 						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.2'].dpubRoles,
+							extendedSpec.def['#aria']['1.2'].dpubRoles,
+						),
 					},
 					'1.3': {
 						roles: mergeArray(def['#aria']['1.3'].roles, extendedSpec.def['#aria']['1.3'].roles),
@@ -55,6 +63,10 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 						graphicsRoles: mergeArray(
 							def['#aria']['1.3'].graphicsRoles,
 							extendedSpec.def['#aria']['1.3'].graphicsRoles,
+						),
+						dpubRoles: mergeArray(
+							def['#aria']['1.3'].dpubRoles,
+							extendedSpec.def['#aria']['1.3'].dpubRoles,
 						),
 					},
 				};
