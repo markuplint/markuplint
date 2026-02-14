@@ -207,6 +207,53 @@ describe('Config Priority', () => {
 	});
 });
 
+describe('#1862 configFile skips default config search', () => {
+	it('configFile only — default config file is not loaded', async () => {
+		const filePath = path.resolve(__dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(__dirname, '../../test/issue1862/config.json');
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, {
+			configFile: configFilePath,
+		});
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		// configFile rule should be applied
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(true);
+		// Default .markuplintrc should NOT be loaded
+		// @ts-ignore
+		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
+	});
+
+	it('configFile + noSearchConfig — consistent behavior', async () => {
+		const filePath = path.resolve(__dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(__dirname, '../../test/issue1862/config.json');
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, {
+			configFile: configFilePath,
+			noSearchConfig: true,
+		});
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		// configFile rule should be applied
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(true);
+		// Default .markuplintrc should NOT be loaded
+		// @ts-ignore
+		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
+	});
+});
+
 describe('Parse Error Severity', () => {
 	it('from config', async () => {
 		const file = await MLEngine.toMLFile({
