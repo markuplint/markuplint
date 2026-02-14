@@ -1590,6 +1590,77 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
+	// https://github.com/markuplint/markuplint/issues/1987
+	test('#1987', async () => {
+		// Valid preload destinations
+		expect((await mlRuleTest(rule, '<link rel="preload" as="fetch" href="/api" />')).violations).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" as="font" href="/font.woff2" />')).violations,
+		).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<link rel="preload" as="script" href="/app.js" />')).violations).toStrictEqual(
+			[],
+		);
+		expect((await mlRuleTest(rule, '<link rel="preload" as="style" href="/app.css" />')).violations).toStrictEqual(
+			[],
+		);
+		expect((await mlRuleTest(rule, '<link rel="preload" as="track" href="/sub.vtt" />')).violations).toStrictEqual(
+			[],
+		);
+
+		// Valid module preload destinations
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload" as="script" href="/mod.js" />')).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload" as="worker" href="/worker.js" />')).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload" as="json" href="/data.json" />')).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload" as="style" href="/mod.css" />')).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload" as="audioworklet" href="/audio.js" />')).violations,
+		).toStrictEqual([]);
+
+		// Invalid: values removed from the spec (no longer valid for either preload or modulepreload)
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" as="audio" href="/audio.mp3" />')).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message:
+					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				raw: 'audio',
+			},
+		]);
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" as="video" href="/video.mp4" />')).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message:
+					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				raw: 'video',
+			},
+		]);
+		expect((await mlRuleTest(rule, '<link rel="preload" as="document" href="/page" />')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message:
+					'The "as" attribute expects either "audioworklet", "fetch", "font", "image", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "track", "worker"',
+				raw: 'document',
+			},
+		]);
+	});
+
 	test('#564', async () => {
 		expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
