@@ -7,7 +7,7 @@ import type {
 } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
+import { ParserError, Parser, AttrState, searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
 import { svelteParse } from './svelte-parser/index.js';
@@ -412,6 +412,12 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 		if (attr.startQuote.raw === '{' && attr.endQuote.raw === '}') {
 			isDynamicValue = true;
+		}
+
+		const nameForLookup = potentialName ?? attr.name.raw;
+		const { contentAttrName } = searchIDLAttribute(nameForLookup);
+		if (contentAttrName && contentAttrName !== nameForLookup) {
+			potentialName = contentAttrName;
 		}
 
 		return {
