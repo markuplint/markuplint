@@ -57,7 +57,6 @@ describe('mergeConfig', () => {
 					name: 'c',
 					settings: {
 						bar: 'bar2',
-						foo: 'foo',
 						foo2: 'foo2',
 					},
 				},
@@ -399,10 +398,6 @@ describe('Preteners', () => {
 			pretenders: {
 				files: ['../pretenders.json'],
 				data: [
-					{
-						selector: 'MyComponent',
-						as: 'div',
-					},
 					{
 						selector: 'MyComponent2',
 						as: 'section',

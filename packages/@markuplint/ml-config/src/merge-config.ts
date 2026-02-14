@@ -11,17 +11,16 @@ import type {
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import deepmerge from 'deepmerge';
-
 import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
 
 /**
- * Deep-merges two markuplint configurations into an optimized result.
+ * Merges two markuplint configurations into an optimized result.
  *
  * Plugins, arrays, and rules are merged with specific strategies:
- * - Plugins are concatenated and deduplicated by name
+ * - Plugins are concatenated and deduplicated by name (settings shallow-merged)
  * - Arrays (excludeFiles, nodeRules, childNodeRules) are concatenated
  * - Rules are merged per-key with right-side precedence
+ * - Objects (parser, specs, etc.) are shallow-merged
  * - The `extends` property is removed from the result when `b` is provided
  *
  * @param a - The base configuration
@@ -184,7 +183,7 @@ function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (b == null) {
 		return a ?? undefined;
 	}
-	const res = deepmerge<T>(a, b);
+	const res = { ...a, ...b } as T;
 	deleteUndefProp(res);
 	return res;
 }
