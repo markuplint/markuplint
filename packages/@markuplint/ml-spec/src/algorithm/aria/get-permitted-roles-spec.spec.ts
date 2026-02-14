@@ -107,9 +107,55 @@ const coreRoles = [
 	'treeitem',
 ];
 
+const dpubRoles = [
+	'doc-abstract',
+	'doc-acknowledgments',
+	'doc-afterword',
+	'doc-appendix',
+	'doc-backlink',
+	'doc-biblioentry',
+	'doc-bibliography',
+	'doc-biblioref',
+	'doc-chapter',
+	'doc-colophon',
+	'doc-conclusion',
+	'doc-cover',
+	'doc-credit',
+	'doc-credits',
+	'doc-dedication',
+	'doc-endnote',
+	'doc-endnotes',
+	'doc-epigraph',
+	'doc-epilogue',
+	'doc-errata',
+	'doc-example',
+	'doc-footnote',
+	'doc-foreword',
+	'doc-glossary',
+	'doc-glossref',
+	'doc-index',
+	'doc-introduction',
+	'doc-noteref',
+	'doc-notice',
+	'doc-pagebreak',
+	'doc-pagefooter',
+	'doc-pageheader',
+	'doc-pagelist',
+	'doc-part',
+	'doc-preface',
+	'doc-prologue',
+	'doc-pullquote',
+	'doc-qna',
+	'doc-subtitle',
+	'doc-tip',
+	'doc-toc',
+];
+
+const anyRoles = [...coreRoles, ...dpubRoles];
+
 describe('getPermittedRoles', () => {
 	test('the a element', () => {
-		expect(c('<a></a>', '1.2')).toStrictEqual(coreRoles);
+		expect(c('<a></a>', '1.2')).toStrictEqual(anyRoles);
 		expect(c('<a href="path/to"></a>', '1.2')).toStrictEqual([
 			'link',
 			'button',
@@ -132,7 +178,7 @@ describe('getPermittedRoles', () => {
 	});
 
 	test('the figure element', () => {
-		expect(c('<figure></figure>', '1.2')).toStrictEqual(coreRoles);
+		expect(c('<figure></figure>', '1.2')).toStrictEqual(anyRoles);
 		expect(c('<figure><figcaption></figcaption></figure>', '1.2')).toStrictEqual(['figure']);
 	});
 

@@ -69,7 +69,7 @@ type SpecDefs = {
 ```
 
 - **`#globalAttrs`** -- Category-keyed attribute definitions. Each category (e.g., `#HTMLGlobalAttrs`, `#ARIAAttrs`) maps to a record of partial attribute definitions.
-- **`#aria`** -- ARIA role/property definitions for each specification version (1.1, 1.2, 1.3). Each version contains `roles`, `graphicsRoles`, and `props` arrays.
+- **`#aria`** -- ARIA role/property definitions for each specification version (1.1, 1.2, 1.3). Each version contains `roles`, `graphicsRoles`, `dpubRoles`, and `props` arrays.
 - **`#contentModels`** -- Content model category to selector array mappings. Maps `Category` values (like `#flow`, `#phrasing`) to arrays of CSS selectors that match elements belonging to that category.
 
 ### `ElementSpec`

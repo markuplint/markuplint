@@ -60,6 +60,7 @@ export type SpecDefs = {
 type ARIASpec = {
 	readonly roles: readonly ARIARoleInSchema[];
 	readonly graphicsRoles: readonly ARIARoleInSchema[];
+	readonly dpubRoles: readonly ARIARoleInSchema[];
 	readonly props: readonly ARIAProperty[];
 };
 

@@ -242,7 +242,7 @@ if (result.role) {
 
 | `permittedRoles` の値               | 動作                                                                                                                                 |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `true`                              | ARIA 仕様のすべての非抽象ロールが許可されます。                                                                                      |
+| `true`                              | ARIA 仕様のすべての非抽象ロール（DPub ロールを含む）が許可されます。                                                                 |
 | `PermittedARIAAAMInfo` オブジェクト | `core-aam` が `true` の場合、すべての非抽象ロールを追加。`graphics-aam` が `true` の場合、すべての非抽象グラフィックスロールを追加。 |
 | 文字列/オブジェクトの配列           | リストに記載された特定のロールが許可されます。                                                                                       |
 | `false`                             | ロールは許可されません（暗黙のロール追加前は空リスト）。                                                                             |
@@ -273,9 +273,10 @@ if (result.role) {
 
 1. 指定されたバージョンの ARIA ロールリストからロール名で検索します。
 2. SVG 名前空間（`http://www.w3.org/2000/svg`）の場合、コアロールで見つからなければ `graphicsRoles` も検索します。
-3. `generalization` プロパティ経由でスーパークラスロールを再帰的に走査し、完全な継承チェーンを構築します。
-4. すべてのオプションフィールドを未定義でないデフォルト値に正規化します（例: `!!role.isAbstract`）。`requiredAccessibilityParentRole` はスキーマの `requiredContextRole`（ARIA 1.2 名）または `requiredAccessibilityParentRole`（ARIA 1.3 名）から解決され、同様に `allowedAccessibilityChildRoles` は `requiredOwnedElements` または `allowedAccessibilityChildRoles` から解決されます。新旧両方のプロパティ名に同じ値が設定されます。
-5. ロール名が仕様に存在しない場合は `null` を返します。
+3. それでも見つからない場合、`dpubRoles` を検索します（DPub ARIA ロールは名前空間に関係なくすべての要素で受け入れられます）。
+4. `generalization` プロパティ経由でスーパークラスロールを再帰的に走査し、完全な継承チェーンを構築します。
+5. すべてのオプションフィールドを未定義でないデフォルト値に正規化します（例: `!!role.isAbstract`）。`requiredAccessibilityParentRole` はスキーマの `requiredContextRole`（ARIA 1.2 名）または `requiredAccessibilityParentRole`（ARIA 1.3 名）から解決され、同様に `allowedAccessibilityChildRoles` は `requiredOwnedElements` または `allowedAccessibilityChildRoles` から解決されます。新旧両方のプロパティ名に同じ値が設定されます。
+6. ロール名が仕様に存在しない場合は `null` を返します。
 
 **戻り値の正規化されたフィールド:**
 
@@ -604,9 +605,9 @@ WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素�
 | `specs`    | `MLMLSpec`    | マークアップ言語仕様全体 |
 | `version`  | `ARIAVersion` | ARIA 仕様バージョン      |
 
-**戻り値:** `{ roles: ARIARoleInSchema[], graphicsRoles: ARIARoleInSchema[], props: ARIAProperty[] }`
+**戻り値:** `{ roles: ARIARoleInSchema[], graphicsRoles: ARIARoleInSchema[], dpubRoles: ARIARoleInSchema[], props: ARIAProperty[] }`
 
-**実装:** `specs.def['#aria'][version]` を返し、リクエストされた ARIA バージョンに定義されたロール、グラフィックスロール、およびプロパティへの直接アクセスを提供します。
+**実装:** `specs.def['#aria'][version]` を返し、リクエストされた ARIA バージョンに定義されたロール、グラフィックスロール、DPub ロール、およびプロパティへの直接アクセスを提供します。
 
 ## RoleComputationError リファレンス
 
@@ -678,4 +679,5 @@ ARIA アルゴリズムは以下の W3C 仕様で定義された動作を実装�
 - [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) -- HTML Accessibility API Mappings（暗黙のロールマッピング）
 - [AccName 1.1](https://www.w3.org/TR/accname-1.1/) -- Accessible Name and Description Computation
 - [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/) -- SVG Accessibility API Mappings
+- [DPub-ARIA 1.1](https://w3c.github.io/dpub-aria/) -- Digital Publishing WAI-ARIA Module（DPub ロール）
 - [ARIA in HTML](https://www.w3.org/TR/html-aria/) -- HTML 要素ごとの許可されたロールと ARIA 属性の制約

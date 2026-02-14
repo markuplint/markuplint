@@ -107,7 +107,7 @@ gAttrs['#HTMLGlobalAttrs'] = {
 #### 3. ARIA定義
 
 各ARIAバージョン（`1.1`, `1.2`, `1.3`）について、`roles`, `props`,
-`graphicsRoles` の3つの配列が `mergeArray` を使ってマージされます：
+`graphicsRoles`, `dpubRoles` の4つの配列が `mergeArray` を使ってマージされます：
 
 ```ts
 def['#aria'] = {
@@ -115,6 +115,7 @@ def['#aria'] = {
     roles: mergeArray(def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
     props: mergeArray(def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
     graphicsRoles: mergeArray(def['#aria']['1.1'].graphicsRoles, extendedSpec.def['#aria']['1.1'].graphicsRoles),
+    dpubRoles: mergeArray(def['#aria']['1.1'].dpubRoles, extendedSpec.def['#aria']['1.1'].dpubRoles),
   },
   // 1.2 と 1.3 も同様
 };

@@ -69,7 +69,7 @@ type SpecDefs = {
 ```
 
 - **`#globalAttrs`** -- カテゴリをキーとした属性定義。各カテゴリ（例: `#HTMLGlobalAttrs`、`#ARIAAttrs`）は部分的な属性定義のレコードにマッピングされます。
-- **`#aria`** -- 各仕様バージョン（1.1、1.2、1.3）の ARIA ロール/プロパティ定義。各バージョンには `roles`、`graphicsRoles`、`props` 配列が含まれます。
+- **`#aria`** -- 各仕様バージョン（1.1、1.2、1.3）の ARIA ロール/プロパティ定義。各バージョンには `roles`、`graphicsRoles`、`dpubRoles`、`props` 配列が含まれます。
 - **`#contentModels`** -- コンテンツモデルカテゴリからセレクタ配列へのマッピング。`Category` 値（`#flow`、`#phrasing` など）を、そのカテゴリに属する要素にマッチする CSS セレクタの配列にマッピングします。
 
 ### `ElementSpec`

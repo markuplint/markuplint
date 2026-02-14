@@ -5,7 +5,7 @@ description: Warn if the role attribute and aria-* attributes don't set in accor
 
 # `wai-aria`
 
-Warn if the `role` attribute and `aria-*` attributes don't set in accordance with specs that are **WAI-ARIA** and **ARIA in HTML**.
+Warn if the `role` attribute and `aria-*` attributes don't set in accordance with specs that are **WAI-ARIA**, **DPub-ARIA** (Digital Publishing WAI-ARIA Module), and **ARIA in HTML**.
 
 Warn if:
 

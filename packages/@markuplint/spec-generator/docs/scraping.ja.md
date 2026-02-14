@@ -206,6 +206,20 @@ Graphics ARIA ロールは、同じ `getRoles()` 関数に `graphicsAria = true`
 
 ---
 
+## DPub ARIA スクレイピング
+
+**モジュール:** `aria.ts`
+
+DPub ARIA ロール（Digital Publishing WAI-ARIA Module）は `getDpubRoles()` 関数でフェッチされます。
+
+| URL                                |
+| ---------------------------------- |
+| `https://w3c.github.io/dpub-aria/` |
+
+DPub ARIA 仕様は標準 WAI-ARIA 仕様と同じ HTML 構造および CSS セレクタ（`#role_definitions section.role`、`.role-name[title]`、`.role-parent a` など）を使用しています。`getDpubRoles()` 関数は1回だけ呼び出され、41個のロールはすべての ARIA バージョンで共有されます。
+
+---
+
 ## HTML-ARIA マッピング
 
 **モジュール:** `aria.ts`（`getAriaInHtml()`）

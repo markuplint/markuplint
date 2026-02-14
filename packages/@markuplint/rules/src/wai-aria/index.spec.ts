@@ -44,6 +44,18 @@ describe("Use the role that doesn't exist in the spec", () => {
 			[],
 		);
 	});
+
+	test('DPub ARIA roles (#1490)', async () => {
+		expect((await mlRuleTest(rule, '<div role="doc-abstract"><p>text</p></div>')).violations).toStrictEqual([]);
+
+		expect((await mlRuleTest(rule, '<div role="doc-backlink">Back</div>')).violations).toStrictEqual([]);
+
+		expect((await mlRuleTest(rule, '<div role="doc-pagebreak"></div>')).violations).toStrictEqual([]);
+
+		expect(
+			(await mlRuleTest(rule, '<div role="doc-toc"><ol><li>Chapter 1</li></ol></div>')).violations,
+		).toStrictEqual([]);
+	});
 });
 
 describe('Use the abstract role', () => {

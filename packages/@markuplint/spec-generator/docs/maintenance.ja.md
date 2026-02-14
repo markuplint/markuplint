@@ -109,6 +109,7 @@ MDN が要素リファレンスページを再構築した場合、`scraping.ts`
      roles: roles14,
      props: await getProps('1.4', roles14),
      graphicsRoles: await getRoles('1.4', true),
+     dpubRoles,
    },
    ```
 4. **パッケージ間連携:** `@markuplint/ml-spec` の `ARIAVersion` 型も `'1.4'` を含むよう更新が必要

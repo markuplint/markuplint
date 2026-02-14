@@ -111,8 +111,8 @@ the extension.
 
 #### 3. ARIA Definitions
 
-For each ARIA version (`1.1`, `1.2`, `1.3`), the three arrays -- `roles`,
-`props`, and `graphicsRoles` -- are merged using `mergeArray`:
+For each ARIA version (`1.1`, `1.2`, `1.3`), the four arrays -- `roles`,
+`props`, `graphicsRoles`, and `dpubRoles` -- are merged using `mergeArray`:
 
 ```ts
 def['#aria'] = {
@@ -120,6 +120,7 @@ def['#aria'] = {
     roles: mergeArray(def['#aria']['1.1'].roles, extendedSpec.def['#aria']['1.1'].roles),
     props: mergeArray(def['#aria']['1.1'].props, extendedSpec.def['#aria']['1.1'].props),
     graphicsRoles: mergeArray(def['#aria']['1.1'].graphicsRoles, extendedSpec.def['#aria']['1.1'].graphicsRoles),
+    dpubRoles: mergeArray(def['#aria']['1.1'].dpubRoles, extendedSpec.def['#aria']['1.1'].dpubRoles),
   },
   // same for 1.2 and 1.3
 };
