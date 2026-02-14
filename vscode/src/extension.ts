@@ -35,6 +35,26 @@ export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
 ) {
+	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
+		logger?.show();
+	});
+	context.subscriptions.push(openLogCommand);
+
+	const restartServerCommand = commands.registerCommand(COMMAND_NAME_RESTART_SERVER, async () => {
+		if (client === undefined) {
+			return;
+		}
+		try {
+			void window.showInformationMessage('Restarting Markuplint language server...');
+			await client.stop();
+			await client.start();
+			void window.showInformationMessage('Markuplint language server restarted successfully.');
+		} catch (error) {
+			void window.showErrorMessage(`Failed to restart Markuplint language server: ${String(error)}`);
+		}
+	});
+	context.subscriptions.push(restartServerCommand);
+
 	const config = workspace.getConfiguration(ID);
 
 	if (config.get('enable') === false) {
@@ -135,23 +155,6 @@ export function activate(
 			void window.showInformationMessage(message);
 		});
 	});
-
-	const openLogCommand = commands.registerCommand(COMMAND_NAME_OPEN_LOG_COMMAND, () => {
-		logger.show();
-	});
-	context.subscriptions.push(openLogCommand);
-
-	const restartServerCommand = commands.registerCommand(COMMAND_NAME_RESTART_SERVER, async () => {
-		try {
-			void window.showInformationMessage('Restarting Markuplint language server...');
-			await client.stop();
-			await client.start();
-			void window.showInformationMessage('Markuplint language server restarted successfully.');
-		} catch (error) {
-			void window.showErrorMessage(`Failed to restart Markuplint language server: ${String(error)}`);
-		}
-	});
-	context.subscriptions.push(restartServerCommand);
 }
 
 export function deactivate() {
