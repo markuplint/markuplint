@@ -38,7 +38,7 @@ export async function readJsons<T = Record<string, any>>(
 	if (!path.isAbsolute(pattern)) {
 		throw new Error(`The pattern must be absolute path: ${pattern}`);
 	}
-	const files = await glob(pattern);
+	const files = await glob(pattern, { windowsPathsNoEscape: true });
 	return Promise.all(
 		files.map(file => {
 			const json = readJson<T>(file);
