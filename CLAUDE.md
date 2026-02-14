@@ -56,6 +56,25 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 | `@markuplint/php-parser`      | Maintenance tasks for php-parser                                      | [SKILL.md](packages/@markuplint/php-parser/SKILL.md)      |
 | `@markuplint/smarty-parser`   | Maintenance tasks for smarty-parser                                   | [SKILL.md](packages/@markuplint/smarty-parser/SKILL.md)   |
 
+## Verification Commands
+
+### Test
+
+- **Full test**: `yarn test` (no arguments)
+- **Single file/directory**: `npx vitest run <path>`
+- **NEVER use**: `npx lerna run test`, `yarn test --scope @markuplint/*`, or any other variant
+
+### Lint
+
+- **Full lint check**: `yarn lint-check` (no arguments) — runs ESLint, Prettier, and CSpell
+- **Full lint with auto-fix**: `yarn lint` (no arguments) — same linters with auto-fix enabled
+- **NEVER run linters individually** (e.g., `npx eslint ...` alone) — always use the root scripts to ensure all linters run
+
+### Build
+
+- **Full build**: `yarn build` (no arguments)
+- **Single package**: `yarn build --scope @markuplint/<package>`
+
 ## Worktree Usage
 
 When working on feature branches that involve multiple PRs or long-running tasks,
