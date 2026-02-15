@@ -17,13 +17,14 @@ import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 import { exchangeValueOnRule, mergeRule } from '@markuplint/ml-config';
 import {
 	schemaToSpec,
-	getAccname,
 	getComputedRole,
 	mayBeFocusable,
 	getComputedAriaProps,
 	isExposed,
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
+
+import { getAccname } from '../helper/accname.js';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
@@ -3008,7 +3009,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		};
 
 		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-		const name = getAccname(node).trim();
+		const name = getAccname(node, ariaVersion).trim();
 		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
