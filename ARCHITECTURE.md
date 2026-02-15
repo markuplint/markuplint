@@ -173,7 +173,7 @@ All package names omit the `@markuplint/` prefix. The 9 simple template-engine p
 
 - `@markuplint/ml-ast`: AST type definitions
 - `@markuplint/types`: Attribute value types
-- `dom-accessibility-api`: W3C Accessible Name Computation implementation
+- (No external dependencies for AccName — algorithm is implemented in-house)
 
 **Update Triggers**:
 
@@ -248,7 +248,7 @@ A critical finding of this analysis is the tight coupling between specifications
 
 **WAI-ARIA Embedded Algorithms**:
 
-- Accessible Name Computation (W3C AccName 1.1)
+- Accessible Name Computation (W3C AccName 1.2)
 - Role Computation with conflict resolution
 - Accessibility Tree inclusion/exclusion
 - Allowed Accessibility Child Roles validation
@@ -499,4 +499,4 @@ The primary recommendation is to enhance documentation and clarify package roles
 - [WAI-ARIA 1.1](https://www.w3.org/TR/wai-aria-1.1/)
 - [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/)
 - [WAI-ARIA 1.3](https://w3c.github.io/aria/)
-- [Accessible Name and Description Computation 1.1](https://w3c.github.io/accname/)
+- [Accessible Name and Description Computation 1.2](https://www.w3.org/TR/accname-1.2/)
