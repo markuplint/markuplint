@@ -105,7 +105,7 @@ JSX 式とその包含要素間の親子関係を追跡するプライベート 
 | メソッド              | 用途                                                                                                     |
 | --------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | `tokenize()`          | `jsxParser()` を呼び出して TypeScript ESTree 経由でソースをパースし、コメントを state に抽出             |
-| `parseError()`        | TypeScript ESTree のパースエラー（`lineNumber`/`column` 付き）を `ParserError` に変換                    |
+| `parseError()`        | TypeScript ESTree のパースエラーを `error.location.start` を使って `ParserError` に変換（下記注記参照）  |
 | `nodeize()`           | JSX AST ノードを markuplint ノードに変換。コメント、テキスト、要素、フラグメント、psblock を処理         |
 | `afterTraverse()`     | `#parentIdMap` を使用して psblock ノードの親子関係を再構築                                               |
 | `afterFlattenNodes()` | `exposeWhiteSpace: false` と `exposeInvalidNode: false` で親メソッドを呼び出す                           |
@@ -113,6 +113,12 @@ JSX 式とその包含要素間の親子関係を追跡するプライベート 
 | `visitAttr()`         | JSX 固有のクォート（`{}`）、IDL 属性マッピング、動的値検出を処理                                         |
 | `parseCodeFragment()` | `namelessFragment: true` で親メソッドに委譲                                                              |
 | `detectElementType()` | `/^[A-Z]                                                                                                 | \./` 正規表現でコンポーネント vs HTML 要素を検出 |
+
+### 注記: `parseError()` と TSError の getter プロパティ
+
+`@typescript-eslint/typescript-estree` の `TSError` は `lineNumber` と `column` を自身のプロパティではなく **prototype の getter プロパティ** として公開しています。一部のランタイム（例: Bun）ではこれらの getter に対する `'lineNumber' in error` チェックが失敗し、`super.parseError()` にフォールバックして `col` がデフォルト値 `0` になってしまいます。
+
+これを回避するため、`parseError()` は `error.location.start` を直接参照しています。これは `TSError` の own property であり、全ランタイムで確実に `{ line, column }` を提供します。
 
 ## JSX AST 抽出（jsx.ts）
 

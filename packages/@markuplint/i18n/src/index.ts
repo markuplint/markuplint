@@ -1,2 +1,2 @@
 export { translator } from './translator.js';
-export { Translator, LocaleSet } from './types.js';
+export type { Translator, LocaleSet } from './types.js';
