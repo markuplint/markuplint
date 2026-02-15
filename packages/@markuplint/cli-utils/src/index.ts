@@ -10,7 +10,8 @@ export { default as font } from 'picocolors';
 
 export { xterm } from './color.js';
 export { input, confirm, confirmSequence, select, multiSelect } from './prompt.js';
-export { installModule, InstallModuleResult } from './install-module.js';
+export { installModule } from './install-module.js';
+export type { InstallModuleResult } from './install-module.js';
 export { getWidth } from './get-width.js';
 export { header } from './header.js';
 export { invisibleSpace } from './invisible-space.js';

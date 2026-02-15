@@ -1,4 +1,4 @@
-export { RuleInfo, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
+export type { RuleInfo, RuleConfig, RuleConfigValue } from '@markuplint/ml-config';
 export {
 	ariaSpecs,
 	contentModelCategoryToTagNames,
@@ -19,8 +19,8 @@ export * from './ml-dom/index.js';
 export * from './ml-rule/index.js';
 export * from './plugin/index.js';
 export * from './test/index.js';
-export * from './types.js';
+export type * from './types.js';
 export * from './utils/index.js';
 export * from './violation-collector.js';
 
-export { AccessibilityProperties } from './ml-dom/node/types.js';
+export type { AccessibilityProperties } from './ml-dom/node/types.js';
