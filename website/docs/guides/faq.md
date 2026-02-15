@@ -67,7 +67,7 @@ If you want a spec plugin that helps syntax or framework ([Next.js](https://next
 
 ## Warned by `require-accessible-name` rule
 
-You can solve [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://www.w3.org/TR/accname-1.1/) is complex, and there are different places to get them for other elements, so please refer to the following table.
+You can solve [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://www.w3.org/TR/accname-1.2/) is complex, and there are different places to get them for other elements, so please refer to the following table.
 
 | Element    | Name form             | Using `aria-label`          |
 | ---------- | --------------------- | --------------------------- |
