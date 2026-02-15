@@ -9,7 +9,7 @@
 - **WAI-ARIA 1.1 / 1.2 / 1.3** -- ロール定義、ステート、プロパティ
 - **HTML-AAM**（HTML Accessibility API Mappings）-- HTML 要素の暗黙のロールマッピング
 - **SVG-AAM**（SVG Accessibility API Mappings）-- SVG のアクセシビリティツリー包含ルール
-- **AccName 1.1**（Accessible Name and Description Computation）-- アクセシブル名の計算
+- **AccName 1.2**（Accessible Name and Description Computation）-- アクセシブル名の計算
 - **ARIA in HTML** -- 要素ごとの許可されたロールと ARIA 属性の制約
 
 ### 設計方針
@@ -19,7 +19,7 @@
 - 標準的な DOM `Element` インターフェースで動作し、markuplint 固有のノード型を必要としません。
 - マークアップ言語仕様データ全体を含む `MLMLSpec` パラメータを受け取ります。
 - バージョン固有の動作を選択するために `ARIAVersion` パラメータ（`'1.1'`、`'1.2'`、または `'1.3'`）を受け取ります。
-- 純粋関数であり、副作用はありません（`getARIA` の内部キャッシュを除く）。
+- 純粋関数であり、副作用はありません（`getARIA` の内部キャッシュと `getAccname` の再入防止ガードを除く）。
 
 ## ロール計算パイプライン
 
@@ -88,7 +88,7 @@ ARIA アルゴリズム群の中核となる関数です。明示的ロール解
 
 1. **必須コンテキストロールの検証** -- ロールに `requiredAccessibilityParentRole` エントリ（ARIA 1.2 では `requiredContextRole`）がある場合、親階層をチェックします。親要素が存在しない場合は `NO_OWNER` を返します。親階層がコンテキストロール条件を満たさない場合（`matchesContextRole()` 経由）、`INVALID_REQUIRED_CONTEXT_ROLE` を返します。プレゼンテーショナルな祖先は `getNonPresentationalAncestor()` 経由で透過的に走査されます。
 
-2. **SVG アクセシビリティツリー包含** -- 有効な明示的ロールを持たない SVG 名前空間要素について、アクセシブル名があるか（`getAccname()` 経由）、または `<title>`/`<desc>` 子要素があるかをチェックします。どちらも存在しない場合、その SVG 要素はアクセシビリティツリーから除外されます（`role: null` を返す）。これは、通常省略される SVG 要素を含めるための SVG-AAM ルールを実装しています。
+2. **SVG アクセシビリティツリー包含** -- 有効な明示的ロールを持たない SVG 名前空間要素について、アクセシブル名ソースがあるか（`hasSvgAccessibleNameSource()` 経由）をチェックします。具体的には `aria-label`、`aria-labelledby`、または `<title>`/`<desc>` 子要素の有無を確認します。いずれも存在しない場合、その SVG 要素はアクセシビリティツリーから除外されます（`role: null` を返す）。これは、通常省略される SVG 要素を含めるための SVG-AAM ルールを実装しています。
 
 3. **インタラクティブ要素の保護** -- フォーカス可能な要素はプレゼンテーショナルになれません。`mayBeFocusable()` をチェックし、要素が `disabled`、`inert`、`hidden` でないことを確認します（各属性について祖先を走査）。要素がインタラクティブで disabled/inert/hidden でない場合、プレゼンテーショナルロールは暗黙のロールで上書きされ、`INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` エラーが返されます。
 
@@ -389,25 +389,140 @@ if (result.role) {
 
 ---
 
-### 10. `getAccname(el): string`
+### 10. `getAccname(el, specs, version): string`
 
 **ソース:** `src/algorithm/aria/accname-computation.ts`
 
-WAI-ARIA アクセシブル名計算アルゴリズムを使用して、要素のアクセシブル名を計算します。
+HTML-AAM §4.1 アルゴリズムを使用して、DOM 要素のアクセシブル名を計算します。DOM ベースのリゾルバを作成し、純粋な `computeAccessibleName()` 関数に委譲する公開ファサードです。
 
 **パラメータ:**
 
-| パラメータ | 型        | 説明     |
-| ---------- | --------- | -------- |
-| `el`       | `Element` | DOM 要素 |
+| パラメータ | 型            | 説明                                     |
+| ---------- | ------------- | ---------------------------------------- |
+| `el`       | `Element`     | DOM 要素                                 |
+| `specs`    | `MLMLSpec`    | 完全なマークアップ言語仕様               |
+| `version`  | `ARIAVersion` | ロール照会に使用する ARIA 仕様バージョン |
 
 **戻り値:** `string` -- 計算されたアクセシブル名、または見つからない場合は空文字列。
 
-**アルゴリズム:**
+**アーキテクチャ:**
 
-1. AccName 1.1 アルゴリズムを完全に実装した `dom-accessibility-api` ライブラリの `computeAccessibleName()` に委譲します。
-2. **`<input>` 要素のフォールバック:** 計算された名前がトリム後に空の場合、`placeholder` 属性の値（トリム済み）を返します。
-3. いずれの方法でも名前が見つからない場合、空文字列を返します。
+実装は2つのレイヤーに分離されています:
+
+- **`accname-computation.ts`**（ファサード）: DOM ベースの `AccnameResolver` を作成し、`:aria(has name)` セレクタ循環の再入防止ガードを処理し、純粋アルゴリズムに委譲。
+- **`accname/compute.ts`**（純粋アルゴリズム）: `AccnameElement` と `AccnameResolver` インターフェースのみを使用して AccName 1.2 §4.3.2 の Steps 2A–2I を実装。DOM や markuplint 型への依存なし。
+
+**アルゴリズム（AccName 1.2 §4.3.2）:**
+
+1. **Step 2A — 非表示判定:** 要素が非表示かつ `aria-labelledby` で参照されていない場合、空を返す。
+2. **Step 2B – `aria-labelledby`:** 参照先要素を解決し、その名前を再帰的に計算（訪問済みセットで循環防止）。
+3. **Step 2D – `aria-label`:** `aria-label` 属性の値が非空であればそれを使用。
+4. **Step 2E – 要素固有の名前:** HTML-AAM §4.1 のルールを適用（ラベル関連付け、`<img alt>`、`<input value>`、`<fieldset>` legend、`<table>` caption、SVG `<title>` 等）。
+5. **Step 2F – コンテンツからの名前:** ロールが name-from-content を許可する場合、または要素が `aria-labelledby` で参照されている場合、子ノードのテキストを再帰的に収集（Step 2C の埋め込みコントロール値抽出を含む）。
+6. **Step 2I – title フォールバック:** `title` 属性の値を使用。
+
+**再入防止ガード:** `getAccname` は `WeakSet<Element>` を使用して、`getComputedRole` が `:aria(has name)` セレクタを評価する際に `getAccname` を再度呼び出す無限再帰を防止します。
+
+#### AccName アルゴリズム制御フロー
+
+以下の図は、アクセシブル名計算アルゴリズムの全制御フローを示し、各ステップを実装ファイルにマッピングしています。
+
+```mermaid
+flowchart TB
+    Start([Element]) --> Facade["getAccname()\n<i>accname-computation.ts</i>"]
+    Facade --> Guard{"再入\nガード?"}
+    Guard -->|"計算中"| Empty(["'' を返す"])
+    Guard -->|"初回呼び出し"| Resolver["createDomResolver()\n<i>accname-computation.ts</i>"]
+    Resolver --> Compute["computeAccessibleName()\n<i>compute.ts</i>"]
+
+    Compute --> Hidden{"非表示 &\nlabelledby\n外?"}
+    Hidden -->|Yes| EmptyResult(["空を返す"])
+    Hidden -->|No| Precomp{"getPrecomputedName?\n<i>[実装固有]</i>"}
+
+    Precomp -->|"値あり"| PrecompResult(["事前計算名を返す"])
+    Precomp -->|"なし"| Step2B
+
+    subgraph step2b ["Step 2B — aria-labelledby (aria-steps.ts)"]
+        Step2B{"aria-labelledby\nあり &\nlabelledby\n走査外?"}
+        Step2B -->|Yes| SplitIDs["IDREF をホワイトスペースで分割"]
+        SplitIDs --> ForEachID["各 IDREF:\n• 訪問済みスキップ（自己参照は許可）\n• getElementById()\n• inLabelledby=true で再帰"]
+        ForEachID --> JoinParts["スペースで結合"]
+    end
+
+    Step2B -->|"なし / 空"| Step2D
+    JoinParts -->|"名前あり"| LabelledbyResult(["名前を返す\nsource: aria-labelledby"])
+
+    subgraph step2d ["Step 2D — aria-label (aria-steps.ts)"]
+        Step2D{"aria-label\n非空?"}
+    end
+
+    Step2D -->|Yes| AriaLabelResult(["名前を返す\nsource: aria-label"])
+    Step2D -->|No| Step2E
+
+    subgraph step2e ["Step 2E — 要素固有 (element-names.ts)"]
+        Step2E["getElementSpecificName()"]
+        Step2E --> Dispatch{"要素\n種別?"}
+        Dispatch -->|"SVG"| SVGTitle["SVG: title 子要素\n<i>SVG-AAM §8.1</i>"]
+        Dispatch -->|"input"| InputType["Input: type で分岐\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"button"| BtnLabel["ラベル → コンテンツ\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"fieldset"| Legend["legend コンテンツ\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"table"| Caption["caption コンテンツ\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"img"| ImgAlt["alt 属性\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"その他"| LabelAssoc["label-steps.ts:\nラベル関連付け\n<i>for= / 祖先</i>"]
+    end
+
+    Step2E -->|"名前あり"| ElementResult(["名前を返す\nsource: element-specific"])
+    Step2E -->|"null"| Step2F
+
+    subgraph step2f ["Step 2F/2C — コンテンツからの名前 (helpers.ts)"]
+        Step2F{"ロールが\nnameFrom: content\nを許可 OR\nlabelledby 走査中?"}
+        Step2F -->|Yes| WalkChildren["resolveNameFromContent():\n各子ノードに対して:"]
+        WalkChildren --> ChildType{"ノード\n種別?"}
+        ChildType -->|"テキスト"| TextContent["textContent を使用"]
+        ChildType -->|"埋め込み\nコントロール"| EmbedValue["getEmbeddedControlValue()\n<i>AccName §4.3.2 Step 2C</i>"]
+        ChildType -->|"要素"| RecurseChild["computeFn() で再帰;\n名前なし → collectTextContent()\n<i>[実装固有]</i>"]
+        TextContent --> JoinSpaces["スペースで結合"]
+        EmbedValue --> JoinSpaces
+        RecurseChild --> JoinSpaces
+    end
+
+    Step2F -->|"不可"| Step2I
+    JoinSpaces -->|"名前あり"| ContentResult(["名前を返す\nsource: content"])
+    JoinSpaces -->|"空"| Step2I
+
+    subgraph step2i ["Step 2I — title フォールバック"]
+        Step2I{"title 属性\n非空?"}
+    end
+
+    Step2I -->|Yes| TitleResult(["名前を返す\nsource: title"])
+    Step2I -->|No| FinalEmpty(["空を返す"])
+```
+
+#### W3C 仕様参照
+
+| 仕様                                                | セクション     | 説明                                           |
+| --------------------------------------------------- | -------------- | ---------------------------------------------- |
+| [AccName 1.2](https://www.w3.org/TR/accname-1.2/)   | §4.3.2         | 計算ステップ（Steps 2A–2I）                    |
+| [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) | §4.1           | アクセシブル名と説明の計算                     |
+| [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) | §4.1（要素別） | 要素固有の名前計算ルール                       |
+| [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/)   | §5.1.1, §8.1   | SVG アクセシビリティツリー包含と名前マッピング |
+
+#### 実装固有の拡張
+
+以下の動作は厳密な AccName 仕様を超えた拡張です:
+
+| 拡張                                                | 場所                     | 根拠                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 事前計算名 (`getPrecomputedName`)                   | `compute.ts`             | ml-core の Pretender 統合によるフレームワークコンポーネントのサポート                                                                                                                                                                                                                                                             |
+| 透過的テキスト収集 (`collectTextContent`)           | `helpers.ts`             | `nameFrom: ["content"]` を含まないロールの中間要素（例: `<button>` 内の `<span>`）からテキストを収集                                                                                                                                                                                                                              |
+| `<select>` 選択オプション (`getSelectedOptionText`) | `helpers.ts`             | `selected` 属性による選択オプションテキストの静的近似。カスタマイズ可能な `<select>` ([#2069](https://github.com/markuplint/markuplint/issues/2069)) では: (1) `collectOptions` が新しい子要素型（`<button>`、`<datalist>`、`<selectedcontent>`）をスキップする必要あり、(2) `<selectedcontent>` が名前計算に影響するか評価が必要 |
+| 再入防止ガード (`computingElements` WeakSet)        | `accname-computation.ts` | `getComputedRole` → `getARIA` → `matches` チェーン内の `:aria(has name)` 擬似クラスによる無限再帰を防止                                                                                                                                                                                                                           |
+
+#### 既知の制限事項
+
+| 制限事項                                   | AccName 参照   | 説明                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------------------ | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CSS 生成コンテンツ（`::before`/`::after`） | §4.3.2 Step 2G | AccName 仕様では、`::before`/`::after` 擬似要素の `content` プロパティによる CSS 生成テキストコンテンツを累積テキストに含めることが要求されています。markuplint は CSS 処理を伴わない静的 HTML 解析を行うため、このコンテンツはリント時に利用できません。CSS 生成コンテンツのみでアクセシブル名を提供している要素は検出されません。 |
 
 ---
 
@@ -677,7 +792,7 @@ ARIA アルゴリズムは以下の W3C 仕様で定義された動作を実装�
 - [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/) -- Accessible Rich Internet Applications、主要リファレンス
 - [WAI-ARIA 1.1](https://www.w3.org/TR/wai-aria-1.1/) -- 以前のバージョン、引き続きサポート
 - [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) -- HTML Accessibility API Mappings（暗黙のロールマッピング）
-- [AccName 1.1](https://www.w3.org/TR/accname-1.1/) -- Accessible Name and Description Computation
+- [AccName 1.2](https://www.w3.org/TR/accname-1.2/) -- Accessible Name and Description Computation
 - [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/) -- SVG Accessibility API Mappings
 - [DPub-ARIA 1.1](https://w3c.github.io/dpub-aria/) -- Digital Publishing WAI-ARIA Module（DPub ロール）
 - [ARIA in HTML](https://www.w3.org/TR/html-aria/) -- HTML 要素ごとの許可されたロールと ARIA 属性の制約

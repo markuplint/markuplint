@@ -18,7 +18,16 @@ src/
 │   └── permitted-structures.ts                   # content-models.schema.json から生成（ContentModel, Category）
 ├── algorithm/
 │   ├── aria/
-│   │   ├── accname-computation.ts                # dom-accessibility-api によるアクセシブルネーム計算
+│   │   ├── accname-computation.ts                # アクセシブルネーム計算ファサード（DOM リゾルバ + 再入防止ガード）
+│   │   ├── accname/                              # AccName 純粋アルゴリズム（HTML-AAM §4.1）
+│   │   │   ├── types.ts                          # AccnameElement/AccnameResolver インターフェース
+│   │   │   ├── compute.ts                        # コアアルゴリズム: Steps 2A-2I
+│   │   │   ├── aria-steps.ts                     # Steps 2B (aria-labelledby), 2D (aria-label)
+│   │   │   ├── element-names.ts                  # Step 2E: 要素固有の名前（HTML-AAM §4.1）
+│   │   │   ├── helpers.ts                        # 共有ユーティリティ（埋め込みコントロール、name-from-content）
+│   │   │   ├── label-steps.ts                    # Step 2E: ラベル関連付け（labelable 要素）
+│   │   │   ├── svg-helpers.ts                    # SVG アクセシブル名ソース判定
+│   │   │   └── index.ts                          # 公開 API 再エクスポート
 │   │   ├── aria-specs.ts                         # バージョン別 ARIA 仕様データの取得
 │   │   ├── get-aria.ts                           # 要素レベルの ARIA 仕様解決（条件付き）
 │   │   ├── get-computed-aria-props.ts            # ARIA プロパティ解決（明示 → HTML → デフォルト）
@@ -42,6 +51,10 @@ src/
 │       ├── is-palpable-elements.ts                 # パルパブルコンテンツ検出
 │       ├── is-void-element.ts                      # ボイド要素判定（13 要素）
 │       └── may-be-focusable.ts                     # フォーカス可能性ヒューリスティック
+├── const/
+│   ├── index.ts                                  # 全定数の再エクスポート
+│   ├── dom.ts                                    # DOM 定数（ELEMENT_NODE, TEXT_NODE, 名前空間 URI）
+│   └── accname.ts                                # AccName 定数（埋め込みコントロールロール、入力型、デフォルト値）
 └── utils/
     ├── aria-version.ts                           # ARIA バージョン定数（'1.1', '1.2', '1.3'）
     ├── get-attr-specs.ts                         # DOM 要素の属性仕様（ラッパー）
@@ -142,7 +155,7 @@ flowchart TD
 
 ### 2. ARIA アルゴリズム
 
-ARIA アルゴリズムは WAI-ARIA, HTML-AAM, SVG-AAM, AccName 1.1 仕様に基づくロール計算とアクセシビリティツリー管理を実装します。
+ARIA アルゴリズムは WAI-ARIA, HTML-AAM, SVG-AAM, AccName 1.2 仕様に基づくロール計算とアクセシビリティツリー管理を実装します。
 
 | ファイル                         | 役割                                                                            |
 | -------------------------------- | ------------------------------------------------------------------------------- |
@@ -155,7 +168,9 @@ ARIA アルゴリズムは WAI-ARIA, HTML-AAM, SVG-AAM, AccName 1.1 仕様に基
 | `get-role-spec.ts`               | スーパークラスロールチェーン付き完全ロール仕様の取得                            |
 | `has-required-owned-elements.ts` | 必須所有要素制約の検証                                                          |
 | `matches-context-role.ts`        | 祖先チェーンにおける必須コンテキストロール条件の検証                            |
-| `accname-computation.ts`         | `dom-accessibility-api` によるアクセシブルネーム計算                            |
+| `accname-computation.ts`         | アクセシブルネーム計算ファサード（DOM リゾルバ + 再入防止ガード）               |
+| `accname/compute.ts`             | 純粋 AccName アルゴリズム: HTML-AAM §4.1 の Steps 2A-2I                         |
+| `accname/element-names.ts`       | Step 2E: 要素固有の名前計算（HTML-AAM §4.1）                                    |
 | `get-aria.ts`                    | バージョンと条件の解決を含む要素レベル ARIA 仕様                                |
 | `is-presentational.ts`           | ロールが `presentation` または `none` かどうかの判定                            |
 
@@ -189,13 +204,12 @@ HTML アルゴリズムは HTML Living Standard に基づくコンテンツモ�
 
 ## 外部依存パッケージ
 
-| パッケージ              | 用途                                               | 使用箇所                      |
-| ----------------------- | -------------------------------------------------- | ----------------------------- |
-| `@markuplint/ml-ast`    | XML 名前空間処理のための `NamespaceURI` 型         | `types/index.ts`, utils       |
-| `@markuplint/types`     | 属性値の型定義のための `Type` 共用体               | `types/attributes.ts` 経由    |
-| `dom-accessibility-api` | AccName 計算（WAI-ARIA アルゴリズム）              | `accname-computation.ts`      |
-| `is-plain-object`       | AAM 情報のプレーンオブジェクト検出                 | `get-permitted-roles-spec.ts` |
-| `type-fest`             | 深い不変性のための `ReadonlyDeep` ユーティリティ型 | 複数ファイル                  |
+| パッケージ           | 用途                                               | 使用箇所                      |
+| -------------------- | -------------------------------------------------- | ----------------------------- |
+| `@markuplint/ml-ast` | XML 名前空間処理のための `NamespaceURI` 型         | `types/index.ts`, utils       |
+| `@markuplint/types`  | 属性値の型定義のための `Type` 共用体               | `types/attributes.ts` 経由    |
+| `is-plain-object`    | AAM 情報のプレーンオブジェクト検出                 | `get-permitted-roles-spec.ts` |
+| `type-fest`          | 深い不変性のための `ReadonlyDeep` ユーティリティ型 | 複数ファイル                  |
 
 ## 他パッケージとの連携
 

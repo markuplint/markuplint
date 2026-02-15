@@ -18,7 +18,16 @@ src/
 │   └── permitted-structures.ts                   # Generated types from content-models.schema.json (ContentModel, Category)
 ├── algorithm/
 │   ├── aria/
-│   │   ├── accname-computation.ts                # Accessible name computation via dom-accessibility-api
+│   │   ├── accname-computation.ts                # Accessible name computation facade (DOM resolver + reentrant guard)
+│   │   ├── accname/                              # AccName pure algorithm (HTML-AAM §4.1)
+│   │   │   ├── types.ts                          # AccnameElement/AccnameResolver interfaces
+│   │   │   ├── compute.ts                        # Core algorithm: Steps 2A-2I
+│   │   │   ├── aria-steps.ts                     # Steps 2B (aria-labelledby) and 2D (aria-label)
+│   │   │   ├── element-names.ts                  # Step 2E: element-specific name (HTML-AAM §4.1)
+│   │   │   ├── helpers.ts                        # Shared utilities (embedded controls, name-from-content)
+│   │   │   ├── label-steps.ts                    # Step 2E: label association for labelable elements
+│   │   │   ├── svg-helpers.ts                    # SVG accessible name source check
+│   │   │   └── index.ts                          # Re-exports public API
 │   │   ├── aria-specs.ts                         # Version-specific ARIA spec data retrieval
 │   │   ├── get-aria.ts                           # Element-level ARIA spec resolution with conditions
 │   │   ├── get-computed-aria-props.ts            # ARIA property resolution (explicit → HTML → default)
@@ -42,6 +51,10 @@ src/
 │       ├── is-palpable-elements.ts                 # Palpable content detection
 │       ├── is-void-element.ts                      # Void element check (13 elements)
 │       └── may-be-focusable.ts                     # Focusability heuristic
+├── const/
+│   ├── index.ts                                  # Re-exports all constants
+│   ├── dom.ts                                    # DOM constants (ELEMENT_NODE, TEXT_NODE, namespace URIs)
+│   └── accname.ts                                # AccName constants (embedded control roles, input types, defaults)
 └── utils/
     ├── aria-version.ts                           # ARIA version constants ('1.1', '1.2', '1.3')
     ├── get-attr-specs.ts                         # Attribute specs for a DOM element (wrapper)
@@ -142,7 +155,7 @@ The type system defines the structure of markup language specifications, element
 
 ### 2. ARIA Algorithms
 
-ARIA algorithms implement WAI-ARIA, HTML-AAM, SVG-AAM, and AccName 1.1 specifications for role computation and accessibility tree management.
+ARIA algorithms implement WAI-ARIA, HTML-AAM, SVG-AAM, and AccName 1.2 specifications for role computation and accessibility tree management.
 
 | File                             | Purpose                                                                           |
 | -------------------------------- | --------------------------------------------------------------------------------- |
@@ -155,7 +168,9 @@ ARIA algorithms implement WAI-ARIA, HTML-AAM, SVG-AAM, and AccName 1.1 specifica
 | `get-role-spec.ts`               | Retrieves full role spec with super-class role chain                              |
 | `has-required-owned-elements.ts` | Validates required owned element constraints                                      |
 | `matches-context-role.ts`        | Validates required context role conditions in ancestor chain                      |
-| `accname-computation.ts`         | Accessible name computation via `dom-accessibility-api`                           |
+| `accname-computation.ts`         | Accessible name computation facade (DOM resolver + reentrant guard)               |
+| `accname/compute.ts`             | Pure AccName algorithm: Steps 2A-2I per HTML-AAM §4.1                             |
+| `accname/element-names.ts`       | Step 2E: Element-specific name computation (HTML-AAM §4.1)                        |
 | `get-aria.ts`                    | Element-level ARIA spec with version and condition resolution                     |
 | `is-presentational.ts`           | Checks if a role is `presentation` or `none`                                      |
 
@@ -189,13 +204,12 @@ Utilities for merging, resolving, and caching specifications.
 
 ## External Dependencies
 
-| Dependency              | Purpose                                           | Where Used                    |
-| ----------------------- | ------------------------------------------------- | ----------------------------- |
-| `@markuplint/ml-ast`    | `NamespaceURI` type for XML namespace handling    | `types/index.ts`, utils       |
-| `@markuplint/types`     | `Type` union for attribute value type definitions | via `types/attributes.ts`     |
-| `dom-accessibility-api` | AccName computation (WAI-ARIA algorithm)          | `accname-computation.ts`      |
-| `is-plain-object`       | Plain object detection for AAM info               | `get-permitted-roles-spec.ts` |
-| `type-fest`             | `ReadonlyDeep` utility type for deep immutability | Multiple files                |
+| Dependency           | Purpose                                           | Where Used                    |
+| -------------------- | ------------------------------------------------- | ----------------------------- |
+| `@markuplint/ml-ast` | `NamespaceURI` type for XML namespace handling    | `types/index.ts`, utils       |
+| `@markuplint/types`  | `Type` union for attribute value type definitions | via `types/attributes.ts`     |
+| `is-plain-object`    | Plain object detection for AAM info               | `get-permitted-roles-spec.ts` |
+| `type-fest`          | `ReadonlyDeep` utility type for deep immutability | Multiple files                |
 
 ## Integration Points
 

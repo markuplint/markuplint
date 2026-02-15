@@ -128,12 +128,13 @@ These files carry "DO NOT MODIFY" headers and are overwritten by the generation 
 
 ### Test files
 
-The package has 15 test files using vitest:
+The package has 18 test files using vitest:
 
-| Directory             | Test files | Coverage                                                                                                                                                                                                                               |
-| --------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/algorithm/aria/` | 11         | `accname-computation`, `get-computed-aria-props`, `get-computed-role`, `get-implicit-role-spec`, `get-implicit-role`, `get-permitted-roles-spec`, `get-role-spec`, `has-required-owned-elements`, `is-exposed`, `matches-context-role` |
-| `src/utils/`          | 4          | `get-attr-specs-spec`, `get-spec-by-tag-name`, `resolve-namespace`, `resolve-version`, `schema-to-spec`                                                                                                                                |
+| Directory                     | Test files | Coverage                                                                                                                                                                                                                               |
+| ----------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/algorithm/aria/`         | 11         | `accname-computation`, `get-computed-aria-props`, `get-computed-role`, `get-implicit-role-spec`, `get-implicit-role`, `get-permitted-roles-spec`, `get-role-spec`, `has-required-owned-elements`, `is-exposed`, `matches-context-role` |
+| `src/algorithm/aria/accname/` | 3          | `aria-steps`, `compute`, `element-names`, `label-steps`                                                                                                                                                                                |
+| `src/utils/`                  | 4          | `get-attr-specs-spec`, `get-spec-by-tag-name`, `resolve-namespace`, `resolve-version`, `schema-to-spec`                                                                                                                                |
 
 ### Running tests
 
@@ -154,13 +155,12 @@ Tests depend on `@markuplint/test-tools` (devDependency) which provides HTML par
 
 ### Runtime dependencies
 
-| Package                 | Version | Purpose                                | Update risk               |
-| ----------------------- | ------- | -------------------------------------- | ------------------------- |
-| `@markuplint/ml-ast`    | 4.4.10  | `NamespaceURI` type                    | Low (internal)            |
-| `@markuplint/types`     | 4.8.1   | `Type` union for attribute value types | Medium (schema reference) |
-| `dom-accessibility-api` | 0.7.1   | AccName computation                    | Medium (spec compliance)  |
-| `is-plain-object`       | 5.0.0   | Plain object detection for AAM info    | Low (stable API)          |
-| `type-fest`             | 4.41.0  | `ReadonlyDeep` utility type            | Low (types only)          |
+| Package              | Version | Purpose                                | Update risk               |
+| -------------------- | ------- | -------------------------------------- | ------------------------- |
+| `@markuplint/ml-ast` | 4.4.10  | `NamespaceURI` type                    | Low (internal)            |
+| `@markuplint/types`  | 4.8.1   | `Type` union for attribute value types | Medium (schema reference) |
+| `is-plain-object`    | 5.0.0   | Plain object detection for AAM info    | Low (stable API)          |
+| `type-fest`          | 4.41.0  | `ReadonlyDeep` utility type            | Low (types only)          |
 
 ### Dev dependencies
 
@@ -171,7 +171,6 @@ Tests depend on `@markuplint/test-tools` (devDependency) which provides HTML par
 
 ### Updating dependencies
 
-- **`dom-accessibility-api`**: Updates may change AccName computation behavior. Run `accname-computation.spec.ts` tests after updating.
 - **`json-schema-to-typescript`**: Major version updates may change generated type output (formatting, optional handling). After updating, run `yarn workspace @markuplint/ml-spec run schema` and review diffs in `src/types/*.ts`.
 - **`@markuplint/types`**: Always run `yarn up:schema` after updating to ensure schema references stay consistent.
 - **`type-fest`**: Type-only dependency. Update freely, but verify the build succeeds (`yarn build --scope @markuplint/ml-spec`).
@@ -309,14 +308,6 @@ If you add a new algorithm function that computes expensive results, consider ad
 **Cause:** New versions may change formatting, optional handling, or type generation strategy.
 
 **Fix:** Review the diff carefully. If the types are semantically equivalent, commit the changes. If behavior changed (e.g., previously optional fields became required), investigate the `json-schema-to-typescript` changelog.
-
-### Test failures after `dom-accessibility-api` update
-
-**Symptom:** `accname-computation.spec.ts` fails after updating `dom-accessibility-api`.
-
-**Cause:** The library updated its AccName algorithm implementation, changing computed accessible names.
-
-**Fix:** Verify the new behavior against the [AccName 1.1 specification](https://www.w3.org/TR/accname-1.1/). If the library is now more spec-compliant, update the test expectations.
 
 ### Build error: generated type mismatch
 
