@@ -105,7 +105,7 @@ A private `WeakMap` that tracks the parent-child relationships between JSX expre
 | Method                | Purpose                                                                                                     |
 | --------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | `tokenize()`          | Invokes `jsxParser()` to parse source via TypeScript ESTree, extracts comments into state                   |
-| `parseError()`        | Converts TypeScript ESTree parse errors (with `lineNumber`/`column`) to `ParserError`                       |
+| `parseError()`        | Converts TypeScript ESTree parse errors to `ParserError` using `error.location.start` (see note below)      |
 | `nodeize()`           | Converts JSX AST nodes to markuplint nodes, handling comments, text, elements, fragments, and psblock nodes |
 | `afterTraverse()`     | Rebuilds parent-child relationships for psblock nodes using `#parentIdMap`                                  |
 | `afterFlattenNodes()` | Calls parent with `exposeWhiteSpace: false` and `exposeInvalidNode: false`                                  |
@@ -113,6 +113,12 @@ A private `WeakMap` that tracks the parent-child relationships between JSX expre
 | `visitAttr()`         | Handles JSX-specific quoting (`{}`), IDL attribute mapping, and dynamic value detection                     |
 | `parseCodeFragment()` | Delegates to parent with `namelessFragment: true`                                                           |
 | `detectElementType()` | Uses `/^[A-Z]                                                                                               | \./` regex to detect component vs HTML element |
+
+### Note: `parseError()` and TSError getter properties
+
+`TSError` from `@typescript-eslint/typescript-estree` exposes `lineNumber` and `column` as **prototype getter properties** rather than own properties. Some runtimes (e.g. Bun) fail the `'lineNumber' in error` check for these getters, which would cause a fallback to `super.parseError()` and default `col` to `0`.
+
+To avoid this, `parseError()` reads `error.location.start` directly -- an own property on `TSError` that reliably provides `{ line, column }` across all runtimes.
 
 ## JSX AST Extraction (jsx.ts)
 

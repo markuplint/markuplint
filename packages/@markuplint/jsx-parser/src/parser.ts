@@ -43,6 +43,11 @@ class JSXParser extends Parser<JSXNode, State> {
 	}
 
 	parseError(error: any) {
+		// TSError from @typescript-eslint/typescript-estree exposes
+		// `lineNumber` and `column` as prototype getter properties.
+		// Some runtimes (e.g. Bun) may fail the `in` check for these
+		// getters, so we read `error.location.start` (an own property
+		// on TSError) directly instead.
 		if (error instanceof Error && 'location' in error) {
 			const loc = error.location as { start?: { line: number; column: number } };
 			if (loc.start) {
