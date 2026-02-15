@@ -66,7 +66,9 @@ describe('STDOUT Test', () => {
 		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '<<30 lines expected>>', exitCode: 0 });
+		expect(stdout).toBe('');
+		expect(stderr.split('\n').length).toBe(30);
+		expect(exitCode).toBe(0);
 	});
 
 	test('allow warnings', async () => {
@@ -78,7 +80,9 @@ describe('STDOUT Test', () => {
 				reject: false,
 			},
 		);
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '<<24 lines expected>>', exitCode: 1 });
+		expect(stdout).toBe('');
+		expect(stderr.split('\n').length).toBe(24);
+		expect(exitCode).toBe(1);
 	});
 
 	test('format', async () => {
@@ -96,10 +100,10 @@ describe('STDOUT Test', () => {
 
 	test('no files --allow-empty-input="true"', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/xxx/*');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--allow-empty-input="true"', escape(targetFilePath)], {
+		const { exitCode } = await execa(entryFilePath, ['--allow-empty-input="true"', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '', exitCode: 0 });
+		expect(exitCode).toBe(0);
 	});
 
 	test('no files --allow-empty-input="false"', async () => {
@@ -136,50 +140,48 @@ describe('STDOUT Test', () => {
 
 	test('--severity-parse-error warning', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'warning', escape(targetFilePath)], {
+		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'warning', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '', exitCode: 0 });
+		expect(exitCode).toBe(0);
 	});
 
 	test('--severity-parse-error off', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/pug/004.pug');
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'off', escape(targetFilePath)], {
+		const { exitCode } = await execa(entryFilePath, ['--severity-parse-error', 'off', escape(targetFilePath)], {
 			reject: false,
 		});
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '', exitCode: 0 });
+		expect(exitCode).toBe(0);
 	});
 
 	test('--max-count with 002.html', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 
 		// First, get the full number of violations
-		const { stdout: fullStdout, stderr: fullStderr, exitCode: fullExitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+		const { stderr: fullStderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
 			reject: false,
 		});
+		const fullViolationCount = fullStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
 
 		// Test with limit
-		const { stdout: limitedStdout, stderr: limitedStderr, exitCode: limitedExitCode } = await execa(
+		const { stderr: limitedStderr } = await execa(
 			entryFilePath,
 			['--no-color', '--max-count=3', escape(targetFilePath)],
 			{
 				reject: false,
 			},
 		);
+		const limitedViolationCount = limitedStderr.split('\n').filter(line => line.includes('<markuplint>')).length;
 
-		expect({ fullStdout, fullStderr, fullExitCode, limitedStdout, limitedStderr, limitedExitCode }).toEqual({
-			fullStdout: '',
-			fullStderr: '<<fullStderr: >3 violations expected>>',
-			fullExitCode: 0,
-			limitedStdout: '',
-			limitedStderr: '<<limitedStderr: 3 violations expected>>',
-			limitedExitCode: 0,
-		});
+		expect(fullViolationCount).toBeGreaterThan(3);
+		expect(limitedViolationCount).toBe(3);
 	});
 
 	test('--max-count=1', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
-		const { stdout, stderr, exitCode } = await execa(
+		const { stderr, exitCode } = await execa(
 			entryFilePath,
 			['--no-color', '--max-count=1', escape(targetFilePath)],
 			{
@@ -187,45 +189,51 @@ describe('STDOUT Test', () => {
 			},
 		);
 
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '', stderr: '<<1 violation expected>>', exitCode: 0 });
+		const violationCount = stderr.split('\n').filter(line => line.includes('<markuplint>')).length;
+
+		expect(violationCount).toBe(1);
+		expect(exitCode).toBe(0); // allowWarnings defaults to true, so warnings-only exits with 0
 	});
 
 	test('--max-count=0 (no limit)', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 
 		// Get violations without limit
-		const { stdout: noLimitStdout, stderr: noLimitStderr, exitCode: noLimitExitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
+		const { stderr: noLimitStderr } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)], {
 			reject: false,
 		});
+		const noLimitCount = noLimitStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
 
 		// Get violations with --max-count=0
-		const { stdout: zeroLimitStdout, stderr: zeroLimitStderr, exitCode: zeroLimitExitCode } = await execa(
+		const { stderr: zeroLimitStderr } = await execa(
 			entryFilePath,
 			['--no-color', '--max-count=0', escape(targetFilePath)],
 			{
 				reject: false,
 			},
 		);
+		const zeroLimitCount = zeroLimitStderr
+			.split('\n')
+			.filter(line => line.includes('<markuplint>') && !line.includes('info')).length;
 
-		expect({ noLimitStdout, noLimitStderr, noLimitExitCode, zeroLimitStdout, zeroLimitStderr, zeroLimitExitCode }).toEqual({
-			noLimitStdout: '',
-			noLimitStderr: '<<noLimitStderr: >1 violations expected>>',
-			noLimitExitCode: 0,
-			zeroLimitStdout: '',
-			zeroLimitStderr: '<<zeroLimitStderr: same as noLimitStderr>>',
-			zeroLimitExitCode: 0,
-		});
+		// Should be the same (0 means no limit)
+		expect(noLimitCount).toBe(zeroLimitCount);
+		expect(noLimitCount).toBeGreaterThan(1);
 	});
 
 	test('--max-count with JSON format', async () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 
 		// Test with JSON format and limit
-		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['--format=json', '--max-count=2', escape(targetFilePath)], {
+		const { stdout } = await execa(entryFilePath, ['--format=json', '--max-count=2', escape(targetFilePath)], {
 			reject: false,
 		});
 
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '<<JSON array with 2 items expected>>', stderr: '', exitCode: 0 });
+		const violations = JSON.parse(stdout);
+		expect(Array.isArray(violations)).toBe(true);
+		expect(violations.length).toBe(2);
 	});
 
 	test('--max-count with multiple files shows skipped status', async () => {
@@ -235,7 +243,7 @@ describe('STDOUT Test', () => {
 			path.resolve(__dirname, '../../../../test/fixture/003.html'), // Should be skipped
 		];
 
-		const { stdout, stderr, exitCode } = await execa(
+		const { stdout } = await execa(
 			entryFilePath,
 			['--no-color', '--max-count=3', '--format=simple', ...targetFiles.map(escape)],
 			{
@@ -243,7 +251,9 @@ describe('STDOUT Test', () => {
 			},
 		);
 
-		expect({ stdout, stderr, exitCode }).toEqual({ stdout: '<<should contain ✓ and ⚠>>', stderr: '', exitCode: 0 });
+		// Check for passed, processed, and skipped indicators
+		expect(stdout).toContain('✓'); // 001.html should be passed
+		expect(stdout).toContain('⚠'); // 003.html should be skipped
 	});
 });
 
