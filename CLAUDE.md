@@ -19,6 +19,8 @@ Use the following skills and commands for common tasks. **Always invoke the appr
 | Skill             | Description                                            | File                                                  |
 | ----------------- | ------------------------------------------------------ | ----------------------------------------------------- |
 | framework-parsers | Create and maintain framework parser and spec packages | [SKILL.md](.claude/skills/framework-parsers/SKILL.md) |
+| product-manager   | Analyze, review, and generate documentation for repos  | [SKILL.md](.claude/skills/product-manager/SKILL.md)   |
+| qa-engineer       | Code reviews and test quality checks as a QA engineer  | [SKILL.md](.claude/skills/qa-engineer/SKILL.md)       |
 
 ### Package Skills
 

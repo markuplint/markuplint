@@ -29,7 +29,7 @@ description: Git manipulation rules
 
 # Package commit order (dependency-first)
 
-When committing changes that span multiple packages, always commit **from leaves to root** (dependencies before dependents). See `ARCHITECTURE.md` for the full dependency tree.
+When committing changes that span multiple packages, always commit **from leaves to root** (dependencies before dependents). See `docs/architectures/ARCHITECTURE.md` for the full dependency tree.
 
 | Tier | Packages                                                                                                          |
 | ---- | ----------------------------------------------------------------------------------------------------------------- |
