@@ -3,7 +3,8 @@ import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 import { ariaSpecs } from './aria-specs.js';
 import { isPresentational } from './is-presentational.js';
 
-import { getAccname } from './accname-computation.js';
+import { SVG_NAMESPACE } from '../../const/index.js';
+import { hasSvgAccessibleNameSource } from './accname/svg-helpers.js';
 import { getAttrSpecs } from '../../utils/get-attr-specs.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
@@ -141,18 +142,13 @@ export function getComputedRole(
 		// It doesn't been specified a valid explicit role.
 		(explicitRole.role === null || explicitRole.errorType != null) &&
 		// It is an SVG element.
-		el.namespaceURI === 'http://www.w3.org/2000/svg'
+		el.namespaceURI === SVG_NAMESPACE &&
+		!hasSvgAccessibleNameSource(el)
 	) {
-		const accname =
-			getAccname(el).trim() ||
-			[...el.children].find(child => ['title', 'desc'].includes(child.localName))?.textContent?.trim();
-
-		if (!accname) {
-			return {
-				el,
-				role: null,
-			};
-		}
+		return {
+			el,
+			role: null,
+		};
 	}
 
 	if (computedRole.role && !isPresentational(computedRole.role.name)) {

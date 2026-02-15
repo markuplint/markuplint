@@ -1,7 +1,11 @@
 export { getAttrSpecs as getAttrSpecsByNames } from './utils/get-attr-specs-spec.js';
 export * from './utils/aria-version.js';
 
+// Constants
+export { EMBEDDED_CONTROL_ROLES, isNativeEmbeddedControl } from './const/index.js';
+
 // ARIA algorithms
+export * from './algorithm/aria/accname/index.js';
 export * from './algorithm/aria/accname-computation.js';
 export * from './algorithm/aria/get-computed-aria-props.js';
 export * from './algorithm/aria/get-computed-role.js';

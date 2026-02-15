@@ -128,12 +128,13 @@ schema:json → schema:content-models → schema:attributes → schema:aria → 
 
 ### テストファイル
 
-パッケージには vitest を使用する 15 のテストファイルがあります:
+パッケージには vitest を使用する 18 のテストファイルがあります:
 
-| ディレクトリ          | テストファイル数 | カバレッジ                                                                                                                                                                                                                             |
-| --------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/algorithm/aria/` | 11               | `accname-computation`, `get-computed-aria-props`, `get-computed-role`, `get-implicit-role-spec`, `get-implicit-role`, `get-permitted-roles-spec`, `get-role-spec`, `has-required-owned-elements`, `is-exposed`, `matches-context-role` |
-| `src/utils/`          | 4                | `get-attr-specs-spec`, `get-spec-by-tag-name`, `resolve-namespace`, `resolve-version`, `schema-to-spec`                                                                                                                                |
+| ディレクトリ                  | テストファイル数 | カバレッジ                                                                                                                                                                                                                             |
+| ----------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/algorithm/aria/`         | 11               | `accname-computation`, `get-computed-aria-props`, `get-computed-role`, `get-implicit-role-spec`, `get-implicit-role`, `get-permitted-roles-spec`, `get-role-spec`, `has-required-owned-elements`, `is-exposed`, `matches-context-role` |
+| `src/algorithm/aria/accname/` | 3                | `aria-steps`, `compute`, `element-names`, `label-steps`                                                                                                                                                                                |
+| `src/utils/`                  | 4                | `get-attr-specs-spec`, `get-spec-by-tag-name`, `resolve-namespace`, `resolve-version`, `schema-to-spec`                                                                                                                                |
 
 ### テストの実行
 
@@ -154,13 +155,12 @@ yarn test packages/@markuplint/ml-spec/src/algorithm/aria/get-computed-role.spec
 
 ### ランタイム依存
 
-| パッケージ              | バージョン | 目的                               | 更新リスク         |
-| ----------------------- | ---------- | ---------------------------------- | ------------------ |
-| `@markuplint/ml-ast`    | 4.4.10     | `NamespaceURI` 型                  | 低（内部）         |
-| `@markuplint/types`     | 4.8.1      | 属性値型の `Type` ユニオン         | 中（スキーマ参照） |
-| `dom-accessibility-api` | 0.7.1      | AccName 計算                       | 中（仕様準拠）     |
-| `is-plain-object`       | 5.0.0      | AAM 情報のプレーンオブジェクト検出 | 低（安定 API）     |
-| `type-fest`             | 4.41.0     | `ReadonlyDeep` ユーティリティ型    | 低（型のみ）       |
+| パッケージ           | バージョン | 目的                               | 更新リスク         |
+| -------------------- | ---------- | ---------------------------------- | ------------------ |
+| `@markuplint/ml-ast` | 4.4.10     | `NamespaceURI` 型                  | 低（内部）         |
+| `@markuplint/types`  | 4.8.1      | 属性値型の `Type` ユニオン         | 中（スキーマ参照） |
+| `is-plain-object`    | 5.0.0      | AAM 情報のプレーンオブジェクト検出 | 低（安定 API）     |
+| `type-fest`          | 4.41.0     | `ReadonlyDeep` ユーティリティ型    | 低（型のみ）       |
 
 ### 開発依存
 
@@ -171,7 +171,6 @@ yarn test packages/@markuplint/ml-spec/src/algorithm/aria/get-computed-role.spec
 
 ### 依存関係の更新
 
-- **`dom-accessibility-api`**: 更新により AccName 計算の動作が変わる場合があります。更新後は `accname-computation.spec.ts` テストを実行してください。
 - **`json-schema-to-typescript`**: メジャーバージョン更新により、生成される型の出力が変わる場合があります（フォーマット、optional の扱い）。更新後は `yarn workspace @markuplint/ml-spec run schema` を実行し、`src/types/*.ts` の差分を確認してください。
 - **`@markuplint/types`**: 更新後は必ず `yarn up:schema` を実行して、スキーマ参照の一貫性を確保してください。
 - **`type-fest`**: 型のみの依存です。自由に更新できますが、ビルドが成功することを確認してください（`yarn build --scope @markuplint/ml-spec`）。
@@ -309,14 +308,6 @@ W3C 仕様が更新された場合（例: WAI-ARIA 1.3 が勧告になった場�
 **原因:** 新しいバージョンがフォーマット、optional の扱い、型生成戦略を変更した可能性がある。
 
 **対処:** 差分を注意深く確認してください。型が意味的に同等であれば、変更をコミットしてください。動作が変わった場合（例: 以前 optional だったフィールドが required になった）、`json-schema-to-typescript` のチェンジログを調査してください。
-
-### `dom-accessibility-api` 更新後のテスト失敗
-
-**症状:** `dom-accessibility-api` の更新後、`accname-computation.spec.ts` が失敗する。
-
-**原因:** ライブラリが AccName アルゴリズムの実装を更新し、計算されるアクセシブル名が変わった。
-
-**対処:** [AccName 1.1 仕様](https://www.w3.org/TR/accname-1.1/)に照らして新しい動作を確認してください。ライブラリがより仕様準拠になった場合は、テストの期待値を更新してください。
 
 ### ビルドエラー: 生成型の不一致
 

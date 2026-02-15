@@ -9,7 +9,7 @@ The implementation covers algorithms from the following specifications:
 - **WAI-ARIA 1.1 / 1.2 / 1.3** -- Role definitions, states, and properties
 - **HTML-AAM** (HTML Accessibility API Mappings) -- Implicit role mappings for HTML elements
 - **SVG-AAM** (SVG Accessibility API Mappings) -- Accessibility tree inclusion rules for SVG
-- **AccName 1.1** (Accessible Name and Description Computation) -- Accessible name computation
+- **AccName 1.2** (Accessible Name and Description Computation) -- Accessible name computation
 - **ARIA in HTML** -- Permitted roles and ARIA attribute constraints per element
 
 ### Design Principles
@@ -19,7 +19,7 @@ All ARIA algorithm functions share a consistent design:
 - They operate on the standard DOM `Element` interface, requiring no markuplint-specific node types.
 - They accept an `MLMLSpec` parameter containing the full markup language specification data.
 - They accept an `ARIAVersion` parameter (`'1.1'`, `'1.2'`, or `'1.3'`) to select version-specific behavior.
-- They are pure functions with no side effects (aside from internal caching in `getARIA`).
+- They are pure functions with no side effects (aside from internal caching in `getARIA` and a reentrant guard in `getAccname`).
 
 ## Role Computation Pipeline
 
@@ -88,7 +88,7 @@ The core function of the ARIA algorithm suite. It computes the final ARIA role f
 
 1. **Required context role validation** -- If the role has `requiredAccessibilityParentRole` entries (called `requiredContextRole` in ARIA 1.2), the function checks the parent hierarchy. If no parent element exists, returns `NO_OWNER`. If the parent hierarchy does not satisfy the context role conditions (via `matchesContextRole()`), returns `INVALID_REQUIRED_CONTEXT_ROLE`. Presentational ancestors are traversed transparently via `getNonPresentationalAncestor()`.
 
-2. **SVG accessibility tree inclusion** -- For SVG namespace elements without a valid explicit role, the function checks whether the element has an accessible name (via `getAccname()`) or a `<title>`/`<desc>` child element. If neither exists, the SVG element is excluded from the accessibility tree (returns `role: null`). This implements the SVG-AAM rules for including normally-omitted SVG elements.
+2. **SVG accessibility tree inclusion** -- For SVG namespace elements without a valid explicit role, the function checks whether the element has an accessible name source (via `hasSvgAccessibleNameSource()`) — i.e., `aria-label`, `aria-labelledby`, or a `<title>`/`<desc>` child element. If none exists, the SVG element is excluded from the accessibility tree (returns `role: null`). This implements the SVG-AAM rules for including normally-omitted SVG elements.
 
 3. **Interactive element protection** -- Focusable elements cannot be presentational. The function checks `mayBeFocusable()` and ensures the element is not `disabled`, `inert`, or `hidden` (traversing ancestors for each attribute). If the element is interactive and not disabled/inert/hidden, the presentational role is overridden with the implicit role and `INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL` error.
 
@@ -389,25 +389,140 @@ Returns an empty record if the element has no computed role.
 
 ---
 
-### 10. `getAccname(el): string`
+### 10. `getAccname(el, specs, version): string`
 
 **Source:** `src/algorithm/aria/accname-computation.ts`
 
-Computes the accessible name for an element using the WAI-ARIA Accessible Name and Description Computation algorithm.
+Computes the accessible name for a DOM element using the HTML-AAM §4.1 algorithm. This is the public facade that creates a DOM-based resolver and delegates to the pure `computeAccessibleName()` function.
 
 **Parameters:**
 
-| Parameter | Type      | Description     |
-| --------- | --------- | --------------- |
-| `el`      | `Element` | The DOM element |
+| Parameter | Type          | Description                                     |
+| --------- | ------------- | ----------------------------------------------- |
+| `el`      | `Element`     | The DOM element                                 |
+| `specs`   | `MLMLSpec`    | The full markup language specification          |
+| `version` | `ARIAVersion` | The ARIA specification version for role queries |
 
 **Returns:** `string` -- the computed accessible name, or an empty string if none is found.
 
-**Algorithm:**
+**Architecture:**
 
-1. Delegates to `computeAccessibleName()` from the `dom-accessibility-api` library, which implements the full AccName 1.1 algorithm.
-2. **Fallback for `<input>` elements:** If the computed name is empty (after trimming), returns the `placeholder` attribute value (trimmed).
-3. Returns an empty string if no name is found through any method.
+The implementation is split into two layers:
+
+- **`accname-computation.ts`** (facade): Creates a DOM-based `AccnameResolver`, handles reentrant guard for `:aria(has name)` selector cycles, and delegates to the pure algorithm.
+- **`accname/compute.ts`** (pure algorithm): Implements Steps 2A–2I of AccName 1.2 §4.3.2 using only the `AccnameElement` and `AccnameResolver` interfaces, with no dependency on the DOM or markuplint types.
+
+**Algorithm (AccName 1.2 §4.3.2):**
+
+1. **Step 2A — Hidden check:** If the element is hidden and not referenced by `aria-labelledby`, return empty.
+2. **Step 2B – `aria-labelledby`:** Resolve referenced elements, compute their names recursively (with cycle prevention via visited set).
+3. **Step 2D – `aria-label`:** Use the `aria-label` attribute value if non-empty.
+4. **Step 2E – Element-specific name:** Apply HTML-AAM §4.1 rules (label association, `<img alt>`, `<input value>`, `<fieldset>` legend, `<table>` caption, SVG `<title>`, etc.).
+5. **Step 2F – Name from content:** If the element's role allows name-from-content, or the element is referenced by `aria-labelledby`, recursively collect text from child nodes (with embedded control value extraction per Step 2C).
+6. **Step 2I – Title fallback:** Use the `title` attribute value.
+
+**Reentrant guard:** `getAccname` uses a `WeakSet<Element>` to prevent infinite recursion when `getComputedRole` evaluates `:aria(has name)` selectors that call back into `getAccname`.
+
+#### AccName Algorithm Control Flow
+
+The following diagram shows the full control flow of the accessible name computation algorithm, mapping each step to its implementation file.
+
+```mermaid
+flowchart TB
+    Start([Element]) --> Facade["getAccname()\n<i>accname-computation.ts</i>"]
+    Facade --> Guard{"Reentrant\nguard?"}
+    Guard -->|"Already computing"| Empty(["Return ''"])
+    Guard -->|"First call"| Resolver["createDomResolver()\n<i>accname-computation.ts</i>"]
+    Resolver --> Compute["computeAccessibleName()\n<i>compute.ts</i>"]
+
+    Compute --> Hidden{"Hidden &\nnot in\nlabelledby?"}
+    Hidden -->|Yes| EmptyResult(["Return empty"])
+    Hidden -->|No| Precomp{"getPrecomputedName?\n<i>[Implementation-specific]</i>"}
+
+    Precomp -->|"Has value"| PrecompResult(["Return precomputed name"])
+    Precomp -->|"No"| Step2B
+
+    subgraph step2b ["Step 2B — aria-labelledby (aria-steps.ts)"]
+        Step2B{"aria-labelledby\npresent &\nnot in labelledby\ntraversal?"}
+        Step2B -->|Yes| SplitIDs["Split IDREFs by whitespace"]
+        SplitIDs --> ForEachID["For each IDREF:\n• Skip visited (allow self-ref)\n• getElementById()\n• Recurse with inLabelledby=true"]
+        ForEachID --> JoinParts["Join parts with space"]
+    end
+
+    Step2B -->|"No / empty"| Step2D
+    JoinParts -->|"Has name"| LabelledbyResult(["Return name\nsource: aria-labelledby"])
+
+    subgraph step2d ["Step 2D — aria-label (aria-steps.ts)"]
+        Step2D{"aria-label\nnon-empty?"}
+    end
+
+    Step2D -->|Yes| AriaLabelResult(["Return name\nsource: aria-label"])
+    Step2D -->|No| Step2E
+
+    subgraph step2e ["Step 2E — Element-specific (element-names.ts)"]
+        Step2E["getElementSpecificName()"]
+        Step2E --> Dispatch{"Element\ntype?"}
+        Dispatch -->|"SVG"| SVGTitle["SVG: title child\n<i>SVG-AAM §8.1</i>"]
+        Dispatch -->|"input"| InputType["Input: branch by type\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"button"| BtnLabel["Label → content\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"fieldset"| Legend["Legend content\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"table"| Caption["Caption content\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"img"| ImgAlt["alt attr\n<i>HTML-AAM §4.1</i>"]
+        Dispatch -->|"Other"| LabelAssoc["label-steps.ts:\nLabel association\n<i>for= / ancestor</i>"]
+    end
+
+    Step2E -->|"Has name"| ElementResult(["Return name\nsource: element-specific"])
+    Step2E -->|"null"| Step2F
+
+    subgraph step2f ["Step 2F/2C — Name from content (helpers.ts)"]
+        Step2F{"Role allows\nnameFrom: content\nOR in labelledby\ntraversal?"}
+        Step2F -->|Yes| WalkChildren["resolveNameFromContent():\nFor each child node:"]
+        WalkChildren --> ChildType{"Node\ntype?"}
+        ChildType -->|"Text"| TextContent["Use textContent"]
+        ChildType -->|"Embedded\ncontrol"| EmbedValue["getEmbeddedControlValue()\n<i>AccName §4.3.2 Step 2C</i>"]
+        ChildType -->|"Element"| RecurseChild["Recurse computeFn();\nif no name → collectTextContent()\n<i>[Implementation-specific]</i>"]
+        TextContent --> JoinSpaces["Join with space"]
+        EmbedValue --> JoinSpaces
+        RecurseChild --> JoinSpaces
+    end
+
+    Step2F -->|"No"| Step2I
+    JoinSpaces -->|"Has name"| ContentResult(["Return name\nsource: content"])
+    JoinSpaces -->|"Empty"| Step2I
+
+    subgraph step2i ["Step 2I — Title fallback"]
+        Step2I{"title attr\nnon-empty?"}
+    end
+
+    Step2I -->|Yes| TitleResult(["Return name\nsource: title"])
+    Step2I -->|No| FinalEmpty(["Return empty"])
+```
+
+#### W3C Specification References
+
+| Spec                                                | Section            | Description                                       |
+| --------------------------------------------------- | ------------------ | ------------------------------------------------- |
+| [AccName 1.2](https://www.w3.org/TR/accname-1.2/)   | §4.3.2             | Computation Steps (Steps 2A–2I)                   |
+| [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) | §4.1               | Accessible Name and Description Computation       |
+| [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) | §4.1 (per element) | Element-specific name computation rules           |
+| [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/)   | §5.1.1, §8.1       | SVG accessibility tree inclusion and name mapping |
+
+#### Implementation-Specific Extensions
+
+The following behaviors extend beyond the strict AccName specification:
+
+| Extension                                            | Location                 | Rationale                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pre-computed name (`getPrecomputedName`)             | `compute.ts`             | Supports ml-core's Pretender integration for framework components                                                                                                                                                                                                                                                                            |
+| Transparent text collection (`collectTextContent`)   | `helpers.ts`             | Collects text from intermediate elements (e.g., `<span>` inside `<button>`) whose roles do not include `nameFrom: ["content"]`                                                                                                                                                                                                               |
+| `<select>` selected option (`getSelectedOptionText`) | `helpers.ts`             | Static approximation of selected option text via `selected` attribute. Customizable `<select>` ([#2069](https://github.com/markuplint/markuplint/issues/2069)) will require: (1) `collectOptions` to skip new child types (`<button>`, `<datalist>`, `<selectedcontent>`), (2) evaluate whether `<selectedcontent>` affects name computation |
+| Reentrant guard (`computingElements` WeakSet)        | `accname-computation.ts` | Prevents infinite recursion from `:aria(has name)` pseudo-class in `getComputedRole` → `getARIA` → `matches` chain                                                                                                                                                                                                                           |
+
+#### Known Limitations
+
+| Limitation                                   | AccName Reference | Description                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CSS-generated content (`::before`/`::after`) | §4.3.2 Step 2G    | The AccName spec requires CSS-generated textual content (via the `content` property on `::before`/`::after` pseudo-elements) to be included in the accumulated text. Markuplint performs static HTML analysis without CSS processing, so this content is unavailable at lint time. Elements relying solely on CSS-generated content for their accessible name will not be detected. |
 
 ---
 
@@ -679,7 +794,7 @@ The ARIA algorithms implement behavior defined in the following W3C specificatio
 - [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/) -- Accessible Rich Internet Applications, primary reference
 - [WAI-ARIA 1.1](https://www.w3.org/TR/wai-aria-1.1/) -- Previous version, still supported
 - [HTML-AAM 1.0](https://www.w3.org/TR/html-aam-1.0/) -- HTML Accessibility API Mappings (implicit role mappings)
-- [AccName 1.1](https://www.w3.org/TR/accname-1.1/) -- Accessible Name and Description Computation
+- [AccName 1.2](https://www.w3.org/TR/accname-1.2/) -- Accessible Name and Description Computation
 - [SVG-AAM 1.0](https://www.w3.org/TR/svg-aam-1.0/) -- SVG Accessibility API Mappings
 - [DPub-ARIA 1.1](https://w3c.github.io/dpub-aria/) -- Digital Publishing WAI-ARIA Module (DPub roles)
 - [ARIA in HTML](https://www.w3.org/TR/html-aria/) -- Permitted roles and ARIA attribute constraints per HTML element

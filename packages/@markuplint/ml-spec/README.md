@@ -54,7 +54,7 @@ Generated TypeScript types (do not edit directly):
 
 **WAI-ARIA Specification Algorithms**:
 
-- **Accessible Name Computation** - W3C AccName 1.1 compliant (via `dom-accessibility-api`)
+- **Accessible Name Computation** - W3C AccName 1.2 / HTML-AAM §4.1 compliant (`src/algorithm/aria/accname/`)
 - **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/algorithm/aria/get-computed-role.ts`)
 - **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/algorithm/aria/is-exposed.ts`)
 - **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/algorithm/aria/get-computed-aria-props.ts`)
@@ -84,7 +84,7 @@ Generated TypeScript types (do not edit directly):
 - **Spec Resolution**: `getSpecByTagName`, `getAttrSpecs`, `getRoleSpec`
 - **Content Model Utilities**: `getContentModel`, `isPalpableElements`, `isVoidElement`
 - **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`
-- **Accessibility Utilities**: `accnameComputation`, `isExposed`, `mayBeFocusable`
+- **Accessibility Utilities**: `getAccname`, `isExposed`, `mayBeFocusable`
 - **Schema Utilities**: `schemaToSpec`, `resolveNamespace`, `validateAriaVersion`
 - **Framework Extension**: Merges base HTML specs with framework-specific extensions
 
