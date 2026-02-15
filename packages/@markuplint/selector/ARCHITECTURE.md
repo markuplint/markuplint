@@ -130,6 +130,8 @@ DOM `Element`, JSDOM elements, and `MLElement` all satisfy `SelectorElement` via
 
 Extended pseudo-classes (`:aria()`, `:role()`, `:model()`) receive a `SelectorElement` and cast to `Element` at the `@markuplint/ml-spec` boundary where full DOM APIs are required.
 
+Because `@markuplint/selector` sits below `@markuplint/ml-core` in the dependency graph, it cannot reference `MLElement` directly. The `:aria()` pseudo-class uses duck-typing (`'getAccessibleName' in el`) to detect whether the element provides a cached accessible name method. This allows the selector to share `MLElement`'s per-element memoization cache without introducing a circular dependency.
+
 ## Core Internal Classes
 
 The CSS matching system uses a hierarchy of four classes:
@@ -180,11 +182,11 @@ type ExtendedPseudoClass = Record<string, (content: string) => (el: SelectorElem
 
 Three pseudo-classes are built in:
 
-| Pseudo-Class                                   | Module                          | Description                                                       |
-| ---------------------------------------------- | ------------------------------- | ----------------------------------------------------------------- |
-| `:aria(has name)` / `:aria(has no name)`       | `aria-pseudo-class.ts`          | Matches elements by accessible name presence using `getAccname()` |
-| `:role(roleName)` / `:role(roleName\|version)` | `aria-role-pseudo-class.ts`     | Matches elements by computed ARIA role using `getComputedRole()`  |
-| `:model(category)`                             | `content-model-pseudo-class.ts` | Matches elements belonging to an HTML content model category      |
+| Pseudo-Class                                   | Module                          | Description                                                                                                                            |
+| ---------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `:aria(has name)` / `:aria(has no name)`       | `aria-pseudo-class.ts`          | Matches elements by accessible name presence (uses `MLElement.getAccessibleName()` cache when available, falls back to `getAccname()`) |
+| `:role(roleName)` / `:role(roleName\|version)` | `aria-role-pseudo-class.ts`     | Matches elements by computed ARIA role using `getComputedRole()`                                                                       |
+| `:model(category)`                             | `content-model-pseudo-class.ts` | Matches elements belonging to an HTML content model category                                                                           |
 
 All extended pseudo-classes have a specificity of `[0, 1, 0]`.
 

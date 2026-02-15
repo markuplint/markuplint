@@ -204,14 +204,14 @@ MLToken<A extends MLASTToken>
 
 ### 主要メソッド
 
-| メソッド                          | 説明                                                                                          |
-| --------------------------------- | --------------------------------------------------------------------------------------------- |
-| `walkOn(type, walker)`            | 指定した型（`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`）のノードを走査 |
-| `setRule(rule)`                   | 現在のルールを設定（検証時に `MLCore` が使用）                                                |
-| `getTokenList()`                  | ソース再構築用の全トークンを返す                                                              |
-| `searchNodeByLocation(line, col)` | 指定したソース位置のノードを検索                                                              |
-| `getAccessibilityProp(node)`      | ARIA アクセシビリティプロパティを計算                                                         |
-| `toString(fixed?)`                | ソースコードを再構築（オプションで修正適用）                                                  |
+| メソッド                          | 説明                                                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `walkOn(type, walker)`            | 指定した型（`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`）のノードを走査                       |
+| `setRule(rule)`                   | 現在のルールを設定（検証時に `MLCore` が使用）                                                                      |
+| `getTokenList()`                  | ソース再構築用の全トークンを返す                                                                                    |
+| `searchNodeByLocation(line, col)` | 指定したソース位置のノードを検索                                                                                    |
+| `getAccessibilityProp(node)`      | ARIA アクセシビリティプロパティを計算（`MLElement.getAccessibleName()` のキャッシュ経由でアクセシブルネームを取得） |
+| `toString(fixed?)`                | ソースコードを再構築（オプションで修正適用）                                                                        |
 
 ## MLElement
 
@@ -232,15 +232,16 @@ MLToken<A extends MLASTToken>
 
 ### 主要メソッド
 
-| メソッド                     | 説明                                                           |
-| ---------------------------- | -------------------------------------------------------------- |
-| `getAttribute(name)`         | 属性値または `null` を返す                                     |
-| `getAttributeToken(name)`    | 名前付き属性の `MLAttr[]` を返す                               |
-| `hasAttribute(name)`         | 属性の存在を確認                                               |
-| `matches(selector)`          | CSS セレクタマッチング                                         |
-| `matchMLSelector(selector)`  | 拡張 markuplint セレクタマッチング（`RegexSelector` サポート） |
-| `querySelector(selector)`    | 最初にマッチする子孫を検索                                     |
-| `querySelectorAll(selector)` | マッチするすべての子孫を検索                                   |
+| メソッド                     | 説明                                                                |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `getAttribute(name)`         | 属性値または `null` を返す                                          |
+| `getAttributeToken(name)`    | 名前付き属性の `MLAttr[]` を返す                                    |
+| `hasAttribute(name)`         | 属性の存在を確認                                                    |
+| `getAccessibleName(version)` | キャッシュ付きアクセシブルネーム計算（ARIA バージョンごとにメモ化） |
+| `matches(selector)`          | CSS セレクタマッチング                                              |
+| `matchMLSelector(selector)`  | 拡張 markuplint セレクタマッチング（`RegexSelector` サポート）      |
+| `querySelector(selector)`    | 最初にマッチする子孫を検索                                          |
+| `querySelectorAll(selector)` | マッチするすべての子孫を検索                                        |
 
 ## ルールシステム
 

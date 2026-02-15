@@ -130,6 +130,8 @@ DOM `Element`、JSDOM 要素、`MLElement` はすべて構造的型付けによ�
 
 拡張擬似クラス（`:aria()`、`:role()`、`:model()`）は `SelectorElement` を受け取り、完全な DOM API が必要な `@markuplint/ml-spec` 境界で `Element` にキャストします。
 
+`@markuplint/selector` は依存グラフ上 `@markuplint/ml-core` より下位に位置するため、`MLElement` を直接参照できません。`:aria()` 擬似クラスはダックタイピング（`'getAccessibleName' in el`）により、要素がキャッシュ付きアクセシブルネームメソッドを持つかを検出します。これにより、循環依存を導入することなく `MLElement` の要素単位メモ化キャッシュをセレクタから共有できます。
+
 ## コア内部クラス
 
 CSS マッチングシステムは 4 つのクラスの階層で構成されます:
@@ -180,11 +182,11 @@ type ExtendedPseudoClass = Record<string, (content: string) => (el: SelectorElem
 
 3 つの擬似クラスが組み込まれています:
 
-| 擬似クラス                                     | モジュール                      | 説明                                                                   |
-| ---------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------- |
-| `:aria(has name)` / `:aria(has no name)`       | `aria-pseudo-class.ts`          | `getAccname()` を使用してアクセシブルネームの有無で要素をマッチング    |
-| `:role(roleName)` / `:role(roleName\|version)` | `aria-role-pseudo-class.ts`     | `getComputedRole()` を使用して計算された ARIA ロールで要素をマッチング |
-| `:model(category)`                             | `content-model-pseudo-class.ts` | HTML コンテンツモデルカテゴリに属する要素をマッチング                  |
+| 擬似クラス                                     | モジュール                      | 説明                                                                                                                                         |
+| ---------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `:aria(has name)` / `:aria(has no name)`       | `aria-pseudo-class.ts`          | アクセシブルネームの有無で要素をマッチング（`MLElement.getAccessibleName()` のキャッシュを利用、フォールバックとして `getAccname()` を使用） |
+| `:role(roleName)` / `:role(roleName\|version)` | `aria-role-pseudo-class.ts`     | `getComputedRole()` を使用して計算された ARIA ロールで要素をマッチング                                                                       |
+| `:model(category)`                             | `content-model-pseudo-class.ts` | HTML コンテンツモデルカテゴリに属する要素をマッチング                                                                                        |
 
 すべての拡張擬似クラスの詳細度は `[0, 1, 0]` です。
 
