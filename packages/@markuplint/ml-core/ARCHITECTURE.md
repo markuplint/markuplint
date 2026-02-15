@@ -204,14 +204,14 @@ The constructor receives an `MLASTDocument`, a `Ruleset`, and an `MLSchema` tupl
 
 ### Key Methods
 
-| Method                            | Description                                                                                     |
-| --------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `walkOn(type, walker)`            | Walks nodes of a given type (`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`) |
-| `setRule(rule)`                   | Sets the current rule, used by `MLCore` during verification                                     |
-| `getTokenList()`                  | Returns all tokens for source reconstruction                                                    |
-| `searchNodeByLocation(line, col)` | Finds the node at a given source position                                                       |
-| `getAccessibilityProp(node)`      | Computes ARIA accessibility properties                                                          |
-| `toString(fixed?)`                | Reconstructs source code, optionally with fixes applied                                         |
+| Method                            | Description                                                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `walkOn(type, walker)`            | Walks nodes of a given type (`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`)                  |
+| `setRule(rule)`                   | Sets the current rule, used by `MLCore` during verification                                                      |
+| `getTokenList()`                  | Returns all tokens for source reconstruction                                                                     |
+| `searchNodeByLocation(line, col)` | Finds the node at a given source position                                                                        |
+| `getAccessibilityProp(node)`      | Computes ARIA accessibility properties (delegates to `MLElement.getAccessibleName()` for cached accessible name) |
+| `toString(fixed?)`                | Reconstructs source code, optionally with fixes applied                                                          |
 
 ## MLElement
 
@@ -237,6 +237,7 @@ The constructor receives an `MLASTDocument`, a `Ruleset`, and an `MLSchema` tupl
 | `getAttribute(name)`         | Returns attribute value or `null`                                |
 | `getAttributeToken(name)`    | Returns `MLAttr[]` for the named attribute                       |
 | `hasAttribute(name)`         | Checks attribute existence                                       |
+| `getAccessibleName(version)` | Cached accessible name computation (memoized per ARIA version)   |
 | `matches(selector)`          | CSS selector matching                                            |
 | `matchMLSelector(selector)`  | Extended markuplint selector matching (supports `RegexSelector`) |
 | `querySelector(selector)`    | Finds first matching descendant                                  |
