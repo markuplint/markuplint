@@ -24,7 +24,6 @@ import {
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
 
-import { getAccname } from '../helper/accname.js';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
@@ -2975,6 +2974,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * ARIA role, accessible name, focusability, and ARIA property values.
 	 * Returns null for non-element nodes.
 	 *
+	 * The accessible name is obtained via `node.getAccessibleName()` so that
+	 * the per-element memoization cache is shared with other consumers
+	 * (rules, selectors). See {@link MLElement.getAccessibleName}.
+	 *
 	 * @param node - The node to compute accessibility properties for
 	 * @param ariaVersion - The ARIA specification version to use for computation
 	 * @returns The computed accessibility properties, or null for non-element nodes
@@ -3009,7 +3012,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		};
 
 		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-		const name = getAccname(node, ariaVersion).trim();
+		const name = node.getAccessibleName(ariaVersion).trim();
 		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
