@@ -43,10 +43,11 @@ class JSXParser extends Parser<JSXNode, State> {
 	}
 
 	parseError(error: any) {
-		if (error instanceof Error && 'lineNumber' in error && 'column' in error) {
+		if (error instanceof Error && 'location' in error && error.location?.start) {
+			const { line, column } = error.location.start;
 			return new ParserError(error.message, {
-				line: error.lineNumber as number,
-				col: error.column as number,
+				line,
+				col: column,
 			});
 		}
 		return super.parseError(error);
