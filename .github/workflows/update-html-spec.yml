@@ -1,0 +1,104 @@
+name: Update HTML Spec
+
+on:
+    schedule:
+        - cron: '0 0 * * 1' # Weekly on Monday at 00:00 UTC
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    pull-requests: write
+
+env:
+    BRANCH_NAME: auto/update-html-spec
+    NODE_BUILD_VERSION: 24
+    NX_DISABLE_DB: true
+
+jobs:
+    update-html-spec:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  ref: dev
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Build
+              run: yarn build
+
+            - name: Run up:gen
+              run: yarn up:gen
+
+            - name: Check for changes
+              id: changes
+              run: |
+                  if git diff --quiet; then
+                    echo "has_changes=false" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "has_changes=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Check for existing open PR
+              if: steps.changes.outputs.has_changes == 'true'
+              id: existing-pr
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  PR_NUMBER=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
+                  if [ -n "$PR_NUMBER" ]; then
+                    echo "pr_exists=true" >> "$GITHUB_OUTPUT"
+                    echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "pr_exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Commit and push changes
+              if: steps.changes.outputs.has_changes == 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git checkout -B "$BRANCH_NAME"
+                  git add -A
+                  git commit -m "chore: update html-spec generated data"
+                  git push --force origin "$BRANCH_NAME"
+
+            - name: Create PR
+              if: steps.changes.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'false'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh pr create \
+                    --base dev \
+                    --head "$BRANCH_NAME" \
+                    --title "chore: update html-spec generated data" \
+                    --body "Automated update of \`@markuplint/html-spec\` generated data.
+
+                  This PR was created automatically by the **Update HTML Spec** workflow.
+                  It runs \`yarn up:gen\` to regenerate the HTML spec data from the latest HTML Living Standard.
+
+                  If this PR is outdated, it will be updated automatically on the next scheduled run." \
+                    --label "Specs"
