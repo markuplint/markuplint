@@ -38,7 +38,7 @@
 		"site:build": "cd website && yarn install && yarn run site:build",
 		"site:up": "cd website && yarn install && yarn run site:up",
 		"apidoc": "typedoc --options ./typedoc.json",
-		"prepare": "husky",
+		"postinstall": "husky",
 		"cli": "npx markuplint",
 		"create-rule": "npx @markuplint/create-rule",
 		"commit": "cz",
