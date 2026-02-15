@@ -9584,16 +9584,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"heapdump@npm:0.3.15":
-  version: 0.3.15
-  resolution: "heapdump@npm:0.3.15"
-  dependencies:
-    nan: "npm:^2.13.2"
-    node-gyp: "npm:latest"
-  checksum: 10c0/506b06e91bec4952cccd144b3232033ca82e0c87e5e9decf63cacb5c16d785e4ba2fe6dcb6202555f7282f221225432f9126d4ec7dc3754a42c4fdfc3dd74be7
-  languageName: node
-  linkType: hard
-
 "hermes-estree@npm:0.25.1":
   version: 0.25.1
   resolution: "hermes-estree@npm:0.25.1"
@@ -11894,7 +11884,6 @@ __metadata:
     cz-conventional-changelog: "npm:3.3.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.0.1"
-    heapdump: "npm:0.3.15"
     husky: "npm:9.1.7"
     lerna: "npm:9.0.4"
     lint-staged: "npm:16.2.7"
@@ -12657,15 +12646,6 @@ __metadata:
   version: 2.0.0
   resolution: "mute-stream@npm:2.0.0"
   checksum: 10c0/2cf48a2087175c60c8dcdbc619908b49c07f7adcfc37d29236b0c5c612d6204f789104c98cc44d38acab7b3c96f4a3ec2cfdc4934d0738d876dbefa2a12c69f4
-  languageName: node
-  linkType: hard
-
-"nan@npm:^2.13.2":
-  version: 2.25.0
-  resolution: "nan@npm:2.25.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/add28b255a880f705f937b6276550ebc09274e8ea9d0e8f598f286c817aedfba22223844297840e597a478d7264537294f8c1eda0eb33a228b7aee57ecf52d45
   languageName: node
   linkType: hard
 
