@@ -77,24 +77,36 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 - **Full build**: `yarn build` (no arguments)
 - **Single package**: `yarn build --scope @markuplint/<package>`
 
-## Worktree Usage
+## Worktree Usage (MANDATORY)
 
-When working on feature branches that involve multiple PRs or long-running tasks,
-**proactively use `git worktree`** to avoid blocking the user's main working directory.
+**CRITICAL: Direct commits to `dev` are BLOCKED. All work requires a feature branch.**
+**CRITICAL: NEVER create a feature branch in the main working directory. ALWAYS use `git worktree`.**
 
-```bash
-git worktree add /tmp/markuplint-worktree -b <branch-name> dev
-cd /tmp/markuplint-worktree
-yarn install
-yarn build   # Required before yarn up:gen works
-```
+The main working directory MUST stay on `dev` at all times. Any feature branch work — no matter how small (even a single-file docs change) — MUST be done in a worktree.
+
+### Procedure
+
+1. **Check for existing worktrees first**: `git worktree list`
+   - If the target branch already has a worktree, work there
+2. **Create a new worktree** for new branches:
+   ```bash
+   git worktree add ../markuplint-worktree-<short-name> -b <branch-name> dev
+   ```
+3. **Install and build** in the worktree before any work:
+   ```bash
+   cd ../markuplint-worktree-<short-name>
+   yarn install
+   yarn build
+   ```
+4. **Do all edits, commits, and pushes** from within the worktree
+5. **Clean up** when done:
+   ```bash
+   git worktree remove ../markuplint-worktree-<short-name>
+   git branch -D <branch-name>   # only if branch was merged
+   ```
 
 ### Important Notes
 
-- **Always run `yarn install && yarn build`** in the worktree before any generation or test commands
-- **Husky hooks do NOT run in worktrees** — run `yarn lint` manually before committing
-- Clean up worktrees when done:
-  ```bash
-  git worktree remove /tmp/markuplint-worktree
-  git branch -D <temp-branch-name>
-  ```
+- **Husky hooks do NOT run in worktrees** — run `yarn lint` manually before every commit
+- **NEVER run `git checkout <branch>` or `git switch` in the main working directory** — use worktrees instead
+- If you catch yourself about to create a branch in the main repo, STOP and use a worktree
