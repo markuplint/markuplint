@@ -12,7 +12,7 @@ Create and maintain framework parser and spec packages for markuplint.
 
 ## Architecture
 
-See [FRAMEWORK-PARSERS-ARCHITECTURE.md](../../../architectures/FRAMEWORK-PARSERS-ARCHITECTURE.md) for the overall design, parser hierarchy, and extension patterns.
+See [FRAMEWORK-PARSERS-ARCHITECTURE.md](../../../docs/architectures/FRAMEWORK-PARSERS-ARCHITECTURE.md) for the overall design, parser hierarchy, and extension patterns.
 
 For individual package details, see each package's `ARCHITECTURE.md` and `docs/maintenance.md`.
 
