@@ -30,6 +30,7 @@ describe('Event notification', () => {
 			'markuplint:performance',
 			'markuplint:security',
 			'markuplint:rdfa',
+			'markuplint:compat',
 			'markuplint:recommended',
 			path.resolve('test/fixture/.markuplintrc'),
 		]);

@@ -5,6 +5,7 @@
 		"markuplint:a11y",
 		"markuplint:performance",
 		"markuplint:security",
-		"markuplint:rdfa"
+		"markuplint:rdfa",
+		"markuplint:compat"
 	]
 }

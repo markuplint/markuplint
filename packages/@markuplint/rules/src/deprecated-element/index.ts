@@ -3,12 +3,10 @@ import { createRule, getSpec } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * Rule that reports the use of deprecated, obsolete, or non-standard HTML
- * elements.
+ * Rule that reports the use of deprecated or obsolete HTML elements.
  *
  * Walks HTML and SVG elements and checks their spec status. Reports any
- * element that is marked as deprecated, obsolete, or non-standard in the
- * HTML specification.
+ * element that is marked as deprecated or obsolete in the HTML specification.
  */
 export default createRule({
 	meta: meta,
@@ -24,11 +22,11 @@ export default createRule({
 				return;
 			}
 			const spec = getSpec(el, document.specs.specs);
-			if (spec && (spec.obsolete != null || spec.deprecated || spec.nonStandard)) {
+			if (spec && (spec.obsolete != null || spec.deprecated)) {
 				const message = t(
 					'{0} is {1:c}',
 					t('the "{0*}" {1}', el.localName, 'element'),
-					spec.deprecated ? 'deprecated' : spec.obsolete == null ? 'non-standard' : 'obsolete',
+					spec.deprecated ? 'deprecated' : 'obsolete',
 				);
 				report({
 					scope: el,

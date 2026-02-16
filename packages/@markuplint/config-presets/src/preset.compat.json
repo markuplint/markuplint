@@ -1,0 +1,9 @@
+{
+	"rules": {
+		"no-unsupported-features": {
+			"options": {
+				"checkNonStandard": true
+			}
+		}
+	}
+}

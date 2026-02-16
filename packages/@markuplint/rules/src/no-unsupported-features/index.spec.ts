@@ -1,0 +1,245 @@
+import { mlRuleTest } from 'markuplint';
+import { describe, test, expect } from 'vitest';
+
+import rule from './index.js';
+
+describe('browser support (BCD-based)', () => {
+	test('element not supported in IE 11', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+				},
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('element');
+		expect(violations[0]?.message).toContain('Internet Explorer');
+	});
+
+	test('common element supported everywhere', async () => {
+		const { violations } = await mlRuleTest(rule, '<div></div>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+				},
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('attribute not supported in old browsers', async () => {
+		// Use <dialog> + closedby which was added more recently in browsers
+		// The dialog element itself may also be unsupported, so we check attribute-specific violations
+		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+				},
+			},
+		});
+		// At minimum, the dialog element is unsupported in IE
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+		expect(violations[0]?.message).toContain('"dialog"');
+	});
+
+	test('common attribute supported everywhere', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="text">', {
+			rule: {
+				options: {
+					browserslist: 'chrome 130',
+				},
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('multiple browsers - only unsupported ones reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
+			rule: {
+				options: {
+					browserslist: ['chrome 130', 'ie 11'],
+				},
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('Internet Explorer');
+		expect(violations[0]?.message).not.toContain('Chrome');
+	});
+});
+
+describe('attribute-only unsupported (element is supported)', () => {
+	test('element supported but attribute unsupported', async () => {
+		// <video> is supported since Chrome 3, but "controlslist" was added in Chrome 58.
+		// Target Chrome 50 so the element is supported but the attribute is not.
+		const { violations } = await mlRuleTest(rule, '<video controlslist="nodownload"></video>', {
+			rule: {
+				options: {
+					browserslist: 'chrome 50',
+				},
+			},
+		});
+		// Element should be supported, so no element-level violation
+		const elementViolation = violations.find(v => v.message.includes('"video"') && v.message.includes('element'));
+		expect(elementViolation).toBeUndefined();
+		// Attribute should be unsupported
+		const attrViolation = violations.find(
+			v => v.message.includes('"controlslist"') && v.message.includes('attribute'),
+		);
+		expect(attrViolation).toBeDefined();
+	});
+});
+
+describe('no-op without browserslist', () => {
+	test('no error without browserslist config', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('no error with empty options', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
+			rule: {
+				options: {},
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('ignoreFeatures', () => {
+	test('ignore element by name', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+					ignoreFeatures: ['dialog'],
+				},
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('ignore attribute by pattern', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+					ignoreFeatures: ['dialog', 'dialog[open]'],
+				},
+			},
+		});
+		// Both element and attribute are ignored
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('checkExperimental', () => {
+	test('no warning by default for experimental attribute', async () => {
+		// "credentialless" on <iframe> is experimental in spec data
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
+			rule: {
+				options: {},
+			},
+		});
+		const experimentalViolation = violations.find(v => v.message.includes('experimental'));
+		expect(experimentalViolation).toBeUndefined();
+	});
+
+	test('warns about experimental attributes when enabled', async () => {
+		// "credentialless" on <iframe> is experimental in spec data
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
+			rule: {
+				options: {
+					checkExperimental: true,
+				},
+			},
+		});
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+		const experimentalViolation = violations.find(v => v.message.includes('experimental'));
+		expect(experimentalViolation).toBeDefined();
+		expect(experimentalViolation?.message).toContain('"credentialless"');
+	});
+
+	test('works without browserslist config', async () => {
+		// checkExperimental should work independently of browserslist
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
+			rule: {
+				options: {
+					checkExperimental: true,
+				},
+			},
+		});
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+		expect(violations.some(v => v.message.includes('experimental'))).toBe(true);
+	});
+});
+
+describe('checkNonStandard', () => {
+	test('no warning by default for non-standard attribute', async () => {
+		// "moz-opaque" on canvas is nonStandard in spec data
+		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
+			rule: {
+				options: {},
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('warns about non-standard attributes when enabled', async () => {
+		// "moz-opaque" on canvas is nonStandard in spec data
+		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
+			rule: {
+				options: {
+					checkNonStandard: true,
+				},
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('"moz-opaque"');
+		expect(violations[0]?.message).toContain('non-standard');
+	});
+
+	test('works without browserslist config', async () => {
+		// Should work even without browserslist
+		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
+			rule: {
+				options: {
+					checkNonStandard: true,
+				},
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('"moz-opaque"');
+	});
+});
+
+describe('default severity', () => {
+	test('severity is warning by default', async () => {
+		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+				},
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.severity).toBe('warning');
+	});
+});
+
+describe('SVG elements are skipped', () => {
+	test('SVG content is not checked', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', {
+			rule: {
+				options: {
+					browserslist: 'ie 11',
+				},
+			},
+		});
+		// SVG child elements should not be checked
+		const circleViolation = violations.find(v => v.message.includes('"circle"'));
+		expect(circleViolation).toBeUndefined();
+	});
+});
