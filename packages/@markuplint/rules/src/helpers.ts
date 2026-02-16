@@ -204,7 +204,7 @@ export function accnameMayBeMutable(
 	return false;
 }
 
-const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
+export const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
 /**
  * Finds the `<label>` element associated with a labelable form element.
  * First checks for an ancestor `<label>`, then looks for a `<label>` whose

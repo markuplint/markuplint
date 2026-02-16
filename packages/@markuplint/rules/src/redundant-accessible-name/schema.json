@@ -1,0 +1,47 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "boolean"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"checkTitleFallback": {
+					"type": "boolean",
+					"default": false,
+					"description": "Report title attribute as a redundant accessible name source.",
+					"description:ja": "title属性を冗長なアクセシブル名ソースとして報告します。"
+				},
+				"checkPlaceholderFallback": {
+					"type": "boolean",
+					"default": false,
+					"description": "Report placeholder attribute as a redundant accessible name source.",
+					"description:ja": "placeholder属性を冗長なアクセシブル名ソースとして報告します。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"option": { "$ref": "#/definitions/options", "deprecated": true },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "warning"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}
