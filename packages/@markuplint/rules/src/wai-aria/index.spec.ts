@@ -1641,3 +1641,175 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 		).toStrictEqual([]);
 	});
 });
+
+describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', () => {
+	test('input[type=range] with value and aria-valuenow', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="50" aria-valuenow="50">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuenow" ARIA property should not use on the "input" element. As its state is already provided by the "value" attribute',
+				raw: 'aria-valuenow="50"',
+			},
+		]);
+	});
+
+	test('input[type=range] with aria-valuenow but no value attr', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" aria-valuenow="50">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message:
+					'The "aria-valuenow" ARIA property should not use on the "input" element. Add the "value" attribute if you use the ARIA property',
+				raw: 'aria-valuenow="50"',
+			},
+		]);
+	});
+
+	test('input[type=range] with value and aria-valuemax', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" value="50" aria-valuemax="100">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuemax" ARIA property should not use on the "input" element. Add the "max" attribute if you use the ARIA property',
+				raw: 'aria-valuemax="100"',
+			},
+		]);
+	});
+
+	test('input[type=range] with aria-valuemax but no max attr', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="range" aria-valuemax="100">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message:
+					'The "aria-valuemax" ARIA property should not use on the "input" element. Add the "max" attribute if you use the ARIA property',
+				raw: 'aria-valuemax="100"',
+			},
+		]);
+	});
+
+	test('input[type=number] with value and aria-valuenow', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" value="5" aria-valuenow="5">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuenow" ARIA property should not use on the "input" element. As its state is already provided by the "value" attribute',
+				raw: 'aria-valuenow="5"',
+			},
+		]);
+	});
+
+	test('input[type=number] with aria-valuemax', async () => {
+		const { violations } = await mlRuleTest(rule, '<input type="number" aria-valuemax="10">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 22,
+				message:
+					'The "aria-valuemax" ARIA property should not use on the "input" element. Add the "max" attribute if you use the ARIA property',
+				raw: 'aria-valuemax="10"',
+			},
+		]);
+	});
+
+	test('meter with value and aria-valuenow', async () => {
+		const { violations } = await mlRuleTest(rule, '<meter value="0.6" aria-valuenow="0.6"></meter>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message:
+					'The "aria-valuenow" ARIA property should not use on the "meter" element. As its state is already provided by the "value" attribute',
+				raw: 'aria-valuenow="0.6"',
+			},
+		]);
+	});
+
+	test('meter with value and aria-valuemax', async () => {
+		const { violations } = await mlRuleTest(rule, '<meter value="0.6" aria-valuemax="1"></meter>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message:
+					'The "aria-valuemax" ARIA property should not use on the "meter" element. Add the "max" attribute if you use the ARIA property',
+				raw: 'aria-valuemax="1"',
+			},
+		]);
+	});
+
+	test('progress with value and aria-valuenow', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress value="70" max="100" aria-valuenow="70"></progress>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuenow" ARIA property should not use on the "progress" element. As its state is already provided by the "value" attribute',
+				raw: 'aria-valuenow="70"',
+			},
+		]);
+	});
+
+	test('progress with value and aria-valuemax', async () => {
+		const { violations } = await mlRuleTest(rule, '<progress value="70" max="100" aria-valuemax="100"></progress>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuemax" ARIA property should not use on the "progress" element. As its state is already provided by the "max" attribute',
+				raw: 'aria-valuemax="100"',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message:
+					'The "aria-valuemax" ARIA property has the same semantics as the current "max" attribute or the implicit "max" attribute',
+				raw: 'aria-valuemax="100"',
+			},
+		]);
+	});
+
+	// Note: option[aria-selected] test is skipped because getComputedRole() returns
+	// null for option inside select due to Required Context Role mismatch (combobox
+	// is not recognized as a valid parent for the option role). This prevents the
+	// without check from being reached. See #3214.
+
+	test('select with multiple and aria-multiselectable', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<select multiple aria-multiselectable="true"><option>A</option></select>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message:
+					'The "aria-multiselectable" ARIA property should not use on the "select" element. As its state is already provided by the "multiple" attribute',
+				raw: 'aria-multiselectable="true"',
+			},
+		]);
+	});
+});
