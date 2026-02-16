@@ -3,7 +3,7 @@ import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
 import { toNonNullableArrayFromItemOrArray } from '@markuplint/shared';
-import { check } from '@markuplint/types';
+import { check, getCandidate } from '@markuplint/types';
 
 import { createMessageValueExpected } from './create-message.js';
 import { log } from './debug.js';
@@ -50,6 +50,8 @@ type Loc = {
  * @param value - The attribute value to validate
  * @param isCustomRule - When `true`, skips the built-in bypass for `data-*`, `aria-*`, and `adapt-*` attributes
  * @param spec - The attribute specification to validate against; if absent, the attribute is considered non-existent
+ * @param allAttrNames - Optional list of all valid attribute names for the element;
+ *   used to suggest a similar attribute name via Levenshtein distance when the attribute is non-existent
  * @returns `false` if the attribute is valid, a single `Invalid` object for existence/disallowed errors,
  *   or an array of `Invalid<'invalid-value'>` objects for value validation failures
  */
@@ -59,6 +61,7 @@ export function attrCheck(
 	value: string,
 	isCustomRule: boolean,
 	spec?: AttrSpec,
+	allAttrNames?: readonly string[],
 ): Invalid | Invalid<'invalid-value'>[] | false {
 	if (!isCustomRule) {
 		if (/^data-.+$/.test(name)) {
@@ -82,9 +85,17 @@ export function attrCheck(
 	// Existence
 	if (!spec) {
 		log('The "%s" attribute DOES\'NT EXIST in the spec', name);
+		const baseMessage = t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed');
+		const candidate = allAttrNames ? getCandidate(name, allAttrNames) : undefined;
+		if (candidate) {
+			return {
+				invalidType: 'non-existent',
+				message: baseMessage + t('. ') + t('Did you mean "{0*}"?', candidate),
+			};
+		}
 		return {
 			invalidType: 'non-existent',
-			message: t('{0} is {1:c}', t('the "{0*}" {1}', name, 'attribute'), 'disallowed'),
+			message: baseMessage,
 		};
 	}
 

@@ -8,6 +8,8 @@ description: 属性が仕様上（あるいは独自に指定したルール上�
 
 [HTML Living Standard](https://momdo.github.io/html/)に準拠します。[`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)に設定値を持っています。
 
+存在しない属性名がその要素の有効な属性名に類似している場合、タイプミスの修正を助けるために「もしかして ...？」という候補がエラーメッセージに含まれます。
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

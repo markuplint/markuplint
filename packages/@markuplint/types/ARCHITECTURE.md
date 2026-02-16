@@ -224,6 +224,7 @@ flowchart LR
     subgraph pkg ["@markuplint/types"]
         defs["defs registry"]
         check["check()"]
+        getCandidate["getCandidate()"]
         types["Type definitions"]
     end
 
@@ -234,6 +235,7 @@ flowchart LR
     mlSpec -->|"provides Defs\n(type definitions)"| defs
     mlSpec -->|"uses Type union\nfor attribute specs"| types
     rules -->|"calls check()\nto validate attribute values"| check
+    rules -->|"calls getCandidate()\nfor typo suggestions"| getCandidate
 ```
 
 ### Upstream: `@markuplint/ml-spec`
@@ -243,6 +245,8 @@ flowchart LR
 ### Downstream: `@markuplint/rules`
 
 `@markuplint/rules` calls `check(value, type)` to validate attribute values found in parsed HTML documents. The `Result` type drives error reporting: an `UnmatchedResult` provides the offset, line, column, reason, expected values, and candidate corrections that rules translate into lint diagnostics.
+
+`@markuplint/rules` also calls `getCandidate()` to suggest similar attribute names when a non-existent attribute is detected. The same Levenshtein-based similarity threshold (≥50%) used for attribute value suggestions applies to attribute name suggestions.
 
 ## Documentation Map
 
