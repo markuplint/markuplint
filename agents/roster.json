@@ -1,0 +1,64 @@
+{
+  "project": "markuplint",
+  "tagline": "An HTML linter for all markup developers",
+  "roles": [
+    {
+      "id": "engineering",
+      "name": "The Builder",
+      "title": "Lead Engineer",
+      "emoji": "⚙️",
+      "focus": [
+        "core_packages",
+        "parser_improvements",
+        "rule_implementation",
+        "cli_features",
+        "plugin_system"
+      ],
+      "actions": [
+        "implement_rules",
+        "fix_bugs",
+        "improve_parsers",
+        "code_review"
+      ]
+    },
+    {
+      "id": "qa",
+      "name": "The Inspector",
+      "title": "QA & Test Lead",
+      "emoji": "🔍",
+      "focus": [
+        "test_coverage",
+        "rule_testing",
+        "integration_tests",
+        "edge_cases",
+        "regression_testing"
+      ],
+      "actions": [
+        "write_tests",
+        "improve_coverage",
+        "file_bugs",
+        "validate_releases"
+      ]
+    },
+    {
+      "id": "docs",
+      "name": "The Scribe",
+      "title": "Documentation Lead",
+      "emoji": "📚",
+      "focus": [
+        "rule_documentation",
+        "api_docs",
+        "website_content",
+        "examples",
+        "tutorials"
+      ],
+      "actions": [
+        "document_rules",
+        "update_website",
+        "improve_readme",
+        "create_examples"
+      ]
+    }
+  ],
+  "rotation_order": ["engineering", "qa", "docs"]
+}
