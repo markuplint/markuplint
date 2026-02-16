@@ -1,0 +1,71 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"browserslist": {
+					"oneOf": [
+						{
+							"type": "string",
+							"description": "A browserslist query string to override project configuration."
+						},
+						{
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "An array of browserslist query strings."
+						}
+					]
+				},
+				"browserslistConfig": {
+					"type": "string",
+					"description": "Explicit path to a browserslist configuration file."
+				},
+				"browserslistEnv": {
+					"type": "string",
+					"description": "Browserslist environment name (e.g., \"production\")."
+				},
+				"ignoreFeatures": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Features to ignore. Element name (\"dialog\") or attribute pattern (\"input[list]\")."
+				},
+				"checkExperimental": {
+					"type": "boolean",
+					"default": false,
+					"description": "Whether to warn about experimental elements and attributes."
+				},
+				"checkNonStandard": {
+					"type": "boolean",
+					"default": false,
+					"description": "Whether to warn about non-standard elements and attributes."
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"options": {
+					"$ref": "#/definitions/options"
+				},
+				"severity": {
+					"type": "string"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}
