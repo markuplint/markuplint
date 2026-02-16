@@ -470,7 +470,34 @@
 				"permittedRoles": false,
 				"properties": {
 					"global": true,
-					"role": "spinbutton"
+					"role": "spinbutton",
+					// Authors SHOULD NOT use the aria-valuemax, aria-valuemin, or aria-valuenow attributes on input type=number.
+					"without": [
+						{
+							"type": "should-not",
+							"name": "aria-valuemax",
+							"alt": {
+								"method": "set-attr",
+								"target": "max"
+							}
+						},
+						{
+							"type": "should-not",
+							"name": "aria-valuemin",
+							"alt": {
+								"method": "set-attr",
+								"target": "min"
+							}
+						},
+						{
+							"type": "should-not",
+							"name": "aria-valuenow",
+							"alt": {
+								"method": "set-attr",
+								"target": "value"
+							}
+						}
+					]
 				}
 			},
 			"[type='password' i]": {
@@ -507,15 +534,31 @@
 				"properties": {
 					"global": true,
 					"role": "slider",
-					// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on input type=range.
+					// Authors SHOULD NOT use the aria-valuemax, aria-valuemin, or aria-valuenow attributes on input type=range.
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-valuemax"
+							"name": "aria-valuemax",
+							"alt": {
+								"method": "set-attr",
+								"target": "max"
+							}
 						},
 						{
 							"type": "should-not",
-							"name": "aria-valuemin"
+							"name": "aria-valuemin",
+							"alt": {
+								"method": "set-attr",
+								"target": "min"
+							}
+						},
+						{
+							"type": "should-not",
+							"name": "aria-valuenow",
+							"alt": {
+								"method": "set-attr",
+								"target": "value"
+							}
 						}
 					]
 				}
@@ -709,7 +752,34 @@
 					"permittedRoles": false,
 					"properties": {
 						"global": true,
-						"role": "spinbutton"
+						"role": "spinbutton",
+						// Authors SHOULD NOT use the aria-valuemax, aria-valuemin, or aria-valuenow attributes on input type=number.
+						"without": [
+							{
+								"type": "should-not",
+								"name": "aria-valuemax",
+								"alt": {
+									"method": "set-attr",
+									"target": "max"
+								}
+							},
+							{
+								"type": "should-not",
+								"name": "aria-valuemin",
+								"alt": {
+									"method": "set-attr",
+									"target": "min"
+								}
+							},
+							{
+								"type": "should-not",
+								"name": "aria-valuenow",
+								"alt": {
+									"method": "set-attr",
+									"target": "value"
+								}
+							}
+						]
 					}
 				},
 				"[type='password' i]": {
@@ -746,15 +816,31 @@
 					"properties": {
 						"global": true,
 						"role": "slider",
-						// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on input type=range.
+						// Authors SHOULD NOT use the aria-valuemax, aria-valuemin, or aria-valuenow attributes on input type=range.
 						"without": [
 							{
 								"type": "should-not",
-								"name": "aria-valuemax"
+								"name": "aria-valuemax",
+								"alt": {
+									"method": "set-attr",
+									"target": "max"
+								}
 							},
 							{
 								"type": "should-not",
-								"name": "aria-valuemin"
+								"name": "aria-valuemin",
+								"alt": {
+									"method": "set-attr",
+									"target": "min"
+								}
+							},
+							{
+								"type": "should-not",
+								"name": "aria-valuenow",
+								"alt": {
+									"method": "set-attr",
+									"target": "value"
+								}
 							}
 						]
 					}

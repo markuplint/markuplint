@@ -39,7 +39,11 @@
 			"without": [
 				{
 					"type": "should-not",
-					"name": "aria-multiselectable"
+					"name": "aria-multiselectable",
+					"alt": {
+						"method": "set-attr",
+						"target": "multiple"
+					}
 				}
 			]
 		},
@@ -55,7 +59,11 @@
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-multiselectable"
+							"name": "aria-multiselectable",
+							"alt": {
+								"method": "set-attr",
+								"target": "multiple"
+							}
 						}
 					]
 				}
