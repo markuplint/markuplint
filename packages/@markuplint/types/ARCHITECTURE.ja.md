@@ -224,6 +224,7 @@ flowchart LR
     subgraph pkg ["@markuplint/types"]
         defs["defs レジストリ"]
         check["check()"]
+        getCandidate["getCandidate()"]
         types["型定義"]
     end
 
@@ -234,6 +235,7 @@ flowchart LR
     mlSpec -->|"Defs を提供\n(型定義)"| defs
     mlSpec -->|"Type 共用体を使用\n(属性仕様の記述)"| types
     rules -->|"check() を呼び出し\n属性値を検証"| check
+    rules -->|"getCandidate() を呼び出し\nタイプミス候補を提示"| getCandidate
 ```
 
 ### 上流: `@markuplint/ml-spec`
@@ -243,6 +245,8 @@ flowchart LR
 ### 下流: `@markuplint/rules`
 
 `@markuplint/rules` は、パース済み HTML ドキュメント中の属性値を検証するために `check(value, type)` を呼び出します。`Result` 型がエラー報告を駆動し、`UnmatchedResult` に含まれるオフセット・行・列・理由・期待値・修正候補の情報を、ルールがリント診断メッセージに変換します。
+
+また、`@markuplint/rules` は存在しない属性が検出された際に類似する属性名を提案するため `getCandidate()` も呼び出します。属性値の候補提示と同じレーベンシュタイン距離ベースの類似度閾値（50%以上）が属性名の候補提示にも適用されます。
 
 ## ドキュメントマップ
 
