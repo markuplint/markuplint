@@ -2,6 +2,11 @@ import * as cheerio from 'cheerio';
 import { Bar, Presets } from 'cli-progress';
 
 /**
+ * Whether the process is running in a CI environment.
+ */
+const isCI = Boolean(process.env.CI);
+
+/**
  * In-memory cache mapping URLs to their raw HTML text responses.
  */
 const cache = new Map<string, string>();
@@ -13,13 +18,16 @@ const domCache = new Map<string, cheerio.CheerioAPI>();
 
 let total = 1;
 let current = 0;
-const bar = new Bar(
-	{
-		format: '🔎 Fetch references... {bar} {percentage}% | ETA: {eta}s | {value}/{total} {process}',
-	},
-	Presets.shades_grey,
-);
-bar.start(total, current, { process: '🚀 Started.' });
+
+const bar = isCI
+	? null
+	: new Bar(
+			{
+				format: '🔎 Fetch references... {bar} {percentage}% | ETA: {eta}s | {value}/{total} {process}',
+			},
+			Presets.shades_grey,
+		);
+bar?.start(total, current, { process: '🚀 Started.' });
 
 /**
  * Fetches a URL and returns a parsed Cheerio DOM instance.
@@ -48,7 +56,7 @@ export async function fetch(url: string) {
  */
 export async function fetchText(url: string) {
 	total += 1;
-	bar.setTotal(total);
+	bar?.setTotal(total);
 	let text: string;
 	if (cache.has(url)) {
 		text = cache.get(url)!;
@@ -63,7 +71,7 @@ export async function fetchText(url: string) {
 		}
 	}
 	current += 1;
-	bar.update(current, { process: `🔗 ${url.length > 30 ? `${url.slice(0, 15)}...${url.slice(-15)}` : url}` });
+	bar?.update(current, { process: `🔗 ${url.length > 30 ? `${url.slice(0, 15)}...${url.slice(-15)}` : url}` });
 	return text;
 }
 
@@ -75,7 +83,7 @@ export async function fetchText(url: string) {
  */
 export function getReferences() {
 	current += 1;
-	bar.update(current, { process: '🎉 Finished.' });
-	bar.stop();
+	bar?.update(current, { process: '🎉 Finished.' });
+	bar?.stop();
 	return [...cache.keys()].toSorted();
 }
