@@ -59,6 +59,11 @@
 		"no-refer-to-non-existent-id": true,
 
 		/**
+		 * No redundant **accessible name** sources
+		 */
+		"redundant-accessible-name": true,
+
+		/**
 		 * Require **accessible name**
 		 */
 		"require-accessible-name": true,

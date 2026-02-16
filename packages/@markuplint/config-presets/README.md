@@ -32,6 +32,7 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 [No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
+No redundant **accessible name** sources| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Align row and column| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|

@@ -129,6 +129,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'redundant-accessible-name': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'require-accessible-name': {
 			category: 'a11y',
 			defaultValue: true,
