@@ -8,6 +8,11 @@ test('normal', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
+test('non-deprecated standard element is not flagged', async () => {
+	const { violations } = await mlRuleTest(rule, '<hgroup></hgroup>');
+	expect(violations).toStrictEqual([]);
+});
+
 test('deprecated', async () => {
 	const { violations } = await mlRuleTest(rule, '<font></font><big><blink></blink></big>');
 	expect(violations).toStrictEqual([

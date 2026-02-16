@@ -113,6 +113,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-unsupported-features': {
+			category: 'validation',
+			defaultValue: false,
+		},
 		'no-use-event-handler-attr': {
 			category: 'maintainability',
 			defaultValue: false,

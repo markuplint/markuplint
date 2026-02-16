@@ -144,4 +144,20 @@ describe('checkSupport', () => {
 		const support: SupportStatement = { version_added: '10' };
 		expect(checkSupport(support, target)).toBeNull();
 	});
+
+	test('version_removed equal to target version — treated as unsupported', () => {
+		const support: SupportStatement = { version_added: '10', version_removed: '50' };
+		const result = checkSupport(support, target);
+		expect(result).not.toBeNull();
+		expect(result?.addedVersion).toBe(false);
+		expect(result?.removedVersion).toBe('50');
+	});
+
+	test('all entries flagged or prefixed — returns null (treated as supported)', () => {
+		const support: SupportStatement = [
+			{ version_added: '37', flags: [{ type: 'preference', name: 'test' }] },
+			{ version_added: '40', prefix: 'webkit' },
+		];
+		expect(checkSupport(support, target)).toBeNull();
+	});
 });

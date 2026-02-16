@@ -13,6 +13,7 @@ describe('getPreset', () => {
 				'markuplint:performance',
 				'markuplint:security',
 				'markuplint:rdfa',
+				'markuplint:compat',
 			],
 		});
 	});

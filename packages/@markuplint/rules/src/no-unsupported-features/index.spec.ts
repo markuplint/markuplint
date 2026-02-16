@@ -70,6 +70,28 @@ describe('browser support (BCD-based)', () => {
 	});
 });
 
+describe('attribute-only unsupported (element is supported)', () => {
+	test('element supported but attribute unsupported', async () => {
+		// <video> is supported since Chrome 3, but "controlslist" was added in Chrome 58.
+		// Target Chrome 50 so the element is supported but the attribute is not.
+		const { violations } = await mlRuleTest(rule, '<video controlslist="nodownload"></video>', {
+			rule: {
+				options: {
+					browserslist: 'chrome 50',
+				},
+			},
+		});
+		// Element should be supported, so no element-level violation
+		const elementViolation = violations.find(v => v.message.includes('"video"') && v.message.includes('element'));
+		expect(elementViolation).toBeUndefined();
+		// Attribute should be unsupported
+		const attrViolation = violations.find(
+			v => v.message.includes('"controlslist"') && v.message.includes('attribute'),
+		);
+		expect(attrViolation).toBeDefined();
+	});
+});
+
 describe('no-op without browserslist', () => {
 	test('no error without browserslist config', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>');
@@ -114,51 +136,43 @@ describe('ignoreFeatures', () => {
 });
 
 describe('checkExperimental', () => {
-	test('no warning by default', async () => {
-		const { violations } = await mlRuleTest(rule, '<search></search>', {
+	test('no warning by default for experimental attribute', async () => {
+		// "credentialless" on <iframe> is experimental in spec data
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
 				options: {},
 			},
 		});
-		expect(violations).toStrictEqual([]);
+		const experimentalViolation = violations.find(v => v.message.includes('experimental'));
+		expect(experimentalViolation).toBeUndefined();
 	});
 
-	test('warns about experimental elements when enabled', async () => {
-		// checkExperimental uses spec data, not BCD.
-		// If <search> is no longer experimental in spec, violations will be empty — that's correct.
-		const { violations } = await mlRuleTest(rule, '<search></search>', {
+	test('warns about experimental attributes when enabled', async () => {
+		// "credentialless" on <iframe> is experimental in spec data
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
 				options: {
 					checkExperimental: true,
 				},
 			},
 		});
-		for (const v of violations) {
-			expect(v.message).toContain('experimental');
-		}
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+		const experimentalViolation = violations.find(v => v.message.includes('experimental'));
+		expect(experimentalViolation).toBeDefined();
+		expect(experimentalViolation?.message).toContain('"credentialless"');
 	});
 
 	test('works without browserslist config', async () => {
 		// checkExperimental should work independently of browserslist
-		const withBrowserslist = await mlRuleTest(rule, '<search></search>', {
-			rule: {
-				options: {
-					checkExperimental: true,
-					browserslist: 'chrome 130',
-				},
-			},
-		});
-		const withoutBrowserslist = await mlRuleTest(rule, '<search></search>', {
+		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
 				options: {
 					checkExperimental: true,
 				},
 			},
 		});
-		// Experimental violations should be the same regardless of browserslist
-		const expWithBl = withBrowserslist.violations.filter(v => v.message.includes('experimental'));
-		const expWithoutBl = withoutBrowserslist.violations.filter(v => v.message.includes('experimental'));
-		expect(expWithoutBl.length).toBe(expWithBl.length);
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+		expect(violations.some(v => v.message.includes('experimental'))).toBe(true);
 	});
 });
 
