@@ -455,14 +455,14 @@ test('prefix attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 27,
-			message: 'The ":class" attribute is disallowed',
+			message: 'The ":class" attribute is disallowed. Did you mean "class"?',
 			raw: ':class',
 		},
 		{
 			severity: 'error',
 			col: 44,
 			line: 1,
-			message: 'The "@click" attribute is disallowed',
+			message: 'The "@click" attribute is disallowed. Did you mean "onclick"?',
 			raw: '@click',
 		},
 	]);
@@ -680,7 +680,7 @@ test('svg', async () => {
 			severity: 'error',
 			line: 2,
 			col: 30,
-			message: 'The "cz" attribute is disallowed',
+			message: 'The "cz" attribute is disallowed. Did you mean "cx"?',
 			raw: 'cz',
 		},
 	]);
@@ -918,7 +918,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 6,
-			message: 'The "invalid" attribute is disallowed',
+			message: 'The "invalid" attribute is disallowed. Did you mean "oninvalid"?',
 			raw: 'invalid',
 		},
 	]);
@@ -936,7 +936,7 @@ test('React with spread attribute', async () => {
 			severity: 'error',
 			line: 1,
 			col: 17,
-			message: 'The "invalid" attribute is disallowed',
+			message: 'The "invalid" attribute is disallowed. Did you mean "oninvalid"?',
 			raw: 'invalid',
 		},
 	]);
@@ -1573,7 +1573,7 @@ describe('Deprecated options', () => {
 				severity: 'error',
 				line: 1,
 				col: 4,
-				message: 'The "as" attribute is disallowed',
+				message: 'The "as" attribute is disallowed. Did you mean "is"?',
 				raw: 'as',
 			},
 		]);
@@ -1825,6 +1825,48 @@ describe('button command attribute', () => {
 				message:
 					'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid-value"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
 				raw: 'invalid-value',
+			},
+		]);
+	});
+});
+
+describe('Attribute name suggestion (#1487)', () => {
+	test('suggests similar attribute name for typo', async () => {
+		const { violations } = await mlRuleTest(rule, '<input nama="test">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: 'The "nama" attribute is disallowed. Did you mean "name"?',
+				raw: 'nama',
+			},
+		]);
+	});
+
+	// cspell:ignore clss
+	test('suggests similar attribute name for class typo', async () => {
+		const { violations } = await mlRuleTest(rule, '<div clss="test"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "clss" attribute is disallowed. Did you mean "class"?',
+				raw: 'clss',
+			},
+		]);
+	});
+
+	test('no suggestion for completely unrelated attribute', async () => {
+		const { violations } = await mlRuleTest(rule, '<div xyz="test"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message: 'The "xyz" attribute is disallowed',
+				raw: 'xyz',
 			},
 		]);
 	});
