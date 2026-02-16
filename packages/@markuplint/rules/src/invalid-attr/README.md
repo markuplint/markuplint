@@ -9,6 +9,8 @@ Warn if an attribute is a non-existent attribute or an invalid type value due to
 
 This rule according to [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
+When a non-existent attribute name is similar to a valid attribute for the element, the error message includes a "Did you mean ...?" suggestion to help fix typos.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

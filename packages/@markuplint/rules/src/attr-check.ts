@@ -50,6 +50,8 @@ type Loc = {
  * @param value - The attribute value to validate
  * @param isCustomRule - When `true`, skips the built-in bypass for `data-*`, `aria-*`, and `adapt-*` attributes
  * @param spec - The attribute specification to validate against; if absent, the attribute is considered non-existent
+ * @param allAttrNames - Optional list of all valid attribute names for the element;
+ *   used to suggest a similar attribute name via Levenshtein distance when the attribute is non-existent
  * @returns `false` if the attribute is valid, a single `Invalid` object for existence/disallowed errors,
  *   or an array of `Invalid<'invalid-value'>` objects for value validation failures
  */
