@@ -2642,6 +2642,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@markuplint/tagged-template-literal-parser@workspace:packages/@markuplint/tagged-template-literal-parser":
+  version: 0.0.0-use.local
+  resolution: "@markuplint/tagged-template-literal-parser@workspace:packages/@markuplint/tagged-template-literal-parser"
+  dependencies:
+    "@markuplint/html-parser": "npm:4.6.23"
+    "@markuplint/ml-ast": "npm:4.4.11"
+    "@markuplint/parser-utils": "npm:4.8.11"
+    "@typescript-eslint/types": "npm:8.55.0"
+    "@typescript-eslint/typescript-estree": "npm:8.55.0"
+  languageName: unknown
+  linkType: soft
+
 "@markuplint/test-tools@npm:4.5.23, @markuplint/test-tools@workspace:packages/@markuplint/test-tools":
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
