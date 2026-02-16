@@ -59,7 +59,7 @@ test('complex type', async () => {
 			line: 1,
 			col: 32,
 			message:
-				'The autofill named group part of the "autocomplete" attribute is duplicated (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-section)',
+				'It includes unexpected characters. the "autocomplete" attribute expects autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field)',
 			raw: 'section-b',
 		},
 	]);
