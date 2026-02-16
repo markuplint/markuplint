@@ -138,7 +138,7 @@ export class Token {
 	 */
 	includes(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
-			return value.some(v => this.includes(v));
+			return value.some(v => this.includes(v, caseInsensitive));
 		}
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
@@ -161,7 +161,7 @@ export class Token {
 	 */
 	matches(value: TokenValue, caseInsensitive?: boolean): boolean {
 		if (Array.isArray(value)) {
-			return value.some(v => this.matches(v));
+			return value.some(v => this.matches(v, caseInsensitive));
 		}
 		if (typeof value === 'string') {
 			const a = caseInsensitive ? this.value.toLowerCase() : this.value;

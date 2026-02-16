@@ -205,17 +205,27 @@ The `datetimeTokenCheck` object also maintains `_year` and `_month` as mutable s
 
 Validates the `autocomplete` attribute value according to the [WHATWG autofill specification](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete).
 
-The validator uses a token-based approach, parsing the attribute value as an ordered set of space-separated tokens. It recognizes:
+The validator uses **backward parsing** (right-to-left), matching the WHATWG specification algorithm. The attribute value is parsed as an ordered set of space-separated tokens (ASCII case-insensitive). It recognizes:
 
 - **Keywords:** `on`, `off` (standalone, no other tokens allowed)
 - **Named groups:** Tokens starting with `section-` (optional prefix)
 - **Address parts:** `shipping`, `billing` (optional)
-- **Contacting tokens:** `home`, `work`, `mobile`, `fax`, `pager` (optional, must be followed by a contactable field name)
+- **Contacting tokens:** `home`, `work`, `mobile`, `fax`, `pager` (optional, only valid before contactable field names)
 - **Autofill field names:** `name`, `given-name`, `postal-code`, `cc-number`, etc. (44 names)
 - **Contactable field names:** `tel`, `tel-country-code`, `email`, `impp`, etc. (10 names)
-- **WebAuthn:** `webauthn` (optional trailing token)
+- **WebAuthn:** `webauthn` (optional trailing token with category re-determination)
 
-The validation enforces the WHATWG-defined ordering: `[section-*] [shipping|billing] [home|work|...] <field-name> [webauthn]`. Duplicate tokens and incorrect ordering produce detailed error results with candidates for typo correction.
+The backward parsing algorithm:
+
+1. Determine the field name from the **last** token and classify into Normal, Contact, or Credential category
+2. Handle `webauthn` credential token: if present, consume it and re-determine the category from the preceding token
+3. Optionally consume a contacting token (only valid for Contact category fields)
+4. Reject contacting tokens preceding Normal category fields
+5. Optionally consume `shipping`/`billing`
+6. Optionally consume `section-*` named group
+7. Report any remaining tokens as extra
+
+The grammar enforced is: `[section-*] [shipping|billing] [home|work|...] <field-name> [webauthn]`. A field name is always required -- prefix-only values (e.g., `section-foo` or `shipping` alone) are rejected. Duplicate tokens, incorrect ordering, and unrecognized tokens produce detailed error results with Levenshtein-distance-based typo correction candidates.
 
 ### Link Type Validator
 

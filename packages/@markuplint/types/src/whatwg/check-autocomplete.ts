@@ -91,7 +91,7 @@ const contactableFieldNames = [
 /**
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
  */
-const webauthnFieldNames = ['webauthn'];
+const webauthnFieldNames = new Set(['webauthn']);
 
 const URL_AUTOCOMPLETE = 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete';
 const URL_ON_OFF =
@@ -101,22 +101,43 @@ const URL_NAMED_GROUP =
 const URL_PART_OF_ADDRESS =
 	'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-shipping';
 const URL_AUTOFILL_FIELD = 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field';
-const URL_CONTACTABLE_FIELD =
-	'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute:attr-fe-autocomplete-tel';
+
+type FieldCategory = 'Normal' | 'Contact' | 'Credential';
+
+/**
+ * Determines the field category and maximum allowed token count
+ * based on the last meaningful token (the field name).
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field
+ */
+function determineFieldCategory(value: string): { category: FieldCategory } | null {
+	const lower = value.toLowerCase();
+	if (autofillFieldNames.includes(lower)) {
+		return { category: 'Normal' };
+	}
+	if (contactableFieldNames.includes(lower)) {
+		return { category: 'Contact' };
+	}
+	if (webauthnFieldNames.has(lower)) {
+		return { category: 'Credential' };
+	}
+	return null;
+}
 
 /**
  * Validates the `autocomplete` attribute value according to the WHATWG specification.
  *
- * Supports "on"/"off" keywords, optional named groups (`section-*`),
- * address parts (shipping/billing), contacting tokens, and autofill field names.
+ * Uses backward parsing (right-to-left) to match the spec algorithm:
+ * 1. Determine field name from the last token
+ * 2. Handle `webauthn` credential token and category re-determination
+ * 3. Validate optional contacting token (home/work/mobile/fax/pager)
+ * 4. Validate optional shipping/billing token
+ * 5. Validate optional section-* named group
+ * 6. Check maximum token count per category
  *
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete
  */
 export const checkAutoComplete: CustomSyntaxChecker = () => value => {
-	let hasNamedGroup = false;
-	let hasPartOfAddress = false;
-	let hasContactingToken = false;
-
 	const tokens = new TokenCollection(value, {
 		disallowToSurroundBySpaces: false,
 		allowEmpty: false,
@@ -140,22 +161,18 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 	}
 
 	const identTokens = tokens.getIdentTokens();
-	const headAndTail1 = identTokens.headAndTail();
-	let { head, tail } = headAndTail1;
-	if (!head) {
-		// Never
+	if (identTokens.length === 0) {
+		// Never — TokenCollection.check would catch empty
 		throw new Error('TokenCollection is empty');
 	}
 
-	// > When wearing the autofill anchor mantle, the autocomplete attribute,
-	// > if specified, must have a value that is
-	// > an ordered set of space-separated tokens consisting of
-	// > just autofill detail tokens
-	// > (i.e. the "on" and "off" keywords are not allowed).
-	if (head.matches(['on', 'off'], true)) {
-		if (tail[0]) {
-			acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, tail.value);
-			return tail[0].unmatched({
+	const firstToken = identTokens[0]!;
+
+	// Check for "on" / "off"
+	if (firstToken.matches(['on', 'off'], true)) {
+		if (identTokens[1]) {
+			acLog('[Unmatched ("%s")] Unexpected pair with "on" or "off": "%s"', value, identTokens[1].value);
+			return identTokens[1].unmatched({
 				reason: 'extra-token',
 				expects: [
 					{
@@ -166,217 +183,231 @@ export const checkAutoComplete: CustomSyntaxChecker = () => value => {
 				ref: URL_ON_OFF,
 			});
 		}
-
 		return matched();
 	}
 
-	// > Optionally, a token whose first eight characters are
-	// > an ASCII case-insensitive match for the string "section-",
-	// > meaning that the field belongs to the named group.
-	if (head.matches(namedGroup, true)) {
-		hasNamedGroup = true;
-		const sectionToken = tail.search(namedGroup);
-		if (sectionToken) {
-			acLog('[Unmatched ("%s")] Deprecated in autofill named group: "%s"', value, sectionToken.value);
-			return sectionToken.unmatched({
-				partName: 'autofill named group',
-				reason: 'duplicated',
-				ref: URL_NAMED_GROUP,
+	// Check for "on" / "off" appearing as the last token in a multi-token context
+	const lastIdentToken = identTokens.at(-1)!;
+	if (lastIdentToken.matches(['on', 'off'], true) && identTokens.length > 1) {
+		acLog('[Unmatched ("%s")] Extra token "on"/"off" at end: "%s"', value, lastIdentToken.value);
+		return lastIdentToken.unmatched({
+			reason: 'extra-token',
+			expects: [
+				{
+					type: 'format',
+					value: 'autocomplete',
+				},
+			],
+			ref: URL_AUTOFILL_FIELD,
+		});
+	}
+
+	// --- Backward parsing ---
+	let index = identTokens.length - 1;
+
+	// Step 1: Determine field category from last token
+	const lastToken = identTokens[index]!;
+	const fieldResult = determineFieldCategory(lastToken.value);
+
+	if (!fieldResult) {
+		// Last token is not a valid field name
+		const allFieldNames = [...autofillFieldNames, ...contactableFieldNames];
+		const expects: Expect[] = [
+			{
+				type: 'common',
+				value: 'autofill field name',
+			},
+		];
+
+		// If single token, also suggest named group
+		if (identTokens.length === 1) {
+			expects.unshift({
+				type: 'common',
+				value: 'autofill named group',
 			});
 		}
 
-		const headAndTail2 = tail.headAndTail();
-		head = headAndTail2.head;
-		tail = headAndTail2.tail;
+		let candidate = getCandidate(lastToken.value, allFieldNames);
 
-		if (!head) {
-			// Missing autofill field name but it is valid
+		// If single token, also check for section- typo
+		if (!candidate && identTokens.length === 1) {
+			const [prefix, namedGroupStr] = lastToken.value.split('-');
+			const candidatePrefix = getCandidate(prefix, 'section');
+			if (candidatePrefix) {
+				candidate = `${candidatePrefix}-${namedGroupStr ?? ''}`;
+			}
+		}
+
+		acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, lastToken.value);
+		return lastToken.unmatched({
+			reason: 'unexpected-token',
+			expects,
+			candidate,
+			ref: URL_AUTOFILL_FIELD,
+		});
+	}
+
+	let { category } = fieldResult;
+	index--;
+
+	// Step 2: Handle webauthn (Credential category re-determination)
+	if (category === 'Credential') {
+		// webauthn token consumed; if there are more tokens, re-determine category
+		if (index >= 0) {
+			const preWebauthnToken = identTokens[index]!;
+			const reResult = determineFieldCategory(preWebauthnToken.value);
+
+			if (reResult && reResult.category !== 'Credential') {
+				// Re-determine: the token before webauthn is the actual field name
+				category = reResult.category;
+				index--;
+			} else if (reResult && reResult.category === 'Credential') {
+				// webauthn webauthn — duplicate caught by TokenCollection.check unique
+				acLog('[Unmatched ("%s")] Duplicate webauthn', value);
+				return preWebauthnToken.unmatched({
+					reason: 'extra-token',
+					expects: [{ type: 'format', value: 'autocomplete' }],
+					ref: URL_AUTOFILL_FIELD,
+				});
+			} else {
+				// Token before webauthn is not a valid field name
+				const allFieldNames = [...autofillFieldNames, ...contactableFieldNames];
+				const candidate = getCandidate(preWebauthnToken.value, allFieldNames);
+				acLog('[Unmatched ("%s")] Unexpected token before webauthn: "%s"', value, preWebauthnToken.value);
+				return preWebauthnToken.unmatched({
+					reason: 'unexpected-token',
+					expects: [{ type: 'common', value: 'autofill field name' }],
+					candidate,
+					ref: URL_AUTOFILL_FIELD,
+				});
+			}
+		} else {
+			// Standalone "webauthn" is valid
 			return matched();
 		}
 	}
 
-	// > Optionally, a token that is an ASCII case-insensitive match for
-	// > one of the following strings:
-	// > - "shipping", meaning the field is part of the shipping address or contact information
-	// > - "billing", meaning the field is part of the billing address or contact information
-	if (head.matches(partOfAddress, true)) {
-		hasPartOfAddress = true;
-		const partToken = tail.search(partOfAddress);
-		if (partToken) {
-			acLog('[Unmatched ("%s")] Duplicated values: "%s"', value, partToken.value);
-			return partToken.unmatched({
-				reason: 'duplicated',
+	// No more tokens to validate — only the field name was present
+	if (index < 0) {
+		return matched();
+	}
+
+	// Track which optional prefixes have been consumed
+	let hasPartOfAddress = false;
+	let hasNamedGroup = false;
+
+	// Step 3: If Contact category, optionally consume contacting token
+	if (category === 'Contact') {
+		const currentToken = identTokens[index]!;
+		if (currentToken.matches(contactingTokens, true)) {
+			index--;
+			if (index < 0) {
+				return matched();
+			}
+		}
+	}
+
+	// Step 4: If Normal category, the current token must NOT be a contacting token
+	// (contacting tokens are only valid before contactable field names)
+	if (category === 'Normal') {
+		const currentToken = identTokens[index]!;
+		if (currentToken.matches(contactingTokens, true)) {
+			acLog('[Unmatched ("%s")] Contacting token not valid for Normal field', value, currentToken.value);
+			return currentToken.unmatched({
+				reason: 'unexpected-token',
 				expects: [
+					...partOfAddress.map(token => ({
+						type: 'const' as const,
+						value: token,
+					})),
 					{
-						type: 'format',
-						value: 'autocomplete',
+						type: 'common' as const,
+						value: 'autofill named group',
 					},
 				],
 				ref: URL_PART_OF_ADDRESS,
 			});
 		}
+	}
 
-		const headAndTail3 = tail.headAndTail();
-		head = headAndTail3.head;
-		tail = headAndTail3.tail;
-
-		if (!head) {
-			// Missing autofill field name but it is valid
-			return matched();
+	// Step 5: Optionally consume shipping/billing
+	if (index >= 0) {
+		const currentToken = identTokens[index]!;
+		if (currentToken.matches(partOfAddress, true)) {
+			hasPartOfAddress = true;
+			index--;
+			if (index < 0) {
+				return matched();
+			}
 		}
 	}
 
-	if (head.matches(contactingTokens, true)) {
-		// eslint-disable-next-line no-useless-assignment
-		hasContactingToken = true;
-		const contactableFiledToken = tail[0];
-		if (!contactableFiledToken) {
-			// Missing autofill field name but it is valid
-			return matched();
+	// Step 6: Optionally consume section-*
+	if (index >= 0) {
+		const currentToken = identTokens[index]!;
+		if (currentToken.matches(namedGroup, true)) {
+			hasNamedGroup = true;
+			index--;
+			if (index < 0) {
+				return matched();
+			}
 		}
+	}
 
-		if (!contactableFiledToken.matches(contactableFieldNames, true)) {
-			const candidate = getCandidate(contactableFiledToken.value, contactableFieldNames);
-			acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, contactableFiledToken.value);
-			return contactableFiledToken.unmatched({
-				reason: 'unexpected-token',
-				expects: contactableFieldNames.map(token => ({
+	// Step 7: If there are remaining tokens, they are extra
+	if (index >= 0) {
+		const extraToken = identTokens[index]!;
+
+		// Build expects based on what hasn't been consumed yet
+		const extraExpects: Expect[] = [];
+		if (!hasPartOfAddress && !hasNamedGroup) {
+			// Neither shipping/billing nor section-* consumed — could be either
+			extraExpects.push(
+				...partOfAddress.map(token => ({
 					type: 'const' as const,
 					value: token,
 				})),
-				candidate,
-				ref: URL_CONTACTABLE_FIELD,
+				{
+					type: 'common',
+					value: 'autofill field name',
+				},
+			);
+		} else if (hasNamedGroup) {
+			// Both consumed — nothing expected, pure extra
+			extraExpects.push({
+				type: 'common',
+				value: 'autofill named group',
+			});
+		} else {
+			// shipping/billing consumed but section-* not — expect section-*
+			extraExpects.push({
+				type: 'common',
+				value: 'autofill named group',
 			});
 		}
 
-		if (tail[1]) {
-			if (tail[1].matches(webauthnFieldNames)) {
-				return matched();
-			}
-
-			const candidate = getCandidate(tail[1].value, webauthnFieldNames);
-
-			if (candidate) {
-				acLog(
-					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
-					value,
-					tail[1].value,
-					candidate,
-				);
-			} else {
-				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[1].value);
-			}
-
-			return tail[1].unmatched({
-				reason: 'extra-token',
-				expects: [
-					{
-						type: 'format',
-						value: 'autocomplete',
-					},
-				],
-				ref: URL_AUTOFILL_FIELD,
-			});
-		}
-
-		return matched();
-	}
-
-	if (head.matches([...autofillFieldNames, ...contactableFieldNames], true)) {
-		if (tail[0]) {
-			if (tail[0].matches(webauthnFieldNames)) {
-				return matched();
-			}
-
-			const candidate = getCandidate(tail[0].value, webauthnFieldNames);
-
-			if (candidate) {
-				acLog(
-					'[Unmatched ("%s")] Unnecessarily token: "%s", Do you mean "%s"? ',
-					value,
-					tail[0].value,
-					candidate,
-				);
-			} else {
-				acLog('[Unmatched ("%s")] Unnecessarily token: "%s"', value, tail[0].value);
-			}
-
-			return tail[0].unmatched({
-				reason: 'extra-token',
-				expects: [
-					{
-						type: 'format',
-						value: 'autocomplete',
-					},
-				],
-				ref: URL_AUTOFILL_FIELD,
-			});
-		}
-
-		return matched();
-	}
-
-	if (head.matches(webauthnFieldNames)) {
-		return matched();
-	}
-
-	const expects: Expect[] = [
-		{
-			type: 'common',
-			value: 'autofill field name',
-		},
-	];
-	let candidate: string | undefined;
-
-	if (!hasNamedGroup) {
-		expects.unshift({
-			type: 'common',
-			value: 'autofill named group',
-		});
-
-		// Potentially typo a named group
-		const [prefix, namedGroupStr] = head.value.split('-');
+		// Check if it's a section-* typo
+		let candidate: string | undefined;
+		const [prefix, namedGroupStr] = extraToken.value.split('-');
 		const candidatePrefix = getCandidate(prefix, 'section');
 		if (candidatePrefix) {
 			candidate = `${candidatePrefix}-${namedGroupStr ?? ''}`;
 		}
-	} else if (!hasPartOfAddress) {
-		expects.unshift(
-			...[...partOfAddress].toReversed().map(token => ({
-				type: 'const' as const,
-				value: token,
-			})),
-		);
 
-		candidate = getCandidate(
-			head.value,
-			partOfAddress,
-			autofillFieldNames,
-			contactingTokens,
-			contactableFieldNames,
-		);
-	} else if (!hasContactingToken) {
-		expects.push(
-			...contactingTokens.map(token => ({
-				type: 'const' as const,
-				value: token,
-			})),
-		);
+		if (!candidate) {
+			candidate = getCandidate(extraToken.value, partOfAddress, autofillFieldNames, contactableFieldNames);
+		}
 
-		candidate = getCandidate(head.value, autofillFieldNames, contactingTokens, contactableFieldNames);
+		const ref = !hasPartOfAddress && !hasNamedGroup ? URL_AUTOFILL_FIELD : URL_NAMED_GROUP;
+
+		acLog('[Unmatched ("%s")] Extra token: "%s"', value, extraToken.value);
+		return extraToken.unmatched({
+			reason: 'unexpected-token',
+			expects: extraExpects,
+			candidate,
+			ref,
+		});
 	}
 
-	candidate = candidate ?? getCandidate(head.value, autofillFieldNames);
-
-	if (candidate) {
-		acLog('[Unmatched ("%s")] Unexpected token: "%s", Do you mean "%s"? ', value, head.value, candidate);
-	} else {
-		acLog('[Unmatched ("%s")] Unexpected token: "%s"', value, head.value);
-	}
-	return head.unmatched({
-		reason: 'unexpected-token',
-		expects,
-		candidate,
-		ref: URL_AUTOFILL_FIELD,
-	});
+	return matched();
 };
