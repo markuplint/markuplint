@@ -58,7 +58,7 @@ markuplint AST         — 位置情報は元ファイルを参照
 
 ```
 src/
-├── index.ts                        — parser を再エクスポート
+├── index.ts                        — parser と TaggedTemplateLiteralParser クラスを再エクスポート
 ├── parser.ts                       — TaggedTemplateLiteralParser クラス
 ├── find-template-literals.ts       — テンプレート抽出用 TypeScript AST 走査
 ├── index.spec.ts                   — パーサー統合テスト
@@ -67,11 +67,11 @@ src/
 
 ## 主要ソースファイル
 
-| ファイル                        | 用途                                                                         |
-| ------------------------------- | ---------------------------------------------------------------------------- |
-| `src/parser.ts`                 | `HtmlParser` を拡張する `TaggedTemplateLiteralParser`。シングルトン `parser` |
-| `src/find-template-literals.ts` | タグ付きテンプレートリテラルの検出・抽出のための AST 走査                    |
-| `src/index.ts`                  | パッケージエントリーポイント。`parser` を再エクスポート                      |
+| ファイル                        | 用途                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------- |
+| `src/parser.ts`                 | `HtmlParser` を拡張する `TaggedTemplateLiteralParser`。シングルトン `parser`             |
+| `src/find-template-literals.ts` | タグ付きテンプレートリテラルの検出・抽出のための AST 走査                                |
+| `src/index.ts`                  | パッケージエントリーポイント。`parser` と `TaggedTemplateLiteralParser` を再エクスポート |
 
 ## 統合ポイント
 

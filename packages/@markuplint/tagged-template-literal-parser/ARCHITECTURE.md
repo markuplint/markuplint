@@ -58,7 +58,7 @@ When a source file contains multiple tagged template literals, each is parsed in
 
 ```
 src/
-├── index.ts                        — Re-exports parser
+├── index.ts                        — Re-exports parser and TaggedTemplateLiteralParser class
 ├── parser.ts                       — TaggedTemplateLiteralParser class
 ├── find-template-literals.ts       — TypeScript AST traversal for template extraction
 ├── index.spec.ts                   — Parser integration tests
@@ -67,11 +67,11 @@ src/
 
 ## Key Source Files
 
-| File                            | Purpose                                                                  |
-| ------------------------------- | ------------------------------------------------------------------------ |
-| `src/parser.ts`                 | `TaggedTemplateLiteralParser` extending `HtmlParser`; singleton `parser` |
-| `src/find-template-literals.ts` | AST traversal to locate and extract tagged template literals             |
-| `src/index.ts`                  | Package entry point; re-exports `parser`                                 |
+| File                            | Purpose                                                                    |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| `src/parser.ts`                 | `TaggedTemplateLiteralParser` extending `HtmlParser`; singleton `parser`   |
+| `src/find-template-literals.ts` | AST traversal to locate and extract tagged template literals               |
+| `src/index.ts`                  | Package entry point; re-exports `parser` and `TaggedTemplateLiteralParser` |
 
 ## Integration Points
 
