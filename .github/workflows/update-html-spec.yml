@@ -2,7 +2,8 @@ name: Update HTML Spec
 
 on:
     schedule:
-        - cron: '0 0 * * 1' # Weekly on Monday at 00:00 UTC
+        - cron: '0 0 * * *' # Daily at 09:00 JST
+        - cron: '0 12 * * *' # Daily at 21:00 JST
     workflow_dispatch:
 
 permissions:
