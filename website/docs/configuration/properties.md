@@ -145,6 +145,7 @@ The regex should be specify it matches the target file (ex., the extension part)
     "\\.[jt]sx?$": "@markuplint/jsx-parser",
     "\\.vue$": "@markuplint/vue-parser",
     "\\.svelte$": "@markuplint/svelte-parser",
+    "\\.ts$": "@markuplint/tagged-template-literal-parser",
     "\\.ext$": "./path/to/custom-parser/any-lang.js"
   }
 }
@@ -701,7 +702,7 @@ const MyComponent = props => {
 <div>
   {/* Evaluate as rendered div element has aria-live="polite"  */}
   <MyComponent aria-live="polite">Lorem Ipsam</MyComponent>
-</div>;
+</div>
 ```
 
 #### `as.attrs`
@@ -740,7 +741,7 @@ const MyPicture = () => {
 <div>
   {/* Evaluate as rendered img element has the src attribute and alt="Lorem ipsam"  */}
   <MyComponent />
-</div>;
+</div>
 ```
 
 #### `as.attrs[].name`
@@ -793,7 +794,7 @@ const MyIcon = ({ label }) => {
 <div>
   {/* Evaluate as the accessible name is "my icon name" */}
   <MyIcon label="my icon name" />
-</div>;
+</div>
 ```
 
 #### Interface {#pretenders/interface}

@@ -137,6 +137,7 @@ interface Config {
     "\\.[jt]sx?$": "@markuplint/jsx-parser",
     "\\.vue$": "@markuplint/vue-parser",
     "\\.svelte$": "@markuplint/svelte-parser",
+    "\\.ts$": "@markuplint/tagged-template-literal-parser",
     "\\.ext$": "./path/to/custom-parser/any-lang.js"
   }
 }
@@ -685,7 +686,7 @@ const MyComponent = props => {
 <div>
   {/* レンダリングされたdiv要素がaria-live="polite"を持つものとして評価します。  */}
   <MyComponent aria-live="polite">Lorem Ipsam</MyComponent>
-</div>;
+</div>
 ```
 
 #### `as.attrs`
@@ -724,7 +725,7 @@ const MyPicture = () => {
 <div>
   {/* レンダリングされたimg要素がsrc属性とalt="Lorem ipsam"を持つものとして評価されます。*/}
   <MyComponent />
-</div>;
+</div>
 ```
 
 #### `as.attrs[].name`
@@ -775,7 +776,7 @@ const MyIcon = ({ label }) => {
 <div>
   {/* アクセシブルな名前が「my icon name」であるとして評価します。 */}
   <MyIcon label="my icon name" />
-</div>;
+</div>
 ```
 
 #### インターフェイス {#pretenders/interface}
