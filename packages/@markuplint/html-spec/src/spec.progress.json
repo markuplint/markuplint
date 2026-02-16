@@ -31,11 +31,23 @@
 		"properties": {
 			"global": true,
 			"role": "progressbar",
-			// Authors SHOULD NOT use the aria-valuemax attribute on progress elements.
+			// Authors SHOULD NOT use the aria-valuemax or aria-valuenow attributes on progress elements.
 			"without": [
 				{
 					"type": "should-not",
-					"name": "aria-valuemax"
+					"name": "aria-valuemax",
+					"alt": {
+						"method": "set-attr",
+						"target": "max"
+					}
+				},
+				{
+					"type": "should-not",
+					"name": "aria-valuenow",
+					"alt": {
+						"method": "set-attr",
+						"target": "value"
+					}
 				}
 			]
 		}

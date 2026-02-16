@@ -45,15 +45,31 @@
 		"permittedRoles": false,
 		"properties": {
 			"global": true,
-			// Authors SHOULD NOT use the aria-valuemax or aria-valuemin attributes on meter elements.
+			// Authors SHOULD NOT use the aria-valuemax, aria-valuemin, or aria-valuenow attributes on meter elements.
 			"without": [
 				{
 					"type": "should-not",
-					"name": "aria-valuemax"
+					"name": "aria-valuemax",
+					"alt": {
+						"method": "set-attr",
+						"target": "max"
+					}
 				},
 				{
 					"type": "should-not",
-					"name": "aria-valuemin"
+					"name": "aria-valuemin",
+					"alt": {
+						"method": "set-attr",
+						"target": "min"
+					}
+				},
+				{
+					"type": "should-not",
+					"name": "aria-valuenow",
+					"alt": {
+						"method": "set-attr",
+						"target": "value"
+					}
 				}
 			]
 		},

@@ -51502,7 +51502,33 @@
 						"permittedRoles": false,
 						"properties": {
 							"global": true,
-							"role": "spinbutton"
+							"role": "spinbutton",
+							"without": [
+								{
+									"type": "should-not",
+									"name": "aria-valuemax",
+									"alt": {
+										"method": "set-attr",
+										"target": "max"
+									}
+								},
+								{
+									"type": "should-not",
+									"name": "aria-valuemin",
+									"alt": {
+										"method": "set-attr",
+										"target": "min"
+									}
+								},
+								{
+									"type": "should-not",
+									"name": "aria-valuenow",
+									"alt": {
+										"method": "set-attr",
+										"target": "value"
+									}
+								}
+							]
 						}
 					},
 					"[type='password' i]": {
@@ -51540,11 +51566,27 @@
 							"without": [
 								{
 									"type": "should-not",
-									"name": "aria-valuemax"
+									"name": "aria-valuemax",
+									"alt": {
+										"method": "set-attr",
+										"target": "max"
+									}
 								},
 								{
 									"type": "should-not",
-									"name": "aria-valuemin"
+									"name": "aria-valuemin",
+									"alt": {
+										"method": "set-attr",
+										"target": "min"
+									}
+								},
+								{
+									"type": "should-not",
+									"name": "aria-valuenow",
+									"alt": {
+										"method": "set-attr",
+										"target": "value"
+									}
 								}
 							]
 						}
@@ -51735,7 +51777,33 @@
 							"permittedRoles": false,
 							"properties": {
 								"global": true,
-								"role": "spinbutton"
+								"role": "spinbutton",
+								"without": [
+									{
+										"type": "should-not",
+										"name": "aria-valuemax",
+										"alt": {
+											"method": "set-attr",
+											"target": "max"
+										}
+									},
+									{
+										"type": "should-not",
+										"name": "aria-valuemin",
+										"alt": {
+											"method": "set-attr",
+											"target": "min"
+										}
+									},
+									{
+										"type": "should-not",
+										"name": "aria-valuenow",
+										"alt": {
+											"method": "set-attr",
+											"target": "value"
+										}
+									}
+								]
 							}
 						},
 						"[type='password' i]": {
@@ -51773,11 +51841,27 @@
 								"without": [
 									{
 										"type": "should-not",
-										"name": "aria-valuemax"
+										"name": "aria-valuemax",
+										"alt": {
+											"method": "set-attr",
+											"target": "max"
+										}
 									},
 									{
 										"type": "should-not",
-										"name": "aria-valuemin"
+										"name": "aria-valuemin",
+										"alt": {
+											"method": "set-attr",
+											"target": "min"
+										}
+									},
+									{
+										"type": "should-not",
+										"name": "aria-valuenow",
+										"alt": {
+											"method": "set-attr",
+											"target": "value"
+										}
 									}
 								]
 							}
@@ -52945,11 +53029,27 @@
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-valuemax"
+							"name": "aria-valuemax",
+							"alt": {
+								"method": "set-attr",
+								"target": "max"
+							}
 						},
 						{
 							"type": "should-not",
-							"name": "aria-valuemin"
+							"name": "aria-valuemin",
+							"alt": {
+								"method": "set-attr",
+								"target": "min"
+							}
+						},
+						{
+							"type": "should-not",
+							"name": "aria-valuenow",
+							"alt": {
+								"method": "set-attr",
+								"target": "value"
+							}
 						}
 					]
 				},
@@ -53371,7 +53471,11 @@
 							"without": [
 								{
 									"type": "should-not",
-									"name": "aria-selected"
+									"name": "aria-selected",
+									"alt": {
+										"method": "set-attr",
+										"target": "selected"
+									}
 								}
 							]
 						}
@@ -53630,7 +53734,19 @@
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-valuemax"
+							"name": "aria-valuemax",
+							"alt": {
+								"method": "set-attr",
+								"target": "max"
+							}
+						},
+						{
+							"type": "should-not",
+							"name": "aria-valuenow",
+							"alt": {
+								"method": "set-attr",
+								"target": "value"
+							}
 						}
 					]
 				}
@@ -54091,7 +54207,11 @@
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-multiselectable"
+							"name": "aria-multiselectable",
+							"alt": {
+								"method": "set-attr",
+								"target": "multiple"
+							}
 						}
 					]
 				},
@@ -54105,7 +54225,11 @@
 							"without": [
 								{
 									"type": "should-not",
-									"name": "aria-multiselectable"
+									"name": "aria-multiselectable",
+									"alt": {
+										"method": "set-attr",
+										"target": "multiple"
+									}
 								}
 							]
 						}

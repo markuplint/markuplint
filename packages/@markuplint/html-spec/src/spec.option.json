@@ -62,10 +62,17 @@
 					"global": true,
 					"role": "option",
 					// Authors SHOULD NOT use the aria-selected attribute on the option element.
+					// Note: This without check is currently non-functional because
+					// getComputedRole() returns null for option inside select
+					// (Required Context Role mismatch). See #3214.
 					"without": [
 						{
 							"type": "should-not",
-							"name": "aria-selected"
+							"name": "aria-selected",
+							"alt": {
+								"method": "set-attr",
+								"target": "selected"
+							}
 						}
 					]
 				}
