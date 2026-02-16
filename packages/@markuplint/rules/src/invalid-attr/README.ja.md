@@ -46,6 +46,12 @@ const Component = (props) => {
 
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
+:::caution
+`allowAttrs`は仕様レベルの制約（`noUse`など）を上書きできます。
+プリセットや共有設定を作成する際は、`nodeRules`でスコープを絞り、
+HTML仕様が特定の要素で禁止している属性を意図せず許可しないよう注意してください。
+:::
+
 **配列**もしくは**オブジェクト**を受け取ります。
 
 #### 配列形式 {#allow-attrs-array-format}
