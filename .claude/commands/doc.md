@@ -18,6 +18,21 @@ Thoroughly identify any omissions or inconsistencies in the documentation. **The
 - **NEVER include specific dependency version numbers** (e.g., `postcss-selector-parser 7.1.1`) in documentation — versions change frequently and cause maintenance burden. Refer to `package.json` as the source of truth. Note: specification versions like ARIA 1.3 are not dependencies and may be mentioned.
 - If the intent of code or documentation is unclear, ask the user rather than guessing
 
+# Localized Documents (MANDATORY)
+
+**CRITICAL: Many documents have localized variants (e.g., `README.ja.md` alongside `README.md`). You MUST update ALL localized versions when editing a document.**
+
+Before editing any `.md` file, ALWAYS check for sibling files matching the pattern `<basename>.<lang>.md`:
+
+```bash
+# Example: when editing README.md, check for localized versions
+ls README*.md
+```
+
+- If `foo.md` exists alongside `foo.ja.md`, `foo.zh.md`, etc., update **every** localized file with equivalent changes
+- Each localized file must be written in its respective language (e.g., `.ja.md` in Japanese)
+- Do NOT skip this step. Forgetting to update localized docs is a recurring mistake — always verify
+
 # JSDoc
 
 - Every exported function and type must have a JSDoc comment

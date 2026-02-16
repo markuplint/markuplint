@@ -2,30 +2,48 @@
 description: Analyze a GitHub Issue and create a resolution plan
 ---
 
-You are given a GitHub Issue URL as input: $ARGUMENTS
+Input: $ARGUMENTS
 
 Follow these steps in order:
 
-## Step 1: Fetch Issue Information
+## Step 1: Understand the Problem
+
+**If a GitHub Issue URL is provided:**
 
 1. Extract owner/repo/number from the Issue URL
 2. Run `gh issue view <URL> --json number,title,body,labels,comments,assignees,state` to retrieve all Issue details
 
+**If NO URL is provided (or input is empty/a keyword):**
+
+1. Ask the user to describe the problem using AskUserQuestion or conversation:
+   - What is happening? (bug, feature request, refactoring, etc.)
+   - How to reproduce? (for bugs)
+   - What is the expected behavior?
+   - Which packages or rules are affected? (if known)
+2. Gather enough context to form a clear problem statement before proceeding
+3. Do NOT skip this step — do NOT guess or assume the problem
+
 ## Step 2: Create a Worktree
 
-1. Generate a slug from the Issue title (lowercase, spaces to hyphens, alphanumeric and hyphens only, strip leading/trailing hyphens, truncate to 50 chars)
-2. Branch name: `issue/<number>-<slug>`
-3. Worktree path: `../<branch name with slashes replaced by hyphens>` (under the parent directory of the current repository)
+**CRITICAL: ALWAYS create a worktree. NEVER work in the main directory.**
+
+1. Generate a branch name:
+   - With Issue URL: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars)
+   - Without Issue URL: `fix/<short-description>` or `feat/<short-description>` as appropriate
+2. Check for existing worktrees: `git worktree list`
+   - If a worktree for this branch already exists, use it
+3. Worktree path: `../markuplint-worktree-<short-name>` (under the parent directory of the current repository)
 4. Execute:
    ```bash
-   git worktree add ../<worktree-dir> -b issue/<number>-<slug> dev
-   cd ../<worktree-dir>
+   git worktree add ../markuplint-worktree-<short-name> -b <branch-name> dev
+   cd ../markuplint-worktree-<short-name>
    yarn install && yarn build
    ```
+5. **All subsequent work (analysis, edits, commits) MUST happen in the worktree**
 
 ## Step 3: Analyze the Problem
 
-Read through the Issue body and comments carefully, then organize the following:
+Read through the Issue body and comments (or user description) carefully, then organize the following:
 
 1. **Summary**: What is happening / what is being requested
 2. **Reproduction**: For bugs, reproduction steps and environment
