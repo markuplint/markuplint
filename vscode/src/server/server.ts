@@ -5,9 +5,9 @@ import type { InitializeResult } from 'vscode-languageserver/node.js';
 import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { NO_INSTALL_WARNING } from '../const.js';
+import { IMPORT_ASSERTION_COMPAT_WARNING, NO_INSTALL_WARNING } from '../const.js';
 import { t } from '../i18n.js';
-import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status } from '../lsp.js';
+import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
@@ -15,6 +15,13 @@ import { getModule } from './get-module.js';
 
 const DEBUG = false;
 
+/**
+ * Bootstrap the LSP language server.
+ *
+ * Creates the LSP connection, sets up logging handlers, resolves the markuplint module,
+ * registers document event handlers, and starts listening. If the local markuplint module
+ * is unavailable or incompatible, displays appropriate warnings to the user.
+ */
 export function bootServer() {
 	const connection = createConnection(ProposedFeatures.all);
 
@@ -74,6 +81,12 @@ export function bootServer() {
 
 					if (message) {
 						void connection.sendNotification(logToPrimaryChannel, [message, 'warn']);
+					}
+
+					if (mod.fallbackReason === 'import-assertion-compat') {
+						const compatMessage = t(IMPORT_ASSERTION_COMPAT_WARNING, mod.version);
+						void connection.sendNotification(warningToPopup, compatMessage);
+						void connection.sendNotification(logToPrimaryChannel, [compatMessage, 'warn']);
 					}
 				},
 			});

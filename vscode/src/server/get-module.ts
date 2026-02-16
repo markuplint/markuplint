@@ -5,10 +5,21 @@ import path from 'node:path';
 
 import { Files } from 'vscode-languageserver/node.js';
 
+/**
+ * Resolve and load the markuplint module.
+ *
+ * Attempts to load a locally installed markuplint from the workspace first.
+ * If the local module fails to load (e.g., due to import assertion incompatibility
+ * on Node.js 22+), falls back to the bundled version shipped with the VS Code extension.
+ *
+ * @param log - Logger function for diagnostic output
+ * @returns The resolved module metadata including version, type, and optional fallback reason
+ */
 export async function getModule(log: Log): Promise<Module> {
 	let markuplint: any;
 	let isLocalModule = false;
 	let pkg: any;
+	let fallbackReason: Module['fallbackReason'];
 	try {
 		log('Getting module', 'debug');
 		const modPath = await fileResolve(message => log(message));
@@ -21,7 +32,12 @@ export async function getModule(log: Log): Promise<Module> {
 		pkg = pkg.default ?? pkg;
 		isLocalModule = true;
 	} catch (error: unknown) {
-		log(`Failed to resolve local package: ${error}`, 'error');
+		if (isImportAssertionError(error)) {
+			log(`Local markuplint is incompatible with Node.js 22+ (import assertion syntax): ${error}`, 'warn');
+			fallbackReason = 'import-assertion-compat';
+		} else {
+			log(`Failed to resolve local package: ${error}`, 'error');
+		}
 
 		try {
 			markuplint = await import('markuplint');
@@ -54,16 +70,42 @@ export async function getModule(log: Log): Promise<Module> {
 		moduleType,
 		markuplint,
 		ariaRecommendedVersion: ARIA_RECOMMENDED_VERSION,
+		fallbackReason,
 	};
 }
 
+/**
+ * Metadata for the resolved markuplint module.
+ */
 export type Module = {
+	/** Whether the module was loaded from the workspace's local node_modules */
 	isLocalModule: boolean;
+	/** The semver version string of the loaded module */
 	version: string;
+	/** The module system type declared in package.json */
 	moduleType: 'commonjs' | 'module';
+	/** The loaded markuplint module exports */
 	markuplint: any;
+	/** The ARIA specification version recommended by the loaded module */
 	ariaRecommendedVersion: ARIAVersion;
+	/**
+	 * Reason the local module was skipped in favor of the bundled version.
+	 * Set to `'import-assertion-compat'` when the local markuplint uses
+	 * `assert { type: 'json' }` syntax that was removed in Node.js 22.
+	 */
+	fallbackReason?: 'import-assertion-compat';
 };
+
+/**
+ * Check whether the error is a SyntaxError caused by the `assert { type: 'json' }`
+ * import assertion syntax that was removed in Node.js 22.
+ *
+ * @param error - The caught error to inspect
+ * @returns `true` if the error matches the import assertion SyntaxError pattern
+ */
+function isImportAssertionError(error: unknown): boolean {
+	return error instanceof SyntaxError && /Unexpected identifier 'assert'/.test(error.message);
+}
 
 async function fileResolve(log: (message: string) => void) {
 	try {
