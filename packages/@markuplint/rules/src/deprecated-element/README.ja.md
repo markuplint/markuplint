@@ -1,4 +1,5 @@
 ---
+id: deprecated-element
 description: 非推奨もしくは廃止な要素があると警告します。
 ---
 

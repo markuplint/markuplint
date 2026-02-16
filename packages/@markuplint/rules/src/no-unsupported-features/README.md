@@ -17,8 +17,8 @@ This rule uses [@mdn/browser-compat-data](https://github.com/mdn/browser-compat-
 
 ## How It Works
 
-1. **Browser support check**: Reads the project's browserslist configuration and checks whether each HTML element and attribute is supported in all target browsers.
-2. **Experimental check** (`checkExperimental`): Warns about elements and attributes marked as experimental in the HTML specification.
+1. **Browser support check**: Reads the project's browserslist configuration and checks whether each HTML element and attribute is supported in all target browsers. Features that were once supported but later removed from a browser are also reported (e.g., "removed in 50").
+2. **Experimental check** (`checkExperimental`): Warns about elements and attributes marked as experimental in the HTML specification. The `recommended` preset does not enable this option; you need to enable it manually if needed.
 3. **Non-standard check** (`checkNonStandard`): Warns about elements and attributes marked as non-standard in the HTML specification.
 
 ## Options
@@ -33,6 +33,8 @@ This rule uses [@mdn/browser-compat-data](https://github.com/mdn/browser-compat-
 | `checkNonStandard`   | `boolean`            | `false` | Warn about non-standard elements/attributes.          |
 
 ### `ignoreFeatures` Format
+
+Uses exact string matching (no glob or wildcard patterns).
 
 - `"dialog"` — Ignores the `<dialog>` element (exact match on element name).
 - `"input[list]"` — Ignores the `list` attribute on `<input>` elements.
@@ -66,6 +68,36 @@ Configuration:
 ```html
 <div>This is a div</div>
 ```
+
+### Experimental Check
+
+Configuration:
+
+```json
+{
+  "rules": {
+    "no-unsupported-features": {
+      "options": {
+        "checkExperimental": true
+      }
+    }
+  }
+}
+```
+
+❌ Examples of **incorrect** code for this rule
+
+```html
+<iframe credentialless></iframe>
+```
+
+✅ Examples of **correct** code for this rule
+
+```html
+<iframe></iframe>
+```
+
+> **Note:** Whether an element or attribute is experimental depends on the HTML specification data bundled with markuplint. If a feature is no longer marked as experimental, this rule will not report it.
 
 ### Non-Standard Check
 
@@ -120,4 +152,4 @@ To detect non-standard elements, enable `no-unsupported-features`:
 }
 ```
 
-If you use the `recommended` preset, this is already enabled automatically.
+If you use the `recommended` preset, this is already enabled automatically via the `compat` preset.

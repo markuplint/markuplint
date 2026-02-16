@@ -1,4 +1,5 @@
 ---
+id: no-unsupported-features
 description: ターゲットブラウザでサポートされていないHTML要素や属性、実験的・非標準な要素・属性を使用している場合に警告します。
 ---
 
@@ -18,8 +19,8 @@ description: ターゲットブラウザでサポートされていないHTML要
 
 ## 動作の仕組み
 
-1. **ブラウザサポートチェック**: プロジェクトの browserslist 設定を読み取り、各HTML要素・属性がすべてのターゲットブラウザでサポートされているか確認します。
-2. **実験的チェック** (`checkExperimental`): HTML仕様で実験的とマークされた要素・属性について警告します。
+1. **ブラウザサポートチェック**: プロジェクトの browserslist 設定を読み取り、各HTML要素・属性がすべてのターゲットブラウザでサポートされているか確認します。かつてサポートされていたがその後ブラウザから削除された機能も報告されます（例: "removed in 50"）。
+2. **実験的チェック** (`checkExperimental`): HTML仕様で実験的とマークされた要素・属性について警告します。`recommended` プリセットではこのオプションは有効化されません。必要に応じて手動で有効にしてください。
 3. **非標準チェック** (`checkNonStandard`): HTML仕様で非標準とマークされた要素・属性について警告します。
 
 ## オプション
@@ -34,6 +35,8 @@ description: ターゲットブラウザでサポートされていないHTML要
 | `checkNonStandard`   | `boolean`            | `false`    | 非標準な要素・属性を警告する              |
 
 ### `ignoreFeatures` の形式
+
+完全一致で判定します（グロブやワイルドカードパターンは使用できません）。
 
 - `"dialog"` — `<dialog>` 要素を無視します（要素名の完全一致）
 - `"input[list]"` — `<input>` 要素の `list` 属性を無視します
@@ -67,6 +70,36 @@ description: ターゲットブラウザでサポートされていないHTML要
 ```html
 <div>コンテンツです</div>
 ```
+
+### 実験的チェック
+
+設定:
+
+```json
+{
+  "rules": {
+    "no-unsupported-features": {
+      "options": {
+        "checkExperimental": true
+      }
+    }
+  }
+}
+```
+
+❌ 間違ったコード例
+
+```html
+<iframe credentialless></iframe>
+```
+
+✅ 正しいコード例
+
+```html
+<iframe></iframe>
+```
+
+> **注意:** 要素や属性が実験的かどうかは、markuplint にバンドルされたHTML仕様データに依存します。機能が実験的でなくなった場合、このルールは報告しません。
 
 ### 非標準チェック
 
@@ -121,6 +154,6 @@ v5.x では非標準の検出は `no-unsupported-features` ルールの `checkNo
 }
 ```
 
-`recommended` プリセットを使用している場合は、自動的に有効になっているため変更は不要です。
+`recommended` プリセットを使用している場合は、`compat` プリセット経由で自動的に有効になっているため変更は不要です。
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->
