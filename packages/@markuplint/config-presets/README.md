@@ -26,7 +26,6 @@ Ruleset|Description|`recommended`|`recommended-vue`|`recommended-svelte`|`recomm
 ---|---|---|---|---|---|---|---|---|---|---|---|---|
 [Must not duplicate **ID**](https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html)|Be able to avoid problems in assistive technologies from the viewpoint of machine readability.|✅|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|
 [Disallow `accesskey` attr](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
-[`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 `<label>` should have control| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 **Popover** trigger and target must be adjacent| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
@@ -45,6 +44,7 @@ Require `<video muted>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [Disallow `autofocus` attr to except in the dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
+[`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)|Scoped to non-dialog elements because the HTML spec disallows `tabindex` on `<dialog>` (`noUse`).|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use deprecated attr|You should not use deprecated attributes from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No use deprecated element|You should not use deprecated elements from the viewpoint of compatibility.|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|

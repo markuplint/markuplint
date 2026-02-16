@@ -647,6 +647,19 @@ test('noUse flag', async () => {
 	]);
 });
 
+test('noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
+	const { violations } = await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', {
+		rule: {
+			options: {
+				allowAttrs: [{ name: 'tabindex', value: { enum: ['-1', '0'] } }],
+			},
+		},
+	});
+	// allowAttrs intentionally overrides spec-level noUse — users can opt in.
+	// Presets should use nodeRules to scope allowAttrs and avoid this.
+	expect(violations).toStrictEqual([]);
+});
+
 test('svg', async () => {
 	expect(
 		(

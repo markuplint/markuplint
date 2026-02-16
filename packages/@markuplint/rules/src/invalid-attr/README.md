@@ -45,6 +45,13 @@ const Component = (props) => {
 
 ### Setting `allowAttrs` option {#setting-allow-attrs-option}
 
+:::caution
+`allowAttrs` can override spec-level restrictions (such as `noUse`).
+When writing presets or shared configurations, use `nodeRules` to
+scope `allowAttrs` so it does not unintentionally allow attributes
+that the HTML specification disallows on specific elements.
+:::
+
 It accepts an **array** or an **object**.
 
 #### Array format {#allow-attrs-array-format}

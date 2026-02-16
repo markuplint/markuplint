@@ -15,11 +15,16 @@ const log = ruleLog.extend('invalid-attr');
  */
 type Option = {
 	/**
+	 * Attributes to allow beyond what the spec permits.
+	 * Can override spec-level restrictions such as `noUse`.
+	 *
 	 * @since 3.7.0
 	 */
 	allowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
 
 	/**
+	 * Attributes to disallow in addition to spec restrictions.
+	 *
 	 * @since 3.7.0
 	 */
 	disallowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
