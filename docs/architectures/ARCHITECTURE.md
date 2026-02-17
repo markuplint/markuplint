@@ -188,7 +188,7 @@ All package names omit the `@markuplint/` prefix. The 9 simple template-engine p
 **Contains**:
 
 - **Generated Data**: Single consolidated `index.json` (48K+ lines)
-- **Source Files**: Individual element specifications (`src/spec.*.json`)
+- **Source Files**: Individual element specifications (`src/spec.*.jsonc`)
 - **Build Process**: Automated generation with external data fetching
 
 **Data Structure**:
@@ -220,7 +220,7 @@ All package names omit the `@markuplint/` prefix. The 9 simple template-engine p
 The data generation process is a key architectural decision that influences the overall design:
 
 ```
-Individual JSON Sources (spec.table.json, spec.tr.json...)
+Individual JSONC Sources (spec.table.jsonc, spec.tr.jsonc...)
     ↓ @markuplint/spec-generator processing
 External Data Enrichment (MDN, W3C ARIA, HTML Standard)
     ↓ Consolidation and validation

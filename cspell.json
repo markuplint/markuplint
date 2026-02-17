@@ -6,7 +6,7 @@
 		"cspell.json",
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
-		"packages/@markuplint/html-spec/src/*.json",
+		"packages/@markuplint/html-spec/src/*.jsonc",
 		"packages/@markuplint/html-spec/index.json"
 	],
 	"dictionaries": [
@@ -55,6 +55,7 @@
 		"ebnf",
 		"EFFFF",
 		"Embeded",
+		"esbenp",
 		"espree",
 		"estree",
 		"execa",
