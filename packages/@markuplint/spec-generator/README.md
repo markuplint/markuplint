@@ -12,9 +12,9 @@ Called from `packages/@markuplint/html-spec/build.mjs`:
 ```ts
 await main({
   outputFilePath: 'index.json',
-  htmlFilePattern: 'src/spec.*.json',
-  commonAttrsFilePath: 'src/spec-common.attributes.json',
-  commonContentsFilePath: 'src/spec-common.contents.json',
+  htmlFilePattern: 'src/spec.*.jsonc',
+  commonAttrsFilePath: 'src/spec-common.attributes.jsonc',
+  commonContentsFilePath: 'src/spec-common.contents.jsonc',
 });
 ```
 
@@ -25,7 +25,7 @@ You normally don't run this directly; use:
 
 ## What it does
 
-1. **Read element sources** -- Load every `src/spec.*.json` and infer the element name from the filename
+1. **Read element sources** -- Load every `src/spec.*.jsonc` and infer the element name from the filename
 2. **Enrich from MDN** -- Fetch MDN element pages for descriptions, categories, and attribute metadata (manual specs take precedence)
 3. **Add obsolete elements** -- Inject HTML obsolete elements and deprecated SVG elements
 4. **Load shared data** -- Read global attributes and content model definitions
@@ -36,9 +36,9 @@ For detailed architecture and data flow, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Precedence rules
 
-- Manual data in `src/spec.*.json` overrides MDN-scraped values on conflict.
+- Manual data in `src/spec.*.jsonc` overrides MDN-scraped values on conflict.
 - Attribute objects are merged per name; manual keys win, MDN may fill missing flags.
-- Shared files under `src/spec-common.*.json` are imported as-is.
+- Shared files under `src/spec-common.*.jsonc` are imported as-is.
 
 ## Network and caching
 

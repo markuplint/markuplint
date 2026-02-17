@@ -47,9 +47,9 @@ flowchart TD
     end
 
     subgraph local ["Local Data"]
-        specFiles["spec.*.json files\n(read-json.ts)"]
-        commonAttrs["spec-common.attributes.json\n(read-json.ts)"]
-        commonContents["spec-common.contents.json\n(read-json.ts)"]
+        specFiles["spec.*.jsonc files\n(read-json.ts)"]
+        commonAttrs["spec-common.attributes.jsonc\n(read-json.ts)"]
+        commonContents["spec-common.contents.jsonc\n(read-json.ts)"]
     end
 
     subgraph output ["Output"]
