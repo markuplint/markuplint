@@ -18,10 +18,7 @@
 	"stylelint.validate": ["css"],
 	"files.associations": {
 		".markuplintrc": "jsonc",
-		"*.schema.json": "jsonc",
-		"preset.*.json": "jsonc",
-		"spec.*.json": "jsonc",
-		"spec-common.*.json": "jsonc"
+		"*.schema.json": "jsonc"
 	},
 	"json.schemas": [
 		{
@@ -32,16 +29,16 @@
 			"fileMatch": [
 				"/**/*.markuplintrc",
 				"/**/markuplint-*.json",
-				"/packages/@markuplint/config-presets/src/*.json"
+				"/packages/@markuplint/config-presets/src/*.jsonc"
 			],
 			"url": "/config.schema.json"
 		},
 		{
-			"fileMatch": ["/packages/*markuplint/html-spec/src/spec.*.json"],
+			"fileMatch": ["/packages/*markuplint/html-spec/src/spec.*.jsonc"],
 			"url": "/packages/@markuplint/ml-spec/schemas/element.schema.json"
 		},
 		{
-			"fileMatch": ["/packages/*markuplint/html-spec/src/spec-common.attributes.json"],
+			"fileMatch": ["/packages/*markuplint/html-spec/src/spec-common.attributes.jsonc"],
 			"url": "/packages/@markuplint/ml-spec/schemas/global-attributes.schema.json"
 		},
 		{

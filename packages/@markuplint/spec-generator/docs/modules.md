@@ -51,7 +51,7 @@ Builds the complete list of HTML and SVG element specifications.
 
 **Flow:**
 
-1. Read all spec files matching the glob pattern via `readJsons()`. Element names are extracted from filenames using the regex `spec.([\w-]+).json` (e.g., `spec.a.json` becomes `a`)
+1. Read all spec files matching the glob pattern via `readJsons()`. Element names are extracted from filenames using the regex `spec.([\w-]+).jsonc` (e.g., `spec.a.jsonc` becomes `a`)
 2. Fetch the deprecated SVG element list via `getSVGElementList()`
 3. Generate stubs for obsolete elements not already present via `fetchObsoleteElements()`
 4. For each element, construct the MDN URL and scrape metadata via `fetchHTMLElement()`:
@@ -185,7 +185,7 @@ JSON file reading with comment support.
 
 ### `readJson<T>(filePath: string): T`
 
-Reads a single JSON file. Uses `strip-json-comments` to remove `//` and `/* */` comments before parsing. Throws if the path is not absolute.
+Reads a single JSONC file. Uses `jsonc-parser` to parse JSON with `//` and `/* */` comments. Throws if the path is not absolute.
 
 ### `readJsons<T>(pattern: string, hook?): Promise<T[]>`
 

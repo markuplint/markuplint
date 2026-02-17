@@ -18,9 +18,9 @@ The build is network-dependent because external data is fetched live. Expect sev
 ```mermaid
 flowchart TD
     subgraph inputs ["Source Files (html-spec)"]
-        specFiles["src/spec.*.json\n(177 element files)"]
-        commonAttrs["src/spec-common.attributes.json\n(19 global attribute categories)"]
-        commonContents["src/spec-common.contents.json\n(content model macros)"]
+        specFiles["src/spec.*.jsonc\n(177 element files)"]
+        commonAttrs["src/spec-common.attributes.jsonc\n(19 global attribute categories)"]
+        commonContents["src/spec-common.contents.jsonc\n(content model macros)"]
     end
 
     subgraph build ["Build"]
@@ -60,9 +60,9 @@ import { main } from '@markuplint/spec-generator';
 
 await main({
   outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.json'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.json'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.json'),
+  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
+  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
+  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
 });
 ```
 
@@ -108,7 +108,7 @@ Key points:
 
 - **Manual data always takes precedence** over MDN-scraped data
 - For `attributes`, MDN-scraped attributes are added only when the manual spec does not define that attribute name
-- Content models and ARIA mappings are never scraped -- they come exclusively from your `src/spec.*.json` files
+- Content models and ARIA mappings are never scraped -- they come exclusively from your `src/spec.*.jsonc` files
 - The `cite` URL defaults to the MDN page but can be overridden per element
 
 **Attribute merge behavior in detail:**
@@ -141,9 +141,9 @@ The `index.json` follows the `ExtendedSpec` type from `@markuplint/ml-spec`:
 ```
 
 - `cites` -- all fetched URLs, for traceability
-- `def["#globalAttrs"]` -- from `spec-common.attributes.json`
+- `def["#globalAttrs"]` -- from `spec-common.attributes.jsonc`
 - `def["#aria"]` -- scraped from W3C ARIA specifications
-- `def["#contentModels"]` -- from `spec-common.contents.json`
+- `def["#contentModels"]` -- from `spec-common.contents.jsonc`
 - `specs` -- merged element specifications array
 
 ## Build Commands

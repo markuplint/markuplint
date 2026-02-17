@@ -199,10 +199,9 @@ To check which roles were extracted from a specific ARIA version:
 - Listed as a dependency but not currently imported by any source module
 - May be reserved for future XML parsing needs
 
-### strip-json-comments
+### jsonc-parser
 
-- Version: 5.0.3
-- Used in `read-json.ts` to support `//` and `/* */` comments in JSON spec files
+- Used in `read-json.ts` to parse JSONC files (JSON with `//` and `/* */` comments)
 - The `html-spec` package uses comments at the top of spec files for spec URL references
 
 ### cli-progress

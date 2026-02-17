@@ -9,23 +9,23 @@ the shared common files.
 
 ### HTML Elements
 
-Pattern: `src/spec.<tag>.json` (e.g., `spec.div.json`, `spec.table.json`, `spec.input.json`)
+Pattern: `src/spec.<tag>.jsonc` (e.g., `spec.div.jsonc`, `spec.table.jsonc`, `spec.input.jsonc`)
 
 ### SVG Elements
 
-Pattern: `src/spec.svg_<local>.json` (e.g., `spec.svg_text.json`, `spec.svg_circle.json`)
+Pattern: `src/spec.svg_<local>.jsonc` (e.g., `spec.svg_text.jsonc`, `spec.svg_circle.jsonc`)
 
-The local name preserves case (`svg_animateMotion.json`). The element name is inferred
+The local name preserves case (`svg_animateMotion.jsonc`). The element name is inferred
 at runtime as `svg:<local>` (e.g., `svg:text`, `svg:clipPath`).
 
 ### Common Files
 
-- `spec-common.attributes.json` -- Global attribute category definitions (19 categories)
-- `spec-common.contents.json` -- Content model category macros
+- `spec-common.attributes.jsonc` -- Global attribute category definitions (19 categories)
+- `spec-common.contents.jsonc` -- Content model category macros
 
 ### JSON with Comments
 
-All spec files support JavaScript-style comments (`//` and `/* */`) via `strip-json-comments`.
+All spec files use the JSONC format (`.jsonc`) and support JavaScript-style comments (`//` and `/* */`) via `jsonc-parser`.
 Use comments to link to specification URLs at the top of each file:
 
 ```json
@@ -87,7 +87,7 @@ The content model definitions in these JSON files are part of a larger ecosystem
 
 - **Schema validation** -- `@markuplint/ml-spec` provides `content-models.schema.json` which defines the valid structure of content model patterns (`require`, `optional`, `oneOrMore`, `zeroOrMore`, `choice`, `transparent`). Source JSON files are validated against this schema in tests.
 - **TypeScript types** -- `@markuplint/ml-spec` auto-generates `ContentModel`, `PermittedContentPattern`, and `Category` types from the schema (in `types/permitted-structures.ts`), enabling type-safe access throughout the codebase.
-- **Runtime algorithms** -- `@markuplint/ml-spec` provides `getContentModel()` which evaluates conditional content models at runtime, and `contentModelCategoryToTagNames()` which resolves category names (e.g., `#flow`) to concrete element lists using `def["#contentModels"]` from this package's `spec-common.contents.json`.
+- **Runtime algorithms** -- `@markuplint/ml-spec` provides `getContentModel()` which evaluates conditional content models at runtime, and `contentModelCategoryToTagNames()` which resolves category names (e.g., `#flow`) to concrete element lists using `def["#contentModels"]` from this package's `spec-common.contents.jsonc`.
 - **Lint rules** -- `@markuplint/rules` uses these definitions in the `permitted-contents` rule (validates element children against content model patterns) and the `no-empty-palpable-content` rule (uses `#palpable` category data to detect empty palpable elements).
 
 ## Content Model Patterns
@@ -207,7 +207,7 @@ elements that have been fully obsoleted). In practice, `deprecated` attributes u
 still work in browsers, while `obsolete` attributes may not.
 
 **Flag precedence (spec > MDN):** When a flag is set in the manual spec file
-(`src/spec.*.json`), it takes precedence over the MDN-scraped value. This allows you to
+(`src/spec.*.jsonc`), it takes precedence over the MDN-scraped value. This allows you to
 correct cases where MDN data is inaccurate or lagging behind the specification. Flags
 from MDN are used only when the manual spec does not define the attribute or does not
 set that particular flag.
@@ -354,12 +354,12 @@ spec versions. Version overrides can contain their own `conditions` object:
 
 ## Common Files
 
-### spec-common.attributes.json
+### spec-common.attributes.jsonc
 
 Defines the 19 global attribute categories. Each category maps attribute names to
 definitions using the same format described in the attributes section.
 
-### spec-common.contents.json
+### spec-common.contents.jsonc
 
 Defines content model category macros referenced via `:model()`. Structure:
 

@@ -46,9 +46,9 @@ flowchart TD
     end
 
     subgraph local ["ローカルデータ"]
-        specFiles["spec.*.json ファイル\n(read-json.ts)"]
-        commonAttrs["spec-common.attributes.json\n(read-json.ts)"]
-        commonContents["spec-common.contents.json\n(read-json.ts)"]
+        specFiles["spec.*.jsonc ファイル\n(read-json.ts)"]
+        commonAttrs["spec-common.attributes.jsonc\n(read-json.ts)"]
+        commonContents["spec-common.contents.jsonc\n(read-json.ts)"]
     end
 
     subgraph output ["出力"]
@@ -121,14 +121,14 @@ export async function main(options: Options): Promise<void>;
 
 ## 外部依存
 
-| パッケージ            | 用途                                                      |
-| --------------------- | --------------------------------------------------------- |
-| `cheerio`             | スクレイピングしたウェブページの HTML 解析と DOM クエリ   |
-| `cli-progress`        | フェッチ操作のターミナルプログレスバー                    |
-| `ajv`                 | JSON スキーマバリデーション（利用可能だが実行時は未使用） |
-| `fast-xml-parser`     | XML パース（利用可能だが現在のモジュールでは未使用）      |
-| `glob`                | `readJsons()` 用のファイル glob パターンマッチング        |
-| `strip-json-comments` | パース前に JSON ファイルからコメントを除去                |
+| パッケージ        | 用途                                                      |
+| ----------------- | --------------------------------------------------------- |
+| `cheerio`         | スクレイピングしたウェブページの HTML 解析と DOM クエリ   |
+| `cli-progress`    | フェッチ操作のターミナルプログレスバー                    |
+| `ajv`             | JSON スキーマバリデーション（利用可能だが実行時は未使用） |
+| `fast-xml-parser` | XML パース（利用可能だが現在のモジュールでは未使用）      |
+| `glob`            | `readJsons()` 用のファイル glob パターンマッチング        |
+| `jsonc-parser`    | JSONC ファイル（コメント付き JSON）のパース               |
 
 **開発依存:**
 

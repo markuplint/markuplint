@@ -51,7 +51,7 @@ HTML および SVG 要素仕様の完全なリストを構築します。
 
 **フロー:**
 
-1. `readJsons()` で glob パターンにマッチする全仕様ファイルを読み込み。要素名は正規表現 `spec.([\w-]+).json` でファイル名から抽出（例: `spec.a.json` → `a`）
+1. `readJsons()` で glob パターンにマッチする全仕様ファイルを読み込み。要素名は正規表現 `spec.([\w-]+).jsonc` でファイル名から抽出（例: `spec.a.jsonc` → `a`）
 2. `getSVGElementList()` で非推奨 SVG 要素リストを取得
 3. `fetchObsoleteElements()` で既存の仕様にない非推奨要素のスタブを生成
 4. 各要素について MDN URL を構築し、`fetchHTMLElement()` でメタデータをスクレイピング:
@@ -185,7 +185,7 @@ W3C ARIA 仕様からロールとプロパティの定義をスクレイピン�
 
 ### `readJson<T>(filePath: string): T`
 
-単一の JSON ファイルを読み込みます。`strip-json-comments` を使用してパース前に `//` および `/* */` コメントを除去します。パスが絶対パスでない場合はエラーをスローします。
+単一の JSONC ファイルを読み込みます。`jsonc-parser` を使用して `//` および `/* */` コメント付き JSON をパースします。パスが絶対パスでない場合はエラーをスローします。
 
 ### `readJsons<T>(pattern: string, hook?): Promise<T[]>`
 

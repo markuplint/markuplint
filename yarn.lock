@@ -2374,6 +2374,7 @@ __metadata:
     "@markuplint/ml-spec": "npm:4.10.2"
     "@markuplint/spec-generator": "npm:4.8.2"
     "@markuplint/test-tools": "npm:4.5.23"
+    jsonc-parser: "npm:3.3.1"
   languageName: unknown
   linkType: soft
 
@@ -2620,7 +2621,7 @@ __metadata:
     cli-progress: "npm:3.12.0"
     fast-xml-parser: "npm:5.3.6"
     glob: "npm:13.0.4"
-    strip-json-comments: "npm:5.0.3"
+    jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.4.4"
   languageName: unknown
   linkType: soft
@@ -2669,7 +2670,6 @@ __metadata:
     execa: "npm:9.6.1"
     glob: "npm:13.0.4"
     jsdom: "npm:28.1.0"
-    strip-json-comments: "npm:5.0.3"
     textlint-rule-prh: "npm:6.1.0"
     type-fest: "npm:5.4.4"
     vitest: "npm:4.0.18"
@@ -15936,13 +15936,6 @@ __metadata:
   version: 3.1.1
   resolution: "strip-json-comments@npm:3.1.1"
   checksum: 10c0/9681a6257b925a7fa0f285851c0e613cc934a50661fa7bb41ca9cbbff89686bb4a0ee366e6ecedc4daafd01e83eee0720111ab294366fe7c185e935475ebcecd
-  languageName: node
-  linkType: hard
-
-"strip-json-comments@npm:5.0.3":
-  version: 5.0.3
-  resolution: "strip-json-comments@npm:5.0.3"
-  checksum: 10c0/daaf20b29f69fb51112698f4a9a662490dbb78d5baf6127c75a0a83c2ac6c078a8c0f74b389ad5e0519d6fc359c4a57cb9971b1ae201aef62ce45a13247791e0
   languageName: node
   linkType: hard
 

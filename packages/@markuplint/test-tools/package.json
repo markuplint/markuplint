@@ -31,7 +31,6 @@
 		"execa": "9.6.1",
 		"glob": "13.0.4",
 		"jsdom": "28.1.0",
-		"strip-json-comments": "5.0.3",
 		"textlint-rule-prh": "6.1.0",
 		"type-fest": "5.4.4",
 		"vitest": "4.0.18"

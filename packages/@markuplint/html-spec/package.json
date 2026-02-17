@@ -30,7 +30,8 @@
 	},
 	"devDependencies": {
 		"@markuplint/spec-generator": "4.8.2",
-		"@markuplint/test-tools": "4.5.23"
+		"@markuplint/test-tools": "4.5.23",
+		"jsonc-parser": "3.3.1"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "4.10.2"

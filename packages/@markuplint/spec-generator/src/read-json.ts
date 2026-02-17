@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { glob } from 'glob';
-import strip from 'strip-json-comments';
+import { parse } from 'jsonc-parser';
 
 /**
  * Reads and parses a single JSON file (with support for JSON comments) from an absolute file path.
@@ -16,9 +16,8 @@ export function readJson<T = Record<string, any>>(filePath: string): T {
 	if (!path.isAbsolute(filePath)) {
 		throw new Error(`The path must be absolute path: ${filePath}`);
 	}
-	let json = fs.readFileSync(filePath, { encoding: 'utf8' });
-	json = strip(json);
-	return JSON.parse(json) as T;
+	const json = fs.readFileSync(filePath, { encoding: 'utf8' });
+	return parse(json) as T;
 }
 
 /**

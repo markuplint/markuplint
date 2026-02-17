@@ -35,9 +35,9 @@ Core packages (Application Layer)
 
 ### Source Files (EDIT THESE)
 
-- **`src/spec.*.json`** - Individual element specifications (177 files)
-- **`src/spec-common.attributes.json`** - Global attribute category definitions (19 categories)
-- **`src/spec-common.contents.json`** - Content model category macros (HTML 10 + SVG 19 categories)
+- **`src/spec.*.jsonc`** - Individual element specifications (177 files)
+- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (19 categories)
+- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 categories)
 
 ### Build System
 

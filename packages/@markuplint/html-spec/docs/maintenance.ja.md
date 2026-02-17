@@ -15,15 +15,15 @@
 
 ### 1. 新しいHTML要素の追加
 
-1. `src/spec.<element>.json` を作成（例: `src/spec.dialog.json`）
+1. `src/spec.<element>.jsonc` を作成（例: `src/spec.dialog.jsonc`）
 2. 最低限以下を定義:
    - `contentModel` と `contents`
    - `globalAttrs`（通常 `#HTMLGlobalAttrs`, `#GlobalEventAttrs`, `#ARIAAttrs` を `true` に設定）
    - `attributes`（要素固有属性、空 `{}` でも可）
    - `aria` と `implicitRole`, `permittedRoles`
-3. ファイル先頭に関連仕様URLのコメントを追加（`//` 形式、`strip-json-comments` で処理される）
+3. ファイル先頭に関連仕様URLのコメントを追加（`//` 形式、`jsonc-parser` で処理される）
 4. 要素がいずれかのコンテンツカテゴリ（flow、phrasing 等）に属する場合、
-   `src/spec-common.contents.json` の該当カテゴリに追加する。追加しないと
+   `src/spec-common.contents.jsonc` の該当カテゴリに追加する。追加しないと
    `@markuplint/rules` の `permitted-contents` ルールがそのカテゴリを許可する
    親要素の中で不正な子要素として検出してしまう
 5. `yarn workspace @markuplint/html-spec run gen` を実行
@@ -53,7 +53,7 @@
 
 ### 2. 既存要素の属性変更
 
-1. 該当する `src/spec.<element>.json` を開く
+1. 該当する `src/spec.<element>.jsonc` を開く
 2. `attributes` オブジェクトにエントリを追加・変更
 3. 条件付き属性の場合、CSSセレクタで `condition` フィールドを追加
 4. `yarn workspace @markuplint/html-spec run gen` を実行
@@ -61,7 +61,7 @@
 
 ### 3. SVG要素の追加
 
-1. `src/spec.svg_<localname>.json` を作成（例: `src/spec.svg_circle.json`）
+1. `src/spec.svg_<localname>.jsonc` を作成（例: `src/spec.svg_circle.jsonc`）
 2. ファイル名の `svg_` プレフィックスから、要素名は `svg:<localname>` として自動推論される
 3. SVG固有のグローバル属性カテゴリ（`#SVGCoreAttrs`, `#SVGPresentationAttrs` 等）を使用
 4. ARIAの `permittedRoles` にはAAM参照オブジェクト（`{ "core-aam": true, "graphics-aam": true }`）を使用
@@ -70,7 +70,7 @@
 
 ### 4. グローバル属性カテゴリの変更
 
-1. `src/spec-common.attributes.json` を編集
+1. `src/spec-common.attributes.jsonc` を編集
 2. 各トップレベルキーがカテゴリ（例: `#HTMLGlobalAttrs`, `#SVGCoreAttrs`）
 3. カテゴリ内の属性定義を追加・削除・変更
 4. `yarn workspace @markuplint/html-spec run gen` を実行
@@ -78,7 +78,7 @@
 
 ### 5. コンテンツモデルカテゴリの追加・更新
 
-1. `src/spec-common.contents.json` を編集
+1. `src/spec-common.contents.jsonc` を編集
 2. `models` オブジェクトに新しいエントリを追加、または既存カテゴリに要素を追加
 3. SVG要素には `svg|<name>` プレフィックスを使用
 4. 要素仕様で `:model(newCategory)` として参照
@@ -97,7 +97,7 @@
 
 ### 6. ARIAマッピングの更新
 
-1. 該当する `src/spec.<element>.json` を開く
+1. 該当する `src/spec.<element>.jsonc` を開く
 2. `aria` オブジェクトを変更:
    - `implicitRole` でデフォルトロールを変更
    - `permittedRoles` 配列を更新
@@ -158,7 +158,7 @@ description の表現変更などの表面的な変更は、更新された `ind
 場合、手動仕様ファイルの更新が必要になることがある:
 
 1. 影響を受ける要素を特定する
-2. 該当する `src/spec.*.json` または `src/spec-common.*.json` を新しい仕様に合わせて
+2. 該当する `src/spec.*.jsonc` または `src/spec-common.*.jsonc` を新しい仕様に合わせて
    更新する。まれに `@markuplint/ml-spec` のスキーマや型定義の更新が必要になる
    こともある
 3. 手動仕様の変更を反映するために再生成する:
@@ -168,7 +168,7 @@ description の表現変更などの表面的な変更は、更新された `ind
 4. **冪等性の検証** -- 仕様ファイルの変更が安定した出力を生成することをコミット前に確認する:
    ```bash
    # 仕様ファイルと index.json をステージ
-   git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+   git add packages/@markuplint/html-spec/src/spec.*.jsonc packages/@markuplint/html-spec/index.json
    # 再生成
    yarn up:gen
    # 変更した属性が diff に出ないことを確認（= 安定した出力）
@@ -214,12 +214,12 @@ description の表現変更などの表面的な変更は、更新された `ind
 
 ### 編集可能なファイル（これらを変更）
 
-| ファイル                          | 説明                                               |
-| --------------------------------- | -------------------------------------------------- |
-| `src/spec.*.json`                 | 要素ごとの仕様（177ファイル）                      |
-| `src/spec-common.attributes.json` | グローバル属性カテゴリ定義（19カテゴリ）           |
-| `src/spec-common.contents.json`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
-| `build.mjs`                       | ビルドスクリプト設定                               |
+| ファイル                           | 説明                                               |
+| ---------------------------------- | -------------------------------------------------- |
+| `src/spec.*.jsonc`                 | 要素ごとの仕様（177ファイル）                      |
+| `src/spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（19カテゴリ）           |
+| `src/spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
+| `build.mjs`                        | ビルドスクリプト設定                               |
 
 ### 生成ファイル（編集不可）
 
@@ -253,14 +253,14 @@ yarn workspace @markuplint/html-spec run test
 
 スキーマテストでは以下のスキーマが使用される:
 
-| スキーマ                        | 対象                              |
-| ------------------------------- | --------------------------------- |
-| `element.schema.json`           | `src/spec.*.json` ファイル        |
-| `global-attributes.schema.json` | `src/spec-common.attributes.json` |
-| `attributes.schema.json`        | 属性定義の部分スキーマ            |
-| `types.schema.json`             | 型定義の部分スキーマ              |
-| `aria.schema.json`              | ARIA定義の部分スキーマ            |
-| `content-models.schema.json`    | コンテンツモデルの部分スキーマ    |
+| スキーマ                        | 対象                               |
+| ------------------------------- | ---------------------------------- |
+| `element.schema.json`           | `src/spec.*.jsonc` ファイル        |
+| `global-attributes.schema.json` | `src/spec-common.attributes.jsonc` |
+| `attributes.schema.json`        | 属性定義の部分スキーマ             |
+| `types.schema.json`             | 型定義の部分スキーマ               |
+| `aria.schema.json`              | ARIA定義の部分スキーマ             |
+| `content-models.schema.json`    | コンテンツモデルの部分スキーマ     |
 
 ## 依存関係管理
 
