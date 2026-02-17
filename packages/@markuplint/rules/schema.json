@@ -108,6 +108,9 @@
 				"require-datetime": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-datetime/schema.json"
 				},
+				"require-dialog-autofocus": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/require-dialog-autofocus/schema.json"
+				},
 				"required-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/required-attr/schema.json"
 				},

@@ -34,6 +34,7 @@ No consecutive `<br>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No refer to no existent **ID**| |✅|✅|✅|✅|✅|✅|❌|❌|✅|❌|❌|❌|
 No redundant **accessible name** sources| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require **accessible name**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+Require **autofocus** in modal dialogs| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<h1>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Align row and column| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Use `<ul>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
