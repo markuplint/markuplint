@@ -15,6 +15,7 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
   - プロパティ/ステートに無効な値を指定した場合
   - ARIA in HTMLの仕様における要素に許可されていないロールを指定した場合
   - 必須のプロパティ/ステートを指定していない場合
+  - ロールが必要とする子ロールを持たない場合（例: `table`は`row`を必要とする）
 - 推奨されない使い方
   - 非推奨（廃止予定）のロールを指定した場合
   - 非推奨（廃止予定）のプロパティ/ステートを指定した場合
@@ -22,6 +23,9 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
   - ARIA in HTMLの仕様において、HTMLの属性と同等の意味を持つプロパティ/ステートを指定した場合
 - プリファレンス
   - プロパティ/ステートのデフォルト値を明示的に指定した場合
+- オプションチェック（デフォルトで無効）
+  - childrenPresentationalを持つロールの子孫要素にARIA属性を指定した場合
+  - `aria-hidden`で非表示にされたフォーカス可能なインタラクティブ要素を使用した場合
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 

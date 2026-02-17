@@ -13,9 +13,10 @@ Warn if:
   - Use the role that doesn't exist in the spec.
   - Use the abstract role.
   - Use the property/state that doesn't belong to a set role (or an implicit role).
-  - Use an invalid value of the property/state .
+  - Use an invalid value of the property/state.
   - Use the not permitted role according to ARIA in HTML.
   - Don't set the required property/state.
+  - The role doesn't have the required child roles (e.g., `table` requires `row`).
 - Unrecommended.
   - Set the deprecated role.
   - Set the deprecated property/state.
@@ -23,6 +24,9 @@ Warn if:
   - Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.
 - Preference
   - Set the default value of the property/state explicitly.
+- Optional checks (disabled by default)
+  - Set ARIA attributes on descendants of roles whose children are presentational.
+  - Use focusable interactive elements hidden via `aria-hidden`.
 
 ❌ Examples of **incorrect** code for this rule
 
