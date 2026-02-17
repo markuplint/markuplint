@@ -1,6 +1,6 @@
 # 要素仕様フォーマット
 
-`@markuplint/html-spec` パッケージにおける要素仕様 JSON ファイルの包括的なリファレンスガイドです。各 `src/spec.*.json` ファイルは 1 つの HTML または SVG 要素の仕様を定義し、コンテンツモデル、属性、ARIA マッピングなどの情報を含みます。
+`@markuplint/html-spec` パッケージにおける要素仕様 JSON ファイルの包括的なリファレンスガイドです。各 `src/spec.*.jsonc` ファイルは 1 つの HTML または SVG 要素の仕様を定義し、コンテンツモデル、属性、ARIA マッピングなどの情報を含みます。
 
 ## ファイル命名規則
 
@@ -9,38 +9,38 @@
 ファイル名パターン: `src/spec.<tag>.json`
 
 ```
-spec.div.json       # <div> 要素
-spec.table.json     # <table> 要素
-spec.input.json     # <input> 要素
-spec.a.json         # <a> 要素
-spec.p.json         # <p> 要素
+spec.div.jsonc       # <div> 要素
+spec.table.jsonc     # <table> 要素
+spec.input.jsonc     # <input> 要素
+spec.a.jsonc         # <a> 要素
+spec.p.jsonc         # <p> 要素
 ```
 
 タグ名はそのままファイル名に使用されます。
 
 ### SVG 要素
 
-ファイル名パターン: `src/spec.svg_<local>.json`
+ファイル名パターン: `src/spec.svg_<local>.jsonc`
 
 ```
-spec.svg_text.json     # <svg:text> 要素
-spec.svg_circle.json   # <svg:circle> 要素
-spec.svg_rect.json     # <svg:rect> 要素
-spec.svg_path.json     # <svg:path> 要素
+spec.svg_text.jsonc     # <svg:text> 要素
+spec.svg_circle.jsonc   # <svg:circle> 要素
+spec.svg_rect.jsonc     # <svg:rect> 要素
+spec.svg_path.jsonc     # <svg:path> 要素
 ```
 
-ファイル名のプレフィックス `svg_` から、要素名は `svg:<local>` として推論されます（例: `spec.svg_text.json` は `svg:text` に対応）。
+ファイル名のプレフィックス `svg_` から、要素名は `svg:<local>` として推論されます（例: `spec.svg_text.jsonc` は `svg:text` に対応）。
 
 ### 共通定義ファイル
 
-| ファイル                      | 内容                                               |
-| ----------------------------- | -------------------------------------------------- |
-| `spec-common.attributes.json` | グローバル属性カテゴリ定義（19 カテゴリ）          |
-| `spec-common.contents.json`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
+| ファイル                       | 内容                                               |
+| ------------------------------ | -------------------------------------------------- |
+| `spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（19 カテゴリ）          |
+| `spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
 
 ## 要素仕様の構造
 
-各仕様ファイルは JSON オブジェクトです。`strip-json-comments` によるコメント（`//` 形式）に対応しており、ファイル先頭に仕様の参照 URL を記載するのが慣例です。
+各仕様ファイルは JSON オブジェクトです。JSONC 形式（`.jsonc`）を使用しており、`jsonc-parser` によるコメント（`//` 形式）に対応しています。ファイル先頭に仕様の参照 URL を記載するのが慣例です。
 
 トップレベルフィールドは以下の 4 つです。
 
@@ -116,7 +116,7 @@ spec.svg_path.json     # <svg:path> 要素
 
 - **スキーマ検証** -- `@markuplint/ml-spec` の `content-models.schema.json` がコンテンツモデルパターン（`require`、`optional`、`oneOrMore`、`zeroOrMore`、`choice`、`transparent`）の有効な構造を定義しています。テスト時にソース JSON ファイルがこのスキーマに対して検証されます。
 - **TypeScript 型** -- `@markuplint/ml-spec` がスキーマから `ContentModel`、`PermittedContentPattern`、`Category` 等の型を自動生成し（`types/permitted-structures.ts`）、コードベース全体で型安全なアクセスを提供します。
-- **ランタイムアルゴリズム** -- `@markuplint/ml-spec` の `getContentModel()` が条件付きコンテンツモデルを実行時に評価し、`contentModelCategoryToTagNames()` がカテゴリ名（例: `#flow`）を本パッケージの `spec-common.contents.json` の `def["#contentModels"]` を用いて具体的な要素リストに解決します。
+- **ランタイムアルゴリズム** -- `@markuplint/ml-spec` の `getContentModel()` が条件付きコンテンツモデルを実行時に評価し、`contentModelCategoryToTagNames()` がカテゴリ名（例: `#flow`）を本パッケージの `spec-common.contents.jsonc` の `def["#contentModels"]` を用いて具体的な要素リストに解決します。
 - **リントルール** -- `@markuplint/rules` の `permitted-contents` ルールが子要素をコンテンツモデルパターンに対して検証し、`no-empty-palpable-content` ルールが `#palpable` カテゴリデータを使用して空のパルパブル要素を検出します。
 
 ---
@@ -278,7 +278,7 @@ spec.svg_path.json     # <svg:path> 要素
 （例: 完全に廃止された要素のレガシーなプレゼンテーション属性）。実際の動作として、
 `deprecated` な属性は通常ブラウザで動作するが、`obsolete` な属性は動作しない場合がある。
 
-**フラグの優先順位（仕様ファイル > MDN）:** 手動仕様ファイル（`src/spec.*.json`）で
+**フラグの優先順位（仕様ファイル > MDN）:** 手動仕様ファイル（`src/spec.*.jsonc`）で
 フラグを設定した場合、MDN スクレイピングの値よりも優先される。これにより、MDN データが
 不正確または仕様に追いついていない場合を修正できる。MDN のフラグは、手動仕様に属性定義が
 ない場合、または該当フラグが設定されていない場合にのみ使用される。
@@ -520,7 +520,7 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 
 ## コンテンツモデルカテゴリ
 
-`spec-common.contents.json` に定義されるカテゴリマクロです。コンテンツモデルパターンのセレクタで `:model(<category>)` の形式で参照されます。
+`spec-common.contents.jsonc` に定義されるカテゴリマクロです。コンテンツモデルパターンのセレクタで `:model(<category>)` の形式で参照されます。
 
 ### HTML カテゴリ（10）
 
@@ -563,7 +563,7 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 
 ## 共通定義ファイル
 
-### `spec-common.attributes.json`
+### `spec-common.attributes.jsonc`
 
 19 個のグローバル属性カテゴリの定義ファイルです。各カテゴリはキーに `#` プレフィックス付きの名前を持ち、値は属性名から属性定義へのマッピングです。
 
@@ -603,7 +603,7 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 
 要素仕様の `globalAttrs` フィールドでカテゴリ名を参照し、`true`（全属性）、`false`（除外）、または文字列配列（選択的インクルード）で使用方法を指定します。
 
-### `spec-common.contents.json`
+### `spec-common.contents.jsonc`
 
 コンテンツモデルカテゴリマクロの定義ファイルです。`models` キーの下にカテゴリ名と所属要素の配列が定義されます。
 

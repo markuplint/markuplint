@@ -10,12 +10,12 @@ During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C A
 
 ```
 src/
-├── spec.a.json                       # <a> element specification
-├── spec.abbr.json                    # <abbr> element specification
+├── spec.a.jsonc                      # <a> element specification
+├── spec.abbr.jsonc                   # <abbr> element specification
 ├── ... (177 element specification files total)
-├── spec.svg_text.json                # <svg:text> element specification
-├── spec-common.attributes.json       # 19 global attribute category definitions
-└── spec-common.contents.json         # 10 HTML + 19 SVG content model category definitions
+├── spec.svg_text.jsonc               # <svg:text> element specification
+├── spec-common.attributes.jsonc      # 19 global attribute category definitions
+└── spec-common.contents.jsonc        # 10 HTML + 19 SVG content model category definitions
 
 build.mjs                             # Build script invoking @markuplint/spec-generator
 index.json                            # Generated output (48K+ lines, DO NOT EDIT)
@@ -30,9 +30,9 @@ test/
 ```mermaid
 flowchart TD
     subgraph sources ["Source Layer"]
-        elemSpecs["177 element specs\n(src/spec.*.json)"]
-        commonAttrs["spec-common.attributes.json\n(19 global attribute categories)"]
-        commonContents["spec-common.contents.json\n(10 HTML + 19 SVG content models)"]
+        elemSpecs["177 element specs\n(src/spec.*.jsonc)"]
+        commonAttrs["spec-common.attributes.jsonc\n(19 global attribute categories)"]
+        commonContents["spec-common.contents.jsonc\n(10 HTML + 19 SVG content models)"]
     end
 
     subgraph build ["Build Pipeline"]
@@ -133,14 +133,14 @@ An array of element specifications. Each entry defines a single HTML or SVG elem
 
 ## Core Components
 
-| Component             | Files                                                      | Purpose                                                                        |
-| --------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Source Specifications | 177 `src/spec.*.json` files                                | Per-element definitions: content models, attributes, ARIA mappings             |
-| Common Definitions    | `spec-common.attributes.json`, `spec-common.contents.json` | Shared global attribute categories and content model category macros           |
-| Build System          | `build.mjs`                                                | Invokes `@markuplint/spec-generator` to merge sources with external data       |
-| Generated Output      | `index.json`                                               | Single consolidated dataset consumed by downstream packages                    |
-| Type Declarations     | `index.d.ts`                                               | Re-exports `Cites`, `ElementSpec`, `SpecDefs` from `@markuplint/ml-spec`       |
-| Schema Validation     | `test/structure.spec.mjs`                                  | Ajv-based validation of generated output against `@markuplint/ml-spec` schemas |
+| Component             | Files                                                        | Purpose                                                                        |
+| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Source Specifications | 177 `src/spec.*.jsonc` files                                 | Per-element definitions: content models, attributes, ARIA mappings             |
+| Common Definitions    | `spec-common.attributes.jsonc`, `spec-common.contents.jsonc` | Shared global attribute categories and content model category macros           |
+| Build System          | `build.mjs`                                                  | Invokes `@markuplint/spec-generator` to merge sources with external data       |
+| Generated Output      | `index.json`                                                 | Single consolidated dataset consumed by downstream packages                    |
+| Type Declarations     | `index.d.ts`                                                 | Re-exports `Cites`, `ElementSpec`, `SpecDefs` from `@markuplint/ml-spec`       |
+| Schema Validation     | `test/structure.spec.mjs`                                    | Ajv-based validation of generated output against `@markuplint/ml-spec` schemas |
 
 ## External Dependencies
 

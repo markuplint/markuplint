@@ -18,9 +18,9 @@
 ```mermaid
 flowchart TD
     subgraph inputs ["ソースファイル（html-spec）"]
-        specFiles["src/spec.*.json\n（177 要素ファイル）"]
-        commonAttrs["src/spec-common.attributes.json\n（19 グローバル属性カテゴリ）"]
-        commonContents["src/spec-common.contents.json\n（コンテンツモデルマクロ）"]
+        specFiles["src/spec.*.jsonc\n（177 要素ファイル）"]
+        commonAttrs["src/spec-common.attributes.jsonc\n（19 グローバル属性カテゴリ）"]
+        commonContents["src/spec-common.contents.jsonc\n（コンテンツモデルマクロ）"]
     end
 
     subgraph build ["ビルド"]
@@ -60,9 +60,9 @@ import { main } from '@markuplint/spec-generator';
 
 await main({
   outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.json'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.json'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.json'),
+  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
+  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
+  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
 });
 ```
 
@@ -108,7 +108,7 @@ spec-generator の内部アーキテクチャ（スクレイピング、キャ�
 
 - **手動データが常に優先** -- MDN スクレイピングデータを上書きする
 - `attributes` は、手動仕様に同名の属性がない場合のみ MDN データが追加される
-- `contentModel` と `aria` はスクレイピングされない -- `src/spec.*.json` からのみ取得
+- `contentModel` と `aria` はスクレイピングされない -- `src/spec.*.jsonc` からのみ取得
 - `cite` URL はデフォルトで MDN ページだが、要素ごとにオーバーライド可能
 
 **属性マージの詳細動作:**
@@ -140,9 +140,9 @@ spec-generator の内部アーキテクチャ（スクレイピング、キャ�
 ```
 
 - `cites` -- フェッチされた全 URL（トレーサビリティ用）
-- `def["#globalAttrs"]` -- `spec-common.attributes.json` から
+- `def["#globalAttrs"]` -- `spec-common.attributes.jsonc` から
 - `def["#aria"]` -- W3C ARIA 仕様からスクレイピング
-- `def["#contentModels"]` -- `spec-common.contents.json` から
+- `def["#contentModels"]` -- `spec-common.contents.jsonc` から
 - `specs` -- マージ済み要素仕様の配列
 
 ## ビルドコマンド

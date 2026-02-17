@@ -77,9 +77,9 @@ content models:
 
 1. Identify the affected elements
 2. Determine which source files need updating:
-   - `src/spec.<element>.json` for element-specific changes
-   - `src/spec-common.contents.json` for content model category changes
-   - `src/spec-common.attributes.json` for global attribute changes
+   - `src/spec.<element>.jsonc` for element-specific changes
+   - `src/spec-common.contents.jsonc` for content model category changes
+   - `src/spec-common.attributes.jsonc` for global attribute changes
    - In rare cases, `@markuplint/ml-spec` schemas or types may need updating
 3. Make the changes, referencing the authoritative specification:
    - HTML Living Standard: https://html.spec.whatwg.org/multipage/
@@ -93,13 +93,13 @@ content models:
 
 ### Step 3b: Idempotency verification (when spec files are modified)
 
-When you modify `src/spec.*.json` files, verify that your changes produce stable output
+When you modify `src/spec.*.jsonc` files, verify that your changes produce stable output
 before committing. This ensures the generated `index.json` does not contain unintended
 drift:
 
 ```bash
 # 1. Stage spec files and index.json
-git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+git add packages/@markuplint/html-spec/src/spec.*.jsonc packages/@markuplint/html-spec/index.json
 
 # 2. Regenerate
 yarn up:gen
@@ -128,15 +128,15 @@ Stage and commit `index.json` and any modified `src/` files.
 
 Add a new HTML element specification. Follow recipe #1 in `docs/maintenance.md`.
 
-1. Read `src/spec.a.json` as a reference for a typical element
-2. Create `src/spec.<name>.json` with required fields:
+1. Read `src/spec.a.jsonc` as a reference for a typical element
+2. Create `src/spec.<name>.jsonc` with required fields:
    - `contentModel` with `contents`
    - `globalAttrs` (`#HTMLGlobalAttrs`, `#GlobalEventAttrs`, `#ARIAAttrs` set to `true`)
    - `attributes` (element-specific, can be `{}`)
    - `aria` with `implicitRole` and `permittedRoles`
 3. Add spec URL comments at the top (`//` format)
 4. **Cross-package step**: If the element belongs to content categories (flow, phrasing, etc.),
-   add it to the appropriate categories in `src/spec-common.contents.json`.
+   add it to the appropriate categories in `src/spec-common.contents.jsonc`.
    Without this, `@markuplint/rules`' `permitted-contents` rule will flag the element
    as invalid content in parent elements that allow those categories.
 5. Regenerate: `yarn workspace @markuplint/html-spec run gen`
@@ -147,8 +147,8 @@ Add a new HTML element specification. Follow recipe #1 in `docs/maintenance.md`.
 
 Add a new SVG element specification. Follow recipe #3 in `docs/maintenance.md`.
 
-1. Read `src/spec.svg_circle.json` as a reference for a typical SVG element
-2. Create `src/spec.svg_<name>.json` (the `svg_` prefix maps to namespace `svg:<name>`)
+1. Read `src/spec.svg_circle.jsonc` as a reference for a typical SVG element
+2. Create `src/spec.svg_<name>.jsonc` (the `svg_` prefix maps to namespace `svg:<name>`)
 3. Use SVG-specific global attribute categories (`#SVGCoreAttrs`, `#SVGPresentationAttrs`)
 4. For ARIA, use AAM references: `{ "core-aam": true, "graphics-aam": true }`
 5. Regenerate: `yarn workspace @markuplint/html-spec run gen`
@@ -158,14 +158,14 @@ Add a new SVG element specification. Follow recipe #3 in `docs/maintenance.md`.
 
 Add an attribute to an element. Follow recipe #2 in `docs/maintenance.md`.
 
-1. Open `src/spec.<element>.json`
+1. Open `src/spec.<element>.jsonc`
 2. Add the attribute entry to the `attributes` object. See `docs/element-spec-format.md`
    for the full attribute definition format. Common patterns:
    - Simple typed attribute: `"href": { "type": "URL" }`
    - Conditional attribute: `"accept": { "type": ..., "condition": "[type='file' i]" }`
    - Boolean attribute: `"disabled": { "type": "Boolean" }`
 3. For a **global** attribute (applies to all elements), edit
-   `src/spec-common.attributes.json` instead, adding the attribute to the
+   `src/spec-common.attributes.jsonc` instead, adding the attribute to the
    appropriate category (e.g., `#HTMLGlobalAttrs`)
 4. Regenerate: `yarn workspace @markuplint/html-spec run gen`
 5. Verify the attribute appears in `index.json` with correct metadata
@@ -175,9 +175,9 @@ Add an attribute to an element. Follow recipe #2 in `docs/maintenance.md`.
 
 Remove an attribute from an element's manual specification.
 
-1. Open `src/spec.<element>.json`
+1. Open `src/spec.<element>.jsonc`
 2. Remove the attribute entry from the `attributes` object
-3. For a **global** attribute, edit `src/spec-common.attributes.json` instead
+3. For a **global** attribute, edit `src/spec-common.attributes.jsonc` instead
 4. Regenerate: `yarn workspace @markuplint/html-spec run gen`
 5. Verify the attribute no longer appears in `index.json` for the element.
    **Note**: If the attribute also exists in MDN data, it will still appear in
@@ -195,7 +195,7 @@ There are two approaches:
   Add the element name to the `obsoleteList` array in
   `packages/@markuplint/spec-generator/src/html-elements.ts`
 - **Via manual spec file**: Set `"obsolete": true` in the element's
-  `src/spec.<element>.json`
+  `src/spec.<element>.jsonc`
 
 Obsolete elements automatically get:
 
@@ -213,7 +213,7 @@ After making the change:
 
 Mark an attribute as deprecated in an element's specification.
 
-1. Open `src/spec.<element>.json`
+1. Open `src/spec.<element>.jsonc`
 2. Add `"deprecated": true` to the attribute definition:
    ```json
    "align": {
@@ -222,7 +222,7 @@ Mark an attribute as deprecated in an element's specification.
    ```
    If the attribute already has other fields (`type`, `condition`, etc.),
    simply add `"deprecated": true` alongside them.
-3. For a **global** attribute, edit `src/spec-common.attributes.json` instead
+3. For a **global** attribute, edit `src/spec-common.attributes.jsonc` instead
 4. Regenerate: `yarn workspace @markuplint/html-spec run gen`
 5. Verify the attribute shows `"deprecated": true` in `index.json`
 6. Run tests: `yarn workspace @markuplint/html-spec run test`
@@ -239,7 +239,7 @@ These boolean flags indicate the standardization status of an attribute:
 | `deprecated`   | The attribute is obsolete and should not be used                  |
 | `nonStandard`  | The attribute is not part of any standard                         |
 
-1. Open `src/spec.<element>.json` (or `src/spec-common.attributes.json` for globals)
+1. Open `src/spec.<element>.jsonc` (or `src/spec-common.attributes.jsonc` for globals)
 2. Add, change, or remove the flag on the target attribute:
    ```json
    "attributionsrc": {
@@ -293,10 +293,10 @@ These boolean flags indicate the standardization status of an attribute:
 
 Verify cross-package consistency between `@markuplint/html-spec` and related packages.
 
-1. **Content model categories**: Verify that category names in `src/spec-common.contents.json`
+1. **Content model categories**: Verify that category names in `src/spec-common.contents.jsonc`
    match the `Category` enum in `@markuplint/ml-spec/schemas/content-models.schema.json`
 2. **Element membership**: Verify that elements listed in content categories have
-   corresponding `src/spec.<element>.json` files and consistent `contentModel` definitions
+   corresponding `src/spec.<element>.jsonc` files and consistent `contentModel` definitions
 3. **Attribute types**: Check that attribute type references (e.g., `"URL"`, `"<color>"`)
    exist in `@markuplint/types`' definitions registry
 4. **Schema validation**: Run `yarn workspace @markuplint/html-spec run test` to validate
@@ -340,7 +340,7 @@ Spec data changes propagate to multiple test suites. Always run `yarn test`
 ## Rules
 
 1. **`index.json` is generated -- never edit it directly.** Always modify `src/` files and regenerate.
-2. **Manual spec data takes precedence over MDN data.** Attributes defined in `src/spec.*.json` override same-named MDN-sourced attributes. Use this to correct inaccurate MDN data.
+2. **Manual spec data takes precedence over MDN data.** Attributes defined in `src/spec.*.jsonc` override same-named MDN-sourced attributes. Use this to correct inaccurate MDN data.
 3. **Minor MDN description changes should be committed as-is.** Do not attempt to override cosmetic upstream improvements.
 4. **Content model category membership is critical.** A missing element in a category causes `permitted-contents` rule false positives in downstream linting.
 5. **Always run tests after changes.** Schema validation catches structural errors before they propagate to downstream packages.

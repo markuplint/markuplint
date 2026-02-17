@@ -16,7 +16,7 @@ This is a practical operations and maintenance guide for contributors working on
 The generation process (`gen`) performs two steps in sequence via `npm-run-all`:
 
 1. **`gen:build`** -- Executes `build.mjs`, which calls the `main()` function from
-   `@markuplint/spec-generator`. This reads all `src/spec.*.json` files, merges them
+   `@markuplint/spec-generator`. This reads all `src/spec.*.jsonc` files, merges them
    with scraped MDN data and the common attribute/content files, appends obsolete
    element stubs, and writes the consolidated output to `index.json`.
 2. **`gen:prettier`** -- Runs Prettier on `index.json` to ensure consistent formatting
@@ -30,19 +30,19 @@ Expect the build to take several minutes on a clean run.
 
 The build script derives element names from file names using a regex replacement:
 
-- `spec.div.json` becomes element name `div`
-- `spec.svg_circle.json` becomes element name `svg_circle`, which is later resolved
+- `spec.div.jsonc` becomes element name `div`
+- `spec.svg_circle.jsonc` becomes element name `svg_circle`, which is later resolved
   to namespace `svg:circle` by `resolveNamespace()`
 - Heading elements (`h1` through `h6`) are mapped to the MDN URL path `Heading_Elements`
 
-This naming convention is critical. Any deviation from the `spec.<name>.json` pattern
+This naming convention is critical. Any deviation from the `spec.<name>.jsonc` pattern
 will cause the element to be silently excluded from the build output.
 
 ## Common Recipes
 
 ### 1. Adding a New HTML Element
 
-1. Create `src/spec.<element>.json` (e.g., `src/spec.dialog.json`)
+1. Create `src/spec.<element>.jsonc` (e.g., `src/spec.dialog.jsonc`)
 2. Define the specification with at minimum:
    - `contentModel` with `contents`
    - `globalAttrs` (typically `#HTMLGlobalAttrs`, `#GlobalEventAttrs`, `#ARIAAttrs` all set to `true`)
@@ -55,7 +55,7 @@ will cause the element to be silently excluded from the build output.
    // https://w3c.github.io/html-aria/#el-<element>
    ```
 4. If the element belongs to any content categories (flow, phrasing, etc.), add it
-   to the appropriate categories in `src/spec-common.contents.json` -- otherwise
+   to the appropriate categories in `src/spec-common.contents.jsonc` -- otherwise
    `@markuplint/rules`' `permitted-contents` rule will not recognize it as valid
    content in parent elements that allow those categories
 5. Run `yarn workspace @markuplint/html-spec run gen`
@@ -63,7 +63,7 @@ will cause the element to be silently excluded from the build output.
 
 ### 2. Modifying an Existing Element's Attributes
 
-1. Open the relevant `src/spec.<element>.json`
+1. Open the relevant `src/spec.<element>.jsonc`
 2. Add or modify entries in the `attributes` object
 3. For conditional attributes, add a `condition` field with a CSS selector:
    ```json
@@ -77,7 +77,7 @@ will cause the element to be silently excluded from the build output.
 
 ### 3. Adding an SVG Element
 
-1. Create `src/spec.svg_<localname>.json` (e.g., `src/spec.svg_circle.json`)
+1. Create `src/spec.svg_<localname>.jsonc` (e.g., `src/spec.svg_circle.jsonc`)
 2. The element name will be inferred as `svg:<localname>` (e.g., `svg:circle`)
 3. Use SVG-specific global attribute categories:
    ```json
@@ -100,7 +100,7 @@ will cause the element to be silently excluded from the build output.
 
 ### 4. Updating Global Attribute Categories
 
-1. Edit `src/spec-common.attributes.json`
+1. Edit `src/spec-common.attributes.jsonc`
 2. Each top-level key is a category (e.g., `#HTMLGlobalAttrs`)
 3. Add, remove, or modify attribute definitions within the category
 4. Run `yarn workspace @markuplint/html-spec run gen`
@@ -108,7 +108,7 @@ will cause the element to be silently excluded from the build output.
 
 ### 5. Adding or Updating Content Model Categories
 
-1. Edit `src/spec-common.contents.json`
+1. Edit `src/spec-common.contents.jsonc`
 2. Add a new entry to the `models` object or add elements to existing categories:
    ```json
    "#newCategory": ["element1", "element2", "svg|element3"]
@@ -131,7 +131,7 @@ will cause the element to be silently excluded from the build output.
 
 ### 6. Updating ARIA Mappings
 
-1. Open the relevant `src/spec.<element>.json`
+1. Open the relevant `src/spec.<element>.jsonc`
 2. Modify the `aria` object:
    - Change `implicitRole` for the default role
    - Update `permittedRoles` array
@@ -197,7 +197,7 @@ If the diff reveals a substantive change to element behavior, ARIA mappings, or
 content models, the manual spec files may need updating:
 
 1. Identify which elements are affected
-2. Update the relevant `src/spec.*.json` or `src/spec-common.*.json` files to
+2. Update the relevant `src/spec.*.jsonc` or `src/spec-common.*.jsonc` files to
    reflect the new specification. In rare cases, `@markuplint/ml-spec` schemas
    or types may also need updating.
 3. Regenerate to incorporate the manual spec changes:
@@ -208,7 +208,7 @@ content models, the manual spec files may need updating:
    output before committing:
    ```bash
    # Stage spec files and index.json
-   git add packages/@markuplint/html-spec/src/spec.*.json packages/@markuplint/html-spec/index.json
+   git add packages/@markuplint/html-spec/src/spec.*.jsonc packages/@markuplint/html-spec/index.json
    # Regenerate
    yarn up:gen
    # Check that the attributes you changed are NOT in the diff (= stable output)
@@ -255,12 +255,12 @@ Obsolete elements automatically get:
 
 ### Editable Files (modify these)
 
-| File                              | Description                            |
-| --------------------------------- | -------------------------------------- |
-| `src/spec.*.json`                 | Per-element specifications (177 files) |
-| `src/spec-common.attributes.json` | Global attribute category definitions  |
-| `src/spec-common.contents.json`   | Content model category macros          |
-| `build.mjs`                       | Build script configuration             |
+| File                               | Description                            |
+| ---------------------------------- | -------------------------------------- |
+| `src/spec.*.jsonc`                 | Per-element specifications (177 files) |
+| `src/spec-common.attributes.jsonc` | Global attribute category definitions  |
+| `src/spec-common.contents.jsonc`   | Content model category macros          |
+| `build.mjs`                        | Build script configuration             |
 
 ### Generated Files (DO NOT EDIT)
 
@@ -283,8 +283,8 @@ The test file `test/structure.spec.mjs` validates:
 
 1. **Structure test**: Ensures all elements can be resolved via `resolveNamespace()` and `getAttrSpecsByNames()`
 2. **Schema tests**: Validates source JSON files against JSON schemas from `@markuplint/ml-spec`:
-   - `spec.*.json` files against `element.schema.json` (with aria, content-models, global-attributes, attributes, and types schemas)
-   - `spec-common.attributes.json` against `global-attributes.schema.json`
+   - `spec.*.jsonc` files against `element.schema.json` (with aria, content-models, global-attributes, attributes, and types schemas)
+   - `spec-common.attributes.jsonc` against `global-attributes.schema.json`
 
 The schema validation uses `ajv` (Another JSON Schema Validator) with multiple
 interrelated schemas loaded together. The element schema references the aria,
@@ -376,14 +376,14 @@ grep -A5 '"accept"' index.json
 **Resolution**:
 
 - Verify the file exists: `src/spec.<element>.json`
-- Check file naming: must match `spec.*.json` glob pattern
-- For SVG: must be `spec.svg_<name>.json`
+- Check file naming: must match `spec.*.jsonc` glob pattern
+- For SVG: must be `spec.svg_<name>.jsonc`
 
 ### JSON Comment Syntax Errors
 
 **Symptom**: Build fails with a JSON parse error.
 **Cause**: Spec files support JavaScript-style comments (`//` and `/* */`) via
-`strip-json-comments`, but other non-standard JSON syntax is not supported.
+`jsonc-parser`, but other non-standard JSON syntax is not supported.
 **Resolution**:
 
 - Ensure trailing commas are not present

@@ -10,12 +10,12 @@
 
 ```
 src/
-├── spec.a.json                       # <a> 要素の仕様
-├── spec.abbr.json                    # <abbr> 要素の仕様
+├── spec.a.jsonc                      # <a> 要素の仕様
+├── spec.abbr.jsonc                   # <abbr> 要素の仕様
 ├── ... (計 177 個の要素仕様ファイル)
-├── spec.svg_text.json                # <svg:text> 要素の仕様
-├── spec-common.attributes.json       # 19 個のグローバル属性カテゴリ定義
-└── spec-common.contents.json         # HTML 10 + SVG 19 のコンテンツモデルカテゴリ定義
+├── spec.svg_text.jsonc               # <svg:text> 要素の仕様
+├── spec-common.attributes.jsonc      # 19 個のグローバル属性カテゴリ定義
+└── spec-common.contents.jsonc        # HTML 10 + SVG 19 のコンテンツモデルカテゴリ定義
 
 build.mjs                             # @markuplint/spec-generator を呼び出すビルドスクリプト
 index.json                            # 生成出力（48K 行以上、編集不可）
@@ -30,9 +30,9 @@ test/
 ```mermaid
 flowchart TD
     subgraph sources ["ソースデータ"]
-        specFiles["src/spec.*.json\n(177 個の要素仕様)"]
-        commonAttrs["src/spec-common.attributes.json\n(19 グローバル属性カテゴリ)"]
-        commonContents["src/spec-common.contents.json\n(HTML 10 + SVG 19 コンテンツモデル)"]
+        specFiles["src/spec.*.jsonc\n(177 個の要素仕様)"]
+        commonAttrs["src/spec-common.attributes.jsonc\n(19 グローバル属性カテゴリ)"]
+        commonContents["src/spec-common.contents.jsonc\n(HTML 10 + SVG 19 コンテンツモデル)"]
     end
 
     subgraph build ["ビルドパイプライン"]
@@ -112,18 +112,18 @@ export = json;
 
 ## 主要コンポーネント
 
-| コンポーネント | ファイル                               | 説明                                                          |
-| -------------- | -------------------------------------- | ------------------------------------------------------------- |
-| ソース仕様     | `src/spec.*.json`（177 ファイル）      | 要素ごとの仕様定義（コンテンツモデル、属性、ARIA マッピング） |
-| 共通定義       | `src/spec-common.*.json`（2 ファイル） | グローバル属性カテゴリとコンテンツモデルマクロの共有定義      |
-| ビルドシステム | `build.mjs`                            | `@markuplint/spec-generator` の `main()` を呼び出すエントリー |
-| 生成出力       | `index.json`                           | 統合データセット（48K 行以上、直接編集不可）                  |
-| 型宣言         | `index.d.ts`                           | `@markuplint/ml-spec` からの型を再エクスポート                |
-| スキーマ検証   | `test/structure.spec.mjs`              | Ajv ベースの JSON スキーマ検証テスト                          |
+| コンポーネント | ファイル                                | 説明                                                          |
+| -------------- | --------------------------------------- | ------------------------------------------------------------- |
+| ソース仕様     | `src/spec.*.jsonc`（177 ファイル）      | 要素ごとの仕様定義（コンテンツモデル、属性、ARIA マッピング） |
+| 共通定義       | `src/spec-common.*.jsonc`（2 ファイル） | グローバル属性カテゴリとコンテンツモデルマクロの共有定義      |
+| ビルドシステム | `build.mjs`                             | `@markuplint/spec-generator` の `main()` を呼び出すエントリー |
+| 生成出力       | `index.json`                            | 統合データセット（48K 行以上、直接編集不可）                  |
+| 型宣言         | `index.d.ts`                            | `@markuplint/ml-spec` からの型を再エクスポート                |
+| スキーマ検証   | `test/structure.spec.mjs`               | Ajv ベースの JSON スキーマ検証テスト                          |
 
 ## 要素仕様のフォーマット
 
-各 `src/spec.*.json` ファイルは以下の構造を持ちます（例: `spec.a.json`）。
+各 `src/spec.*.jsonc` ファイルは以下の構造を持ちます（例: `spec.a.jsonc`）。
 
 ```jsonc
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
@@ -162,7 +162,7 @@ export = json;
 
 ## 共通定義ファイル
 
-### `spec-common.attributes.json`
+### `spec-common.attributes.jsonc`
 
 19 個のグローバル属性カテゴリを定義します。カテゴリキーは `#` プレフィックスで参照されます。
 
@@ -173,7 +173,7 @@ export = json;
 | `#ARIAAttrs`                | `aria-*` 属性群                                    |
 | `#HTMLLinkAndFetchingAttrs` | `href`, `target`, `download` 等のリンク関連属性    |
 
-### `spec-common.contents.json`
+### `spec-common.contents.jsonc`
 
 コンテンツモデルカテゴリのマクロ定義です。
 
@@ -190,15 +190,15 @@ import { main } from '@markuplint/spec-generator';
 
 await main({
   outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
-  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.json'),
-  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.json'),
-  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.json'),
+  htmlFilePattern: path.resolve(import.meta.dirname, 'src', 'spec.*.jsonc'),
+  commonAttrsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.attributes.jsonc'),
+  commonContentsFilePath: path.resolve(import.meta.dirname, 'src', 'spec-common.contents.jsonc'),
 });
 ```
 
 ビルドプロセスの流れ:
 
-1. `src/spec.*.json` と `src/spec-common.*.json` を読み込む
+1. `src/spec.*.jsonc` と `src/spec-common.*.jsonc` を読み込む
 2. MDN、W3C ARIA（1.1/1.2/1.3）、HTML Living Standard、SVG 仕様から外部データをフェッチ
 3. 手動仕様と外部データをマージ（手動データが優先）
 4. 統合された `index.json` を出力
@@ -222,8 +222,8 @@ yarn gen:prettier
 
 1. **構造テスト**: 全要素仕様に対して `resolveNamespace()` と `getAttrSpecsByNames()` を呼び出し、属性仕様の整合性を確認
 2. **スキーマ検証**: Ajv を使用して各ソース JSON ファイルが `@markuplint/ml-spec` の JSON スキーマに適合することを検証
-   - `spec.*.json` → `element.schema.json`（+ 関連スキーマ）
-   - `spec-common.attributes.json` → `global-attributes.schema.json`
+   - `spec.*.jsonc` → `element.schema.json`（+ 関連スキーマ）
+   - `spec-common.attributes.jsonc` → `global-attributes.schema.json`
 
 ## 外部依存パッケージ
 
