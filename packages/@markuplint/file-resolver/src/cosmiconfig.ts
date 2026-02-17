@@ -11,18 +11,38 @@ import { log } from './debug.js';
 
 const searchLog = log.extend('search');
 
+const jsoncLoader: Loader = (path, content) => {
+	try {
+		return jsonc.parse(content);
+	} catch (error: unknown) {
+		if (error instanceof Error && error.name === 'JSONError') {
+			return defaultLoaders['noExt'](path, content);
+		}
+		throw error;
+	}
+};
+
 const explorer = cosmiconfig('markuplint', {
+	searchPlaces: [
+		'package.json',
+		'.markuplintrc',
+		'.markuplintrc.json',
+		'.markuplintrc.jsonc',
+		'.markuplintrc.yaml',
+		'.markuplintrc.yml',
+		'.markuplintrc.js',
+		'.markuplintrc.ts',
+		'.markuplintrc.cjs',
+		'.markuplintrc.mjs',
+		'markuplint.config.js',
+		'markuplint.config.ts',
+		'markuplint.config.cjs',
+		'markuplint.config.mjs',
+		'markuplint.config.jsonc',
+	],
 	loaders: {
-		noExt: ((path, content) => {
-			try {
-				return jsonc.parse(content);
-			} catch (error: unknown) {
-				if (error instanceof Error && error.name === 'JSONError') {
-					return defaultLoaders['noExt'](path, content);
-				}
-				throw error;
-			}
-		}) as Loader,
+		noExt: jsoncLoader,
+		'.jsonc': jsoncLoader,
 	},
 	searchStrategy: 'project',
 });
