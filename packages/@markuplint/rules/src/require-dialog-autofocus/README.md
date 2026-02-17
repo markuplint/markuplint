@@ -68,6 +68,12 @@ Dialogs that are opened programmatically (via `showModal()` in JavaScript) or di
 
 Non-dialog elements referenced by `commandfor` are also skipped. The `command` value comparison is case-insensitive per the HTML spec.
 
+## Known Limitations
+
+- **JavaScript-triggered dialogs**: Dialogs opened via `dialog.showModal()` in JavaScript without the Invoker Commands API cannot be detected by static analysis.
+- **Dynamic `autofocus`**: If `autofocus` is added dynamically via JavaScript (e.g., `element.setAttribute('autofocus', '')`), this rule cannot detect it.
+- **Focus placement quality**: This rule checks only whether `autofocus` _exists_, not whether it is placed on the most appropriate element. For guidance on where to place initial focus, see the [WAI-ARIA APG: Modal Dialog Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+
 ## See Also
 
 - [Issue #689](https://github.com/markuplint/markuplint/issues/689)

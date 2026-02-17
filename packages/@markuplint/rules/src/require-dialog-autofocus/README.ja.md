@@ -69,6 +69,12 @@ JavaScript で `showModal()` を呼び出してプログラム的に開かれる
 
 `commandfor` で参照される非 dialog 要素もスキップされます。`command` 値の比較は HTML 仕様に従い大文字小文字を区別しません。
 
+## 既知の制限事項
+
+- **JavaScript で開かれるダイアログ**: Invoker Commands API を使用せず JavaScript の `dialog.showModal()` で開かれるダイアログは、静的解析では検出できません。
+- **動的な `autofocus`**: JavaScript で動的に `autofocus` を追加するケース（例: `element.setAttribute('autofocus', '')`）は検出できません。
+- **フォーカス配置の適切性**: このルールは `autofocus` が「存在するか」のみをチェックし、「最も適切な要素に配置されているか」はチェックしません。初期フォーカスの配置ガイダンスについては [WAI-ARIA APG: モーダルダイアログパターン](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)を参照してください。
+
 ## 関連
 
 - [Issue #689](https://github.com/markuplint/markuplint/issues/689)
