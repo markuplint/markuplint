@@ -14,6 +14,7 @@ export default createRule({
 	meta: meta,
 	verify({ document, report, t }) {
 		const triggers = document.querySelectorAll('button[command][commandfor]');
+		const reportedDialogIds = new Set<string>();
 
 		for (const trigger of triggers) {
 			const command = trigger.getAttribute('command');
@@ -23,6 +24,10 @@ export default createRule({
 
 			const targetId = trigger.getAttribute('commandfor');
 			if (!targetId) {
+				continue;
+			}
+
+			if (reportedDialogIds.has(targetId)) {
 				continue;
 			}
 
@@ -44,6 +49,7 @@ export default createRule({
 				continue;
 			}
 
+			reportedDialogIds.add(targetId);
 			report({
 				scope: target,
 				message: t(

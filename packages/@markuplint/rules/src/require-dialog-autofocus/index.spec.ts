@@ -48,6 +48,28 @@ describe('Violations', () => {
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.raw).toBe('<dialog id="d2">');
 	});
+
+	test('case-insensitive: Show-Modal (mixed case)', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<button command="Show-Modal" commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog>',
+				)
+			).violations.length,
+		).toBe(1);
+	});
+
+	test('empty dialog without any children', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<button command="show-modal" commandfor="d">Open</button><dialog id="d"></dialog>',
+				)
+			).violations.length,
+		).toBe(1);
+	});
 });
 
 describe('No violations', () => {
@@ -129,6 +151,54 @@ describe('No violations', () => {
 					'<button command="show-modal" commandfor="d">Open</button><dialog id="d"><div><div><input autofocus /></div></div></dialog>',
 				)
 			).violations.length,
+		).toBe(0);
+	});
+
+	test('autofocus with empty string value (boolean attribute)', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<button command="show-modal" commandfor="d">Open</button><dialog id="d"><input autofocus="" /></dialog>',
+				)
+			).violations.length,
+		).toBe(0);
+	});
+
+	test('autofocus with redundant value', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<button command="show-modal" commandfor="d">Open</button><dialog id="d"><input autofocus="autofocus" /></dialog>',
+				)
+			).violations.length,
+		).toBe(0);
+	});
+
+	test('duplicate triggers for same dialog report only once', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<button command="show-modal" commandfor="d">Open 1</button>
+<button command="show-modal" commandfor="d">Open 2</button>
+<dialog id="d"><p>Content</p></dialog>
+`,
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('command without commandfor is ignored', async () => {
+		expect(
+			(await mlRuleTest(rule, '<button command="show-modal">Open</button><dialog id="d"><p>Content</p></dialog>'))
+				.violations.length,
+		).toBe(0);
+	});
+
+	test('commandfor without command is ignored', async () => {
+		expect(
+			(await mlRuleTest(rule, '<button commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog>'))
+				.violations.length,
 		).toBe(0);
 	});
 });
