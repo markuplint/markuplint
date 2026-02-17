@@ -1642,6 +1642,275 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 	});
 });
 
+// #816: gridcell context role — should only be valid in grid/treegrid, not table
+// The ARIA spec says gridcell's requiredContextRole is ["row"], so any row is accepted.
+// However, <td role="gridcell"> in a <table> is caught by the permittedAriaRoles check
+// (ARIA in HTML spec forbids overwriting td to gridcell in a table context).
+// Verdict: Detected via permittedAriaRoles, not requiredContextRole. Issue is addressed.
+describe('Issue #816 — gridcell context role validation', () => {
+	const v1_2 = { rule: { options: { version: '1.2' as const } } };
+	const v1_3 = { rule: { options: { version: '1.3' as const } } };
+
+	test('grid > row > gridcell is valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="grid"><div role="row"><div role="gridcell">Cell</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('grid > row > gridcell is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="grid"><div role="row"><div role="gridcell">Cell</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('treegrid > row > gridcell is valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="treegrid"><div role="row"><div role="gridcell">Cell</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('treegrid > row > gridcell is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="treegrid"><div role="row"><div role="gridcell">Cell</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.2)', async () => {
+		// The permittedAriaRoles check catches td being overwritten to gridcell in a table
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><tbody><tr><td role="gridcell">Cell</td></tr></tbody></table>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message:
+					'Cannot overwrite the "gridcell" role to the "td" element according to ARIA in HTML specification',
+				raw: 'gridcell',
+			},
+		]);
+	});
+
+	test('table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><tbody><tr><td role="gridcell">Cell</td></tr></tbody></table>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message:
+					'Cannot overwrite the "gridcell" role to the "td" element according to ARIA in HTML specification',
+				raw: 'gridcell',
+			},
+		]);
+	});
+
+	test('table > row > cell is valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tbody><tr><td>Cell</td></tr></tbody></table>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('table > row > cell is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tbody><tr><td>Cell</td></tr></tbody></table>', v1_3);
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+// #673: presentation/none wrapper transparency for required owned elements
+// In 1.2, radiogroup.requiredOwnedElements = ["radio"], presentation/none should be transparent.
+// In 1.3, radiogroup.requiredOwnedElements = [] — the check doesn't fire at all.
+// Verdict: presentation transparency works in both versions. Issue is resolved.
+describe('Issue #673 — presentation wrapper transparency', () => {
+	const v1_2 = { rule: { options: { version: '1.2' as const } } };
+	const v1_3 = { rule: { options: { version: '1.3' as const } } };
+
+	test('radiogroup > radio (direct child) is valid (1.2)', async () => {
+		// radio role requires aria-checked
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><div role="radio" aria-checked="false">Option 1</div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('radiogroup > radio (direct child) is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><div role="radio" aria-checked="false">Option 1</div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('radiogroup > li[presentation] > button[radio] — no requiredOwnedElements violation (1.2)', async () => {
+		// The only violation should be about aria-checked on the radio, NOT about
+		// radiogroup missing its required owned radio element (presentation is transparent)
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><li role="presentation"><button role="radio">Option 1</button></li></div>',
+			v1_2,
+		);
+		const ownedElementViolations = violations.filter(v => v.message.includes('radio" role'));
+		// Should only have "Require aria-checked", not "requires the radio role"
+		expect(ownedElementViolations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 48,
+				message: 'Require the "aria-checked" ARIA state on the "radio" role',
+				raw: '<button role="radio">',
+			},
+		]);
+	});
+
+	test('radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><li role="presentation"><button role="radio" aria-checked="false">Option 1</button></li></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><li role="presentation"><button role="radio" aria-checked="false">Option 1</button></li></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('radiogroup > li[none] > button[radio] with aria-checked is valid (1.2)', async () => {
+		// "none" is a synonym for "presentation" — should also be transparent
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="radiogroup"><li role="none"><button role="radio" aria-checked="false">Option 1</button></li></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+// #272: Allowed descendants of ARIA roles (requiredOwnedElements)
+// Tests that requiredOwnedElements checks work correctly in both ARIA versions.
+// In 1.3, the "table" role expects "caption", "row", "rowgroup > row" (1.2 has no caption).
+// In 1.3, generic (div) wrappers are transparent for owned element checks.
+// Verdict: checkingRequiredOwnedElements works correctly in both versions.
+describe('Issue #272 — Allowed descendants of ARIA roles', () => {
+	const v1_2 = { rule: { options: { version: '1.2' as const } } };
+	const v1_3 = { rule: { options: { version: '1.3' as const } } };
+
+	test('table without row is a violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="table"><div>content</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "table" role expects the roles: "row", "rowgroup > row"',
+				raw: '<div role="table">',
+			},
+		]);
+	});
+
+	test('table without row is a violation (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="table"><div>content</div></div>', v1_3);
+		// 1.3 adds "caption" to the expected roles
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "table" role expects the roles: "caption", "row", "rowgroup > row"',
+				raw: '<div role="table">',
+			},
+		]);
+	});
+
+	test('list without listitem is a violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="list"><div>content</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" role',
+				raw: '<div role="list">',
+			},
+		]);
+	});
+
+	test('list without listitem is a violation (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="list"><div>content</div></div>', v1_3);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" role',
+				raw: '<div role="list">',
+			},
+		]);
+	});
+
+	test('list > listitem is valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('list > listitem is valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_3);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('list > div > listitem (1.2) — generic is NOT transparent', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><div><div role="listitem">Item</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "list" role expects the "listitem" role',
+				raw: '<div role="list">',
+			},
+		]);
+	});
+
+	test('list > div > listitem (1.3) — generic IS transparent', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><div><div role="listitem">Item</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
+
 describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', () => {
 	test('input[type=range] with value and aria-valuenow', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="range" value="50" aria-valuenow="50">');
