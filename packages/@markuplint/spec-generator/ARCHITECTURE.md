@@ -123,14 +123,14 @@ export async function main(options: Options): Promise<void>;
 
 ## External Dependencies
 
-| Package               | Purpose                                                  |
-| --------------------- | -------------------------------------------------------- |
-| `cheerio`             | HTML parsing and DOM querying of scraped web pages       |
-| `cli-progress`        | Terminal progress bar for fetch operations               |
-| `ajv`                 | JSON Schema validation (available but unused in runtime) |
-| `fast-xml-parser`     | XML parsing (available but unused in current modules)    |
-| `glob`                | File glob pattern matching for `readJsons()`             |
-| `strip-json-comments` | Remove comments from JSON files before parsing           |
+| Package           | Purpose                                                  |
+| ----------------- | -------------------------------------------------------- |
+| `cheerio`         | HTML parsing and DOM querying of scraped web pages       |
+| `cli-progress`    | Terminal progress bar for fetch operations               |
+| `ajv`             | JSON Schema validation (available but unused in runtime) |
+| `fast-xml-parser` | XML parsing (available but unused in current modules)    |
+| `glob`            | File glob pattern matching for `readJsons()`             |
+| `jsonc-parser`    | Parse JSONC files (JSON with comments) for spec data     |
 
 **Dev dependencies:**
 
