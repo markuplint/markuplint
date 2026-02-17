@@ -141,6 +141,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'require-dialog-autofocus': {
+			category: 'a11y',
+			defaultValue: false,
+		},
 		'required-attr': {
 			category: 'validation',
 			defaultValue: [],
