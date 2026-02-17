@@ -69,6 +69,11 @@
 		"require-accessible-name": true,
 
 		/**
+		 * Require **autofocus** in modal dialogs
+		 */
+		"require-dialog-autofocus": true,
+
+		/**
 		 * Require `<h1>`
 		 *
 		 */
