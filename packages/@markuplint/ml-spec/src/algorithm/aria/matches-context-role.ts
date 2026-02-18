@@ -10,6 +10,13 @@ import { getComputedRole } from './get-computed-role.js';
  * Each condition string may describe a chain of ancestor roles separated by
  * ` > ` (e.g., `"list > group"`).
  *
+ * TODO: This function only walks the DOM `parentElement` chain and does not
+ * consider `aria-owns` relationships. An element referenced by `aria-owns` on
+ * a remote ancestor should be treated as if it were an accessibility child of
+ * that ancestor. Implementing this requires a document-wide reverse lookup of
+ * `aria-owns` attributes, which is a separate architectural concern.
+ * See also: `has-required-owned-elements.ts` has a similar limitation.
+ *
  * @param conditions - An array of required accessibility parent role condition strings to match against
  * @param ownedEl - The owned DOM element whose parent context is being validated
  * @param specs - The full markup language specification
@@ -47,13 +54,22 @@ function matchesCondition(
 		 * whether an element has a parent with the required role, user agents
 		 * MUST ignore any elements with the role `generic` or `none`."
 		 *
-		 * This transparency is gated to ARIA 1.3+ only.
-		 * In ARIA 1.1/1.2 ("Required Context Role"), the spec did not define
-		 * this behavior, so parent elements are matched strictly without skipping.
+		 * `presentation`/`none` are transparent in all ARIA versions to stay
+		 * consistent with `getNonPresentationalAncestor` (which already skips
+		 * them unconditionally). `generic` is additionally transparent in 1.3+
+		 * per the spec.
+		 *
+		 * While the ARIA 1.1/1.2 specification text does not explicitly define
+		 * this transparency for the context role check, applying it is a
+		 * pragmatic choice: `getNonPresentationalAncestor` and `classifyChildren`
+		 * (for owned elements) already skip `presentation`/`none` in all versions.
+		 * Treating the context role check differently would create inconsistent
+		 * behavior where a structure is valid from the parent's perspective
+		 * (owned elements) but invalid from the child's perspective (context role).
 		 *
 		 * @see https://w3c.github.io/aria/#scope
 		 */
-		if (version !== '1.1' && version !== '1.2' && isTransparentForOwnership(parentRole?.name, version)) {
+		if (isTransparentForOwnership(parentRole?.name, version)) {
 			parentEl = parentEl.parentElement;
 			continue;
 		}

@@ -336,3 +336,40 @@ describe('Issues', () => {
 		).toBe('graphics-symbol');
 	});
 });
+
+describe('isNativeContextIntact — implicit role context check skip (#3214)', () => {
+	test('option inside select retains implicit role', () => {
+		// <option> has requiredAccessibilityParentRole ["listbox"] but <select> maps to "combobox".
+		// isNativeContextIntact returns true, so the context check is skipped.
+		expect(c('<select><option>A</option></select>', '1.2', 'option').role?.name).toBe('option');
+		expect(c('<select><option>A</option></select>', '1.3', 'option').role?.name).toBe('option');
+	});
+
+	test('option inside select with explicit role — context check proceeds', () => {
+		// Parent has explicit role="listbox" — isNativeContextIntact returns false.
+		// Context check proceeds and "listbox" satisfies option's requirement.
+		expect(c('<select role="listbox"><option>A</option></select>', '1.2', 'option').role?.name).toBe('option');
+		expect(c('<select role="listbox"><option>A</option></select>', '1.3', 'option').role?.name).toBe('option');
+	});
+
+	test('table role="none" cascades to td (context is not intact)', () => {
+		// Parent chain: <table role="none"> makes tbody computed role null → context not intact.
+		expect(c('<table role="none"><tr><td>C</td></tr></table>', '1.2', 'td').role?.name).toBe(undefined);
+		expect(c('<table role="none"><tr><td>C</td></tr></table>', '1.3', 'td').role?.name).toBe(undefined);
+	});
+
+	test('li inside ul retains implicit role (native context intact)', () => {
+		expect(c('<ul><li>Item</li></ul>', '1.2', 'li').role?.name).toBe('listitem');
+		expect(c('<ul><li>Item</li></ul>', '1.3', 'li').role?.name).toBe('listitem');
+	});
+
+	test('option inside select > optgroup retains implicit role', () => {
+		// Optgroup intermediary — parent (optgroup) has no explicit role, computed role is non-null.
+		expect(c('<select><optgroup><option>A</option></optgroup></select>', '1.2', 'option').role?.name).toBe(
+			'option',
+		);
+		expect(c('<select><optgroup><option>A</option></optgroup></select>', '1.3', 'option').role?.name).toBe(
+			'option',
+		);
+	});
+});

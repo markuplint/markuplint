@@ -53463,7 +53463,7 @@
 				"permittedRoles": false,
 				"properties": false,
 				"conditions": {
-					":is(select, select > option, datalist) > option": {
+					":is(select, select > optgroup, datalist) > option": {
 						"implicitRole": "option",
 						"properties": {
 							"global": true,

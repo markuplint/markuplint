@@ -22,6 +22,8 @@ export type Options = {
 	 * Retained for backward compatibility.
 	 */
 	checkingRequiredOwnedElements: boolean;
+	/** Whether to verify "Required Accessibility Parent Role" (ARIA 1.3 name) / "Required Context Role" (ARIA 1.2 name). */
+	checkingRequiredAccessibilityParentRole: boolean;
 	/** Whether to warn when ARIA attributes are set on descendants of presentational-children roles. */
 	checkingPresentationalChildren: boolean;
 	/** Whether to warn about focusable interactive elements hidden via `aria-hidden`. */

@@ -26,9 +26,9 @@ export function isPresentational(roleName?: string) {
  *   "user agents MUST ignore any intervening elements with the role
  *   `generic` or `none`."
  *
- * **Important:** For `matchesContextRole`, the caller gates this function
- * behind a version check (`version !== '1.1' && version !== '1.2'`)
- * because ARIA 1.1/1.2 did not define context role transparency at all.
+ * **Note:** `matchesContextRole` calls this function unconditionally
+ * (without a version gate) so that `presentation`/`none` are always
+ * transparent, consistent with `getNonPresentationalAncestor`.
  *
  * @see https://w3c.github.io/aria/#mustContain — "Allowed Accessibility Child Roles" (called "Required Owned Elements" in ARIA 1.2)
  * @see https://w3c.github.io/aria/#scope — "Required Accessibility Parent Role" (called "Required Context Role" in ARIA 1.2)

@@ -18,6 +18,7 @@ import { checkingNoGlobalProp } from './checkings/no-global-prop.js';
 import { checkingNonExistentRole } from './checkings/non-existent-role.js';
 import { checkingPermittedRoles } from './checkings/permitted-roles.js';
 import { checkingPresentationalChildren } from './checkings/presentational-children.js';
+import { checkingRequiredAccessibilityParentRole } from './checkings/required-accessibility-parent-role.js';
 import { checkingRequiredOwnedElements } from './checkings/required-owned-elements.js';
 import { checkingRequiredProp } from './checkings/required-prop.js';
 import { checkingValue } from './checkings/value.js';
@@ -42,6 +43,7 @@ export default createRule<boolean, Options>({
 		permittedAriaRoles: true,
 		checkingAllowedAccessibilityChildRoles: true,
 		checkingRequiredOwnedElements: true,
+		checkingRequiredAccessibilityParentRole: true,
 		checkingPresentationalChildren: false,
 		checkingInteractionInHidden: false,
 		disallowSetImplicitRole: true,
@@ -85,6 +87,11 @@ export default createRule<boolean, Options>({
 				if (report(checkingAbstractRole({ attr: roleAttr }))) {
 					return;
 				}
+
+				if (el.rule.options.checkingRequiredAccessibilityParentRole) {
+					report(checkingRequiredAccessibilityParentRole({ el, computed }));
+				}
+
 				report(checkingRequiredProp({ el, role: computed.role, propSpecs }));
 
 				if (el.rule.options.checkingDeprecatedRole) {

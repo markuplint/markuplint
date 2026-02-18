@@ -240,6 +240,8 @@
 		"also disallows {0} in this context": "このコンテキスト内では{0}も許可しません",
 		"ambiguous {0}": "曖昧な{0}",
 		"an {0}": "{0}",
+		"an accessibility parent with one of the {0}": "次の{0}のいずれかを持つアクセシビリティ親要素",
+		"an accessibility parent with the \"{0*}\" {1}": "「{0*}」{1}を持つアクセシビリティ親要素",
 		"as its {0} is already provided by {1}": "その{0}は{1}によってすでに提供されています",
 		"cannot overwrite {0} to {1}": "{0}を{1}に上書きすることはできません",
 		"cannot overwrite {0}": "{0}を上書きすることはできません",
