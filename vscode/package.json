@@ -140,7 +140,7 @@
 		"@markuplint/i18n": "4.7.1",
 		"@markuplint/ml-spec": "4.10.2",
 		"debug": "4.4.3",
-		"glob": "13.0.4",
+		"glob": "13.0.5",
 		"markuplint": "4.13.0",
 		"mocha": "11.7.5",
 		"semver": "7.7.4",
