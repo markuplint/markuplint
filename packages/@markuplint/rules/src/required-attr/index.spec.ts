@@ -524,3 +524,101 @@ describe('Issues', () => {
 		]);
 	});
 });
+
+describe('MDX parser', () => {
+	test('MDX img element requires alt attribute', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="photo.png" />\n', {
+			parser: {
+				'.*': '@markuplint/mdx-parser',
+			},
+			nodeRule: [
+				{
+					selector: 'img',
+					rule: {
+						severity: 'error',
+						value: 'alt',
+					},
+				},
+			],
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0].message).toContain('alt');
+	});
+
+	test('MDX img with alt passes required-attr', async () => {
+		const { violations } = await mlRuleTest(rule, '<img src="photo.png" alt="A photo" />\n', {
+			parser: {
+				'.*': '@markuplint/mdx-parser',
+			},
+			nodeRule: [
+				{
+					selector: 'img',
+					rule: {
+						severity: 'error',
+						value: 'alt',
+					},
+				},
+			],
+		});
+		expect(violations.length).toBe(0);
+	});
+});
+
+describe('Markdown parser', () => {
+	test('Markdown image with alt text passes required-attr for alt', async () => {
+		const { violations } = await mlRuleTest(rule, '![alt text](img.png)\n', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+			nodeRule: [
+				{
+					selector: 'img',
+					rule: {
+						severity: 'error',
+						value: 'alt',
+					},
+				},
+			],
+		});
+		expect(violations.length).toBe(0);
+	});
+
+	test('Markdown image with empty alt passes required-attr (attribute exists)', async () => {
+		const { violations } = await mlRuleTest(rule, '![](img.png)\n', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+			nodeRule: [
+				{
+					selector: 'img',
+					rule: {
+						severity: 'error',
+						value: 'alt',
+					},
+				},
+			],
+		});
+		expect(violations.length).toBe(0);
+	});
+
+	test('Markdown image missing required src reports correct position', async () => {
+		const { violations } = await mlRuleTest(rule, 'Text\n\n![alt](img.png)\n', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+			nodeRule: [
+				{
+					selector: 'img',
+					rule: {
+						severity: 'error',
+						value: ['src', 'alt', 'width'],
+					},
+				},
+			],
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0].line).toBe(3);
+		expect(violations[0].col).toBe(1);
+		expect(violations[0].raw).toBe('![alt](img.png)');
+	});
+});
