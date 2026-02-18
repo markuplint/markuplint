@@ -38,6 +38,8 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 | [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`                  | `@markuplint/alpine-parser/spec` |
 | [**HTMX**](https://htmx.org)                                                               | `@markuplint/htmx-parser`                    | `@markuplint/htmx-parser/spec`   |
 | [**Tagged template literals**](https://lit.dev/) (lit-html etc.)                           | `@markuplint/tagged-template-literal-parser` | -                                |
+| [**Markdown**](https://commonmark.org/)                                                    | `@markuplint/markdown-parser`                | -                                |
+| [**MDX**](https://mdxjs.com/)                                                              | `@markuplint/mdx-parser`                     | `@markuplint/react-spec`         |
 | [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`                     | -                                |
 | [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`                     | -                                |
 | [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`                  | -                                |
@@ -126,6 +128,25 @@ Set a regular expression that can identify the target file name to the `parser` 
 {
   "parser": {
     "\\.ts$": "@markuplint/tagged-template-literal-parser"
+  }
+}
+```
+
+```json class=config title="Use Markdown"
+{
+  "parser": {
+    "\\.md$": "@markuplint/markdown-parser"
+  }
+}
+```
+
+```json class=config title="Use MDX"
+{
+  "parser": {
+    "\\.mdx$": "@markuplint/mdx-parser"
+  },
+  "specs": {
+    "\\.mdx$": "@markuplint/react-spec"
   }
 }
 ```
