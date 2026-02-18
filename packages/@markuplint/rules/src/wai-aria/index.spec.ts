@@ -1898,6 +1898,14 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 				message: 'The "list" role expects the "listitem" role',
 				raw: '<div role="list">',
 			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message:
+					'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+				raw: 'listitem',
+			},
 		]);
 	});
 
@@ -2060,10 +2068,24 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	// Note: option[aria-selected] test is skipped because getComputedRole() returns
-	// null for option inside select due to Required Context Role mismatch (combobox
-	// is not recognized as a valid parent for the option role). This prevents the
-	// without check from being reached. See #3214.
+	// #3214: option[aria-selected] inside select now works because the implicit role
+	// context check is skipped (combobox/option mismatch no longer causes false positive).
+	test('option[aria-selected] inside select reports without message (#3214)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<select><option selected aria-selected="true">A</option></select>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message:
+					'The "aria-selected" ARIA state should not use on the "option" element. As its state is already provided by the "selected" attribute',
+				raw: 'aria-selected="true"',
+			},
+		]);
+	});
 
 	test('select with multiple and aria-multiselectable', async () => {
 		const { violations } = await mlRuleTest(
@@ -2080,5 +2102,385 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 				raw: 'aria-multiselectable="true"',
 			},
 		]);
+	});
+});
+
+// #3214: getComputedRole returns null for option inside select due to
+// Required Context Role mismatch (combobox vs listbox). Fixed by skipping
+// the context role check for implicit roles.
+describe('Issue #3214 — implicit role context check skip', () => {
+	test('option inside select has correct computed role (no false positive)', async () => {
+		// Before fix: getComputedRole returned null for option, causing checkingNoGlobalProp
+		// to fire incorrectly. After fix: option keeps its implicit role.
+		const { violations } = await mlRuleTest(rule, '<select><option>A</option></select>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('option inside datalist has correct computed role', async () => {
+		const { violations } = await mlRuleTest(rule, '<datalist><option>A</option></datalist>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('td inside tr inside table has correct computed role', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tr><td>Cell</td></tr></table>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('li inside ul has correct computed role', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul><li>Item</li></ul>');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+// #970: Required Accessibility Parent Role (Required Context Role) validation.
+// Reports when an explicit role is used outside its required parent context.
+describe('Issue #970 — Required Accessibility Parent Role check', () => {
+	const v1_2 = { rule: { options: { version: '1.2' as const } } };
+	const v1_3 = { rule: { options: { version: '1.3' as const } } };
+
+	test('tab without tablist parent — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message: 'The "tab" role requires an accessibility parent with the "tablist" role',
+				raw: 'tab',
+			},
+		]);
+	});
+
+	test('tab without tablist parent — violation (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_3);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message: 'The "tab" role requires an accessibility parent with the "tablist" role',
+				raw: 'tab',
+			},
+		]);
+	});
+
+	test('tab inside tablist — valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="tablist"><div role="tab">Tab</div></div>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('tab inside tablist — valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="tablist"><div role="tab">Tab</div></div>', v1_3);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('listitem without list parent — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="listitem">Item</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+				raw: 'listitem',
+			},
+		]);
+	});
+
+	test('listitem inside list — valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('treeitem without tree/treegrid parent — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="treeitem">Item</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message: 'The "treeitem" role requires an accessibility parent with one of the roles: "group", "tree"',
+				raw: 'treeitem',
+			},
+		]);
+	});
+
+	test('treeitem inside tree — valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="tree"><div role="treeitem">Item</div></div>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('tab inside generic > tablist — valid (1.3, generic transparent)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tablist"><div><div role="tab">Tab</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('tab inside generic > tablist — violation in 1.2 (generic NOT transparent)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tablist"><div><div role="tab">Tab</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "tablist" role expects the "tab" role',
+				raw: '<div role="tablist">',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "tab" role requires an accessibility parent with the "tablist" role',
+				raw: 'tab',
+			},
+		]);
+	});
+
+	test('option with explicit role outside listbox — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="option">Opt</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message: 'The "option" role requires an accessibility parent with one of the roles: "group", "listbox"',
+				raw: 'option',
+			},
+		]);
+	});
+
+	test('option (implicit) inside select — no context violation (#3214)', async () => {
+		// Implicit roles skip context check — HTML spec handles this
+		const { violations } = await mlRuleTest(rule, '<select><option>A</option></select>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('disabled via option — no context violation reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', {
+			rule: { options: { version: '1.2' as const, checkingRequiredAccessibilityParentRole: false } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('root fragment with explicit role — no violation (parentElement is null)', async () => {
+		// A root element fragment cannot satisfy context role, but should not crash.
+		// NO_OWNER with role kept (parentElement === null) means root fragment — skip.
+		const { violations } = await mlRuleTest(rule, '<div role="tab">Tab</div>', v1_2);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('group transparency: listbox > group > option (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="listbox"><div role="group"><div role="option">Opt</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('group transparency: tree > treeitem > group > treeitem (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tree"><div role="treeitem"><div role="group"><div role="treeitem">Item</div></div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('group transparency: menu > group > menuitem (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="group"><div role="menuitem">Item</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('table > row via pure ARIA divs (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="table"><div role="row"><div role="cell">Cell</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('generic NOT transparent for context role in 1.2: listbox > div > option', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="listbox"><div><div role="option">Opt</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "listbox" role expects the roles: "group > option", "option"',
+				raw: '<div role="listbox">',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "option" role requires an accessibility parent with one of the roles: "group", "listbox"',
+				raw: 'option',
+			},
+		]);
+	});
+
+	// #5: Missing role coverage — caption
+	test('caption inside table — valid (1.3)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="table"><div role="caption">Caption</div><div role="row"><div role="cell">Cell</div></div></div>',
+			v1_3,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('caption outside table — violation (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="caption">Caption</div></div>', v1_3);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "caption" role requires an accessibility parent with one of the roles: "figure", "grid", "group", "radiogroup", "table", "treegrid"',
+				raw: 'caption',
+			},
+		]);
+	});
+
+	// #5: Missing role coverage — menuitemcheckbox
+	test('menuitemcheckbox inside menu — valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="menuitemcheckbox" aria-checked="false">Check</div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Only the context role violation is expected here.
+	// Although menuitemcheckbox requires aria-checked, the role is
+	// nullified (role: null) when the required parent context is not
+	// satisfied, so the required state check does not run.
+	test('menuitemcheckbox outside menu — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="menuitemcheckbox">Check</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "menuitemcheckbox" role requires an accessibility parent with one of the roles: "group", "menu", "menubar"',
+				raw: 'menuitemcheckbox',
+			},
+		]);
+	});
+
+	// #5: Missing role coverage — menuitemradio
+	test('menuitemradio inside menu — valid (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="menuitemradio" aria-checked="false">Radio</div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('menuitemradio outside menu — violation (1.2)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="menuitemradio">Radio</div></div>', v1_2);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "menuitemradio" role requires an accessibility parent with one of the roles: "group", "menu", "menubar"',
+				raw: 'menuitemradio',
+			},
+		]);
+	});
+
+	// #9: ARIA 1.3 option explicit role test
+	test('option with explicit role outside listbox — violation (1.3)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><div role="option">Opt</div></div>', v1_3);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message:
+					'The "option" role requires an accessibility parent with one of the roles: "listbox", "listbox > group"',
+				raw: 'option',
+			},
+		]);
+	});
+
+	// #10: ARIA 1.2 tree > treeitem > group > treeitem
+	test('group transparency: tree > treeitem > group > treeitem (1.2)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="tree"><div role="treeitem"><div role="group"><div role="treeitem">Item</div></div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	// #11: ARIA 1.1 basic test
+	test('tab without tablist parent — violation (1.1)', async () => {
+		const v1_1 = { rule: { options: { version: '1.1' as const } } };
+		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_1);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				message: 'The "tab" role requires an accessibility parent with the "tablist" role',
+				raw: 'tab',
+			},
+		]);
+	});
+
+	// #12: presentation/none transparency in ARIA 1.2
+	test('presentation parent transparent for context role in 1.2: menu > none > menuitem', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="none"><div role="menuitem">Item</div></div></div>',
+			v1_2,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	// Presentational role conflict resolution: none + focusable resolves to generic
+	test('none+focusable parent resolves to generic — violation in 1.2', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="none" tabindex="0"><div role="menuitem">Item</div></div></div>',
+			v1_2,
+		);
+		// none+focusable → conflict resolution resolves to generic → not transparent in 1.2
+		expect(violations.length).toBeGreaterThan(0);
+	});
+
+	test('none+focusable parent resolves to generic — valid in 1.3', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="menu"><div role="none" tabindex="0"><div role="menuitem">Item</div></div></div>',
+			v1_3,
+		);
+		// none+focusable → conflict resolution resolves to generic → transparent in 1.3
+		expect(violations).toStrictEqual([]);
 	});
 });

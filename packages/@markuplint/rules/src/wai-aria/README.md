@@ -17,6 +17,7 @@ Warn if:
   - Use the not permitted role according to ARIA in HTML.
   - Don't set the required property/state.
   - The role doesn't have the required child roles (e.g., `table` requires `row`).
+  - The role is placed outside its required parent context (e.g., `tab` without a `tablist` ancestor).
 - Unrecommended.
   - Set the deprecated role.
   - Set the deprecated property/state.
@@ -51,6 +52,39 @@ Warn if:
 ```
 
 ---
+
+## Options
+
+### `checkingRequiredAccessibilityParentRole`
+
+Type: `boolean` (default: `true`)
+
+Verifies that an element with an explicit `role` attribute is placed within the correct parent context as defined by the ARIA specification ("Required Accessibility Parent Role" in ARIA 1.3 / "Required Context Role" in ARIA 1.2).
+
+For example, a `tab` role requires a `tablist` ancestor, and an `option` role requires a `listbox` ancestor.
+
+When set to `false`, this check is disabled.
+
+```json class=config
+{
+  "rules": {
+    "wai-aria": {
+      "options": {
+        "checkingRequiredAccessibilityParentRole": false
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> Only explicit roles (set via the `role` attribute) are checked. Implicit roles are skipped because native HTML parent-child semantics are already guaranteed by the HTML specification.
+
+## Known Limitations
+
+- **`aria-owns` is not considered.** The parent context check only walks the DOM `parentElement` chain. Elements referenced by `aria-owns` on a remote ancestor are not treated as accessibility children of that ancestor.
+- **Shadow DOM boundaries are not crossed.** The parent context check only traverses the light DOM tree. Shadow DOM host boundaries are not considered.
+- **Dual violation reporting.** When a role's required parent context is not satisfied, both `checkingRequiredAccessibilityParentRole` (child-side) and `checkingAllowedAccessibilityChildRoles` (parent-side) may report violations for the same structural issue. Disable one of the options if you want to avoid duplicate reports. Generally, keeping the child-side check (`checkingRequiredAccessibilityParentRole`) is recommended, as it reports the violation on the element that needs to be moved.
 
 ## Configuration Example
 

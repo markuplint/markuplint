@@ -16,6 +16,7 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
   - ARIA in HTMLの仕様における要素に許可されていないロールを指定した場合
   - 必須のプロパティ/ステートを指定していない場合
   - ロールが必要とする子ロールを持たない場合（例: `table`は`row`を必要とする）
+  - ロールが必要とする親コンテキストの外に配置された場合（例: `tablist`の祖先を持たない`tab`）
 - 推奨されない使い方
   - 非推奨（廃止予定）のロールを指定した場合
   - 非推奨（廃止予定）のプロパティ/ステートを指定した場合
@@ -52,6 +53,39 @@ description: WAI-ARIAおよびARIA in HTMLの仕様のとおりrole属性また�
 ```
 
 ---
+
+## オプション
+
+### `checkingRequiredAccessibilityParentRole`
+
+型: `boolean`（デフォルト: `true`）
+
+明示的な`role`属性を持つ要素が、ARIA仕様で定義された正しい親コンテキスト内に配置されているかを検証します（ARIA 1.3の「Required Accessibility Parent Role」/ ARIA 1.2の「Required Context Role」）。
+
+例えば、`tab`ロールは`tablist`の祖先を必要とし、`option`ロールは`listbox`の祖先を必要とします。
+
+`false`に設定すると、このチェックは無効になります。
+
+```json class=config
+{
+  "rules": {
+    "wai-aria": {
+      "options": {
+        "checkingRequiredAccessibilityParentRole": false
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> 明示的なロール（`role`属性で設定されたもの）のみがチェックされます。暗黙のロールは、ネイティブHTMLの親子関係がHTML仕様によって保証されているためスキップされます。
+
+## 既知の制限事項
+
+- **`aria-owns`は考慮されません。** 親コンテキストチェックはDOMの`parentElement`チェーンのみを走査します。リモートの祖先の`aria-owns`で参照された要素は、その祖先のアクセシビリティの子要素として扱われません。
+- **Shadow DOM境界は越えません。** 親コンテキストチェックはライトDOMツリーのみを走査します。Shadow DOMホスト境界は考慮されません。
+- **二重違反の報告。** ロールの必須親コンテキストが満たされない場合、`checkingRequiredAccessibilityParentRole`（子側）と`checkingAllowedAccessibilityChildRoles`（親側）の両方が同じ構造上の問題に対して違反を報告することがあります。重複レポートを避けたい場合は、いずれかのオプションを無効化してください。一般的には、子側のチェック（`checkingRequiredAccessibilityParentRole`）を残すことを推奨します。移動が必要な要素に対して違反が報告されるためです。
 
 ## 設定例
 

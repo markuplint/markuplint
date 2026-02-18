@@ -27,6 +27,12 @@
 					"description": "Deprecated: Use checkingAllowedAccessibilityChildRoles instead. Both must be true for the check to run.",
 					"description:ja": "非推奨: 代わりにcheckingAllowedAccessibilityChildRolesを使用してください。チェックが実行されるには両方がtrueである必要があります。"
 				},
+				"checkingRequiredAccessibilityParentRole": {
+					"type": "boolean",
+					"default": "true",
+					"description": "Verify that roles with \"Required Accessibility Parent Role\" (called \"Required Context Role\" in ARIA 1.2) are placed in a valid parent context.",
+					"description:ja": "\"Required Accessibility Parent Role\"（ARIA 1.2では\"Required Context Role\"）を持つロールが正しい親コンテキスト内に配置されているかチェックします。"
+				},
 				"checkingDeprecatedRole": {
 					"type": "boolean",
 					"default": "true",
