@@ -13,15 +13,11 @@
 						"allowAttrs": [
 							{
 								"name": "property",
-								"value": {
-									"type": "NoEmptyAny"
-								}
+								"value": "NoEmptyAny"
 							},
 							{
 								"name": "content",
-								"value": {
-									"type": "NoEmptyAny"
-								}
+								"value": "NoEmptyAny"
 							}
 						]
 					}
