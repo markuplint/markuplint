@@ -463,6 +463,8 @@ export const defs: Defs = {
 		ref: 'https://html.spec.whatwg.org/multipage/images.html#srcset-attributes',
 		is(value) {
 			const images = value.split(',');
+			let hasWidth = false;
+			let hasDensity = false;
 
 			for (const image of images) {
 				// image candidate string
@@ -496,6 +498,7 @@ export const defs: Defs = {
 									],
 								});
 							}
+							hasWidth = true;
 							break;
 						}
 						case 'x': {
@@ -509,6 +512,7 @@ export const defs: Defs = {
 									],
 								});
 							}
+							hasDensity = true;
 							break;
 						}
 						default: {
@@ -526,6 +530,9 @@ export const defs: Defs = {
 							});
 						}
 					}
+				} else {
+					// No descriptor implies 1x (density descriptor)
+					hasDensity = true;
 				}
 
 				if (tail[0]) {
@@ -538,6 +545,17 @@ export const defs: Defs = {
 						],
 					});
 				}
+			}
+
+			if (hasWidth && hasDensity) {
+				return unmatched(value, 'unexpected-token', {
+					expects: [
+						{
+							type: 'format',
+							value: 'consistent descriptors (all width or all density, not mixed)',
+						},
+					],
+				});
 			}
 
 			return matched();
