@@ -1,11 +1,12 @@
 import type { AttributeType } from '@markuplint/ml-spec';
+import type { Pattern, Type } from '@markuplint/types';
 
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
-import { isEnum } from '@markuplint/types';
+import { check, isEnum, isPattern } from '@markuplint/types';
 
 import { attrCheck } from '../attr-check.js';
 import { log as ruleLog } from '../debug.js';
-import { isValidAttr, match } from '../helpers.js';
+import { isValidAttr } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -21,14 +22,14 @@ type Option = {
 	 *
 	 * @since 3.7.0
 	 */
-	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | PatternRule>;
+	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | Pattern>;
 
 	/**
 	 * Attributes to disallow in addition to spec restrictions.
 	 *
 	 * @since 3.7.0
 	 */
-	disallowAttrs?: (string | Attr)[] | Record<string, AttributeType | PatternRule>;
+	disallowAttrs?: (string | Attr)[] | Record<string, AttributeType | Pattern>;
 
 	/** Attribute name prefix(es) to ignore during validation. */
 	ignoreAttrNamePrefix?: string | string[];
@@ -44,14 +45,7 @@ type Attr = {
 	/** The attribute name. */
 	name: string;
 	/** The expected attribute value type or validation rule. */
-	value: AttributeType | PatternRule;
-};
-
-/**
- * A validation constraint for an attribute value using a regex pattern.
- */
-type PatternRule = {
-	pattern: string;
+	value: AttributeType | Pattern;
 };
 
 /**
@@ -109,8 +103,8 @@ export default createRule<boolean, Option>({
 			}
 
 			let invalid: ReturnType<typeof attrCheck> = false;
-			const allowAttrs: Record<string, AttributeType | PatternRule> = {};
-			const disallowAttrs: Record<string, AttributeType | PatternRule> = {};
+			const allowAttrs: Record<string, AttributeType | Pattern> = {};
+			const disallowAttrs: Record<string, AttributeType | Pattern> = {};
 
 			if (attr.rule.options.allowAttrs) {
 				if (Array.isArray(attr.rule.options.allowAttrs)) {
@@ -148,44 +142,29 @@ export default createRule<boolean, Option>({
 			const disallowValue = disallowAttrs[name] ?? null;
 
 			if (allowValue !== null) {
-				if (isPatternRule(allowValue)) {
-					if (!match(value, allowValue.pattern)) {
-						invalid = {
-							invalidType: 'invalid-value',
-							message: t(
-								'{0} is unmatched with the below patterns: {1}',
-								t('the "{0*}" {1}', name, 'attribute'),
-								allowValue.pattern,
-							),
-						};
-					}
-				} else {
-					invalid = attrCheck(t, name, value, true, { name, type: allowValue, description: '' });
-				}
+				invalid = attrCheck(t, name, value, true, {
+					name,
+					type: allowValue as AttributeType,
+					description: '',
+				});
 			} else if (disallowValue !== null) {
-				if (isPatternRule(disallowValue)) {
-					if (match(value, disallowValue.pattern)) {
-						invalid = {
-							invalidType: 'invalid-value',
-							message: t(
-								'{0} is matched with the below disallowed patterns: {1}',
-								t('the "{0*}" {1}', name, 'attribute'),
-								disallowValue.pattern,
-							),
-						};
-					}
-				} else if (disallowValue === 'Any') {
+				if (disallowValue === 'Any') {
 					invalid = {
 						invalidType: 'non-existent',
 						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
 					};
 				} else {
-					const checkResult = attrCheck(t, name, value, true, {
-						name,
-						type: disallowValue,
-						description: '',
-					});
-					if (checkResult === false) {
+					const checkResult = isPattern(disallowValue as Type)
+						? check(value, disallowValue as Type)
+						: attrCheck(t, name, value, true, {
+								name,
+								type: disallowValue as AttributeType,
+								description: '',
+							});
+					const isMatched = isPattern(disallowValue as Type)
+						? (checkResult as { matched: boolean }).matched
+						: checkResult === false;
+					if (isMatched) {
 						invalid = {
 							invalidType: 'invalid-value',
 							message: createDisallowMessage(t, name, disallowValue),
@@ -254,33 +233,26 @@ export default createRule<boolean, Option>({
 });
 
 /**
- * Determines whether the given value is a {@link PatternRule}
- * as opposed to a raw {@link AttributeType}.
- *
- * @param value - The value to inspect.
- * @returns `true` if the value is a {@link PatternRule}, `false` otherwise.
- */
-function isPatternRule(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	value: AttributeType | PatternRule,
-): value is PatternRule {
-	return typeof value !== 'string' && 'pattern' in value;
-}
-
-/**
  * Creates an appropriate disallow message based on the type structure.
  *
  * @param t - The i18n translator
  * @param name - The attribute name
- * @param type - The attribute type
+ * @param type - The attribute type or pattern
  * @returns A localized message string
  */
 function createDisallowMessage(
 	t: Parameters<typeof attrCheck>[0],
 	name: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	type: AttributeType,
+	type: AttributeType | Pattern,
 ): string {
+	if (isPattern(type as Type)) {
+		return t(
+			'{0} is matched with the below disallowed patterns: {1}',
+			t('the "{0*}" {1}', name, 'attribute'),
+			(type as Pattern).pattern,
+		);
+	}
 	if (typeof type !== 'string' && isEnum(type)) {
 		return t(
 			'{0} is disallowed to accept the following values: {1}',

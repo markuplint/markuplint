@@ -7,8 +7,8 @@
 		"options": {
 			"type": "object",
 			"additionalProperties": false,
-			"description": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | PatternRule;\n}\n\ntype PatternRule = { pattern: string; };\n```\n\n`AttributeType` is [The type API](/docs/api/types).",
-			"description:ja": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | PatternRule;\n}\n\ntype PatternRule = { pattern: string; };\n```\n\n`AttributeType`は[タイプAPI](/docs/api/types)を参照してください。",
+			"description": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType` is [The type API](/docs/api/types). `Pattern` is also part of the type API.",
+			"description:ja": "```ts\ntype Attr = {\n  name: string;\n  value: AttributeType | Pattern;\n}\n\ntype Pattern = { pattern: string; };\n```\n\n`AttributeType`は[タイプAPI](/docs/api/types)を参照してください。`Pattern`もタイプAPIの一部です。",
 			"properties": {
 				"allowAttrs": {
 					"oneOf": [
@@ -27,12 +27,7 @@
 										"properties": {
 											"name": { "type": "string" },
 											"value": {
-												"oneOf": [
-													{ "$ref": "#/definitions/pattern" },
-													{
-														"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-													}
-												]
+												"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
 											}
 										}
 									}
@@ -42,14 +37,9 @@
 						{
 							"deprecated": true,
 							"type": "object",
-							"_type": "Record<string, AttributeType | PatternRule>",
+							"_type": "Record<string, AttributeType | Pattern>",
 							"additionalProperties": {
-								"oneOf": [
-									{ "$ref": "#/definitions/pattern" },
-									{
-										"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-									}
-								]
+								"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
 							}
 						}
 					],
@@ -73,12 +63,7 @@
 										"properties": {
 											"name": { "type": "string" },
 											"value": {
-												"oneOf": [
-													{ "$ref": "#/definitions/pattern" },
-													{
-														"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-													}
-												]
+												"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
 											}
 										}
 									}
@@ -88,14 +73,9 @@
 						{
 							"deprecated": true,
 							"type": "object",
-							"_type": "Record<string, AttributeType | PatternRule>",
+							"_type": "Record<string, AttributeType | Pattern>",
 							"additionalProperties": {
-								"oneOf": [
-									{ "$ref": "#/definitions/pattern" },
-									{
-										"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
-									}
-								]
+								"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/types/types.schema.json#/definitions/type"
 							}
 						}
 					],
@@ -124,16 +104,6 @@
 					"default": "true",
 					"description": "Allow adding properties for a component that pretends to be an HTML native element. The default is `true`. It warns of finding a non-existence attribute if it is set `false` and you use the `pretenders` option.",
 					"description:ja": "HTML要素に偽装しているコンポーネントのプロパティを追加できるようにします。デフォルトは`true`です。`pretenders`オプションを使用している場合に`false`に設定されていると、存在しない属性が見つかると警告します。"
-				}
-			}
-		},
-		"pattern": {
-			"type": "object",
-			"additionalProperties": false,
-			"required": ["pattern"],
-			"properties": {
-				"pattern": {
-					"type": "string"
 				}
 			}
 		}
