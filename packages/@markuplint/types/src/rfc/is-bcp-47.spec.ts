@@ -23,3 +23,11 @@ test('Invalid', () => {
 test('Surrounded by spaces', () => {
 	expect(is(' en ')).toBe(false);
 });
+
+test('x-default (private use)', () => {
+	expect(is('x-default')).toBe(true);
+});
+
+test('x-custom (private use)', () => {
+	expect(is('x-custom')).toBe(true);
+});
