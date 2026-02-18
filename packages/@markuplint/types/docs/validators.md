@@ -295,19 +295,19 @@ All of these are `FormattedPrimitiveTypeCreator` factories -- they return `() =>
 
 Validates language tags according to [BCP 47](https://tools.ietf.org/rfc/bcp/bcp47.html) (RFC 5646 + RFC 4647).
 
-The validator integrates the `bcp-47` npm package. It parses the value and checks that a valid `language` subtag is present:
+The validator integrates the `bcp-47` npm package. It parses the value and checks that either a valid `language` subtag or a `privateuse` subtag (e.g., `x-default`) is present:
 
 ```typescript
 // src/rfc/is-bcp-47.ts
 export const isBCP47: FormattedPrimitiveTypeCreator = () => {
   return value => {
-    const { language } = parse(value);
-    return !!language;
+    const { language, privateuse } = parse(value);
+    return !!language || (privateuse != null && privateuse.length > 0);
   };
 };
 ```
 
-This is registered in `defs.ts` as the `BCP47` type, used for the `lang` attribute on HTML elements.
+This is registered in `defs.ts` as the `BCP47` type, used for the `lang` and `hreflang` attributes on HTML elements.
 
 ---
 
