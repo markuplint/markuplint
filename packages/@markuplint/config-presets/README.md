@@ -59,6 +59,7 @@ Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
