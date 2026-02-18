@@ -9,7 +9,7 @@ import { parse } from 'bcp-47';
  */
 export const isBCP47: FormattedPrimitiveTypeCreator = () => {
 	return value => {
-		const { language } = parse(value);
-		return !!language;
+		const { language, privateuse } = parse(value);
+		return !!language || (privateuse != null && privateuse.length > 0);
 	};
 };

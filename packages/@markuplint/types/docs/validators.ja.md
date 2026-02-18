@@ -295,19 +295,19 @@ WHATWGが定義する各種名前フォーマットに対する、シンプル�
 
 [BCP 47](https://tools.ietf.org/rfc/bcp/bcp47.html)（RFC 5646 + RFC 4647）に準拠した言語タグの検証を行います。
 
-npmパッケージ `bcp-47` を組み込んでパースし、有効な `language` サブタグが含まれているかを確認します。
+npmパッケージ `bcp-47` を組み込んでパースし、有効な `language` サブタグまたは `privateuse` サブタグ（例: `x-default`）が含まれているかを確認します。
 
 ```typescript
 // src/rfc/is-bcp-47.ts
 export const isBCP47: FormattedPrimitiveTypeCreator = () => {
   return value => {
-    const { language } = parse(value);
-    return !!language;
+    const { language, privateuse } = parse(value);
+    return !!language || (privateuse != null && privateuse.length > 0);
   };
 };
 ```
 
-`defs.ts` では `BCP47` 型として登録されており、HTML要素の `lang` 属性の検証に使用されます。
+`defs.ts` では `BCP47` 型として登録されており、HTML要素の `lang` 属性や `hreflang` 属性の検証に使用されます。
 
 ---
 
