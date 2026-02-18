@@ -14,6 +14,25 @@ import { matchesContextRole } from './matches-context-role.js';
 import { mayBeFocusable } from '../html/may-be-focusable.js';
 
 /**
+ * Module-level cache for computed role results.
+ *
+ * Uses WeakMap so entries are automatically garbage-collected
+ * when the Element is released. Cache key format: `${version}:${assumeSingleNode}`.
+ *
+ * Invariants:
+ * - `specs` is always the same `MLMLSpec` instance within a document traversal,
+ *   so it is not included in the cache key.
+ * - Recursive calls from `computeRole` (via `getNonPresentationalAncestor`,
+ *   `matchesContextRole`, `isNativeContextIntact`) always traverse upward
+ *   in the DOM tree, so circular references cannot occur.
+ * - Cache entries become stale if an element's attributes are mutated after
+ *   computation. This is acceptable because markuplint operates on a static
+ *   document snapshot. External consumers that use the algorithm on a live
+ *   DOM with dynamic attribute mutations should be aware of this limitation.
+ */
+const computedRoleCache = new WeakMap<Element, Map<string, ComputedRole>>();
+
+/**
  * Computes the final ARIA role for an element according to the WAI-ARIA specification,
  * applying the Presentational Roles Conflict Resolution algorithm. This considers
  * the explicit role, implicit role, required context roles, focusability,
@@ -31,6 +50,32 @@ export function getComputedRole(
 	el: Element,
 	version: ARIAVersion,
 	assumeSingleNode = false,
+): ComputedRole {
+	const cacheKey = `${version}:${assumeSingleNode}`;
+	const elCache = computedRoleCache.get(el);
+	if (elCache) {
+		const cached = elCache.get(cacheKey);
+		if (cached) {
+			return cached;
+		}
+	}
+
+	const result = computeRole(specs, el, version, assumeSingleNode);
+
+	const cache = elCache ?? new Map<string, ComputedRole>();
+	cache.set(cacheKey, result);
+	if (!elCache) {
+		computedRoleCache.set(el, cache);
+	}
+	return result;
+}
+
+function computeRole(
+	specs: MLMLSpec,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	version: ARIAVersion,
+	assumeSingleNode: boolean,
 ): ComputedRole {
 	let lazyImplicitRole: ComputedRole | undefined;
 	const explicitRole = getExplicitRole(specs, el, version);
@@ -76,7 +121,19 @@ export function getComputedRole(
 	 * @see https://github.com/w3c/aria/issues/1033
 	 * @see https://github.com/w3c/aria/pull/1454
 	 */
-	if (computedRole.role && computedRole.role.requiredAccessibilityParentRole.length > 0) {
+	if (
+		computedRole.role &&
+		computedRole.role.requiredAccessibilityParentRole.length > 0 &&
+		// For implicit roles in native HTML contexts, skip the context role check
+		// when the direct parent retains its native semantics (no explicit role override
+		// and its own computed role is non-null). This handles spec data mismatches
+		// such as <option> inside <select>, where the ARIA spec requires "listbox"
+		// context but the HTML-ARIA mapping gives <select> the "combobox" role.
+		// When the parent HAS an explicit role or its computed role is null (cascaded
+		// from an ancestor override like <table role="none">), the check proceeds
+		// normally so that role nullification cascades correctly.
+		!isNativeContextIntact(computedRole, el, specs, version)
+	) {
 		/**
 		 * An element fragment that serves as the root without a parent element
 		 * cannot satisfy the "Required Accessibility Parent Role" condition.
@@ -284,4 +341,41 @@ function someAncestors(
 		current = current.parentElement;
 	}
 	return list.some(predicate);
+}
+
+/**
+ * Checks whether an element with an implicit role is in its native HTML
+ * context — i.e., the direct parent has no explicit role override and
+ * its own computed role is non-null.
+ *
+ * When this returns `true`, the context role check can be safely skipped
+ * because the native HTML parent-child relationship is intact, even if
+ * the ARIA spec data has a mismatch (e.g., `<option>` requires "listbox"
+ * but `<select>` maps to "combobox").
+ *
+ * When the parent has an explicit role (e.g., `<table role="none">`) or
+ * its computed role is `null` (cascaded from an ancestor override), the
+ * context is NOT considered intact and the check should proceed.
+ */
+function isNativeContextIntact(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	computedRole: ComputedRole,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	specs: MLMLSpec,
+	version: ARIAVersion,
+): boolean {
+	if (!computedRole.role?.isImplicit) {
+		return false;
+	}
+	const parent = el.parentElement;
+	if (!parent) {
+		return false;
+	}
+	const parentExplicit = getExplicitRole(specs, parent, version);
+	if (parentExplicit.role) {
+		return false;
+	}
+	const parentComputed = getComputedRole(specs, parent, version);
+	return parentComputed.role !== null;
 }

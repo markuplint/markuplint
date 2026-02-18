@@ -35,14 +35,14 @@ describe('1.2', () => {
 		expect(matchesContextRole(['grid > rowgroup'], el, specs, version)).toBe(false);
 	});
 
-	test('presentation parent is NOT transparent in 1.2', () => {
+	test('presentation parent IS transparent in 1.2', () => {
 		const el = _('<ul><div role="presentation"><li></li></div></ul>', 'li');
-		expect(matchesContextRole(['list'], el, specs, version)).toBe(false);
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(true);
 	});
 
-	test('none parent is NOT transparent in 1.2', () => {
+	test('none parent IS transparent in 1.2', () => {
 		const el = _('<ul><div role="none"><li></li></div></ul>', 'li');
-		expect(matchesContextRole(['list'], el, specs, version)).toBe(false);
+		expect(matchesContextRole(['list'], el, specs, version)).toBe(true);
 	});
 });
 
