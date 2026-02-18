@@ -22,8 +22,10 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
-		// > A link element must have either a rel attribute or an itemprop attribute, but not both.
-		// > ...must have an href attribute or an imagesrcset attribute (or both).
+		// > One or both of the href or imagesrcset attributes must be present.
+		// Note: requiredEither is NOT added to imagesrcset because it already has
+		// condition/required for imagesizes interaction, and requiredEither would
+		// take precedence (index.ts:88), bypassing that logic.
 		"href": {
 			"requiredEither": ["imagesrcset"]
 		},
