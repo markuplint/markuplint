@@ -525,6 +525,31 @@ describe('Issues', () => {
 	});
 });
 
+describe('link element requires href or imagesrcset (#717)', () => {
+	test('violation: link without href or imagesrcset', async () => {
+		expect((await mlRuleTest(rule, '<link rel="stylesheet">')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "link" element expects the "href" or the "imagesrcset" attribute',
+				raw: '<link rel="stylesheet">',
+			},
+		]);
+	});
+
+	test('no violation: link with href', async () => {
+		expect((await mlRuleTest(rule, '<link rel="stylesheet" href="./style.css">')).violations).toStrictEqual([]);
+	});
+
+	test('no violation: link with imagesrcset (href not required)', async () => {
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" as="image" imagesrcset="/img.png 1x" imagesizes="100vw">'))
+				.violations,
+		).toStrictEqual([]);
+	});
+});
+
 describe('MDX parser', () => {
 	test('MDX img element requires alt attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="photo.png" />\n', {

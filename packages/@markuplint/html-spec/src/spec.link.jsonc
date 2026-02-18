@@ -21,6 +21,12 @@
 		]
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
+		// > A link element must have either a rel attribute or an itemprop attribute, but not both.
+		// > ...must have an href attribute or an imagesrcset attribute (or both).
+		"href": {
+			"requiredEither": ["imagesrcset"]
+		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-rel
 		"rel": {
 			"type": "LinkTypeForLinkElement",
