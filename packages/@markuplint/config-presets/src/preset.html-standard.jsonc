@@ -93,7 +93,14 @@
 		 * Specify required attr
 		 *
 		 */
-		"required-attr": true
+		"required-attr": true,
+
+		/**
+		 * Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
+		 */
+		"srcset-sizes-constraint": true
 	},
 	"nodeRules": [
 		{
