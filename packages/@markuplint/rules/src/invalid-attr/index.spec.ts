@@ -372,9 +372,7 @@ test('custom rule: type', async () => {
 		rule: {
 			options: {
 				allowAttrs: {
-					'x-attr': {
-						type: 'Int',
-					},
+					'x-attr': 'Int',
 				},
 			},
 		},
@@ -405,9 +403,7 @@ test('custom element and custom rule', async () => {
 				rule: {
 					options: {
 						allowAttrs: {
-							'any-attr': {
-								type: 'Int',
-							},
+							'any-attr': 'Int',
 						},
 					},
 				},
@@ -1345,240 +1341,17 @@ test('Multiple Type', async () => {
 	]);
 });
 
-describe('Deprecated options', () => {
-	test('custom rule', async () => {
-		const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
-			rule: {
-				options: {
-					attrs: {
-						'x-attr': {
-							pattern: '/[a-z]+/',
-						},
-					},
-				},
-			},
-		});
-
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 15,
-				message: 'The "x-attr" attribute is unmatched with the below patterns: /[a-z]+/',
-				raw: '123',
-			},
-		]);
-	});
-
-	test('custom rule: type', async () => {
-		const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
-			rule: {
-				options: {
-					attrs: {
-						'x-attr': {
-							type: 'Int',
-						},
-					},
-				},
-			},
-		});
-
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 41,
-				message: 'It includes unexpected characters. the "x-attr" attribute expects integer',
-				raw: 'abc',
-			},
-		]);
-	});
-
-	test('custom element and custom rule', async () => {
-		const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
-			nodeRule: [
-				{
-					selector: 'custom-element',
-					rule: {
-						options: {
-							attrs: {
-								'any-attr': {
-									type: 'Int',
-								},
-							},
-						},
-					},
-				},
-			],
-		});
-
-		expect(violations.length).toBe(1);
-	});
-
-	test('Overwrite type', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
-			{
-				rule: {
-					options: {
-						attrs: {
-							datetime: {
-								enum: ['overwrite-type'],
-							},
-						},
-					},
-				},
-			},
-		);
-		const { violations: violations2 } = await mlRuleTest(
-			rule,
-			'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
-		);
-
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 56,
-				message: 'The "datetime" attribute expects overwrite-type',
-				raw: '2000-01-01',
-			},
-		]);
-		expect(violations2).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 17,
-				message:
-					'The year part includes unexpected characters (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)',
-				raw: 'overwrite',
-			},
-		]);
-	});
-
-	test('custom rule: disallowed', async () => {
-		const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
-			rule: {
-				options: {
-					attrs: {
-						onclick: {
-							disallowed: true,
-						},
-					},
-				},
-			},
-		});
-
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 4,
-				message: 'The "onclick" attribute is disallowed',
-				raw: 'onclick',
-			},
-		]);
-	});
-
-	test('React: a custom rule and a mutable attribute', async () => {
-		const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-			nodeRule: [
-				{
-					selector: 'a',
-					rule: {
-						options: {
-							attrs: {
-								href: {
-									enum: ['https://markuplint.dev'],
-								},
-							},
-						},
-					},
-				},
-			],
-		});
-
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 32,
-				message: 'The "invalidAttr" attribute is disallowed',
-				raw: 'invalidAttr',
-			},
-		]);
-	});
-
-	test('regexSelector', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			`<picture>
-	<source srcset="logo-3x.png 3x">
-	<source srcset="logo@3x.png 3x">
-	<source srcset="logo-2x.png 2x">
-	<source srcset="logo@2x.png 2x">
-	<img src="logo.png" alt="logo">
-</picture>
-`,
-			{
-				nodeRule: [
-					{
-						regexSelector: {
-							nodeName: 'img',
-							attrName: 'src',
-							attrValue: '/^(?<FileName>.+)\\.(?<Exp>png|jpg|webp|gif)$/',
-							combination: {
-								combinator: ':has(~)',
-								nodeName: 'source',
-							},
-						},
-						rule: {
-							options: {
-								attrs: {
-									srcset: {
-										enum: ['{{FileName}}@2x.{{Exp}} 2x', '{{FileName}}@3x.{{Exp}} 3x'],
-									},
-								},
-							},
-						},
-					},
-				],
-			},
-		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 2,
-				col: 18,
-				message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
-				raw: 'logo-3x.png 3x',
-			},
-			{
-				severity: 'error',
-				line: 4,
-				col: 18,
-				message: 'The "srcset" attribute expects either "logo@2x.png 2x", "logo@3x.png 3x"',
-				raw: 'logo-2x.png 2x',
-			},
-		]);
-	});
-
-	test('The `as` attribute', async () => {
-		expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 4,
-				message: 'The "as" attribute is disallowed. Did you mean "is"?',
-				raw: 'as',
-			},
-		]);
-		expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
-	});
+test('The `as` attribute', async () => {
+	expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 4,
+			message: 'The "as" attribute is disallowed. Did you mean "is"?',
+			raw: 'as',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
 });
 
 test('CSS Functions', async () => {

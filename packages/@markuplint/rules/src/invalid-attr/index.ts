@@ -1,6 +1,7 @@
 import type { AttributeType } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
+import { isEnum } from '@markuplint/types';
 
 import { attrCheck } from '../attr-check.js';
 import { log as ruleLog } from '../debug.js';
@@ -20,36 +21,20 @@ type Option = {
 	 *
 	 * @since 3.7.0
 	 */
-	allowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
+	allowAttrs?: (string | Attr)[] | Record<string, AttributeType | PatternRule>;
 
 	/**
 	 * Attributes to disallow in addition to spec restrictions.
 	 *
 	 * @since 3.7.0
 	 */
-	disallowAttrs?: (string | Attr)[] | Record<string, ValueRule>;
+	disallowAttrs?: (string | Attr)[] | Record<string, AttributeType | PatternRule>;
 
 	/** Attribute name prefix(es) to ignore during validation. */
 	ignoreAttrNamePrefix?: string | string[];
 
 	/** Whether to allow additional properties for pretender elements (defaults to `true`). */
 	allowToAddPropertiesForPretender?: boolean;
-
-	/**
-	 * @deprecated Since version 3.7.0. Use `allowAttrs` or `disallowAttrs` instead.
-	 * This option (`attr`) is now considered ambiguous and may lead to confusion.
-	 * Please use the more explicit `allowAttrs` or `disallowAttrs` option
-	 * to specify allowed attributes for the `invalid-attr` rule.
-	 * @see {@link Option.allowAttrs}
-	 * @see {@link Option.disallowAttrs}
-	 */
-	attrs?: Record<
-		string,
-		| ValueRule
-		| {
-				disallowed: true;
-		  }
-	>;
 };
 
 /**
@@ -59,23 +44,15 @@ type Attr = {
 	/** The attribute name. */
 	name: string;
 	/** The expected attribute value type or validation rule. */
-	value: AttributeType | ValueRule;
+	value: AttributeType | PatternRule;
 };
 
 /**
- * A validation constraint for an attribute value, defined as either an
- * enumerated list, a regex pattern, or a spec-based type.
+ * A validation constraint for an attribute value using a regex pattern.
  */
-type ValueRule =
-	| {
-			enum: [string, ...string[]];
-	  }
-	| {
-			pattern: string;
-	  }
-	| {
-			type: AttributeType;
-	  };
+type PatternRule = {
+	pattern: string;
+};
 
 /**
  * Rule that validates attributes against the HTML spec, allowed lists,
@@ -83,9 +60,9 @@ type ValueRule =
  *
  * Checks each attribute for: existence in the spec, correct value type,
  * allowed/disallowed overrides from configuration, and typo suggestions
- * via candidate matching. Supports `allowAttrs`, `disallowAttrs`, and
- * the deprecated `attrs` option. Non-existent attributes on elements that
- * allow additional properties (pretenders) can be optionally permitted.
+ * via candidate matching. Supports `allowAttrs` and `disallowAttrs`.
+ * Non-existent attributes on elements that allow additional properties
+ * (pretenders) can be optionally permitted.
  */
 export default createRule<boolean, Option>({
 	meta: meta,
@@ -132,25 +109,21 @@ export default createRule<boolean, Option>({
 			}
 
 			let invalid: ReturnType<typeof attrCheck> = false;
-			const allowAttrs: Record<string, ValueRule> = {};
-			const disallowAttrs: Record<string, ValueRule> = {};
+			const allowAttrs: Record<string, AttributeType | PatternRule> = {};
+			const disallowAttrs: Record<string, AttributeType | PatternRule> = {};
 
 			if (attr.rule.options.allowAttrs) {
 				if (Array.isArray(attr.rule.options.allowAttrs)) {
 					for (const allowAttr of attr.rule.options.allowAttrs) {
 						if (typeof allowAttr === 'string') {
-							allowAttrs[allowAttr] = { type: 'Any' };
+							allowAttrs[allowAttr] = 'Any';
 							continue;
 						}
-						if (isValueRule(allowAttr.value)) {
-							allowAttrs[allowAttr.name] = allowAttr.value;
-							continue;
-						}
-						allowAttrs[allowAttr.name] = { type: allowAttr.value };
+						allowAttrs[allowAttr.name] = allowAttr.value;
 					}
 				} else {
-					for (const [attrName, valueRule] of Object.entries(attr.rule.options.allowAttrs)) {
-						allowAttrs[attrName] = valueRule;
+					for (const [attrName, attrType] of Object.entries(attr.rule.options.allowAttrs)) {
+						allowAttrs[attrName] = attrType;
 					}
 				}
 			}
@@ -159,28 +132,14 @@ export default createRule<boolean, Option>({
 				if (Array.isArray(attr.rule.options.disallowAttrs)) {
 					for (const disallowAttr of attr.rule.options.disallowAttrs) {
 						if (typeof disallowAttr === 'string') {
-							disallowAttrs[disallowAttr] = { type: 'Any' };
+							disallowAttrs[disallowAttr] = 'Any';
 							continue;
 						}
-						if (isValueRule(disallowAttr.value)) {
-							disallowAttrs[disallowAttr.name] = disallowAttr.value;
-							continue;
-						}
-						disallowAttrs[disallowAttr.name] = { type: disallowAttr.value };
+						disallowAttrs[disallowAttr.name] = disallowAttr.value;
 					}
 				} else {
-					for (const [attrName, valueRule] of Object.entries(attr.rule.options.disallowAttrs)) {
-						disallowAttrs[attrName] = valueRule;
-					}
-				}
-			}
-
-			if (attr.rule.options.attrs) {
-				for (const [attrName, valueRule] of Object.entries(attr.rule.options.attrs)) {
-					if ('disallowed' in valueRule) {
-						disallowAttrs[attrName] = { type: 'Any' };
-					} else {
-						allowAttrs[attrName] = valueRule;
+					for (const [attrName, attrType] of Object.entries(attr.rule.options.disallowAttrs)) {
+						disallowAttrs[attrName] = attrType;
 					}
 				}
 			}
@@ -188,16 +147,8 @@ export default createRule<boolean, Option>({
 			const allowValue = allowAttrs[name] ?? null;
 			const disallowValue = disallowAttrs[name] ?? null;
 
-			if (allowValue) {
-				if ('enum' in allowValue) {
-					invalid = attrCheck(t, name.toLowerCase(), value, true, {
-						name,
-						type: {
-							enum: allowValue.enum,
-						},
-						description: '',
-					});
-				} else if ('pattern' in allowValue) {
+			if (allowValue !== null) {
+				if (isPatternRule(allowValue)) {
 					if (!match(value, allowValue.pattern)) {
 						invalid = {
 							invalidType: 'invalid-value',
@@ -208,29 +159,11 @@ export default createRule<boolean, Option>({
 							),
 						};
 					}
-				} else if ('type' in allowValue) {
-					invalid = attrCheck(t, name, value, true, { name, type: allowValue.type, description: '' });
+				} else {
+					invalid = attrCheck(t, name, value, true, { name, type: allowValue, description: '' });
 				}
-			} else if (disallowValue) {
-				if ('enum' in disallowValue) {
-					const checkResult = attrCheck(t, name.toLowerCase(), value, true, {
-						name,
-						type: {
-							enum: disallowValue.enum,
-						},
-						description: '',
-					});
-					if (checkResult === false) {
-						invalid = {
-							invalidType: 'invalid-value',
-							message: t(
-								'{0} is disallowed to accept the following values: {1}',
-								t('the "{0*}" {1}', name, 'attribute'),
-								t(disallowValue.enum),
-							),
-						};
-					}
-				} else if ('pattern' in disallowValue) {
+			} else if (disallowValue !== null) {
+				if (isPatternRule(disallowValue)) {
 					if (match(value, disallowValue.pattern)) {
 						invalid = {
 							invalidType: 'invalid-value',
@@ -241,27 +174,22 @@ export default createRule<boolean, Option>({
 							),
 						};
 					}
-				} else if ('type' in disallowValue) {
-					if (disallowValue.type === 'Any') {
+				} else if (disallowValue === 'Any') {
+					invalid = {
+						invalidType: 'non-existent',
+						message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
+					};
+				} else {
+					const checkResult = attrCheck(t, name, value, true, {
+						name,
+						type: disallowValue,
+						description: '',
+					});
+					if (checkResult === false) {
 						invalid = {
-							invalidType: 'non-existent',
-							message: t('{0} is disallowed', t('the "{0*}" {1}', name, 'attribute')),
+							invalidType: 'invalid-value',
+							message: createDisallowMessage(t, name, disallowValue),
 						};
-					} else {
-						const checkResult = attrCheck(t, name, value, true, {
-							name,
-							type: disallowValue.type,
-							description: '',
-						});
-						if (checkResult === false) {
-							invalid = {
-								invalidType: 'invalid-value',
-								message: t(
-									'{0} is disallowed',
-									t('{0} of {1}', t('the {0}', 'type'), t('the "{0*}" {1}', name, 'attribute')),
-								),
-							};
-						}
 					}
 				}
 			} else if (attr.ownerElement.elementType === 'html' && attrSpecs) {
@@ -326,36 +254,39 @@ export default createRule<boolean, Option>({
 });
 
 /**
- * Determines whether the given value is a {@link ValueRule} (enum, pattern,
- * or simple type constraint) as opposed to a raw {@link AttributeType}.
+ * Determines whether the given value is a {@link PatternRule}
+ * as opposed to a raw {@link AttributeType}.
  *
  * @param value - The value to inspect.
- * @returns `true` if the value is a {@link ValueRule}, `false` otherwise.
+ * @returns `true` if the value is a {@link PatternRule}, `false` otherwise.
  */
-function isValueRule(
+function isPatternRule(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	value: AttributeType | ValueRule,
-): value is ValueRule {
-	if (typeof value === 'string') {
-		return false;
+	value: AttributeType | PatternRule,
+): value is PatternRule {
+	return typeof value !== 'string' && 'pattern' in value;
+}
+
+/**
+ * Creates an appropriate disallow message based on the type structure.
+ *
+ * @param t - The i18n translator
+ * @param name - The attribute name
+ * @param type - The attribute type
+ * @returns A localized message string
+ */
+function createDisallowMessage(
+	t: Parameters<typeof attrCheck>[0],
+	name: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	type: AttributeType,
+): string {
+	if (typeof type !== 'string' && isEnum(type)) {
+		return t(
+			'{0} is disallowed to accept the following values: {1}',
+			t('the "{0*}" {1}', name, 'attribute'),
+			t(type.enum),
+		);
 	}
-	if ('enum' in value) {
-		if (Object.keys(value).length > 1) {
-			return false;
-		}
-		return true;
-	}
-	if ('token' in value) {
-		return false;
-	}
-	if ('pattern' in value) {
-		return true;
-	}
-	if (value.type === 'integer' || value.type === 'float') {
-		return false;
-	}
-	if (Object.keys(value).length > 1) {
-		return false;
-	}
-	return true;
+	return t('{0} is disallowed', t('{0} of {1}', t('the {0}', 'type'), t('the "{0*}" {1}', name, 'attribute')));
 }
