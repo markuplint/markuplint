@@ -56,15 +56,12 @@
 		"permittedRoles": false,
 		"properties": false,
 		"conditions": {
-			":is(select, select > option, datalist) > option": {
+			":is(select, select > optgroup, datalist) > option": {
 				"implicitRole": "option",
 				"properties": {
 					"global": true,
 					"role": "option",
 					// Authors SHOULD NOT use the aria-selected attribute on the option element.
-					// Note: This without check is currently non-functional because
-					// getComputedRole() returns null for option inside select
-					// (Required Context Role mismatch). See #3214.
 					"without": [
 						{
 							"type": "should-not",
