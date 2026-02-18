@@ -2293,7 +2293,7 @@ __metadata:
   resolution: "@markuplint/config-presets@workspace:packages/@markuplint/config-presets"
   dependencies:
     "@isaacs/brace-expansion": "npm:5.0.1"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     jsonc-parser: "npm:3.3.1"
     mustache: "npm:4.2.0"
   languageName: unknown
@@ -2307,7 +2307,7 @@ __metadata:
     "@markuplint/ml-core": "npm:4.13.3"
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.3.3"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     prettier: "npm:3.8.1"
     typescript: "npm:5.9.3"
   bin:
@@ -2348,7 +2348,7 @@ __metadata:
     "@types/node": "npm:24.5.1"
     cosmiconfig: "npm:9.0.0"
     debug: "npm:4.4.3"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     ignore: "npm:7.0.5"
     import-meta-resolve: "npm:4.2.0"
     jsonc: "npm:2.0.0"
@@ -2548,7 +2548,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-config": "npm:4.8.15"
     "@markuplint/parser-utils": "npm:4.8.11"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     meow: "npm:14.0.0"
     typescript: "npm:5.9.3"
   bin:
@@ -2651,7 +2651,7 @@ __metadata:
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
     fast-xml-parser: "npm:5.3.6"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.4.4"
   languageName: unknown
@@ -2699,7 +2699,7 @@ __metadata:
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
     execa: "npm:9.6.1"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     jsdom: "npm:28.1.0"
     textlint-rule-prh: "npm:6.1.0"
     type-fest: "npm:5.4.4"
@@ -9409,14 +9409,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.4":
-  version: 13.0.4
-  resolution: "glob@npm:13.0.4"
+"glob@npm:13.0.5":
+  version: 13.0.5
+  resolution: "glob@npm:13.0.5"
   dependencies:
     minimatch: "npm:^10.2.1"
     minipass: "npm:^7.1.2"
     path-scurry: "npm:^2.0.0"
-  checksum: 10c0/cf380e68f5c64ab8c52f977c74b7e9affb3d589cfbf663f89baa681468abe97508043be549562f7c4b3f4088ac298902321af9d4ba8e42762bac041add0fed47
+  checksum: 10c0/1388527676127f337877eaf3403d6c54d3fa5e5599e10c1532d73108435b4da66d8fff4b00eb5b306388090a180c6a92d70694df1c19171cf820e285fb1dfee5
   languageName: node
   linkType: hard
 
@@ -18872,7 +18872,7 @@ __metadata:
     "@vscode/vsce": "npm:3.7.1"
     debug: "npm:4.4.3"
     esbuild: "npm:0.27.3"
-    glob: "npm:13.0.4"
+    glob: "npm:13.0.5"
     markuplint: "npm:4.13.0"
     mocha: "npm:11.7.5"
     semver: "npm:7.7.4"
