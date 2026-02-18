@@ -334,7 +334,7 @@ test('custom rule', async () => {
 			severity: 'error',
 			line: 1,
 			col: 15,
-			message: 'The "x-attr" attribute is unmatched with the below patterns: /[a-z]+/',
+			message: 'The "x-attr" attribute expects regular expression (/[a-z]+/)',
 			raw: '123',
 		},
 	]);
@@ -361,7 +361,7 @@ test('custom rule', async () => {
 			severity: 'error',
 			line: 1,
 			col: 15,
-			message: 'The "x-attr" attribute is unmatched with the below patterns: /[a-z]+/',
+			message: 'The "x-attr" attribute expects regular expression (/[a-z]+/)',
 			raw: '123',
 		},
 	]);

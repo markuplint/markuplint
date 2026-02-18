@@ -11,7 +11,7 @@ import type { cssSyntaxMatch } from './css-syntax.js';
  * - `Number` - Defines numeric validation with optional range constraints
  * - `Directive` - Defines composite attribute values with separators and individual token validation
  */
-export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number, Directive } from './types.schema.js';
+export type { Type, List, Enum, CssSyntax, KeywordDefinedType, Number, Directive, Pattern } from './types.schema.js';
 
 /**
  * The outcome of a type validation check. Either a successful match

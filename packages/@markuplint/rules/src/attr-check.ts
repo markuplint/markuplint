@@ -1,5 +1,6 @@
 import type { Translator } from '@markuplint/i18n';
 import type { Attribute as AttrSpec, AttributeType } from '@markuplint/ml-spec';
+import type { Type } from '@markuplint/types';
 import type { ReadonlyDeep } from 'type-fest';
 
 import { toNonNullableArrayFromItemOrArray } from '@markuplint/shared';
@@ -159,7 +160,7 @@ export function valueCheck(
 	t: Translator,
 	name: string,
 	value: string,
-	type: ReadonlyDeep<AttributeType>,
+	type: ReadonlyDeep<AttributeType | Type>,
 ): [string, Loc] | false {
 	if (type === 'Boolean') {
 		// Valid because an attribute is exist

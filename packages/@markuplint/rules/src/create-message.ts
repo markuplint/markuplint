@@ -1,9 +1,9 @@
 import type { Translator } from '@markuplint/i18n';
 import type { AttributeType } from '@markuplint/ml-spec';
-import type { UnmatchedResult, List, Number, Expect } from '@markuplint/types';
+import type { UnmatchedResult, List, Number, Expect, Type } from '@markuplint/types';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { isList, isKeyword, isEnum, isNumber, isDirective } from '@markuplint/types';
+import { isList, isKeyword, isEnum, isNumber, isDirective, isPattern } from '@markuplint/types';
 
 /**
  * Builds a human-readable error message explaining why an attribute value
@@ -21,12 +21,12 @@ import { isList, isKeyword, isEnum, isNumber, isDirective } from '@markuplint/ty
 export function createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
-	type: ReadonlyDeep<AttributeType>,
+	type: ReadonlyDeep<AttributeType | Type>,
 	matches: UnmatchedResult,
 ) {
 	let target = baseTarget;
 	let listDescriptionPart: string | undefined;
-	let tokenType: Exclude<ReadonlyDeep<AttributeType>, List>;
+	let tokenType: Exclude<ReadonlyDeep<AttributeType | Type>, List>;
 
 	if (isList(type)) {
 		listDescriptionPart = t(
@@ -262,7 +262,7 @@ export function __createMessageValueExpected(
  *   no expectation can be determined
  */
 function createExpectedObject(
-	type: ReadonlyDeep<Exclude<AttributeType, List>>,
+	type: ReadonlyDeep<Exclude<AttributeType | Type, List>>,
 	matches: UnmatchedResult,
 	t: Translator,
 ): string | null {
@@ -284,6 +284,8 @@ function createExpectedObject(
 		expectedObject.push(createExpectedNumber(t, type));
 	} else if (isDirective(type)) {
 		expectedObject.push(t('a {0}', 'directive'));
+	} else if (isPattern(type)) {
+		expectedObject.push(t('{0} ({1})', 'regular expression', type.pattern));
 	}
 
 	const expects =
@@ -304,7 +306,7 @@ function createExpectedObject(
  * @param type - The attribute type context for determining phrasing (e.g. CSS syntax)
  * @returns A localized word or phrase describing the expected value
  */
-function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType, List>>) {
+function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exclude<AttributeType | Type, List>>) {
 	switch (expect.type) {
 		case 'common': {
 			return expect.value;

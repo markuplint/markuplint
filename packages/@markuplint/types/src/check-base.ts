@@ -8,6 +8,7 @@ import type {
 	KeywordDefinedType,
 	Number,
 	Directive,
+	Pattern,
 	Defs,
 } from './types.js';
 import type { ReadonlyDeep } from 'type-fest';
@@ -18,6 +19,7 @@ import { checkEnum } from './enum.js';
 import { checkKeywordType } from './keyword-type.js';
 import { checkList } from './list.js';
 import { checkNumber } from './number.js';
+import { checkPattern } from './pattern.js';
 
 /**
  * Validates a string value against a specified type definition using the provided
@@ -53,6 +55,10 @@ export function checkBase(value: string, type: ReadonlyDeep<Type>, defs: Defs, r
 	if (isDirective(type)) {
 		log('Check directive: %O', type);
 		return checkDirective(value, type, defs, ref, cache);
+	}
+	if (isPattern(type)) {
+		log('Check pattern: %O', type);
+		return checkPattern(value, type);
 	}
 	throw new Error('Unknown type');
 }
@@ -116,6 +122,18 @@ export function isNumber(type: ReadonlyDeep<Type>): type is ReadonlyDeep<Number>
  */
 export function isDirective(type: ReadonlyDeep<Type>): type is ReadonlyDeep<Directive> {
 	return typeof type !== 'string' && 'directive' in type;
+}
+
+/**
+ * Determines whether a type definition represents a pattern type.
+ * Pattern types validate attribute values against a regular expression
+ * or plain string, and are identified by having a `pattern` property.
+ *
+ * @param type - The type definition to test
+ * @returns True if the type is a pattern definition
+ */
+export function isPattern(type: ReadonlyDeep<Type>): type is ReadonlyDeep<Pattern> {
+	return typeof type !== 'string' && 'pattern' in type;
 }
 
 /**

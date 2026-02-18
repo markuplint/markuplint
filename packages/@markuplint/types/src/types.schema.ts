@@ -4,7 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Type = KeywordDefinedType | List | Enum | Number | Directive;
+export type Type = KeywordDefinedType | List | Enum | Number | Directive | Pattern;
 export type KeywordDefinedType = CssSyntax | ExtendedType | HtmlAttrRequirement;
 export type CssSyntax =
 	| "<'--*'>"
@@ -1246,4 +1246,7 @@ export interface Directive {
 	directive: [string, ...string[]];
 	token: Type;
 	ref?: string;
+}
+export interface Pattern {
+	pattern: string;
 }
