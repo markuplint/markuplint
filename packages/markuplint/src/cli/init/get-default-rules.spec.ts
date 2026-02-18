@@ -157,6 +157,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'srcset-sizes-constraint': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'table-row-column-alignment': {
 			category: 'a11y',
 			defaultValue: false,
