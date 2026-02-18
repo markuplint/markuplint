@@ -38,6 +38,8 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 | [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`                  | `@markuplint/alpine-parser/spec` |
 | [**HTMX**](https://htmx.org)                                                               | `@markuplint/htmx-parser`                    | `@markuplint/htmx-parser/spec`   |
 | [**タグ付きテンプレートリテラル**](https://lit.dev/)（lit-html等）                         | `@markuplint/tagged-template-literal-parser` | -                                |
+| [**Markdown**](https://commonmark.org/)                                                    | `@markuplint/markdown-parser`                | -                                |
+| [**MDX**](https://mdxjs.com/)                                                              | `@markuplint/mdx-parser`                     | `@markuplint/react-spec`         |
 | [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`                     | -                                |
 | [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`                     | -                                |
 | [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`                  | -                                |
@@ -125,6 +127,25 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 {
   "parser": {
     "\\.ts$": "@markuplint/tagged-template-literal-parser"
+  }
+}
+```
+
+```json class=config title="Markdownでつかう"
+{
+  "parser": {
+    "\\.md$": "@markuplint/markdown-parser"
+  }
+}
+```
+
+```json class=config title="MDXでつかう"
+{
+  "parser": {
+    "\\.mdx$": "@markuplint/mdx-parser"
+  },
+  "specs": {
+    "\\.mdx$": "@markuplint/react-spec"
   }
 }
 ```

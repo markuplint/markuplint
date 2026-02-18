@@ -33,8 +33,10 @@ export function rewriteRuleContent(
     ].join('\n'),
   );
 
-  // Replace relative paths
+  // Replace relative paths and strip README filenames for Docusaurus compatibility
   content = content.replaceAll('](../', '](./');
+  content = content.replaceAll('/README.md)', ')');
+  content = content.replaceAll('/README.ja.md)', ')');
 
   return content;
 }
