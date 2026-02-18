@@ -1274,13 +1274,22 @@
 				"ref": { "type": "string" }
 			}
 		},
+		"pattern": {
+			"type": "object",
+			"required": ["pattern"],
+			"additionalProperties": false,
+			"properties": {
+				"pattern": { "type": "string" }
+			}
+		},
 		"type": {
 			"oneOf": [
 				{ "$ref": "#/definitions/keyword-defined-type" },
 				{ "$ref": "#/definitions/list" },
 				{ "$ref": "#/definitions/enum" },
 				{ "$ref": "#/definitions/number" },
-				{ "$ref": "#/definitions/directive" }
+				{ "$ref": "#/definitions/directive" },
+				{ "$ref": "#/definitions/pattern" }
 			]
 		}
 	},

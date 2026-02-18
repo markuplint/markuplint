@@ -26,10 +26,18 @@ test('OneLineAny', () => {
 	expect(check('a\rb', 'OneLineAny').matched).toBe(false);
 });
 
-test('Pattern', () => {
+test('Pattern (keyword)', () => {
 	expect(check('.*', 'Pattern').matched).toBe(true);
 	expect(check('[a-z]+', 'Pattern').matched).toBe(true);
 	expect(check(']//[()?!+*', 'Pattern').matched).toBe(false);
+});
+
+test('Pattern (object)', () => {
+	expect(check('hello', { pattern: '/^he/' }).matched).toBe(true);
+	expect(check('hello', { pattern: '/^xyz/' }).matched).toBe(false);
+	expect(check('foo', { pattern: 'foo' }).matched).toBe(true);
+	expect(check('foo', { pattern: 'bar' }).matched).toBe(false);
+	expect(check('Hello', { pattern: '/hello/i' }).matched).toBe(true);
 });
 
 test('BCP47', () => {
