@@ -171,11 +171,14 @@
 			"rules": {
 				"invalid-attr": {
 					"options": {
-						"disallowAttrs": {
-							"name": {
-								"pattern": "{{ value }}"
+						"disallowAttrs": [
+							{
+								"name": "name",
+								"value": {
+									"pattern": "{{ value }}"
+								}
 							}
-						}
+						]
 					},
 					"reason": "A document must not contain a details element that is a descendant of another details element in the same details name group."
 				}

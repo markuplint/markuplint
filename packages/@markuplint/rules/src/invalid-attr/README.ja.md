@@ -54,10 +54,6 @@ const Component = (props) => {
 HTML仕様が特定の要素で禁止している属性を意図せず許可しないよう注意してください。
 :::
 
-**配列**もしくは**オブジェクト**を受け取ります。
-
-#### 配列形式 {#allow-attrs-array-format}
-
 配列は**文字列**と**オブジェクト**の要素を含むことができます。
 
 文字列の場合、許可される属性名を指定でき、属性値は制限がありません。オブジェクトの場合、`name`と`value`の両方のプロパティを持つ必要があり、属性値に対してより詳細な制約を指定することができます。
@@ -92,58 +88,9 @@ HTML仕様が特定の要素で禁止している属性を意図せず許可し�
 
 `value`プロパティには[タイプAPI](/docs/api/types)で定義されているものを利用できます。また、`enum`プロパティを指定して許可される値を制限したり、`pattern`プロパティを指定して正規表現で値のパターンを定義することもできます。
 
-[タイプAPI](/docs/api/types)の指定は、`type`プロパティを持つオブジェクトでも指定できます。これは同じ意味を伝えるための代替構文です。
-
-```json
-[
-  {
-    "name": "x-attr",
-    "value": "<'color-profile'>"
-  },
-  // 上記と下記は同じ意味です
-  {
-    "name": "x-attr",
-    "value": {
-      "type": "<'color-profile'>"
-    }
-  }
-]
-```
-
 :::caution
 配列内で同じ属性名がある場合は後から指定されたものが優先されます。
 :::
-
-#### オブジェクト形式
-
-オブジェクト形式は、[非推奨となった旧`attrs`プロパティ](#setting-attrs-option)と同じ構造を持ちます。属性名に対応するプロパティ名を持つオブジェクトを受け取り、`type`、`enum`、`pattern`プロパティを持つオブジェクトを受け付けます。これらのプロパティは前述の[配列形式](#allow-attrs-array-format)で説明したものと同じ意味を持ちます。
-
-:::note
-`disallow`プロパティを持つオブジェクトは受け取りません。代わりに、後述する新しく導入された[`disallowAttrs`](#setting-disallow-attrs-option)オプションを使用してください。
-:::
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "allowAttrs": {
-        "x-attr": {
-          "type": "Any"
-        },
-        "x-attr2": {
-          "type": "Int"
-        },
-        "x-attr3": {
-          "enum": ["apple", "orange"]
-        },
-        "x-attr4": {
-          "pattern": "/^[a-z]+$/"
-        }
-      }
-    }
-  }
-}
-```
 
 ### `disallowAttrs`オプションの設定 {#setting-disallow-attrs-option}
 
@@ -186,95 +133,6 @@ HTML仕様が特定の要素で禁止している属性を意図せず許可し�
   }
 }
 ```
-
-### `attrs`オプションの設定 {#setting-attrs-option}
-
-このオプションは`v3.7.0`から非推奨になりました。
-
-<details>
-<summary>オプションの詳細</summary>
-
-#### `enum`
-
-列挙した文字列にマッチする値のみ許可します。
-
-型: `string[]`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "enum": ["value1", "value2", "value3"]
-        }
-      }
-    }
-  }
-}
-```
-
-#### `pattern`
-
-パターンにマッチする値のみ許可します。 `/` で囲むことで **正規表現** として機能します。
-
-型: `string`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "pattern": "/[a-z]+/"
-        }
-      }
-    }
-  }
-}
-```
-
-#### `type`
-
-指定した[型](https://markuplint.dev/docs/api/types)にマッチする値のみ許可します。
-
-型: `string`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "type": "Boolean"
-        }
-      }
-    }
-  }
-}
-```
-
-#### `disallowed`
-
-指定した属性を禁止します。
-
-型: `boolean`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "disallowed": true
-        }
-      }
-    }
-  }
-}
-```
-
-</details>
 
 ### `ignoreAttrNamePrefix`オプションの設定
 

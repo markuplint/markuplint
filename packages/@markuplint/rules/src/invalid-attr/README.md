@@ -54,10 +54,6 @@ scope `allowAttrs` so it does not unintentionally allow attributes
 that the HTML specification disallows on specific elements.
 :::
 
-It accepts an **array** or an **object**.
-
-#### Array format {#allow-attrs-array-format}
-
 The array can contain elements of both **string** and **object** types.
 
 For strings, you can specify allowed attribute names, with attribute values being unrestricted. In the case of Objects, they should have both `name` and `value` properties, allowing you to specify more precise constraints for the attribute values.
@@ -92,58 +88,9 @@ For strings, you can specify allowed attribute names, with attribute values bein
 
 You can use the types defined in [The types API](/docs/api/types) for the `value` property. Additionally, you can specify an `enum` property to limit the allowed values or use the `pattern` property to define a pattern for the values using regular expressions.
 
-You can also specify [The types API](/docs/api/types) using an Object type with a `type` property. This is just an alias with a different syntax but conveys the same meaning.
-
-```json
-[
-  {
-    "name": "x-attr",
-    "value": "<'color-profile'>"
-  },
-  // The above and below are equivalent
-  {
-    "name": "x-attr",
-    "value": {
-      "type": "<'color-profile'>"
-    }
-  }
-]
-```
-
 :::caution
 In case of duplicate attribute names within the array, the one specified later will take precedence.
 :::
-
-#### Object format
-
-The Object format follows the same structure as [the deprecated `attrs` property](#setting-attrs-option). It accepts objects with property names corresponding to **attribute names** and with object includes `type`, `enum`, and `pattern` properties. These properties have the same meaning as described earlier in [the Array format](#allow-attrs-array-format).
-
-:::note
-Note that objects with the `disallow` property are not accepted. Instead, please use the newly introduced [`disallowAttrs`](#setting-disallow-attrs-option) option, which will be discussed in the following section.
-:::
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "allowAttrs": {
-        "x-attr": {
-          "type": "Any"
-        },
-        "x-attr2": {
-          "type": "Int"
-        },
-        "x-attr3": {
-          "enum": ["apple", "orange"]
-        },
-        "x-attr4": {
-          "pattern": "/^[a-z]+$/"
-        }
-      }
-    }
-  }
-}
-```
 
 ### Setting `disallowAttrs` option {#setting-disallow-attrs-option}
 
@@ -186,95 +133,6 @@ The format for specifying disallowed attributes is the same as for [`allowAttrs`
   }
 }
 ```
-
-### Setting `attrs` option {#setting-attrs-option}
-
-This option is deprecated since `v3.7.0`.
-
-<details>
-<summary>Details of this option</summary>
-
-#### `enum`
-
-Only values ​​that match the enumerated strings are allowed.
-
-Type: `string[]`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "enum": ["value1", "value2", "value3"]
-        }
-      }
-    }
-  }
-}
-```
-
-#### `pattern`
-
-Only allow values ​​that match the pattern. It works as a **regular expression** by enclosing it in `/`.
-
-Type: `string`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "pattern": "/[a-z]+/"
-        }
-      }
-    }
-  }
-}
-```
-
-#### `type`
-
-Only values that match the specified [type](https://markuplint.dev/docs/api/types) are allowed.
-
-Type: `string`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "type": "Boolean"
-        }
-      }
-    }
-  }
-}
-```
-
-#### `disallowed`
-
-Disallow the attribute.
-
-Type: `boolean`
-
-```json
-{
-  "invalid-attr": {
-    "options": {
-      "attrs": {
-        "x-attr": {
-          "disallowed": true
-        }
-      }
-    }
-  }
-}
-```
-
-</details>
 
 ### Setting `ignoreAttrNamePrefix` option
 
