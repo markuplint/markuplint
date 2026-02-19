@@ -363,6 +363,15 @@ export type RuleConfig<T extends RuleConfigValue, O extends PlainData = undefine
 export type Severity = 'error' | 'warning' | 'info';
 
 /**
+ * The spec conformance classification of a rule, based on RFC 2119 keyword strength.
+ *
+ * - `'normative'` — derived from MUST/REQUIRED requirements in the HTML spec
+ * - `'non-normative'` — derived from SHOULD/RECOMMENDED requirements in the HTML spec
+ * - `undefined` — plugin/preset recommendation or user-defined (no spec backing)
+ */
+export type SpecConformance = 'normative' | 'non-normative';
+
+/**
  * The value portion of a rule configuration. Can be a primitive scalar,
  * an array of scalars or objects, or `null` to represent no value.
  */
@@ -370,8 +379,25 @@ export type RuleConfigValue = PrimitiveScalar | readonly (PrimitiveScalar | Read
 
 /**
  * A rule override that targets specific nodes by CSS selector, regex selector, ARIA roles, or categories.
+ *
+ * When a `name` is provided (must contain `/`), this becomes a **named nodeRule**
+ * that creates a virtual rule instance running independently from the base rule.
+ * Named nodeRules can be individually enabled/disabled via `rules["name/here"]: false`.
  */
 export type NodeRule = {
+	/**
+	 * Alias name for this nodeRule, creating a virtual rule.
+	 * Must contain `/` (e.g., `"a11y/img-has-alt"`).
+	 * With a single non-false entry, this name is used directly.
+	 * With multiple non-false entries, derived names (`name/baseRuleName`)
+	 * are generated automatically, and this name becomes the group name.
+	 */
+	readonly name?: string;
+	/**
+	 * The spec conformance classification of this rule.
+	 * Included in violations as metadata for downstream tools and reporting.
+	 */
+	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
 	readonly categories?: readonly string[];
@@ -382,8 +408,24 @@ export type NodeRule = {
 
 /**
  * A rule override that targets child nodes of elements matching the selector.
+ *
+ * When a `name` is provided (must contain `/`), this becomes a **named childNodeRule**
+ * that creates a virtual rule instance, just like named nodeRules.
  */
 export type ChildNodeRule = {
+	/**
+	 * Alias name for this childNodeRule, creating a virtual rule.
+	 * Must contain `/` (e.g., `"a11y/heading-in-section"`).
+	 * With a single non-false entry, this name is used directly.
+	 * With multiple non-false entries, derived names (`name/baseRuleName`)
+	 * are generated automatically, and this name becomes the group name.
+	 */
+	readonly name?: string;
+	/**
+	 * The spec conformance classification of this rule.
+	 * Included in violations as metadata for downstream tools and reporting.
+	 */
+	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
 	readonly inheritance?: boolean;
@@ -440,10 +482,18 @@ export type Scope<T extends RuleConfigValue, O extends PlainData = undefined> = 
  * A fully resolved lint violation with all information needed for reporting.
  */
 export type Violation = {
+	/** The base rule ID (always the underlying rule name, for backwards compatibility) */
 	readonly ruleId: string;
+	/**
+	 * The display name of the rule. Present only on virtual rules (named nodeRules).
+	 * For regular rules, use `ruleId` as the display name.
+	 */
+	readonly name?: string;
 	readonly severity: Severity;
 	readonly message: string;
 	readonly reason?: string;
+	/** The normative level of the rule that produced this violation */
+	readonly specConformance?: SpecConformance;
 	readonly line: number;
 	readonly col: number;
 	readonly raw: string;

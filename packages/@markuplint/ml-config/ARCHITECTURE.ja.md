@@ -87,8 +87,8 @@ type RuleConfig<T, O> = {
 
 ### NodeRule / ChildNodeRule
 
-- `NodeRule` -- CSS セレクタ、正規表現セレクタ、ARIA ロール、カテゴリ、obsolete フラグで対象ノードを限定し、ルール設定をオーバーライド
-- `ChildNodeRule` -- `NodeRule` と類似だが子ノードを対象とする。`inheritance` フラグで子孫への継承を制御
+- `NodeRule` -- CSS セレクタ、正規表現セレクタ、ARIA ロール、カテゴリ、obsolete フラグで対象ノードを限定し、ルール設定をオーバーライド。オプションの `name`（`/` を含む必要あり）で named nodeRule として仮想ルールに展開可能。オプションの `specConformance`（`'normative'` または `'non-normative'`）を下流ツールやレポート向けのメタデータとして設定
+- `ChildNodeRule` -- `NodeRule` と類似だが子ノードを対象とする。`inheritance` フラグで子孫への継承を制御。`name` と `specConformance`（メタデータ）による named nodeRule 展開もサポート
 
 ### Pretender 型
 
@@ -134,8 +134,8 @@ flowchart TD
 | `severity`       | オブジェクト shallow merge | `mergeObject()`                                      | parser と同様                                 |
 | `pretenders`     | セマンティックマージ       | `mergePretenders()`                                  | files/imports: 上書き、data: 追加             |
 | `rules`          | ルール別マージ             | `mergeRules()` → `mergeRule()`                       | **最も複雑 -- 次節で詳述**                    |
-| `nodeRules`      | 結合（重複排除なし）       | `concatArray()`                                      | 両配列を単純連結                              |
-| `childNodeRules` | 結合（重複排除なし）       | `concatArray()`                                      | nodeRules と同様                              |
+| `nodeRules`      | 結合+名前で重複排除        | `concatArray(uniquely=true, comparePropName='name')` | 名前付きエントリは重複排除、無名は追加        |
+| `childNodeRules` | 結合+名前で重複排除        | `concatArray(uniquely=true, comparePropName='name')` | nodeRules と同様                              |
 | `overrideMode`   | 右辺優先                   | `b.overrideMode ?? a.overrideMode`                   | 単純な優先順位                                |
 | `overrides`      | キー別再帰マージ           | `mergeOverrides()`                                   | 各キーに対して `mergeConfig()` を再帰呼び出し |
 | `extends`        | 結合→削除                  | `concatArray()`                                      | マージ後に結果から削除                        |

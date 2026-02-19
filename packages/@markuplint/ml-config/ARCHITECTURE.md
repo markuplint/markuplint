@@ -87,8 +87,8 @@ type RuleConfig<T, O> = {
 
 ### NodeRule / ChildNodeRule
 
-- `NodeRule` -- Targets specific nodes by CSS selector, regex selector, ARIA roles, categories, or obsolete flag, then overrides their rule settings
-- `ChildNodeRule` -- Similar to `NodeRule` but targets child nodes; includes an `inheritance` flag to control whether overrides propagate to descendants
+- `NodeRule` -- Targets specific nodes by CSS selector, regex selector, ARIA roles, categories, or obsolete flag, then overrides their rule settings. Supports an optional `name` (must contain `/`) for named nodeRule expansion into virtual rules, and an optional `specConformance` (`'normative'` or `'non-normative'`) as metadata for downstream tools and reporting
+- `ChildNodeRule` -- Similar to `NodeRule` but targets child nodes; includes an `inheritance` flag to control whether overrides propagate to descendants. Also supports `name` and `specConformance` (metadata) for named nodeRule expansion
 
 ### Pretender Types
 
@@ -134,8 +134,8 @@ flowchart TD
 | `severity`       | Object shallow merge             | `mergeObject()`                                      | Same as parser                                       |
 | `pretenders`     | Semantic merge                   | `mergePretenders()`                                  | files/imports: override, data: append                |
 | `rules`          | Per-rule merge                   | `mergeRules()` then `mergeRule()`                    | **Most complex -- see next section**                 |
-| `nodeRules`      | Concat (no deduplicate)          | `concatArray()`                                      | Both arrays simply concatenated                      |
-| `childNodeRules` | Concat (no deduplicate)          | `concatArray()`                                      | Same as nodeRules                                    |
+| `nodeRules`      | Concat + deduplicate by name     | `concatArray(uniquely=true, comparePropName='name')` | Named entries deduplicated; unnamed entries appended |
+| `childNodeRules` | Concat + deduplicate by name     | `concatArray(uniquely=true, comparePropName='name')` | Same as nodeRules                                    |
 | `overrideMode`   | Right-side wins                  | `b.overrideMode ?? a.overrideMode`                   | Simple precedence                                    |
 | `overrides`      | Per-key recursive merge          | `mergeOverrides()`                                   | Calls `mergeConfig()` recursively for each key       |
 | `extends`        | Concat then delete               | `concatArray()`                                      | Removed from result after merge                      |
