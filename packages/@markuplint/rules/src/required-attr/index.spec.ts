@@ -525,6 +525,76 @@ describe('Issues', () => {
 	});
 });
 
+// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
+// > One or both of the href or imagesrcset attributes must be present.
+describe('link element requires href or imagesrcset (#717)', () => {
+	test('violation: link without href or imagesrcset', async () => {
+		expect((await mlRuleTest(rule, '<link rel="stylesheet">')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "link" element expects the "href" or the "imagesrcset" attribute',
+				raw: '<link rel="stylesheet">',
+			},
+		]);
+	});
+
+	test('violation: bare link reports both href/imagesrcset and rel/itemprop violations', async () => {
+		const { violations } = await mlRuleTest(rule, '<link>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "link" element expects the "href" or the "imagesrcset" attribute',
+				raw: '<link>',
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "link" element expects the "itemprop" or the "rel" attribute',
+				raw: '<link>',
+			},
+		]);
+	});
+
+	test('violation: itemprop path also requires href or imagesrcset', async () => {
+		expect((await mlRuleTest(rule, '<link itemprop="url">')).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'The "link" element expects the "href" or the "imagesrcset" attribute',
+				raw: '<link itemprop="url">',
+			},
+		]);
+	});
+
+	test('no violation: link with href', async () => {
+		expect((await mlRuleTest(rule, '<link rel="stylesheet" href="./style.css">')).violations).toStrictEqual([]);
+	});
+
+	test('no violation: link with imagesrcset satisfies "href or imagesrcset" requirement', async () => {
+		expect(
+			(await mlRuleTest(rule, '<link rel="preload" as="image" imagesrcset="/img.png 1x" imagesizes="100vw">'))
+				.violations,
+		).toStrictEqual([]);
+	});
+
+	test('no violation: link with both href and imagesrcset', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					'<link rel="preload" as="image" href="/img.png" imagesrcset="/img.png 1x" imagesizes="100vw">',
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
+});
+
 describe('MDX parser', () => {
 	test('MDX img element requires alt attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="photo.png" />\n', {

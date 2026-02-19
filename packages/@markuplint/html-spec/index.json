@@ -52621,7 +52621,8 @@
 					"description": "Provides a hint of the relative priority to use when fetching a resource of a particular type. Allowed values: high Fetch the resource at a high priority relative to other resources of the same type. low Fetch the resource at a low priority relative to other resources of the same type. auto Don't set a preference for the fetch priority. This is the default. It is used if no value or an invalid value is set."
 				},
 				"href": {
-					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative."
+					"description": "This attribute specifies the URL of the linked resource. A URL can be absolute or relative.",
+					"requiredEither": ["imagesrcset"]
 				},
 				"hreflang": {
 					"description": "This attribute indicates the language of the linked resource. It is purely advisory. Values should be valid BCP 47 language tags. Use this attribute only if the href attribute is present."
