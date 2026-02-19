@@ -1680,3 +1680,134 @@ describe('headingoffset and headingreset attributes', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+// https://github.com/markuplint/markuplint/issues/716
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag
+describe('Disallow user-scalable=no in viewport meta (#716)', () => {
+	const viewportConfig = {
+		nodeRule: [
+			{
+				selector: "meta[name='viewport' i]",
+				rule: {
+					options: {
+						disallowAttrs: [
+							{
+								name: 'content',
+								value: {
+									pattern: '/user-scalable\\s*=\\s*(no|0)\\b/i',
+								},
+							},
+						],
+					},
+				},
+			},
+		],
+	};
+
+	const expectedMessage =
+		'The "content" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i';
+
+	test('violation: user-scalable=no', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: expectedMessage,
+				raw: 'width=device-width, initial-scale=1, user-scalable=no',
+			},
+		]);
+	});
+
+	test('violation: user-scalable=0', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, user-scalable=0">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: expectedMessage,
+				raw: 'width=device-width, user-scalable=0',
+			},
+		]);
+	});
+
+	test('violation: user-scalable=NO (case insensitive)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, user-scalable=NO">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: expectedMessage,
+				raw: 'width=device-width, user-scalable=NO',
+			},
+		]);
+	});
+
+	test('violation: spaces around = sign', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, user-scalable = no">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				message: expectedMessage,
+				raw: 'width=device-width, user-scalable = no',
+			},
+		]);
+	});
+
+	test('no violation: normal viewport', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, initial-scale=1">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('no violation: user-scalable=yes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, user-scalable=yes">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('no violation: user-scalable=1', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="viewport" content="width=device-width, user-scalable=1">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('no violation: non-viewport meta is not affected', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<meta name="description" content="user-scalable=no">',
+			viewportConfig,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
