@@ -480,7 +480,7 @@ function getName(def: NamedDefinition): string {
 | --- | --------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------- | ------------------------------------------------- |
 | 1   | `getSpecByTagName`                            | `Map<string, any>`                                                | 名前空間修飾名（例: `"svg:circle"`）            | `ElementSpec \| null`                          | モジュールライフタイム（クリアなし）              |
 | 2   | `getVersionResolvedARIA`（`get-aria.ts` 内）  | `Map<string, ARIA \| null>`                                       | `localName + namespace + version`（文字列連結） | バージョン解決済みARIA仕様またはnull           | モジュールライフタイム（クリアなし）              |
-| 3   | `getContentModel`                             | `Map<Specs, Map<Element, ...>>`                                   | 外側: specs配列参照; 内側: DOM Element参照      | `PermittedContentPattern[] \| boolean \| null` | specs参照ごとに外側マップエントリを作成           |
+| 3   | `getContentModel`                             | `WeakMap<Element, ...>`                                           | DOM Element参照                                 | `PermittedContentPattern[] \| boolean \| null` | ElementがGCされるとエントリも自動削除             |
 | 4   | `contentModelCategoryToTagNames`              | `Map<Category, ReadonlyArray<string>>`                            | カテゴリ文字列（例: `"#flow"`）                 | フリーズされたソート済みタグ名配列             | モジュールライフタイム（クリアなし）              |
 | 5   | `resolveNamespace`                            | `Map<string, NamespacedElementName>`                              | `name + namespaceURI`（文字列連結）             | 解決済み名前空間オブジェクト                   | モジュールライフタイム（クリアなし）              |
 | 6   | `getAttrSpecs`（`get-attr-specs-spec.ts` 内） | `Map<string, readonly Attribute[] \| null>` + `WeakSet<MLMLSpec>` | 名前空間修飾名                                  | ソート済み属性配列またはnull                   | スキーマ参照変更時にクリア（WeakSetチェック経由） |
@@ -505,12 +505,11 @@ if (!schemaCache.has(schema)) {
 }
 ```
 
-**ネストされたキャッシュ:** `getContentModel` キャッシュ（項目3）は
-2段階の `Map<Specs, Map<Element, ...>>` 構造を使用します。
-外側のマップはspecs配列参照でキーが付けられるため、
-異なる仕様設定は別々のキャッシュを維持します。
-内側のマップはDOM Element参照でキーが付けられるため、
-同じ仕様コンテキスト内で同じ要素を再クエリするとO(1)になります。
+**WeakMapキャッシュ:** `getContentModel` キャッシュ（項目3）は
+`WeakMap<Element, ...>` を使用し、DOM Element参照をキーとします。
+同じ要素を再クエリするとO(1)になります。
+要素がガベージコレクションされると（例: 再パース後）、
+キャッシュエントリも自動的に削除され、メモリリークを防止します。
 
 **決定論的キー:** 項目1、2、5のキャッシュは文字列連結をキーに使用します。
 `resolveNamespace` は同じ入力に対して決定論的な出力を生成し、

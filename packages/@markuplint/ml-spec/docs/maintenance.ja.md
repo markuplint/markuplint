@@ -277,7 +277,7 @@ W3C 仕様が更新された場合（例: WAI-ARIA 1.3 が勧告になった場�
 | --------------------------------------------- | ----------------------------------------------- | -------------------------- |
 | `getARIA()` 内部キャッシュ                    | `Map`（`localName + namespace + version` キー） | プロセス再起動時のみクリア |
 | `getSpecByTagName()` キャッシュ               | `Map`（`namespace:localName` キー）             | specs インスタンスごと     |
-| `getContentModel()` キャッシュ                | `Map<Specs, Map<Element, ...>>`                 | ネスト、specs + 要素ごと   |
+| `getContentModel()` キャッシュ                | `WeakMap<Element, ...>`                         | 要素ごと、GC セーフ        |
 | `contentModelCategoryToTagNames()` キャッシュ | モジュールレベル `Map<Category, string[]>`      | グローバル、無効化なし     |
 | `getAttrSpecs()` キャッシュ                   | `WeakSet` + `Map`（スキーマごと）               | 新しいスキーマでリセット   |
 | `resolveNamespace()` キャッシュ               | モジュールレベル `Map`                          | グローバル、無効化なし     |

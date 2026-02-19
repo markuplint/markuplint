@@ -79,7 +79,7 @@ function getContentModel(
 
 **Behavior:**
 
-1. Checks the nested `Map<Specs, Map<Element, result>>` cache. If a cached result exists for the given specs reference and element instance, returns it immediately.
+1. Checks the `WeakMap<Element, result>` cache. If a cached result exists for the given element instance, returns it immediately.
 2. Looks up the element's spec using `getSpec()`. If not found, caches and returns `null`.
 3. Iterates over `contentModel.conditional[]` (if present). For each condition, calls `el.matches(cond.condition)`.
 4. Returns the first matching condition's `contents`. If no condition matches, returns the default `contentModel.contents`.
@@ -87,7 +87,7 @@ function getContentModel(
 
 **Caching strategy:**
 
-The cache is a two-level `Map`: the outer map is keyed by the `specs` array reference, and the inner map is keyed by the `Element` instance. This ensures results are correctly invalidated when specs change while avoiding redundant computation for the same element.
+The cache is a `WeakMap` keyed by the `Element` instance. This avoids redundant computation for the same element while ensuring cache entries are automatically garbage-collected when elements are no longer referenced (e.g., after a re-parse).
 
 ---
 
