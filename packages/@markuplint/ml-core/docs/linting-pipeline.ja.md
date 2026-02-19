@@ -53,8 +53,9 @@ constructor(params: MLCoreParams)
 
 ### 構築フロー
 
-1. `_parse()` — `parser.parse(sourceCode, parserOptions)` を呼び出して `MLASTDocument` を生成
-2. `_createDocument()` — AST を `MLDocument` でラップ（ruleset、schemas、オプション付き）
+1. **Named nodeRule の展開** — `expandNamedNodeRules()` が `nodeRules` と `childNodeRules` の名前付きエントリを仮想 `MLRule` インスタンスに変換。展開前のオリジナルは `#originalNodeRules` / `#originalChildNodeRules` にホットリロード用に保持。名前空間 disable プレフィックスはワイルドカードエントリ（例: `"a11y/*": false`）から事前計算される。
+2. `_parse()` — `parser.parse(sourceCode, parserOptions)` を呼び出して `MLASTDocument` を生成
+3. `_createDocument()` — AST を `MLDocument` でラップ（ruleset、schemas、オプション付き）
 
 パースが失敗した場合、`document` は `MLDocument` の代わりに `ParserError` を保持します。
 
@@ -125,6 +126,7 @@ flowchart TD
 2. **未定義ルールの検出**: `setRuleNames`（設定内のルール）と `definedRuleName`（実際にロードされたルール）を比較。未定義ルールに対して `config-error` 警告を報告
 3. **設定エラー**: `configErrors` 配列を違反に変換
 4. **ルールループ**: 各ルールに対して：
+   - **仮想ルールの無効化チェック** — `rule.baseRuleId` がある場合、3つの条件を確認: 完全一致（`rules["alias"]: false`）、グループ無効化（`rules["groupName"]: false`）、名前空間ワイルドカード（`rules["scope/*"]: false`）。いずれかに該当した場合はスキップ。
    - `rule.getRuleInfo(ruleset, rule.name)` で有効性をチェック
    - `disabled && nodeRules.length === 0 && childNodeRules.length === 0` → スキップ
    - `rule.verify(document, locale, fix)` — ルールを実行
@@ -155,6 +157,7 @@ flowchart TD
 
 リンティング設定の部分更新：
 
+- Named nodeRules を仮想ルールに再展開。`ruleset` が提供されていない場合、`#originalNodeRules` / `#originalChildNodeRules`（展開前のコピー）をソースとして使用し、仮想ルール化で変換済みのエントリを失うことを防ぐ。
 - `parserOptions` が変更された場合 → 完全な再パース（`_parse()` + `_createDocument()`）
 - それ以外 → `_createDocument()` のみ（既存の AST を再利用）
 

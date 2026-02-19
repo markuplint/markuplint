@@ -44,6 +44,8 @@ src/
 │   └── manipulations/
 │       ├── child-node-methods.ts     — ChildNode インターフェーススタブ
 │       └── get-children.ts           — 要素の子要素抽出
+├── virtual-rule.ts                   — Named nodeRule の展開（expandNamedNodeRules）
+├── virtual-rule.spec.ts              — 仮想ルールのユニットテスト
 ├── ml-rule/
 │   ├── ml-rule.ts                    — MLRule クラス（ルール実行）
 │   ├── ml-rule-context.ts            — MLRuleContext（レポート収集）
@@ -249,13 +251,17 @@ MLToken<A extends MLASTToken>
 
 `MLRule<T, O>` はリンティングルールを検証およびオプションの修正ロジックとともにカプセル化します。
 
-| プロパティ/メソッド               | 説明                                     |
-| --------------------------------- | ---------------------------------------- |
-| `name`                            | ルール識別子（例：`"attr-duplication"`） |
-| `defaultSeverity`                 | デフォルトの重大度レベル                 |
-| `defaultValue` / `defaultOptions` | デフォルト設定                           |
-| `verify(document, locale, fix)`   | ルールを実行して違反を返す               |
-| `optimizeOption(settings)`        | 生のルール設定を `RuleInfo` に正規化     |
+| プロパティ/メソッド               | 説明                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| `name`                            | ルール識別子（例：`"attr-duplication"`）                                        |
+| `defaultSeverity`                 | デフォルトの重大度レベル                                                        |
+| `defaultValue` / `defaultOptions` | デフォルト設定                                                                  |
+| `baseRuleId`                      | 仮想ルールの場合: ベースルール名（例：`"required-attr"`）                       |
+| `groupName`                       | 複数エントリ仮想ルールの場合: 一括無効化用のグループ名                          |
+| `specConformance`                 | 仮想ルールの場合: `'normative'` または `'non-normative'`（named nodeRule 由来） |
+| `verify(document, locale, fix)`   | ルールを実行して違反を返す                                                      |
+| `createAlias(name, options?)`     | このルールの verify/fix ロジックを再利用する仮想ルールを作成                    |
+| `optimizeOption(settings)`        | 生のルール設定を `RuleInfo` に正規化                                            |
 
 ### RuleSeed
 
@@ -310,6 +316,56 @@ flowchart TD
     F --> G["context.report()\nノードごとに違反を収集"]
     G --> H["Violation[] を返す"]
 ```
+
+### 仮想ルールシステム
+
+ソース: `src/virtual-rule.ts`
+
+> **用語ポリシー**: 「仮想ルール (virtual rule)」は**コントリビューター向けの内部実装用語**です。ユーザー向けドキュメント（ウェブサイト、移行ガイド、README）では**「named rule」**を使用すること。設定ユーザーの視点では、**ベースルール**（例: `required-attr`）と **named rule**（例: `a11y/html-lang`）の2つの概念だけで十分です。`MLRule` のエイリアス機構という内部メカニズムを公開してはなりません。
+
+仮想ルールは、**名前付き nodeRules** — `/` を含む `name` プロパティを持つ nodeRule エントリ（例: `"a11y/html-lang"`）— から作成される独立した `MLRule` インスタンスです。これによりチェック単位の制御が可能になります: 各仮想ルールは `rules["alias/name"]: false` で個別に有効/無効化できます。
+
+#### Named NodeRule の展開
+
+`expandNamedNodeRules()` は `MLCore` の構築時に named nodeRules（および childNodeRules）を仮想ルールに変換します:
+
+```
+Named nodeRule（設定）                  仮想 MLRule（ランタイム）
+┌─────────────────────────┐           ┌──────────────────────────┐
+│ name: "a11y/html-lang"  │           │ name: "a11y/html-lang"   │
+│ specConformance: "norm."│  ──────►  │ baseRuleId: "required-attr" │
+│ selector: ":where(html)"│           │ specConformance: メタデータ│
+│ rules:                  │           │ verify/fix: ベースから   │
+│   required-attr: [lang] │           └──────────────────────────┘
+└─────────────────────────┘
+```
+
+主要な動作:
+
+- **false エントリの分離**: `rules` 内の `false` エントリは自動的に無名 nodeRule に分離され、ベースルールの specificity override としてのセマンティクスが維持される
+- **複数エントリサポート**: 非 false エントリが 2 つ以上の named nodeRule は派生名（`name/baseRuleName`）と `groupName` で作成され、グループ一括無効化が可能
+- **メタデータ**: `specConformance` は下流ツールやレポート向けのメタデータとして仮想ルールに付与される
+- **ホットリロード**: 展開前の nodeRules は `#originalNodeRules` / `#originalChildNodeRules` に保持され、`update()` で再展開可能
+
+#### なぜ `specConformance` は Named NodeRule 専用なのか
+
+`specConformance` は意図的に **named nodeRule（プリセット内）でのみ**使用可能であり、通常の組み込みルールでは使用できません。設計根拠は以下の通りです：
+
+1. **組み込みルールは既に正しいデフォルト重大度を持っている。** `permitted-contents` や `required-attr` のようなルールは本質的に normative（WHATWG の MUST 要件を強制する）であり、`defaultSeverity` は既に `'error'` に設定されています。別途 `specConformance` フラグは不要です — 重大度は組み込み済みです。
+
+2. **Named nodeRules はプリセット作成者による仕様解釈である。** `preset.html-standard.jsonc` のようなプリセットが `"html-standard/head-charset-utf8"` という named nodeRule を作成する場合、プリセット作成者は特定の仕様要件をチェックとして表現しています。`specConformance` により、その要件の RFC 2119 キーワード強度を宣言でき、下流のツールやレポートが違反の仕様由来の分類を識別できます。
+
+3. **ユーザーは自分のルールに `specConformance` を設定すべきではない。** カスタムコンポーネント（例: `<MyComponent>` の props 検証）に対するユーザー定義の nodeRule は仕様準拠チェックではなく、プロジェクトの規約です。任意のユーザー設定で `specConformance` を許可すると、「HTML 仕様がこれを要求している」と「チームがこれを好む」の区別が曖昧になります。`name` プロパティ（`/` を含む必要あり）がゲートキーパーとして機能します：named nodeRule のみが `specConformance` を持てる設計であり、named nodeRule は仕様を理解するプリセット作成者向けに設計されています。
+
+まとめ: `specConformance` は仕様由来のチェックを識別するメタデータを提供する**プリセットレベルのアノテーション**です。組み込みルールは `defaultSeverity` で独自に重大度を管理します。ユーザー定義ルールはルール設定の `severity` フィールドで直接重大度を表現します。
+
+#### 仮想ルールの無効化
+
+仮想ルールは `rules` 設定で3つのレベルで無効化できます:
+
+1. **完全一致**: `rules["a11y/html-lang"]: false`
+2. **グループ無効化**: `rules["custom/multi"]: false`（複数エントリの named nodeRule 用）
+3. **名前空間ワイルドカード**: `rules["a11y/*"]: false`（`a11y/` で始まるすべての仮想ルールを無効化）
 
 ## Pretender システム
 

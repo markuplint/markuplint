@@ -4,6 +4,7 @@ import type { Ruleset } from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
 	GlobalRuleInfo,
+	SpecConformance,
 	PlainData,
 	Rule,
 	RuleConfig,
@@ -27,21 +28,76 @@ import { MLRuleContext } from './ml-rule-context.js';
  * @template O - The type of the rule's options
  */
 export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
+	/**
+	 * For virtual rules, the name of the base rule whose verify/fix logic is reused.
+	 * When set, violations report this as `ruleId` for backwards compatibility.
+	 */
+	readonly baseRuleId?: string;
 	readonly defaultOptions: O;
 	readonly defaultSeverity: Severity;
 	readonly defaultValue: T;
 	#f: RuleSeed<T, O>['fix'];
+	/**
+	 * For multi-entry named nodeRules, the group name shared by all derived virtual rules.
+	 * Allows `rules["groupName"]: false` to disable all rules in the group.
+	 */
+	readonly groupName?: string;
 	readonly name: string;
+	/**
+	 * The spec conformance classification of this rule, based on RFC 2119 keyword strength.
+	 * Set on virtual rules derived from named nodeRules in presets.
+	 */
+	readonly specConformance?: SpecConformance;
 	#v: RuleSeed<T, O>['verify'];
 
-	constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string }) {
+	constructor(
+		o: Readonly<RuleSeed<T, O>> & {
+			readonly name: string;
+			readonly baseRuleId?: string;
+			readonly specConformance?: SpecConformance;
+			readonly groupName?: string;
+		},
+	) {
 		this.name = o.name;
+		this.baseRuleId = o.baseRuleId;
+		this.groupName = o.groupName;
+		this.specConformance = o.specConformance;
 		this.defaultSeverity = o.defaultSeverity ?? 'error';
 		// TODO: https://github.com/markuplint/markuplint/issues/808
 		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
 		this.#f = o.fix;
+	}
+
+	/**
+	 * Creates a virtual rule that reuses this rule's verify/fix logic
+	 * under a different name (alias). Used by named nodeRules to produce
+	 * independent rule instances that can be individually configured.
+	 *
+	 * @param aliasName - The alias name (must contain `/`)
+	 * @param options - Override options for the virtual rule
+	 * @returns A new MLRule instance sharing the same verify/fix logic
+	 */
+	createAlias(
+		aliasName: string,
+		options?: {
+			readonly defaultSeverity?: Severity;
+			readonly specConformance?: SpecConformance;
+			readonly groupName?: string;
+		},
+	): MLRule<T, O> {
+		return new MLRule({
+			name: aliasName,
+			baseRuleId: this.name,
+			groupName: options?.groupName,
+			specConformance: options?.specConformance,
+			defaultSeverity: options?.defaultSeverity ?? this.defaultSeverity,
+			defaultValue: this.defaultValue,
+			defaultOptions: this.defaultOptions,
+			verify: this.#v,
+			fix: this.#f,
+		});
 	}
 
 	/**
@@ -143,6 +199,10 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 			await this.#f(providableContext);
 		}
 
+		const ruleId = this.baseRuleId ?? this.name;
+		// Only include name and specConformance for virtual rules (named nodeRules)
+		const aliasName = this.baseRuleId ? this.name : undefined;
+
 		const violation = context.reports.map<Violation>(report => {
 			if ('scope' in report) {
 				let line = report.scope.startLine;
@@ -159,7 +219,9 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 					line,
 					col,
 					raw,
-					ruleId: this.name,
+					ruleId,
+					name: aliasName,
+					specConformance: this.specConformance,
 					reason: report.scope.rule.reason ?? document.rule.reason,
 				};
 				deleteUndefProp(violation);
@@ -172,7 +234,9 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 				line: report.line,
 				col: report.col,
 				raw: report.raw,
-				ruleId: this.name,
+				ruleId,
+				name: aliasName,
+				specConformance: this.specConformance,
 				reason: document.rule.reason,
 			};
 

@@ -93,12 +93,15 @@ constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string })
 
 ### プロパティ
 
-| プロパティ        | 型         | 説明                                               |
-| ----------------- | ---------- | -------------------------------------------------- |
-| `name`            | `string`   | ルール識別子（例：`"attr-duplication"`）           |
-| `defaultSeverity` | `Severity` | デフォルトの重大度レベル（シードまたは `'error'`） |
-| `defaultValue`    | `T`        | デフォルト設定値（シードまたは `true`）            |
-| `defaultOptions`  | `O`        | デフォルトオプション（シードから）                 |
+| プロパティ        | 型                             | 説明                                                               |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------ |
+| `name`            | `string`                       | ルール識別子（例: `"attr-duplication"` または `"a11y/html-lang"`） |
+| `defaultSeverity` | `Severity`                     | デフォルトの重大度レベル（シードまたは `'error'`）                 |
+| `defaultValue`    | `T`                            | デフォルト設定値（シードまたは `true`）                            |
+| `defaultOptions`  | `O`                            | デフォルトオプション（シードから）                                 |
+| `baseRuleId`      | `string \| undefined`          | 仮想ルールの場合: ベースルール名（例: `"required-attr"`）          |
+| `groupName`       | `string \| undefined`          | 複数エントリ仮想ルールの場合: 一括無効化用のグループ名             |
+| `specConformance` | `SpecConformance \| undefined` | 仮想ルールの場合: `'normative'` または `'non-normative'`           |
 
 ### メソッド
 
@@ -134,6 +137,20 @@ constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string })
   childNodeRules: RuleInfo<T, O>[], // 無効でない子ノードレベルのオーバーライド
 }
 ```
+
+#### `createAlias(aliasName, options?): MLRule<T, O>`
+
+このルールの verify/fix ロジックを別名で再利用する仮想ルールを作成します。named nodeRules を実装するために `expandNamedNodeRules()` が内部的に使用します。
+
+オプション:
+
+| オプション        | 型                | 説明                                                                                                   |
+| ----------------- | ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `defaultSeverity` | `Severity`        | ベースルールのデフォルト重大度をオーバーライド（明示的な指定のみ。specConformance による自動設定なし） |
+| `specConformance` | `SpecConformance` | `'normative'` または `'non-normative'`                                                                 |
+| `groupName`       | `string`          | 複数エントリ named nodeRule のグループ名                                                               |
+
+エイリアスルールはベースルールの verify/fix 関数、meta、デフォルト値を継承します。`baseRuleId` プロパティでベースルール名を返します。
 
 #### `optimizeOption(configSettings): RuleInfo<T, O>`
 

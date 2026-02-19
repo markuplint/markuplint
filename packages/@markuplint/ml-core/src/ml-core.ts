@@ -4,6 +4,8 @@ import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type {
+	ChildNodeRule,
+	NodeRule,
 	PlainData,
 	Pretender,
 	RuleCommonSettings,
@@ -16,6 +18,7 @@ import { ParserError } from '@markuplint/parser-utils';
 
 import { log, enableDebug } from './debug.js';
 import { Document } from './ml-dom/index.js';
+import { expandNamedNodeRules } from './virtual-rule.js';
 
 const resultLog = log.extend('result');
 
@@ -52,7 +55,20 @@ export class MLCore {
 	#schemas: MLSchema;
 	#ruleCommonSettings: RuleCommonSettings;
 	#sourceCode: string;
-	#configErrors: Readonly<Error>[];
+	#configErrors: Error[];
+	/**
+	 * Pre-expansion nodeRules preserved for hot-reload.
+	 * When `update()` is called without a new ruleset, these are used as the
+	 * source for `expandNamedNodeRules()` instead of the already-transformed
+	 * `#ruleset.nodeRules` (which has alias keys and no `name` property).
+	 */
+	#originalNodeRules: readonly NodeRule[];
+	#originalChildNodeRules: readonly ChildNodeRule[];
+	/**
+	 * Pre-computed namespace prefixes from wildcard disable entries.
+	 * e.g., `rules["a11y/*"]: false` yields `"a11y/"`.
+	 */
+	#disabledNamespaces: readonly string[];
 
 	constructor({
 		parser,
@@ -76,19 +92,31 @@ export class MLCore {
 		this.#parser = parser;
 		this.#sourceCode = sourceCode;
 		this.#parserOptions = parserOptions;
-		this.#ruleset = {
-			rules: ruleset.rules ?? {},
-			nodeRules: ruleset.nodeRules ?? [],
-			childNodeRules: ruleset.childNodeRules ?? [],
-		};
 		this.#locale = locale;
 		this.#schemas = schemas;
 		this.#ruleCommonSettings = ruleCommonSettings;
 		this.#filename = filename;
-		this.#rules = [...rules];
 		this.#severity = severity;
 		this.#pretenders = [...pretenders];
 		this.#configErrors = [...(configErrors ?? [])];
+
+		// Preserve pre-expansion nodeRules for hot-reload
+		this.#originalNodeRules = ruleset.nodeRules ?? [];
+		this.#originalChildNodeRules = ruleset.childNodeRules ?? [];
+
+		// Expand named nodeRules into virtual rules
+		const nodeRuleResult = expandNamedNodeRules(this.#originalNodeRules, rules);
+		const childNodeRuleResult = expandNamedNodeRules(this.#originalChildNodeRules, rules);
+
+		const resolvedRules = ruleset.rules ?? {};
+		this.#rules = [...rules, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
+		this.#ruleset = {
+			rules: resolvedRules,
+			nodeRules: nodeRuleResult.transformedNodeRules,
+			childNodeRules: childNodeRuleResult.transformedNodeRules,
+		};
+		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
+		this.#configErrors.push(...nodeRuleResult.errors, ...childNodeRuleResult.errors);
 
 		this._parse();
 		this._createDocument();
@@ -120,15 +148,36 @@ export class MLCore {
 	 */
 	update({ parser, ruleset, rules, locale, schemas, parserOptions, configErrors }: Partial<MLFabric>) {
 		this.#parser = parser ?? this.#parser;
-		this.#ruleset = {
-			rules: ruleset?.rules ?? this.#ruleset.rules,
-			nodeRules: ruleset?.nodeRules ?? this.#ruleset.nodeRules,
-			childNodeRules: ruleset?.childNodeRules ?? this.#ruleset.childNodeRules,
-		};
-		this.#rules = rules?.slice() ?? this.#rules;
 		this.#locale = locale ?? this.#locale;
 		this.#schemas = schemas ?? this.#schemas;
 		this.#configErrors = [...(configErrors ?? [])];
+
+		const baseRules = rules?.slice() ?? this.#rules.filter(r => !r.baseRuleId);
+
+		// Use pre-expansion originals as fallback when ruleset is not provided
+		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;
+		const incomingChildNodeRules = ruleset?.childNodeRules ?? this.#originalChildNodeRules;
+
+		const nodeRuleResult = expandNamedNodeRules(incomingNodeRules, baseRules);
+		const childNodeRuleResult = expandNamedNodeRules(incomingChildNodeRules, baseRules);
+
+		// Update originals if new data was provided
+		if (ruleset?.nodeRules) {
+			this.#originalNodeRules = ruleset.nodeRules;
+		}
+		if (ruleset?.childNodeRules) {
+			this.#originalChildNodeRules = ruleset.childNodeRules;
+		}
+
+		const resolvedRules = ruleset?.rules ?? this.#ruleset.rules;
+		this.#rules = [...baseRules, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
+		this.#ruleset = {
+			rules: resolvedRules,
+			nodeRules: nodeRuleResult.transformedNodeRules,
+			childNodeRules: childNodeRuleResult.transformedNodeRules,
+		};
+		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
+		this.#configErrors.push(...nodeRuleResult.errors, ...childNodeRuleResult.errors);
 
 		if (
 			parserOptions &&
@@ -178,6 +227,10 @@ export class MLCore {
 		]);
 
 		for (const setRuleName of setRuleNames) {
+			// Skip wildcard patterns (e.g., "a11y/*") — they are namespace disable entries, not rule references
+			if (setRuleName.endsWith('/*')) {
+				continue;
+			}
 			if (!definedRuleName.has(setRuleName)) {
 				violations.push({
 					ruleId: 'config-error',
@@ -202,6 +255,19 @@ export class MLCore {
 		}
 
 		for (const rule of this.#rules) {
+			// For virtual rules, check disable conditions:
+			// 1. Exact name match: rules["alias/name"]: false
+			// 2. Group disable: rules["groupName"]: false (multi-entry named nodeRules)
+			// 3. Namespace wildcard: rules["scope/*"]: false
+			if (
+				rule.baseRuleId &&
+				(this.#ruleset.rules[rule.name] === false ||
+					(rule.groupName && this.#ruleset.rules[rule.groupName] === false) ||
+					this.#disabledNamespaces.some(ns => rule.name.startsWith(ns)))
+			) {
+				continue;
+			}
+
 			const ruleInfo = rule.getRuleInfo(this.#ruleset, rule.name);
 			if (ruleInfo.disabled && ruleInfo.nodeRules.length === 0 && ruleInfo.childNodeRules.length === 0) {
 				continue;
@@ -300,4 +366,14 @@ export class MLCore {
 			}
 		}
 	}
+}
+
+/**
+ * Extracts namespace prefixes from wildcard disable entries in rules.
+ * e.g., `{ "a11y/*": false }` yields `["a11y/"]`.
+ */
+function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): readonly string[] {
+	return Object.entries(rules)
+		.filter(([key, value]) => key.endsWith('/*') && value === false)
+		.map(([key]) => key.slice(0, -1)); // "a11y/*" → "a11y/"
 }

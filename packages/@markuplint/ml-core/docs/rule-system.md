@@ -93,12 +93,15 @@ constructor(o: Readonly<RuleSeed<T, O>> & { readonly name: string })
 
 ### Properties
 
-| Property          | Type       | Description                                     |
-| ----------------- | ---------- | ----------------------------------------------- |
-| `name`            | `string`   | Rule identifier (e.g., `"attr-duplication"`)    |
-| `defaultSeverity` | `Severity` | Default severity level (from seed or `'error'`) |
-| `defaultValue`    | `T`        | Default config value (from seed or `true`)      |
-| `defaultOptions`  | `O`        | Default options (from seed)                     |
+| Property          | Type                           | Description                                                        |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------ |
+| `name`            | `string`                       | Rule identifier (e.g., `"attr-duplication"` or `"a11y/html-lang"`) |
+| `defaultSeverity` | `Severity`                     | Default severity level (from seed or `'error'`)                    |
+| `defaultValue`    | `T`                            | Default config value (from seed or `true`)                         |
+| `defaultOptions`  | `O`                            | Default options (from seed)                                        |
+| `baseRuleId`      | `string \| undefined`          | For virtual rules: the base rule's name (e.g., `"required-attr"`)  |
+| `groupName`       | `string \| undefined`          | For multi-entry virtual rules: group name for batch disable        |
+| `specConformance` | `SpecConformance \| undefined` | For virtual rules: `'normative'` or `'non-normative'`              |
 
 ### Methods
 
@@ -134,6 +137,20 @@ Returns:
   childNodeRules: RuleInfo<T, O>[], // Non-disabled child-node-level overrides
 }
 ```
+
+#### `createAlias(aliasName, options?): MLRule<T, O>`
+
+Creates a virtual rule that reuses this rule's verify/fix logic under a different name. Used internally by `expandNamedNodeRules()` to implement named nodeRules.
+
+Options:
+
+| Option            | Type              | Description                                                                           |
+| ----------------- | ----------------- | ------------------------------------------------------------------------------------- |
+| `defaultSeverity` | `Severity`        | Override the base rule's default severity (explicit only; not set by specConformance) |
+| `specConformance` | `SpecConformance` | `'normative'` or `'non-normative'`                                                    |
+| `groupName`       | `string`          | Group name for multi-entry named nodeRules                                            |
+
+The alias rule inherits the base rule's verify/fix functions, meta, and defaults. Its `baseRuleId` property returns the base rule's name.
 
 #### `optimizeOption(configSettings): RuleInfo<T, O>`
 
