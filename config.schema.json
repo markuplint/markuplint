@@ -33,6 +33,11 @@
 							}
 						}
 					]
+				},
+				"^[^/]+/\\*$": {
+					"type": "boolean",
+					"const": false,
+					"description": "Namespace wildcard disable. Disables all virtual rules with this namespace prefix (e.g., 'a11y/*': false)."
 				}
 			}
 		},
@@ -138,6 +143,11 @@
 				"type": "string"
 			}
 		},
+		"specConformance": {
+			"type": "string",
+			"enum": ["normative", "non-normative"],
+			"description": "The spec conformance classification of this rule based on RFC 2119 keyword strength. 'normative' = MUST/REQUIRED, 'non-normative' = SHOULD/RECOMMENDED."
+		},
 		"nodeRules": {
 			"type": "array",
 			"items": {
@@ -147,6 +157,14 @@
 						"additionalProperties": false,
 						"required": ["selector", "rules"],
 						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[^/]+/.+$",
+								"description": "Alias name for this nodeRule, creating a virtual rule. Must contain '/' (e.g., 'a11y/img-has-alt')."
+							},
+							"specConformance": {
+								"$ref": "#/definitions/specConformance"
+							},
 							"selector": {
 								"type": "string"
 							},
@@ -160,6 +178,14 @@
 						"additionalProperties": false,
 						"required": ["regexSelector", "rules"],
 						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[^/]+/.+$",
+								"description": "Alias name for this nodeRule, creating a virtual rule. Must contain '/' (e.g., 'a11y/img-has-alt')."
+							},
+							"specConformance": {
+								"$ref": "#/definitions/specConformance"
+							},
 							"regexSelector": {
 								"$ref": "#/definitions/regexSelector"
 							},
@@ -180,6 +206,14 @@
 						"additionalProperties": false,
 						"required": ["selector", "rules"],
 						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[^/]+/.+$",
+								"description": "Alias name for this childNodeRule, creating a virtual rule. Must contain '/' (e.g., 'a11y/heading-in-section')."
+							},
+							"specConformance": {
+								"$ref": "#/definitions/specConformance"
+							},
 							"selector": {
 								"type": "string"
 							},
@@ -196,6 +230,14 @@
 						"additionalProperties": false,
 						"required": ["regexSelector", "rules"],
 						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[^/]+/.+$",
+								"description": "Alias name for this childNodeRule, creating a virtual rule. Must contain '/' (e.g., 'a11y/heading-in-section')."
+							},
+							"specConformance": {
+								"$ref": "#/definitions/specConformance"
+							},
 							"regexSelector": {
 								"$ref": "#/definitions/regexSelector"
 							},
