@@ -75,13 +75,44 @@ describe('STDOUT Test', () => {
 		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/002.html');
 		const { stdout, stderr, exitCode } = await execa(
 			entryFilePath,
-			['--no-allow-warnings', escape(targetFilePath)],
+			['--no-allow-warnings', '--no-color', escape(targetFilePath)],
 			{
 				reject: false,
 			},
 		);
 		expect(stdout).toBe('');
-		expect(stderr.split('\n').length).toBe(24);
+		expect(stderr.split('\n')).toStrictEqual([
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / For consistency (attr-value-quotes) ${targetFilePath}:2:7`,
+			'   1: <!DOCTYPE\u2022html>',
+			'   2: <html\u2022lang=en>',
+			'            ^^^^^^^ ',
+			'   3: <head>',
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / Another reason (attr-value-quotes) ${targetFilePath}:4:8`,
+			'   3: <head>',
+			'   4: \u2192   <meta\u2022charset=UTF-8>',
+			'                ^^^^^^^^^^^^^ ',
+			"   5: \u2192   <meta\u2022name=viewport\u2022content='width=device-width,\u2022initial-scale=1.0'>",
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / Another reason (attr-value-quotes) ${targetFilePath}:5:8`,
+			'   4: \u2192   <meta\u2022charset=UTF-8>',
+			"   5: \u2192   <meta\u2022name=viewport\u2022content='width=device-width,\u2022initial-scale=1.0'>",
+			'                ^^^^^^^^^^^^^                                                 ',
+			'   6: \u2192   <meta\u2022http-equiv=X-UA-Compatible\u2022content=ie=edge>',
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / Another reason (attr-value-quotes) ${targetFilePath}:5:22`,
+			'   4: \u2192   <meta\u2022charset=UTF-8>',
+			"   5: \u2192   <meta\u2022name=viewport\u2022content='width=device-width, initial-scale=1.0'>",
+			'                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ',
+			'   6: \u2192   <meta\u2022http-equiv=X-UA-Compatible\u2022content=ie=edge>',
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / Another reason (attr-value-quotes) ${targetFilePath}:6:8`,
+			"   5: \u2192   <meta\u2022name=viewport\u2022content='width=device-width,\u2022initial-scale=1.0'>",
+			'   6: \u2192   <meta\u2022http-equiv=X-UA-Compatible\u2022content=ie=edge>',
+			'                ^^^^^^^^^^^^^^^^^^^^^^^^^^                 ',
+			'   7: \u2192   <title>Document</title>',
+			`<markuplint> warning: 属性値 is must クオート on double quotation mark / Another reason (attr-value-quotes) ${targetFilePath}:6:35`,
+			"   5: \u2192   <meta\u2022name=viewport\u2022content='width=device-width,\u2022initial-scale=1.0'>",
+			'   6: \u2192   <meta\u2022http-equiv=X-UA-Compatible\u2022content=ie=edge>',
+			'                                           ^^^^^^^^^^^^^^^ ',
+			'   7: \u2192   <title>Document</title>',
+		]);
 		expect(exitCode).toBe(1);
 	});
 
