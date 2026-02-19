@@ -12,6 +12,10 @@
 | New `ruleCommonSettings` config property | Config files |
 | ARIA version resolution priority changed | Rules using `ariaVersion` / `version` option |
 | ARIA 1.3 support added | Rules using `ariaVersion` / `version` option |
+| Named nodeRules (named rules) | Config files, preset authors |
+| SpecConformance metadata | Config files, preset authors |
+| Namespace disable for named rules | Config files using presets with named nodeRules |
+| `nodeRules`/`childNodeRules` now deduplicate by name | Config files using `extends` with named nodeRules |
 | Rule array values now override instead of concatenate | Config files using `extends` with array rule values |
 | Rule options now use shallow merge instead of deep merge | Config files using `extends` with nested option objects |
 | Pretender `data` arrays now append instead of override | Config files using `extends` with pretenders |
@@ -107,6 +111,369 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` is available on the `MLDocument` instance passed to rule `verify()` callbacks.
+
+## Named NodeRules
+
+v5 introduces **named nodeRules** -- `nodeRules` and `childNodeRules` entries with a `name` property. A named nodeRule creates a **named rule** that can be enabled, disabled, and configured independently of its base rule.
+
+### How It Works
+
+When a `nodeRules` or `childNodeRules` entry has a `name` property (which must contain `/`), it becomes a named rule that reuses the base rule's verification logic under the new name:
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": {
+        "required-attr": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+This creates a named rule `"a11y/img-alt"` based on `required-attr`. It reports violations under the name `"a11y/img-alt"` while reusing `required-attr`'s verification logic.
+
+### Expansion Example
+
+When `ml-core` processes a named nodeRule, it registers a named rule and rewrites the nodeRule internally. The original config:
+
+```jsonc
+// What you write
+{
+  "rules": {
+    "required-attr": true
+  },
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": {
+        "required-attr": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+is internally equivalent to:
+
+```jsonc
+// What ml-core sees after expansion
+{
+  "rules": {
+    "required-attr": true    // Base rule — still active for all elements
+    // + named rule "a11y/img-alt" is registered (based on required-attr)
+  },
+  "nodeRules": [
+    {
+      // Rewritten: "name" is consumed, rules key changed to alias name
+      "selector": "img",
+      "rules": {
+        "a11y/img-alt": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+Now `required-attr` and `a11y/img-alt` are **independent** rules. `required-attr` runs its own global check, and `a11y/img-alt` runs the same verification logic but only on `img` elements with `value: "alt"`.
+
+### Disabling Named Rules
+
+Named rules can be disabled at three levels in the `rules` object:
+
+```json
+{
+  "rules": {
+    "a11y/img-alt": false,
+    "a11y/*": false,
+    "html-standard/figure-caption": false
+  }
+}
+```
+
+| Pattern | Effect |
+|---------|--------|
+| `"a11y/img-alt": false` | Disables the specific named rule |
+| `"a11y/*": false` | Disables all named rules in the `a11y/` namespace |
+| `"groupName": false` | Disables all named rules in a multi-entry group |
+
+### Multiple Rule Entries
+
+When a named nodeRule contains multiple non-`false` entries in `rules`, each entry creates a separate named rule with a derived name (`name/baseRuleName`). A `groupName` is assigned to allow batch disabling:
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "html-standard/figure-caption",
+      "selector": ":where(figcaption ~ table, table:has(~ figcaption))",
+      "rules": {
+        "disallowed-element": { "value": ["caption"] },
+        "require-accessible-name": false
+      }
+    }
+  ]
+}
+```
+
+Here, `disallowed-element` becomes a named rule `"html-standard/figure-caption"` (single non-false entry, so the name is used as-is). The `require-accessible-name: false` is separated into an unnamed nodeRule to preserve base-rule specificity override semantics.
+
+### For Preset Authors
+
+Built-in presets (`preset.html-standard.jsonc`, `preset.a11y.jsonc`) use named nodeRules to provide independently configurable checks. Users can disable specific preset checks without affecting the base rule:
+
+```json
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/img-alt": false
+  }
+}
+```
+
+This disables only the `a11y/img-alt` check while keeping the `required-attr` base rule active for other contexts.
+
+### Config Composition Examples with Named Rules
+
+**Preset defines a named rule → User disables it:**
+
+```jsonc
+// Preset
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// User
+{
+  "extends": ["markuplint:recommended"],
+  "rules": { "a11y/img-alt": false }
+}
+
+// Result: a11y/img-alt is disabled, base rule required-attr still active
+```
+
+**Preset defines a named rule → User overrides severity:**
+
+```jsonc
+// Preset
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// User
+{
+  "extends": ["markuplint:recommended"],
+  "rules": { "a11y/img-alt": { "severity": "warning" } }
+}
+
+// Result: a11y/img-alt reports as warning instead of error
+```
+
+**Preset + User both define named rules → Merge by name:**
+
+```jsonc
+// Preset
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// User (overrides the same named nodeRule)
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+  ]
+}
+
+// Result: User's a11y/img-alt replaces preset's (deduplicated by name)
+// Note: specConformance from the preset is not preserved — the user's entry
+// replaces the entire nodeRule, including any properties the user omits.
+```
+
+### Disable Examples
+
+**Disabling a specific named rule:**
+
+```jsonc
+// Preset (base)
+{
+  "rules": { "required-attr": true },
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } },
+    { "name": "a11y/form-label", "selector": "input", "rules": { "required-attr": { "value": "aria-label" } } }
+  ]
+}
+
+// User config (override)
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/img-alt": false
+  }
+}
+
+// Effective result
+// - required-attr: active (base rule runs on all elements)
+// - a11y/img-alt: DISABLED (no violation for missing alt on img)
+// - a11y/form-label: active (still reports missing aria-label on input)
+```
+
+**Disabling an entire namespace:**
+
+```jsonc
+// User config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/*": false
+  }
+}
+
+// Effective result
+// - required-attr: active (base rule unaffected)
+// - a11y/img-alt: DISABLED
+// - a11y/form-label: DISABLED
+// - html-standard/figure-caption: active (different namespace)
+```
+
+## SpecConformance
+
+`specConformance` is a **preset-level annotation** available only on named nodeRules. It classifies the spec conformance level of a check based on RFC 2119 keyword strength:
+
+| `specConformance` | Meaning | RFC 2119 Keywords |
+|-------------------|---------|-------------------|
+| `'normative'` | Strict requirements | MUST, SHALL, REQUIRED |
+| `'non-normative'` | Recommendations | SHOULD, MAY, RECOMMENDED |
+| (not set) | No spec classification | — |
+
+`specConformance` is included in violations as **metadata** for downstream tools and reporting. It does **not** automatically change the severity of violations. To control severity, use the `severity` field in rule config directly.
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "html-standard/figure-caption",
+      "specConformance": "normative",
+      "selector": "...",
+      "rules": { "disallowed-element": { "value": ["caption"] } }
+    }
+  ]
+}
+```
+
+Built-in rules like `permitted-contents` already have their severity set correctly via `defaultSeverity` — they do not need `specConformance`. User-defined nodeRules for project conventions should not use `specConformance`; use the `severity` field in rule config to control severity directly.
+
+> **Note:** While `specConformance` is primarily intended for preset authors,
+> it is not restricted in the schema. Users who need to define spec-conformance
+> checks — for example, when markuplint has not yet caught up with the latest
+> HTML spec changes, or when upgrading markuplint is not feasible — may set
+> `specConformance` on their own named nodeRules.
+
+### Named Rule Display in Violations
+
+When a named nodeRule triggers a violation, two rule identifiers are available:
+
+| Field    | Value                  | Purpose                                                    |
+|----------|------------------------|------------------------------------------------------------|
+| `ruleId` | Base rule name         | Always present. Identifies the underlying rule (e.g., `required-attr`). Use for programmatic filtering. |
+| `name`   | Named rule alias       | Present only for named nodeRules (e.g., `a11y/html-lang`). Use as the display name when available. |
+
+**Display guideline**: Use `violation.name ?? violation.ruleId` as the display name.
+CLI reporters follow this convention — named rules show their alias name instead of the base rule.
+
+For custom tool authors:
+
+```ts
+const displayName = violation.name ?? violation.ruleId;
+```
+
+## NodeRules Merge Behavior Change
+
+v5 changes how `nodeRules` and `childNodeRules` are merged when using `extends`.
+
+**v4:** Both arrays were simply concatenated.
+
+**v5:** Named entries (those with a `name` property) are deduplicated by name during merge. The overriding config's entry replaces the base config's entry with the same name. Unnamed entries continue to be appended as before.
+
+### Merge Examples
+
+**Named entry override (deduplicate by name):**
+
+```jsonc
+// Preset (base config)
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    {
+      "selector": "div.legacy",
+      "rules": { "class-naming": "^legacy-" }
+    }
+  ]
+}
+
+// User config (override)
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "non-normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    {
+      "selector": "span.icon",
+      "rules": { "wai-aria": true }
+    }
+  ]
+}
+
+// Merged result (mergeConfig output)
+{
+  "nodeRules": [
+    // "a11y/img-alt": user's version replaces preset's (same name → deduplicated)
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "non-normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    // Unnamed from preset: kept as-is
+    {
+      "selector": "div.legacy",
+      "rules": { "class-naming": "^legacy-" }
+    },
+    // Unnamed from user: appended
+    {
+      "selector": "span.icon",
+      "rules": { "wai-aria": true }
+    }
+  ]
+}
+```
+
+**Unnamed entries are always appended:**
+
+```jsonc
+// Base: [{ selector: "img", rules: {...} }]
+// Override: [{ selector: "img", rules: {...} }]
+// Result: both entries are kept (no name → no deduplicate)
+```
 
 ## Merge Behavior Changes
 
