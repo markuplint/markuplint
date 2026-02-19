@@ -1916,4 +1916,16 @@ describe('Issues', () => {
 			).violations,
 		).toStrictEqual([]);
 	});
+
+	// Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
+	// the incremental algorithm completes in <100ms.
+	test('#3249 - many transparent siblings should not cause exponential slowdown', async () => {
+		const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join(
+			'\n',
+		);
+		const sourceCode = `<div>${anchors}</div>`;
+
+		const { violations } = await mlRuleTest(rule, sourceCode);
+		expect(violations).toStrictEqual([]);
+	}, 5000);
 });
