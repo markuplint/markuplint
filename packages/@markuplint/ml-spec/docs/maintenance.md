@@ -277,7 +277,7 @@ The package uses several runtime caches that are **never invalidated during a pr
 | ---------------------------------------- | ------------------------------------------------ | ------------------------------- |
 | `getARIA()` internal cache               | `Map` keyed by `localName + namespace + version` | Cleared only on process restart |
 | `getSpecByTagName()` cache               | `Map` keyed by `namespace:localName`             | Per-specs instance              |
-| `getContentModel()` cache                | `Map<Specs, Map<Element, ...>>`                  | Nested, per-specs + per-element |
+| `getContentModel()` cache                | `WeakMap<Element, ...>`                          | Per-element, GC-safe            |
 | `contentModelCategoryToTagNames()` cache | Module-level `Map<Category, string[]>`           | Global, never invalidated       |
 | `getAttrSpecs()` cache                   | `WeakSet` + `Map` per schema                     | New schema resets cache         |
 | `resolveNamespace()` cache               | Module-level `Map`                               | Global, never invalidated       |

@@ -487,14 +487,14 @@ caches provide significant performance benefits.
 
 ### Cache Inventory
 
-| #   | Location                                        | Cache Type                                                        | Key                                                        | Value                                          | Invalidation                                              |
-| --- | ----------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------- |
-| 1   | `getSpecByTagName`                              | `Map<string, any>`                                                | Namespace-qualified name (e.g., `"svg:circle"`)            | `ElementSpec \| null`                          | Module lifetime (never cleared)                           |
-| 2   | `getVersionResolvedARIA` (inside `get-aria.ts`) | `Map<string, ARIA \| null>`                                       | `localName + namespace + version` (string concatenation)   | Version-resolved ARIA spec or null             | Module lifetime (never cleared)                           |
-| 3   | `getContentModel`                               | `Map<Specs, Map<Element, ...>>`                                   | Outer: specs array reference; Inner: DOM Element reference | `PermittedContentPattern[] \| boolean \| null` | Outer map entry created per unique specs reference        |
-| 4   | `contentModelCategoryToTagNames`                | `Map<Category, ReadonlyArray<string>>`                            | Category string (e.g., `"#flow"`)                          | Frozen sorted array of tag names               | Module lifetime (never cleared)                           |
-| 5   | `resolveNamespace`                              | `Map<string, NamespacedElementName>`                              | `name + namespaceURI` (string concatenation)               | Resolved namespace object                      | Module lifetime (never cleared)                           |
-| 6   | `getAttrSpecs` (in `get-attr-specs-spec.ts`)    | `Map<string, readonly Attribute[] \| null>` + `WeakSet<MLMLSpec>` | Namespace-qualified name                                   | Sorted attribute array or null                 | Cleared when schema reference changes (via WeakSet check) |
+| #   | Location                                        | Cache Type                                                        | Key                                                      | Value                                          | Invalidation                                              |
+| --- | ----------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------- |
+| 1   | `getSpecByTagName`                              | `Map<string, any>`                                                | Namespace-qualified name (e.g., `"svg:circle"`)          | `ElementSpec \| null`                          | Module lifetime (never cleared)                           |
+| 2   | `getVersionResolvedARIA` (inside `get-aria.ts`) | `Map<string, ARIA \| null>`                                       | `localName + namespace + version` (string concatenation) | Version-resolved ARIA spec or null             | Module lifetime (never cleared)                           |
+| 3   | `getContentModel`                               | `WeakMap<Element, ...>`                                           | DOM Element reference                                    | `PermittedContentPattern[] \| boolean \| null` | Entries automatically removed when Element is GC'd        |
+| 4   | `contentModelCategoryToTagNames`                | `Map<Category, ReadonlyArray<string>>`                            | Category string (e.g., `"#flow"`)                        | Frozen sorted array of tag names               | Module lifetime (never cleared)                           |
+| 5   | `resolveNamespace`                              | `Map<string, NamespacedElementName>`                              | `name + namespaceURI` (string concatenation)             | Resolved namespace object                      | Module lifetime (never cleared)                           |
+| 6   | `getAttrSpecs` (in `get-attr-specs-spec.ts`)    | `Map<string, readonly Attribute[] \| null>` + `WeakSet<MLMLSpec>` | Namespace-qualified name                                 | Sorted attribute array or null                 | Cleared when schema reference changes (via WeakSet check) |
 
 ### Cache Characteristics
 
@@ -517,11 +517,10 @@ if (!schemaCache.has(schema)) {
 }
 ```
 
-**Nested caching:** The `getContentModel` cache (item 3) uses a two-level
-`Map<Specs, Map<Element, ...>>` structure. The outer map is keyed by the specs
-array reference, so different spec configurations maintain separate caches. The
-inner map is keyed by DOM Element reference, so re-querying the same element
-within the same spec context is O(1).
+**WeakMap caching:** The `getContentModel` cache (item 3) uses a
+`WeakMap<Element, ...>` keyed by DOM Element reference. Re-querying the same
+element is O(1). When elements are garbage-collected (e.g., after a re-parse),
+their cache entries are automatically removed, preventing memory leaks.
 
 **Deterministic keys:** Caches in items 1, 2, and 5 use string concatenation
 for keys. Since `resolveNamespace` produces deterministic output for the same
