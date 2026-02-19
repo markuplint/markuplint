@@ -63,7 +63,9 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.groupName = o.groupName;
 		this.specConformance = o.specConformance;
 		this.defaultSeverity = o.defaultSeverity ?? 'error';
-		// TODO: https://github.com/markuplint/markuplint/issues/808
+		// When T is boolean, defaultValue is optional and the runtime default is `true`.
+		// For non-boolean T, the type system now enforces that defaultValue is provided.
+		// See: https://github.com/markuplint/markuplint/issues/808
 		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;

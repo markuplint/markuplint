@@ -10,7 +10,6 @@ import meta from './meta.js';
  */
 export default createRule<boolean, null>({
 	meta: meta,
-	defaultValue: true,
 	defaultOptions: null,
 	verify({ document, report, t }) {
 		const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');

@@ -32,7 +32,6 @@ type Options = {
 export default createRule<boolean, Options>({
 	meta: meta,
 	defaultSeverity: 'warning',
-	defaultValue: true,
 	defaultOptions: {
 		checkExperimental: false,
 		checkNonStandard: false,

@@ -11,7 +11,6 @@ import { hasSizesAuto, parseSrcset } from './parse-srcset.js';
  */
 export default createRule<boolean>({
 	meta: meta,
-	defaultValue: true,
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
 			const localName = el.localName;
