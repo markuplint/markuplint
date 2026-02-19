@@ -346,6 +346,30 @@ describe('expandNamedNodeRules', () => {
 		expect(result.transformedNodeRules).toHaveLength(3);
 	});
 
+	test('multi-entry with one invalid base rule still creates virtual rule for valid entry', () => {
+		const validRule = createDummyRule('required-attr');
+		const result = expandNamedNodeRules(
+			[
+				{
+					name: 'custom/partial',
+					selector: ':where(div)',
+					rules: {
+						'required-attr': ['id'],
+						'nonexistent-rule': true,
+					},
+				},
+			],
+			[validRule],
+		);
+
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0]!.message).toContain('nonexistent-rule');
+		// Valid entry's virtual rule is still created (partial success)
+		expect(result.virtualRules).toHaveLength(1);
+		expect(result.virtualRules[0]!.name).toBe('custom/partial/required-attr');
+		expect(result.virtualRules[0]!.groupName).toBe('custom/partial');
+	});
+
 	test('rejects derived name collision with existing rule', () => {
 		const existingRule = createDummyRule('custom/multi/required-attr');
 		const baseRule = createDummyRule('required-attr');
@@ -389,6 +413,95 @@ describe('expandNamedNodeRules', () => {
 
 		expect(result.errors).toHaveLength(1);
 		expect(result.errors[0]!.message).toContain('at least one non-false');
+	});
+
+	// --- Error accumulation & continuation ---
+
+	test('multiple validation errors are accumulated', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedNodeRules(
+			[
+				{
+					name: 'no-slash',
+					selector: ':where(html)',
+					rules: { 'required-attr': ['lang'] },
+				},
+				{
+					name: 'scope/empty-rules',
+					selector: ':where(html)',
+					rules: {},
+				},
+				{
+					name: 'scope/missing-base',
+					selector: ':where(html)',
+					rules: { 'nonexistent-rule': true },
+				},
+			],
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(3);
+		expect(result.virtualRules).toHaveLength(0);
+	});
+
+	test('valid entries are processed after preceding errors', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedNodeRules(
+			[
+				{
+					name: 'no-slash',
+					selector: ':where(html)',
+					rules: { 'required-attr': ['lang'] },
+				},
+				{
+					name: 'scope/valid',
+					selector: ':where(html)',
+					rules: { 'required-attr': ['lang'] },
+				},
+			],
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(1);
+		expect(result.virtualRules).toHaveLength(1);
+		expect(result.virtualRules[0]!.name).toBe('scope/valid');
+	});
+
+	// --- Name format edge cases ---
+
+	test('name with multiple slashes is valid', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedNodeRules(
+			[
+				{
+					name: 'scope/sub/deep-rule',
+					selector: ':where(html)',
+					rules: { 'required-attr': ['lang'] },
+				},
+			],
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(1);
+		expect(result.virtualRules[0]!.name).toBe('scope/sub/deep-rule');
+	});
+
+	test('virtual rule without specConformance has it undefined', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedNodeRules(
+			[
+				{
+					name: 'scope/rule',
+					selector: ':where(html)',
+					rules: { 'required-attr': ['lang'] },
+				},
+			],
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules[0]!.specConformance).toBeUndefined();
 	});
 });
 
