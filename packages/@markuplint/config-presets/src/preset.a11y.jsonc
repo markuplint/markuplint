@@ -213,6 +213,33 @@
 					}
 				}
 			}
+		},
+		{
+			"selector": ":where(meta[name='viewport' i])",
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"disallowAttrs": [
+							{
+								/**
+								 * Disallow `user-scalable=no` in viewport meta
+								 *
+								 * Usage of `user-scalable=no` can cause accessibility issues
+								 * to users with visual impairments such as low vision.
+								 * WCAG requires a minimum of 2× scaling.
+								 *
+								 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag
+								 * @see https://dequeuniversity.com/rules/axe/4.4/meta-viewport
+								 */
+								"name": "content",
+								"value": {
+									"pattern": "/user-scalable\\s*=\\s*(no|0)\\b/i"
+								}
+							}
+						]
+					}
+				}
+			}
 		}
 	]
 }
