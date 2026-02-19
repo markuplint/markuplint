@@ -45,7 +45,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 			// Main message
 			out.push(
 				`<${commandName}> ${logger(
-					`${violation.severity}: ${meg} (${violation.ruleId}) ${font.underline(
+					`${violation.severity}: ${meg} (${violation.name ?? violation.ruleId}) ${font.underline(
 						`${results.filePath}:${violation.line}:${violation.col}`,
 					)}`,
 				)}`,

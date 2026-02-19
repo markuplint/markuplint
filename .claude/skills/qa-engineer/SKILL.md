@@ -21,6 +21,8 @@ When reading code, always ask yourself:
 - Is this code **actually working correctly**, or is it just **made to look like it passes tests**?
 - Do the tests **guarantee the implementation's behavior**, or do they just **happen to pass**?
 - Can someone who touches this code in the future **understand the spec just by reading these tests**?
+- If I deleted this new code, **would any test fail**? If not, the code is untested regardless of the test count.
+- This PR changes behavior across multiple packages — **is there a test that proves the full pipeline works**?
 
 ## Review Perspectives
 
@@ -82,7 +84,77 @@ What the implementation should return is immediately clear from reading the test
 
 **Exception:** For large test data or snapshot tests, this rule can be relaxed. Even then, verify that snapshots are properly updated.
 
-### 5. Coverage Improvement Suggestions
+### 5. Ghost Code Detection — New Code Paths Without Tests
+
+Find new or modified production code that has **no corresponding test exercising it**.
+
+**Why this matters:** Code that passes all existing tests unchanged can be the most dangerous. If you add a major feature and zero tests break, it likely means the new code paths are completely untested — they exist in the codebase but are never actually validated.
+
+**Detection patterns:**
+
+- New files (`git diff --name-only --diff-filter=A`) with no corresponding `.spec.ts` / `.test.ts`
+- New exported functions/classes that are never called from any test file
+- New branches (`if`/`switch`/ternary) in existing code that no test triggers
+- Configuration properties (e.g., new options in JSON schemas or type definitions) that no test supplies
+
+**Red flag:** A PR adds significant production code but the test diff is minimal or zero. Always ask: "What test would fail if I deleted this new code?"
+
+### 6. Breaking Change Impact Verification
+
+When a change is intended to be breaking or significantly alters behavior, **existing tests SHOULD break**. If they don't, that's a warning sign.
+
+**Detection patterns:**
+
+- PR description or commit messages mention "breaking change," "new behavior," or "migration" but zero existing tests were modified
+- New configuration options that change runtime behavior but existing integration tests still pass unchanged
+- Renamed or restructured APIs where old call sites should have been updated in tests
+- New severity levels, error codes, or output formats that no existing assertion validates
+
+**What to check:**
+
+- Identify which existing tests *should* be affected by the behavioral change
+- If none are affected, determine whether the feature is truly additive (safe) or whether the existing tests simply lack coverage of the changed paths
+- For monorepos: cross-package changes require tests at the integration boundary, not just unit tests within each package
+
+**Suggest:** Add at least one test per package boundary that exercises the new behavior end-to-end.
+
+### 7. Integration Test Requirements for Cross-Package Changes
+
+In monorepos or multi-module projects, unit tests within a single package are insufficient when changes span multiple packages.
+
+**When to flag:**
+
+- Changes touch 3+ packages in a single PR
+- A new type/interface is defined in package A, consumed in package B, and exposed to users via package C — but only package A has unit tests
+- Configuration or preset files are modified but no test loads them and verifies the resulting runtime behavior
+- A new feature flows through: schema → config parsing → core engine → reporter output, but tests only cover the core engine in isolation
+
+**What to suggest:**
+
+- An integration test that loads an actual config/preset file, processes real input, and asserts on the final output
+- A test that verifies the full pipeline: config → parse → lint → report
+- For configuration-driven features: a test that supplies the config value and asserts the behavioral difference
+
+**Example (markuplint-specific):**
+```typescript
+// Bad: only tests VirtualRule class in isolation
+test("VirtualRule maps normative to error", () => { ... });
+
+// Good: tests the full pipeline
+test("preset html-standard reports head-charset-utf8 as error", async () => {
+  const { violations } = await mlTest("<html><head></head></html>", {
+    extends: ["markuplint:html-standard"],
+  });
+  expect(violations).toContainEqual(
+    expect.objectContaining({
+      ruleId: "html-standard/head-charset-utf8",
+      severity: "error",
+    })
+  );
+});
+```
+
+### 8. Coverage Improvement Suggestions
 
 Provide concrete suggestions for increasing test coverage.
 
@@ -93,7 +165,7 @@ Provide concrete suggestions for increasing test coverage.
 - **Error paths**: Network errors, timeouts, insufficient permissions, missing files
 - **State transitions**: Initial state, mid-transition, post-completion, recovery after errors
 
-### 6. Make Tests Serve as Documentation
+### 9. Make Tests Serve as Documentation
 
 Tests that cover common mistakes and beginner errors effectively function as documentation.
 
@@ -118,9 +190,12 @@ During code review, also suggest structural improvements to production code, sep
 ## Review Process
 
 1. **First, understand the repository structure**: Check the test framework, directory layout, and existing test patterns
-2. **Read the test code first**: Understand the spec from the tests, then check for drift from production code
-3. **Identify issues using the perspectives above**: List findings organized by each perspective
-4. **Report with priorities**: Present findings from highest severity first, always paired with rationale and a suggested fix
+2. **Assess the scope of change**: Count affected packages/modules. If 3+, integration test requirements apply (Perspective 7)
+3. **Check the test-to-code ratio**: Compare the production code diff size against the test diff size. A large feature with minimal test changes is a red flag (Perspective 5)
+4. **Check for breaking change signals**: If commits mention breaking changes, new behavior, or migration, verify that existing tests were updated (Perspective 6)
+5. **Read the test code**: Understand the spec from the tests, then check for drift from production code
+6. **Identify issues using all perspectives**: List findings organized by each perspective
+7. **Report with priorities**: Present findings from highest severity first, always paired with rationale and a suggested fix
 
 ## Review Report Format
 

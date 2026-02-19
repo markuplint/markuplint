@@ -53,8 +53,9 @@ The `MLFabric` type defines the full linting configuration:
 
 ### Construction Flow
 
-1. `_parse()` — Invokes `parser.parse(sourceCode, parserOptions)` to produce `MLASTDocument`
-2. `_createDocument()` — Wraps AST in `MLDocument` with ruleset, schemas, and options
+1. **Named nodeRule expansion** — `expandNamedNodeRules()` converts named entries in `nodeRules` and `childNodeRules` into virtual `MLRule` instances. The originals are preserved in `#originalNodeRules` / `#originalChildNodeRules` for hot-reload. Namespace disable prefixes are pre-computed from wildcard entries (e.g., `"a11y/*": false`).
+2. `_parse()` — Invokes `parser.parse(sourceCode, parserOptions)` to produce `MLASTDocument`
+3. `_createDocument()` — Wraps AST in `MLDocument` with ruleset, schemas, and options
 
 If parsing fails, `document` holds a `ParserError` instead of `MLDocument`.
 
@@ -125,6 +126,7 @@ flowchart TD
 2. **Undefined rule detection**: Compares `setRuleNames` (rules in config) vs `definedRuleName` (rules actually loaded). Reports `config-error` warnings for undefined rules
 3. **Config errors**: Converts `configErrors` array to violations
 4. **Rule loop**: For each rule:
+   - **Virtual rule disable check** — If `rule.baseRuleId` is set, checks three disable conditions: exact name match (`rules["alias"]: false`), group disable (`rules["groupName"]: false`), or namespace wildcard (`rules["scope/*"]: false`). Skips the rule if any condition is met.
    - `rule.getRuleInfo(ruleset, rule.name)` checks enablement
    - If `disabled && nodeRules.length === 0 && childNodeRules.length === 0` → skip
    - `rule.verify(document, locale, fix)` — executes the rule
@@ -155,6 +157,7 @@ Re-parses with new source code:
 
 Partially updates the linting configuration:
 
+- Re-expands named nodeRules into virtual rules. When `ruleset` is not provided, uses `#originalNodeRules` / `#originalChildNodeRules` (pre-expansion copies) as the source to avoid losing named entries that were already transformed.
 - If `parserOptions` changed → full re-parse (`_parse()` + `_createDocument()`)
 - Otherwise → only `_createDocument()` (reuses existing AST)
 

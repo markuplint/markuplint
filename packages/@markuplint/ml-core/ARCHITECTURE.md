@@ -44,6 +44,8 @@ src/
 │   └── manipulations/
 │       ├── child-node-methods.ts     — ChildNode interface stubs
 │       └── get-children.ts           — Element children extraction
+├── virtual-rule.ts                   — Named nodeRule expansion (expandNamedNodeRules)
+├── virtual-rule.spec.ts              — Virtual rule unit tests
 ├── ml-rule/
 │   ├── ml-rule.ts                    — MLRule class (rule execution)
 │   ├── ml-rule-context.ts            — MLRuleContext (report collection)
@@ -249,13 +251,17 @@ The constructor receives an `MLASTDocument`, a `Ruleset`, and an `MLSchema` tupl
 
 `MLRule<T, O>` encapsulates a linting rule with verification and optional fix logic.
 
-| Property/Method                   | Description                                       |
-| --------------------------------- | ------------------------------------------------- |
-| `name`                            | Rule identifier (e.g., `"attr-duplication"`)      |
-| `defaultSeverity`                 | Default severity level                            |
-| `defaultValue` / `defaultOptions` | Default configuration                             |
-| `verify(document, locale, fix)`   | Executes the rule and returns violations          |
-| `optimizeOption(settings)`        | Normalizes raw rule configuration into `RuleInfo` |
+| Property/Method                   | Description                                                                 |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `name`                            | Rule identifier (e.g., `"attr-duplication"`)                                |
+| `defaultSeverity`                 | Default severity level                                                      |
+| `defaultValue` / `defaultOptions` | Default configuration                                                       |
+| `baseRuleId`                      | For virtual rules: the base rule's name (e.g., `"required-attr"`)           |
+| `groupName`                       | For multi-entry virtual rules: group name for batch disable                 |
+| `specConformance`                 | For virtual rules: `'normative'` or `'non-normative'` (from named nodeRule) |
+| `verify(document, locale, fix)`   | Executes the rule and returns violations                                    |
+| `createAlias(name, options?)`     | Creates a virtual rule that reuses this rule's verify/fix logic             |
+| `optimizeOption(settings)`        | Normalizes raw rule configuration into `RuleInfo`                           |
 
 ### RuleSeed
 
@@ -310,6 +316,56 @@ flowchart TD
     F --> G["context.report()\nCollect violations per node"]
     G --> H["Return Violation[]"]
 ```
+
+### Virtual Rule System
+
+Source: `src/virtual-rule.ts`
+
+> **Terminology policy**: "Virtual rule" is an **internal implementation term** for contributors only. User-facing documentation (website, migration guides, README) must use **"named rule"** instead. From a config user's perspective, there are only two concepts: a **base rule** (e.g., `required-attr`) and a **named rule** (e.g., `a11y/html-lang`). The internal mechanics of `MLRule` aliasing should not be exposed.
+
+Virtual rules are independent `MLRule` instances created from **named nodeRules** — nodeRule entries with a `name` property containing `/` (e.g., `"a11y/html-lang"`). This enables per-check control: each virtual rule can be independently enabled/disabled via `rules["alias/name"]: false`.
+
+#### Named NodeRule Expansion
+
+`expandNamedNodeRules()` converts named nodeRules (and childNodeRules) into virtual rules during `MLCore` construction:
+
+```
+Named nodeRule (config)                Virtual MLRule (runtime)
+┌─────────────────────────┐           ┌──────────────────────────┐
+│ name: "a11y/html-lang"  │           │ name: "a11y/html-lang"   │
+│ specConformance: "norm."│  ──────►  │ baseRuleId: "required-attr" │
+│ selector: ":where(html)"│           │ specConformance: metadata│
+│ rules:                  │           │ verify/fix: from base    │
+│   required-attr: [lang] │           └──────────────────────────┘
+└─────────────────────────┘
+```
+
+Key behaviors:
+
+- **False entry separation**: `false` entries in `rules` are automatically separated into unnamed nodeRules, preserving their semantics as base-rule specificity overrides
+- **Multi-entry support**: Named nodeRules with 2+ non-false entries create derived names (`name/baseRuleName`) with a `groupName` for group disable
+- **Metadata**: `specConformance` is attached to the virtual rule as metadata for downstream tools and reporting
+- **Hot-reload**: Pre-expansion nodeRules are preserved in `#originalNodeRules` / `#originalChildNodeRules` so `update()` can re-expand them
+
+#### Why `specConformance` Is Restricted to Named NodeRules
+
+`specConformance` is intentionally available **only on named nodeRules** (in presets), not on regular built-in rules. The design rationale:
+
+1. **Built-in rules already have correct default severity.** Rules like `permitted-contents` or `required-attr` are inherently normative (they enforce WHATWG MUST requirements), and their `defaultSeverity` is already set to `'error'`. There is no need for a separate `specConformance` flag — the severity is baked in.
+
+2. **Named nodeRules are preset-authored spec interpretations.** When a preset like `preset.html-standard.jsonc` creates a named nodeRule `"html-standard/head-charset-utf8"`, the preset author is expressing a specific spec requirement as a check. `specConformance` lets the author declare the RFC 2119 keyword strength of that requirement, so downstream tools and reports can identify which violations originate from spec requirements and at what normative level.
+
+3. **Users should not set `specConformance` on their own rules.** A user-defined nodeRule for a custom component (e.g., validating `<MyComponent>` props) is not a spec conformance check — it is a project convention. Allowing `specConformance` on arbitrary user config would blur the distinction between "the HTML spec requires this" and "our team prefers this". The `name` property (which requires `/`) serves as a gatekeeper: only named nodeRules can carry `specConformance`, and named nodeRules are designed for preset authors who understand the spec.
+
+In summary: `specConformance` is a **preset-level annotation** that provides metadata about which spec requirements a check enforces. Built-in rules handle their own severity via `defaultSeverity`. User-defined rules express severity directly via the `severity` field in rule config.
+
+#### Virtual Rule Disable
+
+Virtual rules can be disabled at three levels in the `rules` config:
+
+1. **Exact name**: `rules["a11y/html-lang"]: false`
+2. **Group disable**: `rules["custom/multi"]: false` (for multi-entry named nodeRules)
+3. **Namespace wildcard**: `rules["a11y/*"]: false` (disables all virtual rules starting with `a11y/`)
 
 ## Pretender System
 

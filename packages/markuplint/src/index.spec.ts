@@ -11,7 +11,7 @@ setGlobal({
 describe('basic test', () => {
 	it('is empty result of 001.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/001.html');
-		expect(violations.length).toBe(0);
+		expect(violations).toStrictEqual([]);
 	});
 
 	it('is reported from 002.html', async () => {
@@ -127,20 +127,108 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(76);
+		expect(violations.map(v => v.ruleId)).toStrictEqual([
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'placeholder-label-option',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'require-accessible-name',
+			'required-attr',
+			'required-attr',
+			'required-attr',
+			'required-attr',
+			'required-attr',
+			'required-attr',
+			'required-element',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'wai-aria',
+			'required-element',
+			'required-attr',
+			'required-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+			'invalid-attr',
+		]);
 	});
 
 	it('is ignoring 008.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/008.html');
-		expect(violations.length).toEqual(0);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('excludeFiles', () => {
 	test('excludeFiles', async () => {
-		expect((await mlTestFile('test/fixture/_excludeFiles/001.html')).violations.length).toBe(0);
-		expect((await mlTestFile('test/fixture/_excludeFiles/002.html')).violations.length).toBe(1);
-		expect((await mlTestFile('test/fixture/_excludeFiles/sub/003.html')).violations.length).toBe(1);
+		expect((await mlTestFile('test/fixture/_excludeFiles/001.html')).violations).toStrictEqual([]);
+		expect((await mlTestFile('test/fixture/_excludeFiles/002.html')).violations.map(v => v.ruleId)).toStrictEqual([
+			'permitted-contents',
+		]);
+		expect(
+			(await mlTestFile('test/fixture/_excludeFiles/sub/003.html')).violations.map(v => v.ruleId),
+		).toStrictEqual(['permitted-contents']);
 	});
 });
 

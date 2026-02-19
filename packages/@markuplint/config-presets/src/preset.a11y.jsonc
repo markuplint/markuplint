@@ -99,49 +99,50 @@
 	},
 	"nodeRules": [
 		{
+			/**
+			 * Require `<html lang>`
+			 */
+			"name": "a11y/html-lang",
 			"selector": ":where(html)",
 			"rules": {
-				/**
-				 * Require `<html lang>`
-				 *
-				 */
 				"required-attr": ["lang"]
 			}
 		},
 		{
+			/**
+			 * Require `<abbr title>`
+			 */
+			"name": "a11y/abbr-title",
 			"selector": ":where(abbr)",
 			"rules": {
-				/**
-				 * Require `<abbr title>`
-				 */
 				"required-attr": ["title"]
 			}
 		},
 		{
+			/**
+			 * Require `<track>` in media elements
+			 */
+			"name": "a11y/media-track",
 			"selector": ":where(video, audio)",
 			"rules": {
-				/**
-				 * Require `<track>`
-				 *
-				 */
 				"required-element": ["track"]
 			}
 		},
 		{
+			/**
+			 * Require `<video muted>` when autoplay is set
+			 */
+			"name": "a11y/video-autoplay-muted",
 			"selector": ":where(video[autoplay])",
 			"rules": {
-				/**
-				 * Require `<video muted>`
-				 *
-				 */
 				"required-attr": ["muted"]
 			}
 		},
 		{
 			/**
 			 * No merge cells
-			 *
 			 */
+			"name": "a11y/no-merge-cells",
 			"selector": ":where(th, td)",
 			"rules": {
 				"invalid-attr": {
@@ -152,58 +153,55 @@
 			}
 		},
 		{
+			/**
+			 * `<summary>` must not contain interactive contents
+			 *
+			 * There is a case where an assistive technology can't access contents,
+			 * or contents don't propagate a mouse event to `<summary>`.
+			 *
+			 * @see https://github.com/whatwg/html/issues/2272#issuecomment-1242415594
+			 */
+			"name": "a11y/summary-no-interactive",
 			"selector": ":where(summary)",
 			"rules": {
-				/**
-				 * `<summary>` no contains interactive contents
-				 *
-				 * There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.
-				 *
-				 * > The link is not discoverable at all to JAWS when navigating with its virtual cursor.
-				 * > If navigating to the summary element via the Tab key,
-				 * > JAWS announces "example text, button" as the name and role of the element.
-				 * > If hitting Tab key again, JAWS again announces "example text,
-				 * > button" even though keyboard focus is on the link.
-				 *
-				 * @see https://github.com/whatwg/html/issues/2272#issuecomment-1242415594
-				 */
 				"disallowed-element": [":model(interactive)"]
 			}
 		},
 		{
+			/**
+			 * Disallow `autofocus` attr outside dialog scope
+			 *
+			 * Don't take away focus by force. The `dialog` element
+			 * and its descendants are excepted.
+			 *
+			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
+			 */
+			"name": "a11y/no-autofocus-outside-dialog",
 			"selector": ":where(:not(dialog, dialog *))",
 			"rules": {
 				"invalid-attr": {
 					"options": {
-						"disallowAttrs": [
-							/**
-							 * Disallow `autofocus` attr to except in the dialog scope
-							 *
-							 * Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.
-							 *
-							 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
-							 */
-							"autofocus"
-						]
+						"disallowAttrs": ["autofocus"]
 					}
 				}
 			}
 		},
 		{
+			/**
+			 * `tabindex` attr only `-1` or `0`
+			 *
+			 * Scoped to non-dialog elements because the HTML spec
+			 * disallows `tabindex` on `<dialog>` (`noUse`).
+			 *
+			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
+			 */
+			"name": "a11y/tabindex-restrict",
 			"selector": ":where(:not(dialog))",
 			"rules": {
 				"invalid-attr": {
 					"options": {
 						"allowAttrs": [
 							{
-								/**
-								 * `tabindex` attr only `-1` or `0`
-								 *
-								 * Scoped to non-dialog elements because the HTML spec
-								 * disallows `tabindex` on `<dialog>` (`noUse`).
-								 *
-								 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
-								 */
 								"name": "tabindex",
 								"value": {
 									"enum": ["-1", "0"]

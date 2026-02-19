@@ -109,6 +109,8 @@
 			 *
 			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
 			 */
+			"name": "html-standard/head-charset-utf8",
+			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
 				"required-element": ["meta[charset=\"UTF-8\" i]"]
@@ -118,10 +120,12 @@
 			/**
 			 * No use `<small>` as **subheadings**
 			 *
-			 * Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.
+			 * The small element must not be used for subheadings.
 			 *
 			 * @see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element
 			 */
+			"name": "html-standard/no-small-in-heading",
+			"specConformance": "normative",
 			"selector": "h1, h2, h3, h4, h5, h6",
 			"rules": {
 				"disallowed-element": {
@@ -135,9 +139,13 @@
 			 * No use `<caption>` within `<figure>`
 			 *
 			 * When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.
+			 * The `require-accessible-name: false` entry is automatically separated into an unnamed
+			 * nodeRule by expandNamedNodeRules, preserving its base-rule specificity override semantics.
 			 *
 			 * @see https://html.spec.whatwg.org/multipage/tables.html#the-caption-element
 			 */
+			"name": "html-standard/figure-no-caption",
+			"specConformance": "non-normative",
 			"selector": ":where(figcaption ~ table, table:has(~ figcaption))",
 			"rules": {
 				"disallowed-element": {
@@ -153,8 +161,10 @@
 			 *
 			 * When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.
 			 *
-			 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element
+			 * @see https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern
 			 */
+			"name": "html-standard/input-pattern-title",
+			"specConformance": "non-normative",
 			"selector": ":where(input[pattern])",
 			"rules": {
 				"required-attr": {
@@ -165,7 +175,12 @@
 		{
 			/**
 			 * No nested same `<details>` name group
+			 *
+			 * A document must not contain a details element that is a descendant
+			 * of another details element in the same details name group.
 			 */
+			"name": "html-standard/no-nested-details-name",
+			"specConformance": "normative",
 			"regexSelector": {
 				"nodeName": "details",
 				"attrName": "name",

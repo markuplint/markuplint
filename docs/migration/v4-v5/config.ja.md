@@ -12,6 +12,10 @@
 | 新しい `ruleCommonSettings` 設定プロパティ | 設定ファイル |
 | ARIA バージョンの解決優先度の変更 | `ariaVersion` / `version` オプションを使用するルール |
 | ARIA 1.3 サポートの追加 | `ariaVersion` / `version` オプションを使用するルール |
+| Named nodeRules（named rule） | 設定ファイル、プリセット作成者 |
+| SpecConformance メタデータ | 設定ファイル、プリセット作成者 |
+| Named rule の名前空間一括無効化 | named nodeRules を持つプリセットを使用する設定ファイル |
+| `nodeRules`/`childNodeRules` の名前による重複排除 | `extends` で named nodeRules を使用する設定ファイル |
 | ルールの配列値が連結から上書きに変更 | `extends` で配列ルール値を使用する設定ファイル |
 | ルール options が deep merge から shallow merge に変更 | `extends` でネストされた options を使用する設定ファイル |
 | Pretender の `data` 配列が上書きから追加に変更 | `extends` で pretenders を使用する設定ファイル |
@@ -107,6 +111,368 @@ const ariaVersion =
 ```
 
 `document.ruleCommonSettings` は、ルールの `verify()` コールバックに渡される `MLDocument` インスタンスで利用可能です。
+
+## Named NodeRules
+
+v5 では **named nodeRules** が導入されました。`name` プロパティを持つ `nodeRules` と `childNodeRules` のエントリです。Named nodeRule はベースルールから独立した **named rule** を作成し、個別に有効化・無効化・設定が可能です。
+
+### 動作の仕組み
+
+`nodeRules` や `childNodeRules` のエントリに `name` プロパティ（`/` を含む必要あり）がある場合、ベースルールの検証ロジックを再利用する named rule が作成されます：
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": {
+        "required-attr": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+これにより `required-attr` をベースにした named rule `"a11y/img-alt"` が作成されます。`required-attr` の検証ロジックを再利用しながら、`"a11y/img-alt"` という名前で違反を報告します。
+
+### 展開の例
+
+`ml-core` が named nodeRule を処理すると、named rule を登録し nodeRule を内部的に書き換えます。元の設定：
+
+```jsonc
+// ユーザーが書く設定
+{
+  "rules": {
+    "required-attr": true
+  },
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": {
+        "required-attr": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+は内部的に以下と等価です：
+
+```jsonc
+// ml-core が展開後に認識する設定
+{
+  "rules": {
+    "required-attr": true    // ベースルール — すべての要素で引き続き有効
+    // + named rule "a11y/img-alt" が登録される（required-attr ベース）
+  },
+  "nodeRules": [
+    {
+      // 書き換え済み: "name" は消費され、rules キーがエイリアス名に変更
+      "selector": "img",
+      "rules": {
+        "a11y/img-alt": { "value": "alt" }
+      }
+    }
+  ]
+}
+```
+
+これにより `required-attr` と `a11y/img-alt` は**独立した**ルールになります。`required-attr` は独自のグローバルチェックを実行し、`a11y/img-alt` は同じ検証ロジックを `img` 要素に対して `value: "alt"` で実行します。
+
+### Named Rule の無効化
+
+Named rule は `rules` オブジェクト内で3つのレベルで無効化できます：
+
+```json
+{
+  "rules": {
+    "a11y/img-alt": false,
+    "a11y/*": false,
+    "html-standard/figure-caption": false
+  }
+}
+```
+
+| パターン | 効果 |
+|---------|------|
+| `"a11y/img-alt": false` | 特定の named rule を無効化 |
+| `"a11y/*": false` | `a11y/` 名前空間内のすべての named rule を無効化 |
+| `"groupName": false` | マルチエントリグループ内のすべての named rule を無効化 |
+
+### 複数ルールエントリ
+
+named nodeRule の `rules` に複数の非 `false` エントリがある場合、各エントリが派生名（`name/baseRuleName`）で個別の named rule を作成します。`groupName` が割り当てられ、一括無効化が可能になります：
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "html-standard/figure-caption",
+      "selector": ":where(figcaption ~ table, table:has(~ figcaption))",
+      "rules": {
+        "disallowed-element": { "value": ["caption"] },
+        "require-accessible-name": false
+      }
+    }
+  ]
+}
+```
+
+ここでは `disallowed-element` が named rule `"html-standard/figure-caption"` になります（非 false エントリが1つなのでそのまま名前を使用）。`require-accessible-name: false` はベースルールの specificity override セマンティクスを保持するため、無名 nodeRule に分離されます。
+
+### プリセット作成者向け
+
+ビルトインプリセット（`preset.html-standard.jsonc`、`preset.a11y.jsonc`）は named nodeRules を使用して、個別に設定可能なチェックを提供します。ユーザーはベースルールに影響を与えずに特定のプリセットチェックを無効化できます：
+
+```json
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/img-alt": false
+  }
+}
+```
+
+これは `a11y/img-alt` チェックのみを無効化し、他のコンテキストでの `required-attr` ベースルールは引き続き動作します。
+
+### Named Rule を含む設定合成の例
+
+**プリセットが named rule を定義 → ユーザーが無効化：**
+
+```jsonc
+// プリセット
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// ユーザー設定
+{
+  "extends": ["markuplint:recommended"],
+  "rules": { "a11y/img-alt": false }
+}
+
+// 結果: a11y/img-alt は無効化、ベースルール required-attr は引き続き有効
+```
+
+**プリセットが named rule を定義 → ユーザーが重大度を変更：**
+
+```jsonc
+// プリセット
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// ユーザー設定
+{
+  "extends": ["markuplint:recommended"],
+  "rules": { "a11y/img-alt": { "severity": "warning" } }
+}
+
+// 結果: a11y/img-alt は error の代わりに warning として報告
+```
+
+**プリセットとユーザーが両方 named rule を定義 → 名前でマージ：**
+
+```jsonc
+// プリセット
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "specConformance": "normative", "selector": "img", "rules": { "required-attr": { "value": "alt" } } }
+  ]
+}
+
+// ユーザー設定（同名の named nodeRule をオーバーライド）
+{
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": ["alt", "aria-label"] } } }
+  ]
+}
+
+// 結果: ユーザーの a11y/img-alt がプリセット版を置き換え（名前で重複排除）
+// 注意: プリセットの specConformance は保持されません。ユーザーのエントリが
+// nodeRule 全体を置き換えるため、省略したプロパティも含めて上書きされます。
+```
+
+### 無効化の例
+
+**特定の named rule を無効化：**
+
+```jsonc
+// プリセット（ベース）
+{
+  "rules": { "required-attr": true },
+  "nodeRules": [
+    { "name": "a11y/img-alt", "selector": "img", "rules": { "required-attr": { "value": "alt" } } },
+    { "name": "a11y/form-label", "selector": "input", "rules": { "required-attr": { "value": "aria-label" } } }
+  ]
+}
+
+// ユーザー設定（オーバーライド）
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/img-alt": false
+  }
+}
+
+// 最終的な効果
+// - required-attr: 有効（ベースルールはすべての要素で動作）
+// - a11y/img-alt: 無効化（img の alt 欠落は違反にならない）
+// - a11y/form-label: 有効（input の aria-label 欠落は引き続き報告）
+```
+
+**名前空間全体を無効化：**
+
+```jsonc
+// ユーザー設定
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "a11y/*": false
+  }
+}
+
+// 最終的な効果
+// - required-attr: 有効（ベースルールは影響を受けない）
+// - a11y/img-alt: 無効化
+// - a11y/form-label: 無効化
+// - html-standard/figure-caption: 有効（異なる名前空間）
+```
+
+## SpecConformance
+
+`specConformance` は named nodeRules でのみ使用可能な**プリセットレベルのアノテーション**です。RFC 2119 キーワードの強度に基づいて、チェックの仕様準拠レベルを分類します：
+
+| `specConformance` | 意味 | RFC 2119 キーワード |
+|-------------------|------|---------------------|
+| `'normative'` | 厳格な要件 | MUST, SHALL, REQUIRED |
+| `'non-normative'` | 推奨事項 | SHOULD, MAY, RECOMMENDED |
+| (未設定) | 仕様分類なし | — |
+
+`specConformance` は違反の**メタデータ**として下流ツールやレポートに含まれます。違反の重大度を自動的に変更する機能は**ありません**。重大度を制御するには、ルール設定の `severity` フィールドを直接使用してください。
+
+```json
+{
+  "nodeRules": [
+    {
+      "name": "html-standard/figure-caption",
+      "specConformance": "normative",
+      "selector": "...",
+      "rules": { "disallowed-element": { "value": ["caption"] } }
+    }
+  ]
+}
+```
+
+`permitted-contents` のような組み込みルールは `defaultSeverity` で既に正しい重大度が設定されているため、`specConformance` は不要です。プロジェクト規約のためのユーザー定義 nodeRules には `specConformance` を使用せず、ルール設定の `severity` フィールドで直接重大度を指定してください。
+
+> **注意:** `specConformance` は主にプリセット作成者を対象としていますが、
+> スキーマ上は制限されていません。markuplint が最新の HTML 仕様変更にまだ
+> 追いついていない場合や、markuplint のバージョンアップが困難な場合など、
+> ユーザーが自身の named nodeRules に `specConformance` を設定することも可能です。
+
+### Violation における Named Rule の表示
+
+Named nodeRule が違反を検出した場合、2つのルール識別子が利用可能です：
+
+| フィールド | 値 | 用途 |
+|-----------|------|------|
+| `ruleId` | ベースルール名 | 常に存在。基になるルールを識別します（例: `required-attr`）。プログラム的なフィルタリングに使用。 |
+| `name` | Named rule のエイリアス | Named nodeRules の場合のみ存在（例: `a11y/html-lang`）。表示名として利用可能な場合はこちらを使用。 |
+
+**表示ガイドライン**: 表示名には `violation.name ?? violation.ruleId` を使用してください。
+CLI レポーターはこの規約に従い、named rule ではベースルール名の代わりにエイリアス名を表示します。
+
+カスタムツール作成者向け：
+
+```ts
+const displayName = violation.name ?? violation.ruleId;
+```
+
+## NodeRules のマージ動作の変更
+
+v5 では `extends` 使用時の `nodeRules` と `childNodeRules` のマージ方法が変更されました。
+
+**v4:** 両配列は単純に連結されていました。
+
+**v5:** 名前付きエントリ（`name` プロパティを持つもの）はマージ時に名前で重複排除されます。オーバーライド設定のエントリが、同じ名前のベース設定のエントリを置き換えます。無名エントリは従来通り追加されます。
+
+### マージの例
+
+**名前付きエントリのオーバーライド（名前による重複排除）：**
+
+```jsonc
+// プリセット（ベース設定）
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    {
+      "selector": "div.legacy",
+      "rules": { "class-naming": "^legacy-" }
+    }
+  ]
+}
+
+// ユーザー設定（オーバーライド）
+{
+  "nodeRules": [
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "non-normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    {
+      "selector": "span.icon",
+      "rules": { "wai-aria": true }
+    }
+  ]
+}
+
+// マージ結果（mergeConfig の出力）
+{
+  "nodeRules": [
+    // "a11y/img-alt": ユーザー版がプリセット版を置き換え（同名 → 重複排除）
+    {
+      "name": "a11y/img-alt",
+      "specConformance": "non-normative",
+      "selector": "img",
+      "rules": { "required-attr": { "value": "alt" } }
+    },
+    // プリセットの無名エントリ: そのまま保持
+    {
+      "selector": "div.legacy",
+      "rules": { "class-naming": "^legacy-" }
+    },
+    // ユーザーの無名エントリ: 追加
+    {
+      "selector": "span.icon",
+      "rules": { "wai-aria": true }
+    }
+  ]
+}
+```
+
+**無名エントリは常に追加されます：**
+
+```jsonc
+// ベース: [{ selector: "img", rules: {...} }]
+// オーバーライド: [{ selector: "img", rules: {...} }]
+// 結果: 両方のエントリが保持される（name なし → 重複排除なし）
+```
 
 ## マージ動作の変更
 

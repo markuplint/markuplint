@@ -19,7 +19,7 @@ export function githubReporter(results: MLResultInfo) {
 		const command = severityToCommand(violation.severity);
 		const meg = messageToString(violation.message, violation.reason);
 		out.push(
-			`::${command} file=${results.filePath},line=${violation.line},col=${violation.col}::${meg} (${violation.ruleId})`,
+			`::${command} file=${results.filePath},line=${violation.line},col=${violation.col}::${meg} (${violation.name ?? violation.ruleId})`,
 		);
 	}
 
