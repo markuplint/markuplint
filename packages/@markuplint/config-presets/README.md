@@ -41,11 +41,11 @@ Use `<ul>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Conform to **WAI-ARIA**| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<html lang>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 Require `<abbr title>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-Require `<track>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-Require `<video muted>`| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+Require `<track>` in media elements| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+Require `<video muted>` when autoplay is set| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-[`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
-[Disallow `autofocus` attr to except in the dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away a focus to forced. However,  the `dialog` element and its descendants allow it.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[`<summary>` must not contain interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)|There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
+[Disallow `autofocus` attr outside dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)|Don't take away focus by force. The `dialog` element and its descendants are excepted.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)|Scoped to non-dialog elements because the HTML spec disallows `tabindex` on `<dialog>` (`noUse`).|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [Disallow `user-scalable=no` in viewport meta](https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag)|Usage of `user-scalable=no` can cause accessibility issues to users with visual impairments such as low vision. WCAG requires a minimum of 2× scaling.|✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
@@ -62,10 +62,10 @@ Require the `datetime` attribute if the content of the `time` element is invalid
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-[Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No nested same `<details>` name group| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|The small element must not be used for subheadings.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`. The `require-accessible-name: false` entry is automatically separated into an unnamed nodeRule by expandNamedNodeRules, preserving its base-rule specificity override semantics.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No nested same `<details>` name group|A document must not contain a details element that is a descendant of another details element in the same details name group.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require `defer` attr|Should load and parse scripts lazily to avoid render-blocking.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
