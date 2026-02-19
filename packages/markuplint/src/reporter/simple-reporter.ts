@@ -42,7 +42,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 			out.push(
 				`  ${font.cyan(
 					`${pad(violation.line, sizes.line, true)}:${pad(violation.col, sizes.col)}`,
-				)} ${s}  ${pad(meg, sizes.meg)} ${xterm(8)(violation.ruleId)} `,
+				)} ${s}  ${pad(meg, sizes.meg)} ${xterm(8)(violation.name ?? violation.ruleId)} `,
 			);
 		}
 	} else if (!options.problemOnly) {

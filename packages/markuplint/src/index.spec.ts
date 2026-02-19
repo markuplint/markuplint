@@ -127,7 +127,9 @@ describe('basic test', () => {
 
 	it('is reported from 007.html', async () => {
 		const { violations } = await mlTestFile('test/fixture/007.html');
-		expect(violations.length).toEqual(76);
+		// Named nodeRules in html-standard and a11y presets create virtual rules
+		// that report additional violations independently from base rules.
+		expect(violations.length).toEqual(83);
 	});
 
 	it('is ignoring 008.html', async () => {
