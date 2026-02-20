@@ -120,9 +120,6 @@ graph TD
     create-rule --> cli-utils
     create-rule --> ml-core
 
-    rule-textlint["rule-textlint"]
-    rule-textlint --> ml-core
-
     %% ── Styling ──
     classDef leafNode fill:#e8f5e9,stroke:#4caf50
     classDef foundationNode fill:#e3f2fd,stroke:#2196f3
@@ -138,7 +135,7 @@ graph TD
     class html-spec,react-spec,vue-spec,svelte-spec specNode
     class html-parser,jsx-parser,vue-parser,svelte-parser,pug-parser,astro-parser,simple-parsers parserNode
     class markuplint mainNode
-    class pretenders,create-rule,rule-textlint toolNode
+    class pretenders,create-rule toolNode
 ```
 
 All package names omit the `@markuplint/` prefix. The 9 simple template-engine parsers (alpine, ejs, erb, htmx, liquid, mustache, nunjucks, php, smarty) are grouped into a single node since they all share the same dependency pattern: `html-parser` only.
@@ -151,7 +148,7 @@ All package names omit the `@markuplint/` prefix. The 9 simple template-engine p
 - **Purple (Spec Data)**: HTML/framework specification datasets -- `html-spec`, `react-spec`, `vue-spec`, `svelte-spec`
 - **Pink (Parsers)**: `html-parser` + 14 framework parsers
 - **Red (Main)**: Entry point -- `markuplint`
-- **Gray (Tools)**: Development utilities -- `pretenders`, `create-rule`, `rule-textlint`
+- **Gray (Tools)**: Development utilities -- `pretenders`, `create-rule`
 
 ### Package Role Definition
 
@@ -463,7 +460,7 @@ Process packages in the following tier order. Within the same tier, order does n
 | 7 (Framework Parsers) | `jsx-parser`, `vue-parser`, `svelte-parser`, `pug-parser`, `astro-parser`, `alpine-parser`, `ejs-parser`, `erb-parser`, `htmx-parser`, `liquid-parser`, `mustache-parser`, `nunjucks-parser`, `php-parser`, `smarty-parser` | Depend on `html-parser` and/or `parser-utils`       |
 | 8 (Core)              | `ml-core`                                                                                                                                                                                                                   | Depends on many foundation + parser packages        |
 | 9 (Rules & Resolver)  | `rules`, `file-resolver`                                                                                                                                                                                                    | Depend on `ml-core`                                 |
-| 10 (Tools)            | `pretenders`, `create-rule`, `rule-textlint`                                                                                                                                                                                | Depend on core/config packages                      |
+| 10 (Tools)            | `pretenders`, `create-rule`                                                                                                                                                                                                 | Depend on core/config packages                      |
 | 11 (Main)             | `markuplint`                                                                                                                                                                                                                | Top-level entry point; depends on almost everything |
 
 ### When to Apply This Order

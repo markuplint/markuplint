@@ -9,26 +9,6 @@ vi.mock('markuplint-rule-fake', () => {
 	};
 });
 
-test('built-in-rules', async () => {
-	const r = await autoLoadRules(
-		new Ruleset({
-			rules: {
-				textlint: true,
-			},
-		}),
-	);
-
-	expect(r.rules).toEqual([
-		{
-			name: 'textlint',
-			defaultSeverity: 'warning',
-			defaultValue: true,
-			defaultOptions: true,
-		},
-	]);
-	expect(r.errors).toEqual([]);
-});
-
 test('third-party-rules', async () => {
 	const r = await autoLoadRules(
 		new Ruleset({
