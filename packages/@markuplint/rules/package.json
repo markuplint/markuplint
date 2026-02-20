@@ -39,6 +39,7 @@
 		"browserslist": "^4.28.1",
 		"chrono-node": "2.9.0",
 		"debug": "4.4.3",
+		"image-size": "^2.0.2",
 		"type-fest": "5.4.4"
 	}
 }
