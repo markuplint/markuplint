@@ -14,7 +14,7 @@
 			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
 			"additionalProperties": false,
 			"patternProperties": {
-				"^[^/]+/[^/]+$": {
+				"^[^/]+/.+$": {
 					"oneOf": [
 						{
 							"$ref": "#/definitions/custom-rule-value"
@@ -23,7 +23,9 @@
 							"type": "object",
 							"additionalProperties": false,
 							"properties": {
-								"value": { "$ref": "#/definitions/custom-rule-value" },
+								"value": {
+									"$ref": "#/definitions/custom-rule-value"
+								},
 								"severity": {
 									"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
 								},
@@ -31,6 +33,9 @@
 									"type": "string"
 								}
 							}
+						},
+						{
+							"$ref": "#/definitions/namedRuleGroup"
 						}
 					]
 				},
@@ -40,6 +45,29 @@
 					"description": "Namespace wildcard disable. Disables all virtual rules with this namespace prefix (e.g., 'a11y/*': false)."
 				}
 			}
+		},
+		"namedRuleGroup": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["rules"],
+			"description": "A named rule group that wraps one or more base rules under a namespace, enabling per-check control and spec conformance metadata.",
+			"properties": {
+				"specConformance": {
+					"$ref": "#/definitions/specConformance"
+				},
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
+				},
+				"rules": {
+					"$ref": "#/definitions/baseRules",
+					"description": "Base rules to wrap. Named rule groups are not accepted here."
+				}
+			}
+		},
+		"baseRules": {
+			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
+			"additionalProperties": false,
+			"description": "Rules without named rule group support. Used inside nodeRules, childNodeRules, and namedRuleGroup."
 		},
 		"custom-rule-value": {
 			"type": ["string", "boolean", "number", "array", "object"]
@@ -75,9 +103,15 @@
 		"regexSelectorWithoutCombination": {
 			"type": "object",
 			"properties": {
-				"nodeName": { "type": "string" },
-				"attrName": { "type": "string" },
-				"attrValue": { "type": "string" }
+				"nodeName": {
+					"type": "string"
+				},
+				"attrName": {
+					"type": "string"
+				},
+				"attrValue": {
+					"type": "string"
+				}
 			}
 		},
 		"regexSelectorCombinator": {
@@ -96,8 +130,12 @@
 						"required": ["name"],
 						"additionalProperties": false,
 						"properties": {
-							"name": { "type": "string" },
-							"settings": { "type": "object" }
+							"name": {
+								"type": "string"
+							},
+							"settings": {
+								"type": "object"
+							}
 						}
 					}
 				]
@@ -169,7 +207,7 @@
 								"type": "string"
 							},
 							"rules": {
-								"$ref": "#/definitions/rules"
+								"$ref": "#/definitions/baseRules"
 							}
 						}
 					},
@@ -190,7 +228,7 @@
 								"$ref": "#/definitions/regexSelector"
 							},
 							"rules": {
-								"$ref": "#/definitions/rules"
+								"$ref": "#/definitions/baseRules"
 							}
 						}
 					}
@@ -221,7 +259,7 @@
 								"type": "boolean"
 							},
 							"rules": {
-								"$ref": "#/definitions/rules"
+								"$ref": "#/definitions/baseRules"
 							}
 						}
 					},
@@ -245,7 +283,7 @@
 								"type": "boolean"
 							},
 							"rules": {
-								"$ref": "#/definitions/rules"
+								"$ref": "#/definitions/baseRules"
 							}
 						}
 					}
@@ -278,16 +316,22 @@
 			"additionalProperties": false,
 			"required": ["selector", "as"],
 			"properties": {
-				"selector": { "type": "string" },
+				"selector": {
+					"type": "string"
+				},
 				"as": {
 					"oneOf": [
-						{ "type": "string" },
+						{
+							"type": "string"
+						},
 						{
 							"type": "object",
 							"additionalProperties": false,
 							"required": ["element"],
 							"properties": {
-								"element": { "type": "string" },
+								"element": {
+									"type": "string"
+								},
 								"namespace": {
 									"type": "string",
 									"enum": ["svg"]
@@ -299,16 +343,22 @@
 										"additionalProperties": false,
 										"required": ["name"],
 										"properties": {
-											"name": { "type": "string" },
+											"name": {
+												"type": "string"
+											},
 											"value": {
 												"oneOf": [
-													{ "type": "string" },
+													{
+														"type": "string"
+													},
 													{
 														"type": "object",
 														"additionalProperties": false,
 														"required": ["fromAttr"],
 														"properties": {
-															"fromAttr": { "type": "string" }
+															"fromAttr": {
+																"type": "string"
+															}
 														}
 													}
 												]
@@ -321,16 +371,22 @@
 									"additionalProperties": false,
 									"required": ["name"],
 									"properties": {
-										"name": { "type": "string" },
+										"name": {
+											"type": "string"
+										},
 										"value": {
 											"oneOf": [
-												{ "type": "boolean" },
+												{
+													"type": "boolean"
+												},
 												{
 													"type": "object",
 													"additionalProperties": false,
 													"required": ["fromAttr"],
 													"properties": {
-														"fromAttr": { "type": "string" }
+														"fromAttr": {
+															"type": "string"
+														}
 													}
 												}
 											]
@@ -384,16 +440,36 @@
 				"type": "string"
 			}
 		},
-		"ruleCommonSettings": { "$ref": "#/definitions/ruleCommonSettings" },
-		"plugins": { "$ref": "#/definitions/plugins" },
-		"parser": { "$ref": "#/definitions/parser" },
-		"parserOptions": { "$ref": "#/definitions/parserOptions" },
-		"excludeFiles": { "$ref": "#/definitions/excludeFiles" },
-		"specs": { "$ref": "#/definitions/specs" },
-		"rules": { "$ref": "#/definitions/rules" },
-		"nodeRules": { "$ref": "#/definitions/nodeRules" },
-		"childNodeRules": { "$ref": "#/definitions/childNodeRules" },
-		"severity": { "$ref": "#/definitions/severity" },
+		"ruleCommonSettings": {
+			"$ref": "#/definitions/ruleCommonSettings"
+		},
+		"plugins": {
+			"$ref": "#/definitions/plugins"
+		},
+		"parser": {
+			"$ref": "#/definitions/parser"
+		},
+		"parserOptions": {
+			"$ref": "#/definitions/parserOptions"
+		},
+		"excludeFiles": {
+			"$ref": "#/definitions/excludeFiles"
+		},
+		"specs": {
+			"$ref": "#/definitions/specs"
+		},
+		"rules": {
+			"$ref": "#/definitions/rules"
+		},
+		"nodeRules": {
+			"$ref": "#/definitions/nodeRules"
+		},
+		"childNodeRules": {
+			"$ref": "#/definitions/childNodeRules"
+		},
+		"severity": {
+			"$ref": "#/definitions/severity"
+		},
 		"pretenders": {
 			"oneOf": [
 				{
@@ -416,15 +492,33 @@
 				"type": "object",
 				"additionalProperties": false,
 				"properties": {
-					"plugins": { "$ref": "#/definitions/plugins" },
-					"parser": { "$ref": "#/definitions/parser" },
-					"parserOptions": { "$ref": "#/definitions/parserOptions" },
-					"excludeFiles": { "$ref": "#/definitions/excludeFiles" },
-					"specs": { "$ref": "#/definitions/specs" },
-					"severity": { "$ref": "#/definitions/severity" },
-					"rules": { "$ref": "#/definitions/rules" },
-					"nodeRules": { "$ref": "#/definitions/nodeRules" },
-					"childNodeRules": { "$ref": "#/definitions/childNodeRules" }
+					"plugins": {
+						"$ref": "#/definitions/plugins"
+					},
+					"parser": {
+						"$ref": "#/definitions/parser"
+					},
+					"parserOptions": {
+						"$ref": "#/definitions/parserOptions"
+					},
+					"excludeFiles": {
+						"$ref": "#/definitions/excludeFiles"
+					},
+					"specs": {
+						"$ref": "#/definitions/specs"
+					},
+					"severity": {
+						"$ref": "#/definitions/severity"
+					},
+					"rules": {
+						"$ref": "#/definitions/rules"
+					},
+					"nodeRules": {
+						"$ref": "#/definitions/nodeRules"
+					},
+					"childNodeRules": {
+						"$ref": "#/definitions/childNodeRules"
+					}
 				}
 			}
 		}
