@@ -96,4 +96,25 @@ const Component = (props) => {
 }
 ```
 
+### `ignoreAttrs`
+
+`ignoreAttrs` オプションを使うと、特定の属性を必須属性チェックから除外できます。ルール全体を無効にせずに、フレームワークが処理する属性や意図的に省略する属性を無視したい場合に便利です。
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "img",
+      "rules": {
+        "required-attr": {
+          "options": {
+            "ignoreAttrs": ["src", "srcset"]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

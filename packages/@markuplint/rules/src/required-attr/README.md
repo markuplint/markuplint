@@ -92,3 +92,24 @@ Example configuration that `alt` attribute must be required on `<img>` element:
   ]
 }
 ```
+
+### `ignoreAttrs`
+
+You can use the `ignoreAttrs` option to exclude specific attributes from required-attribute checks. This is useful when you want to keep the rule enabled but ignore certain attributes that are handled by a framework or are intentionally omitted.
+
+```json class=config
+{
+  "nodeRules": [
+    {
+      "selector": "img",
+      "rules": {
+        "required-attr": {
+          "options": {
+            "ignoreAttrs": ["src", "srcset"]
+          }
+        }
+      }
+    }
+  ]
+}
+```
