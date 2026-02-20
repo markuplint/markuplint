@@ -1,0 +1,29 @@
+{
+	"name": "@markuplint/htmx-spec",
+	"version": "4.5.23",
+	"description": "Extended specification for tags and attributes in htmx",
+	"repository": "git@github.com:markuplint/markuplint.git",
+	"author": "Yusuke Hirao <yusukehirao@me.com>",
+	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		}
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"dev": "tsc --watch --project tsconfig.build.json",
+		"clean": "tsc --build --clean tsconfig.build.json"
+	},
+	"dependencies": {
+		"@markuplint/ml-spec": "4.10.2"
+	}
+}
