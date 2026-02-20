@@ -175,6 +175,23 @@
 			"rules": {
 				"srcset-sizes-constraint": true
 			}
+		},
+
+		/**
+		 * Validate link type keywords
+		 *
+		 * Validates that `rel` attribute keywords are allowed on the given element
+		 * and context (e.g., body-ok for `<link>` inside `<body>`).
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/links.html#linkTypes
+		 */
+		"html-standard/link-types": {
+			"specConformance": "normative",
+			"rules": {
+				"link-types": {
+					"options": { "allowMicroformats": true }
+				}
+			}
 		}
 	},
 	"nodeRules": [

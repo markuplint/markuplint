@@ -3,7 +3,12 @@ import type { CustomSyntaxChecker } from '../types.js';
 import { checkList } from '../list.js';
 import { TokenCollection } from '../token/token-collection.js';
 
-type DefLinkTypeWhatwg = {
+/**
+ * A WHATWG-defined link type keyword with per-element context and body-ok flag.
+ *
+ * @see https://html.spec.whatwg.org/multipage/links.html#linkTypes
+ */
+export type DefLinkTypeWhatwg = {
 	readonly keyword: string;
 	readonly link: string;
 	readonly a: string;
@@ -11,13 +16,23 @@ type DefLinkTypeWhatwg = {
 	readonly bodyOk: string;
 };
 
-type DefLinkTypeMicroformats = {
+/**
+ * A Microformats-registered link type keyword with per-element context flags.
+ *
+ * @see https://microformats.org/wiki/existing-rel-values
+ */
+export type DefLinkTypeMicroformats = {
 	readonly keyword: string;
 	readonly link: boolean;
 	readonly a: boolean;
 };
 
-type DefLinkTypeMicroformatsDropped = {
+/**
+ * A dropped, rejected, or non-HTML link type keyword from the Microformats registry.
+ *
+ * @see https://microformats.org/wiki/existing-rel-values
+ */
+export type DefLinkTypeMicroformatsDropped = {
 	readonly keyword: string;
 };
 
@@ -36,7 +51,7 @@ type DefLinkTypeMicroformatsDropped = {
  * }));
  * ```
  */
-const DEF_LINK_TYPE_WHATWG: DefLinkTypeWhatwg[] = [
+export const DEF_LINK_TYPE_WHATWG: DefLinkTypeWhatwg[] = [
 	{ keyword: 'alternate', link: 'Hyperlink', a: 'Hyperlink', form: 'not allowed', bodyOk: '·' },
 	{ keyword: 'canonical', link: 'Hyperlink', a: 'not allowed', form: 'not allowed', bodyOk: '·' },
 	{ keyword: 'author', link: 'Hyperlink', a: 'Hyperlink', form: 'not allowed', bodyOk: '·' },
@@ -381,7 +396,7 @@ const DEF_LINK_TYPE_MICROFORMATS_DUBLIN_CORE: DefLinkTypeMicroformats[] = [
  *     return { keyword, link: true, a: true }
  * }));
  */
-const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicroformatsDropped[] = [
+export const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'self' },
 	{ keyword: 'http://gdata.youtube.com/schemas/2007#in-reply-to' },
 	{ keyword: 'collection' },
@@ -423,7 +438,7 @@ const DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES: DefLinkTypeMicroformatsDro
  *     return { keyword }
  * }));
  */
-const DEF_LINK_TYPE_MICROFORMATS_DROPPED: DefLinkTypeMicroformatsDropped[] = [
+export const DEF_LINK_TYPE_MICROFORMATS_DROPPED: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'banner' },
 	{ keyword: 'begin' },
 	{ keyword: 'biblioentry' }, // cspell:disable-line
@@ -460,7 +475,7 @@ const DEF_LINK_TYPE_MICROFORMATS_DROPPED: DefLinkTypeMicroformatsDropped[] = [
  * }));
  * ```
  */
-const DEF_LINK_TYPE_MICROFORMATS_DROPPED_WITHOUT_PREJUDICE: DefLinkTypeMicroformatsDropped[] = [
+export const DEF_LINK_TYPE_MICROFORMATS_DROPPED_WITHOUT_PREJUDICE: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'first' },
 	{ keyword: 'index' },
 	{ keyword: 'last' },
@@ -479,12 +494,18 @@ const DEF_LINK_TYPE_MICROFORMATS_DROPPED_WITHOUT_PREJUDICE: DefLinkTypeMicroform
  * }));
  * ```
  */
-const DEF_LINK_TYPE_MICROFORMATS_REJECTED: DefLinkTypeMicroformatsDropped[] = [
+export const DEF_LINK_TYPE_MICROFORMATS_REJECTED: DefLinkTypeMicroformatsDropped[] = [
 	{ keyword: 'logo' },
 	{ keyword: 'pavatar' }, // cspell:disable-line
 ];
 
-const ALLOWED_LINK_TYPE_MICROFORMATS = [
+/**
+ * Combined list of all allowed Microformats link type keywords,
+ * excluding any that overlap with WHATWG standard keywords.
+ *
+ * @see https://microformats.org/wiki/existing-rel-values
+ */
+export const ALLOWED_LINK_TYPE_MICROFORMATS = [
 	...DEF_LINK_TYPE_MICROFORMATS_FORMATS,
 	...DEF_LINK_TYPE_MICROFORMATS_PROPOSALS,
 	...DEF_LINK_TYPE_MICROFORMATS_HTML5_LINK_TYPE_EXTENSIONS,

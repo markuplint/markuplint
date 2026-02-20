@@ -27,6 +27,7 @@ import IneffectiveAttr from './ineffective-attr/index.js';
 import InvalidAttr from './invalid-attr/index.js';
 import LabelHasControl from './label-has-control/index.js';
 import LandmarkRoles from './landmark-roles/index.js';
+import LinkTypes from './link-types/index.js';
 import NeighborPopovers from './neighbor-popovers/index.js';
 import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-names/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
@@ -76,6 +77,7 @@ const rules = {
 	'invalid-attr': InvalidAttr,
 	'label-has-control': LabelHasControl,
 	'landmark-roles': LandmarkRoles,
+	'link-types': LinkTypes,
 	'neighbor-popovers': NeighborPopovers,
 	'no-ambiguous-navigable-target-names': NoAmbiguousNavigableTargetNames,
 	'no-boolean-attr-value': NoBooleanAttrValue,

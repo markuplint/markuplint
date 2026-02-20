@@ -77,6 +77,10 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: false,
 		},
+		'link-types': {
+			category: 'validation',
+			defaultValue: true,
+		},
 		'neighbor-popovers': {
 			category: 'a11y',
 			defaultValue: true,

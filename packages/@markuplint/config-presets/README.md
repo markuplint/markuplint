@@ -61,6 +61,7 @@ Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|
 Require the `datetime` attribute if the content of the `time` element is invalid| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes](https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[Validate link type keywords](https://html.spec.whatwg.org/multipage/links.html#linkTypes)|Validates that `rel` attribute keywords are allowed on the given element and context (e.g., body-ok for `<link>` inside `<body>`).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)|The small element must not be used for subheadings.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
