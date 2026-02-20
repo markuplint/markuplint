@@ -121,6 +121,7 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 | `html-standard/figure-no-caption`           | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.           |
 | `html-standard/input-pattern-title`         | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern. |
 | `html-standard/no-nested-details-name`      | A document must not contain a `<details>` element that is a descendant of another `<details>` element in the same name group.                   |
+| `html-standard/no-shortcut-icon`            | The `shortcut` keyword in `<link rel>` is unnecessary. Use `rel="icon"` instead.                                                                |
 
 ### `markuplint:performance` {#preset-performance}
 
