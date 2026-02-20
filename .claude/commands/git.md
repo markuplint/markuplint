@@ -56,7 +56,7 @@ When committing changes that span multiple packages, always commit **from leaves
 | 7    | Framework parsers (jsx, vue, svelte, pug, astro, alpine, ejs, erb, htmx, liquid, mustache, nunjucks, php, smarty) |
 | 8    | `ml-core`                                                                                                         |
 | 9    | `rules`, `file-resolver`                                                                                          |
-| 10   | `pretenders`, `create-rule`, `rule-textlint`                                                                      |
+| 10   | `pretenders`, `create-rule`                                                                                       |
 | 11   | `markuplint`                                                                                                      |
 
 - Within the same tier, order does not matter
