@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
+
+### Performance Improvements
+
+- **selector:** use cached getAccessibleName in :aria() pseudo-class ([42ea466](https://github.com/markuplint/markuplint/commit/42ea4665308e2b90e90856b29be939a6e8022347)), closes [#2179](https://github.com/markuplint/markuplint/issues/2179)
+
 ## [4.7.8](https://github.com/markuplint/markuplint/compare/@markuplint/selector@4.7.7...@markuplint/selector@4.7.8) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/selector

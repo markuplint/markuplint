@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Features
+
+- **react-spec:** add useIDLAttributeNames flag for IDL attribute resolution ([8d19c0c](https://github.com/markuplint/markuplint/commit/8d19c0cff75b5f0ee9703df08591642a8bd4fa47))
+
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/react-spec@4.5.22...@markuplint/react-spec@4.5.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/react-spec

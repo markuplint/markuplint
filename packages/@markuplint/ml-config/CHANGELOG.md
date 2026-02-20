@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
+
+### Code Refactoring
+
+- **ml-config:** remove deprecated rule types ([e5d2b2d](https://github.com/markuplint/markuplint/commit/e5d2b2d6b5d7f6a060e1ea2160be97ad3ca02084))
+
+- refactor(ml-config)!: change pretenders merge behavior ([e7b00ab](https://github.com/markuplint/markuplint/commit/e7b00abd80dd75a6060697b30d59d0371ae3694b))
+- refactor(ml-config)!: change rule value array merge to override ([05c23ac](https://github.com/markuplint/markuplint/commit/05c23ace31a3429233b3411c8b95ae62438be6e5)), closes [#1104](https://github.com/markuplint/markuplint/issues/1104)
+- refactor(ml-config)!: replace deepmerge with shallow merge ([15b4945](https://github.com/markuplint/markuplint/commit/15b494546b9016189a790b2ea49fcc2bb38c85c4))
+
+### Features
+
+- **ml-config:** add name and specConformance properties to nodeRule types ([af53042](https://github.com/markuplint/markuplint/commit/af5304218f7a207a1d8e61464c81c42d5ee1bf01))
+- **ml-config:** add named rule group types, merge logic, and type guards ([9f625fd](https://github.com/markuplint/markuplint/commit/9f625fdcd9bc821d2be53668ac0eb676597aa935))
+- **ml-config:** add ruleCommonSettings.ariaVersion option ([f2cd713](https://github.com/markuplint/markuplint/commit/f2cd7132311c00c22d68c4685b4a280b77ee6463))
+
+### BREAKING CHANGES
+
+- Pretender files/imports are now overridden instead
+  of deep-merged. Pretender data continues to be appended.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- Rule value arrays are now overridden instead of
+- Object properties in config are now shallow-merged
+  instead of deep-merged. Nested objects within parser, specs, etc.
+  will be replaced entirely by the overriding config.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- **ml-config:** RuleV2, RuleConfigV2, AnyRuleV2 types are removed.
+  The deprecated `option` field is no longer supported; use `options`.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.8.15](https://github.com/markuplint/markuplint/compare/@markuplint/ml-config@4.8.14...@markuplint/ml-config@4.8.15) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/ml-config

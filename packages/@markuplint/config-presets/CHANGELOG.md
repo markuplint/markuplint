@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **config-presets:** scope tabindex allowAttrs to non-dialog elements ([faa327d](https://github.com/markuplint/markuplint/commit/faa327db131f123dd0ecca8fc76db3d576541597))
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+
+### Features
+
+- **config-presets:** add compat preset and extend recommended ([c306134](https://github.com/markuplint/markuplint/commit/c3061348f1d8034f5b7b6ebad630fd9b1f8edef8))
+- **config-presets:** add link-types rule to html-standard preset ([5e4a4d0](https://github.com/markuplint/markuplint/commit/5e4a4d01211a7bdbd08f20e76d83d9e052ceace0))
+- **config-presets:** add named nodeRules and specConformance to presets ([c94e82f](https://github.com/markuplint/markuplint/commit/c94e82f226ceffbd89b12fcd04e7ee556f8c4063))
+- **config-presets:** add named rule groups and specConformance to all presets ([1ef5d58](https://github.com/markuplint/markuplint/commit/1ef5d58dfbc0a02e6574448fa58b419115baceb2))
+- **config-presets:** add no-shortcut-icon rule to html-standard preset ([6420fbc](https://github.com/markuplint/markuplint/commit/6420fbc5728ffe5a79b50e7694ddf93d00c01b50)), closes [#715](https://github.com/markuplint/markuplint/issues/715)
+- **config-presets:** add redundant-accessible-name rule to a11y preset ([8c66b37](https://github.com/markuplint/markuplint/commit/8c66b37714abfa3f0a0c95564f703e00f963ca7c))
+- **config-presets:** add srcset-sizes-constraint to html-standard preset ([9a3f564](https://github.com/markuplint/markuplint/commit/9a3f5643a9f0bfe0f437ab6f4415f6e5d35a0847))
+- **config-presets:** disallow user-scalable=no in viewport meta for a11y preset ([9703c79](https://github.com/markuplint/markuplint/commit/9703c791fa220dc28698e3d7a27c19e716de21de))
+- **rules:** add require-dialog-autofocus rule ([2d8d650](https://github.com/markuplint/markuplint/commit/2d8d650f8bc82e706687d292b27c310f3552b418)), closes [#689](https://github.com/markuplint/markuplint/issues/689)
+
 ## [4.5.14](https://github.com/markuplint/markuplint/compare/@markuplint/config-presets@4.5.13...@markuplint/config-presets@4.5.14) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/config-presets

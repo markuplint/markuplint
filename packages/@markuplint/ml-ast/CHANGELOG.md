@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- feat(ml-ast)!: simplify AST token properties and restructure block types ([78f8a77](https://github.com/markuplint/markuplint/commit/78f8a77c76728df8090fcf54c7c5541bedb56f9d))
+
+### BREAKING CHANGES
+
+- Multiple breaking changes to AST interfaces:
+
+Token property renames (MLASTToken):
+
+- startOffset -> offset
+- startLine -> line
+- startCol -> col
+- Remove endOffset, endLine, endCol (derive via helpers)
+
+Element changes (MLASTElement):
+
+- Remove selfClosingSolidus property
+- Add blockBehavior: MLASTBlockBehavior | null
+
+Block changes (MLASTPreprocessorSpecificBlock):
+
+- Remove conditionalType property
+- Add blockBehavior: MLASTBlockBehavior | null
+
+New types:
+
+- MLASTBlockBehavior interface (type + expression)
+- MLASTBlockBehaviorType (replaces MLASTPreprocessorSpecificBlockConditionalType)
+
+Removed deprecated types:
+
+- MLMarkupLanguageParser interface
+- Parse type alias
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.4.11](https://github.com/markuplint/markuplint/compare/@markuplint/ml-ast@4.4.10...@markuplint/ml-ast@4.4.11) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/ml-ast

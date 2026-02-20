@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Features
+
+- **alpine-parser:** support loop blocks ([d92c53c](https://github.com/markuplint/markuplint/commit/d92c53ce7337a2b39f78cbc43edbe1aba2232bae))
+- delete htmx-parser, simplify alpine-parser, add migration guide and tests ([f8dbb09](https://github.com/markuplint/markuplint/commit/f8dbb090707d8cfbf3d859a9b868b2087064f89b))
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/alpine-parser@4.6.22...@markuplint/alpine-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/alpine-parser

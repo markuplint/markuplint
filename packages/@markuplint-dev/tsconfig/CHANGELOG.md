@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+**Note:** Version bump only for package @markuplint-dev/tsconfig
+
 ## [1.0.10](https://github.com/markuplint/markuplint/compare/@markuplint-dev/tsconfig@1.0.9...@markuplint-dev/tsconfig@1.0.10) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint-dev/tsconfig
