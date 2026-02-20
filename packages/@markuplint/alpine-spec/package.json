@@ -1,7 +1,7 @@
 {
-	"name": "@markuplint/htmx-parser",
-	"version": "4.0.21",
-	"description": "HTMX parser for markuplint",
+	"name": "@markuplint/alpine-spec",
+	"version": "4.5.23",
+	"description": "Extended specification for tags and attributes in Alpine.js",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
 	"license": "MIT",
@@ -13,10 +13,6 @@
 		".": {
 			"import": "./lib/index.js",
 			"types": "./lib/index.d.ts"
-		},
-		"./spec": {
-			"import": "./lib/spec.js",
-			"types": "./lib/spec.d.ts"
 		}
 	},
 	"publishConfig": {
@@ -28,10 +24,6 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "4.6.23"
-	},
-	"devDependencies": {
-		"@markuplint/ml-spec": "4.10.2",
-		"@markuplint/parser-utils": "4.8.11"
+		"@markuplint/ml-spec": "4.10.2"
 	}
 }

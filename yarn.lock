@@ -2259,8 +2259,15 @@ __metadata:
   resolution: "@markuplint/alpine-parser@workspace:packages/@markuplint/alpine-parser"
   dependencies:
     "@markuplint/html-parser": "npm:4.6.23"
-    "@markuplint/ml-spec": "npm:4.10.2"
     "@markuplint/parser-utils": "npm:4.8.11"
+  languageName: unknown
+  linkType: soft
+
+"@markuplint/alpine-spec@workspace:packages/@markuplint/alpine-spec":
+  version: 0.0.0-use.local
+  resolution: "@markuplint/alpine-spec@workspace:packages/@markuplint/alpine-spec"
+  dependencies:
+    "@markuplint/ml-spec": "npm:4.10.2"
   languageName: unknown
   linkType: soft
 
@@ -2378,13 +2385,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/htmx-parser@workspace:packages/@markuplint/htmx-parser":
+"@markuplint/htmx-spec@workspace:packages/@markuplint/htmx-spec":
   version: 0.0.0-use.local
-  resolution: "@markuplint/htmx-parser@workspace:packages/@markuplint/htmx-parser"
+  resolution: "@markuplint/htmx-spec@workspace:packages/@markuplint/htmx-spec"
   dependencies:
-    "@markuplint/html-parser": "npm:4.6.23"
     "@markuplint/ml-spec": "npm:4.10.2"
-    "@markuplint/parser-utils": "npm:4.8.11"
   languageName: unknown
   linkType: soft
 

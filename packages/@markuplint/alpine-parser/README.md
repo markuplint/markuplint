@@ -14,7 +14,7 @@ $ yarn add -D @markuplint/alpine-parser
 
 ## Usage
 
-Add `parser` and `spec` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
+Add `parser` and `specs` option to your [configuration](https://markuplint.dev/configuration/#properties/parser).
 
 ```json
 {
@@ -22,7 +22,7 @@ Add `parser` and `spec` option to your [configuration](https://markuplint.dev/co
     "\\.html$": "@markuplint/alpine-parser"
   },
   "specs": {
-    "\\.html$": "@markuplint/alpine-parser/spec"
+    "\\.html$": "@markuplint/alpine-spec"
   }
 }
 ```

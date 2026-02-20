@@ -28,26 +28,26 @@ npm install -D @markuplint/vue-parser @markuplint/vue-spec
 
 ### サポートしている構文 {#supported-syntaxes}
 
-| テンプレートエンジンまたは構文                                                             | パーサ                                       | スペック                         |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------- | -------------------------------- |
-| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`                     | `@markuplint/react-spec`         |
-| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`                     | `@markuplint/vue-spec`           |
-| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`                  | `@markuplint/svelte-spec`        |
-| [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit`              | -                                |
-| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`                   | -                                |
-| [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`                  | `@markuplint/alpine-parser/spec` |
-| [**HTMX**](https://htmx.org)                                                               | `@markuplint/htmx-parser`                    | `@markuplint/htmx-parser/spec`   |
-| [**タグ付きテンプレートリテラル**](https://lit.dev/)（lit-html等）                         | `@markuplint/tagged-template-literal-parser` | -                                |
-| [**Markdown**](https://commonmark.org/)                                                    | `@markuplint/markdown-parser`                | -                                |
-| [**MDX**](https://mdxjs.com/)                                                              | `@markuplint/mdx-parser`                     | `@markuplint/react-spec`         |
-| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`                     | -                                |
-| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`                     | -                                |
-| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`                  | -                                |
-| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`                     | -                                |
-| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`                     | -                                |
-| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser`                | -                                |
-| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser`                | -                                |
-| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`                  | -                                |
+| テンプレートエンジンまたは構文                                                             | パーサ                                       | スペック                  |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------- |
+| [**JSX**](https://react.dev/learn/writing-markup-with-jsx)                                 | `@markuplint/jsx-parser`                     | `@markuplint/react-spec`  |
+| [**Vue**](https://vuejs.org/)                                                              | `@markuplint/vue-parser`                     | `@markuplint/vue-spec`    |
+| [**Svelte**](https://svelte.dev/)                                                          | `@markuplint/svelte-parser`                  | `@markuplint/svelte-spec` |
+| [**SvelteKit**](https://kit.svelte.dev/)                                                   | `@markuplint/svelte-parser/kit`              | -                         |
+| [**Astro**](https://astro.build/)                                                          | `@markuplint/astro-parser`                   | -                         |
+| [**Alpine.js**](https://alpinejs.dev)                                                      | `@markuplint/alpine-parser`                  | `@markuplint/alpine-spec` |
+| [**HTMX**](https://htmx.org)                                                               | -                                            | `@markuplint/htmx-spec`   |
+| [**タグ付きテンプレートリテラル**](https://lit.dev/)（lit-html等）                         | `@markuplint/tagged-template-literal-parser` | -                         |
+| [**Markdown**](https://commonmark.org/)                                                    | `@markuplint/markdown-parser`                | -                         |
+| [**MDX**](https://mdxjs.com/)                                                              | `@markuplint/mdx-parser`                     | `@markuplint/react-spec`  |
+| [**Pug**](https://pugjs.org/)                                                              | `@markuplint/pug-parser`                     | -                         |
+| [**PHP**](https://www.php.net/)                                                            | `@markuplint/php-parser`                     | -                         |
+| [**Smarty**](https://www.smarty.net/)                                                      | `@markuplint/smarty-parser`                  | -                         |
+| [**eRuby**](https://docs.ruby-lang.org/en/master/ERB.html)                                 | `@markuplint/erb-parser`                     | -                         |
+| [**EJS**](https://ejs.co/)                                                                 | `@markuplint/ejs-parser`                     | -                         |
+| [**Mustache**](https://mustache.github.io/) or [**Handlebars**](https://handlebarsjs.com/) | `@markuplint/mustache-parser`                | -                         |
+| [**Nunjucks**](https://mozilla.github.io/nunjucks/)                                        | `@markuplint/nunjucks-parser`                | -                         |
+| [**Liquid**](https://liquidjs.com/)                                                        | `@markuplint/liquid-parser`                  | -                         |
 
 :::note
 

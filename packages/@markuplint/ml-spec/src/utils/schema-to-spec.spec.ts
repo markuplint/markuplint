@@ -40,6 +40,26 @@ describe('schemaToSpec', () => {
 		expect(aElAttrs['extended-attr']).toStrictEqual(exAttr2);
 	});
 
+	test('directivePatterns', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{
+				directivePatterns: [{ pattern: '^x-data$', isDirective: true }],
+			},
+			{
+				directivePatterns: [{ pattern: '^hx-on[:-]([a-z]+)$', potentialName: 'on$1', isDirective: true }],
+			},
+		]);
+		expect(mergedSpec.directivePatterns).toHaveLength(2);
+		expect(mergedSpec.directivePatterns[0].pattern).toBe('^x-data$');
+		expect(mergedSpec.directivePatterns[1].pattern).toBe('^hx-on[:-]([a-z]+)$');
+	});
+
+	test('directivePatterns defaults to empty when not provided', () => {
+		const mergedSpec = schemaToSpec([htmlSpec]);
+		expect(mergedSpec.directivePatterns ?? []).toStrictEqual([]);
+	});
+
 	test('globalAttrs.extends', () => {
 		const keyAttr = {
 			type: 'NoEmptyAny',
