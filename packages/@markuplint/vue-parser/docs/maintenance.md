@@ -49,7 +49,7 @@ expect(doc.nodeList[0].elementType).toBe('authored');
 
 ### 1. Adding or Modifying a Vue Directive
 
-1. Read `src/parser.ts` and find the `visitAttr()` method
+1. Open `@markuplint/vue-spec` (`packages/@markuplint/vue-spec/src/index.ts`) and find the `directivePatterns` array
 2. Identify the correct position in the priority chain:
    - `v-on` / `@` (event binding) — first
    - `v-bind` / `:` (property binding) — second
@@ -158,12 +158,12 @@ yarn test --scope @markuplint/vue-parser
 
 **Symptom:** A Vue directive like `v-custom` is treated as a regular HTML attribute instead of being marked as `isDirective: true`.
 
-**Cause:** The directive pattern does not match in `visitAttr()`, or the new directive block is placed after the generic `v-*` catch-all.
+**Cause:** The directive pattern does not match in `directivePatterns` (defined in `@markuplint/vue-spec`), or the new pattern is placed after the generic `v-*` catch-all.
 
 **Solution:**
 
 1. Check the regex pattern in your directive block — ensure it matches the full attribute name
-2. Ensure the block is placed before the generic `v-*` catch-all at the end of `visitAttr()`
+2. Ensure the pattern is placed before the generic `v-*` catch-all in the `directivePatterns` array
 3. Verify the return object includes `isDirective: true as const`
 
 ### Template comments are missing from the AST

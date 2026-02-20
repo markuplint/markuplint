@@ -1,6 +1,5 @@
 import type { ASTNode, ASTComment } from './vue-parser/index.js';
 import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
-import type { Token } from '@markuplint/parser-utils';
 
 import { ParserError, Parser } from '@markuplint/parser-utils';
 
@@ -17,8 +16,6 @@ type State = {
  * Recognizes Vue built-in components and PascalCase user components.
  */
 class VueParser extends Parser<ASTNode, State> {
-	readonly duplicatableAttrs = new Set(['class', 'style']);
-
 	constructor() {
 		super(
 			{
@@ -177,119 +174,6 @@ class VueParser extends Parser<ASTNode, State> {
 			exposeWhiteSpace: false,
 			concatText: false,
 		});
-	}
-
-	/**
-	 * Visits an attribute token and resolves Vue-specific directive shorthands.
-	 * Handles `v-on` / `@` (event binding), `v-bind` / `:` (property binding),
-	 * `v-model`, `v-slot` / `#`, and other `v-` prefixed directives.
-	 *
-	 * @param token - The token representing the attribute
-	 * @returns The parsed attribute node with Vue-specific metadata
-	 */
-	visitAttr(token: Token) {
-		const attr = super.visitAttr(token);
-
-		if (attr.type === 'spread') {
-			return attr;
-		}
-
-		{
-			/**
-			 * `v-on`
-			 */
-			const [, directive, potentialName] = attr.name.raw.match(/^(v-on:|@)([^.]+)(?:\.([^.]+))?$/i) ?? [];
-			if (directive && potentialName) {
-				return {
-					...attr,
-					potentialName: `on${potentialName.toLowerCase()}`,
-					isDynamicValue: true as const,
-				};
-			}
-		}
-
-		{
-			/**
-			 * `v-bind`
-			 */
-			const [, directive, potentialName, modifier] =
-				attr.name.raw.match(/^(v-bind:|:)([^.]+)(?:\.([^.]+))?$/i) ?? [];
-			if (directive && potentialName) {
-				if (this.duplicatableAttrs.has(potentialName.toLowerCase())) {
-					this.updateAttr(attr, { isDuplicatable: true });
-				}
-
-				if (!modifier) {
-					return {
-						...attr,
-						potentialName,
-						isDynamicValue: true as const,
-					};
-				}
-
-				switch (modifier) {
-					case '.attr': {
-						return {
-							...attr,
-							potentialName,
-							isDynamicValue: true as const,
-						};
-					}
-					/* eslint-disable unicorn/no-useless-switch-case */
-					case '.prop':
-					case '.camel':
-					default: {
-						const name = `v-bind:${potentialName}${modifier ?? ''}`;
-						return {
-							...attr,
-							potentialName: attr.name.raw === name ? undefined : name,
-							isDirective: true as const,
-						};
-					}
-					/* eslint-enable unicorn/no-useless-switch-case */
-				}
-			}
-		}
-
-		{
-			/**
-			 * `v-model`
-			 */
-			const [, directive] = attr.name.raw.match(/^(v-model)(?:\.([^.]+))?$/i) ?? [];
-			if (directive) {
-				return {
-					...attr,
-					isDirective: true as const,
-				};
-			}
-		}
-
-		{
-			/**
-			 * `v-slot`
-			 */
-			const slotName = (attr.name.raw.match(/^(v-slot:|#)(.+)$/i) ?? [])[2];
-			const name = `v-slot:${slotName}`;
-			if (slotName) {
-				return {
-					...attr,
-					potentialName: attr.name.raw === name ? undefined : name,
-					isDirective: true as const,
-				};
-			}
-		}
-
-		/**
-		 * If directives
-		 */
-		if (attr.name.raw.startsWith('v-')) {
-			return {
-				...attr,
-				isDirective: true as const,
-			};
-		}
-
-		return attr;
 	}
 
 	/**

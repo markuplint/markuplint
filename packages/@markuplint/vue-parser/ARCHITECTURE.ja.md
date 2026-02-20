@@ -79,8 +79,9 @@ Parser<ASTNode, State>  (@markuplint/parser-utils)
 | `nodeize()`           | vue-eslint-parser AST ノード（VText、VElement、VExpressionContainer）を markuplint AST に変換 |
 | `flattenNodes()`      | 基底のフラット化を拡張し、兄弟ノード間にテンプレートコメントを注入                            |
 | `afterFlattenNodes()` | `exposeWhiteSpace: false`、`exposeInvalidNode: false`、`concatText: false` で基底を呼び出す   |
-| `visitAttr()`         | Vue ディレクティブの省略形を `potentialName`/`isDirective` メタデータに解決                   |
 | `detectElementType()` | PascalCase コンポーネントと Vue 組み込みコンポーネントを検出                                  |
+
+> **注記:** `visitAttr()` オーバーライドは削除されました。Vue ディレクティブ処理（`v-bind`、`v-on`、`v-model`、`v-slot` など）は `@markuplint/vue-spec` の `directivePatterns` で管理されています。
 
 ### `duplicatableAttrs`
 
@@ -134,9 +135,11 @@ Parser<ASTNode, State>  (@markuplint/parser-utils)
 
 この2パスアプローチが必要な理由は、vue-eslint-parser がコメントをメインノードツリーとは別に提供するため、正しい位置にインターリーブする必要があるからです。
 
-## 属性処理（visitAttr）
+## ディレクティブ処理（@markuplint/vue-spec の directivePatterns）
 
-`visitAttr()` メソッドはまず `super.visitAttr(token)` を呼び出し、その後 Vue 固有のディレクティブ解決を適用します。
+Vue ディレクティブの解決はパーサー自体ではなく、`@markuplint/vue-spec` で定義された `directivePatterns` によって管理されています。spec がディレクティブを `potentialName`、`isDirective`、`isDynamicValue` メタデータにマッピングするパターンを宣言します。
+
+> **二段階解決:** パーサーレベルのテスト（`index.spec.ts`）はパーサー自体が設定する raw AST 値を示します（例: 波括弧式のみ `isDynamicValue: true`）。コアレベルのテスト（`ml-core` や `rules`）は `ml-core` の `MLAttr` コンストラクタが `directivePatterns` を適用した後の最終解決値を示します。例えば、値なしの `on:click` はパーサーレベルでは `isDynamicValue: false` ですが、コアレベルでは `directivePatterns` マッチにより `isDynamicValue: true` に解決されます。
 
 ### クォートセット
 

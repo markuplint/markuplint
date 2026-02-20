@@ -347,13 +347,15 @@ describe('parser', () => {
 			'<template><div v-if="bool" data-attr v-bind:data-attr2="variable" @click.once="event" v-on:click.foobar="event"></div></template>',
 		);
 		expect(doc.nodeList[0].attributes[0].raw).toBe('v-if="bool"');
-		expect(doc.nodeList[0].attributes[0].isDirective).toBeTruthy();
+		// Directive resolution now handled by vue-spec's directivePatterns, not parser
+		expect(doc.nodeList[0].attributes[0].isDirective).toBeUndefined();
 		expect(doc.nodeList[0].attributes[1].raw).toBe('data-attr');
 		expect(doc.nodeList[0].attributes[1].isDirective).toBeUndefined();
 		expect(doc.nodeList[0].attributes[2].raw).toBe('v-bind:data-attr2="variable"');
-		expect(doc.nodeList[0].attributes[2].potentialName).toBe('data-attr2');
-		expect(doc.nodeList[0].attributes[3].isDirective).toBeFalsy();
-		expect(doc.nodeList[0].attributes[4].isDirective).toBeFalsy();
+		// potentialName resolution now handled by vue-spec's directivePatterns
+		expect(doc.nodeList[0].attributes[2].potentialName).toBeUndefined();
+		expect(doc.nodeList[0].attributes[3].isDirective).toBeUndefined();
+		expect(doc.nodeList[0].attributes[4].isDirective).toBeUndefined();
 	});
 
 	test('namespace', () => {
@@ -396,7 +398,7 @@ describe('parser', () => {
 			'[3:3]>[3:8](15,20)div: <div>',
 			'[3:8]>[4:4](20,24)#text: ⏎→→→',
 			'[4:4]>[4:22](24,42)template: <template␣#header>',
-			'[4:14]>[4:21](34,41)v-slot:header: #header',
+			'[4:14]>[4:21](34,41)#header: #header',
 			'  [4:13]>[4:14](33,34)bN: ␣',
 			'  [4:14]>[4:21](34,41)name: #header',
 			'  [4:21]>[4:21](41,41)bE: ',
@@ -405,9 +407,8 @@ describe('parser', () => {
 			'  [4:21]>[4:21](41,41)sQ: ',
 			'  [4:21]>[4:21](41,41)value: ',
 			'  [4:21]>[4:21](41,41)eQ: ',
-			'  isDirective: true',
+			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: v-slot:header',
 			'[4:22]>[4:33](42,53)template: </template>',
 			'[4:33]>[5:3](53,56)#text: ⏎→→',
 			'[5:3]>[5:9](56,62)div: </div>',
@@ -438,11 +439,11 @@ bool
 			'  [4:2]>[4:3](25,26)sQ: "',
 			'  [4:3]>[6:1](26,34)value: ␣⏎bool␣⏎',
 			'  [6:1]>[6:2](34,35)eQ: "',
-			'  isDirective: true',
+			'  isDirective: false',
 			'  isDynamicValue: false',
 			'[6:3]>[7:1](36,38)#text: ␣⏎',
 			'[7:1]>[8:2](38,58)template: <template␣#header␣⏎>',
-			'[7:11]>[7:18](48,55)v-slot:header: #header',
+			'[7:11]>[7:18](48,55)#header: #header',
 			'  [7:10]>[7:11](47,48)bN: ␣',
 			'  [7:11]>[7:18](48,55)name: #header',
 			'  [7:18]>[7:18](55,55)bE: ',
@@ -451,9 +452,8 @@ bool
 			'  [7:18]>[7:18](55,55)sQ: ',
 			'  [7:18]>[7:18](55,55)value: ',
 			'  [7:18]>[7:18](55,55)eQ: ',
-			'  isDirective: true',
+			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: v-slot:header',
 			'[8:2]>[8:13](58,69)template: </template>',
 			'[8:13]>[9:1](69,71)#text: ␣⏎',
 			'[9:1]>[9:7](71,77)div: </div>',
@@ -472,7 +472,7 @@ describe('Issues', () => {
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
 			'[3:3]>[3:51](15,63)button: <button␣@click.stop="foo"␣v-on:click.stop="bar">',
-			'[3:11]>[3:28](23,40)onclick: @click.stop="foo"',
+			'[3:11]>[3:28](23,40)@click.stop: @click.stop="foo"',
 			'  [3:10]>[3:11](22,23)bN: ␣',
 			'  [3:11]>[3:22](23,34)name: @click.stop',
 			'  [3:22]>[3:22](34,34)bE: ',
@@ -482,9 +482,8 @@ describe('Issues', () => {
 			'  [3:24]>[3:27](36,39)value: foo',
 			'  [3:27]>[3:28](39,40)eQ: "',
 			'  isDirective: false',
-			'  isDynamicValue: true',
-			'  potentialName: onclick',
-			'[3:29]>[3:50](41,62)onclick: v-on:click.stop="bar"',
+			'  isDynamicValue: false',
+			'[3:29]>[3:50](41,62)v-on:click.stop: v-on:click.stop="bar"',
 			'  [3:28]>[3:29](40,41)bN: ␣',
 			'  [3:29]>[3:44](41,56)name: v-on:click.stop',
 			'  [3:44]>[3:44](56,56)bE: ',
@@ -494,8 +493,7 @@ describe('Issues', () => {
 			'  [3:46]>[3:49](58,61)value: bar',
 			'  [3:49]>[3:50](61,62)eQ: "',
 			'  isDirective: false',
-			'  isDynamicValue: true',
-			'  potentialName: onclick',
+			'  isDynamicValue: false',
 			'[3:51]>[3:54](63,66)#text: ...',
 			'[3:54]>[3:63](66,75)button: </button>',
 			'[3:63]>[4:2](75,77)#text: ⏎→',

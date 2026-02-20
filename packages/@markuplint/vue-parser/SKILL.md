@@ -14,12 +14,12 @@ detection, update vue-eslint-parser version support, and fix comment injection.
 
 `$ARGUMENTS` specifies the task. Supported tasks:
 
-| Task                            | Description                                      |
-| ------------------------------- | ------------------------------------------------ |
-| `add-directive`                 | Add or modify a Vue directive in visitAttr()     |
-| `modify-element-type-detection` | Update detectElementType() matchers              |
-| `update-vue-version-support`    | Handle vue-eslint-parser API changes             |
-| `fix-comment-injection`         | Fix template comment injection in flattenNodes() |
+| Task                            | Description                                                   |
+| ------------------------------- | ------------------------------------------------------------- |
+| `add-directive`                 | Add or modify a Vue directive in directivePatterns (vue-spec) |
+| `modify-element-type-detection` | Update detectElementType() matchers                           |
+| `update-vue-version-support`    | Handle vue-eslint-parser API changes                          |
+| `fix-comment-injection`         | Fix template comment injection in flattenNodes()              |
 
 If omitted, defaults to `add-directive`.
 
@@ -35,11 +35,11 @@ Also read:
 
 ## Task: add-directive
 
-Add or modify a Vue directive in `visitAttr()`. Follow recipe #1 in `docs/maintenance.md`.
+Add or modify a Vue directive in `directivePatterns` (`@markuplint/vue-spec`). Follow recipe #1 in `docs/maintenance.md`.
 
 ### Step 1: Understand the directive
 
-1. Read `src/parser.ts` and find the `visitAttr()` method
+1. Open `@markuplint/vue-spec` (`packages/@markuplint/vue-spec/src/index.ts`) and find the `directivePatterns` array
 2. Identify where in the priority chain the new directive should be processed
 3. Determine whether the directive needs `potentialName`, `isDirective`, or `isDynamicValue`
 
@@ -134,4 +134,4 @@ Fix template comment injection in `flattenNodes()`. Follow recipe #4 in `docs/ma
 3. **Use `isDirective: true`** for directives with no HTML equivalent (e.g., `v-if`, `v-for`).
 4. **Test with `nodeListToDebugMaps`** — this is the standard assertion pattern for parser tests.
 5. **Add JSDoc comments** to all new public methods and properties.
-6. **Preserve directive priority order** in `visitAttr()` — `v-on` before `v-bind` before `v-model` before `v-slot` before generic `v-`.
+6. **Preserve directive priority order** in `directivePatterns` — `.prop` shorthand before `v-bind` with modifiers before `v-bind`/`:` before `v-on`/`@` before `v-model` before `v-slot`/`#` before generic `v-`.
