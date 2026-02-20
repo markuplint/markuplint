@@ -7,21 +7,36 @@
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute
 		 */
-		"attr-duplication": true,
+		"html-standard/attr-duplication": {
+			"specConformance": "normative",
+			"rules": {
+				"attr-duplication": true
+			}
+		},
 
 		/**
 		 * No use deprecated attr
 		 *
-		 * You should not use deprecated attributes from the viewpoint of compatibility.
+		 * Authors must not use deprecated attributes from the viewpoint of compatibility.
 		 */
-		"deprecated-attr": true,
+		"html-standard/deprecated-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"deprecated-attr": true
+			}
+		},
 
 		/**
 		 * No use deprecated element
 		 *
-		 * You should not use deprecated elements from the viewpoint of compatibility.
+		 * Authors must not use deprecated elements from the viewpoint of compatibility.
 		 */
-		"deprecated-element": true,
+		"html-standard/deprecated-element": {
+			"specConformance": "normative",
+			"rules": {
+				"deprecated-element": true
+			}
+		},
 
 		/**
 		 * Require `doctype`
@@ -30,25 +45,45 @@
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype
 		 */
-		"doctype": true,
+		"html-standard/doctype": {
+			"specConformance": "normative",
+			"rules": {
+				"doctype": true
+			}
+		},
 
 		/**
 		 * Must not skip heading levels
 		 *
 		 */
-		"heading-levels": true,
+		"html-standard/heading-levels": {
+			"specConformance": "non-normative",
+			"rules": {
+				"heading-levels": true
+			}
+		},
 
 		/**
 		 * Must not duplicate **ID**
 		 *
 		 */
-		"id-duplication": true,
+		"html-standard/id-duplication": {
+			"specConformance": "normative",
+			"rules": {
+				"id-duplication": true
+			}
+		},
 
 		/**
 		 * No use ineffective attr
 		 *
 		 */
-		"ineffective-attr": true,
+		"html-standard/ineffective-attr": {
+			"specConformance": "non-normative",
+			"rules": {
+				"ineffective-attr": true
+			}
+		},
 
 		/**
 		 * No duplicate names in `<dl>`
@@ -58,49 +93,89 @@
 		 * @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name
 		 *
 		 */
-		"no-duplicate-dt": true,
+		"html-standard/no-duplicate-dt": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-duplicate-dt": true
+			}
+		},
 
 		/**
 		 * No refer to no existent **ID**
 		 */
-		"no-refer-to-non-existent-id": true,
+		"html-standard/no-refer-to-non-existent-id": {
+			"specConformance": "normative",
+			"rules": {
+				"no-refer-to-non-existent-id": true
+			}
+		},
 
 		/**
 		 * No use **orphaned end tag**
 		 *
 		 */
-		"no-orphaned-end-tag": true,
+		"html-standard/no-orphaned-end-tag": {
+			"specConformance": "normative",
+			"rules": {
+				"no-orphaned-end-tag": true
+			}
+		},
 
 		/**
 		 * Allow only **permitted contents**
 		 *
 		 */
-		"permitted-contents": true,
+		"html-standard/permitted-contents": {
+			"specConformance": "normative",
+			"rules": {
+				"permitted-contents": true
+			}
+		},
 
 		/**
 		 * Need **placeholder label option**
 		 *
 		 */
-		"placeholder-label-option": true,
+		"html-standard/placeholder-label-option": {
+			"specConformance": "normative",
+			"rules": {
+				"placeholder-label-option": true
+			}
+		},
 
 		/**
 		 * Require the `datetime` attribute if the content of the `time` element is invalid
 		 *
 		 */
-		"require-datetime": true,
+		"html-standard/require-datetime": {
+			"specConformance": "normative",
+			"rules": {
+				"require-datetime": true
+			}
+		},
 
 		/**
 		 * Specify required attr
 		 *
 		 */
-		"required-attr": true,
+		"html-standard/required-attr": {
+			"specConformance": "normative",
+			"rules": {
+				"required-attr": true
+			}
+		},
 
 		/**
 		 * Enforce WHATWG constraints between `srcset`, `sizes`, and `loading` attributes
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/images.html#srcset-attributes
 		 */
-		"srcset-sizes-constraint": true
+		"html-standard/srcset-sizes-constraint": {
+			"specConformance": "normative",
+			"rules": {
+				"srcset-sizes-constraint": true
+			}
+		}
 	},
 	"nodeRules": [
 		{
@@ -139,8 +214,6 @@
 			 * No use `<caption>` within `<figure>`
 			 *
 			 * When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.
-			 * The `require-accessible-name: false` entry is automatically separated into an unnamed
-			 * nodeRule by expandNamedNodeRules, preserving its base-rule specificity override semantics.
 			 *
 			 * @see https://html.spec.whatwg.org/multipage/tables.html#the-caption-element
 			 */

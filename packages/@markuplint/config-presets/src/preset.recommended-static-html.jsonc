@@ -11,8 +11,15 @@
 		/**
 		 * Use [**character reference**](https://markuplint.dev/docs/rules/character-reference)
 		 *
+		 * Warns when illegal characters in text nodes or attribute values
+		 * are not escaped with character references.
 		 */
-		"character-reference": true,
+		"static-html/character-reference": {
+			"specConformance": "normative",
+			"rules": {
+				"character-reference": true
+			}
+		},
 
 		/**
 		 * No omit **end-tag**
@@ -20,6 +27,11 @@
 		 * Recommend to write an end-tag always because it is too difficult
 		 * for a human decide an element is end-tag omittable.
 		 */
-		"end-tag": true
+		"static-html/end-tag": {
+			"specConformance": "non-normative",
+			"rules": {
+				"end-tag": true
+			}
+		}
 	}
 }

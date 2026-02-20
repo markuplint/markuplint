@@ -334,10 +334,45 @@ export type Rule<T extends RuleConfigValue, O extends PlainData = undefined> = R
 export type AnyRule = Rule<RuleConfigValue, PlainData>;
 
 /**
+ * A named rule group in the `rules` section.
+ * Keys containing `/` in `rules` are treated as named rule groups.
+ * Each group wraps one or more base rules under a namespace,
+ * enabling per-check control and spec conformance metadata.
+ *
+ * @example
+ * ```jsonc
+ * {
+ *   "rules": {
+ *     "a11y/id-duplication": {
+ *       "specConformance": "normative",
+ *       "rules": { "id-duplication": true }
+ *     }
+ *   }
+ * }
+ * ```
+ */
+export type NamedRuleGroup = {
+	readonly specConformance?: SpecConformance;
+	/** User-applied severity override for all rules in the group */
+	readonly severity?: Severity;
+	readonly rules: BaseRules;
+};
+
+/**
+ * A dictionary mapping base rule names to their configurations.
+ * Does not accept {@link NamedRuleGroup} entries.
+ * Used inside {@link NamedRuleGroup}, {@link NodeRule}, and {@link ChildNodeRule}.
+ */
+export type BaseRules = {
+	readonly [ruleName: string]: AnyRule;
+};
+
+/**
  * A dictionary mapping rule names to their configurations.
+ * Keys containing `/` may be {@link NamedRuleGroup} entries.
  */
 export type Rules = {
-	readonly [ruleName: string]: AnyRule;
+	readonly [ruleName: string]: AnyRule | NamedRuleGroup;
 };
 
 /**
@@ -403,7 +438,8 @@ export type NodeRule = {
 	readonly categories?: readonly string[];
 	readonly roles?: readonly string[];
 	readonly obsolete?: boolean;
-	readonly rules?: Rules;
+	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
+	readonly rules?: BaseRules;
 };
 
 /**
@@ -429,7 +465,8 @@ export type ChildNodeRule = {
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
 	readonly inheritance?: boolean;
-	readonly rules?: Rules;
+	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
+	readonly rules?: BaseRules;
 };
 
 /**

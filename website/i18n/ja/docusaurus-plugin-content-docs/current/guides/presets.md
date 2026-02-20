@@ -38,60 +38,134 @@
 - `markuplint:recommended-vue`
 - `markuplint:recommended-svelte`
 
-これらの**推奨プリセット**には、**すべての[基本プリセット](#base-presets)**が含まれています。また、`markuplint:recommended`以外はそれぞれ[固有のルールセット](#syntax-specific-presets)を持っています。
+これらの**推奨プリセット**には、**すべての[基本プリセット](#base-presets)**が含まれています。また、`markuplint:recommended`以外はそれぞれ固有のルールセット（例: [`markuplint:recommended-static-html`](#preset-static-html)、[`markuplint:recommended-react`](#preset-react)）を持っています。
 
-## 基本プリセットのルールセット {#rulesets-of-base-presets}
+## プリセット内の名前付きルール {#named-rules}
 
-| ルールセット                                                                                                                                                                                                                                | 解説                                                                                                                                            | `a11y` | `html-standard` | `performance` | `rdfa` | `security` |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------- | ------------- | ------ | ---------- |
-| [Must not duplicate **ID**](https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html)                                                                                                                                                         | Be able to avoid problems in assistive technologies from the viewpoint of machine readability.                                                  | ✅     | ✅              | ❌            | ❌     | ❌         |
-| [Disallow `accesskey` attr](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns)                                                                                                           |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [`tabindex` attr only `-1` or `0`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns)                                                                                                     |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| `<label>` should have control                                                                                                                                                                                                               |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [Use **landmark**](https://www.w3.org/TR/wai-aria-practices/examples/landmarks/)                                                                                                                                                            |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| **Popover** trigger and target must be adjacent                                                                                                                                                                                             |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [No ambiguous **Navigable Target Names**](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names)                                                                                                            |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| No consecutive `<br>`                                                                                                                                                                                                                       |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| No refer to no existent **ID**                                                                                                                                                                                                              |                                                                                                                                                 | ✅     | ✅              | ❌            | ❌     | ❌         |
-| Require **accessible name**                                                                                                                                                                                                                 |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Require `<h1>`                                                                                                                                                                                                                              |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Align row and column                                                                                                                                                                                                                        |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Use `<ul>`                                                                                                                                                                                                                                  |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Conform to **WAI-ARIA**                                                                                                                                                                                                                     |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Require `<html lang>`                                                                                                                                                                                                                       |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Require `<abbr title>`                                                                                                                                                                                                                      |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Require `<track>`                                                                                                                                                                                                                           |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| Require `<video muted>`                                                                                                                                                                                                                     |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| No merge cells                                                                                                                                                                                                                              |                                                                                                                                                 | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [`<summary>` no contains interactive contents](https://github.com/whatwg/html/issues/2272#issuecomment-1242415594)                                                                                                                          | There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.                  | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [Disallow `autofocus` attr to except in the dialog scope](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations)                                                                       | Don't take away a focus to forced. However, the `dialog` element and its descendants allow it.                                                  | ✅     | ❌              | ❌            | ❌     | ❌         |
-| [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)                                                                                                                                    | The parser ignores all such duplicate occurrences of the attribute.                                                                             | ❌     | ✅              | ❌            | ❌     | ❌         |
-| No use deprecated attr                                                                                                                                                                                                                      | You should not use deprecated attributes from the viewpoint of compatibility.                                                                   | ❌     | ✅              | ❌            | ❌     | ❌         |
-| No use deprecated element                                                                                                                                                                                                                   | You should not use deprecated elements from the viewpoint of compatibility.                                                                     | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)                                                                                                                                                      | It has the effect of avoiding quirks mode.                                                                                                      | ❌     | ✅              | ❌            | ❌     | ❌         |
-| Must not skip heading levels                                                                                                                                                                                                                |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| No use ineffective attr                                                                                                                                                                                                                     |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [No duplicate names in `<dl>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element:~:text=Within%20a%20single%20dl%20element%2C%20there%20should%20not%20be%20more%20than%20one%20dt%20element%20for%20each%20name) | Within a single dl element, there should not be more than one dt element for each name.                                                         | ❌     | ✅              | ❌            | ❌     | ❌         |
-| No use **orphaned end tag**                                                                                                                                                                                                                 |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| Allow only **permitted contents**                                                                                                                                                                                                           |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| Need **placeholder label option**                                                                                                                                                                                                           |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| Require the `datetime` attribute if the content of the `time` element is invalid                                                                                                                                                            |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| Specify required attr                                                                                                                                                                                                                       |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [Specify `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)                                                                                                                                                    |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [No use `<small>` as **subheadings**](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element)                                                                                                                   | Should not use it in `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`.                                                                        | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)                                                                                                                              | When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.           | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element)                                                                                                                | When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern. | ❌     | ✅              | ❌            | ❌     | ❌         |
-| No nested same `<details>` name group                                                                                                                                                                                                       |                                                                                                                                                 | ❌     | ✅              | ❌            | ❌     | ❌         |
-| [Require `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)                                                                                                                                                    |                                                                                                                                                 | ❌     | ❌              | ✅            | ❌     | ❌         |
-| Require `defer` attr                                                                                                                                                                                                                        | Should load and parse scripts lazily to avoid render-blocking.                                                                                  | ❌     | ❌              | ✅            | ❌     | ❌         |
-| Require **aspect-ratio**                                                                                                                                                                                                                    | Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**                                                             | ❌     | ❌              | ✅            | ❌     | ❌         |
-| Require loading `<iframe>` lazily                                                                                                                                                                                                           | Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.                      | ❌     | ❌              | ✅            | ❌     | ❌         |
-| Allow `property` attr with `<meta>`                                                                                                                                                                                                         | Be able to use **Open-Graph** etc.                                                                                                              | ❌     | ❌              | ❌            | ✅     | ❌         |
+プリセットのチェックの一部は**名前付きルール**として定義されています。名前付きルールは `namespace/rule-name` 形式の名前を持ち、違反レポートに表示されます（例: `a11y/html-lang`）。
 
-## 構文固有のルールセット {#syntax-specific-presets}
+`rules` プロパティを使って、名前付きルールの無効化、深刻度の変更、名前空間ワイルドカードによる一括無効化が可能です。
 
-| ルールセット                                                                         | 解説                                                                                                                                                                   | `recommended-static-html` | `recommended-react` | `recommended-vue` | `recommended-svelte` |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------- | ----------------- | -------------------- |
-| No hard coding **ID**                                                                | The component that hard-coded ID cannot mount to an app duplicated because the IDs must be unique in a document. Recommend to specify dynamic IDs to avoid doing that. | ❌                        | ✅                  | ✅                | ✅                   |
-| Use [**character reference**](https://markuplint.dev/docs/rules/character-reference) |                                                                                                                                                                        | ✅                        | ❌                  | ❌                | ❌                   |
-| No omit **end-tag**                                                                  | Recommend to write an end-tag always because it is too difficult for a human decide an element is end-tag omittable.                                                   | ✅                        | ❌                  | ❌                | ❌                   |
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // 特定の名前付きルールを無効化
+    "a11y/html-lang": false,
+
+    // 名前付きルールの深刻度を変更
+    "a11y/no-autofocus-outside-dialog": { "severity": "warning" },
+
+    // 名前空間内のすべての名前付きルールを無効化
+    "a11y/*": false
+  }
+}
+```
+
+複数のプリセットが同じベースルールをラップしている場合（例: `a11y/id-duplication` と `html-standard/id-duplication`）、それぞれ独立して実行され、個別の違反を報告します。各ルールを個別に制御できます。
+
+名前付きルールの一覧は、以下の[ルールセットのテーブル](#rulesets-of-base-presets)を参照してください。
+
+## プリセットのルールセット {#rulesets-of-base-presets}
+
+### `markuplint:a11y` {#preset-a11y}
+
+| 名前付きルール                             | 解説                                                                                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `a11y/id-duplication`                      | `id`属性値がドキュメント内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。                             |
+| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                                        |
+| `a11y/wai-aria`                            | `role`属性と`aria-*`属性がWAI-ARIA、DPub-ARIA、およびARIA in HTML仕様に準拠していない場合に警告します。                                          |
+| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                                                         |
+| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                                             |
+| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない、もしくは複数持つ場合に警告します。                                                            |
+| `a11y/landmark-roles`                      | `banner`、`main`、`complementary`、`contentinfo`がトップレベルのランドマークであること、複数のランドマークが一意のラベルを持つことを確認します。 |
+| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                                               |
+| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                                                           |
+| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                                                        |
+| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                                                    |
+| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                                                         |
+| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                                                |
+| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                                                    |
+| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                                                       |
+| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                                                       |
+| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。                                          |
+| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。                                       |
+| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                                                       |
+| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                                                       |
+| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                                                   |
+| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                                              |
+| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。                                |
+| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                                               |
+
+### `markuplint:html-standard` {#preset-html-standard}
+
+| 名前付きルール                              | 解説                                                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `html-standard/id-duplication`              | `id`属性値がドキュメント内で重複している場合に警告します。                                                                     |
+| `html-standard/no-refer-to-non-existent-id` | `for`、`form`、`aria-*`、フラグメントリンクに指定されたIDが同じドキュメント内に存在することを確認します。                      |
+| `html-standard/attr-duplication`            | パーサーは重複した属性をすべて無視します。                                                                                     |
+| `html-standard/deprecated-attr`             | 互換性の観点から、非推奨属性を使用してはなりません。                                                                           |
+| `html-standard/deprecated-element`          | 互換性の観点から、非推奨要素を使用してはなりません。                                                                           |
+| `html-standard/doctype`                     | 後方互換モードを回避する効果があります。                                                                                       |
+| `html-standard/permitted-contents`          | HTML仕様で親要素に許可されていない子要素がある場合に警告します。                                                               |
+| `html-standard/required-attr`               | HTML仕様で定義された必須属性が要素に存在しない場合に警告します。                                                               |
+| `html-standard/ineffective-attr`            | 要素に対して効果のない属性が指定されている場合に警告します（例: `<div>`に`disabled`）。                                        |
+| `html-standard/no-orphaned-end-tag`         | 対応する開始タグのない終了タグが現れた場合に警告します。内部解析エラーに該当します。                                           |
+| `html-standard/heading-levels`              | 各見出しは前の見出しと同じか1レベル大きい必要があります。                                                                      |
+| `html-standard/no-duplicate-dt`             | ひとつの`<dl>`要素内に、同じ名前の`<dt>`要素が複数あるべきではありません。                                                     |
+| `html-standard/placeholder-label-option`    | `<select>`要素がプレースホルダーラベルオプション（空の値を持つ最初の`<option>`）を必要とするかどうかを確認します。             |
+| `html-standard/require-datetime`            | `<time>`要素の内容が有効な日時文字列でない場合、`datetime`属性が必要です。                                                     |
+| `html-standard/srcset-sizes-constraint`     | `<img>`および`<source>`要素の`srcset`、`sizes`、`loading`属性間のWHATWG制約を検証します。                                      |
+| `html-standard/head-charset-utf8`           | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                                                 |
+| `html-standard/no-small-in-heading`         | `<h1>`〜`<h6>`内で`<small>`を使用すべきではありません。                                                                        |
+| `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |
+| `html-standard/input-pattern-title`         | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                            |
+| `html-standard/no-nested-details-name`      | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                   |
+
+### `markuplint:performance` {#preset-performance}
+
+| 名前付きルール                    | 解説                                                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `performance/head-charset-utf8`   | ドキュメントheadに`<meta charset="UTF-8">`要素を必須とします。                                             |
+| `performance/script-defer`        | レンダリングブロッキングを避けるため、スクリプトを遅延読み込み・解析すべきです。                           |
+| `performance/img-aspect-ratio`    | **Cumulative Layout Shift**を避けるため、`<img>`に`width`と`height`属性を必須とします。                    |
+| `performance/iframe-lazy-loading` | ビューポート外の要素によるレンダリングブロッキングを避けるため、`<iframe>`に`loading=lazy`を必須とします。 |
+
+### `markuplint:rdfa` {#preset-rdfa}
+
+| 名前付きルール       | 解説                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `rdfa/meta-property` | **Open Graph**等のRDFaベースのメタデータのため、`<meta>`の`property`属性を許容します。 |
+
+### `markuplint:recommended-static-html` {#preset-static-html}
+
+すべての[基本プリセット](#base-presets)に加えて、以下のルールが含まれます:
+
+| 名前付きルール                    | 解説                                                                                                           |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `static-html/character-reference` | テキストノードまたは属性値で、不正な文字が文字参照でエスケープされていない場合に警告します。                   |
+| `static-html/end-tag`             | 要素の終了タグが省略可能かどうかを人間が判断するのは非常に困難なため、常に終了タグを記述することを推奨します。 |
+
+### `markuplint:recommended-react` {#preset-react}
+
+すべての[基本プリセット](#base-presets)に加えて、以下のルールが含まれます:
+
+| 名前付きルール          | 解説                                                                                                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `react/no-hard-code-id` | IDをハードコーディングしたコンポーネントは、ドキュメント内でIDが一意でなければならないため、重複してマウントできません。動的なIDを使用してください。 |
+
+### `markuplint:recommended-vue` {#preset-vue}
+
+すべての[基本プリセット](#base-presets)に加えて、以下のルールが含まれます:
+
+| 名前付きルール        | 解説                                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vue/no-hard-code-id` | IDをハードコーディングしたコンポーネントは、ドキュメント内でIDが一意でなければならないため、重複してマウントできません。動的なIDを使用してください。 |
+
+### `markuplint:recommended-svelte` {#preset-svelte}
+
+すべての[基本プリセット](#base-presets)に加えて、以下のルールが含まれます:
+
+| 名前付きルール           | 解説                                                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `svelte/no-hard-code-id` | IDをハードコーディングしたコンポーネントは、ドキュメント内でIDが一意でなければならないため、重複してマウントできません。動的なIDを使用してください。 |

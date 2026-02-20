@@ -1,5 +1,7 @@
 import type { AnyMLRule } from './ml-rule/index.js';
-import type { SpecConformance } from '@markuplint/ml-config';
+import type { AnyRule, BaseRules, NamedRuleGroup, Rules, Severity, SpecConformance } from '@markuplint/ml-config';
+
+import { isNamedRuleGroup } from '@markuplint/ml-config';
 
 /**
  * Common shape of a nodeRule/childNodeRule entry that supports naming.
@@ -116,13 +118,11 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 		const useGroupName = nonFalseEntries.length > 1;
 		const groupName = useGroupName ? namedRuleName : undefined;
 
-		let hasError = false;
 		for (const [baseRuleName, ruleConfig] of nonFalseEntries) {
 			const baseRule = existingRuleMap.get(baseRuleName);
 
 			if (!baseRule) {
 				errors.push(new Error(`Base rule "${baseRuleName}" not found for named nodeRule "${namedRuleName}"`));
-				hasError = true;
 				continue;
 			}
 
@@ -135,12 +135,10 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 				errors.push(
 					new Error(`Named nodeRule "${aliasName}" conflicts with an existing rule of the same name`),
 				);
-				hasError = true;
 				continue;
 			}
 			if (usedAliasNames.has(aliasName) && aliasName !== namedRuleName) {
 				errors.push(new Error(`Duplicate named nodeRule: "${aliasName}"`));
-				hasError = true;
 				continue;
 			}
 			if (aliasName !== namedRuleName) {
@@ -159,10 +157,6 @@ export function expandNamedNodeRules<T extends NameableNodeRule>(
 			// and strip the name/specConformance properties (consumed by the virtual rule)
 			// Safety: same as above — T's structural properties are preserved by stripNamedProperties.
 			transformedNodeRules.push(stripNamedProperties(nodeRule, { [aliasName]: ruleConfig }) as unknown as T);
-		}
-
-		if (hasError) {
-			continue;
 		}
 	}
 
@@ -186,4 +180,147 @@ function stripNamedProperties(
 	}
 	result['rules'] = replacementRules;
 	return result as NameableNodeRule;
+}
+
+/**
+ * Result of expanding named rule groups in the `rules` section.
+ */
+export type ExpandNamedRulesResult = {
+	/** Virtual MLRule instances created from named rule groups */
+	readonly virtualRules: readonly AnyMLRule[];
+	/** Rules dict with named groups expanded into their virtual rule entries */
+	readonly resolvedRules: Rules;
+	/** Validation errors encountered during expansion */
+	readonly errors: readonly Error[];
+};
+
+/**
+ * Expands named rule groups in the `rules` section into virtual MLRule instances.
+ *
+ * Named rule groups (keys containing `/` whose values are {@link NamedRuleGroup} objects)
+ * are converted into independent virtual rules, similar to how `expandNamedNodeRules`
+ * handles named nodeRules. This enables per-check control at the global rules level.
+ *
+ * @param rules - The rules dict from the config
+ * @param existingRules - All registered MLRule instances (for base rule lookup)
+ * @returns Virtual rules, resolved rules dict, and any validation errors
+ */
+export function expandNamedRules(rules: Rules, existingRules: readonly Readonly<AnyMLRule>[]): ExpandNamedRulesResult {
+	const virtualRules: AnyMLRule[] = [];
+	const resolvedRules: Record<string, AnyRule | NamedRuleGroup> = {};
+	const errors: Error[] = [];
+
+	const existingRuleMap = new Map(existingRules.map(r => [r.name, r as AnyMLRule]));
+	const usedAliasNames = new Set<string>();
+
+	for (const [key, value] of Object.entries(rules)) {
+		// Non-namespaced keys: pass through as regular rules
+		if (!key.includes('/')) {
+			resolvedRules[key] = value;
+			continue;
+		}
+
+		// Wildcard patterns (e.g., "a11y/*"): pass through
+		if (key.endsWith('/*')) {
+			resolvedRules[key] = value;
+			continue;
+		}
+
+		// `false`: disable signal — pass through
+		if (value === false) {
+			resolvedRules[key] = false;
+			continue;
+		}
+
+		// NamedRuleGroup: expand into virtual rules
+		if (isNamedRuleGroup(value)) {
+			const groupKey = key;
+			const { specConformance, severity: groupSeverity } = value;
+			const groupRules = value.rules;
+
+			const entries = Object.entries(groupRules);
+			const nonFalseEntries = entries.filter(([, v]) => v !== false);
+
+			if (nonFalseEntries.length === 0) {
+				errors.push(new Error(`Named rule group "${groupKey}" must have at least one non-false rule entry`));
+				continue;
+			}
+
+			// Check for duplicate
+			if (usedAliasNames.has(groupKey)) {
+				errors.push(new Error(`Duplicate named rule group: "${groupKey}"`));
+				continue;
+			}
+			usedAliasNames.add(groupKey);
+
+			// Check for name collision with existing rules
+			if (existingRuleMap.has(groupKey)) {
+				errors.push(
+					new Error(`Named rule group "${groupKey}" conflicts with an existing rule of the same name`),
+				);
+				continue;
+			}
+
+			const useGroupName = nonFalseEntries.length > 1;
+			const gName = useGroupName ? groupKey : undefined;
+
+			// Determine the defaultSeverity for virtual rules:
+			// 1. Group-level severity override (from user config merge)
+			// 2. undefined (use base rule's default)
+			const effectiveDefaultSeverity: Severity | undefined = groupSeverity;
+
+			for (const [baseRuleName, ruleConfig] of nonFalseEntries) {
+				const baseRule = existingRuleMap.get(baseRuleName);
+
+				if (!baseRule) {
+					errors.push(new Error(`Base rule "${baseRuleName}" not found for named rule group "${groupKey}"`));
+					continue;
+				}
+
+				const aliasName: string = useGroupName ? `${groupKey}/${baseRuleName}` : groupKey;
+
+				// Check collisions
+				if (existingRuleMap.has(aliasName)) {
+					errors.push(
+						new Error(`Named rule group "${aliasName}" conflicts with an existing rule of the same name`),
+					);
+					continue;
+				}
+				if (usedAliasNames.has(aliasName) && aliasName !== groupKey) {
+					errors.push(new Error(`Duplicate named rule: "${aliasName}"`));
+					continue;
+				}
+				if (aliasName !== groupKey) {
+					usedAliasNames.add(aliasName);
+				}
+
+				// Create virtual rule
+				const virtualRule = baseRule.createAlias(aliasName, {
+					specConformance,
+					groupName: gName,
+					defaultSeverity: effectiveDefaultSeverity,
+				});
+
+				virtualRules.push(virtualRule);
+
+				// Add the rule config under the alias name
+				resolvedRules[aliasName] = ruleConfig;
+			}
+		} else {
+			// Not a NamedRuleGroup — treat as regular rule (e.g., user config for a virtual rule)
+			resolvedRules[key] = value;
+		}
+	}
+
+	// Backwards compatibility: if a base rule is set to false in the rules dict,
+	// also disable any virtual rules from named rule groups that wrap it.
+	// This ensures `"id-duplication": false` still works when the preset wraps
+	// the rule in a named rule group like `"a11y/id-duplication"`.
+	for (const vRule of virtualRules) {
+		if (vRule.baseRuleId && resolvedRules[vRule.baseRuleId] === false) {
+			resolvedRules[vRule.name] = false;
+		}
+	}
+
+	return { virtualRules, resolvedRules: resolvedRules as BaseRules, errors };
 }

@@ -1,6 +1,13 @@
 import { describe, test, expect } from 'vitest';
 
-import { cleanOptions, deleteUndefProp, exchangeValueOnRule, isRuleConfigValue, provideValue } from './utils.js';
+import {
+	cleanOptions,
+	deleteUndefProp,
+	exchangeValueOnRule,
+	isNamedRuleGroup,
+	isRuleConfigValue,
+	provideValue,
+} from './utils.js';
 
 test('provideValue', () => {
 	expect(
@@ -211,5 +218,64 @@ describe('exchangeValueOnRule edge cases', () => {
 		expect(result).toStrictEqual({
 			value: 'static',
 		});
+	});
+});
+
+describe('isNamedRuleGroup', () => {
+	test('object with rules property is a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup({ rules: { 'id-duplication': true } })).toBe(true);
+	});
+
+	test('object with rules and specConformance', () => {
+		expect(isNamedRuleGroup({ specConformance: 'normative', rules: { 'id-duplication': true } })).toBe(true);
+	});
+
+	test('object with rules and severity', () => {
+		expect(isNamedRuleGroup({ severity: 'warning', rules: { 'id-duplication': true } })).toBe(true);
+	});
+
+	test('false is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup(false)).toBe(false);
+	});
+
+	test('string is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup('warning')).toBe(false);
+	});
+
+	test('array is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup(['id', 'class'])).toBe(false);
+	});
+
+	test('null is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup(null)).toBe(false);
+	});
+
+	test('undefined is not a NamedRuleGroup', () => {
+		// eslint-disable-next-line unicorn/no-useless-undefined
+		expect(isNamedRuleGroup(undefined)).toBe(false);
+	});
+
+	test('number is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup(42)).toBe(false);
+	});
+
+	test('true is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup(true)).toBe(false);
+	});
+
+	test('object with rules: null is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup({ rules: null })).toBe(false);
+	});
+
+	test('object with rules as array is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup({ rules: [] })).toBe(false);
+	});
+
+	test('RuleConfig with value and options is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup({ value: true, options: { foo: 'bar' } })).toBe(false);
+	});
+
+	test('object with rules as string is not a NamedRuleGroup', () => {
+		expect(isNamedRuleGroup({ rules: 'not-an-object' })).toBe(false);
 	});
 });

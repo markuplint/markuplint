@@ -65,7 +65,7 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 
 ## `invalid-attr`ルールで怒られます
 
-[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`attrs`](/docs/rules/invalid-attr#setting-attrs-option)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
+[`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
 
 また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/besides-html#why-need-the-spec-plugins)）
 

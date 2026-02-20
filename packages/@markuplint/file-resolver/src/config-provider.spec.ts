@@ -234,7 +234,10 @@ test('Config Presets', async () => {
 	const key = path.resolve(testDir, '007', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '007', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
-	expect(configSet.config.rules?.['wai-aria']).toBe(true);
+	expect(configSet.config.rules?.['a11y/wai-aria']).toStrictEqual({
+		specConformance: 'normative',
+		rules: { 'wai-aria': true },
+	});
 });
 
 test('TypeScript (.markuplintrc.ts)', async () => {

@@ -6,6 +6,8 @@
 			 *
 			 * @see https://html.spec.whatwg.org/multipage/semantics.html#charset
 			 */
+			"name": "performance/head-charset-utf8",
+			"specConformance": "normative",
 			"selector": ":where(head)",
 			"rules": {
 				"required-element": ["meta[charset=\"UTF-8\" i]"]
@@ -17,6 +19,8 @@
 			 *
 			 * Should load and parse scripts lazily to avoid render-blocking.
 			 */
+			"name": "performance/script-defer",
+			"specConformance": "non-normative",
 			"selector": ":where(script[src]:not([type=module]))",
 			"rules": {
 				"required-attr": ["defer"]
@@ -28,6 +32,8 @@
 			 *
 			 * Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**
 			 */
+			"name": "performance/img-aspect-ratio",
+			"specConformance": "non-normative",
 			"selector": ":where(img[src])",
 			"rules": {
 				"required-attr": ["width", "height"]
@@ -39,6 +45,8 @@
 			 *
 			 * Require `loading=lazy` with `<iframe>` to avoid render-blocking that causes loading if its element is out of the viewport.
 			 */
+			"name": "performance/iframe-lazy-loading",
+			"specConformance": "non-normative",
 			"selector": ":where(iframe)",
 			"rules": {
 				"required-attr": [

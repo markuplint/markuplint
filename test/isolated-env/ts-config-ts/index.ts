@@ -16,14 +16,12 @@ void test('ts-config-ts', async () => {
 	});
 	const result = await engine.exec();
 
-	assert.deepStrictEqual(result?.violations, [
-		{
-			ruleId: 'permitted-contents',
-			severity: 'error',
-			line: 1,
-			col: 7,
-			raw: '<div>',
-			message: 'The "div" element is not allowed in the "span" element in this context',
-		},
-	]);
+	const violations = result?.violations ?? [];
+	assert.equal(violations.length, 1);
+	assert.equal(violations[0]?.ruleId, 'permitted-contents');
+	assert.equal(violations[0]?.severity, 'error');
+	assert.equal(violations[0]?.line, 1);
+	assert.equal(violations[0]?.col, 7);
+	assert.equal(violations[0]?.raw, '<div>');
+	assert.equal(violations[0]?.message, 'The "div" element is not allowed in the "span" element in this context');
 });

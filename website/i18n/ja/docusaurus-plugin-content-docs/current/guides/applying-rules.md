@@ -65,6 +65,35 @@ Markuplintは実行時、[設定ファイル](/docs/configuration)を自動で�
 }
 ```
 
+## プリセットルールのカスタマイズ {#customizing-preset-rules}
+
+プリセットは**名前付きルール**を定義しており、個別にカスタマイズできます。名前付きルールは `namespace/rule-name` 形式で、無効化、深刻度の変更、名前空間ワイルドカードによる一括無効化が可能です。
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // 特定の名前付きルールを無効化
+    "a11y/html-lang": false,
+
+    // 名前付きルールの深刻度を変更
+    "a11y/no-autofocus-outside-dialog": "warning",
+
+    // 名前空間内のすべての名前付きルールを無効化
+    "a11y/*": false,
+
+    // ベースルール名で無効化（詳細はプロパティリファレンス参照）
+    "id-duplication": false
+  }
+}
+```
+
+複数のプリセットが同じベースルールをラップしている場合（例: `a11y/id-duplication` と `html-standard/id-duplication`）、それぞれ独立して実行されます。個別に制御することも可能です。ベースルール名を`false`に設定すると、そのベースルールを含むすべての名前付きルールグループ内で該当ルールが無効化されます — 詳細は[ベースルール名による無効化](/docs/configuration/properties#disable-by-base-rule-name)を参照してください。
+
+独自の[名前付きルールグループ](/docs/configuration/properties#named-rule-groups)を`rules`プロパティで定義することもできます。詳細は[設定リファレンス](/docs/configuration/properties#named-rule-groups)を参照してください。
+
+名前付きルールの一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
+
 ## 組み込みルール
 
 各**組込みルール**の詳細は、[「ルール」ページ](/docs/rules/)よりご確認ください。
