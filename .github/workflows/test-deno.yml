@@ -159,4 +159,4 @@ jobs:
               run: deno --version
 
             - name: Test with Deno
-              run: deno run -A --node-modules-dir npm:vitest run
+              run: deno run -A --unstable-detect-cjs node_modules/vitest/vitest.mjs run
