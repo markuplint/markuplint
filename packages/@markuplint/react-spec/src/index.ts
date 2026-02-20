@@ -20,6 +20,7 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * `defaultValue`, `value`).
  */
 const spec: ExtendedSpec = {
+	useIDLAttributeNames: true,
 	def: {
 		'#globalAttrs': {
 			'#extends': {

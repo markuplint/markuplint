@@ -8,6 +8,10 @@
 
 ## ExtendedSpec の内容
 
+### `useIDLAttributeNames`
+
+この spec は `useIDLAttributeNames: true` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `className` -> `class`、`htmlFor` -> `for`）。この解決はパーサーではなくコアレベルで行われます。
+
 ### グローバル属性
 
 グローバル属性は `def['#globalAttrs']['#extends']` の下に定義され、すべての JSX 要素で利用可能です:

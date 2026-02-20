@@ -8,6 +8,10 @@ This package contains no parsing logic -- it is purely a data definition consume
 
 ## ExtendedSpec Content
 
+### `useIDLAttributeNames`
+
+The spec sets `useIDLAttributeNames: true`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `className` -> `class`, `htmlFor` -> `for`). This resolution is performed at the core level, not in the parser.
+
 ### Global Attributes
 
 Global attributes are defined under `def['#globalAttrs']['#extends']` and are available on every JSX element:
