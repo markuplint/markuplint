@@ -746,33 +746,34 @@ describe('MDXParser', () => {
 	});
 
 	describe('IDL attribute name conversion', () => {
-		test('className is mapped to class as potentialName', () => {
+		test('className is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<div className="test">text</div>\n');
 			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'className');
 			expect(attr).toBeDefined();
-			expect(attr!.potentialName).toBe('class');
-			// candidate is not set because rawName === idlPropName ("className")
+			// potentialName is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			expect(attr!.potentialName).toBeUndefined();
 		});
 
-		test('htmlFor is mapped to for as potentialName', () => {
+		test('htmlFor is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<label htmlFor="input-id">Label</label>\n');
 			const label = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'label');
 			expect(label).toBeDefined();
 			const attr = label!.attributes.find(a => a.type === 'attr' && a.name.raw === 'htmlFor');
 			expect(attr).toBeDefined();
-			expect(attr!.potentialName).toBe('for');
-			// candidate is not set because rawName === idlPropName ("htmlFor")
+			// potentialName is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			expect(attr!.potentialName).toBeUndefined();
 		});
 
-		test('class in JSX gets candidate set to className (rawName differs from IDL name)', () => {
+		test('class in JSX is kept as-is (IDL resolution handled by ml-core)', () => {
 			const doc = parse('<div class="test">text</div>\n');
 			const div = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'div');
 			expect(div).toBeDefined();
 			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'class');
 			expect(attr).toBeDefined();
-			expect(attr!.candidate).toBe('className');
+			// candidate is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			expect(attr!.candidate).toBeUndefined();
 		});
 	});
 

@@ -32,7 +32,7 @@ Add `parser` and `specs` options to your [configuration](https://markuplint.dev/
 ## Features
 
 - **JSX elements**: Both self-closing (`<Badge />`) and container (`<Card>...</Card>`) components
-- **IDL attribute conversion**: React-style attributes (e.g., `className`, `htmlFor`) are mapped to their HTML equivalents
+- **IDL attribute conversion**: When paired with `@markuplint/react-spec`, React-style attributes (e.g., `className`, `htmlFor`) are mapped to their HTML equivalents
 - **Expressions**: `{variable}` and `{condition ? a : b}` are treated as dynamic values
 - **ESM imports/exports**: `import` and `export` statements are recognized as blocks
 - **Markdown inside JSX**: Markdown content within JSX containers is recursively parsed
