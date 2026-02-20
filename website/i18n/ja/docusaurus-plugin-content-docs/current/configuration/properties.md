@@ -10,6 +10,7 @@
   "parserOptions": {},
   "specs": [],
   "excludeFiles": [],
+  "severity": {},
   "rules": {},
   "nodeRules": [],
   "childNodeRules": [],
@@ -27,6 +28,7 @@
 | [**`parserOptions`**](#parseroptions)   | -                                                                                                                             | [インターフェイス](#parseroptions/interface)  |
 | [**`specs`**](#specs)                   | [HTML以外につかう](/docs/guides/besides-html)                                                                                 | [インターフェイス](#specs/interface)          |
 | [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                    | [インターフェイス](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                             | [インターフェイス](#severity/interface)       |
 | [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                               | [インターフェイス](#rules/interface)          |
 | [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#noderules/interface)      |
 | [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#childnoderules/interface) |
@@ -270,6 +272,32 @@ interface Config {
 }
 ```
 
+### `severity`
+
+診断カテゴリごとにデフォルトの深刻度を制御します。
+
+#### `parseError`
+
+パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。
+
+```json class=config
+{
+  "severity": {
+    "parseError": "warning"
+  }
+}
+```
+
+#### インターフェイス {#severity/interface}
+
+```ts
+interface Config {
+  severity?: {
+    parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+  };
+}
+```
+
 ### `rules`
 
 [ルール](/docs/guides/applying-rules)を有効にしたり、詳細を設定します。各ルールの値は、文字列、数値、および配列のいずれかです。
@@ -334,12 +362,158 @@ interface Config {
 }
 ```
 
+#### プリセットの名前付きルール {#named-rules-from-presets}
+
+プリセットは `namespace/rule-name` 形式の名前付きルールを定義します。名前付きルールは違反レポートに表示され、`rules` プロパティで個別にカスタマイズ可能です。
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // プリセットの特定の名前付きルールを無効化
+    "a11y/html-lang": false,
+
+    // 名前付きルールの深刻度を変更
+    "html-standard/head-charset-utf8": { "severity": "warning" },
+
+    // ワイルドカードで名前空間内のすべての名前付きルールを無効化
+    "a11y/*": false,
+
+    // ベースルール名で無効化（詳細は下記参照）
+    "id-duplication": false
+  }
+}
+```
+
+##### ベースルール名による無効化 {#disable-by-base-rule-name}
+
+ベースルール名を`false`に設定すると、そのベースルールをラップしている名前付きルールグループ内の該当エントリが無効化されます。例えば、プリセットが以下のように定義されているとします：
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "id-duplication": true,
+        "invalid-attr": true
+      }
+    }
+  }
+}
+```
+
+設定に`"id-duplication": false`を追加すると、グループ内の該当ベースルールだけが無効化されます：
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "id-duplication": false,
+        "invalid-attr": true
+      }
+    }
+  }
+}
+```
+
+同グループ内の`invalid-attr`は影響を受けずに有効のままです。これは全グループに適用されます — `a11y/id-duplication`と`html-standard/id-duplication`の両方が`id-duplication`ベースルールをラップしている場合、両方とも無効化されます。この機能は後方互換性のために提供されています。
+
+一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
+
+#### 名前付きルールグループ {#named-rule-groups}
+
+`/` を含むキーと `rules` フィールドを持つ値を使って、独自の名前付きルールグループを定義できます。1つ以上のベースルールを名前空間でラップし、個別制御やメタデータの付与が可能になります。
+
+```json class=config
+{
+  "rules": {
+    "my-project/no-accesskey": {
+      "specConformance": "non-normative",
+      "rules": {
+        "invalid-attr": {
+          "options": { "disallowAttrs": ["accesskey"] }
+        }
+      }
+    }
+  }
+}
+```
+
+##### `specConformance` {#spec-conformance}
+
+`'normative'` または `'non-normative'` を受け取ります。省略可能です。チェックがHTML仕様の規範的要件に関するものか非規範的要件に関するものかを示すメタデータで、違反レポートに含まれますが、深刻度には影響しません。
+
+- `'normative'`: MUST や REQUIRED の要件に対応するチェック。
+- `'non-normative'`: SHOULD や RECOMMENDED の要件に対応するチェック。
+
+MarkuplintのHTML仕様に基づく組み込みプリセットルールにはこの値が自動的に設定されます。ユーザーが独自に設定することも可能です — 例えば、MarkuplintがHTML仕様の更新にまだ対応していない場合や、Markuplintのバージョンアップがやむを得ずできない場合に利用できます。
+
+:::warning
+このフィールドはHTML仕様に基づくチェックのみを対象としています。独自ルールやハウスルールに対して使用しないでください。乱用すると、違反レポートに表示される準拠レベルを見たユーザーが、HTML仕様上の要件だと誤解する恐れがあります。
+:::
+
+##### `severity`
+
+`'error'`、`'warning'`、または `'info'` を受け取ります。省略可能です。指定すると、グループ内の全ルールのデフォルト深刻度を上書きします。
+
+##### `rules`
+
+[`rules`](#rules)プロパティと同じ個別ルール設定を受け取りますが、名前付きルールグループのネストは受け付けません。必須です。ラップするベースルールを1つ以上含みます。
+
+##### 複数エントリの命名規則
+
+名前付きルールグループに1つのエントリがある場合、グループキーがそのままルール名になります。2つ以上のエントリがある場合、各エントリに`グループキー/ベースルール名`形式の派生名が付与され、グループキーはグループ名になります。
+
+```json class=config
+{
+  "rules": {
+    // 単一エントリ: ルール名は "my-project/no-accesskey"
+    "my-project/no-accesskey": {
+      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+    },
+    // 複数エントリ: ルール名は "my-project/checks/attr-duplication"
+    // と "my-project/checks/class-naming"
+    "my-project/checks": {
+      "rules": {
+        "attr-duplication": true,
+        "class-naming": "/[a-z]+/"
+      }
+    }
+  }
+}
+```
+
+グループ名を使って複数エントリのグループを一括で無効化できます：
+
+```json class=config
+{
+  "rules": {
+    "my-project/checks": false
+  }
+}
+```
+
+#### 積み上げ動作 {#accumulation}
+
+複数の名前付きルールグループが同じベースルールをラップしている場合（例: `a11y/id-duplication` と `html-standard/id-duplication`）、それぞれ独立して実行され、両方が違反を報告します。各名前付きルールは独立して制御できます：
+
+```json class=config
+{
+  "extends": ["markuplint:a11y", "markuplint:html-standard"],
+  "rules": {
+    // a11y の観点のみ無効化。html-standard の観点は有効のまま
+    "a11y/id-duplication": false
+  }
+}
+```
+
 #### インターフェイス {#rules/interface}
 
 ```ts
 interface Config {
   rules?: {
-    [ruleName: string]: Rule<T, O>;
+    [ruleName: string]: Rule<T, O> | NamedRuleGroup;
   };
 }
 
@@ -352,13 +526,21 @@ type Rule<T, O> =
       option?: O;
       reason?: string;
     };
+
+type NamedRuleGroup = {
+  specConformance?: 'normative' | 'non-normative';
+  severity?: 'error' | 'warning' | 'info';
+  rules: {
+    [ruleName: string]: Rule<T, O>;
+  };
+};
 ```
 
 ### `nodeRules`
 
 特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-to-some)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
 
-`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。[`rules`](#rules)プロパティと同じ値を指定します。
+`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。
 
 ```json class=config
 {
@@ -373,9 +555,19 @@ type Rule<T, O> =
 }
 ```
 
+#### `name`
+
+`/` を含む文字列（例: `a11y/html-lang`）を受け取ります。省略可能です。指定すると、[`rules`](#rules) プロパティで個別に設定可能な**名前付きルール**を作成します。主にプリセットで使用されます。
+
+`rules` フィールドに1つのエントリがある場合、この名前がそのままルール名になります。2つ以上のエントリがある場合、各エントリに `name/ベースルール名` 形式の派生名が付与され、この名前はグループ名になります。グループは `rules["グループ名"]: false` で一括無効化できます。
+
+#### `specConformance`
+
+Named Rule Groupsの[`specConformance`](#spec-conformance)と同じです。
+
 #### `rules` {#to-some-rules}
 
-[`rules`](#rules)プロパティと同じ値を受け取ります。必須です。
+個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。必須です。
 
 #### `selector`
 
@@ -551,12 +743,16 @@ interface Config {
   nodeRules?: (
     | {
         selector: string;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
       }
     | {
         regexSelector: RegexSelector;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -596,6 +792,8 @@ interface Config {
     | {
         selector: string;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -603,6 +801,8 @@ interface Config {
     | {
         regexSelector: RegexSelector;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -868,8 +1068,8 @@ interface Config {
 - [`specs`](#specs)
 - [`excludeFiles`](#excludefiles)
 - [`rules`](#rules)
-- [`nodeRules`](#childnoderules)
-- [`childNodeRules`](#noderules)
+- [`nodeRules`](#noderules)
+- [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
 
 #### インターフェイス {#overrides/interface}

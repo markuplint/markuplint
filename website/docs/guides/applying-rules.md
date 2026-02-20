@@ -66,6 +66,35 @@ If you want the part of structures only to apply rules then set with [**selector
 }
 ```
 
+## Customizing preset rules {#customizing-preset-rules}
+
+Presets define **named rules** that you can individually customize. Named rules use the `namespace/rule-name` format and can be disabled, have their severity changed, or be bulk-disabled using a namespace wildcard.
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // Disable a specific named rule
+    "a11y/html-lang": false,
+
+    // Change severity of a named rule
+    "a11y/no-autofocus-outside-dialog": "warning",
+
+    // Disable all named rules in a namespace
+    "a11y/*": false,
+
+    // Disable by base rule name (see properties reference for details)
+    "id-duplication": false
+  }
+}
+```
+
+When multiple presets wrap the same base rule (e.g., `a11y/id-duplication` and `html-standard/id-duplication`), both run independently. You can control each independently. Setting the base rule name to `false` disables that specific base rule inside every named rule group that contains it — see [Disabling by base rule name](/docs/configuration/properties#disable-by-base-rule-name) for details.
+
+You can also define your own [named rule groups](/docs/configuration/properties#named-rule-groups) in the `rules` property. See the [configuration reference](/docs/configuration/properties#named-rule-groups) for details.
+
+For the full list of preset named rules, see [Named rules in presets](/docs/guides/presets#named-rules).
+
 ## Build-in rules
 
 The detail of each **built-in rule** is said from the [Rules page](/docs/rules/).

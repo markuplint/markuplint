@@ -65,7 +65,11 @@ function type(value: any, escape = false): string {
 
   if (value.type === 'object') {
     if (typeof value._type === 'string') {
-      return value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      let result = value._type.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      if (escape) {
+        result = result.replaceAll('|', '&#x7C;<wbr />');
+      }
+      return result;
     }
     return value._type ?? 'Object';
   }

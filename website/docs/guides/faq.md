@@ -55,7 +55,7 @@ The Open Graph protocol is a different specification from HTML and is not suppor
 
 ## Warned by `invalid-attr` rule
 
-[`invalid-attr`](/docs/rules/invalid-attr) rule warns when an attribute is specified for an element that does not exist in the HTML specification, which may be encountered frequently when using non-HTML syntax or frameworks. You can eliminate the warning by adding the attributes you want to allow. `invalid-attr` has [`attrs`](/docs/rules/invalid-attr#setting-attrs-option) option to add the attribute you want to allow.
+[`invalid-attr`](/docs/rules/invalid-attr) rule warns when an attribute is specified for an element that does not exist in the HTML specification, which may be encountered frequently when using non-HTML syntax or frameworks. You can eliminate the warning by adding the attributes you want to allow. `invalid-attr` has [`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option) option to add the attribute you want to allow.
 
 For React and Vue, spec plugins have been introduced to prevent warnings on specific attributes in each syntax. (FYI: [Why need the spec plugins?](/docs/guides/besides-html#why-need-the-spec-plugins))
 

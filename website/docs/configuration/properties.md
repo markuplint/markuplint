@@ -10,6 +10,7 @@ The configuration has the following properties:
   "parserOptions": {},
   "specs": [],
   "excludeFiles": [],
+  "severity": {},
   "rules": {},
   "nodeRules": [],
   "childNodeRules": [],
@@ -27,6 +28,7 @@ The configuration has the following properties:
 | [**`parserOptions`**](#parseroptions)   | -                                                                                                                            | [Interface](#parseroptions/interface)  |
 | [**`specs`**](#specs)                   | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#specs/interface)          |
 | [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                                    | [Interface](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                            | [Interface](#severity/interface)       |
 | [**`rules`**](#rules)                   | [Applying rules](/docs/guides/applying-rules)                                                                                | [Interface](#rules/interface)          |
 | [**`nodeRules`**](#noderules)           | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#noderules/interface)      |
 | [**`childNodeRules`**](#childnoderules) | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#childnoderules/interface) |
@@ -281,6 +283,32 @@ interface Config {
 }
 ```
 
+### `severity`
+
+Controls default severity levels for specific categories of diagnostics.
+
+#### `parseError`
+
+Controls the severity of parse errors. Set to `"off"` or `false` to suppress parse error reporting.
+
+```json class=config
+{
+  "severity": {
+    "parseError": "warning"
+  }
+}
+```
+
+#### Interface {#severity/interface}
+
+```ts
+interface Config {
+  severity?: {
+    parseError?: 'error' | 'warning' | 'info' | 'off' | boolean;
+  };
+}
+```
+
 ### `rules`
 
 Configure to enable or specify details to [rules](/docs/guides/applying-rules). The value for each rule is either string, number, and array.
@@ -348,12 +376,158 @@ The after the solidus is the unique rule name on the plugin.
 }
 ```
 
+#### Named rules from presets {#named-rules-from-presets}
+
+Presets define named rules using the `namespace/rule-name` format. These named rules appear in violation reports and can be customized individually through the `rules` property.
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    // Disable a specific named rule from a preset
+    "a11y/html-lang": false,
+
+    // Change severity of a named rule
+    "html-standard/head-charset-utf8": { "severity": "warning" },
+
+    // Disable all named rules in a namespace using wildcard
+    "a11y/*": false,
+
+    // Disable by base rule name (see explanation below)
+    "id-duplication": false
+  }
+}
+```
+
+##### Disabling by base rule name {#disable-by-base-rule-name}
+
+Setting a base rule name to `false` disables it inside every named rule group that wraps it. For example, suppose a preset defines:
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "id-duplication": true,
+        "invalid-attr": true
+      }
+    }
+  }
+}
+```
+
+Adding `"id-duplication": false` to your config is equivalent to reaching into the group and disabling that specific base rule:
+
+```json class=config
+{
+  "rules": {
+    "my-checks/validation": {
+      "rules": {
+        "id-duplication": false,
+        "invalid-attr": true
+      }
+    }
+  }
+}
+```
+
+The `invalid-attr` rule in the same group remains active. This applies across all groups — if both `a11y/id-duplication` and `html-standard/id-duplication` wrap the `id-duplication` base rule, both are disabled. This is provided for backward compatibility.
+
+See [Named rules in presets](/docs/guides/presets#named-rules) for the full list.
+
+#### Named rule groups {#named-rule-groups}
+
+You can define your own named rule groups by using a key that contains `/` and a value with a `rules` field. This wraps one or more base rules under a namespace, allowing per-check control and metadata.
+
+```json class=config
+{
+  "rules": {
+    "my-project/no-accesskey": {
+      "specConformance": "non-normative",
+      "rules": {
+        "invalid-attr": {
+          "options": { "disallowAttrs": ["accesskey"] }
+        }
+      }
+    }
+  }
+}
+```
+
+##### `specConformance` {#spec-conformance}
+
+It accepts `'normative'` or `'non-normative'`. It's optional. This metadata indicates whether the check relates to a normative or non-normative requirement of the HTML specification, and is included in violation reports but does not affect severity.
+
+- `'normative'`: The check corresponds to a MUST or REQUIRED requirement.
+- `'non-normative'`: The check corresponds to a SHOULD or RECOMMENDED requirement.
+
+Markuplint's built-in presets set this value automatically for rules derived from the HTML specification. Users may also set it in their own configuration — for example, when Markuplint has not yet caught up with an HTML specification update, or when upgrading Markuplint is not feasible.
+
+:::warning
+This field is intended exclusively for checks derived from the HTML specification. Do not use it for custom rules or house rules. Misuse can confuse users who see the conformance level in violation reports, as they may mistakenly believe the issue is required by the HTML specification.
+:::
+
+##### `severity`
+
+It accepts `'error'`, `'warning'`, or `'info'`. It's optional. When specified, this overrides the default severity for all rules in the group.
+
+##### `rules`
+
+It accepts base rule entries (the same individual rule settings as the [`rules`](#rules) property), but does not accept nested named rule groups. It's required. Contains one or more base rules to wrap.
+
+##### Multi-entry naming
+
+When a named rule group contains a single entry, the group key is used directly as the rule name. When it contains two or more entries, each entry gets a derived name in the format `groupKey/baseRuleName`, and the group key becomes the group name.
+
+```json class=config
+{
+  "rules": {
+    // Single entry: rule name is "my-project/no-accesskey"
+    "my-project/no-accesskey": {
+      "rules": { "invalid-attr": { "options": { "disallowAttrs": ["accesskey"] } } }
+    },
+    // Multi entry: rule names are "my-project/checks/attr-duplication"
+    // and "my-project/checks/class-naming"
+    "my-project/checks": {
+      "rules": {
+        "attr-duplication": true,
+        "class-naming": "/[a-z]+/"
+      }
+    }
+  }
+}
+```
+
+You can disable the entire multi-entry group at once using the group name:
+
+```json class=config
+{
+  "rules": {
+    "my-project/checks": false
+  }
+}
+```
+
+#### Accumulation behavior {#accumulation}
+
+When multiple named rule groups wrap the same base rule (e.g., `a11y/id-duplication` and `html-standard/id-duplication`), they run independently and both report violations. Each named rule can be independently controlled:
+
+```json class=config
+{
+  "extends": ["markuplint:a11y", "markuplint:html-standard"],
+  "rules": {
+    // Disable only the a11y perspective; html-standard perspective remains active
+    "a11y/id-duplication": false
+  }
+}
+```
+
 #### Interface {#rules/interface}
 
 ```ts
 interface Config {
   rules?: {
-    [ruleName: string]: Rule<T, O>;
+    [ruleName: string]: Rule<T, O> | NamedRuleGroup;
   };
 }
 
@@ -366,6 +540,14 @@ type Rule<T, O> =
       option?: O;
       reason?: string;
     };
+
+type NamedRuleGroup = {
+  specConformance?: 'normative' | 'non-normative';
+  severity?: 'error' | 'warning' | 'info';
+  rules: {
+    [ruleName: string]: Rule<T, O>;
+  };
+};
 ```
 
 ### `nodeRules`
@@ -373,7 +555,7 @@ type Rule<T, O> =
 If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-to-some), you can specify by this property.
 Be careful to the value is an array.
 
-It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It specifies the same value of the [`rules`](#rules) property.
+It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups).
 
 ```json class=config
 {
@@ -388,9 +570,19 @@ It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).
 }
 ```
 
+#### `name`
+
+It accepts a `string` that contains a `/` (e.g., `a11y/html-lang`). It's optional. When specified, this creates a **named rule** that can be individually configured via the [`rules`](#rules) property. This is primarily used by presets.
+
+When the `rules` field contains a single entry, this name is used directly as the rule name. When it contains two or more entries, each entry gets a derived name in the format `name/baseRuleName`, and this name becomes the group name. The group can be disabled at once via `rules["groupName"]: false`.
+
+#### `specConformance`
+
+Same as [`specConformance`](#spec-conformance) in Named Rule Groups.
+
 #### `rules` {#to-some-rules}
 
-It accepts the same value of the [`rules`](#rules) property. It's required.
+It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups). It's required.
 
 #### `selector`
 
@@ -563,12 +755,16 @@ interface Config {
   nodeRules?: (
     | {
         selector: string;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
       }
     | {
         regexSelector: RegexSelector;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -610,6 +806,8 @@ interface Config {
     | {
         selector: string;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -617,6 +815,8 @@ interface Config {
     | {
         regexSelector: RegexSelector;
         inheritance?: boolean;
+        name?: string;
+        specConformance?: 'normative' | 'non-normative';
         rules: {
           [ruleName: string]: Rule<T, O>;
         };
@@ -888,8 +1088,8 @@ It can override the following properties:
 - [`specs`](#specs)
 - [`excludeFiles`](#excludefiles)
 - [`rules`](#rules)
-- [`nodeRules`](#childnoderules)
-- [`childNodeRules`](#noderules)
+- [`nodeRules`](#noderules)
+- [`childNodeRules`](#childnoderules)
 - [`pretenders`](#pretenders)
 
 #### Interface {#overrides/interface}
