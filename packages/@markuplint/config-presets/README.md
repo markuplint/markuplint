@@ -66,6 +66,7 @@ Specify required attr| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No use `<caption>` within `<figure>`](https://html.spec.whatwg.org/multipage/tables.html#the-caption-element)|When `<table>` is the only content in `<figure>` other than `<figcaption>`, `<caption>` should be omitted in favor of `<figcaption>`.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `title` attr in `<input pattern>`](https://html.spec.whatwg.org/multipage/input.html#attr-input-pattern)|When an `<input>` element has a `pattern` attribute specified, authors should include a `title` attribute to give a description of the pattern.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No nested same `<details>` name group|A document must not contain a details element that is a descendant of another details element in the same details name group.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+[No use `shortcut` keyword in `<link rel>`](https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon)|For historical reasons, the icon keyword may be preceded by the keyword "shortcut". However, pages should not use the keyword "shortcut" as it is unnecessary.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `charset=UTF-8`](https://html.spec.whatwg.org/multipage/semantics.html#charset)| |✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require `defer` attr|Should load and parse scripts lazily to avoid render-blocking.|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|
 Require **aspect-ratio**|Require `width` and `height` attr with `<img>` to avoid **Cumulative Layout Shift**|✅|✅|✅|✅|✅|❌|❌|❌|❌|✅|❌|❌|

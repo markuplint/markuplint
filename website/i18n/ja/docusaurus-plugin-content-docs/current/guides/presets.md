@@ -121,6 +121,7 @@
 | `html-standard/figure-no-caption`           | `<figure>`内で`<table>`が`<figcaption>`以外の唯一のコンテンツである場合、`<caption>`を省略して`<figcaption>`を使用すべきです。 |
 | `html-standard/input-pattern-title`         | `<input>`要素に`pattern`属性が指定されている場合、パターンの説明として`title`属性を含めるべきです。                            |
 | `html-standard/no-nested-details-name`      | 同じ名前グループ内の別の`<details>`要素の子孫である`<details>`要素をドキュメント内に含めることはできません。                   |
+| `html-standard/no-shortcut-icon`            | `<link rel>`の`shortcut`キーワードは不要です。代わりに`rel="icon"`を使用してください。                                         |
 
 ### `markuplint:performance` {#preset-performance}
 
