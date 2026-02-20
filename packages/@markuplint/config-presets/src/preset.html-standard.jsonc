@@ -278,6 +278,34 @@
 					"reason": "A document must not contain a details element that is a descendant of another details element in the same details name group."
 				}
 			}
+		},
+		{
+			/**
+			 * No use `shortcut` keyword in `<link rel>`
+			 *
+			 * For historical reasons, the icon keyword may be preceded by the keyword "shortcut".
+			 * However, pages should not use the keyword "shortcut" as it is unnecessary.
+			 *
+			 * @see https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon
+			 */
+			"name": "html-standard/no-shortcut-icon",
+			"specConformance": "non-normative",
+			"selector": "link",
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"disallowAttrs": [
+							{
+								"name": "rel",
+								"value": {
+									"pattern": "/\\bshortcut\\b/i"
+								}
+							}
+						]
+					},
+					"reason": "The \"shortcut\" keyword is unnecessary. Use rel=\"icon\" instead. https://html.spec.whatwg.org/multipage/links.html#rel-shortcut-icon"
+				}
+			}
 		}
 	]
 }
