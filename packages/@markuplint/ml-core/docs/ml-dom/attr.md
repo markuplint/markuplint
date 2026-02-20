@@ -24,6 +24,14 @@ The parser may provide resolved "potential" names and values for attributes wher
 - If `astToken.potentialName` exists → use it as `name`; otherwise use `nameNode.raw`
 - If `astToken.potentialValue` exists → use it as `value`; otherwise use `valueNode.raw`
 
+### Directive Pattern Resolution
+
+When `astToken.potentialName` is not set by the parser, the `MLAttr` constructor checks for `directivePatterns` from the spec (e.g., `@markuplint/vue-spec`, `@markuplint/svelte-spec`). If patterns exist, `resolveDirective()` is called with the raw attribute name and the compiled patterns. The first matching pattern determines `potentialName`, `isDynamicValue`, `isDirective`, and `isDuplicatable`.
+
+### IDL Attribute Name Resolution
+
+After directive pattern resolution, if the spec sets `useIDLAttributeNames: true` (e.g., `@markuplint/react-spec`, `@markuplint/svelte-spec`) and the attribute is not a directive, the constructor calls `searchIDLAttribute()` from `@markuplint/parser-utils` to map IDL property names to HTML content attribute names (e.g., `className` -> `class`, `htmlFor` -> `for`). This is a core-level concern, not a parser-level one.
+
 ## Token Decomposition
 
 Each attribute is decomposed into individual `MLToken` instances:

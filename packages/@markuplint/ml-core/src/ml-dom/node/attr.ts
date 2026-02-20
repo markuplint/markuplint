@@ -4,6 +4,7 @@ import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
+import { searchIDLAttribute } from '@markuplint/parser-utils';
 
 import { MLToken } from '../token/token.js';
 
@@ -159,6 +160,22 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 				this.isDynamicValue = this._astToken.isDynamicValue;
 				this.isDirective = this._astToken.isDirective;
 				this.isDuplicatable = this._astToken.isDuplicatable;
+			}
+
+			// IDL attribute resolution (after directivePatterns)
+			if (ownElement.ownerMLDocument.specs.useIDLAttributeNames && !this.isDirective) {
+				const { contentAttrName, idlPropName } = searchIDLAttribute(this.#potentialName);
+				if (contentAttrName && contentAttrName !== this.#potentialName) {
+					this.#potentialName = contentAttrName;
+				}
+				// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
+				// Only when no directive pattern transformed the name.
+				if (!resolution && idlPropName) {
+					const rawName = this.nameNode?.raw ?? '';
+					if (rawName !== idlPropName) {
+						this.candidate = idlPropName;
+					}
+				}
 			}
 		} else {
 			// Parser-set potentialName takes precedence

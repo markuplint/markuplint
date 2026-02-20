@@ -134,16 +134,19 @@ describe('AST', () => {
 		expect(
 			createTestElement('<label></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			}).getAttributeNode('for')?.localName,
 		).toBeUndefined();
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			}).getAttributeNode('for')?.localName,
 		).toBe('for');
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			}).getAttributeNode('htmlFor')?.localName,
 		).toBeUndefined();
 	});
@@ -230,12 +233,14 @@ div#hoge.foo.bar
 		expect(
 			createTestElement('<div tabIndex className><label htmlFor></label></div>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			}).matches('[tabindex][class]:has(>label[for])'),
 		).toBeTruthy();
 
 		expect(
 			createTestElement('<svg><image clipPath /></svg>', {
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			}).matches('svg:has(>image[clip-path])'),
 		).toBeTruthy();
 	});
@@ -576,6 +581,7 @@ describe('Rule', () => {
 					],
 				},
 				parser: await import('@markuplint/jsx-parser'),
+				specs: { ...specs, useIDLAttributeNames: true },
 			},
 		);
 		const ruleA = createRule({
