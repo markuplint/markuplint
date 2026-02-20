@@ -7,18 +7,26 @@
 		 *
 		 * @see https://www.w3.org/WAI/WCAG21/Techniques/html/H93.html
 		 */
-		"id-duplication": true,
+		"a11y/id-duplication": {
+			"specConformance": "normative",
+			"rules": {
+				"id-duplication": true
+			}
+		},
 
-		"invalid-attr": {
-			"options": {
-				"disallowAttrs": [
-					/**
-					 * Disallow `accesskey` attr
-					 *
-					 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
-					 */
-					"accesskey"
-				]
+		/**
+		 * Disallow `accesskey` attr
+		 *
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey#accessibility_concerns
+		 */
+		"a11y/no-accesskey": {
+			"specConformance": "non-normative",
+			"rules": {
+				"invalid-attr": {
+					"options": {
+						"disallowAttrs": ["accesskey"]
+					}
+				}
 			}
 		},
 
@@ -26,76 +34,141 @@
 		 * `<label>` should have control
 		 *
 		 */
-		"label-has-control": true,
+		"a11y/label-has-control": {
+			"specConformance": "non-normative",
+			"rules": {
+				"label-has-control": true
+			}
+		},
 
 		/**
 		 * Use **landmark**
 		 *
 		 * @see https://www.w3.org/TR/wai-aria-practices/examples/landmarks/
 		 */
-		"landmark-roles": true,
+		"a11y/landmark-roles": {
+			"specConformance": "non-normative",
+			"rules": {
+				"landmark-roles": true
+			}
+		},
 
 		/**
 		 * **Popover** trigger and target must be adjacent
 		 *
 		 */
-		"neighbor-popovers": true,
+		"a11y/neighbor-popovers": {
+			"specConformance": "non-normative",
+			"rules": {
+				"neighbor-popovers": true
+			}
+		},
 
 		/**
 		 * No ambiguous **Navigable Target Names**
 		 *
 		 * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names
 		 */
-		"no-ambiguous-navigable-target-names": true,
+		"a11y/no-ambiguous-navigable-target-names": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-ambiguous-navigable-target-names": true
+			}
+		},
 
 		/**
 		 * No consecutive `<br>`
 		 */
-		"no-consecutive-br": true,
+		"a11y/no-consecutive-br": {
+			"specConformance": "non-normative",
+			"rules": {
+				"no-consecutive-br": true
+			}
+		},
 
 		/**
 		 * No refer to no existent **ID**
 		 */
-		"no-refer-to-non-existent-id": true,
+		"a11y/no-refer-to-non-existent-id": {
+			"specConformance": "normative",
+			"rules": {
+				"no-refer-to-non-existent-id": true
+			}
+		},
 
 		/**
 		 * No redundant **accessible name** sources
 		 */
-		"redundant-accessible-name": true,
+		"a11y/redundant-accessible-name": {
+			"specConformance": "non-normative",
+			"rules": {
+				"redundant-accessible-name": true
+			}
+		},
 
 		/**
 		 * Require **accessible name**
 		 */
-		"require-accessible-name": true,
+		"a11y/require-accessible-name": {
+			"specConformance": "non-normative",
+			"rules": {
+				"require-accessible-name": true
+			}
+		},
 
 		/**
 		 * Require **autofocus** in modal dialogs
 		 */
-		"require-dialog-autofocus": true,
+		"a11y/require-dialog-autofocus": {
+			"specConformance": "non-normative",
+			"rules": {
+				"require-dialog-autofocus": true
+			}
+		},
 
 		/**
 		 * Require `<h1>`
 		 *
 		 */
-		"required-h1": true,
+		"a11y/required-h1": {
+			"specConformance": "non-normative",
+			"rules": {
+				"required-h1": true
+			}
+		},
 
 		/**
 		 * Align row and column
 		 *
 		 */
-		"table-row-column-alignment": true,
+		"a11y/table-row-column-alignment": {
+			"specConformance": "non-normative",
+			"rules": {
+				"table-row-column-alignment": true
+			}
+		},
 
 		/**
 		 * Use `<ul>`
 		 *
 		 */
-		"use-list": true,
+		"a11y/use-list": {
+			"specConformance": "non-normative",
+			"rules": {
+				"use-list": true
+			}
+		},
 
 		/**
 		 * Conform to **WAI-ARIA**
 		 *
 		 */
-		"wai-aria": true
+		"a11y/wai-aria": {
+			"specConformance": "normative",
+			"rules": {
+				"wai-aria": true
+			}
+		}
 	},
 	"nodeRules": [
 		{
@@ -103,6 +176,7 @@
 			 * Require `<html lang>`
 			 */
 			"name": "a11y/html-lang",
+			"specConformance": "non-normative",
 			"selector": ":where(html)",
 			"rules": {
 				"required-attr": ["lang"]
@@ -113,6 +187,7 @@
 			 * Require `<abbr title>`
 			 */
 			"name": "a11y/abbr-title",
+			"specConformance": "non-normative",
 			"selector": ":where(abbr)",
 			"rules": {
 				"required-attr": ["title"]
@@ -123,6 +198,7 @@
 			 * Require `<track>` in media elements
 			 */
 			"name": "a11y/media-track",
+			"specConformance": "non-normative",
 			"selector": ":where(video, audio)",
 			"rules": {
 				"required-element": ["track"]
@@ -133,6 +209,7 @@
 			 * Require `<video muted>` when autoplay is set
 			 */
 			"name": "a11y/video-autoplay-muted",
+			"specConformance": "non-normative",
 			"selector": ":where(video[autoplay])",
 			"rules": {
 				"required-attr": ["muted"]
@@ -143,6 +220,7 @@
 			 * No merge cells
 			 */
 			"name": "a11y/no-merge-cells",
+			"specConformance": "non-normative",
 			"selector": ":where(th, td)",
 			"rules": {
 				"invalid-attr": {
@@ -162,6 +240,7 @@
 			 * @see https://github.com/whatwg/html/issues/2272#issuecomment-1242415594
 			 */
 			"name": "a11y/summary-no-interactive",
+			"specConformance": "non-normative",
 			"selector": ":where(summary)",
 			"rules": {
 				"disallowed-element": [":model(interactive)"]
@@ -177,6 +256,7 @@
 			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus#accessibility_considerations
 			 */
 			"name": "a11y/no-autofocus-outside-dialog",
+			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog, dialog *))",
 			"rules": {
 				"invalid-attr": {
@@ -196,6 +276,7 @@
 			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex#accessibility_concerns
 			 */
 			"name": "a11y/tabindex-restrict",
+			"specConformance": "non-normative",
 			"selector": ":where(:not(dialog))",
 			"rules": {
 				"invalid-attr": {
@@ -213,22 +294,24 @@
 			}
 		},
 		{
+			/**
+			 * Disallow `user-scalable=no` in viewport meta
+			 *
+			 * Usage of `user-scalable=no` can cause accessibility issues
+			 * to users with visual impairments such as low vision.
+			 * WCAG requires a minimum of 2× scaling.
+			 *
+			 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag
+			 * @see https://dequeuniversity.com/rules/axe/4.4/meta-viewport
+			 */
+			"name": "a11y/viewport-no-user-scalable",
+			"specConformance": "non-normative",
 			"selector": ":where(meta[name='viewport' i])",
 			"rules": {
 				"invalid-attr": {
 					"options": {
 						"disallowAttrs": [
 							{
-								/**
-								 * Disallow `user-scalable=no` in viewport meta
-								 *
-								 * Usage of `user-scalable=no` can cause accessibility issues
-								 * to users with visual impairments such as low vision.
-								 * WCAG requires a minimum of 2× scaling.
-								 *
-								 * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag
-								 * @see https://dequeuniversity.com/rules/axe/4.4/meta-viewport
-								 */
 								"name": "content",
 								"value": {
 									"pattern": "/user-scalable\\s*=\\s*(no|0)\\b/i"
