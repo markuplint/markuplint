@@ -808,6 +808,79 @@ describe('Named nodeRules integration', () => {
 		});
 	});
 
+	describe('html-standard/no-shortcut-icon', () => {
+		it('detects rel="shortcut icon" on link element', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="shortcut icon" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeDefined();
+			expect(shortcutViolation!.ruleId).toBe('invalid-attr');
+			expect(shortcutViolation!.specConformance).toBe('non-normative');
+		});
+
+		it('detects rel="SHORTCUT ICON" (case-insensitive)', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="SHORTCUT ICON" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeDefined();
+		});
+
+		it('does not flag rel="icon"', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="icon" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeUndefined();
+		});
+
+		it('detects rel="shortcut" without icon', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="shortcut" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeDefined();
+		});
+
+		it('detects rel="icon shortcut" (reversed order)', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="icon shortcut" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeDefined();
+		});
+
+		it('can be disabled by exact name', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"><link rel="shortcut icon" href="/favicon.ico"></head><body></body></html>',
+				{
+					extends: ['markuplint:html-standard'],
+					rules: {
+						'html-standard/no-shortcut-icon': false,
+					},
+				},
+			);
+			const shortcutViolation = violations.find(v => v.name === 'html-standard/no-shortcut-icon');
+			expect(shortcutViolation).toBeUndefined();
+		});
+	});
+
 	describe('backwards compatibility', () => {
 		it('conventional config without named rule groups works as before', async () => {
 			const { violations } = await mlTest(
