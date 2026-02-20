@@ -6,7 +6,22 @@
 
 ## ExtendedSpec Content
 
-The package exports a single `ExtendedSpec` object with element-specific overrides in the `specs` array:
+### `useIDLAttributeNames`
+
+The spec sets `useIDLAttributeNames: true`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `defaultValue` -> the corresponding content attribute). This resolution is performed at the core level, not in the parser.
+
+### `directivePatterns`
+
+The spec declares a `directivePatterns` array that the core engine uses to resolve Svelte directive attributes. Patterns are evaluated in order (first match wins):
+
+| Pattern                                        | Result                                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| `^bind:(?:group\|this)$`                       | `bind:group` / `bind:this` -> `isDirective`, `isDynamicValue`                 |
+| `^bind:(.+)$`                                  | `bind:name` -> `potentialName=$1`, `isDynamicValue`                           |
+| `^on:.+$`                                      | `on:event` (Svelte 4 legacy) -> `isDirective`, `isDynamicValue`               |
+| `^class:`                                      | `class:name` -> `potentialName=class`, `isDuplicatable`, `isDynamicValue`     |
+| `^style:`                                      | `style:property` -> `potentialName=style`, `isDuplicatable`, `isDynamicValue` |
+| `^(?:animate\|transition\|in\|out\|use\|let):` | Animation/transition/action/slot directives -> `isDirective`                  |
 
 ### Element-Specific Overrides
 

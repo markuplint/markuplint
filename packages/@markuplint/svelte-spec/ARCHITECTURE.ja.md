@@ -6,7 +6,22 @@
 
 ## ExtendedSpec の内容
 
-パッケージは `specs` 配列に要素固有のオーバーライドを含む単一の `ExtendedSpec` オブジェクトをエクスポートします:
+### `useIDLAttributeNames`
+
+この spec は `useIDLAttributeNames: true` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `defaultValue` → 対応するコンテンツ属性）。この解決はパーサーではなくコアレベルで行われます。
+
+### `directivePatterns`
+
+この spec は Svelte ディレクティブ属性を解決するための `directivePatterns` 配列を宣言します。パターンは順番に評価されます（最初のマッチが優先）:
+
+| パターン                                       | 結果                                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- |
+| `^bind:(?:group\|this)$`                       | `bind:group` / `bind:this` → `isDirective`、`isDynamicValue`                    |
+| `^bind:(.+)$`                                  | `bind:name` → `potentialName=$1`、`isDynamicValue`                              |
+| `^on:.+$`                                      | `on:event`（Svelte 4 レガシー）→ `isDirective`、`isDynamicValue`                |
+| `^class:`                                      | `class:name` → `potentialName=class`、`isDuplicatable`、`isDynamicValue`        |
+| `^style:`                                      | `style:property` → `potentialName=style`、`isDuplicatable`、`isDynamicValue`    |
+| `^(?:animate\|transition\|in\|out\|use\|let):` | アニメーション/トランジション/アクション/スロットディレクティブ → `isDirective` |
 
 ### 要素固有のオーバーライド
 

@@ -17,6 +17,46 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * attributes on form elements.
  */
 const spec: ExtendedSpec = {
+	useIDLAttributeNames: true,
+	directivePatterns: [
+		// bind:group, bind:this → true directives
+		{
+			pattern: '^bind:(?:group|this)$',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// bind:name → potentialName=name, isDynamicValue
+		{
+			pattern: '^bind:(.+)$',
+			potentialName: '$1',
+			isDynamicValue: true,
+		},
+		// on:event (Svelte 4 legacy)
+		{
+			pattern: '^on:.+$',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// class:name → potentialName=class, isDuplicatable
+		{
+			pattern: '^class:',
+			potentialName: 'class',
+			isDuplicatable: true,
+			isDynamicValue: true,
+		},
+		// style:property → potentialName=style, isDuplicatable
+		{
+			pattern: '^style:',
+			potentialName: 'style',
+			isDuplicatable: true,
+			isDynamicValue: true,
+		},
+		// animate:, transition:, in:, out:, use:, let: → isDirective
+		{
+			pattern: '^(?:animate|transition|in|out|use|let):',
+			isDirective: true,
+		},
+	],
 	specs: [
 		{
 			name: 'input',
