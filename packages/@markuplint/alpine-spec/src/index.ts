@@ -23,6 +23,53 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  */
 const spec: ExtendedSpec = {
 	cites: ['https://alpinejs.dev/'],
+	directivePatterns: [
+		/**
+		 * Static directives: x-data, x-init, x-show, x-text, x-html,
+		 * x-modelable, x-effect, x-ref, x-id
+		 */
+		{
+			pattern: '^x-(?:data|init|show|text|html|modelable|effect|ref|id)$',
+			isDirective: true,
+		},
+		/**
+		 * Boolean directives: x-ignore, x-cloak
+		 */
+		{
+			pattern: '^x-(?:ignore|cloak)$',
+			isDirective: true,
+			valueType: 'boolean',
+		},
+		/**
+		 * x-bind:attr or :attr shorthand => potentialName = attr
+		 * @see https://alpinejs.dev/directives/bind
+		 */
+		{
+			pattern: '^(?:x-bind:|:)([^.]+)(?:\\.[^.]+)?$',
+			potentialName: '$1',
+			isDynamicValue: true,
+			valueType: 'code',
+			isDuplicatable: ['class', 'style'],
+		},
+		/**
+		 * x-on:event or @event shorthand => potentialName = onevent
+		 * @see https://alpinejs.dev/directives/on
+		 */
+		{
+			pattern: '^(?:x-on:|@)([^.]+)(?:\\..+)?$',
+			potentialName: 'on$1',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		/**
+		 * x-transition (with optional suffix like :enter, :leave, .duration, etc.)
+		 * @see https://alpinejs.dev/directives/transition
+		 */
+		{
+			pattern: '^x-transition(?:$|:|\\.)',
+			isDirective: true,
+		},
+	],
 	def: {
 		'#globalAttrs': {
 			'#extends': {

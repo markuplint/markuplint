@@ -22,6 +22,38 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  */
 const spec: ExtendedSpec = {
 	cites: ['https://htmx.org/reference/'],
+	directivePatterns: [
+		/**
+		 * htmx event with explicit prefix: hx-on:htmx:event or hx-on-htmx-event
+		 * @see https://htmx.org/attributes/hx-on/
+		 */
+		{
+			pattern: '^hx-on([:-])htmx\\1(.+)$',
+			potentialName: 'hx-on:htmx:$2',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		/**
+		 * htmx event with shorthand double separator: hx-on::event
+		 * @see https://htmx.org/attributes/hx-on/
+		 */
+		{
+			pattern: '^hx-on[:-]{2}(.+)$',
+			potentialName: 'hx-on:htmx:$1',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		/**
+		 * Native DOM event: hx-on:click, hx-on-click
+		 * @see https://htmx.org/attributes/hx-on/
+		 */
+		{
+			pattern: '^hx-on[:-]([a-z]+)$',
+			potentialName: 'on$1',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+	],
 	def: {
 		'#globalAttrs': {
 			'#extends': {

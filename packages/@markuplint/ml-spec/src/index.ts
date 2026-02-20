@@ -34,6 +34,7 @@ export * from './utils/get-spec-by-tag-name.js';
 export * from './utils/schema-to-spec.js';
 export * from './utils/resolve-namespace.js';
 export * from './utils/validate-aria-version.js';
+export * from './utils/directive-resolver.js';
 
 // Type definitions
 export * from './types/index.js';

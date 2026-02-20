@@ -3,7 +3,7 @@ import type { AttributeNodeType } from './types.js';
 import type { MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { resolveNamespace } from '@markuplint/ml-spec';
+import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
 
 import { MLToken } from '../token/token.js';
 
@@ -135,12 +135,38 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		this.startQuote = new MLToken(this._astToken.startQuote);
 		this.valueNode = new MLToken(this._astToken.value);
 		this.endQuote = new MLToken(this._astToken.endQuote);
-		this.isDynamicValue = this._astToken.isDynamicValue;
-		this.isDirective = this._astToken.isDirective;
 		this.candidate = this._astToken.candidate;
-		this.#potentialName = this._astToken.potentialName ?? this.nameNode?.raw ?? '';
 		this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
-		this.isDuplicatable = this._astToken.isDuplicatable;
+
+		if (this._astToken.potentialName == null) {
+			// Try declarative directive pattern resolution from spec
+			const patterns = ownElement.ownerMLDocument.specs.directivePatterns ?? [];
+			const resolution =
+				patterns.length > 0
+					? resolveDirective(this.nameNode?.raw ?? '', compileDirectivePatterns(patterns))
+					: null;
+
+			if (resolution) {
+				this.#potentialName = resolution.potentialName ?? this.nameNode?.raw ?? '';
+				this.isDynamicValue = resolution.isDynamicValue;
+				this.isDirective = resolution.isDirective;
+				this.isDuplicatable = resolution.isDuplicatable ?? this._astToken.isDuplicatable;
+				if (resolution.valueType) {
+					this.valueType = resolution.valueType;
+				}
+			} else {
+				this.#potentialName = this.nameNode?.raw ?? '';
+				this.isDynamicValue = this._astToken.isDynamicValue;
+				this.isDirective = this._astToken.isDirective;
+				this.isDuplicatable = this._astToken.isDuplicatable;
+			}
+		} else {
+			// Parser-set potentialName takes precedence
+			this.#potentialName = this._astToken.potentialName;
+			this.isDynamicValue = this._astToken.isDynamicValue;
+			this.isDirective = this._astToken.isDirective;
+			this.isDuplicatable = this._astToken.isDuplicatable;
+		}
 
 		const ns = resolveNamespace(this.#potentialName, ownElement.namespaceURI);
 		this.#localName = ns.localName;

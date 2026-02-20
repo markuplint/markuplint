@@ -12,6 +12,7 @@ export interface MLMLSpec {
 	readonly cites: Cites;
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
+	readonly directivePatterns?: readonly DirectivePattern[];
 }
 
 /**
@@ -32,6 +33,62 @@ export type ExtendedSpec = {
 	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
+	readonly directivePatterns?: readonly DirectivePattern[];
+};
+
+/**
+ * A declarative pattern for resolving framework-specific directive
+ * attributes to their canonical names and metadata. Stored as part
+ * of the spec, enabling "parser-less" framework support.
+ *
+ * The `pattern` is a regex string matched against the raw attribute name.
+ * Capture groups can be referenced in `potentialName` using `$1`, `$2`, etc.
+ */
+export type DirectivePattern = {
+	/**
+	 * A regex string (without delimiters) matched against the raw attribute name.
+	 * Must be a valid JavaScript RegExp pattern. Capture groups can be used
+	 * for potentialName templates.
+	 * @example "^(?:x-bind:|:)([^.]+)(?:\\.[^.]+)?$"
+	 */
+	readonly pattern: string;
+
+	/**
+	 * Optional regex flags (e.g., "i" for case-insensitive).
+	 * @default "i"
+	 */
+	readonly flags?: string;
+
+	/**
+	 * Template for the resolved potentialName. References capture groups
+	 * with $1, $2, etc. If omitted, the attribute is treated as a directive
+	 * with no potentialName change.
+	 * @example "on$1"  -- for `@click` -> `onclick`
+	 * @example "$1"    -- for `:href` -> `href`
+	 */
+	readonly potentialName?: string;
+
+	/**
+	 * Whether this attribute is a framework directive.
+	 */
+	readonly isDirective?: true;
+
+	/**
+	 * Whether this attribute has a dynamic value.
+	 */
+	readonly isDynamicValue?: true;
+
+	/**
+	 * The semantic value type for matched attributes.
+	 */
+	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
+
+	/**
+	 * If true, the attribute can appear multiple times on the same element.
+	 * Can also be a string array of potentialName values for which
+	 * duplication is allowed (e.g., ['class', 'style']).
+	 */
+	readonly isDuplicatable?: true | readonly string[];
 };
 
 /**
