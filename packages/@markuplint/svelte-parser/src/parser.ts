@@ -7,7 +7,7 @@ import type {
 } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { ParserError, Parser, AttrState, searchIDLAttribute } from '@markuplint/parser-utils';
+import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
 import { svelteParse } from './svelte-parser/index.js';
@@ -20,8 +20,6 @@ import { svelteParse } from './svelte-parser/index.js';
  * and shorthand attribute syntax.
  */
 export class SvelteParser extends Parser<SvelteNode> {
-	readonly specificBindDirective: ReadonlySet<string> = new Set(['group', 'this']);
-
 	constructor() {
 		super({
 			endTagType: 'xml',
@@ -357,9 +355,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 	/**
 	 * Visits an attribute token, handling Svelte-specific syntax including
-	 * curly-brace expression values, shorthand attributes (`{name}`),
-	 * `bind:` / `class:` directives, duplicatable class attributes,
-	 * and IDL-to-content attribute name mapping via `searchIDLAttribute`.
+	 * curly-brace expression values and shorthand attributes (`{name}`).
+	 * Directive resolution (`bind:`, `class:`, `on:`, etc.) and IDL attribute
+	 * mapping are now handled declaratively by svelte-spec's directivePatterns
+	 * and ml-core's useIDLAttributeNames.
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Svelte-specific metadata
@@ -381,51 +380,21 @@ export class SvelteParser extends Parser<SvelteNode> {
 		}
 
 		let isDynamicValue = attr.startQuote.raw === '{' || undefined;
-
 		let potentialName: string | undefined;
-		let isDirective: true | undefined;
-		let isDuplicatable = false;
 
+		// Shorthand {name} → potentialName = value
 		if (isDynamicValue && attr.name.raw === '') {
 			potentialName = attr.value.raw;
 		}
 
-		const [baseName, subName] = attr.name.raw.split(':');
-
-		if (subName) {
-			isDirective = true;
-
-			if (baseName === 'bind' && !this.specificBindDirective.has(subName)) {
-				potentialName = subName;
-				isDirective = undefined;
-				isDynamicValue = true;
-			}
-		}
-
-		if (baseName?.toLowerCase() === 'class') {
-			isDuplicatable = true;
-
-			if (subName) {
-				potentialName = 'class';
-				isDynamicValue = true;
-			}
-		}
-
+		// Final curly brace check
 		if (attr.startQuote.raw === '{' && attr.endQuote.raw === '}') {
 			isDynamicValue = true;
-		}
-
-		const nameForLookup = potentialName ?? attr.name.raw;
-		const { contentAttrName } = searchIDLAttribute(nameForLookup);
-		if (contentAttrName && contentAttrName !== nameForLookup) {
-			potentialName = contentAttrName;
 		}
 
 		return {
 			...attr,
 			isDynamicValue,
-			isDirective,
-			isDuplicatable,
 			potentialName,
 		};
 	}

@@ -370,7 +370,7 @@ describe('Dynamic values', () => {
 				await mlRuleTest(
 					rule,
 					'<template><img :srcset="computedSrcset" sizes="100vw" src="s.png" alt="p"></template>',
-					{ parser: { '.*': '@markuplint/vue-parser' } },
+					{ parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } },
 				)
 			).violations,
 		).toStrictEqual([]);
@@ -382,7 +382,7 @@ describe('Dynamic values', () => {
 				await mlRuleTest(
 					rule,
 					'<template><img srcset="s.png 480w" :sizes="computedSizes" src="s.png" alt="p"></template>',
-					{ parser: { '.*': '@markuplint/vue-parser' } },
+					{ parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } },
 				)
 			).violations,
 		).toStrictEqual([]);

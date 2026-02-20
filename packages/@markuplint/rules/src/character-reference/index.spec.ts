@@ -44,6 +44,9 @@ test('in Vue', async () => {
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
+		specs: {
+			'.*': '@markuplint/vue-spec',
+		},
 	});
 	expect(violations.length).toBe(0);
 });

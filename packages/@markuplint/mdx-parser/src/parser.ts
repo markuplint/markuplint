@@ -4,7 +4,6 @@ import type { RootContent } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 
 import { MarkdownAwareParser } from '@markuplint/markdown-parser';
-import { searchIDLAttribute } from '@markuplint/parser-utils';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdx from 'remark-mdx';
@@ -142,11 +141,9 @@ class MDXParser extends MarkdownAwareParser {
 	}
 
 	/**
-	 * Processes a JSX attribute token with IDL name conversion and dynamic value detection.
-	 *
-	 * Converts React-style IDL property names (e.g., `className`) to their
-	 * HTML content attribute equivalents (e.g., `class`) via `searchIDLAttribute`.
-	 * Marks `{...}` quoted values as dynamic.
+	 * Processes a JSX attribute token with dynamic value detection.
+	 * IDL attribute name mapping is now handled declaratively by the spec's
+	 * useIDLAttributeNames and ml-core's attr resolution.
 	 *
 	 * @param token - The raw attribute token from the source.
 	 * @returns The processed attribute node.
@@ -162,19 +159,6 @@ class MDXParser extends MarkdownAwareParser {
 
 		if (attr.type === 'spread') {
 			return attr;
-		}
-
-		const rawName = attr.name.raw;
-		const { idlPropName, contentAttrName } = searchIDLAttribute(rawName);
-
-		this.updateAttr(attr, {
-			potentialName: contentAttrName,
-		});
-
-		if (rawName !== idlPropName) {
-			this.updateAttr(attr, {
-				candidate: idlPropName,
-			});
 		}
 
 		if (attr.startQuote.raw === '{' && attr.endQuote.raw === '}') {

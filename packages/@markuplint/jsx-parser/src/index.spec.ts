@@ -349,7 +349,7 @@ const Component3 = memo(() => <div>Component3</div>);`);
 		]);
 		expect(attrMaps).toStrictEqual([
 			[
-				'[1:12]>[1:27](11,26)class: className="foo"',
+				'[1:12]>[1:27](11,26)className: className="foo"',
 				'  [1:11]>[1:12](10,11)bN: ␣',
 				'  [1:12]>[1:21](11,20)name: className',
 				'  [1:21]>[1:21](20,20)bE: ',
@@ -360,10 +360,9 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:26]>[1:27](25,26)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: class',
 			],
 			[
-				'[1:28]>[1:41](27,40)tabindex: tabIndex="-1"',
+				'[1:28]>[1:41](27,40)tabIndex: tabIndex="-1"',
 				'  [1:27]>[1:28](26,27)bN: ␣',
 				'  [1:28]>[1:36](27,35)name: tabIndex',
 				'  [1:36]>[1:36](35,35)bE: ',
@@ -374,7 +373,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:40]>[1:41](39,40)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: tabindex',
 			],
 			[
 				'[1:42]>[1:55](41,54)tabindex: tabindex="-1"',
@@ -388,8 +386,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:54]>[1:55](53,54)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: tabindex',
-				'  candidate: tabIndex',
 			],
 			[
 				'[1:56]>[1:76](55,75)aria-label: aria-label="accname"',
@@ -437,7 +433,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: "',
 				'  isDirective: false',
 				'  isDynamicValue: false',
-				'  potentialName: href',
 			],
 		]);
 	});
@@ -459,7 +454,6 @@ const Component3 = memo(() => <div>Component3</div>);`);
 				'  [1:10]>[1:11](9,10)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  potentialName: href',
 			],
 		]);
 	});
@@ -630,7 +624,6 @@ describe('Issues', () => {
 			'  [3:33]>[3:34](69,70)eQ: }',
 			'  isDirective: false',
 			'  isDynamicValue: true',
-			'  potentialName: style',
 			'[3:35]>[3:41](71,77)div: </div>',
 		]);
 	});
@@ -738,7 +731,6 @@ const C = () => {
 			'  [1:15]>[1:16](14,15)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: lang',
 			'[1:17]>[2:2](16,18)#text: ⏎→',
 			'[2:2]>[2:8](18,24)head: <head>',
 			'[2:8]>[3:3](24,27)#text: ⏎→→',
@@ -747,7 +739,7 @@ const C = () => {
 			'[3:14]>[3:22](38,46)title: </title>',
 			'[3:22]>[4:3](46,49)#text: ⏎→→',
 			'[4:3]>[4:27](49,73)meta: <meta␣charSet="UTF-8"␣/>',
-			'[4:9]>[4:24](55,70)charset: charSet="UTF-8"',
+			'[4:9]>[4:24](55,70)charSet: charSet="UTF-8"',
 			'  [4:8]>[4:9](54,55)bN: ␣',
 			'  [4:9]>[4:16](55,62)name: charSet',
 			'  [4:16]>[4:16](62,62)bE: ',
@@ -758,10 +750,9 @@ const C = () => {
 			'  [4:23]>[4:24](69,70)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: charset',
 			'[4:27]>[5:3](73,76)#text: ⏎→→',
 			'[5:3]>[5:57](76,130)meta: <meta␣httpEquiv="x-ua-compatible"␣content="ie=edge"␣/>',
-			'[5:9]>[5:36](82,109)http-equiv: httpEquiv="x-ua-compatible"',
+			'[5:9]>[5:36](82,109)httpEquiv: httpEquiv="x-ua-compatible"',
 			'  [5:8]>[5:9](81,82)bN: ␣',
 			'  [5:9]>[5:18](82,91)name: httpEquiv',
 			'  [5:18]>[5:18](91,91)bE: ',
@@ -772,7 +763,6 @@ const C = () => {
 			'  [5:35]>[5:36](108,109)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: http-equiv',
 			'[5:37]>[5:54](110,127)content: content="ie=edge"',
 			'  [5:36]>[5:37](109,110)bN: ␣',
 			'  [5:37]>[5:44](110,117)name: content',
@@ -784,7 +774,6 @@ const C = () => {
 			'  [5:53]>[5:54](126,127)eQ: "',
 			'  isDirective: false',
 			'  isDynamicValue: false',
-			'  potentialName: content',
 			'[5:57]>[6:2](130,132)#text: ⏎→',
 			'[6:2]>[6:9](132,139)head: </head>',
 			'[6:9]>[7:2](139,141)#text: ⏎→',

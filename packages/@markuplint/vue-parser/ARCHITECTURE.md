@@ -79,8 +79,9 @@ The parser maintains internal state through the `State` type:
 | `nodeize()`           | Converts vue-eslint-parser AST nodes (VText, VElement, VExpressionContainer) to markuplint AST |
 | `flattenNodes()`      | Extends base flattening to inject template comments between sibling nodes                      |
 | `afterFlattenNodes()` | Calls base with `exposeWhiteSpace: false`, `exposeInvalidNode: false`, `concatText: false`     |
-| `visitAttr()`         | Resolves Vue directive shorthands to `potentialName`/`isDirective` metadata                    |
 | `detectElementType()` | Detects PascalCase components and Vue built-in components                                      |
+
+> **Note:** The `visitAttr()` override has been removed. Vue directive handling (`v-bind`, `v-on`, `v-model`, `v-slot`, etc.) is now managed via `directivePatterns` in `@markuplint/vue-spec`.
 
 ### `duplicatableAttrs`
 
@@ -134,9 +135,11 @@ The `flattenNodes()` method extends the base `Parser.flattenNodes()` to inject t
 
 This two-pass approach is necessary because vue-eslint-parser provides comments separately from the main node tree, and they must be interleaved at the correct positions.
 
-## Attribute Processing (visitAttr)
+## Directive Handling (directivePatterns in @markuplint/vue-spec)
 
-The `visitAttr()` method calls `super.visitAttr(token)` first, then applies Vue-specific directive resolution.
+Vue directive resolution is managed by `directivePatterns` defined in `@markuplint/vue-spec`, not by the parser itself. The spec declares patterns that the core engine uses to map directives to `potentialName`, `isDirective`, and `isDynamicValue` metadata.
+
+> **Two-stage resolution:** Parser-level tests (`index.spec.ts`) show raw AST values where `isDynamicValue` and `isDirective` reflect only what the parser itself sets (e.g., curly-brace expressions). Core-level tests (`ml-core` and `rules`) show the final resolved values after `directivePatterns` are applied by `ml-core`'s `MLAttr` constructor. For example, `on:click` without a value shows `isDynamicValue: false` at the parser level, but resolves to `isDynamicValue: true` at the core level via the `directivePatterns` match.
 
 ### Quote Set
 

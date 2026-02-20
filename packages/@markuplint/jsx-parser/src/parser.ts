@@ -2,7 +2,7 @@ import type { JSXComment, JSXNode } from './jsx.js';
 import type { MLASTBlockBehavior, MLASTNodeTreeItem, MLASTParentNode } from '@markuplint/ml-ast';
 import type { ChildToken, Token } from '@markuplint/parser-utils';
 
-import { Parser, ParserError, searchIDLAttribute } from '@markuplint/parser-utils';
+import { Parser, ParserError } from '@markuplint/parser-utils';
 
 import { jsxParser, attrParser, getName } from './jsx.js';
 import { extractJSXFromCall } from './extract-jsx-from-call.js';
@@ -280,8 +280,9 @@ class JSXParser extends Parser<JSXNode, State> {
 	}
 
 	/**
-	 * Visits an attribute token, handling JSX-specific quoting (curly braces for expressions),
-	 * IDL attribute mapping, and dynamic value detection.
+	 * Visits an attribute token, handling JSX-specific quoting (curly braces for expressions)
+	 * and dynamic value detection. IDL attribute name mapping is now handled declaratively
+	 * by react-spec's useIDLAttributeNames and ml-core's attr resolution.
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node
@@ -297,19 +298,6 @@ class JSXParser extends Parser<JSXNode, State> {
 
 		if (attr.type === 'spread') {
 			return attr;
-		}
-
-		const rawName = attr.name.raw;
-		const { idlPropName, contentAttrName } = searchIDLAttribute(rawName);
-
-		this.updateAttr(attr, {
-			potentialName: contentAttrName,
-		});
-
-		if (rawName !== idlPropName) {
-			this.updateAttr(attr, {
-				candidate: idlPropName,
-			});
 		}
 
 		if (attr.startQuote.raw === '{' && attr.endQuote.raw === '}') {

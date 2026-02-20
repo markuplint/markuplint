@@ -174,7 +174,7 @@ Additionally, `debug.ts` provides `PerformanceTimer` for measuring parse phase d
 
 ## IDL Attribute Mapping
 
-`searchIDLAttribute` maps between React-style IDL attribute names and HTML content attribute names. It maintains a comprehensive mapping table derived from React's `possibleStandardNames.js`, covering:
+`searchIDLAttribute` maps between React-style IDL attribute names and HTML content attribute names. It is called by `@markuplint/ml-core`'s `MLAttr` constructor when the spec sets `useIDLAttributeNames: true`. It maintains a comprehensive mapping table derived from React's `possibleStandardNames.js`, covering:
 
 - HTML attributes (e.g., `className` -> `class`, `htmlFor` -> `for`, `tabIndex` -> `tabindex`)
 - SVG attributes (e.g., `strokeWidth` -> `stroke-width`, `clipPath` -> `clip-path`)

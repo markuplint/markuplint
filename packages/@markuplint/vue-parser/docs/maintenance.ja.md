@@ -49,7 +49,7 @@ expect(doc.nodeList[0].elementType).toBe('authored');
 
 ### 1. Vue ディレクティブの追加・変更
 
-1. `src/parser.ts` を読み、`visitAttr()` メソッドを見つける
+1. `@markuplint/vue-spec`（`packages/@markuplint/vue-spec/src/index.ts`）を開き、`directivePatterns` 配列を確認する
 2. 優先チェーン内の正しい位置を特定:
    - `v-on` / `@`（イベントバインディング） — 最初
    - `v-bind` / `:`（プロパティバインディング） — 2番目
@@ -158,12 +158,12 @@ yarn test --scope @markuplint/vue-parser
 
 **症状:** `v-custom` のような Vue ディレクティブが `isDirective: true` としてマークされず、通常の HTML 属性として扱われる。
 
-**原因:** `visitAttr()` でディレクティブパターンがマッチしないか、新しいディレクティブブロックが汎用 `v-*` キャッチオールの後に配置されている。
+**原因:** `directivePatterns`（`@markuplint/vue-spec` で定義）でディレクティブパターンがマッチしないか、新しいパターンが汎用 `v-*` キャッチオールの後に配置されている。
 
 **解決策:**
 
 1. ディレクティブブロックの正規表現パターンを確認 — 完全な属性名にマッチすることを確認
-2. ブロックが `visitAttr()` 末尾の汎用 `v-*` キャッチオールの前に配置されていることを確認
+2. パターンが `directivePatterns` 配列内の汎用 `v-*` キャッチオールの前に配置されていることを確認
 3. 返却オブジェクトに `isDirective: true as const` が含まれていることを検証
 
 ### テンプレートコメントが AST に含まれていない

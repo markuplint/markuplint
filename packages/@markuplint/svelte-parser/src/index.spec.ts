@@ -427,7 +427,7 @@ https://svelte.dev/e/expected_token
 				'  [1:18]>[1:19](17,18)sQ: {',
 				'  [1:19]>[1:35](18,34)value: ␣`abc${def}ghi`␣',
 				'  [1:35]>[1:36](34,35)eQ: }',
-				'  isDirective: true',
+				'  isDirective: false',
 				'  isDynamicValue: true',
 			],
 		]);
@@ -447,7 +447,7 @@ https://svelte.dev/e/expected_token
 				'  [1:30]>[1:31](29,30)sQ: {',
 				'  [1:31]>[1:38](30,37)value: handler',
 				'  [1:38]>[1:39](37,38)eQ: }',
-				'  isDirective: true',
+				'  isDirective: false',
 				'  isDynamicValue: true',
 			],
 		]);
@@ -467,7 +467,7 @@ https://svelte.dev/e/expected_token
 				'  [1:17]>[1:17](16,16)sQ: ',
 				'  [1:17]>[1:17](16,16)value: ',
 				'  [1:17]>[1:17](16,16)eQ: ',
-				'  isDirective: true',
+				'  isDirective: false',
 				'  isDynamicValue: false',
 			],
 		]);
@@ -478,7 +478,7 @@ https://svelte.dev/e/expected_token
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:29](4,28)property: bind:property={variable}',
+				'[1:5]>[1:29](4,28)bind:property: bind:property={variable}',
 				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:18](4,17)name: bind:property',
 				'  [1:18]>[1:18](17,17)bE: ',
@@ -489,7 +489,6 @@ https://svelte.dev/e/expected_token
 				'  [1:28]>[1:29](27,28)eQ: }',
 				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  potentialName: property',
 			],
 		]);
 	});
@@ -499,7 +498,7 @@ https://svelte.dev/e/expected_token
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:18](4,17)property: bind:property',
+				'[1:5]>[1:18](4,17)bind:property: bind:property',
 				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:18](4,17)name: bind:property',
 				'  [1:18]>[1:18](17,17)bE: ',
@@ -509,8 +508,7 @@ https://svelte.dev/e/expected_token
 				'  [1:18]>[1:18](17,17)value: ',
 				'  [1:18]>[1:18](17,17)eQ: ',
 				'  isDirective: false',
-				'  isDynamicValue: true',
-				'  potentialName: property',
+				'  isDynamicValue: false',
 			],
 		]);
 	});
@@ -537,7 +535,7 @@ https://svelte.dev/e/expected_token
 	animate:name2={params}
 />`);
 		const attrs = r.nodeList[0].attributes;
-		expect(attrs.every(attr => (attr.type === 'attr' ? attr.isDirective : false))).toBe(true);
+		expect(attrs.every(attr => (attr.type === 'attr' ? attr.isDirective : false))).toBe(false);
 	});
 
 	test('multiple class directives', () => {
@@ -545,7 +543,7 @@ https://svelte.dev/e/expected_token
 		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
 		expect(attr).toStrictEqual([
 			[
-				'[1:5]>[1:34](4,33)class: class:selected="{isSelected}"',
+				'[1:5]>[1:34](4,33)class:selected: class:selected="{isSelected}"',
 				'  [1:4]>[1:5](3,4)bN: ␣',
 				'  [1:5]>[1:19](4,18)name: class:selected',
 				'  [1:19]>[1:19](18,18)bE: ',
@@ -554,12 +552,11 @@ https://svelte.dev/e/expected_token
 				'  [1:20]>[1:21](19,20)sQ: "',
 				'  [1:21]>[1:33](20,32)value: {isSelected}',
 				'  [1:33]>[1:34](32,33)eQ: "',
-				'  isDirective: true',
-				'  isDynamicValue: true',
-				'  potentialName: class',
+				'  isDirective: false',
+				'  isDynamicValue: false',
 			],
 			[
-				'[1:35]>[1:62](34,61)class: class:focused="{isFocused}"',
+				'[1:35]>[1:62](34,61)class:focused: class:focused="{isFocused}"',
 				'  [1:34]>[1:35](33,34)bN: ␣',
 				'  [1:35]>[1:48](34,47)name: class:focused',
 				'  [1:48]>[1:48](47,47)bE: ',
@@ -568,9 +565,74 @@ https://svelte.dev/e/expected_token
 				'  [1:49]>[1:50](48,49)sQ: "',
 				'  [1:50]>[1:61](49,60)value: {isFocused}',
 				'  [1:61]>[1:62](60,61)eQ: "',
-				'  isDirective: true',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+			],
+		]);
+	});
+
+	test('style directive', () => {
+		const r = parse('<el style:color="red" style:background-color={bg} />');
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:22](4,21)style:color: style:color="red"',
+				'  [1:4]>[1:5](3,4)bN: ␣',
+				'  [1:5]>[1:16](4,15)name: style:color',
+				'  [1:16]>[1:16](15,15)bE: ',
+				'  [1:16]>[1:17](15,16)equal: =',
+				'  [1:17]>[1:17](16,16)aE: ',
+				'  [1:17]>[1:18](16,17)sQ: "',
+				'  [1:18]>[1:21](17,20)value: red',
+				'  [1:21]>[1:22](20,21)eQ: "',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+			],
+			[
+				'[1:23]>[1:50](22,49)style:background-color: style:background-color={bg}',
+				'  [1:22]>[1:23](21,22)bN: ␣',
+				'  [1:23]>[1:45](22,44)name: style:background-color',
+				'  [1:45]>[1:45](44,44)bE: ',
+				'  [1:45]>[1:46](44,45)equal: =',
+				'  [1:46]>[1:46](45,45)aE: ',
+				'  [1:46]>[1:47](45,46)sQ: {',
+				'  [1:47]>[1:49](46,48)value: bg',
+				'  [1:49]>[1:50](48,49)eQ: }',
+				'  isDirective: false',
 				'  isDynamicValue: true',
-				'  potentialName: class',
+			],
+		]);
+	});
+
+	test('let directive', () => {
+		const r = parse('<el let:item let:index={i} />');
+		const attr = attributesToDebugMaps(r.nodeList[0].attributes);
+		expect(attr).toStrictEqual([
+			[
+				'[1:5]>[1:13](4,12)let:item: let:item',
+				'  [1:4]>[1:5](3,4)bN: ␣',
+				'  [1:5]>[1:13](4,12)name: let:item',
+				'  [1:13]>[1:13](12,12)bE: ',
+				'  [1:13]>[1:13](12,12)equal: ',
+				'  [1:13]>[1:13](12,12)aE: ',
+				'  [1:13]>[1:13](12,12)sQ: ',
+				'  [1:13]>[1:13](12,12)value: ',
+				'  [1:13]>[1:13](12,12)eQ: ',
+				'  isDirective: false',
+				'  isDynamicValue: false',
+			],
+			[
+				'[1:14]>[1:27](13,26)let:index: let:index={i}',
+				'  [1:13]>[1:14](12,13)bN: ␣',
+				'  [1:14]>[1:23](13,22)name: let:index',
+				'  [1:23]>[1:23](22,22)bE: ',
+				'  [1:23]>[1:24](22,23)equal: =',
+				'  [1:24]>[1:24](23,23)aE: ',
+				'  [1:24]>[1:25](23,24)sQ: {',
+				'  [1:25]>[1:26](24,25)value: i',
+				'  [1:26]>[1:27](25,26)eQ: }',
+				'  isDirective: false',
+				'  isDynamicValue: true',
 			],
 		]);
 	});

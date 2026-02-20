@@ -96,7 +96,7 @@ Parser<MdastNode>               (from @markuplint/parser-utils)
       |                          - tokenize(): remark-parse + remark-gfm + remark-mdx
       |                          - nodeize(): MDX types first, then Markdown delegation
       |                          - #visitJsxElement(): JSX -> MLASTElement
-      |                          - visitAttr(): JSX attribute handling (quoteSet, IDL mapping)
+      |                          - visitAttr(): JSX attribute handling (quoteSet, dynamic value)
       |                          - detectElementType(): uppercase/dot = authored
 ```
 
@@ -132,7 +132,7 @@ The start tag is parsed by `parseCodeFragment` to extract attributes, then `visi
 | Boolean (no value) | `disabled`                 | Empty value (booleanish) |
 | Spread             | `{...props}`               | `type: 'spread'`         |
 
-IDL attribute mapping (`className` -> `class`, `htmlFor` -> `for`) via `searchIDLAttribute()`.
+IDL attribute mapping (`className` -> `class`, `htmlFor` -> `for`) is handled at the core level by `MLAttr` when paired with `@markuplint/react-spec` (which sets `useIDLAttributeNames: true`).
 
 ### Component Detection
 
@@ -148,7 +148,7 @@ IDL attribute mapping (`className` -> `class`, `htmlFor` -> `for`) via `searchID
 ```mermaid
 flowchart TD
     subgraph upstream ["Upstream"]
-        parserUtils["@markuplint/parser-utils\n(Parser, searchIDLAttribute)"]
+        parserUtils["@markuplint/parser-utils\n(Parser)"]
         mdParser["@markuplint/markdown-parser\n(MarkdownAwareParser)"]
         remark["remark-parse + remark-gfm\n(Markdown + GFM)"]
         remarkMdx["remark-mdx\n(MDX syntax extensions)"]
@@ -182,7 +182,7 @@ flowchart TD
 | ----------------------------- | --------------------------------------------- |
 | `@markuplint/markdown-parser` | MarkdownAwareParser base class                |
 | `@markuplint/ml-ast`          | AST type definitions                          |
-| `@markuplint/parser-utils`    | Parser utilities, `searchIDLAttribute`        |
+| `@markuplint/parser-utils`    | Parser utilities                              |
 | `unified`                     | Processor pipeline for remark                 |
 | `remark-parse`                | Markdown -> mdast parser                      |
 | `remark-gfm`                  | GFM extensions (tables, strikethrough)        |

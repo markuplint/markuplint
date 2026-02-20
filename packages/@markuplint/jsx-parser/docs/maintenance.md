@@ -117,11 +117,11 @@ When `@typescript-eslint` introduces a new `AST_NODE_TYPES` value:
 
 Changes to upstream packages can affect this parser:
 
-| Package                    | Impact on jsx-parser                                              |
-| -------------------------- | ----------------------------------------------------------------- |
-| `@markuplint/parser-utils` | `Parser` base class changes, `searchIDLAttribute` mapping changes |
-| `@markuplint/html-parser`  | `getNamespace()` behavior changes                                 |
-| `@markuplint/ml-ast`       | AST type definition changes                                       |
+| Package                    | Impact on jsx-parser              |
+| -------------------------- | --------------------------------- |
+| `@markuplint/parser-utils` | `Parser` base class changes       |
+| `@markuplint/html-parser`  | `getNamespace()` behavior changes |
+| `@markuplint/ml-ast`       | AST type definition changes       |
 
 When upstream packages are updated, run:
 
@@ -147,7 +147,7 @@ yarn test --scope @markuplint/jsx-parser
 
 **Symptom:** A JSX attribute like `className` does not get `potentialName: class` in the AST output.
 
-**Cause:** The attribute is not in the `idlContentMap` in `@markuplint/parser-utils/src/idl-attributes.ts`, or the `searchIDLAttribute()` lookup logic does not match.
+**Cause:** The attribute is not in the `idlContentMap` in `@markuplint/parser-utils/src/idl-attributes.ts`, or `@markuplint/react-spec` does not set `useIDLAttributeNames: true`.
 
 **Solution:**
 

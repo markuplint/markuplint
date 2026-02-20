@@ -36,7 +36,7 @@ expect(debugMaps).toStrictEqual([
 
 ### 1. Adding a New Directive
 
-1. Read `src/parser.ts` and locate the `visitAttr()` method
+1. Open `@markuplint/svelte-spec` (`packages/@markuplint/svelte-spec/src/index.ts`) and find the `directivePatterns` array
 2. Identify the directive prefix (e.g., `newdir:`) and determine the required flags:
    - `isDirective: true` for pure directives (like `on:`, `use:`, `transition:`)
    - `isDirective: undefined` + `potentialName` for directives that map to attributes (like `bind:value`)
@@ -136,11 +136,11 @@ expect(debugMaps).toStrictEqual([
 
 **Symptom:** A Svelte directive (e.g., `bind:value`) is not parsed with the correct `isDirective` / `potentialName` flags.
 
-**Cause:** The directive prefix is not handled in `visitAttr()`, or the `specificBindDirective` set is missing an entry.
+**Cause:** The directive prefix is not handled in `directivePatterns` (defined in `@markuplint/svelte-spec`), or a specific bind directive pattern is missing.
 
 **Solution:**
 
-1. Check the `split(':')` logic in `visitAttr()` — ensure the directive prefix is handled
+1. Check the `directivePatterns` array in `@markuplint/svelte-spec` — ensure the directive prefix pattern is present
 2. Check `specificBindDirective` — entries in this set are treated as true directives; entries not in this set get `potentialName` behavior
 3. Add a test case with the specific directive syntax
 

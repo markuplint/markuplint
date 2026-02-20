@@ -6,6 +6,23 @@
 
 ## ExtendedSpec Content
 
+### `directivePatterns`
+
+The spec declares a `directivePatterns` array that the core engine uses to resolve Vue directive attributes. Patterns are evaluated in order (first match wins):
+
+| Pattern                           | Result                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------- |
+| `^\\.(.+)$`                       | `.prop` shorthand (Vue 3.2+) -> `isDirective`, `isDynamicValue`                        |
+| `^(?:v-bind:\|:)([^.]+)\\..+$`    | `v-bind` with modifier (`.prop`, `.camel`) -> `isDirective`, `isDynamicValue`          |
+| `^(?:v-bind:\|:\|v-on:\|@)\\[`    | Dynamic attribute/event name (`:[expr]`, `@[expr]`) -> `isDirective`, `isDynamicValue` |
+| `^(?:v-bind:\|:)([^.]+)$`         | `v-bind:attr` / `:attr` -> `potentialName=$1`, `isDynamicValue`                        |
+| `^(?:v-on:\|@)([^.]+)(?:\\..+)?$` | `v-on:event` / `@event` -> `potentialName=on$1`, `isDynamicValue`                      |
+| `^v-model(?:$\|\\.)`              | `v-model` -> `isDirective`, `isDynamicValue`                                           |
+| `^(?:v-slot:\|#)`                 | `v-slot` / `#` shorthand -> `isDirective`, `isDynamicValue`                            |
+| `^v-`                             | Other `v-*` directives -> `isDirective`, `isDynamicValue`                              |
+
+The `v-bind:attr` pattern also sets `isDuplicatable: ['class', 'style']`, allowing these attributes to appear alongside their bound equivalents.
+
 ### Global Attributes
 
 The following global attributes are registered under `def['#globalAttrs']['#extends']`:

@@ -24,6 +24,14 @@
 - `astToken.potentialName` が存在する場合 → `name` として使用する。そうでなければ `nameNode.raw` を使用する
 - `astToken.potentialValue` が存在する場合 → `value` として使用する。そうでなければ `valueNode.raw` を使用する
 
+### ディレクティブパターン解決
+
+パーサーが `astToken.potentialName` を設定していない場合、`MLAttr` コンストラクタは spec（例: `@markuplint/vue-spec`、`@markuplint/svelte-spec`）からの `directivePatterns` をチェックします。パターンが存在する場合、生の属性名とコンパイル済みパターンで `resolveDirective()` が呼び出されます。最初にマッチしたパターンが `potentialName`、`isDynamicValue`、`isDirective`、`isDuplicatable` を決定します。
+
+### IDL 属性名解決
+
+ディレクティブパターン解決の後、spec が `useIDLAttributeNames: true` を設定しており（例: `@markuplint/react-spec`、`@markuplint/svelte-spec`）、属性がディレクティブでない場合、コンストラクタは `@markuplint/parser-utils` の `searchIDLAttribute()` を呼び出して IDL プロパティ名を HTML コンテンツ属性名にマッピングします（例: `className` → `class`、`htmlFor` → `for`）。これはパーサーレベルではなくコアレベルの関心事です。
+
 ## トークン分解
 
 各属性は個々の `MLToken` インスタンスに分解されます：

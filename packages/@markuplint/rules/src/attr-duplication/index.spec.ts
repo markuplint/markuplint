@@ -88,6 +88,9 @@ test('Vue', async () => {
 		parser: {
 			'.*': '@markuplint/vue-parser',
 		},
+		specs: {
+			'.*': '@markuplint/vue-spec',
+		},
 	});
 
 	expect(violations).toStrictEqual([
@@ -108,6 +111,9 @@ test('Vue (exception)', async () => {
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
+			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
 			},
 		},
 	);

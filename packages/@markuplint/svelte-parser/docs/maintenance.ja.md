@@ -36,7 +36,7 @@ expect(debugMaps).toStrictEqual([
 
 ### 1. 新しいディレクティブの追加
 
-1. `src/parser.ts` を読み、`visitAttr()` メソッドを特定
+1. `@markuplint/svelte-spec`（`packages/@markuplint/svelte-spec/src/index.ts`）を開き、`directivePatterns` 配列を確認する
 2. ディレクティブのプレフィックス（例: `newdir:`）を特定し、必要なフラグを決定:
    - `isDirective: true` — 純粋なディレクティブの場合（`on:`、`use:`、`transition:` のように）
    - `isDirective: undefined` + `potentialName` — 属性にマッピングするディレクティブの場合（`bind:value` のように）
@@ -136,11 +136,11 @@ expect(debugMaps).toStrictEqual([
 
 **症状:** Svelte ディレクティブ（例: `bind:value`）が正しい `isDirective` / `potentialName` フラグでパースされない。
 
-**原因:** ディレクティブプレフィックスが `visitAttr()` で処理されていない、または `specificBindDirective` セットにエントリが不足している。
+**原因:** ディレクティブプレフィックスが `directivePatterns`（`@markuplint/svelte-spec` で定義）で処理されていない、または特定の bind ディレクティブパターンが不足している。
 
 **解決策:**
 
-1. `visitAttr()` の `split(':')` ロジックを確認 — ディレクティブプレフィックスが処理されていることを確認
+1. `@markuplint/svelte-spec` の `directivePatterns` 配列を確認 — ディレクティブプレフィックスのパターンが存在することを確認
 2. `specificBindDirective` を確認 — このセット内のエントリは真のディレクティブとして扱われ、セット外のエントリは `potentialName` の動作になる
 3. 特定のディレクティブ構文でテストケースを追加
 

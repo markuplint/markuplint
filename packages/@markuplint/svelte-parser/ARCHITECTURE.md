@@ -80,17 +80,17 @@ Parser<SvelteNode>  (from @markuplint/parser-utils)
 
 ### Override Methods
 
-| Method                | Purpose                                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `tokenize()`          | Calls `svelteParse()` to produce the Svelte AST                                                         |
-| `parse()`             | Delegates to `super.parse()` with `ignoreFrontMatter: false`                                            |
-| `parseError()`        | Wraps Svelte compiler errors with `ParserError`, including the error frame                              |
-| `nodeize()`           | Converts Svelte AST nodes to markuplint nodes (text, comment, element, expression, control flow blocks) |
-| `visitText()`         | Calls `super.visitText()` with `researchTags: false`; converts `<script>` text to Script psblock        |
-| `visitPsBlock()`      | Delegates to `super.visitPsBlock()` and enforces exactly one result node                                |
-| `visitChildren()`     | Delegates to `super.visitChildren()` and validates no sibling nodes with differing hierarchy levels     |
-| `visitAttr()`         | Handles Svelte-specific attribute syntax: directives, shorthand, spread, curly-brace expressions        |
-| `detectElementType()` | Detects component vs HTML element using the regex `/^[A-Z]                                              | \./` (PascalCase or dotted names are components) |
+| Method                | Purpose                                                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `tokenize()`          | Calls `svelteParse()` to produce the Svelte AST                                                                                                                     |
+| `parse()`             | Delegates to `super.parse()` with `ignoreFrontMatter: false`                                                                                                        |
+| `parseError()`        | Wraps Svelte compiler errors with `ParserError`, including the error frame                                                                                          |
+| `nodeize()`           | Converts Svelte AST nodes to markuplint nodes (text, comment, element, expression, control flow blocks)                                                             |
+| `visitText()`         | Calls `super.visitText()` with `researchTags: false`; converts `<script>` text to Script psblock                                                                    |
+| `visitPsBlock()`      | Delegates to `super.visitPsBlock()` and enforces exactly one result node                                                                                            |
+| `visitChildren()`     | Delegates to `super.visitChildren()` and validates no sibling nodes with differing hierarchy levels                                                                 |
+| `visitAttr()`         | Handles Svelte-specific attribute syntax: shorthand, spread, curly-brace expressions (directive handling moved to `directivePatterns` in `@markuplint/svelte-spec`) |
+| `detectElementType()` | Detects component vs HTML element using the regex `/^[A-Z]                                                                                                          | \./` (PascalCase or dotted names are components) |
 
 ## tokenize()
 
@@ -277,7 +277,11 @@ This shared utility extracts `openToken` and `closeToken` from block constructs:
 
 **Important note:** The `openToken` does not guarantee an isolated opening tag. For blocks like `EachBlock` and `AwaitBlock`, the open token may include intermediate tags (`:then`, `:else`), which is why those blocks implement their own token splitting logic instead of relying on `openToken`. The `parseBlock()` utility is primarily used by `KeyBlock` and `SnippetBlock`, which have simple open/close structures.
 
-## Attribute Processing (visitAttr)
+## Attribute Processing (visitAttr) and Directive Handling (directivePatterns in @markuplint/svelte-spec)
+
+> **Note:** Svelte directive handling (`bind:`, `on:`, `class:`, `style:`, `use:`, `animate:`, `transition:`, `in:`, `out:`, `let:`) is now managed via `directivePatterns` in `@markuplint/svelte-spec`. The `visitAttr()` method in this parser handles non-directive attribute syntax (shorthand, spread, curly-brace expressions).
+
+> **Two-stage resolution:** Parser-level tests (`index.spec.ts`) show raw AST values where `isDynamicValue` and `isDirective` reflect only what the parser itself sets (e.g., curly-brace expressions). Core-level tests (`ml-core` and `rules`) show the final resolved values after `directivePatterns` are applied by `ml-core`'s `MLAttr` constructor. For example, `on:click` without a value shows `isDynamicValue: false` at the parser level, but resolves to `isDynamicValue: true` at the core level via the `directivePatterns` match.
 
 ### Quote Set
 
@@ -333,11 +337,11 @@ When an attribute is a shorthand expression like `{items}`:
 
 ### Spread `{...attrs}`
 
-When `super.visitAttr()` returns an attribute with `type: 'spread'`, it is returned directly without further processing.
+When the base `visitAttr()` returns an attribute with `type: 'spread'`, it is returned directly without further processing.
 
 ### IDL Attribute Mapping
 
-After all directive and shorthand processing, the parser applies `searchIDLAttribute()` from `@markuplint/parser-utils` to map camelCase IDL property names to their corresponding content attribute names. For example, `tabIndex` is mapped to `tabindex` and `contentEditable` to `contenteditable`. This mapping applies to both regular attributes and `bind:` directive sub-names.
+IDL attribute mapping (e.g., `tabIndex` → `tabindex`, `contentEditable` → `contenteditable`) is handled by `ml-core`'s `MLAttr` constructor when the spec sets `useIDLAttributeNames: true`. The `@markuplint/svelte-spec` enables this flag, so Svelte files get IDL resolution at the core level, not the parser level.
 
 The mapping only updates `potentialName` when the content attribute name differs from the looked-up name, so attributes that already match their content attribute form (e.g., `value`, `class`) are unaffected. IDL-only properties that have no corresponding content attribute (e.g., `defaultValue`, `indeterminate`) are not in the mapping and are instead handled by the paired `@markuplint/svelte-spec` package.
 
@@ -424,12 +428,12 @@ These Svelte 5 constructs are handled by the parser: `SnippetBlock` has dedicate
 
 ## External Dependencies
 
-| Dependency                 | Purpose                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `@markuplint/ml-ast`       | AST type definitions (`MLASTPreprocessorSpecificBlock`, etc.)                                    |
-| `@markuplint/parser-utils` | Abstract `Parser` class, `ChildToken`, `Token`, `AttrState`, `ParserError`, `searchIDLAttribute` |
-| `@markuplint/html-parser`  | `HtmlParser` (base for SvelteKit parser), `getNamespace()`                                       |
-| `svelte`                   | `svelte/compiler` `parse()` function for tokenization                                            |
+| Dependency                 | Purpose                                                                    |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `@markuplint/ml-ast`       | AST type definitions (`MLASTPreprocessorSpecificBlock`, etc.)              |
+| `@markuplint/parser-utils` | Abstract `Parser` class, `ChildToken`, `Token`, `AttrState`, `ParserError` |
+| `@markuplint/html-parser`  | `HtmlParser` (base for SvelteKit parser), `getNamespace()`                 |
+| `svelte`                   | `svelte/compiler` `parse()` function for tokenization                      |
 
 ## Documentation Map
 

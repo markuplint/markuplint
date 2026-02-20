@@ -342,6 +342,9 @@ test('Vue', async () => {
 				parser: {
 					'.*': '@markuplint/vue-parser',
 				},
+				specs: {
+					'.*': '@markuplint/vue-spec',
+				},
 			})
 		).violations.length,
 	).toBe(0);
@@ -456,6 +459,9 @@ describe('Issues', () => {
 		const { violations } = await mlRuleTest(rule, '<meta httpEquiv="x-ua-compatible" content="ie=edge" />', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
 			},
 		});
 		expect(violations).toStrictEqual([]);

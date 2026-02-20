@@ -117,11 +117,11 @@ expect(attrMaps).toStrictEqual([
 
 上流パッケージへの変更がこのパーサーに影響を与える可能性があります:
 
-| パッケージ                 | jsx-parser への影響                                              |
-| -------------------------- | ---------------------------------------------------------------- |
-| `@markuplint/parser-utils` | `Parser` 基底クラスの変更、`searchIDLAttribute` マッピングの変更 |
-| `@markuplint/html-parser`  | `getNamespace()` の動作変更                                      |
-| `@markuplint/ml-ast`       | AST 型定義の変更                                                 |
+| パッケージ                 | jsx-parser への影響         |
+| -------------------------- | --------------------------- |
+| `@markuplint/parser-utils` | `Parser` 基底クラスの変更   |
+| `@markuplint/html-parser`  | `getNamespace()` の動作変更 |
+| `@markuplint/ml-ast`       | AST 型定義の変更            |
 
 上流パッケージが更新された際は以下を実行してください:
 
@@ -147,7 +147,7 @@ yarn test --scope @markuplint/jsx-parser
 
 **症状:** `className` のような JSX 属性が AST 出力で `potentialName: class` を取得しない。
 
-**原因:** 属性が `@markuplint/parser-utils/src/idl-attributes.ts` の `idlContentMap` にない、または `searchIDLAttribute()` のルックアップロジックが一致しない。
+**原因:** 属性が `@markuplint/parser-utils/src/idl-attributes.ts` の `idlContentMap` にない、または `@markuplint/react-spec` が `useIDLAttributeNames: true` を設定していない。
 
 **解決策:**
 

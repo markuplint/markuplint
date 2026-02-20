@@ -60,6 +60,26 @@ describe('schemaToSpec', () => {
 		expect(mergedSpec.directivePatterns ?? []).toStrictEqual([]);
 	});
 
+	test('useIDLAttributeNames defaults to undefined', () => {
+		const mergedSpec = schemaToSpec([htmlSpec]);
+		expect(mergedSpec.useIDLAttributeNames).toBeUndefined();
+	});
+
+	test('useIDLAttributeNames can be set to true', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }]);
+		expect(mergedSpec.useIDLAttributeNames).toBe(true);
+	});
+
+	test('useIDLAttributeNames=false overrides previous true', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }, { useIDLAttributeNames: false }]);
+		expect(mergedSpec.useIDLAttributeNames).toBe(false);
+	});
+
+	test('useIDLAttributeNames is not overridden when omitted', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }, { specs: [] }]);
+		expect(mergedSpec.useIDLAttributeNames).toBe(true);
+	});
+
 	test('globalAttrs.extends', () => {
 		const keyAttr = {
 			type: 'NoEmptyAny',

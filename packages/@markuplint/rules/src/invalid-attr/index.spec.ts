@@ -748,6 +748,9 @@ test('Vue', async () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
 		},
 	);
 	const { violations: violations2 } = await mlRuleTest(
@@ -756,6 +759,9 @@ test('Vue', async () => {
 		{
 			parser: {
 				'.*': '@markuplint/vue-parser',
+			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
 			},
 		},
 	);
@@ -811,6 +817,30 @@ test('Vue slot', async () => {
 	expect(violations.length).toBe(0);
 });
 
+test('Vue (.prop shorthand)', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div .someProp="value"></div></template>', {
+		parser: {
+			'.*': '@markuplint/vue-parser',
+		},
+		specs: {
+			'.*': '@markuplint/vue-spec',
+		},
+	});
+	expect(violations.length).toBe(0);
+});
+
+test('MDX with react-spec (className is valid via IDL resolution)', async () => {
+	const { violations } = await mlRuleTest(rule, '<div className="test">text</div>\n', {
+		parser: {
+			'.*': '@markuplint/mdx-parser',
+		},
+		specs: {
+			'.*': '@markuplint/react-spec',
+		},
+	});
+	expect(violations).toStrictEqual([]);
+});
+
 test('React Component', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
@@ -818,6 +848,9 @@ test('React Component', async () => {
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
 			},
 		},
 	);
@@ -832,6 +865,9 @@ test('React HTML', async () => {
 		{
 			parser: {
 				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
 			},
 		},
 	);
@@ -858,6 +894,9 @@ test('React', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
+		},
+		specs: {
+			'.*': '@markuplint/react-spec',
 		},
 	});
 
@@ -1371,6 +1410,9 @@ describe('Issues', () => {
 					parser: {
 						'.*': '@markuplint/jsx-parser',
 					},
+					specs: {
+						'.*': '@markuplint/react-spec',
+					},
 				})
 			).violations,
 		).toStrictEqual([]);
@@ -1457,6 +1499,9 @@ describe('Issues', () => {
 			parser: {
 				'.*': '@markuplint/vue-parser',
 			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
+			},
 		};
 
 		expect(
@@ -1468,6 +1513,9 @@ describe('Issues', () => {
 		const vue = {
 			parser: {
 				'.*': '@markuplint/vue-parser',
+			},
+			specs: {
+				'.*': '@markuplint/vue-spec',
 			},
 		};
 

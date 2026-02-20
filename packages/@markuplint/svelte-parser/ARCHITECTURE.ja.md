@@ -80,17 +80,17 @@ Parser<SvelteNode>  (@markuplint/parser-utils)
 
 ### オーバーライドメソッド
 
-| メソッド              | 用途                                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `tokenize()`          | `svelteParse()` を呼び出して Svelte AST を生成                                                       |
-| `parse()`             | `ignoreFrontMatter: false` で `super.parse()` に委譲                                                 |
-| `parseError()`        | Svelte コンパイラエラーをエラーフレーム付きの `ParserError` でラップ                                 |
-| `nodeize()`           | Svelte AST ノードを markuplint ノードに変換（テキスト、コメント、要素、式、制御フローブロック）      |
-| `visitText()`         | `researchTags: false` で `super.visitText()` を呼び出し、`<script>` テキストを Script psblock に変換 |
-| `visitPsBlock()`      | `super.visitPsBlock()` に委譲し、結果ノードが正確に1つであることを検証                               |
-| `visitChildren()`     | `super.visitChildren()` に委譲し、異なる階層レベルの兄弟ノードがないことを検証                       |
-| `visitAttr()`         | Svelte 固有の属性構文を処理: ディレクティブ、省略形、スプレッド、波括弧式                            |
-| `detectElementType()` | 正規表現 `/^[A-Z]                                                                                    | \./` でコンポーネント vs HTML 要素を判定（PascalCase またはドット付き名はコンポーネント） |
+| メソッド              | 用途                                                                                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `tokenize()`          | `svelteParse()` を呼び出して Svelte AST を生成                                                                                                |
+| `parse()`             | `ignoreFrontMatter: false` で `super.parse()` に委譲                                                                                          |
+| `parseError()`        | Svelte コンパイラエラーをエラーフレーム付きの `ParserError` でラップ                                                                          |
+| `nodeize()`           | Svelte AST ノードを markuplint ノードに変換（テキスト、コメント、要素、式、制御フローブロック）                                               |
+| `visitText()`         | `researchTags: false` で `super.visitText()` を呼び出し、`<script>` テキストを Script psblock に変換                                          |
+| `visitPsBlock()`      | `super.visitPsBlock()` に委譲し、結果ノードが正確に1つであることを検証                                                                        |
+| `visitChildren()`     | `super.visitChildren()` に委譲し、異なる階層レベルの兄弟ノードがないことを検証                                                                |
+| `visitAttr()`         | Svelte 固有の属性構文を処理: 省略形、スプレッド、波括弧式（ディレクティブ処理は `@markuplint/svelte-spec` の `directivePatterns` に移行済み） |
+| `detectElementType()` | 正規表現 `/^[A-Z]                                                                                                                             | \./` でコンポーネント vs HTML 要素を判定（PascalCase またはドット付き名はコンポーネント） |
 
 ## tokenize()
 
@@ -277,7 +277,11 @@ export function svelteParse(template: string): SvelteNode[] {
 
 **重要な注意:** `openToken` は単独の開始タグを保証しません。`EachBlock` や `AwaitBlock` のようなブロックでは、open トークンに中間タグ（`:then`、`:else`）が含まれる可能性があるため、これらのブロックは `openToken` に頼らず独自のトークン分割ロジックを実装しています。`parseBlock()` ユーティリティは主にシンプルな open/close 構造を持つ `KeyBlock` と `SnippetBlock` で使用されます。
 
-## 属性処理（visitAttr）
+## 属性処理（visitAttr）とディレクティブ処理（@markuplint/svelte-spec の directivePatterns）
+
+> **注記:** Svelte ディレクティブ処理（`bind:`、`on:`、`class:`、`style:`、`use:`、`animate:`、`transition:`、`in:`、`out:`、`let:`）は `@markuplint/svelte-spec` の `directivePatterns` で管理されています。このパーサーの `visitAttr()` メソッドは非ディレクティブの属性構文（省略形、スプレッド、波括弧式）を処理します。
+
+> **二段階解決:** パーサーレベルのテスト（`index.spec.ts`）はパーサー自体が設定する raw AST 値を示します（例: 波括弧式のみ `isDynamicValue: true`）。コアレベルのテスト（`ml-core` や `rules`）は `ml-core` の `MLAttr` コンストラクタが `directivePatterns` を適用した後の最終解決値を示します。例えば、値なしの `on:click` はパーサーレベルでは `isDynamicValue: false` ですが、コアレベルでは `directivePatterns` マッチにより `isDynamicValue: true` に解決されます。
 
 ### クォートセット
 
@@ -333,11 +337,11 @@ export function svelteParse(template: string): SvelteNode[] {
 
 ### スプレッド `{...attrs}`
 
-`super.visitAttr()` が `type: 'spread'` の属性を返した場合、追加処理なしでそのまま返されます。
+基底の `visitAttr()` が `type: 'spread'` の属性を返した場合、追加処理なしでそのまま返されます。
 
 ### IDL 属性マッピング
 
-すべてのディレクティブ・省略形処理の後、パーサーは `@markuplint/parser-utils` の `searchIDLAttribute()` を適用して、camelCase の IDL プロパティ名を対応するコンテンツ属性名にマッピングします。例えば、`tabIndex` は `tabindex` に、`contentEditable` は `contenteditable` にマッピングされます。このマッピングは通常の属性と `bind:` ディレクティブのサブ名の両方に適用されます。
+IDL 属性マッピング（例: `tabIndex` → `tabindex`、`contentEditable` → `contenteditable`）は、spec が `useIDLAttributeNames: true` を設定している場合に `ml-core` の `MLAttr` コンストラクタで処理されます。`@markuplint/svelte-spec` はこのフラグを有効化しているため、Svelte ファイルではパーサーレベルではなくコアレベルで IDL 解決が行われます。
 
 マッピングはコンテンツ属性名がルックアップ名と異なる場合にのみ `potentialName` を更新するため、すでにコンテンツ属性形式と一致している属性（例: `value`、`class`）は影響を受けません。対応するコンテンツ属性を持たない IDL 専用プロパティ（例: `defaultValue`、`indeterminate`）はマッピングに含まれず、対となる `@markuplint/svelte-spec` パッケージで処理されます。
 
@@ -424,12 +428,12 @@ class SvelteKitTemplateParser extends HtmlParser {
 
 ## 外部依存
 
-| 依存パッケージ             | 用途                                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| `@markuplint/ml-ast`       | AST 型定義（`MLASTPreprocessorSpecificBlock` 等）                                             |
-| `@markuplint/parser-utils` | 抽象 `Parser` クラス、`ChildToken`、`Token`、`AttrState`、`ParserError`、`searchIDLAttribute` |
-| `@markuplint/html-parser`  | `HtmlParser`（SvelteKit パーサーの基底）、`getNamespace()`                                    |
-| `svelte`                   | `svelte/compiler` の `parse()` 関数（トークン化用）                                           |
+| 依存パッケージ             | 用途                                                                    |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `@markuplint/ml-ast`       | AST 型定義（`MLASTPreprocessorSpecificBlock` 等）                       |
+| `@markuplint/parser-utils` | 抽象 `Parser` クラス、`ChildToken`、`Token`、`AttrState`、`ParserError` |
+| `@markuplint/html-parser`  | `HtmlParser`（SvelteKit パーサーの基底）、`getNamespace()`              |
+| `svelte`                   | `svelte/compiler` の `parse()` 関数（トークン化用）                     |
 
 ## ドキュメントマップ
 
