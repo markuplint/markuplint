@@ -21,7 +21,7 @@ src/
 flowchart TD
     subgraph upstream ["Upstream"]
         mlAst["@markuplint/ml-ast\n(AST types)"]
-        parserUtils["@markuplint/parser-utils\n(Abstract Parser class,\nsearchIDLAttribute)"]
+        parserUtils["@markuplint/parser-utils\n(Abstract Parser class)"]
         htmlParser["@markuplint/html-parser\n(getNamespace)"]
         tsEstree["@typescript-eslint/typescript-estree\n(TypeScript/JSX parser)"]
         tsTypes["@typescript-eslint/types\n(TSESTree type definitions)"]
@@ -37,7 +37,7 @@ flowchart TD
     end
 
     mlAst -->|"AST types"| jsxParserClass
-    parserUtils -->|"Parser base class,\nsearchIDLAttribute"| jsxParserClass
+    parserUtils -->|"Parser base class"| jsxParserClass
     htmlParser -->|"getNamespace()"| jsxParserClass
     tsEstree -->|"parse()"| jsxModule
     tsTypes -->|"TSESTree types"| jsxModule
@@ -110,7 +110,7 @@ A private `WeakMap` that tracks the parent-child relationships between JSX expre
 | `afterTraverse()`     | Rebuilds parent-child relationships for psblock nodes using `#parentIdMap`                                  |
 | `afterFlattenNodes()` | Calls parent with `exposeWhiteSpace: false` and `exposeInvalidNode: false`                                  |
 | `visitComment()`      | Marks all comment nodes as `isBogus: false` (JSX uses JS comment syntax, not HTML bogus comments)           |
-| `visitAttr()`         | Handles JSX-specific quoting (`{}`), IDL attribute mapping, and dynamic value detection                     |
+| `visitAttr()`         | Handles JSX-specific quoting (`{}`) and dynamic value detection                                             |
 | `parseCodeFragment()` | Delegates to parent with `namelessFragment: true`                                                           |
 | `detectElementType()` | Uses `/^[A-Z]                                                                                               | \./` regex to detect component vs HTML element |
 
@@ -337,22 +337,7 @@ When the attribute value is wrapped in `{}`, the `attrParser` function is invoke
 
 ### IDL Attribute Mapping
 
-After parsing the attribute, `visitAttr()` calls `searchIDLAttribute(rawName)` from `@markuplint/parser-utils` to resolve IDL-to-content attribute mappings. Key mappings include:
-
-| JSX (IDL) Attribute | HTML Content Attribute |
-| ------------------- | ---------------------- |
-| `className`         | `class`                |
-| `htmlFor`           | `for`                  |
-| `httpEquiv`         | `http-equiv`           |
-| `tabIndex`          | `tabindex`             |
-| `charSet`           | `charset`              |
-| `autoComplete`      | `autocomplete`         |
-| `crossOrigin`       | `crossorigin`          |
-
-The resolved mapping is applied via `this.updateAttr()`:
-
-- `potentialName` is set to the content attribute name (e.g., `class` for `className`)
-- `candidate` is set to the IDL property name if it differs from the raw name (e.g., `tabIndex` when `tabindex` is written)
+IDL-to-content attribute mapping (e.g., `className` -> `class`, `htmlFor` -> `for`) is **not** performed by the parser. Instead, it is handled declaratively at the core level by `@markuplint/ml-core`'s `MLAttr` constructor when the paired spec (`@markuplint/react-spec`) sets `useIDLAttributeNames: true`. See the [MLAttr documentation](../../ml-core/docs/ml-dom/attr.md) for details.
 
 ### Dynamic Value Flag
 
@@ -403,13 +388,13 @@ The `recursiveSearchJSXElements()` function exhaustively handles all known `AST_
 
 ## External Dependencies
 
-| Dependency                             | Purpose                                                                             |
-| -------------------------------------- | ----------------------------------------------------------------------------------- |
-| `@markuplint/ml-ast`                   | AST type definitions (`MLASTNodeTreeItem`, `MLASTParentNode`)                       |
-| `@markuplint/parser-utils`             | Abstract `Parser` class, `ParserError`, `searchIDLAttribute`, `ChildToken`, `Token` |
-| `@markuplint/html-parser`              | `getNamespace()` for namespace resolution                                           |
-| `@typescript-eslint/typescript-estree` | TypeScript/JSX parsing via `parse()`                                                |
-| `@typescript-eslint/types`             | `TSESTree` type definitions for AST nodes                                           |
+| Dependency                             | Purpose                                                       |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `@markuplint/ml-ast`                   | AST type definitions (`MLASTNodeTreeItem`, `MLASTParentNode`) |
+| `@markuplint/parser-utils`             | Abstract `Parser` class, `ParserError`, `ChildToken`, `Token` |
+| `@markuplint/html-parser`              | `getNamespace()` for namespace resolution                     |
+| `@typescript-eslint/typescript-estree` | TypeScript/JSX parsing via `parse()`                          |
+| `@typescript-eslint/types`             | `TSESTree` type definitions for AST nodes                     |
 
 ## Integration Points
 
@@ -437,7 +422,7 @@ flowchart TD
 ### Upstream
 
 - **`@markuplint/ml-ast`** -- AST type definitions used throughout the parser
-- **`@markuplint/parser-utils`** -- Abstract `Parser` class that `JSXParser` extends, plus `searchIDLAttribute` for IDL attribute mapping and `ParserError` for error handling
+- **`@markuplint/parser-utils`** -- Abstract `Parser` class that `JSXParser` extends, plus `ParserError` for error handling
 - **`@markuplint/html-parser`** -- Provides `getNamespace()` for resolving element namespaces (HTML, SVG, MathML)
 - **`@typescript-eslint/typescript-estree`** -- The underlying TypeScript/JSX parser that performs AST generation
 - **`@typescript-eslint/types`** -- TSESTree type definitions for all AST node types

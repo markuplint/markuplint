@@ -21,7 +21,7 @@ src/
 flowchart TD
     subgraph upstream ["上流"]
         mlAst["@markuplint/ml-ast\n(AST 型定義)"]
-        parserUtils["@markuplint/parser-utils\n(抽象 Parser クラス,\nsearchIDLAttribute)"]
+        parserUtils["@markuplint/parser-utils\n(抽象 Parser クラス)"]
         htmlParser["@markuplint/html-parser\n(getNamespace)"]
         tsEstree["@typescript-eslint/typescript-estree\n(TypeScript/JSX パーサー)"]
         tsTypes["@typescript-eslint/types\n(TSESTree 型定義)"]
@@ -37,7 +37,7 @@ flowchart TD
     end
 
     mlAst -->|"AST 型"| jsxParserClass
-    parserUtils -->|"Parser 基底クラス,\nsearchIDLAttribute"| jsxParserClass
+    parserUtils -->|"Parser 基底クラス"| jsxParserClass
     htmlParser -->|"getNamespace()"| jsxParserClass
     tsEstree -->|"parse()"| jsxModule
     tsTypes -->|"TSESTree 型"| jsxModule
@@ -110,7 +110,7 @@ JSX 式とその包含要素間の親子関係を追跡するプライベート 
 | `afterTraverse()`     | `#parentIdMap` を使用して psblock ノードの親子関係を再構築                                               |
 | `afterFlattenNodes()` | `exposeWhiteSpace: false` と `exposeInvalidNode: false` で親メソッドを呼び出す                           |
 | `visitComment()`      | 全コメントノードを `isBogus: false` にマーク（JSX は HTML bogus コメントではなく JS コメント構文を使用） |
-| `visitAttr()`         | JSX 固有のクォート（`{}`）、IDL 属性マッピング、動的値検出を処理                                         |
+| `visitAttr()`         | JSX 固有のクォート（`{}`）と動的値検出を処理                                                             |
 | `parseCodeFragment()` | `namelessFragment: true` で親メソッドに委譲                                                              |
 | `detectElementType()` | `/^[A-Z]                                                                                                 | \./` 正規表現でコンポーネント vs HTML 要素を検出 |
 
@@ -255,17 +255,7 @@ JSX を返す `.map()` 呼び出し（例: `{items.map(item => <li>{item}</li>)}
 
 ### IDL 属性マッピング
 
-属性パース後、`visitAttr()` は `@markuplint/parser-utils` の `searchIDLAttribute(rawName)` を呼び出して IDL-コンテンツ属性マッピングを解決します。主なマッピング:
-
-| JSX（IDL）属性 | HTML コンテンツ属性 |
-| -------------- | ------------------- |
-| `className`    | `class`             |
-| `htmlFor`      | `for`               |
-| `httpEquiv`    | `http-equiv`        |
-| `tabIndex`     | `tabindex`          |
-| `charSet`      | `charset`           |
-| `autoComplete` | `autocomplete`      |
-| `crossOrigin`  | `crossorigin`       |
+IDL-コンテンツ属性マッピング（例: `className` -> `class`、`htmlFor` -> `for`）はパーサーでは**行いません**。代わりに、ペアとなる spec（`@markuplint/react-spec`）が `useIDLAttributeNames: true` を設定している場合に、`@markuplint/ml-core` の `MLAttr` コンストラクタでコアレベルで宣言的に処理されます。詳細は [MLAttr ドキュメント](../../ml-core/docs/ml-dom/attr.ja.md)を参照してください。
 
 ### 動的値フラグ
 
@@ -316,13 +306,13 @@ flowchart LR
 
 ## 外部依存
 
-| 依存パッケージ                         | 用途                                                                             |
-| -------------------------------------- | -------------------------------------------------------------------------------- |
-| `@markuplint/ml-ast`                   | AST 型定義（`MLASTNodeTreeItem`、`MLASTParentNode`）                             |
-| `@markuplint/parser-utils`             | 抽象 `Parser` クラス、`ParserError`、`searchIDLAttribute`、`ChildToken`、`Token` |
-| `@markuplint/html-parser`              | 名前空間解決用 `getNamespace()`                                                  |
-| `@typescript-eslint/typescript-estree` | `parse()` による TypeScript/JSX パース                                           |
-| `@typescript-eslint/types`             | AST ノードの `TSESTree` 型定義                                                   |
+| 依存パッケージ                         | 用途                                                       |
+| -------------------------------------- | ---------------------------------------------------------- |
+| `@markuplint/ml-ast`                   | AST 型定義（`MLASTNodeTreeItem`、`MLASTParentNode`）       |
+| `@markuplint/parser-utils`             | 抽象 `Parser` クラス、`ParserError`、`ChildToken`、`Token` |
+| `@markuplint/html-parser`              | 名前空間解決用 `getNamespace()`                            |
+| `@typescript-eslint/typescript-estree` | `parse()` による TypeScript/JSX パース                     |
+| `@typescript-eslint/types`             | AST ノードの `TSESTree` 型定義                             |
 
 ## 統合ポイント
 
@@ -350,7 +340,7 @@ flowchart TD
 ### 上流
 
 - **`@markuplint/ml-ast`** -- パーサー全体で使用される AST 型定義
-- **`@markuplint/parser-utils`** -- `JSXParser` が拡張する抽象 `Parser` クラス、IDL 属性マッピング用の `searchIDLAttribute`、エラー処理用の `ParserError`
+- **`@markuplint/parser-utils`** -- `JSXParser` が拡張する抽象 `Parser` クラス、エラー処理用の `ParserError`
 - **`@markuplint/html-parser`** -- 要素の名前空間解決（HTML、SVG、MathML）用の `getNamespace()` を提供
 - **`@typescript-eslint/typescript-estree`** -- AST 生成を行う基盤 TypeScript/JSX パーサー
 - **`@typescript-eslint/types`** -- すべての AST ノード型の TSESTree 型定義
