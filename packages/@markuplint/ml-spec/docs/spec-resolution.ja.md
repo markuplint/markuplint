@@ -143,7 +143,35 @@ for (const modelName of keys) {
 （例: `#phrasing` に `<router-link>` を追加）、
 まったく新しいカテゴリを定義したりできます。
 
-#### 5. 要素仕様
+#### 5. ディレクティブパターン
+
+拡張仕様が `directivePatterns` を提供する場合、既存の配列に連結されます：
+
+```ts
+result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
+```
+
+単純な配列結合です。コアエンジンはパターンを順番に評価します
+（最初のマッチが優先）。そのため、フレームワーク spec はパターンを
+最も具体的なものから最も一般的なものの順で定義する必要があります。
+
+#### 6. `useIDLAttributeNames`
+
+拡張仕様が `useIDLAttributeNames` を明示的に設定している場合（`true` または
+`false`）、現在の値を上書きします：
+
+```ts
+if (extendedSpec.useIDLAttributeNames != null) {
+  result.useIDLAttributeNames = extendedSpec.useIDLAttributeNames;
+}
+```
+
+これは明示的な `null` ガード付きの last-write-wins セマンティクスです。
+プロパティを省略しても以前に設定された値はリセットされません。
+このフラグは `@markuplint/ml-core` の `MLAttr` コンストラクタで使用され、
+IDL-コンテンツ属性名解決（例: `className` → `class`）を有効化します。
+
+#### 7. 要素仕様
 
 要素は名前で照合されます（大文字小文字を区別しない比較）。
 ベース仕様の各要素について：

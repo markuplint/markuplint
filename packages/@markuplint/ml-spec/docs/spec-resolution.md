@@ -147,7 +147,36 @@ This means a framework can add its custom elements to existing categories
 (e.g., adding `<router-link>` to `#phrasing`) or define entirely new
 categories.
 
-#### 5. Element Specs
+#### 5. Directive Patterns
+
+If the extended spec provides `directivePatterns`, they are concatenated onto the
+existing array:
+
+```ts
+result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
+```
+
+This is simple array concatenation. The core engine evaluates patterns in order
+(first match wins), so framework specs should define their patterns from most
+specific to most general.
+
+#### 6. `useIDLAttributeNames`
+
+If the extended spec explicitly sets `useIDLAttributeNames` (to `true` or
+`false`), it overrides the current value:
+
+```ts
+if (extendedSpec.useIDLAttributeNames != null) {
+  result.useIDLAttributeNames = extendedSpec.useIDLAttributeNames;
+}
+```
+
+This is a last-write-wins semantic with explicit `null` guard -- omitting the
+property does not reset a previously set value. This flag is consumed by
+`@markuplint/ml-core`'s `MLAttr` constructor to enable IDL-to-content attribute
+name resolution (e.g., `className` -> `class`).
+
+#### 7. Element Specs
 
 Elements are matched by name (case-insensitive comparison). For each element in
 the base spec:

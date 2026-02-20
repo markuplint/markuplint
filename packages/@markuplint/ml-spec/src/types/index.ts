@@ -13,6 +13,7 @@ export interface MLMLSpec {
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
+	readonly useIDLAttributeNames?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export type ExtendedSpec = {
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
+	readonly useIDLAttributeNames?: boolean;
 };
 
 /**

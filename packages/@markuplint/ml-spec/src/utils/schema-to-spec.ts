@@ -89,6 +89,9 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		if (extendedSpec.directivePatterns) {
 			result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
 		}
+		if (extendedSpec.useIDLAttributeNames != null) {
+			result.useIDLAttributeNames = extendedSpec.useIDLAttributeNames;
+		}
 		if (extendedSpec.specs) {
 			const exSpecs = [...extendedSpec.specs];
 			const specs: ElementSpec[] = [];
