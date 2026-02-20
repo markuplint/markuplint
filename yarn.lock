@@ -2651,7 +2651,7 @@ __metadata:
     ajv: "npm:8.18.0"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
-    fast-xml-parser: "npm:5.3.6"
+    fast-xml-parser: "npm:5.3.7"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.4.4"
@@ -8748,14 +8748,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:5.3.6":
-  version: 5.3.6
-  resolution: "fast-xml-parser@npm:5.3.6"
+"fast-xml-parser@npm:5.3.7":
+  version: 5.3.7
+  resolution: "fast-xml-parser@npm:5.3.7"
   dependencies:
     strnum: "npm:^2.1.2"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/0150cc0566f327a76115de8b11628d717fb179010ed9bb77c52e579a7e6055a0f92f42f83678a6f1ec5b74411faec09713cb1f9b94bc687068ad86884a9199fa
+  checksum: 10c0/2452b8d4557f6958507ccb9694dad094fb56342385774ee900e0ae1e193027a6590dd5c4ce9e5485af64fb18c2299b64d5423c82dba5f5a698950d36d02a864d
   languageName: node
   linkType: hard
 
