@@ -60,6 +60,9 @@
 				"landmark-roles": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/landmark-roles/schema.json"
 				},
+				"link-types": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/link-types/schema.json"
+				},
 				"neighbor-popovers": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/neighbor-popovers/schema.json"
 				},
