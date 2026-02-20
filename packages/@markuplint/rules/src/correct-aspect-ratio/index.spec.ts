@@ -235,6 +235,62 @@ describe('Edge cases', () => {
 	});
 });
 
+describe('picture/source element', () => {
+	test('source with srcset mismatch', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="/100x50.png" width="100" height="100"></picture>',
+			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
+		);
+		expect(violations.length).toBe(1);
+	});
+
+	test('source with srcset match', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="/100x50.png" width="200" height="100"></picture>',
+			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('source inside video is skipped', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<video><source srcset="/100x50.png" width="100" height="100"></video>',
+			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('source with multiple srcset entries', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="/100x50.png 1x, /50x50.png 2x" width="100" height="100"></picture>',
+			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
+		);
+		// First image (100x50) is used for the check
+		expect(violations.length).toBe(1);
+	});
+
+	test('source without width/height', async () => {
+		const { violations } = await mlRuleTest(rule, '<picture><source srcset="/100x50.png"></picture>', {
+			rule: { value: true, options: { documentRoot: fixturesDir } },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('picture with img fallback (both checked)', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<picture><source srcset="/100x50.png" width="100" height="100"><img src="/50x50.png" width="100" height="50"></picture>',
+			{ rule: { value: true, options: { documentRoot: fixturesDir } } },
+		);
+		// source: 100x50 vs 100:100 → mismatch; img: 50x50 vs 100:50 → mismatch
+		expect(violations.length).toBe(2);
+	});
+});
+
 describe('Rule disabled', () => {
 	test('no violations when rule is disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {

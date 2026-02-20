@@ -1,11 +1,11 @@
 ---
 id: correct-aspect-ratio
-description: img要素のwidth/height属性が実際の画像のアスペクト比と一致しない場合に警告します。
+description: imgまたはsource要素のwidth/height属性が実際の画像のアスペクト比と一致しない場合に警告します。
 ---
 
 # `correct-aspect-ratio`
 
-`<img>` 要素の `width` および `height` 属性が、参照する画像ファイルの実際のアスペクト比と一致しない場合に警告します。
+`<img>` 要素および `<picture>` 内の `<source>` 要素の `width` / `height` 属性が、参照する画像ファイルの実際のアスペクト比と一致しない場合に警告します。
 
 `width`/`height` 属性が正しくないと、ブラウザが画像の読み込み前にこれらの値に基づいてスペースを確保するため、レイアウトシフト（CLS）が発生します。画像の読み込みが完了した際に、実際のアスペクト比と異なるとレイアウトがずれます。
 
@@ -13,7 +13,8 @@ description: img要素のwidth/height属性が実際の画像のアスペクト�
 
 ## 動作
 
-- `src`、`width`、`height` 属性を持つ `<img>` 要素のみチェックします。
+- `src`、`width`、`height` 属性を持つ `<img>` 要素をチェックします。
+- `<picture>` 内の `<source>` 要素で `srcset`、`width`、`height` 属性を持つものもチェック対象です。`srcset` 属性の最初の URL を使って画像サイズを取得します。
 - リモートURL（`http://`、`https://`）やデータURI（`data:`）はスキップされます。
 - 画像ファイルが見つからない、または読み取れない場合は違反を報告しません（サイレントスキップ）。
 - 動的な属性値（Vue の `:src`、JSX の `src={...}` など）やスプレッド属性を持つ要素はスキップされます。

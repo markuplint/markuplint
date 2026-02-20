@@ -1,17 +1,18 @@
 ---
 id: correct-aspect-ratio
-description: Warns when the width/height attributes of an img element do not match the actual image aspect ratio.
+description: Warns when the width/height attributes of an img or source element do not match the actual image aspect ratio.
 ---
 
 # `correct-aspect-ratio`
 
-Warns when the `width` and `height` attributes of an `<img>` element do not match the actual aspect ratio of the referenced image file.
+Warns when the `width` and `height` attributes of an `<img>` or `<source>` (inside `<picture>`) element do not match the actual aspect ratio of the referenced image file.
 
 Incorrect `width`/`height` attributes can cause layout shifts (CLS) because the browser reserves space based on these values before the image loads. If they don't match the intrinsic aspect ratio, the layout will jump when the image finishes loading.
 
 ## How It Works
 
-- Only `<img>` elements with `src`, `width`, and `height` attributes are checked.
+- `<img>` elements with `src`, `width`, and `height` attributes are checked.
+- `<source>` elements inside `<picture>` with `srcset`, `width`, and `height` attributes are also checked. The first URL from the `srcset` attribute is used for dimension lookup.
 - Remote URLs (`http://`, `https://`) and data URIs (`data:`) are skipped.
 - If the image file cannot be found or read, no violation is reported (silent skip).
 - Dynamic attribute values (e.g., Vue `:src`, JSX `src={...}`) and elements with spread attributes are skipped.

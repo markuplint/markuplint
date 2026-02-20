@@ -13,7 +13,15 @@ export default createRule<boolean, Options>({
 	defaultOptions: {},
 	async verify({ document, report }) {
 		await document.walkOn('Element', async el => {
-			if (el.localName !== 'img') {
+			const localName = el.localName;
+
+			// Only check img and source (inside picture) elements
+			if (localName !== 'img' && localName !== 'source') {
+				return;
+			}
+
+			// source is only relevant inside <picture>
+			if (localName === 'source' && el.parentElement?.localName !== 'picture') {
 				return;
 			}
 
@@ -21,19 +29,36 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const srcAttr = el.getAttributeNode('src');
 			const widthAttr = el.getAttributeNode('width');
 			const heightAttr = el.getAttributeNode('height');
 
-			if (!srcAttr || !widthAttr || !heightAttr) {
+			if (!widthAttr || !heightAttr) {
 				return;
 			}
 
-			if (srcAttr.isDynamicValue || widthAttr.isDynamicValue || heightAttr.isDynamicValue) {
+			if (widthAttr.isDynamicValue || heightAttr.isDynamicValue) {
 				return;
 			}
 
-			const src = srcAttr.value;
+			// Resolve the image URL from src (img) or srcset (source)
+			let src: string;
+			if (localName === 'img') {
+				const srcAttr = el.getAttributeNode('src');
+				if (!srcAttr || srcAttr.isDynamicValue) {
+					return;
+				}
+				src = srcAttr.value;
+			} else {
+				const srcsetAttr = el.getAttributeNode('srcset');
+				if (!srcsetAttr || srcsetAttr.isDynamicValue) {
+					return;
+				}
+				const extracted = extractFirstSrcsetUrl(srcsetAttr.value);
+				if (!extracted) {
+					return;
+				}
+				src = extracted;
+			}
 			const widthStr = widthAttr.value;
 			const heightStr = heightAttr.value;
 
@@ -62,3 +87,11 @@ export default createRule<boolean, Options>({
 		});
 	},
 });
+
+function extractFirstSrcsetUrl(srcset: string): string | null {
+	const first = srcset.trim().split(',')[0]?.trim();
+	if (!first) {
+		return null;
+	}
+	return first.split(/\s+/)[0] ?? null;
+}
