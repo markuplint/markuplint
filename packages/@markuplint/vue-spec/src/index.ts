@@ -19,6 +19,57 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * element is marked as allowing additional dynamic properties.
  */
 const spec: ExtendedSpec = {
+	directivePatterns: [
+		// .propName shorthand (Vue 3.2+, equivalent to v-bind:propName.prop)
+		{
+			pattern: '^\\.(.+)$',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// v-bind/: with .prop or .camel modifier → isDirective
+		{
+			pattern: '^(?:v-bind:|:)([^.]+)\\..+$',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// Dynamic attribute/event names with brackets (e.g., :[dynamicAttr], @[dynamicEvent])
+		{
+			pattern: '^(?:v-bind:|:|v-on:|@)\\[',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// v-bind:attr or :attr (no modifier) → potentialName=attr, isDynamicValue
+		{
+			pattern: '^(?:v-bind:|:)([^.]+)$',
+			potentialName: '$1',
+			isDynamicValue: true,
+			isDuplicatable: ['class', 'style'],
+		},
+		// v-on:event or @event (with optional modifiers)
+		{
+			pattern: '^(?:v-on:|@)([^.]+)(?:\\..+)?$',
+			potentialName: 'on$1',
+			isDynamicValue: true,
+		},
+		// v-model (with optional modifiers)
+		{
+			pattern: '^v-model(?:$|\\.)',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// v-slot:name or #name shorthand
+		{
+			pattern: '^(?:v-slot:|#)',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+		// Other v-* directives (v-show, v-if, v-for, v-text, v-html, etc.)
+		{
+			pattern: '^v-',
+			isDirective: true,
+			isDynamicValue: true,
+		},
+	],
 	def: {
 		'#globalAttrs': {
 			'#extends': {

@@ -6,6 +6,23 @@
 
 ## ExtendedSpec の内容
 
+### `directivePatterns`
+
+この spec は Vue ディレクティブ属性を解決するための `directivePatterns` 配列を宣言します。パターンは順番に評価されます（最初のマッチが優先）:
+
+| パターン                          | 結果                                                                         |
+| --------------------------------- | ---------------------------------------------------------------------------- |
+| `^\\.(.+)$`                       | `.prop` ショートハンド (Vue 3.2+) → `isDirective`、`isDynamicValue`          |
+| `^(?:v-bind:\|:)([^.]+)\\..+$`    | `v-bind` + 修飾子（`.prop`、`.camel`）→ `isDirective`、`isDynamicValue`      |
+| `^(?:v-bind:\|:\|v-on:\|@)\\[`    | 動的属性/イベント名（`:[expr]`、`@[expr]`）→ `isDirective`、`isDynamicValue` |
+| `^(?:v-bind:\|:)([^.]+)$`         | `v-bind:attr` / `:attr` → `potentialName=$1`、`isDynamicValue`               |
+| `^(?:v-on:\|@)([^.]+)(?:\\..+)?$` | `v-on:event` / `@event` → `potentialName=on$1`、`isDynamicValue`             |
+| `^v-model(?:$\|\\.)`              | `v-model` → `isDirective`、`isDynamicValue`                                  |
+| `^(?:v-slot:\|#)`                 | `v-slot` / `#` ショートハンド → `isDirective`、`isDynamicValue`              |
+| `^v-`                             | その他の `v-*` ディレクティブ → `isDirective`、`isDynamicValue`              |
+
+`v-bind:attr` パターンは `isDuplicatable: ['class', 'style']` も設定しており、これらの属性がバインドされた同等物と並んで出現できるようにします。
+
 ### グローバル属性
 
 以下のグローバル属性が `def['#globalAttrs']['#extends']` 配下に登録されています:
