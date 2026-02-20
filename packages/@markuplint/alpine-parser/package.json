@@ -13,10 +13,6 @@
 		".": {
 			"import": "./lib/index.js",
 			"types": "./lib/index.d.ts"
-		},
-		"./spec": {
-			"import": "./lib/spec.js",
-			"types": "./lib/spec.d.ts"
 		}
 	},
 	"publishConfig": {
@@ -31,7 +27,6 @@
 		"@markuplint/html-parser": "4.6.23"
 	},
 	"devDependencies": {
-		"@markuplint/ml-spec": "4.10.2",
 		"@markuplint/parser-utils": "4.8.11"
 	}
 }

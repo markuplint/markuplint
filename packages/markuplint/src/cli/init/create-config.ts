@@ -107,7 +107,7 @@ export function createConfig(langs: readonly Langs[], mode: RuleSettingMode, def
 				...config,
 				specs: {
 					...config.specs,
-					'\\.html': '@markuplint/alpine-parser/spec',
+					'\\.html': '@markuplint/alpine-spec',
 				},
 			};
 		}

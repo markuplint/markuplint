@@ -26,10 +26,10 @@ const spec: ExtendedSpec = {
 	directivePatterns: [
 		/**
 		 * Static directives: x-data, x-init, x-show, x-text, x-html,
-		 * x-modelable, x-effect, x-ref, x-id
+		 * x-modelable, x-effect, x-ref, x-id, x-for, x-if, x-teleport
 		 */
 		{
-			pattern: '^x-(?:data|init|show|text|html|modelable|effect|ref|id)$',
+			pattern: '^x-(?:data|init|show|text|html|modelable|effect|ref|id|for|if|teleport)$',
 			isDirective: true,
 		},
 		/**
@@ -39,6 +39,15 @@ const spec: ExtendedSpec = {
 			pattern: '^x-(?:ignore|cloak)$',
 			isDirective: true,
 			valueType: 'boolean',
+		},
+		/**
+		 * x-model with optional modifiers (.lazy, .number, .debounce, etc.)
+		 * @see https://alpinejs.dev/directives/model
+		 */
+		{
+			pattern: '^x-model(?:$|\\.)',
+			isDirective: true,
+			isDynamicValue: true,
 		},
 		/**
 		 * x-bind:attr or :attr shorthand => potentialName = attr
@@ -68,6 +77,55 @@ const spec: ExtendedSpec = {
 		{
 			pattern: '^x-transition(?:$|:|\\.)',
 			isDirective: true,
+		},
+	],
+	specs: [
+		{
+			name: 'template',
+			attributes: {
+				'x-for': {
+					type: 'NoEmptyAny',
+					description: 'Renders elements by iterating over arrays, objects, or numeric ranges',
+				},
+				key: {
+					type: 'NoEmptyAny',
+					description: 'A special attribute for list rendering that helps Alpine track changes',
+					condition: '[x-for]',
+				},
+				'x-teleport': {
+					type: 'NoEmptyAny',
+					description: 'Moves the element DOM content to another location in the page',
+				},
+				'x-if': {
+					type: 'NoEmptyAny',
+					description: 'Conditionally adds/removes elements from the DOM entirely',
+				},
+			},
+		},
+		{
+			name: 'input',
+			attributes: {
+				'x-model': {
+					type: 'NoEmptyAny',
+					condition: '[type=text i], [type=checkbox i], [type=radio i], [type=range i]',
+				},
+			},
+		},
+		{
+			name: 'select',
+			attributes: {
+				'x-model': {
+					type: 'NoEmptyAny',
+				},
+			},
+		},
+		{
+			name: 'textarea',
+			attributes: {
+				'x-model': {
+					type: 'NoEmptyAny',
+				},
+			},
 		},
 	],
 	def: {
