@@ -29,6 +29,10 @@ test('default-rules', () => {
 			category: 'naming-convention',
 			defaultValue: false,
 		},
+		'correct-aspect-ratio': {
+			category: 'validation',
+			defaultValue: false,
+		},
 		'deprecated-attr': {
 			category: 'validation',
 			defaultValue: true,
