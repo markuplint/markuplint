@@ -18,7 +18,7 @@ import { ParserError } from '@markuplint/parser-utils';
 
 import { log, enableDebug } from './debug.js';
 import { Document } from './ml-dom/index.js';
-import { expandNamedNodeRules } from './virtual-rule.js';
+import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 const resultLog = log.extend('result');
 
@@ -104,19 +104,23 @@ export class MLCore {
 		this.#originalNodeRules = ruleset.nodeRules ?? [];
 		this.#originalChildNodeRules = ruleset.childNodeRules ?? [];
 
-		// Expand named nodeRules into virtual rules
-		const nodeRuleResult = expandNamedNodeRules(this.#originalNodeRules, rules);
-		const childNodeRuleResult = expandNamedNodeRules(this.#originalChildNodeRules, rules);
+		// Expand named rule groups in the rules section
+		const namedRulesResult = expandNamedRules(ruleset.rules ?? {}, rules);
 
-		const resolvedRules = ruleset.rules ?? {};
-		this.#rules = [...rules, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
+		// Expand named nodeRules into virtual rules (using expanded rules as base)
+		const allRulesForExpansion = [...rules, ...namedRulesResult.virtualRules];
+		const nodeRuleResult = expandNamedNodeRules(this.#originalNodeRules, allRulesForExpansion);
+		const childNodeRuleResult = expandNamedNodeRules(this.#originalChildNodeRules, allRulesForExpansion);
+
+		const resolvedRules = namedRulesResult.resolvedRules;
+		this.#rules = [...allRulesForExpansion, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
 		this.#ruleset = {
 			rules: resolvedRules,
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
-		this.#configErrors.push(...nodeRuleResult.errors, ...childNodeRuleResult.errors);
+		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
 
 		this._parse();
 		this._createDocument();
@@ -158,8 +162,13 @@ export class MLCore {
 		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;
 		const incomingChildNodeRules = ruleset?.childNodeRules ?? this.#originalChildNodeRules;
 
-		const nodeRuleResult = expandNamedNodeRules(incomingNodeRules, baseRules);
-		const childNodeRuleResult = expandNamedNodeRules(incomingChildNodeRules, baseRules);
+		// Expand named rule groups in the rules section
+		const incomingRules = ruleset?.rules ?? this.#ruleset.rules;
+		const namedRulesResult = expandNamedRules(incomingRules, baseRules);
+
+		const allRulesForExpansion = [...baseRules, ...namedRulesResult.virtualRules];
+		const nodeRuleResult = expandNamedNodeRules(incomingNodeRules, allRulesForExpansion);
+		const childNodeRuleResult = expandNamedNodeRules(incomingChildNodeRules, allRulesForExpansion);
 
 		// Update originals if new data was provided
 		if (ruleset?.nodeRules) {
@@ -169,15 +178,15 @@ export class MLCore {
 			this.#originalChildNodeRules = ruleset.childNodeRules;
 		}
 
-		const resolvedRules = ruleset?.rules ?? this.#ruleset.rules;
-		this.#rules = [...baseRules, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
+		const resolvedRules = namedRulesResult.resolvedRules;
+		this.#rules = [...allRulesForExpansion, ...nodeRuleResult.virtualRules, ...childNodeRuleResult.virtualRules];
 		this.#ruleset = {
 			rules: resolvedRules,
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
-		this.#configErrors.push(...nodeRuleResult.errors, ...childNodeRuleResult.errors);
+		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
 
 		if (
 			parserOptions &&
@@ -259,6 +268,8 @@ export class MLCore {
 			// 1. Exact name match: rules["alias/name"]: false
 			// 2. Group disable: rules["groupName"]: false (multi-entry named nodeRules)
 			// 3. Namespace wildcard: rules["scope/*"]: false
+			// Note: base rule name disable (rules["baseRuleName"]: false) is handled
+			// during expandNamedRules for named rule groups in the rules section.
 			if (
 				rule.baseRuleId &&
 				(this.#ruleset.rules[rule.name] === false ||

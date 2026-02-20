@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 
 import { createRule } from './ml-rule/create-test-rule.js';
-import { expandNamedNodeRules } from './virtual-rule.js';
+import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 function createDummyRule(name: string, defaultSeverity: 'error' | 'warning' | 'info' = 'error') {
 	return createRule({
@@ -178,9 +178,8 @@ describe('expandNamedNodeRules', () => {
 		expect(names).toStrictEqual(['custom/multi-check/disallowed-element', 'custom/multi-check/required-attr']);
 
 		// Both should have groupName set
-		for (const rule of result.virtualRules) {
-			expect(rule.groupName).toBe('custom/multi-check');
-		}
+		expect(result.virtualRules[0]!.groupName).toBe('custom/multi-check');
+		expect(result.virtualRules[1]!.groupName).toBe('custom/multi-check');
 	});
 
 	// --- Validation errors ---
@@ -339,9 +338,8 @@ describe('expandNamedNodeRules', () => {
 		// 2 virtual rules for non-false entries
 		expect(result.virtualRules).toHaveLength(2);
 		// Both should have groupName
-		for (const rule of result.virtualRules) {
-			expect(rule.groupName).toBe('custom/complex');
-		}
+		expect(result.virtualRules[0]!.groupName).toBe('custom/complex');
+		expect(result.virtualRules[1]!.groupName).toBe('custom/complex');
 		// 3 transformed nodeRules: 1 false + 2 named
 		expect(result.transformedNodeRules).toHaveLength(3);
 	});
@@ -545,6 +543,313 @@ describe('MLRule.createAlias', () => {
 	test('regular rule has no baseRuleId', () => {
 		const rule = createDummyRule('required-attr');
 		expect(rule.baseRuleId).toBeUndefined();
+	});
+});
+
+describe('expandNamedRules', () => {
+	test('single-rule group creates virtual rule with group name', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'a11y/id-duplication': {
+					rules: { 'id-duplication': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(1);
+		expect(result.virtualRules[0]!.name).toBe('a11y/id-duplication');
+		expect(result.virtualRules[0]!.baseRuleId).toBe('id-duplication');
+		// Single entry → no groupName
+		expect(result.virtualRules[0]!.groupName).toBeUndefined();
+		// resolvedRules has alias name entry
+		expect(result.resolvedRules['a11y/id-duplication']).toBe(true);
+		// Original group key is NOT in resolvedRules
+		expect(result.resolvedRules).not.toHaveProperty('a11y/id-duplication-group');
+	});
+
+	test('multi-rule group creates derived names with groupName', () => {
+		const ruleA = createDummyRule('required-attr');
+		const ruleB = createDummyRule('disallowed-element');
+		const result = expandNamedRules(
+			{
+				'ns/multi': {
+					rules: {
+						'required-attr': ['id'],
+						'disallowed-element': ['span'],
+					},
+				},
+			},
+			[ruleA, ruleB],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(2);
+
+		const names = result.virtualRules.map(r => r.name).toSorted();
+		expect(names).toStrictEqual(['ns/multi/disallowed-element', 'ns/multi/required-attr']);
+
+		expect(result.virtualRules[0]!.groupName).toBe('ns/multi');
+		expect(result.virtualRules[1]!.groupName).toBe('ns/multi');
+
+		expect(result.resolvedRules['ns/multi/required-attr']).toStrictEqual(['id']);
+		expect(result.resolvedRules['ns/multi/disallowed-element']).toStrictEqual(['span']);
+	});
+
+	test('specConformance is propagated to virtual rules', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'a11y/id-duplication': {
+					specConformance: 'normative' as const,
+					rules: { 'id-duplication': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules[0]!.specConformance).toBe('normative');
+	});
+
+	test('virtual rule without specConformance has it undefined', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'a11y/id-duplication': {
+					rules: { 'id-duplication': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules[0]!.specConformance).toBeUndefined();
+	});
+
+	test('group value false passes through as disable signal', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'a11y/id-duplication': false,
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(0);
+		expect(result.resolvedRules['a11y/id-duplication']).toBe(false);
+	});
+
+	test('severity string passes through as regular rule value (no special treatment)', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'a11y/id-duplication': 'warning',
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(0);
+		// Severity string is NOT converted; it passes through as-is (same as regular rules)
+		expect(result.resolvedRules['a11y/id-duplication']).toBe('warning');
+	});
+
+	test('non-namespaced keys pass through unchanged', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'id-duplication': true,
+				'required-attr': ['lang'],
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(0);
+		expect(result.resolvedRules['id-duplication']).toBe(true);
+		expect(result.resolvedRules['required-attr']).toStrictEqual(['lang']);
+	});
+
+	test('wildcard patterns pass through unchanged', () => {
+		const result = expandNamedRules(
+			{
+				'a11y/*': false,
+			},
+			[],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(0);
+		expect(result.resolvedRules['a11y/*']).toBe(false);
+	});
+
+	test('rejects non-existent base rule', () => {
+		const result = expandNamedRules(
+			{
+				'ns/missing': {
+					rules: { 'nonexistent-rule': true },
+				},
+			},
+			[],
+		);
+
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0]!.message).toContain('not found');
+	});
+
+	test('rejects name collision with existing rule', () => {
+		const existingRule = createDummyRule('ns/existing');
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'ns/existing': {
+					rules: { 'id-duplication': true },
+				},
+			},
+			[existingRule, baseRule],
+		);
+
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0]!.message).toContain('conflicts');
+	});
+
+	test('derived name collision between groups is reported as error', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const ruleA = createDummyRule('required-attr');
+		const result = expandNamedRules(
+			{
+				'ns/rule': {
+					rules: { 'id-duplication': true },
+				},
+				'ns/rule/id-duplication': {
+					rules: { 'required-attr': true },
+				},
+			},
+			[baseRule, ruleA],
+		);
+
+		// ns/rule creates virtual rule "ns/rule" (single entry)
+		// ns/rule/id-duplication creates virtual rule "ns/rule/id-duplication" (single entry)
+		// No collision — both names are distinct
+		expect(result.virtualRules).toHaveLength(2);
+		expect(result.errors).toHaveLength(0);
+	});
+
+	test('multi-entry with mixed false and non-false creates virtual rules for non-false only', () => {
+		const ruleA = createDummyRule('required-attr');
+		const ruleB = createDummyRule('disallowed-element');
+		const result = expandNamedRules(
+			{
+				'ns/mixed': {
+					rules: {
+						'required-attr': ['id'],
+						'disallowed-element': false,
+					},
+				},
+			},
+			[ruleA, ruleB],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(1);
+		// Single non-false entry: uses group key directly
+		expect(result.virtualRules[0]!.name).toBe('ns/mixed');
+		expect(result.virtualRules[0]!.baseRuleId).toBe('required-attr');
+	});
+
+	test('rejects all-false rules entries', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'ns/all-false': {
+					rules: { 'id-duplication': false },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0]!.message).toContain('at least one non-false');
+	});
+
+	test('base rule false disables wrapping virtual rules (backwards compat)', () => {
+		const baseRule = createDummyRule('id-duplication');
+		const result = expandNamedRules(
+			{
+				'id-duplication': false,
+				'a11y/id-duplication': {
+					rules: { 'id-duplication': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(1);
+		// Base rule disabled → virtual rule also set to false
+		expect(result.resolvedRules['a11y/id-duplication']).toBe(false);
+		expect(result.resolvedRules['id-duplication']).toBe(false);
+	});
+
+	test('specConformance does not affect severity (metadata only)', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedRules(
+			{
+				'a11y/no-accesskey': {
+					specConformance: 'non-normative' as const,
+					rules: { 'required-attr': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		// specConformance is metadata only — severity is NOT affected
+		expect(result.virtualRules[0]!.defaultSeverity).toBe('error');
+		expect(result.virtualRules[0]!.specConformance).toBe('non-normative');
+	});
+
+	test('group-level severity sets defaultSeverity', () => {
+		const baseRule = createDummyRule('required-attr');
+		const result = expandNamedRules(
+			{
+				'a11y/no-accesskey': {
+					specConformance: 'non-normative' as const,
+					severity: 'info',
+					rules: { 'required-attr': true },
+				},
+			},
+			[baseRule],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules[0]!.defaultSeverity).toBe('info');
+	});
+
+	test('mixed named groups and regular rules', () => {
+		const ruleA = createDummyRule('id-duplication');
+		const ruleB = createDummyRule('required-attr');
+		const result = expandNamedRules(
+			{
+				'wai-aria': true,
+				'a11y/id-duplication': {
+					specConformance: 'normative' as const,
+					rules: { 'id-duplication': true },
+				},
+				'required-attr': ['lang'],
+			},
+			[ruleA, ruleB],
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.virtualRules).toHaveLength(1);
+		expect(result.resolvedRules['wai-aria']).toBe(true);
+		expect(result.resolvedRules['a11y/id-duplication']).toBe(true);
+		expect(result.resolvedRules['required-attr']).toStrictEqual(['lang']);
 	});
 });
 
