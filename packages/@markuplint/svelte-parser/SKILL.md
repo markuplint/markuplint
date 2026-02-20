@@ -14,11 +14,11 @@ update SvelteKit placeholders, and modify attribute processing.
 
 `$ARGUMENTS` specifies the task. Supported tasks:
 
-| Task                            | Description                                    |
-| ------------------------------- | ---------------------------------------------- |
-| `add-directive`                 | Add a new Svelte directive to visitAttr()      |
-| `add-control-flow-block`        | Add a new control flow block to nodeize()      |
-| `update-sveltekit-placeholders` | Update SvelteKit template placeholder patterns |
+| Task                            | Description                                                   |
+| ------------------------------- | ------------------------------------------------------------- |
+| `add-directive`                 | Add a new Svelte directive to directivePatterns (svelte-spec) |
+| `add-control-flow-block`        | Add a new control flow block to nodeize()                     |
+| `update-sveltekit-placeholders` | Update SvelteKit template placeholder patterns                |
 
 If omitted, defaults to `add-directive`.
 
@@ -34,19 +34,19 @@ Also read:
 
 ## Task: add-directive
 
-Add a new Svelte directive to `visitAttr()`. Follow recipe #1 in `docs/maintenance.md`.
+Add a new Svelte directive to `directivePatterns` (`@markuplint/svelte-spec`). Follow recipe #1 in `docs/maintenance.md`.
 
 ### Step 1: Understand the current directive handling
 
-1. Read `src/parser.ts` and locate the `visitAttr()` method
+1. Open `@markuplint/svelte-spec` (`packages/@markuplint/svelte-spec/src/index.ts`) and find the `directivePatterns` array
 2. Review the directive table in `ARCHITECTURE.md` to understand existing patterns
 3. Identify whether the new directive should be `isDirective=true`, or requires special processing like `bind:`
 
 ### Step 2: Add the directive
 
-1. Add a new `if (baseName === 'newDirective')` branch in `visitAttr()` after the `split(':')` check
+1. Add a new pattern entry in the `directivePatterns` array in `@markuplint/svelte-spec`
 2. Set the appropriate flags: `isDirective`, `isDynamicValue`, `potentialName`, `isDuplicatable`
-3. If the directive needs special handling like `bind:`, add to `specificBindDirective` in the constructor
+3. For directives that need special attribute processing (e.g., spread, shorthand), also update `visitAttr()` in `src/parser.ts`
 
 ### Step 3: Verify
 
