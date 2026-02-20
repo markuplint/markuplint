@@ -24,6 +24,9 @@
 				"class-naming": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/class-naming/schema.json"
 				},
+				"correct-aspect-ratio": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/correct-aspect-ratio/schema.json"
+				},
 				"deprecated-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/deprecated-attr/schema.json"
 				},

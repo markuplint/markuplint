@@ -14,6 +14,7 @@ import AttrValueQuotes from './attr-value-quotes/index.js';
 import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
 import CharacterReference from './character-reference/index.js';
+import CorrectAspectRatio from './correct-aspect-ratio/index.js';
 import ClassNaming from './class-naming/index.js';
 import DeprecatedAttr from './deprecated-attr/index.js';
 import DeprecatedElement from './deprecated-element/index.js';
@@ -63,6 +64,7 @@ const rules = {
 	'case-sensitive-tag-name': CaseSensitiveTagName,
 	'character-reference': CharacterReference,
 	'class-naming': ClassNaming,
+	'correct-aspect-ratio': CorrectAspectRatio,
 	'deprecated-attr': DeprecatedAttr,
 	'deprecated-element': DeprecatedElement,
 	'disallowed-element': DisallowedElement,
