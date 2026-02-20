@@ -1,4 +1,12 @@
-import type { AnyRule, PlainData, PrimitiveScalar, RuleConfig, RuleConfigValue } from './types.js';
+import type {
+	AnyRule,
+	NamedRuleGroup,
+	PlainData,
+	PrimitiveScalar,
+	RuleConfig,
+	RuleConfigValue,
+	Severity,
+} from './types.js';
 
 // @ts-ignore
 import { isPlainObject } from 'is-plain-object';
@@ -87,6 +95,35 @@ export function cleanOptions(rule: RuleConfig<RuleConfigValue, PlainData>): Rule
 	};
 	deleteUndefProp(res);
 	return res;
+}
+
+/**
+ * Type guard that checks whether a value is a {@link NamedRuleGroup}.
+ * A NamedRuleGroup is an object with a `rules` property (and optionally `specConformance` and `severity`).
+ *
+ * @param v - The value to check
+ * @returns `true` if `v` is a named rule group
+ */
+export function isNamedRuleGroup(v: unknown): v is NamedRuleGroup {
+	return (
+		v != null &&
+		typeof v === 'object' &&
+		!Array.isArray(v) &&
+		'rules' in v &&
+		(v as Record<string, unknown>).rules != null &&
+		typeof (v as Record<string, unknown>).rules === 'object' &&
+		!Array.isArray((v as Record<string, unknown>).rules)
+	);
+}
+
+/**
+ * Type guard that checks whether a string is a valid {@link Severity} value.
+ *
+ * @param v - The string to check
+ * @returns `true` if `v` is "error", "warning", or "info"
+ */
+export function isSeverity(v: string): v is Severity {
+	return v === 'error' || v === 'warning' || v === 'info';
 }
 
 /**

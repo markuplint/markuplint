@@ -1,6 +1,7 @@
 import type {
 	Config,
 	AnyRule,
+	NamedRuleGroup,
 	Rules,
 	OptimizedConfig,
 	OverrideConfig,
@@ -11,7 +12,7 @@ import type {
 import type { Nullable } from '@markuplint/shared';
 import type { Writable } from 'type-fest';
 
-import { deleteUndefProp, cleanOptions, isRuleConfigValue } from './utils.js';
+import { deleteUndefProp, cleanOptions, isRuleConfigValue, isNamedRuleGroup } from './utils.js';
 
 /**
  * Merges two markuplint configurations into an optimized result.
@@ -261,6 +262,15 @@ function getName(item: any, comparePropName: string) {
 	return null;
 }
 
+/**
+ * Merges two Rules dictionaries. Keys containing `/` use named rule group
+ * merge semantics ({@link mergeNamedRuleGroupEntry}); other keys use standard
+ * rule merge semantics ({@link mergeRule}).
+ *
+ * @param a - The base rules (lower priority)
+ * @param b - The override rules (higher priority)
+ * @returns The merged rules, or `undefined` if both inputs are nullish
+ */
 function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	if (a == null) {
 		return b && optimizeRules(b);
@@ -270,19 +280,67 @@ function mergeRules(a?: Rules, b?: Rules): Rules | undefined {
 	}
 	const res = optimizeRules(a);
 	for (const [key, rule] of Object.entries(b)) {
-		const merged = mergeRule(res[key], rule);
-		if (merged != null) {
-			res[key] = merged;
+		if (key.includes('/')) {
+			// Named rule group key: special merge semantics
+			res[key] = mergeNamedRuleGroupEntry(res[key], rule);
+		} else {
+			const merged = mergeRule(res[key], rule as AnyRule);
+			if (merged != null) {
+				res[key] = merged;
+			}
 		}
 	}
 	deleteUndefProp(res);
 	return Object.freeze(res);
 }
 
+/**
+ * Merges a named rule group entry (key containing `/`).
+ *
+ * - `false` disables the group entirely
+ * - A partial override object (e.g., `{ severity: "warning" }`) is merged into the existing NamedRuleGroup
+ * - Otherwise, right side wins
+ *
+ * @param a - The existing entry from a lower-priority config (may be a NamedRuleGroup)
+ * @param b - The overriding entry from a higher-priority config
+ * @returns The merged entry
+ */
+function mergeNamedRuleGroupEntry(
+	a: AnyRule | NamedRuleGroup | undefined,
+	b: AnyRule | NamedRuleGroup,
+): AnyRule | NamedRuleGroup {
+	// false disables the group
+	if (b === false) {
+		return false;
+	}
+	// Partial override: object without `rules` merging into an existing NamedRuleGroup
+	// Only merge valid NamedRuleGroup keys to avoid contamination from RuleConfig keys
+	if (typeof b === 'object' && b !== null && !isNamedRuleGroup(b) && a !== undefined && isNamedRuleGroup(a)) {
+		const bObj = b as Record<string, unknown>;
+		const override: Record<string, unknown> = {};
+		if ('severity' in bObj) {
+			override.severity = bObj.severity;
+		}
+		if ('specConformance' in bObj) {
+			override.specConformance = bObj.specConformance;
+		}
+		const merged = { ...a, ...override };
+		deleteUndefProp(merged);
+		return merged;
+	}
+	// Right side wins for everything else
+	return b;
+}
+
 function optimizeRules(rules: Rules) {
 	const res: Writable<Rules> = {};
 	for (const [key, rule] of Object.entries(rules)) {
-		const _rule = optimizeRule(rule);
+		// Pass through NamedRuleGroup entries without optimization
+		if (key.includes('/') && isNamedRuleGroup(rule)) {
+			res[key] = rule;
+			continue;
+		}
+		const _rule = optimizeRule(rule as AnyRule);
 		if (_rule != null) {
 			res[key] = _rule;
 		}

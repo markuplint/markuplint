@@ -611,7 +611,7 @@ describe('Pretenders', () => {
 		});
 	});
 
-	test('test', () => {
+	test('array pretenders merged with files config', () => {
 		expect(
 			mergeConfig(
 				{
@@ -641,7 +641,7 @@ describe('Pretenders', () => {
 		});
 	});
 
-	test('test', () => {
+	test('array pretenders preserved when b has undefined pretenders', () => {
 		expect(
 			mergeConfig(
 				{
@@ -739,5 +739,225 @@ describe('Pretenders', () => {
 				],
 			},
 		});
+	});
+});
+
+describe('Named rule group merging', () => {
+	test('named rule group preserved when only a has it', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+			{},
+		);
+		expect(result.rules).toStrictEqual({
+			'a11y/id-duplication': {
+				specConformance: 'normative',
+				rules: { 'id-duplication': true },
+			},
+		});
+	});
+
+	test('same-name named rule group: right side wins', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'non-normative',
+						rules: { 'id-duplication': { severity: 'warning' } },
+					},
+				},
+			},
+		);
+		expect(result.rules?.['a11y/id-duplication']).toStrictEqual({
+			specConformance: 'non-normative',
+			rules: { 'id-duplication': { severity: 'warning' } },
+		});
+	});
+
+	test('named rule group disabled by false', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+			{
+				rules: {
+					'a11y/id-duplication': false,
+				},
+			},
+		);
+		expect(result.rules?.['a11y/id-duplication']).toBe(false);
+	});
+
+	test('named rule group severity overridden by object', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/no-accesskey': {
+						specConformance: 'non-normative',
+						rules: { 'invalid-attr': { options: { disallowAttrs: ['accesskey'] } } },
+					},
+				},
+			},
+			{
+				rules: {
+					'a11y/no-accesskey': { severity: 'warning' },
+				},
+			},
+		);
+		// Partial override object merges into the existing NamedRuleGroup
+		expect(result.rules?.['a11y/no-accesskey']).toStrictEqual({
+			specConformance: 'non-normative',
+			severity: 'warning',
+			rules: { 'invalid-attr': { options: { disallowAttrs: ['accesskey'] } } },
+		});
+	});
+
+	test('different-name named rule groups coexist', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+			{
+				rules: {
+					'html-standard/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+		);
+		expect(result.rules?.['a11y/id-duplication']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'id-duplication': true },
+		});
+		expect(result.rules?.['html-standard/id-duplication']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'id-duplication': true },
+		});
+	});
+
+	test('regular rule and named rule group coexist', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'wai-aria': true,
+				},
+			},
+			{
+				rules: {
+					'a11y/wai-aria': {
+						specConformance: 'normative',
+						rules: { 'wai-aria': true },
+					},
+				},
+			},
+		);
+		expect(result.rules?.['wai-aria']).toBe(true);
+		expect(result.rules?.['a11y/wai-aria']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'wai-aria': true },
+		});
+	});
+
+	test('named rule group re-enabled after false', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/id-duplication': false,
+				},
+			},
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+		);
+		expect(result.rules?.['a11y/id-duplication']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'id-duplication': true },
+		});
+	});
+
+	test('named rule group first definition (undefined base)', () => {
+		const result = mergeConfig(
+			{},
+			{
+				rules: {
+					'a11y/id-duplication': {
+						specConformance: 'normative',
+						rules: { 'id-duplication': true },
+					},
+				},
+			},
+		);
+		expect(result.rules?.['a11y/id-duplication']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'id-duplication': true },
+		});
+	});
+
+	test('partial override only merges valid NamedRuleGroup keys', () => {
+		const result = mergeConfig(
+			{
+				rules: {
+					'a11y/no-accesskey': {
+						specConformance: 'non-normative',
+						rules: { 'invalid-attr': { options: { disallowAttrs: ['accesskey'] } } },
+					},
+				},
+			},
+			{
+				rules: {
+					'a11y/no-accesskey': { severity: 'warning', value: 'should-be-ignored' } as any,
+				},
+			},
+		);
+		const merged = result.rules?.['a11y/no-accesskey'];
+		expect(merged).toStrictEqual({
+			specConformance: 'non-normative',
+			severity: 'warning',
+			rules: { 'invalid-attr': { options: { disallowAttrs: ['accesskey'] } } },
+		});
+		// value should NOT be in the merged result
+		expect(merged).not.toHaveProperty('value');
+	});
+
+	test('namespaced key with non-NamedRuleGroup value is optimized normally', () => {
+		const result = mergeConfig(
+			{},
+			{
+				rules: {
+					'a11y/html-lang': 'warning',
+				},
+			},
+		);
+		expect(result.rules?.['a11y/html-lang']).toBe('warning');
 	});
 });
