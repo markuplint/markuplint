@@ -24,6 +24,8 @@ void test('ts-config-ts', async () => {
 			col: 7,
 			raw: '<div>',
 			message: 'The "div" element is not allowed in the "span" element in this context',
+			name: 'html-standard/permitted-contents',
+			specConformance: 'normative',
 		},
 	]);
 });
