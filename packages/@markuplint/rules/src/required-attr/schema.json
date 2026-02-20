@@ -37,6 +37,22 @@
 				}
 			],
 			"description": "```ts\ntype Attr = {\n  name: string;\n  value?: string | string[];\n};\n```"
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"ignoreAttrs": {
+					"type": "array",
+					"uniqueItems": true,
+					"minItems": 1,
+					"items": {
+						"type": "string"
+					},
+					"description": "Attribute names to exclude from required-attribute checks. Use this when you want to ignore specific required attributes without disabling the entire rule.",
+					"description:ja": "必須属性チェックから除外する属性名のリスト。ルール全体を無効にせずに特定の必須属性を無視したい場合に使用します。"
+				}
+			}
 		}
 	},
 	"oneOf": [
@@ -51,6 +67,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
 				"severity": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
 					"default": "error"

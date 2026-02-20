@@ -20,15 +20,24 @@ type Attr = {
 };
 
 /**
+ * Configuration options for the `required-attr` rule.
+ */
+type Options = {
+	/** Attribute names to exclude from required-attribute checks. */
+	readonly ignoreAttrs?: readonly string[];
+};
+
+/**
  * Rule that validates elements have all required attributes.
  *
  * Checks both HTML-spec-defined required attributes and custom required attributes
  * specified in the rule configuration. Also validates that required attribute values
  * match expected patterns when value constraints are provided.
  */
-export default createRule<RequiredAttributes>({
+export default createRule<RequiredAttributes, Options>({
 	meta: meta,
 	defaultValue: [],
+	defaultOptions: {},
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.hasSpreadAttr) {
@@ -37,6 +46,7 @@ export default createRule<RequiredAttributes>({
 
 			const customRequiredAttrs = typeof el.rule.value === 'string' ? [el.rule.value] : el.rule.value;
 			const attrSpec = getAttrSpecs(el, document.specs);
+			const ignoreAttrs = new Set(el.rule.options.ignoreAttrs);
 
 			const attributeSpecs: Record<
 				string,
@@ -79,6 +89,36 @@ export default createRule<RequiredAttributes>({
 			}
 
 			for (const spec of Object.values(attributeSpecs)) {
+				if (ignoreAttrs.has(spec.name)) {
+					if (spec.requiredEither) {
+						const activeCandidates = spec.requiredEither.filter(n => !ignoreAttrs.has(n));
+						if (activeCandidates.length > 0) {
+							const invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
+							if (invalid) {
+								const sortedCandidate = activeCandidates.toSorted();
+								const expects =
+									sortedCandidate.length === 1
+										? t('the "{0*}" {1}', sortedCandidate[0]!, 'attribute')
+										: t(
+												'{0} {1}',
+												sortedCandidate
+													.map(attrName => t('the "{0*}"', attrName))
+													// eslint-disable-next-line unicorn/no-array-reduce
+													.reduce((a, b) => t('{0} or {1}', a, b)),
+												t('attribute'),
+											);
+								const message = t(
+									'{0} expects {1}',
+									t('the "{0*}" {1}', el.localName, 'element'),
+									expects,
+								);
+								report({ scope: el, message });
+							}
+						}
+					}
+					continue;
+				}
+
 				const didntHave = !el.hasAttribute(spec.name);
 
 				const candidate: string[] = [spec.name];
@@ -87,7 +127,9 @@ export default createRule<RequiredAttributes>({
 
 				if (spec.requiredEither) {
 					candidate.push(...spec.requiredEither);
-					invalid = !candidate.some(attrName => el.hasAttribute(attrName));
+
+					const activeCandidates = candidate.filter(n => !ignoreAttrs.has(n));
+					invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
 				} else if (spec.required != null && spec.required !== false) {
@@ -95,7 +137,7 @@ export default createRule<RequiredAttributes>({
 					invalid = el.matches(selector) && didntHave;
 				}
 
-				const sortedCandidate = candidate.toSorted();
+				const sortedCandidate = candidate.filter(n => !ignoreAttrs.has(n)).toSorted();
 
 				if (invalid) {
 					const expects =
