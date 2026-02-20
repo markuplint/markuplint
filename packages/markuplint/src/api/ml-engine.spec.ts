@@ -132,7 +132,10 @@ describe('Config Priority', () => {
 		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(true);
 		// @ts-ignore
-		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
+		expect(configSet?.config.rules?.['a11y/wai-aria']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'wai-aria': true },
+		});
 	});
 
 	it('defaultConfig', async () => {
@@ -154,7 +157,10 @@ describe('Config Priority', () => {
 		// @ts-ignore
 		expect(configSet?.config.rules?.__hoge).toBe(undefined);
 		// @ts-ignore
-		expect(configSet?.config.rules?.['wai-aria']).toBe(true);
+		expect(configSet?.config.rules?.['a11y/wai-aria']).toStrictEqual({
+			specConformance: 'normative',
+			rules: { 'wai-aria': true },
+		});
 	});
 
 	it('defaultConfig + noSearchConfig', async () => {
@@ -202,7 +208,9 @@ describe('Config Priority', () => {
 				line: 5,
 				col: 5,
 				message: 'The "authoredcomponent" element is not allowed in the "div" element in this context',
+				name: 'html-standard/permitted-contents',
 				raw: '<authoredcomponent>',
+				specConformance: 'normative',
 			},
 		]);
 	});

@@ -80,7 +80,7 @@ describe('Named nodeRules integration', () => {
 			expect(a11yVirtualViolations).toStrictEqual([]);
 		});
 
-		it('still reports base rules when only virtual rules are disabled', async () => {
+		it('disables all a11y rules (both nodeRules and named rule groups) with "a11y/*": false', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html><head></head><body><video autoplay></video></body></html>',
 				{
@@ -90,9 +90,11 @@ describe('Named nodeRules integration', () => {
 					},
 				},
 			);
-			// Base rules like require-accessible-name should still fire
-			const baseRuleViolations = violations.filter(v => !v.name);
-			expect(baseRuleViolations.length).toBeGreaterThan(0);
+			// All a11y rules are now named rule groups, so a11y/*: false disables everything
+			const a11yViolations = violations.filter(
+				v => v.name?.startsWith('a11y/') || v.ruleId === 'require-accessible-name',
+			);
+			expect(a11yViolations).toStrictEqual([]);
 		});
 
 		it('disables all html-standard virtual rules with "html-standard/*": false', async () => {
@@ -122,14 +124,16 @@ describe('Named nodeRules integration', () => {
 			expect(patternViolation!.severity).toBe('error');
 		});
 
-		it('a11y preset virtual rules have no specConformance', async () => {
+		it('a11y preset virtual rules carry specConformance metadata', async () => {
 			const { violations } = await mlTest('<!doctype html><html><head></head><body></body></html>', {
 				extends: ['markuplint:a11y'],
 			});
 			const a11yVirtualViolations = violations.filter(v => v.name?.startsWith('a11y/'));
-			expect(a11yVirtualViolations.length).toBeGreaterThan(0);
+			// At minimum, a11y/html-lang fires (missing lang on <html>)
+			expect(a11yVirtualViolations).toContainEqual(expect.objectContaining({ name: 'a11y/html-lang' }));
 			for (const v of a11yVirtualViolations) {
-				expect(v.specConformance).toBeUndefined();
+				// All a11y rules now have specConformance (normative or non-normative)
+				expect(v.specConformance).toBeDefined();
 			}
 		});
 	});
@@ -162,22 +166,17 @@ describe('Named nodeRules integration', () => {
 	});
 
 	describe('base rule violation structure', () => {
-		it('base rule violations do not carry virtual rule metadata', async () => {
+		it('named rule group virtual rules carry correct metadata', async () => {
 			const { violations } = await mlTest(
-				'<!doctype html><html><head></head><body><video autoplay></video></body></html>',
+				'<!doctype html><html><head></head><body><div id="a"></div><div id="a"></div></body></html>',
 				{
 					extends: ['markuplint:a11y'],
-					rules: {
-						'a11y/*': false,
-					},
 				},
 			);
-			// All virtual rules disabled — only base rule violations remain
-			expect(violations.length).toBeGreaterThan(0);
-			for (const v of violations) {
-				expect(v).not.toHaveProperty('name');
-				expect(v).not.toHaveProperty('specConformance');
-			}
+			const idViolation = violations.find(v => v.name === 'a11y/id-duplication');
+			expect(idViolation).toBeDefined();
+			expect(idViolation!.ruleId).toBe('id-duplication');
+			expect(idViolation!.specConformance).toBe('normative');
 		});
 	});
 
@@ -188,8 +187,10 @@ describe('Named nodeRules integration', () => {
 			});
 			const htmlStdViolations = violations.filter(v => v.name?.startsWith('html-standard/'));
 			const a11yViolations = violations.filter(v => v.name?.startsWith('a11y/'));
-			expect(htmlStdViolations.length).toBeGreaterThan(0);
-			expect(a11yViolations.length).toBeGreaterThan(0);
+			expect(htmlStdViolations).toContainEqual(
+				expect.objectContaining({ name: 'html-standard/head-charset-utf8' }),
+			);
+			expect(a11yViolations).toContainEqual(expect.objectContaining({ name: 'a11y/html-lang' }));
 		});
 	});
 
@@ -564,8 +565,8 @@ describe('Named nodeRules integration', () => {
 			});
 			const htmlStd = violations.filter(v => v.name?.startsWith('html-standard/'));
 			const a11y = violations.filter(v => v.name?.startsWith('a11y/'));
-			expect(htmlStd.length).toBeGreaterThan(0);
-			expect(a11y.length).toBeGreaterThan(0);
+			expect(htmlStd).toContainEqual(expect.objectContaining({ name: 'html-standard/head-charset-utf8' }));
+			expect(a11y).toContainEqual(expect.objectContaining({ name: 'a11y/html-lang' }));
 		});
 	});
 
@@ -592,7 +593,9 @@ describe('Named nodeRules integration', () => {
 				},
 			});
 			expect(violations.filter(v => v.name?.startsWith('a11y/'))).toStrictEqual([]);
-			expect(violations.filter(v => v.name?.startsWith('html-standard/')).length).toBeGreaterThan(0);
+			expect(violations.filter(v => v.name?.startsWith('html-standard/'))).toContainEqual(
+				expect.objectContaining({ name: 'html-standard/head-charset-utf8' }),
+			);
 		});
 	});
 
@@ -698,6 +701,130 @@ describe('Named nodeRules integration', () => {
 		});
 	});
 
+	describe('accumulation: same base rule in multiple named rule groups', () => {
+		it('both a11y and html-standard id-duplication report independently', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+				},
+			);
+			const a11yId = violations.find(v => v.name === 'a11y/id-duplication');
+			const htmlStdId = violations.find(v => v.name === 'html-standard/id-duplication');
+			expect(a11yId).toBeDefined();
+			expect(htmlStdId).toBeDefined();
+			// Different names, same base rule
+			expect(a11yId!.ruleId).toBe('id-duplication');
+			expect(htmlStdId!.ruleId).toBe('id-duplication');
+		});
+
+		it('disabling a11y/id-duplication still reports html-standard/id-duplication', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+					rules: {
+						'a11y/id-duplication': false,
+					},
+				},
+			);
+			expect(violations.find(v => v.name === 'a11y/id-duplication')).toBeUndefined();
+			expect(violations.find(v => v.name === 'html-standard/id-duplication')).toBeDefined();
+		});
+
+		it('disabling html-standard/id-duplication still reports a11y/id-duplication', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+					rules: {
+						'html-standard/id-duplication': false,
+					},
+				},
+			);
+			expect(violations.find(v => v.name === 'html-standard/id-duplication')).toBeUndefined();
+			expect(violations.find(v => v.name === 'a11y/id-duplication')).toBeDefined();
+		});
+
+		it('disabling both id-duplication named groups removes all id-duplication violations', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+					rules: {
+						'a11y/id-duplication': false,
+						'html-standard/id-duplication': false,
+					},
+				},
+			);
+			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			expect(idViolations).toStrictEqual([]);
+		});
+	});
+
+	describe('disable strength: base rule name disables all wrapping named rule groups', () => {
+		it('base rule false disables named rule groups that wrap it', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+					rules: {
+						'id-duplication': false,
+					},
+				},
+			);
+			// base rule false → both a11y/ and html-standard/ named rule groups disabled
+			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			expect(idViolations).toStrictEqual([]);
+		});
+	});
+
+	describe('specConformance is metadata only (does not affect severity)', () => {
+		it('non-normative rules use base rule default severity (error)', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html><head><meta charset="UTF-8"></head><body></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+				},
+			);
+			const langViolation = violations.find(v => v.name === 'a11y/html-lang');
+			expect(langViolation).toBeDefined();
+			// specConformance does NOT affect severity
+			expect(langViolation!.severity).toBe('error');
+			expect(langViolation!.specConformance).toBe('non-normative');
+		});
+
+		it('normative rules also use base rule default severity (error)', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+				},
+			);
+			const idViolation = violations.find(v => v.name === 'a11y/id-duplication');
+			expect(idViolation).toBeDefined();
+			expect(idViolation!.severity).toBe('error');
+			expect(idViolation!.specConformance).toBe('normative');
+		});
+	});
+
+	describe('backwards compatibility', () => {
+		it('conventional config without named rule groups works as before', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					rules: {
+						'id-duplication': true,
+					},
+				},
+			);
+			const idViolation = violations.find(v => v.ruleId === 'id-duplication');
+			expect(idViolation).toBeDefined();
+			// No virtual rule metadata
+			expect(idViolation).not.toHaveProperty('name');
+		});
+	});
+
 	describe('wildcard pattern edge cases', () => {
 		it('wildcard with non-false value does not disable virtual rules', async () => {
 			const { violations } = await mlTest('<!doctype html><html><head></head><body></body></html>', {
@@ -708,7 +835,7 @@ describe('Named nodeRules integration', () => {
 			});
 			// a11y/*: true should NOT disable — only false disables
 			const a11yViolations = violations.filter(v => v.name?.startsWith('a11y/'));
-			expect(a11yViolations.length).toBeGreaterThan(0);
+			expect(a11yViolations).toContainEqual(expect.objectContaining({ name: 'a11y/html-lang' }));
 		});
 
 		it('unrelated namespace wildcard does not affect other namespaces', async () => {
@@ -719,8 +846,12 @@ describe('Named nodeRules integration', () => {
 				},
 			});
 			// Both namespaces should still fire
-			expect(violations.filter(v => v.name?.startsWith('html-standard/')).length).toBeGreaterThan(0);
-			expect(violations.filter(v => v.name?.startsWith('a11y/')).length).toBeGreaterThan(0);
+			expect(violations.filter(v => v.name?.startsWith('html-standard/'))).toContainEqual(
+				expect.objectContaining({ name: 'html-standard/head-charset-utf8' }),
+			);
+			expect(violations.filter(v => v.name?.startsWith('a11y/'))).toContainEqual(
+				expect.objectContaining({ name: 'a11y/html-lang' }),
+			);
 		});
 	});
 });
