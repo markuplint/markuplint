@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+- **vue-parser:** update vue-eslint-parser to 10.3.0 and fix TS4053 errors ([b4633ea](https://github.com/markuplint/markuplint/commit/b4633eaeeb55c3b969127071094fde8e51bfb451))
+
+- refactor(vue-parser)!: update for simplified AST token properties ([b7e52df](https://github.com/markuplint/markuplint/commit/b7e52df21b6af0a4f2b61b327e60ed609f4359cc))
+
+### BREAKING CHANGES
+
+- Replace startOffset/endOffset with offset and
+  offset + raw.length in flattenNodes comment handling.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/vue-parser@4.6.22...@markuplint/vue-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/vue-parser

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+- **spec-generator:** add windowsPathsNoEscape option to glob call ([77189eb](https://github.com/markuplint/markuplint/commit/77189ebaa7511c32e50246a4b70dbe495117b784))
+- **spec-generator:** disable progress bar in CI and run up:gen twice daily ([526044d](https://github.com/markuplint/markuplint/commit/526044d26ed207e0c2a04c266c9491a14c56b3e1))
+
+### Features
+
+- **spec-generator:** scrape DPub ARIA roles from W3C spec ([681abed](https://github.com/markuplint/markuplint/commit/681abed45c1e61facba040fc3535e3e46ea410be))
+
 ## [4.8.2](https://github.com/markuplint/markuplint/compare/@markuplint/spec-generator@4.8.1...@markuplint/spec-generator@4.8.2) (2026-02-10)
 
 ### Bug Fixes

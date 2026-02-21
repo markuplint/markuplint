@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(pug-parser)!: update for simplified AST token properties ([7e0704e](https://github.com/markuplint/markuplint/commit/7e0704e32761f418a0c2e078557e797dae80b722))
+
+### Features
+
+- **pug-parser:** support loop blocks ([1ed3ab8](https://github.com/markuplint/markuplint/commit/1ed3ab82203dbb32389c78a669a43412a8b407e2))
+
+### BREAKING CHANGES
+
+- Adapt to renamed token properties and add
+  blockBehavior to visitElement calls.
+
+* Token property access: startOffset -> offset, startLine -> line,
+  startCol -> col
+* Update test assertions for new property names
+* Add blockBehavior: null to element creation
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/pug-parser@4.6.22...@markuplint/pug-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/pug-parser

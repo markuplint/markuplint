@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(astro-parser)!: update for simplified AST token properties ([4c05de1](https://github.com/markuplint/markuplint/commit/4c05de151d30233a8d4a184c4cb70c26de19b36b))
+
+### Features
+
+- **astro-parser:** support loop blocks ([ebe2eb6](https://github.com/markuplint/markuplint/commit/ebe2eb6b85aa32ff3f29964e333d058afe99d18b))
+
+### BREAKING CHANGES
+
+- Adapt to renamed token properties and remove
+  selfClosingSolidus test.
+
+* Token property access: startOffset -> offset, startLine -> line,
+  startCol -> col
+* Replace selfClosingSolidus check with tagCloseChar
+* Remove selfClosingSolidus test case
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/astro-parser@4.6.22...@markuplint/astro-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/astro-parser

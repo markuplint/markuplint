@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **file-resolver:** use "options" instead of deprecated "option" in test fixtures ([98a53f2](https://github.com/markuplint/markuplint/commit/98a53f27c4a6e640f20e2c74421c1cdeba3e7db5))
+
+- refactor(file-resolver)!: drop MLMarkupLanguageParser support ([3272ee7](https://github.com/markuplint/markuplint/commit/3272ee72a7c4fb3105fbecd41ec4ba5eff030092))
+
+### Features
+
+- **file-resolver:** add .jsonc config file support via cosmiconfig ([755848d](https://github.com/markuplint/markuplint/commit/755848dbec75105e3cdf9de6becb84546b66deec))
+
+### BREAKING CHANGES
+
+- Remove MLMarkupLanguageParser compatibility from
+  resolve-parser. Parser modules must now export MLParserModule
+  with a parser property.
+
+* Remove MLMarkupLanguageParser import and union types
+* Remove deprecated 'parser' in parserMod check
+* Update test mock to use Parser class instance
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.9.18](https://github.com/markuplint/markuplint/compare/@markuplint/file-resolver@4.9.17...@markuplint/file-resolver@4.9.18) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/file-resolver

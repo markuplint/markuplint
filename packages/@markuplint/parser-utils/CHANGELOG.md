@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+- resolve additional eslint-plugin-unicorn v63 errors ([e58a72c](https://github.com/markuplint/markuplint/commit/e58a72c17c97bbec522f9513b99777fac6904d64))
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
+
+- feat(parser-utils)!: adapt to simplified MLASTToken properties ([5cbbc9c](https://github.com/markuplint/markuplint/commit/5cbbc9ca8f77a71d99bffa14b193c79b26c1c415))
+
+### BREAKING CHANGES
+
+- Update Token type and parser internals for
+  simplified AST token properties.
+
+Token type property renames:
+
+- startOffset -> offset
+- startLine -> line
+- startCol -> col
+
+Parser changes:
+
+- createToken() no longer produces endOffset/endLine/endCol
+- visitPsBlock() parameter: conditionalType -> blockBehavior
+- visitElement() accepts blockBehavior option
+- Remove selfClosingSolidus token generation
+- Add getEndPosition() helper to get-location.ts
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.8.11](https://github.com/markuplint/markuplint/compare/@markuplint/parser-utils@4.8.10...@markuplint/parser-utils@4.8.11) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/parser-utils

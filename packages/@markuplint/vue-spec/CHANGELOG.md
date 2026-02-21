@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Features
+
+- **vue-spec:** add directivePatterns for Vue directive resolution ([2873205](https://github.com/markuplint/markuplint/commit/2873205cff7a7f0c2cc945e008a27e9592bcc876))
+
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/vue-spec@4.5.22...@markuplint/vue-spec@4.5.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/vue-spec
