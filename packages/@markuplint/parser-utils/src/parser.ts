@@ -1365,6 +1365,25 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		} as const;
 	}
 
+	/**
+	 * Checks whether a node is a descendant of another node by walking up
+	 * the parent chain.
+	 *
+	 * @param node - The node to test.
+	 * @param potentialAncestor - The node that may be an ancestor.
+	 * @returns `true` if `node` is a descendant of `potentialAncestor`.
+	 */
+	#isDescendantOf(node: MLASTNodeTreeItem, potentialAncestor: MLASTNodeTreeItem): boolean {
+		let current: MLASTParentNode | null = 'parentNode' in node ? node.parentNode : null;
+		while (current) {
+			if (current === potentialAncestor) {
+				return true;
+			}
+			current = current.parentNode;
+		}
+		return false;
+	}
+
 	#orphanEndTagToBogusMark(nodeList: readonly MLASTNodeTreeItem[]) {
 		const newNodeList: MLASTNodeTreeItem[] = [];
 		for (let node of nodeList) {
@@ -1720,10 +1739,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
-	 * Trim overlapping sections of text nodes for proper node separation
+	 * Trims text nodes whose source range overlaps with the next node in
+	 * the flat list. This prevents text content from bleeding into adjacent
+	 * elements that occupy a later (or overlapping) source range.
 	 *
-	 * @param nodeList
-	 * @returns
+	 * Skips trimming when the text node is a descendant of the next node
+	 * in the tree hierarchy, because synthetic parsers (e.g., Markdown)
+	 * can produce child elements that share the same source range as their
+	 * parent and therefore appear before the parent in offset-sorted order.
+	 *
+	 * @param nodeList - The flat, offset-sorted node list to process.
+	 * @returns A new node list with overlapping text nodes trimmed.
 	 */
 	#trimText(nodeList: readonly MLASTNodeTreeItem[]) {
 		const newNodeList: MLASTNodeTreeItem[] = [];
@@ -1736,7 +1762,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			) {
 				const prevNodeEndOffset = prevNode.offset + prevNode.raw.length;
 				const nodeStartOffset = node.offset;
-				if (prevNodeEndOffset > nodeStartOffset) {
+				if (prevNodeEndOffset > nodeStartOffset && !this.#isDescendantOf(prevNode, node)) {
 					const prevNodeRaw = prevNode.raw;
 					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.offset);
 					this.updateRaw(prevNode, prevNodeTrimmedRaw);
