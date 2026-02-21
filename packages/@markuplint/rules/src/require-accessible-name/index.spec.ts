@@ -396,6 +396,44 @@ test('The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-image as="img" alt="Name"></x-image>')).violations).toStrictEqual([]);
 });
 
+describe('Markdown parser', () => {
+	test('email autolink in markdown should have accessible name from text content', async () => {
+		const { violations } = await mlRuleTest(rule, 'user@example.com', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('email autolink in list item should have accessible name', async () => {
+		const { violations } = await mlRuleTest(rule, '- user@example.com or admin@example.org', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('markdown link should have accessible name from text content', async () => {
+		const { violations } = await mlRuleTest(rule, '[example](https://example.com)', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('empty markdown link should NOT have accessible name', async () => {
+		const { violations } = await mlRuleTest(rule, '[](https://example.com)', {
+			parser: {
+				'.*': '@markuplint/markdown-parser',
+			},
+		});
+		expect(violations.length).toBe(1);
+	});
+});
+
 describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/536
 	test('#536', async () => {

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **create-rule:** use toSorted in spec files to satisfy ESLint ([130372f](https://github.com/markuplint/markuplint/commit/130372fb5f74802f66b31ea9b50c4825d54f1850))
+
 # [4.8.0](https://github.com/markuplint/markuplint/compare/@markuplint/create-rule@4.7.22...@markuplint/create-rule@4.8.0) (2026-02-10)
 
 ### Features

@@ -584,6 +584,31 @@ describe('MarkdownParser', () => {
 		});
 	});
 
+	describe('GFM autolink (email)', () => {
+		test('plain email address is autolinked to <a> with mailto href', () => {
+			const doc = parse('user@example.com');
+			const a = doc.nodeList.find(n => n?.type === 'starttag' && n.nodeName === 'a');
+			expect(a).toBeDefined();
+			const href = a!.attributes.find(attr => attr.type === 'attr' && attr.name.raw === 'href');
+			expect(href).toBeDefined();
+			expect(href!.value.raw).toBe('mailto:user@example.com');
+			// Should have text child with the email address
+			const text = a!.childNodes.find(c => c.type === 'text');
+			expect(text).toBeDefined();
+			expect(text!.raw).toBe('user@example.com');
+		});
+
+		test('email address in list item is autolinked', () => {
+			const doc = parse('- user@example.com or admin@example.org');
+			const links = doc.nodeList.filter(n => n?.type === 'starttag' && n.nodeName === 'a');
+			expect(links.length).toBe(2);
+			const hrefValues = links.map(
+				l => l.attributes.find(a => a.type === 'attr' && a.name.raw === 'href')?.value.raw,
+			);
+			expect(hrefValues).toStrictEqual(['mailto:user@example.com', 'mailto:admin@example.org']);
+		});
+	});
+
 	describe('Edge cases', () => {
 		test('empty input produces empty nodeList', () => {
 			const doc = parse('');

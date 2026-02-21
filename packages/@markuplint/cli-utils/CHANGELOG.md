@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- use explicit `export type` for type-only re-exports ([7c77c05](https://github.com/markuplint/markuplint/commit/7c77c05619518c8d18a183132040f5b2cd0ab6ec))
+
 ## [4.4.14](https://github.com/markuplint/markuplint/compare/@markuplint/cli-utils@4.4.13...@markuplint/cli-utils@4.4.14) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/cli-utils

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- disable unicorn/no-array-sort rule and fix no-immediate-mutation ([bf76be2](https://github.com/markuplint/markuplint/commit/bf76be26478aa2a03528f9182cb11d123b44db44))
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+- **svelte-parser:** map IDL attribute names to content attribute names ([3e5006f](https://github.com/markuplint/markuplint/commit/3e5006f2b9f6dd5ca3af3c8727439d9ab04d696b))
+
+- refactor(svelte-parser)!: use blockBehavior and simplified tokens ([7342981](https://github.com/markuplint/markuplint/commit/734298138b1d56685499415db397be7136fcb75d))
+
+### BREAKING CHANGES
+
+- Replace conditionalType with blockBehavior objects
+  containing type and expression fields. Update token property
+  access from startOffset to offset in parse-block.ts.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.7.13](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-parser@4.7.12...@markuplint/svelte-parser@4.7.13) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/svelte-parser

@@ -1,0 +1,10 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Features
+
+- **tagged-template-literal-parser:** add tagged template literal parser ([5224ef4](https://github.com/markuplint/markuplint/commit/5224ef40c5d5c6baa4621b86f9a1b251a83b2b91)), closes [#221](https://github.com/markuplint/markuplint/issues/221)

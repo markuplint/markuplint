@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **ml-core:** improve detection of namespace ([5b507ad](https://github.com/markuplint/markuplint/commit/5b507ad7c19c5015b8ce587845d901e31dfa6518))
+
+- refactor(html-parser)!: update for simplified AST token properties ([524ce5d](https://github.com/markuplint/markuplint/commit/524ce5d6fc23c8bff73583ed4ac42fdff1759938))
+
+### BREAKING CHANGES
+
+- Adapt to renamed MLASTToken properties.
+
+* Use getEndPosition() for ghost element position calculation
+* Update test assertions: startCol -> col, startOffset -> offset,
+  startLine -> line
+* Remove endOffset/endLine/endCol assertions from tests
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## [4.6.23](https://github.com/markuplint/markuplint/compare/@markuplint/html-parser@4.6.22...@markuplint/html-parser@4.6.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/html-parser

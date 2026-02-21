@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
+
+### Bug Fixes
+
+- **svelte-spec:** allow IDL property attributes on form elements ([418e88d](https://github.com/markuplint/markuplint/commit/418e88dac4158d25be883f1495592c495849ca75)), closes [#2590](https://github.com/markuplint/markuplint/issues/2590)
+
+### Features
+
+- **svelte-spec:** add directivePatterns and useIDLAttributeNames ([78568cf](https://github.com/markuplint/markuplint/commit/78568cff19bef02a8f255eed33bb7e50a8c89c6d))
+
 ## [4.5.23](https://github.com/markuplint/markuplint/compare/@markuplint/svelte-spec@4.5.22...@markuplint/svelte-spec@4.5.23) (2026-02-10)
 
 **Note:** Version bump only for package @markuplint/svelte-spec
