@@ -173,7 +173,7 @@ Performs four cleanup passes:
 1. **Expose remnant nodes** — discovers whitespace and invalid markup between known nodes
 2. **Orphan end tags → bogus** — converts unmatched end tags to `invalid` nodes
 3. **Concatenate text** — merges adjacent `#text` nodes at the same offset
-4. **Trim text** — trims overlapping text node boundaries
+4. **Trim text** — trims text nodes whose source range overlaps with the next node in the flat list. Skips trimming when the text node is a tree-descendant of the next node, which can occur with synthetic parsers (e.g., Markdown) where child elements share the same source range as their parent
 
 ### Step 9: restoreNode()
 
