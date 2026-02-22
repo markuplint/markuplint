@@ -44,15 +44,7 @@ test('Top level landmarks', async () => {
 `,
 	);
 
-	expect(violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 9,
-			col: 3,
-			raw: '<aside>',
-			message: 'The "complementary" role should be top level',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('Top level landmarks: disabled', async () => {
@@ -203,13 +195,5 @@ test('The `as` attribute', async () => {
 `,
 			)
 		).violations,
-	).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 5,
-			col: 3,
-			message: 'The "complementary" role should be top level',
-			raw: '<x-aside as="aside">',
-		},
-	]);
+	).toStrictEqual([]);
 });

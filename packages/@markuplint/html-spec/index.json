@@ -48976,7 +48976,22 @@
 			},
 			"aria": {
 				"implicitRole": "complementary",
-				"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"]
+				"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"],
+				"conditions": {
+					":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) *": {
+						"implicitRole": "generic",
+						"namingProhibited": true
+					},
+					":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) *:aria(has name)": {
+						"implicitRole": "complementary"
+					}
+				},
+				"1.2": {
+					"conditions": false
+				},
+				"1.1": {
+					"conditions": false
+				}
 			},
 			"omission": false,
 			"globalAttrs": {

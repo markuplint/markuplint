@@ -567,7 +567,7 @@ describe('Allowed Accessibility Child Roles', () => {
 				severity: 'error',
 				line: 1,
 				col: 1,
-				message: 'The "table" role expects the roles: "row", "rowgroup > row"',
+				message: 'The "table" role expects the roles: "caption", "row", "rowgroup > row"',
 				raw: '<table>',
 			},
 			{
@@ -1097,13 +1097,6 @@ describe('Issues', () => {
 				)
 			).violations,
 		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'The "table" role expects the roles: "row", "rowgroup > row"',
-				raw: '<table>',
-			},
 			{
 				severity: 'error',
 				line: 5,
