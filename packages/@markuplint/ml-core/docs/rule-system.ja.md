@@ -189,7 +189,7 @@ constructor(document: MLDocument<T, O>, locale: LocaleSet)
 
 ### `provide(): ProvidedContext`
 
-`RuleSeed.verify()` と `RuleSeed.fix()` に渡されるコンテキストオブジェクトを返します：
+`RuleSeed.verify()` に渡されるコンテキストオブジェクトを返します。自動修正ロジックは個々の `report()` 呼び出しのインライン `fix` コールバックとして提供されます：
 
 ```typescript
 {

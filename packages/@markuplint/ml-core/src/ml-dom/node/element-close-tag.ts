@@ -39,24 +39,7 @@ export class MLElementCloseTag<T extends RuleConfigValue, O extends PlainData = 
 		return this._astToken.nodeName;
 	}
 
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-
-		if (this.nodeName.startsWith('#')) {
-			return this.raw;
-		}
-
-		if (this.pair.isOmitted) {
-			return this.raw;
-		}
-
-		return [
-			this.pair.tagOpenChar,
-			this.pair.tagOpenChar === '' ? '' : '/',
-			this.pair.fixedNodeName === this.pair.rawName ? this.rawName : this.pair.fixedNodeName,
-			this.pair.tagCloseChar,
-		].join('');
+	toString() {
+		return this.raw;
 	}
 }

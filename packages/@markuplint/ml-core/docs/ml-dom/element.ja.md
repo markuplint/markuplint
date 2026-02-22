@@ -8,20 +8,18 @@ HTML/SVG/MathML の要素ノードです。`MLParentNode` を継承し、`Elemen
 
 要素には異なる目的に使用される複数の名前関連プロパティがあります：
 
-| プロパティ      | HTML `<DIV>`                | SVG `<foreignObject>` | Pretender（`MyButton` → `button`） |
-| --------------- | --------------------------- | --------------------- | ---------------------------------- |
-| `localName`     | `"div"`                     | `"foreignObject"`     | `"button"`                         |
-| `nodeName`      | `"DIV"`                     | `"foreignObject"`     | `"BUTTON"`                         |
-| `rawName`       | `"DIV"`                     | `"foreignObject"`     | `"MyButton"`                       |
-| `fixedNodeName` | `"DIV"`（修正後は `"div"`） | `"foreignObject"`     | `"MyButton"`                       |
-| `tagName`       | `"DIV"`                     | `"foreignObject"`     | `"BUTTON"`                         |
+| プロパティ  | HTML `<DIV>` | SVG `<foreignObject>` | Pretender（`MyButton` → `button`） |
+| ----------- | ------------ | --------------------- | ---------------------------------- |
+| `localName` | `"div"`      | `"foreignObject"`     | `"button"`                         |
+| `nodeName`  | `"DIV"`      | `"foreignObject"`     | `"BUTTON"`                         |
+| `rawName`   | `"DIV"`      | `"foreignObject"`     | `"MyButton"`                       |
+| `tagName`   | `"DIV"`      | `"foreignObject"`     | `"BUTTON"`                         |
 
 **ルール：**
 
 - **`localName`**: HTML 要素 → 小文字化。外部要素または非 `'html'` の elementType → そのまま。pretender コンテキスト → pretender の `localName`。`tagNameCaseSensitive` が `true` の場合 → 小文字化しない。
 - **`nodeName`**: HTML 要素 → 大文字化（DOM 慣例）。外部要素または非 `'html'` の elementType → AST からそのまま。pretender コンテキスト → pretender の `nodeName`。
 - **`rawName`**: 常に元の AST `nodeName`。正規化なし、pretender の影響なし。
-- **`fixedNodeName`**: 初期値は `rawName`。リント修正がタグ名を変更した場合に `fixNodeName(name)` で更新される。
 - **`tagName`**: `nodeName` と同じ（pretender コンテキストに従う）。
 
 ## 要素型の判定
@@ -98,7 +96,6 @@ Pretender システムのアーキテクチャ、初期化フロー、プロパ�
 
 | メソッド                 | シグネチャ                                        | 説明                                                                               |
 | ------------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `fixNodeName`            | `fixNodeName(name: string): void`                 | リント自動修正用に `fixedNodeName` を更新する                                      |
 | `getAccessibleName`      | `getAccessibleName(version: ARIAVersion): string` | `getAccname()` を通じてアクセシブル名を計算する                                    |
 | `toNormalizeString`      | `toNormalizeString(): string`                     | 比較用の正規化された表現を返す（キャッシュ済み）。子要素と属性を再帰的に正規化する |
 | `nextElementSibling`     | `get nextElementSibling: MLElement \| null`       | 次の兄弟要素                                                                       |
@@ -134,7 +131,7 @@ Pretender システムのアーキテクチャ、初期化フロー、プロパ�
 
 - 対応するソーストークンを持たない
 - `prevToken` によってスキップされる（有効なオフセットチェーンを維持するため）
-- `toString(fixed)` から `raw` を返す（ソースに修正すべきものがないため修正は適用されない）
+- `toString()` から `raw` を返す（ソースに対応するものがないため）
 - `getChildElementsAndTextNodeWithoutWhitespaces()` によってフラット化される
 
 ## 閉じタグ
@@ -143,21 +140,9 @@ Pretender システムのアーキテクチャ、初期化フロー、プロパ�
 | ---------- | --------------------------- | ------------------------------------------------------------------------------------ |
 | `closeTag` | `MLElementCloseTag \| null` | ペアの閉じタグ。void 要素、自己閉じ要素、または `endTag === 'never'` の場合は `null` |
 
-## `toString(fixed?)`
+## `toString()`
 
-修正を適用して要素のソース文字列を再構築します。
-
-- `fixed=false` または pretender/省略要素/`#` プレフィックスの nodeName → `raw` を返す
-- `fixed=true`:
-  1. 置換可能なノードのリストを構築する：`[tagOpenChar + fixedNodeName, ...overriddenCommentNodes, ...attributes]`
-  2. 各ノードに対して、正しいオフセットで `node.toString(true)` をスプライスする
-  3. 正確な位置決めのために累積オフセット差を追跡する
-
-```
-Original: <DIV class="foo" >
-Fixed:    <div class="foo" >
-          ^^^^              (fixedNodeName が "DIV" から "div" に変更)
-```
+要素の生のソース文字列を返します。このメソッドはパースされたドキュメントに記述されたままの元の `raw` ソーステキストを単純に返します。修正は DOM ノードの変更を通じて適用されなくなりました。代わりに、修正操作は `RuleFixer` を通じて `TextEdit[]` を生成し、`FixApplier.applyFixes()` がすべての編集をソーステキストに直接適用します。
 
 ## その他のプロパティ
 

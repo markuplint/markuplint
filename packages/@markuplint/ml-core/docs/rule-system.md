@@ -189,7 +189,7 @@ Creates translator from locale, stores document reference.
 
 ### `provide(): ProvidedContext`
 
-Returns the context object passed to `RuleSeed.verify()` and `RuleSeed.fix()`:
+Returns the context object passed to `RuleSeed.verify()`. Auto-fix logic is provided as an inline `fix` callback on individual `report()` calls:
 
 ```typescript
 {

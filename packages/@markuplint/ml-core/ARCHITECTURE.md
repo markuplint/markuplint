@@ -143,8 +143,8 @@ flowchart LR
 
 1. **Parse**: `MLCore` invokes the configured parser (`MLParser`) to produce an `MLASTDocument`
 2. **Create Document**: The AST is wrapped in an `MLDocument`, which builds the full MLDOM tree via `createNode()` factory. `RuleMapper` resolves rule configuration for every node
-3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`
-4. **Fix** (optional): When `fix=true`, rules may call `node.fix()` to modify token content. `document.toString(true)` produces the fixed source
+3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`. Rules may attach inline `fix` callbacks to reports that return `TextEdit` objects
+4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection
 
 ## MLDOM Class Hierarchy
 
@@ -210,10 +210,9 @@ The constructor receives an `MLASTDocument`, a `Ruleset`, and an `MLSchema` tupl
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `walkOn(type, walker)`            | Walks nodes of a given type (`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`)                  |
 | `setRule(rule)`                   | Sets the current rule, used by `MLCore` during verification                                                      |
-| `getTokenList()`                  | Returns all tokens for source reconstruction                                                                     |
 | `searchNodeByLocation(line, col)` | Finds the node at a given source position                                                                        |
 | `getAccessibilityProp(node)`      | Computes ARIA accessibility properties (delegates to `MLElement.getAccessibleName()` for cached accessible name) |
-| `toString(fixed?)`                | Reconstructs source code, optionally with fixes applied                                                          |
+| `toString()`                      | Returns the raw source code of the document                                                                      |
 
 ## MLElement
 
@@ -292,7 +291,7 @@ type RuleSeed<T, O> = {
 - `translate` / `t` — Locale-aware message translator
 - `report(report)` — Reports a violation with node, message, and optional fix
 
-The `provide()` method returns the context object passed to `RuleSeed.verify()` and `RuleSeed.fix()`.
+The `provide()` method returns the context object passed to `RuleSeed.verify()`. Auto-fix logic is provided as an inline `fix` callback on individual `report()` calls, not as a separate lifecycle method.
 
 ### Rule Configuration Resolution
 

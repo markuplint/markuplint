@@ -109,15 +109,9 @@ Computes ARIA accessibility properties for a node.
 
 Returns `AccessibilityProperties` (see [Type Utilities](./helpers.md#type-utilities)).
 
-## `toString(fixed?)`
+## `toString()`
 
-Reconstructs the source code from the token list.
-
-- `fixed=false` (default): Returns the original `raw` string
-- `fixed=true`: Applies offset-tracked replacement:
-  1. Get `getTokenList()` (sorted by `startOffset`)
-  2. For each token: if `toString(true) !== raw`, splice the fixed content into the string
-  3. Track cumulative offset differences to maintain correct positions
+Returns the original `raw` source string of the document. Fixes are no longer applied through DOM node mutation and token-list reconstruction. Instead, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes()` applies all edits to the source text.
 
 ## `defaultView`
 
@@ -125,12 +119,11 @@ Returns a mock window object providing `getComputedStyle()` that returns an obje
 
 ## Other Methods
 
-| Method                 | Signature                                         | Description                                                                                          |
-| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `setRule`              | `setRule(rule: MLRule \| null): void`             | Set/clear the current rule being evaluated                                                           |
-| `getTokenList`         | `getTokenList(): ReadonlyArray<MLToken>`          | All tokens for source reconstruction, sorted by offset (cached). Includes both nodes and close tags. |
-| `searchNodeByLocation` | `searchNodeByLocation(line, col): MLNode \| null` | Find node at a 1-based source position                                                               |
-| `debugMap`             | `debugMap(): string[]`                            | Debug output of document tree structure                                                              |
+| Method                 | Signature                                         | Description                                |
+| ---------------------- | ------------------------------------------------- | ------------------------------------------ |
+| `setRule`              | `setRule(rule: MLRule \| null): void`             | Set/clear the current rule being evaluated |
+| `searchNodeByLocation` | `searchNodeByLocation(line, col): MLNode \| null` | Find node at a 1-based source position     |
+| `debugMap`             | `debugMap(): string[]`                            | Debug output of document tree structure    |
 
 ## endTag Modes
 

@@ -4,7 +4,22 @@ import specs from '@markuplint/html-spec';
 import { describe, test, expect } from 'vitest';
 
 import { createRule } from './ml-rule/create-test-rule.js';
-import { createTestDocument, createTestElement, createTestNodeList, createTestTokenList } from './test/index.js';
+import { createTestDocument, createTestElement, createTestNodeList } from './test/index.js';
+
+/**
+ * Creates a flat, offset-sorted token list for test assertions (replaces removed createTestTokenList).
+ */
+function createTestTokenList(sourceCode) {
+	const document = createTestDocument(sourceCode);
+	const tokens = [];
+	for (const node of document.nodeList) {
+		tokens.push(node);
+		if (node.is(node.ELEMENT_NODE) && node.closeTag) {
+			tokens.push(node.closeTag);
+		}
+	}
+	return tokens.toSorted((a, b) => a.startOffset - b.startOffset);
+}
 
 describe('AST', () => {
 	test('node count', () => {
@@ -79,21 +94,6 @@ describe('AST', () => {
 	test('classList', () => {
 		const el = createTestElement('<div class="a b c"></div>');
 		expect([...el.classList]).toStrictEqual(['a', 'b', 'c']);
-	});
-
-	test('fixNodeName', () => {
-		const el = createTestElement('<div attr></div>');
-		el.fixNodeName('x-div');
-		expect(el.toString()).toBe('<div attr>');
-		expect(el.toString(true)).toBe('<x-div attr>');
-		expect(el.closeTag?.toString(true)).toBe('</x-div>');
-	});
-
-	test('fix', () => {
-		const el = createTestElement('<div attr></div>');
-		el.attributes[0].fix('value');
-		expect(el.toString()).toBe('<div attr>');
-		expect(el.toString(true)).toBe('<div attr="value">');
 	});
 
 	test('namespace', () => {
@@ -948,181 +948,6 @@ describe('ChildNode with blockBehavior', () => {
 
 		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
 		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
-	});
-});
-
-describe('Fix', () => {
-	test('HTML', () => {
-		const doc = createTestDocument(
-			[
-				'<!doctype html>',
-				'<html lang="en">',
-				'	<head>',
-				'		<meta charset="utf-8">',
-				'		<title>title</title>',
-				'	</head>',
-				'	<body>',
-				'		<h1>text</h1>',
-				'		<div',
-				'			id="app"',
-				'			class="app"',
-				'		>',
-				'			<span>text</span>',
-				'		</div>',
-				'	</body>',
-				'</html>',
-			].join('\n'),
-		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'<!doctype html>',
-			'<html lang="en">',
-			'	<head>',
-			'		<meta charset="utf-8">',
-			'		<title>title</title>',
-			'	</head>',
-			'	<body>',
-			'		<h1>text</h1>',
-			'		<div',
-			'			id="foo"',
-			'			class="app"',
-			'		>',
-			'			<a>text</a>',
-			'		</div>',
-			'	</body>',
-			'</html>',
-		]);
-	});
-
-	test('Astro', async () => {
-		const doc = createTestDocument(
-			[
-				'---',
-				"import { Header } from './Header.astro'",
-				'---',
-				'<!doctype html>',
-				'<html lang="en">',
-				'	<Header>',
-				'		<meta charset="utf-8">',
-				'		<title>title</title>',
-				'	</Header>',
-				'	<body>',
-				'		<h1>text</h1>',
-				'		<div',
-				'			id="app"',
-				'			class="app"',
-				'		>',
-				'			<span>text</span>',
-				'		</div>',
-				'	</body>',
-				'</html>',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/astro-parser'),
-			},
-		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'---',
-			"import { Header } from './Header.astro'",
-			'---',
-			'<!doctype html>',
-			'<html lang="en">',
-			'	<Header>',
-			'		<meta charset="utf-8">',
-			'		<title>title</title>',
-			'	</Header>',
-			'	<body>',
-			'		<h1>text</h1>',
-			'		<div',
-			'			id="foo"',
-			'			class="app"',
-			'		>',
-			'			<a>text</a>',
-			'		</div>',
-			'	</body>',
-			'</html>',
-		]);
-	});
-
-	test('Pug', async () => {
-		const doc = createTestDocument(
-			[
-				'html(lang="en")',
-				'	head',
-				'		meta(charset="utf-8")',
-				'		title title',
-				'	body',
-				'		h1 text',
-				'		div(',
-				'			id="app",',
-				'			class="app"',
-				'		)',
-				'			span text',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/pug-parser'),
-			},
-		);
-		doc.querySelector('div')?.attributes[0].fix('foo');
-		doc.querySelector('span')?.fixNodeName('a');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'html(lang="en")',
-			'	head',
-			'		meta(charset="utf-8")',
-			'		title title',
-			'	body',
-			'		h1 text',
-			'		div(',
-			'			id="foo",',
-			'			class="app"',
-			'		)',
-			'			a text',
-		]);
-	});
-
-	test('JSX', async () => {
-		const doc = createTestDocument(
-			[
-				'export const Component = ({ list, id }) => {',
-				'  return (',
-				'    <>',
-				'      <p id={id}></p>',
-				'      <ul',
-				'        // Inline Comment in start tag',
-				'        id="hard-coded" /* Block Comment in start tag */>',
-				'        {list.map(item => (',
-				'          <li key={item.key}>{item.text}</li>',
-				'        ))}',
-				'      </ul>',
-				'    </>',
-				'  );',
-				'};',
-			].join('\n'),
-			{
-				parser: await import('@markuplint/jsx-parser'),
-			},
-		);
-		doc.querySelector('ul')?.attributes[0].fix('foo');
-		doc.querySelector('li')?.fixNodeName('Li');
-		expect(doc.toString(true).split('\n')).toStrictEqual([
-			'export const Component = ({ list, id }) => {',
-			'  return (',
-			'    <>',
-			'      <p id={id}></p>',
-			'      <ul',
-			'        // Inline Comment in start tag',
-			'        id="foo" /* Block Comment in start tag */>',
-			'        {list.map(item => (',
-			'          <Li key={item.key}>{item.text}</Li>',
-			'        ))}',
-			'      </ul>',
-			'    </>',
-			'  );',
-			'};',
-		]);
 	});
 });
 

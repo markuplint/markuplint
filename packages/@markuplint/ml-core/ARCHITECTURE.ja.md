@@ -143,8 +143,8 @@ flowchart LR
 
 1. **パース**: `MLCore` は設定されたパーサー（`MLParser`）を呼び出し、`MLASTDocument` を生成
 2. **ドキュメント作成**: AST を `MLDocument` でラップし、`createNode()` ファクトリで MLDOM ツリー全体を構築。`RuleMapper` が各ノードのルール設定を解決
-3. **検証**: 各 `MLRule` に対して、`document.setRule(rule)` を呼び出した後 `rule.verify(document)` を実行。ルールは `document.walkOn()` で対象ノードを走査し、`MLRuleContext` を通じて違反を報告
-4. **修正**（オプション）: `fix=true` の場合、ルールが `node.fix()` でトークン内容を変更。`document.toString(true)` で修正後のソースを生成
+3. **検証**: 各 `MLRule` に対して、`document.setRule(rule)` を呼び出した後 `rule.verify(document)` を実行。ルールは `document.walkOn()` で対象ノードを走査し、`MLRuleContext` を通じて違反を報告。ルールは report にインライン `fix` コールバックを付与して `TextEdit` オブジェクトを返す
+4. **修正**（オプション）: `fix=true` の場合、report の fix コールバックが `RuleFixer` を使って `TextEdit[]` を生成。`FixApplier.applyFixes(sourceCode, fixes)` が全編集をソーステキストに一括適用（重複検出付き）
 
 ## MLDOM クラス階層
 
@@ -210,10 +210,9 @@ MLToken<A extends MLASTToken>
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `walkOn(type, walker)`            | 指定した型（`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`）のノードを走査                       |
 | `setRule(rule)`                   | 現在のルールを設定（検証時に `MLCore` が使用）                                                                      |
-| `getTokenList()`                  | ソース再構築用の全トークンを返す                                                                                    |
 | `searchNodeByLocation(line, col)` | 指定したソース位置のノードを検索                                                                                    |
 | `getAccessibilityProp(node)`      | ARIA アクセシビリティプロパティを計算（`MLElement.getAccessibleName()` のキャッシュ経由でアクセシブルネームを取得） |
-| `toString(fixed?)`                | ソースコードを再構築（オプションで修正適用）                                                                        |
+| `toString()`                      | ドキュメントの生のソースコードを返す                                                                                |
 
 ## MLElement
 
@@ -292,7 +291,7 @@ type RuleSeed<T, O> = {
 - `translate` / `t` — ロケール対応のメッセージ翻訳
 - `report(report)` — ノード、メッセージ、オプションの修正とともに違反を報告
 
-`provide()` メソッドは `RuleSeed.verify()` と `RuleSeed.fix()` に渡されるコンテキストオブジェクトを返します。
+`provide()` メソッドは `RuleSeed.verify()` に渡されるコンテキストオブジェクトを返します。自動修正ロジックは、個々の `report()` 呼び出しのインライン `fix` コールバックとして提供され、独立したライフサイクルメソッドではありません。
 
 ### ルール設定の解決
 
