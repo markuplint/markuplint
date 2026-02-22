@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'import-meta-resolve';
 
 import { log } from './debug.js';
+import { fromFileURL } from './path-utils.js';
 
 const gLog = log.extend('general-import');
 const gLogSuccess = gLog.extend('success');
@@ -63,7 +64,8 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 					?.groups ?? {};
 			if (filePath && packageName) {
 				const modFile = resolve(packageName, import.meta.url);
-				const modPath = path.dirname(modFile);
+				const modNativePath = modFile.startsWith('file:') ? fromFileURL(modFile) : modFile;
+				const modPath = path.dirname(modNativePath);
 				const candidate = path.join(modPath, filePath);
 				gLog('Try import absolute path: "%s"', candidate);
 				const result = await generalImport<T>(candidate);
