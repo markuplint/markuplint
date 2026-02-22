@@ -2688,7 +2688,7 @@ __metadata:
   dependencies:
     "@esbuild/linux-x64": "npm:0.27.3"
     "@esbuild/win32-x64": "npm:0.27.3"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.58.0"
+    "@rollup/rollup-linux-x64-gnu": "npm:4.59.0"
     "@vitest/coverage-v8": "npm:4.0.18"
     browser-resolve: "npm:2.0.0"
     coveralls: "npm:3.1.1"
@@ -3459,9 +3459,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-linux-x64-gnu@npm:4.58.0":
-  version: 4.58.0
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.58.0"
+"@rollup/rollup-linux-x64-gnu@npm:4.59.0":
+  version: 4.59.0
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.59.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
