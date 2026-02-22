@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+- fix(rules)!: remove complementary from top-level landmark check ([4643651](https://github.com/markuplint/markuplint/commit/4643651d256276ae0473d4756e72277d59398e3d))
+
+### BREAKING CHANGES
+
+- The landmark-roles rule no longer checks that
+  complementary landmarks are top-level. This aligns with axe-core's
+  deprecation of landmark-complementary-is-top-level.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 # [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
 
 ### Bug Fixes

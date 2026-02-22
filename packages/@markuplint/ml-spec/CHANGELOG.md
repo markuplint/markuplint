@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+### Bug Fixes
+
+- **ml-spec:** add transparent traversal fallback in collectLabelText ([d6096c1](https://github.com/markuplint/markuplint/commit/d6096c1ceba190e7799974d0c682695946f852ed))
+
+- feat(ml-spec)!: update default ARIA version to 1.3 ([c3b56e2](https://github.com/markuplint/markuplint/commit/c3b56e2bf06a667a00aa621f2f51a082a90d4e2f))
+
+### BREAKING CHANGES
+
+- The default ARIA specification version used when none
+  is explicitly configured changes from 1.2 to 1.3. This may produce
+  different lint results for rules that depend on ARIA version.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 # [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
 
 ### Bug Fixes

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+### Bug Fixes
+
+- **file-resolver:** fix matches() normalization asymmetry and harden tests ([4651df9](https://github.com/markuplint/markuplint/commit/4651df9679427755a3848937b3b8f5546cb04371))
+- **file-resolver:** fix Windows path normalization for non-C: drives ([f31a942](https://github.com/markuplint/markuplint/commit/f31a9427fc417f444df26ad1a931d4df5957f29f)), closes [#1806](https://github.com/markuplint/markuplint/issues/1806)
+- **file-resolver:** skip platform-specific fromFileURL tests per OS ([4c05356](https://github.com/markuplint/markuplint/commit/4c0535657a748d63f7832efeb3d33b43e5b8e081))
+
 # [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
 
 ### Bug Fixes

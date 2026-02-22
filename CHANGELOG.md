@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
+
+### Bug Fixes
+
+- **file-resolver:** fix matches() normalization asymmetry and harden tests ([4651df9](https://github.com/markuplint/markuplint/commit/4651df9679427755a3848937b3b8f5546cb04371))
+- **file-resolver:** fix Windows path normalization for non-C: drives ([f31a942](https://github.com/markuplint/markuplint/commit/f31a9427fc417f444df26ad1a931d4df5957f29f)), closes [#1806](https://github.com/markuplint/markuplint/issues/1806)
+- **file-resolver:** skip platform-specific fromFileURL tests per OS ([4c05356](https://github.com/markuplint/markuplint/commit/4c0535657a748d63f7832efeb3d33b43e5b8e081))
+- **ml-spec:** add transparent traversal fallback in collectLabelText ([d6096c1](https://github.com/markuplint/markuplint/commit/d6096c1ceba190e7799974d0c682695946f852ed))
+- **parser-utils:** skip text trimming when text node is a descendant of the next node ([1bfcede](https://github.com/markuplint/markuplint/commit/1bfcedebbd115ea817df76a979b4e10a26d0a2b2))
+
+- fix(rules)!: remove complementary from top-level landmark check ([4643651](https://github.com/markuplint/markuplint/commit/4643651d256276ae0473d4756e72277d59398e3d))
+- feat(ml-spec)!: update default ARIA version to 1.3 ([c3b56e2](https://github.com/markuplint/markuplint/commit/c3b56e2bf06a667a00aa621f2f51a082a90d4e2f))
+
+### Features
+
+- **html-spec:** add conditional aside role mapping for ARIA 1.3 ([f3315b7](https://github.com/markuplint/markuplint/commit/f3315b7352d17308c8d6edfc0831da3cb33a0922))
+- **react-spec:** use acceptedAttrNames and add contenteditable override ([62656e5](https://github.com/markuplint/markuplint/commit/62656e56771d88cf79976750bf261b4d217ca464))
+- **svelte-spec:** use acceptedAttrNames and add contenteditable override ([60a6279](https://github.com/markuplint/markuplint/commit/60a627907b93543b542b9578b53cbe06406a5196))
+
+### BREAKING CHANGES
+
+- The landmark-roles rule no longer checks that
+  complementary landmarks are top-level. This aligns with axe-core's
+  deprecation of landmark-complementary-is-top-level.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- The default ARIA specification version used when none
+  is explicitly configured changes from 1.2 to 1.3. This may produce
+  different lint results for rules that depend on ARIA version.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 # [5.0.0-alpha.0](https://github.com/markuplint/markuplint/compare/v4.14.1...v5.0.0-alpha.0) (2026-02-20)
 
 ### Bug Fixes
