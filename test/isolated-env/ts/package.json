@@ -7,7 +7,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "npm-run-all --parallel test:*",
+		"test": "npm-run-all --parallel test:build test:normal test:tsx",
 		"test:build": "tsc --build --dry",
 		"test:normal": "tsc --noEmit",
 		"test:tsx": "tsx index.ts"
