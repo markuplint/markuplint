@@ -17,21 +17,22 @@
 	},
 	"attributes": {},
 	"aria": {
-		// v1.2 later
-		// 	"implicitRole": "generic",
-		// 	"conditions": [
-		// 		{
-		// 			"condition": ":is(body, main) aside",
-		// 			"role": "complementary"
-		// 		},
-		// 		{
-		// 			// Sectioning content elements are: article, aside, nav, section
-		// 			// Sectioning root elements are: blockquote, body, details, dialog, fieldset, figure, td
-		// 			"condition": ":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) aside:hasaccname",
-		// 			"role": "complementary"
-		// 		}
-		// 	]
 		"implicitRole": "complementary",
-		"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"]
+		"permittedRoles": ["feed", "none", "note", "presentation", "region", "search"],
+		"conditions": {
+			":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) *": {
+				"implicitRole": "generic",
+				"namingProhibited": true
+			},
+			":is(article, aside, nav, section, blockquote, details, dialog, fieldset, figure, td) *:aria(has name)": {
+				"implicitRole": "complementary"
+			}
+		},
+		"1.2": {
+			"conditions": false
+		},
+		"1.1": {
+			"conditions": false
+		}
 	}
 }
