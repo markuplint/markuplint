@@ -42,6 +42,15 @@ test('ignored', () => {
 	expect(file.ignored(['*', '!dir', 'dir/*', '!dir/file'])).toBeFalsy();
 });
 
+test('ignored with absolute path patterns', () => {
+	const file = new MLFile('/project/src/file.html');
+	// gitignore-style: pattern must match from the root of the relative path
+	expect(file.ignored(['project/src/file.html'])).toBeTruthy();
+	expect(file.ignored(['project'])).toBeTruthy();
+	expect(file.ignored(['**/file.html'])).toBeTruthy();
+	expect(file.ignored(['!project/src/file.html'])).toBeFalsy();
+});
+
 test('file exists', async () => {
 	const file = new MLFile({ sourceCode: '<html></html>' });
 	expect(await file.isExist()).toBeTruthy();

@@ -7,6 +7,8 @@ import path from 'node:path';
 import ignore from 'ignore';
 import { minimatch } from 'minimatch';
 
+import { normalizeForIgnore } from '../path-utils.js';
+
 export class MLFile {
 	#basename: string;
 	#code: string | null;
@@ -46,14 +48,14 @@ export class MLFile {
 	 * Normalized `MLFile.dirname`
 	 */
 	get nDirname() {
-		return pathNormalize(this.dirname);
+		return normalizeForIgnore(this.dirname);
 	}
 
 	/**
 	 * Normalized `MLFile.path`
 	 */
 	get nPath() {
-		return pathNormalize(this.path);
+		return normalizeForIgnore(this.path);
 	}
 
 	get path() {
@@ -76,10 +78,10 @@ export class MLFile {
 
 	ignored(globPath: string | readonly string[]) {
 		globPath = typeof globPath === 'string' ? [globPath] : globPath;
-		const normalizedPaths = globPath.map(p => pathNormalize(p, true));
+		const normalizedPaths = globPath.map(p => normalizeForIgnore(p, true));
 		// @ts-ignore
 		const ig = ignore().add(normalizedPaths);
-		const ignored = ig.ignores(pathNormalize(this.nPath, true));
+		const ignored = ig.ignores(normalizeForIgnore(this.path, true));
 		return ignored;
 	}
 
@@ -100,7 +102,7 @@ export class MLFile {
 	}
 
 	matches(globPath: string) {
-		return minimatch(this.nPath, pathNormalize(globPath));
+		return minimatch(normalizeForIgnore(this.path), normalizeForIgnore(globPath));
 	}
 
 	setCode(code: string) {
@@ -139,29 +141,4 @@ async function stat(filePath: string) {
 		}
 		throw error;
 	}
-}
-
-function pathNormalize(filePath: string, relative = false) {
-	const hasBang = filePath.startsWith('!');
-	if (hasBang) {
-		filePath = filePath.slice(1);
-	}
-
-	// Remove the local disk scheme of Windows OS
-	if (path.isAbsolute(filePath)) {
-		filePath = filePath.replace(/^[a-z]+:/i, '');
-
-		if (relative) {
-			filePath = path.relative(path.sep, filePath);
-		}
-	}
-
-	// Replace the separator of Windows OS
-	filePath = filePath.split(path.sep).join('/');
-
-	if (hasBang) {
-		filePath = `!${filePath}`;
-	}
-
-	return filePath;
 }

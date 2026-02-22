@@ -3,6 +3,7 @@ import type { MLFile } from './ml-file.js';
 import { glob } from 'glob';
 import { minimatch } from 'minimatch';
 
+import { normalizeForGlob } from '../path-utils.js';
 import { getFile } from './get-file.js';
 
 /**
@@ -13,7 +14,7 @@ import { getFile } from './get-file.js';
  * @param filePathOrGlob
  */
 export async function getFiles(filePathOrGlob: string, ignoreGlob?: string): Promise<MLFile[]> {
-	const fileList = await glob(filePathOrGlob, {}).catch<string[]>(() => []);
-	const filtered = fileList.filter(fileName => !minimatch(fileName, ignoreGlob ?? ''));
+	const fileList = await glob(normalizeForGlob(filePathOrGlob), {}).catch<string[]>(() => []);
+	const filtered = fileList.filter(fileName => !minimatch(fileName, normalizeForGlob(ignoreGlob ?? '')));
 	return filtered.map(fileName => getFile(fileName));
 }
