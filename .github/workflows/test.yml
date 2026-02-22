@@ -488,7 +488,9 @@ jobs:
               run: |
                   cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
                   echo 'enableHardenedMode: false' >> .yarnrc.yml
-                  jq '. + {"packageManager": "yarn@4.12.0"}' package.json > tmp.json && mv tmp.json package.json
+                  # Build resolutions from dependencies to force yarn to use file: versions
+                  # for transitive dependencies (prevents npm registry fallback)
+                  jq '. + {"packageManager": "yarn@4.12.0"} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
