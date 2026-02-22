@@ -49,9 +49,11 @@ src/
 ├── ml-rule/
 │   ├── ml-rule.ts                    — MLRule クラス（ルール実行）
 │   ├── ml-rule-context.ts            — MLRuleContext（レポート収集）
+│   ├── rule-fixer.ts                 — RuleFixer（fix コールバック用の TextEdit ビルダー）
 │   ├── create-rule.ts                — createRule ファクトリ
 │   ├── create-test-rule.ts           — テスト用ルールファクトリ
 │   └── types.ts                      — RuleSeed, Checker 型
+├── fix-applier.ts                    — applyFixes（重複検出付き TextEdit 適用エンジン）
 ├── ruleset/
 │   └── index.ts                      — Ruleset クラス（rules + nodeRules + childNodeRules）
 ├── plugin/
@@ -365,6 +367,125 @@ Named nodeRule（設定）                  仮想 MLRule（ランタイム）
 1. **完全一致**: `rules["a11y/html-lang"]: false`
 2. **グループ無効化**: `rules["custom/multi"]: false`（複数エントリの named nodeRule 用）
 3. **名前空間ワイルドカード**: `rules["a11y/*"]: false`（`a11y/` で始まるすべての仮想ルールを無効化）
+
+## 自動修正（Autofix）システム
+
+自動修正システムは、ルールが違反に対する自動修正を提供する仕組みです。**RuleFixer**（TextEdit ビルダー）、**fix コールバック**（ルール作者が記述するロジック）、**FixApplier**（編集適用エンジン）の 3 つのコンポーネントで構成されます。
+
+### 自動修正のデータフロー
+
+```mermaid
+flowchart LR
+    subgraph RulePhase ["ルールフェーズ"]
+        report["context.report({\n  message,\n  scope,\n  fix: コールバック\n})"]
+    end
+
+    subgraph FixPhase ["Fix コールバック実行"]
+        callback["fix(fixer) → TextEdit[]"]
+        fixer["RuleFixer\n(共有インスタンス)"]
+        callback --> fixer
+    end
+
+    subgraph ApplyPhase ["適用フェーズ"]
+        fixdata["FixData\n{ edits: TextEdit[] }"]
+        applier["applyFixes(\n  sourceCode,\n  allFixes\n)"]
+        output["fixedCode"]
+        fixdata --> applier --> output
+    end
+
+    report --> callback
+    fixer --> fixdata
+```
+
+### Fix コールバックの動作
+
+ルールは各 `report()` 呼び出しにオプションの `fix` コールバックを付与します。このコールバックはルール検証中には**実行されず**、保存されるだけです。`MLCore.verify()` に `fix=true` が渡された場合にのみ呼び出されます。
+
+```mermaid
+sequenceDiagram
+    participant Rule as ルール (verify)
+    participant Ctx as MLRuleContext
+    participant MLR as MLRule.verify()
+    participant Fixer as RuleFixer
+    participant Core as MLCore.verify()
+    participant FA as applyFixes()
+
+    Rule->>Ctx: report({ scope, message, fix })
+    Note over Ctx: fix コールバック付きレポートを格納
+
+    MLR->>Ctx: context.reports
+    loop fix コールバックを持つ各レポート
+        MLR->>Fixer: report.fix(sharedFixer)
+        Fixer-->>MLR: TextEdit | TextEdit[]
+        MLR->>MLR: FixData { edits } としてラップ
+    end
+    MLR-->>Core: Violation[]（FixData 付き）
+
+    Core->>Core: 全 Violation から FixData を収集
+    Core->>FA: applyFixes(sourceCode, allFixes)
+    FA-->>Core: FixResult { output, applied, skipped }
+```
+
+### RuleFixer API
+
+`RuleFixer` は `IRuleFixer`（`@markuplint/ml-config` で定義）を実装します。**ステートレス**なヘルパーであり、全ルールで 1 つのインスタンスを共有します。各メソッドはソースコードのレンジ置換を記述する `TextEdit` オブジェクトを生成します。
+
+| メソッド                    | 入力                                 | 生成される TextEdit                     |
+| --------------------------- | ------------------------------------ | --------------------------------------- |
+| `replaceText(token, text)`  | `startOffset` + `raw` を持つトークン | `range: [start, start+len], text`       |
+| `replaceRange(range, text)` | 明示的な `[start, end)` レンジ       | `range: [start, end], text`             |
+| `insertBefore(token, text)` | `startOffset` を持つトークン         | `range: [start, start], text`（ゼロ幅） |
+| `insertAfter(token, text)`  | `startOffset` + `raw` を持つトークン | `range: [end, end], text`（ゼロ幅）     |
+| `remove(token)`             | `startOffset` + `raw` を持つトークン | `range: [start, start+len], text: ""`   |
+| `removeRange(range)`        | 明示的な `[start, end)` レンジ       | `range: [start, end], text: ""`         |
+
+`token` パラメータは `startOffset` と `raw` プロパティを持つ任意のオブジェクトを受け付けます。MLDOM トークン（`MLToken`, `MLAttr` 等）は自然にこの要件を満たします。
+
+### FixApplier アルゴリズム
+
+`applyFixes()`（`fix-applier.ts`）は全ルールの `FixData` をマージし、1 パスで適用します：
+
+```mermaid
+flowchart TD
+    A["展開: FixData[] → タグ付き TextEdit[]"]
+    B["ソート: range start 昇順、\nthen range end 降順"]
+    C["逐次適用:\n各 edit の重複をチェック"]
+    D{{"edit.start < lastAppliedEnd?"}}
+    E["スキップ\n（親 FixData をスキップとしてマーク）"]
+    F["適用\n（出力にスプライス）"]
+    G["分類: 各 FixData を\napplied または skipped に"]
+    H["FixResult を返す\n{ output, applied, skipped }"]
+
+    A --> B --> C --> D
+    D -- Yes --> E --> C
+    D -- No --> F --> C
+    C -. "全 edit 処理完了" .-> G --> H
+```
+
+主要な制約:
+
+- 1 つの `FixData` 内の edit は互いに重複してはならない
+- `FixData` 間の重複はスキップ機構で処理される
+- `FixData` 内のいずれかの edit がスキップされると、その `FixData` 全体がスキップとして分類される
+
+### 実例: ルールの Fix 実装
+
+```typescript
+// ルールの verify 関数内:
+context.report({
+  scope: node,
+  message: '属性値にはダブルクォートを使用してください',
+  fix: fixer => fixer.replaceText(node.attrValueToken, `"${value}"`),
+});
+```
+
+これにより以下の処理が行われます:
+
+1. **レポート** → `MLRuleContext` に格納
+2. **Fix コールバック** → `(fixer) => fixer.replaceText(token, text)`（まだ呼び出されない）
+3. **`fix=true` の場合** → 共有 `RuleFixer` でコールバック実行 → `TextEdit` を返す
+4. **TextEdit** → `FixData { edits: [{ range: [12, 17], text: '"hello"' }] }` としてラップ
+5. **applyFixes** → ソースコードに置換を適用
 
 ## Pretender システム
 
