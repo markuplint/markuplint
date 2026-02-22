@@ -110,12 +110,18 @@ test('normalizeForGlob: preserves drive letter', () => {
 	expect(normalizeForGlob('C:\\Users\\**\\*.html')).toBe('C:/Users/**/*.html');
 });
 
-test('fromFileURL: POSIX file URL', () => {
+// fileURLToPath requires a drive letter on Windows (e.g. file:///C:/...),
+// so POSIX-style file URLs are only valid on non-Windows platforms.
+test.skipIf(process.platform === 'win32')('fromFileURL: POSIX file URL', () => {
 	expect(fromFileURL('file:///home/user/file')).toBe('/home/user/file');
 });
 
-test('fromFileURL: handles URL-encoded characters', () => {
+test.skipIf(process.platform === 'win32')('fromFileURL: handles URL-encoded characters', () => {
 	expect(fromFileURL('file:///home/user/my%20file')).toBe('/home/user/my file');
+});
+
+test.skipIf(process.platform !== 'win32')('fromFileURL: Windows file URL with drive letter', () => {
+	expect(fromFileURL('file:///C:/Users/project/file.html')).toBe('C:\\Users\\project\\file.html');
 });
 
 test('fromFileURL: throws on non-file protocol', () => {
