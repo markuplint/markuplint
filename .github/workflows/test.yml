@@ -492,6 +492,8 @@ jobs:
 
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
               run: ${{ matrix.pm }} install
 
             - name: Debug - After install
