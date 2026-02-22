@@ -1345,6 +1345,77 @@ test('Booleanish', async () => {
 	).toStrictEqual([]);
 });
 
+describe('contentEditable "inherit" (Issue #525)', () => {
+	test('HTML: contenteditable="inherit" is invalid (no spec override)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>');
+		expect(violations.length).toBe(1);
+		expect(violations[0].raw).toBe('inherit');
+	});
+
+	test('React: contentEditable="inherit" is valid via react-spec override', async () => {
+		const { violations } = await mlRuleTest(rule, '<div contentEditable="inherit"></div>', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('React: contentEditable="banana" is still invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<div contentEditable="banana"></div>', {
+			parser: {
+				'.*': '@markuplint/jsx-parser',
+			},
+			specs: {
+				'.*': '@markuplint/react-spec',
+			},
+		});
+		expect(violations.length).toBe(1);
+		expect(violations[0].raw).toBe('banana');
+	});
+
+	test('Svelte: contentEditable="inherit" is valid via svelte-spec override', async () => {
+		const { violations } = await mlRuleTest(rule, '<div contentEditable="inherit"></div>', {
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+			specs: {
+				'.*': '@markuplint/svelte-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
+	test('Svelte: class="foo" is valid (content attribute name accepted)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div class="foo"></div>', {
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+			specs: {
+				'.*': '@markuplint/svelte-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div className="foo"></div>', {
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+			specs: {
+				'.*': '@markuplint/svelte-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});
+
 test('WAI-Adapt', async () => {
 	expect((await mlRuleTest(rule, '<p adapt-simplification="critical"></p>')).violations).toStrictEqual([]);
 
