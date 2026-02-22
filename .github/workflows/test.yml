@@ -487,6 +487,7 @@ jobs:
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: |
                   cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
+                  echo 'enableHardenedMode: false' >> .yarnrc.yml
                   jq '. + {"packageManager": "yarn@4.12.0"}' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install dependencies
