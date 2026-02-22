@@ -752,7 +752,7 @@ describe('MDXParser', () => {
 			expect(div).toBeDefined();
 			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'className');
 			expect(attr).toBeDefined();
-			// potentialName is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			// potentialName is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.potentialName).toBeUndefined();
 		});
 
@@ -762,7 +762,7 @@ describe('MDXParser', () => {
 			expect(label).toBeDefined();
 			const attr = label!.attributes.find(a => a.type === 'attr' && a.name.raw === 'htmlFor');
 			expect(attr).toBeDefined();
-			// potentialName is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			// potentialName is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.potentialName).toBeUndefined();
 		});
 
@@ -772,7 +772,7 @@ describe('MDXParser', () => {
 			expect(div).toBeDefined();
 			const attr = div!.attributes.find(a => a.type === 'attr' && a.name.raw === 'class');
 			expect(attr).toBeDefined();
-			// candidate is not set by the parser; IDL resolution is handled by ml-core's useIDLAttributeNames
+			// candidate is not set by the parser; IDL resolution is handled by ml-core's acceptedAttrNames
 			expect(attr!.candidate).toBeUndefined();
 		});
 	});

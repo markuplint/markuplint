@@ -143,7 +143,7 @@ class MDXParser extends MarkdownAwareParser {
 	/**
 	 * Processes a JSX attribute token with dynamic value detection.
 	 * IDL attribute name mapping is now handled declaratively by the spec's
-	 * useIDLAttributeNames and ml-core's attr resolution.
+	 * acceptedAttrNames and ml-core's attr resolution.
 	 *
 	 * @param token - The raw attribute token from the source.
 	 * @returns The processed attribute node.

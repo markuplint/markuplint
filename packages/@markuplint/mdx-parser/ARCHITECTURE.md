@@ -132,7 +132,7 @@ The start tag is parsed by `parseCodeFragment` to extract attributes, then `visi
 | Boolean (no value) | `disabled`                 | Empty value (booleanish) |
 | Spread             | `{...props}`               | `type: 'spread'`         |
 
-IDL attribute mapping (`className` -> `class`, `htmlFor` -> `for`) is handled at the core level by `MLAttr` when paired with `@markuplint/react-spec` (which sets `useIDLAttributeNames: true`).
+IDL attribute mapping (`className` -> `class`, `htmlFor` -> `for`) is handled at the core level by `MLAttr` when paired with `@markuplint/react-spec` (which sets `acceptedAttrNames: 'idl'`).
 
 ### Component Detection
 
