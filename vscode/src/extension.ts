@@ -31,6 +31,14 @@ let client: LanguageClient;
 let logger: Logger;
 let diagnosticsLogger: Logger;
 
+/**
+ * Activates the markuplint VS Code extension.
+ *
+ * Registers commands, reads user configuration (including `workingDirectories`),
+ * starts the language server, and sets up event handlers.
+ *
+ * @param context - The VS Code extension context
+ */
 export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
@@ -166,6 +174,11 @@ export function activate(
 	});
 }
 
+/**
+ * Deactivates the markuplint VS Code extension by stopping the language client.
+ *
+ * @returns A promise that resolves when the client has stopped
+ */
 export function deactivate() {
 	return client.stop();
 }

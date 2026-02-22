@@ -52,6 +52,9 @@ const ROOT_INDICATOR_FILES = ['package.json', ...MARKUPLINT_CONFIG_FILES] as con
  *
  * This is a simplified implementation for matching directory paths against
  * patterns like `./packages/* /` or `./apps/** /`.
+ *
+ * @param pattern - A glob pattern string (e.g. `"./packages/* /"`)
+ * @returns A RegExp anchored at the start that matches directory paths
  */
 export function convertGlobToRegex(pattern: string): RegExp {
 	// Normalize and remove trailing slash
