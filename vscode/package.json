@@ -147,13 +147,12 @@
 				},
 				"markuplint.hover.accessibility.ariaVersion": {
 					"type": "string",
-					"markdownDescription": "Set WAI-ARIA version; Default is `1.2`.",
+					"markdownDescription": "Set WAI-ARIA version. If not set, uses markuplint's default version.",
 					"enum": [
 						"1.1",
 						"1.2",
 						"1.3"
-					],
-					"default": "1.2"
+					]
 				}
 			}
 		},

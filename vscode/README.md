@@ -10,7 +10,7 @@
 - `markuplint.targetLanguages`: Specify the target languages
 - `markuplint.workingDirectories`: Specify working directories for config resolution (see [Working Directories](#working-directories))
 - `markuplint.hover.accessibility.enable`: Enable the feature that **popup Accessibility Object**
-- `markuplint.hover.accessibility.ariaVersion`: Set `1.1`, `1.2`, or `1.3` WAI-ARIA version; Default is `1.2`.
+- `markuplint.hover.accessibility.ariaVersion`: Set `1.1`, `1.2`, or `1.3` WAI-ARIA version. If not set, uses markuplint's default version.
 
 ## Working Directories
 
