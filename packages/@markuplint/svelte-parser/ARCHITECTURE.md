@@ -341,7 +341,7 @@ When the base `visitAttr()` returns an attribute with `type: 'spread'`, it is re
 
 ### IDL Attribute Mapping
 
-IDL attribute mapping (e.g., `tabIndex` → `tabindex`, `contentEditable` → `contenteditable`) is handled by `ml-core`'s `MLAttr` constructor when the spec sets `useIDLAttributeNames: true`. The `@markuplint/svelte-spec` enables this flag, so Svelte files get IDL resolution at the core level, not the parser level.
+IDL attribute mapping (e.g., `tabIndex` → `tabindex`, `contentEditable` → `contenteditable`) is handled by `ml-core`'s `MLAttr` constructor when the spec sets `acceptedAttrNames` (either `'idl'` or `'both'`). The `@markuplint/svelte-spec` sets `acceptedAttrNames: 'both'`, so Svelte files get IDL resolution at the core level (not the parser level) while accepting both content and IDL attribute names.
 
 The mapping only updates `potentialName` when the content attribute name differs from the looked-up name, so attributes that already match their content attribute form (e.g., `value`, `class`) are unaffected. IDL-only properties that have no corresponding content attribute (e.g., `defaultValue`, `indeterminate`) are not in the mapping and are instead handled by the paired `@markuplint/svelte-spec` package.
 

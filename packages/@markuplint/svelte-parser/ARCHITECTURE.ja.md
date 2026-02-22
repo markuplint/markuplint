@@ -341,7 +341,7 @@ export function svelteParse(template: string): SvelteNode[] {
 
 ### IDL 属性マッピング
 
-IDL 属性マッピング（例: `tabIndex` → `tabindex`、`contentEditable` → `contenteditable`）は、spec が `useIDLAttributeNames: true` を設定している場合に `ml-core` の `MLAttr` コンストラクタで処理されます。`@markuplint/svelte-spec` はこのフラグを有効化しているため、Svelte ファイルではパーサーレベルではなくコアレベルで IDL 解決が行われます。
+IDL 属性マッピング（例: `tabIndex` → `tabindex`、`contentEditable` → `contenteditable`）は、spec が `acceptedAttrNames`（`'idl'` または `'both'`）を設定している場合に `ml-core` の `MLAttr` コンストラクタで処理されます。`@markuplint/svelte-spec` は `acceptedAttrNames: 'both'` を設定しているため、Svelte ファイルではパーサーレベルではなくコアレベルで IDL 解決が行われ、コンテンツ属性名と IDL 属性名の両方が受け入れられます。
 
 マッピングはコンテンツ属性名がルックアップ名と異なる場合にのみ `potentialName` を更新するため、すでにコンテンツ属性形式と一致している属性（例: `value`、`class`）は影響を受けません。対応するコンテンツ属性を持たない IDL 専用プロパティ（例: `defaultValue`、`indeterminate`）はマッピングに含まれず、対となる `@markuplint/svelte-spec` パッケージで処理されます。
 
