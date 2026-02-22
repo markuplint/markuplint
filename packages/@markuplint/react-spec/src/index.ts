@@ -20,7 +20,7 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * `defaultValue`, `value`).
  */
 const spec: ExtendedSpec = {
-	useIDLAttributeNames: true,
+	acceptedAttrNames: 'idl',
 	def: {
 		'#globalAttrs': {
 			'#extends': {
@@ -38,14 +38,14 @@ const spec: ExtendedSpec = {
 					type: 'Any',
 				},
 				/**
-				 * React’s replacement for using innerHTML in the browser DOM
+				 * React's replacement for using innerHTML in the browser DOM
 				 */
 				dangerouslySetInnerHTML: {
 					type: 'Any',
 				},
 				/**
 				 * Normally, there is a warning when an element with children
-				 * is also marked as contentEditable, because it won’t work.
+				 * is also marked as contentEditable, because it won't work.
 				 * This attribute suppresses that warning.
 				 */
 				suppressContentEditableWarning: {
@@ -58,6 +58,19 @@ const spec: ExtendedSpec = {
 				 */
 				suppressHydrationWarning: {
 					type: 'Boolean',
+				},
+				/**
+				 * React accepts "inherit" as a valid contentEditable value
+				 * (IDL state value from the ContentEditable interface).
+				 */
+				contenteditable: {
+					type: {
+						enum: ['', 'true', 'false', 'plaintext-only', 'inherit'],
+						disallowToSurroundBySpaces: true,
+						invalidValueDefault: 'inherit',
+						missingValueDefault: 'inherit',
+						sameStates: { true: [''] },
+					},
 				},
 			},
 		},

@@ -8,21 +8,22 @@ This package contains no parsing logic -- it is purely a data definition consume
 
 ## ExtendedSpec Content
 
-### `useIDLAttributeNames`
+### `acceptedAttrNames`
 
-The spec sets `useIDLAttributeNames: true`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `className` -> `class`, `htmlFor` -> `for`). This resolution is performed at the core level, not in the parser.
+The spec sets `acceptedAttrNames: 'idl'`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `className` -> `class`, `htmlFor` -> `for`) and to suggest IDL names as candidates when content attribute names are used (e.g., `tabindex` -> "Did you mean `tabIndex`?"). This resolution is performed at the core level, not in the parser.
 
 ### Global Attributes
 
 Global attributes are defined under `def['#globalAttrs']['#extends']` and are available on every JSX element:
 
-| Attribute                        | Type      | Description                                                               |
-| -------------------------------- | --------- | ------------------------------------------------------------------------- |
-| `key`                            | `Any`     | Special attribute for list rendering to help React identify changed items |
-| `ref`                            | `Any`     | Attribute for accessing child component instances and DOM elements        |
-| `dangerouslySetInnerHTML`        | `Any`     | React's replacement for using `innerHTML` in the browser DOM              |
-| `suppressContentEditableWarning` | `Boolean` | Suppresses the warning when an element with children is `contentEditable` |
-| `suppressHydrationWarning`       | `Boolean` | Suppresses React hydration mismatch warnings for attributes and content   |
+| Attribute                        | Type              | Description                                                               |
+| -------------------------------- | ----------------- | ------------------------------------------------------------------------- |
+| `key`                            | `Any`             | Special attribute for list rendering to help React identify changed items |
+| `ref`                            | `Any`             | Attribute for accessing child component instances and DOM elements        |
+| `dangerouslySetInnerHTML`        | `Any`             | React's replacement for using `innerHTML` in the browser DOM              |
+| `suppressContentEditableWarning` | `Boolean`         | Suppresses the warning when an element with children is `contentEditable` |
+| `suppressHydrationWarning`       | `Boolean`         | Suppresses React hydration mismatch warnings for attributes and content   |
+| `contenteditable`                | `Enum` (extended) | Overrides the HTML spec to accept `"inherit"` as a valid IDL state value  |
 
 ### Element-Specific Overrides
 
