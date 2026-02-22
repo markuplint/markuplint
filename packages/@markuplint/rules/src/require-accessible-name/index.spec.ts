@@ -528,6 +528,23 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
+	// https://github.com/markuplint/markuplint/issues/3283
+	test('#3283', async () => {
+		// Implicit label with text only inside child elements
+		expect((await mlRuleTest(rule, '<label><span>label</span> <input /></label>')).violations).toStrictEqual([]);
+
+		// Explicit label with text only inside child elements
+		expect(
+			(await mlRuleTest(rule, '<label for="label"><span>label</span></label> <input id="label" />')).violations,
+		).toStrictEqual([]);
+
+		// These should still work (direct text nodes)
+		expect((await mlRuleTest(rule, '<label>label <input /></label>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<label>label <span>label</span> <input /></label>')).violations).toStrictEqual(
+			[],
+		);
+	});
+
 	test('#2394', async () => {
 		expect(
 			(
