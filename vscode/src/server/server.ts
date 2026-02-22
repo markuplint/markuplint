@@ -1,5 +1,5 @@
 import type { SendDiagnostics } from './document-events.js';
-import type { LangConfigs, Log } from '../types.js';
+import type { InitializationOptions, Log } from '../types.js';
 import type { InitializeResult } from 'vscode-languageserver/node.js';
 
 import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node.js';
@@ -49,7 +49,8 @@ export function bootServer() {
 		log('onInitialize');
 
 		const locale = params.locale ?? 'en';
-		const langConfigs: LangConfigs = params.initializationOptions.langConfigs;
+		const initOptions: InitializationOptions = params.initializationOptions;
+		const { langConfigs, workingDirectories, workspaceFolders } = initOptions;
 
 		connection.onInitialized(async () => {
 			log('onInitialized');
@@ -63,10 +64,16 @@ export function bootServer() {
 			log(`Found version: ${mod.version} (isLocalModule: ${mod.isLocalModule})`, 'info');
 			log(`Locale: ${locale}`, 'info');
 
+			if (workingDirectories) {
+				log(`Working directories: ${JSON.stringify(workingDirectories)}`, 'info');
+			}
+
 			const { onDidOpen, onDidChangeContent, onHover } = createEventHandlers({
 				mod,
 				locale,
 				langConfigs,
+				workingDirectories,
+				workspaceFolders: workspaceFolders ?? [],
 				log,
 				diagnosticsLog,
 				errorLog,

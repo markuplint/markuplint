@@ -1,5 +1,6 @@
 import type { Module } from './get-module.js';
 import type { LangConfigs, Log } from '../types.js';
+import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
@@ -12,15 +13,28 @@ import * as v2 from './v2.js';
 import * as v3 from './v3.js';
 import * as v4 from './v4.js';
 
+/**
+ * Callback for publishing diagnostics from the language server to the client.
+ */
 export type SendDiagnostics = (
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	params: PublishDiagnosticsParams,
 ) => void;
 
+/**
+ * Options for creating the document event handlers.
+ */
 export type EventHandlerOptions = {
+	/** The resolved markuplint module (local or bundled) */
 	mod: Module;
+	/** The user's locale (e.g. `"en"`, `"ja"`) */
 	locale: string;
+	/** Per-language configuration from VS Code settings */
 	langConfigs: LangConfigs;
+	/** User-configured working directories for monorepo support */
+	workingDirectories?: readonly WorkingDirectoryEntry[];
+	/** Absolute paths of VS Code workspace folders */
+	workspaceFolders: readonly string[];
 	log: Log;
 	diagnosticsLog: Log;
 	errorLog: Log;
@@ -28,6 +42,15 @@ export type EventHandlerOptions = {
 	initUI: () => void;
 };
 
+/**
+ * Creates version-aware event handlers for document open, change, and hover events.
+ *
+ * Dispatches to the appropriate version handler (v2, v3, or v4) based on the
+ * resolved markuplint module version.
+ *
+ * @param options - Configuration including the markuplint module, locale, and settings
+ * @returns An object containing `onDidOpen`, `onDidChangeContent`, and `onHover` handlers
+ */
 export function createEventHandlers(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	options: EventHandlerOptions,
@@ -62,6 +85,9 @@ export function createEventHandlers(
 					options.locale,
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
+					options.workingDirectories,
+					options.workspaceFolders,
+					options.log,
 				);
 				return;
 			}
@@ -76,6 +102,8 @@ export function createEventHandlers(
 					options.diagnosticsLog,
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
+					options.workingDirectories,
+					options.workspaceFolders,
 				);
 				return;
 			}
@@ -89,6 +117,8 @@ export function createEventHandlers(
 				options.diagnosticsLog,
 				options.sendDiagnostics,
 				notFoundParserError(languageId, options.errorLog),
+				options.workingDirectories,
+				options.workspaceFolders,
 			);
 		},
 

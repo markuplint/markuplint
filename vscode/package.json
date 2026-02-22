@@ -77,6 +77,69 @@
 						]
 					}
 				},
+				"markuplint.workingDirectories": {
+					"type": "array",
+					"markdownDescription": "Specifies working directories for markuplint config resolution. Useful for **monorepos** where each sub-package has its own `.markuplintrc`.\n\nExamples:\n- `[\"./client\", \"./server\"]` — explicit directories\n- `[{ \"pattern\": \"./packages/*/\" }]` — glob pattern\n- `[{ \"mode\": \"auto\" }]` — auto-detect from `package.json` / `.markuplintrc`",
+					"items": {
+						"anyOf": [
+							{
+								"type": "string",
+								"description": "A directory path relative to the workspace folder."
+							},
+							{
+								"type": "object",
+								"properties": {
+									"directory": {
+										"type": "string",
+										"description": "A directory path relative to the workspace folder."
+									},
+									"!cwd": {
+										"type": "boolean",
+										"description": "If true, does not change the process working directory."
+									}
+								},
+								"required": [
+									"directory"
+								],
+								"additionalProperties": false
+							},
+							{
+								"type": "object",
+								"properties": {
+									"pattern": {
+										"type": "string",
+										"description": "A glob pattern to match working directories (e.g. \"./packages/*/\")."
+									},
+									"!cwd": {
+										"type": "boolean",
+										"description": "If true, does not change the process working directory."
+									}
+								},
+								"required": [
+									"pattern"
+								],
+								"additionalProperties": false
+							},
+							{
+								"type": "object",
+								"properties": {
+									"mode": {
+										"type": "string",
+										"enum": [
+											"auto",
+											"location"
+										],
+										"description": "\"auto\" detects from package.json/.markuplintrc; \"location\" uses workspace folder."
+									}
+								},
+								"required": [
+									"mode"
+								],
+								"additionalProperties": false
+							}
+						]
+					}
+				},
 				"markuplint.hover.accessibility.enable": {
 					"type": "boolean",
 					"markdownDescription": "Enable the feature that **popup Accessibility Object**",

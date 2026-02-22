@@ -1,4 +1,4 @@
-import type { Config, LangConfigs } from './types.js';
+import type { Config, InitializationOptions, LangConfigs } from './types.js';
 import type { ExtensionContext } from 'vscode';
 import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
 
@@ -31,6 +31,14 @@ let client: LanguageClient;
 let logger: Logger;
 let diagnosticsLogger: Logger;
 
+/**
+ * Activates the markuplint VS Code extension.
+ *
+ * Registers commands, reads user configuration (including `workingDirectories`),
+ * starts the language server, and sets up event handlers.
+ *
+ * @param context - The VS Code extension context
+ */
 export function activate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	context: ExtensionContext,
@@ -108,6 +116,16 @@ export function activate(
 		};
 	}
 
+	const workingDirectories: InitializationOptions['workingDirectories'] =
+		config.get('workingDirectories') ?? undefined;
+	const workspaceFolders = (workspace.workspaceFolders ?? []).map(f => f.uri.fsPath);
+
+	const initializationOptions: InitializationOptions = {
+		langConfigs,
+		workingDirectories,
+		workspaceFolders,
+	};
+
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
 			...languageList.map(language => ({ language, scheme: 'file' })),
@@ -119,9 +137,7 @@ export function activate(
 		},
 		outputChannel: logger.outputChannel,
 		revealOutputChannelOn: RevealOutputChannelOn.Error,
-		initializationOptions: {
-			langConfigs,
-		},
+		initializationOptions,
 	};
 
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);
@@ -158,6 +174,11 @@ export function activate(
 	});
 }
 
+/**
+ * Deactivates the markuplint VS Code extension by stopping the language client.
+ *
+ * @returns A promise that resolves when the client has stopped
+ */
 export function deactivate() {
 	return client.stop();
 }
