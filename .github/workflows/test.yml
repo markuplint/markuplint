@@ -482,6 +482,13 @@ jobs:
                   echo "=== Check markuplint.config.ts ==="
                   cat markuplint.config.ts 2>/dev/null || echo "markuplint.config.ts not found"
 
+            - name: Setup Yarn v4 for sandbox
+              if: matrix.pm == 'yarn'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: |
+                  cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
+                  jq '. + {"packageManager": "yarn@4.12.0"}' package.json > tmp.json && mv tmp.json package.json
+
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               run: ${{ matrix.pm }} install
