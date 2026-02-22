@@ -110,7 +110,7 @@ export function activate(
 					ariaVersion:
 						langConfig.get<Config['hover']['accessibility']['ariaVersion']>(
 							'hover.accessibility.ariaVersion',
-						) ?? ARIA_RECOMMENDED_VERSION,
+						) || ARIA_RECOMMENDED_VERSION,
 				},
 			},
 		};

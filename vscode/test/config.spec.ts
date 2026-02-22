@@ -13,7 +13,7 @@ suite('Config Tests', () => {
 			extends: ['markuplint:recommended'],
 		});
 		assert.deepStrictEqual(config.get('hover.accessibility.enable'), true);
-		assert.strictEqual(config.get('hover.accessibility.ariaVersion'), undefined);
+		assert.strictEqual(config.get('hover.accessibility.ariaVersion'), '');
 		assert.deepStrictEqual(config.get('targetLanguages'), [
 			'astro',
 			'ejs',
@@ -66,7 +66,7 @@ suite('Config Tests', () => {
 					hover: {
 						accessibility: {
 							enable: true,
-							ariaVersion: undefined,
+							ariaVersion: '',
 						},
 					},
 				},
