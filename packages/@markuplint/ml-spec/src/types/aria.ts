@@ -107,19 +107,21 @@ export interface ARIA {
 		namingProhibited?: true;
 		implicitProperties?: ImplicitProperties;
 		properties?: PermittedARIAProperties;
-		conditions?: {
-			/**
-			 * This interface was referenced by `undefined`'s JSON-Schema definition
-			 * via the `patternProperty` ".+".
-			 */
-			[k: string]: {
-				implicitRole?: ImplicitRole;
-				permittedRoles?: PermittedRoles;
-				namingProhibited?: true;
-				implicitProperties?: ImplicitProperties;
-				properties?: PermittedARIAProperties;
-			};
-		};
+		conditions?:
+			| false
+			| {
+					/**
+					 * This interface was referenced by `undefined`'s JSON-Schema definition
+					 * via the `patternProperty` ".+".
+					 */
+					[k: string]: {
+						implicitRole?: ImplicitRole;
+						permittedRoles?: PermittedRoles;
+						namingProhibited?: true;
+						implicitProperties?: ImplicitProperties;
+						properties?: PermittedARIAProperties;
+					};
+			  };
 	};
 	'1.2'?: {
 		implicitRole?: ImplicitRole;
@@ -127,37 +129,41 @@ export interface ARIA {
 		namingProhibited?: true;
 		implicitProperties?: ImplicitProperties;
 		properties?: PermittedARIAProperties;
-		conditions?: {
-			/**
-			 * This interface was referenced by `undefined`'s JSON-Schema definition
-			 * via the `patternProperty` ".+".
-			 */
-			[k: string]: {
-				implicitRole?: ImplicitRole;
-				permittedRoles?: PermittedRoles;
-				namingProhibited?: true;
-				implicitProperties?: ImplicitProperties;
-				properties?: PermittedARIAProperties;
-			};
-		};
+		conditions?:
+			| false
+			| {
+					/**
+					 * This interface was referenced by `undefined`'s JSON-Schema definition
+					 * via the `patternProperty` ".+".
+					 */
+					[k: string]: {
+						implicitRole?: ImplicitRole;
+						permittedRoles?: PermittedRoles;
+						namingProhibited?: true;
+						implicitProperties?: ImplicitProperties;
+						properties?: PermittedARIAProperties;
+					};
+			  };
 	};
 	'1.1'?: {
 		implicitRole?: ImplicitRole;
 		permittedRoles?: PermittedRoles;
 		implicitProperties?: ImplicitProperties;
 		properties?: PermittedARIAProperties;
-		conditions?: {
-			/**
-			 * This interface was referenced by `undefined`'s JSON-Schema definition
-			 * via the `patternProperty` ".+".
-			 */
-			[k: string]: {
-				implicitRole?: ImplicitRole;
-				permittedRoles?: PermittedRoles;
-				implicitProperties?: ImplicitProperties;
-				properties?: PermittedARIAProperties;
-			};
-		};
+		conditions?:
+			| false
+			| {
+					/**
+					 * This interface was referenced by `undefined`'s JSON-Schema definition
+					 * via the `patternProperty` ".+".
+					 */
+					[k: string]: {
+						implicitRole?: ImplicitRole;
+						permittedRoles?: PermittedRoles;
+						implicitProperties?: ImplicitProperties;
+						properties?: PermittedARIAProperties;
+					};
+			  };
 	};
 }
 export interface PermittedARIAAAMInfo {

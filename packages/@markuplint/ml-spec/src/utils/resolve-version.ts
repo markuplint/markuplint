@@ -20,7 +20,8 @@ export function resolveVersion(aria: ReadonlyDeep<ARIA>, version: ARIAVersion): 
 	const properties = aria[version]?.properties ?? aria.properties;
 	const namingProhibited =
 		version === '1.1' ? aria.namingProhibited : (aria[version]?.namingProhibited ?? aria.namingProhibited);
-	const conditions = aria[version]?.conditions ?? aria.conditions;
+	const versionConditions = aria[version]?.conditions;
+	const conditions = versionConditions === false ? undefined : (versionConditions ?? aria.conditions);
 	return {
 		implicitRole,
 		permittedRoles,
