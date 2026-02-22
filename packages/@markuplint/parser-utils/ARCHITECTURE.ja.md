@@ -148,7 +148,7 @@ ParserError (基底クラス)
 
 ## IDL 属性マッピング
 
-`searchIDLAttribute` は React スタイルの IDL 属性名と HTML コンテンツ属性名の双方向マッピングを提供します（例: `className` → `class`、`htmlFor` → `for`）。spec が `useIDLAttributeNames: true` を設定している場合に、`@markuplint/ml-core` の `MLAttr` コンストラクタから呼び出されます。
+`searchIDLAttribute` は React スタイルの IDL 属性名と HTML コンテンツ属性名の双方向マッピングを提供します（例: `className` → `class`、`htmlFor` → `for`）。spec が `acceptedAttrNames`（`'idl'` または `'both'`）を設定している場合に、`@markuplint/ml-core` の `MLAttr` コンストラクタから呼び出されます。
 
 ## 外部依存
 

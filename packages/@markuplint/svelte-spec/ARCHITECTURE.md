@@ -6,9 +6,13 @@
 
 ## ExtendedSpec Content
 
-### `useIDLAttributeNames`
+### `acceptedAttrNames`
 
-The spec sets `useIDLAttributeNames: true`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `defaultValue` -> the corresponding content attribute). This resolution is performed at the core level, not in the parser.
+The spec sets `acceptedAttrNames: 'both'`, which instructs `@markuplint/ml-core`'s `MLAttr` constructor to resolve IDL attribute names to their HTML content attribute equivalents (e.g., `defaultValue` -> the corresponding content attribute). In `'both'` mode, both content attribute names and IDL names are accepted without suggesting a rename. This resolution is performed at the core level, not in the parser.
+
+### `contenteditable` Override
+
+Svelte accepts `"inherit"` as a valid `contentEditable` value (IDL state value from the ContentEditable interface). This spec extends the global `contenteditable` attribute type to include `"inherit"` as a valid enum value.
 
 ### `directivePatterns`
 

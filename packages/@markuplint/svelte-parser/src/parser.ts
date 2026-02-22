@@ -358,7 +358,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 	 * curly-brace expression values and shorthand attributes (`{name}`).
 	 * Directive resolution (`bind:`, `class:`, `on:`, etc.) and IDL attribute
 	 * mapping are now handled declaratively by svelte-spec's directivePatterns
-	 * and ml-core's useIDLAttributeNames.
+	 * and ml-core's acceptedAttrNames.
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node with Svelte-specific metadata

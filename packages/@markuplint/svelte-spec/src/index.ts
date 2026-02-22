@@ -17,7 +17,26 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * attributes on form elements.
  */
 const spec: ExtendedSpec = {
-	useIDLAttributeNames: true,
+	acceptedAttrNames: 'both',
+	def: {
+		'#globalAttrs': {
+			'#extends': {
+				/**
+				 * Svelte accepts "inherit" as a valid contentEditable value
+				 * (IDL state value from the ContentEditable interface).
+				 */
+				contenteditable: {
+					type: {
+						enum: ['', 'true', 'false', 'plaintext-only', 'inherit'],
+						disallowToSurroundBySpaces: true,
+						invalidValueDefault: 'inherit',
+						missingValueDefault: 'inherit',
+						sameStates: { true: [''] },
+					},
+				},
+			},
+		},
+	},
 	directivePatterns: [
 		// bind:group, bind:this → true directives
 		{

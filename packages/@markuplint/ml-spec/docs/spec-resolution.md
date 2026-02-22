@@ -160,21 +160,29 @@ This is simple array concatenation. The core engine evaluates patterns in order
 (first match wins), so framework specs should define their patterns from most
 specific to most general.
 
-#### 6. `useIDLAttributeNames`
+#### 6. `acceptedAttrNames`
 
-If the extended spec explicitly sets `useIDLAttributeNames` (to `true` or
-`false`), it overrides the current value:
+If the extended spec explicitly sets `acceptedAttrNames`, it overrides the
+current value:
 
 ```ts
-if (extendedSpec.useIDLAttributeNames != null) {
-  result.useIDLAttributeNames = extendedSpec.useIDLAttributeNames;
+if (extendedSpec.acceptedAttrNames != null) {
+  result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
 }
 ```
 
 This is a last-write-wins semantic with explicit `null` guard -- omitting the
-property does not reset a previously set value. This flag is consumed by
-`@markuplint/ml-core`'s `MLAttr` constructor to enable IDL-to-content attribute
-name resolution (e.g., `className` -> `class`).
+property does not reset a previously set value. The value controls how
+`@markuplint/ml-core`'s `MLAttr` constructor resolves attribute names:
+
+- `'idl'` -- Enables IDL-to-content attribute name resolution (e.g.,
+  `className` -> `class`) and suggests IDL names as candidates when the
+  content attribute name is used (e.g., `tabindex` -> "Did you mean
+  `tabIndex`?"). Used by React, where only IDL property names are accepted.
+- `'both'` -- Enables IDL-to-content attribute name resolution but does
+  **not** suggest IDL names as candidates. Both content attribute names
+  (e.g., `class`) and IDL property names (e.g., `className`) are accepted
+  without warnings. Used by Svelte.
 
 #### 7. Element Specs
 

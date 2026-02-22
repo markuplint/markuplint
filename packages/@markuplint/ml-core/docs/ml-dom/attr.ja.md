@@ -30,7 +30,7 @@
 
 ### IDL 属性名解決
 
-ディレクティブパターン解決の後、spec が `useIDLAttributeNames: true` を設定しており（例: `@markuplint/react-spec`、`@markuplint/svelte-spec`）、属性がディレクティブでない場合、コンストラクタは `@markuplint/parser-utils` の `searchIDLAttribute()` を呼び出して IDL プロパティ名を HTML コンテンツ属性名にマッピングします（例: `className` → `class`、`htmlFor` → `for`）。これはパーサーレベルではなくコアレベルの関心事です。
+ディレクティブパターン解決の後、spec が `acceptedAttrNames` を設定しており（例: `@markuplint/react-spec` では `'idl'`、`@markuplint/svelte-spec` では `'both'`）、属性がディレクティブでない場合、コンストラクタは `@markuplint/parser-utils` の `searchIDLAttribute()` を呼び出して IDL プロパティ名を HTML コンテンツ属性名にマッピングします（例: `className` → `class`、`htmlFor` → `for`）。`'idl'` モードでは、IDL プロパティ名が候補として設定されます（例: `tabindex` → 「`tabIndex` の間違いでは？」）。`'both'` モードでは、コンテンツ名と IDL 名の両方が候補提案なしで受け入れられます。これはパーサーレベルではなくコアレベルの関心事です。
 
 ## トークン分解
 

@@ -8,9 +8,13 @@
 
 ## ExtendedSpec の内容
 
-### `useIDLAttributeNames`
+### `acceptedAttrNames`
 
-この spec は `useIDLAttributeNames: true` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `className` -> `class`、`htmlFor` -> `for`）。この解決はパーサーではなくコアレベルで行われます。
+この spec は `acceptedAttrNames: 'idl'` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `className` -> `class`、`htmlFor` -> `for`）。`'idl'` モードでは IDL 名のみが受け入れられ、コンテンツ属性名を使うと候補として IDL 名が提示されます。この解決はパーサーではなくコアレベルで行われます。
+
+### `contenteditable` オーバーライド
+
+React は `contentEditable` 属性の値として `"inherit"` を受け付けます（ContentEditable インターフェースの IDL 状態値）。この仕様はグローバル属性 `contenteditable` の型を拡張し、`"inherit"` を有効な列挙値として追加します。
 
 ### グローバル属性
 

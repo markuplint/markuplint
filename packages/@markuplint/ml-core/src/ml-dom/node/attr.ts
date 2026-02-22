@@ -163,14 +163,14 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			}
 
 			// IDL attribute resolution (after directivePatterns)
-			if (ownElement.ownerMLDocument.specs.useIDLAttributeNames && !this.isDirective) {
+			if (ownElement.ownerMLDocument.specs.acceptedAttrNames && !this.isDirective) {
 				const { contentAttrName, idlPropName } = searchIDLAttribute(this.#potentialName);
 				if (contentAttrName && contentAttrName !== this.#potentialName) {
 					this.#potentialName = contentAttrName;
 				}
 				// Set candidate for IDL naming suggestions (e.g., tabindex → tabIndex in JSX).
-				// Only when no directive pattern transformed the name.
-				if (!resolution && idlPropName) {
+				// Only in 'idl' mode (React). In 'both' mode (Svelte), both content and IDL names are accepted.
+				if (!resolution && idlPropName && ownElement.ownerMLDocument.specs.acceptedAttrNames === 'idl') {
 					const rawName = this.nameNode?.raw ?? '';
 					if (rawName !== idlPropName) {
 						this.candidate = idlPropName;

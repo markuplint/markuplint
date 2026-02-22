@@ -134,21 +134,37 @@ describe('AST', () => {
 		expect(
 			createTestElement('<label></label>', {
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('for')?.localName,
 		).toBeUndefined();
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('for')?.localName,
 		).toBe('for');
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).getAttributeNode('htmlFor')?.localName,
 		).toBeUndefined();
+	});
+
+	test('IDL attribute candidate in idl mode vs both mode', async () => {
+		// In 'idl' mode, using content name suggests the IDL name
+		const idlEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'idl' },
+		});
+		expect(idlEl.getAttributeNode('tabindex')?.candidate).toBe('tabIndex');
+
+		// In 'both' mode, no candidate is set (both names are accepted)
+		const bothEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'both' },
+		});
+		expect(bothEl.getAttributeNode('tabindex')?.candidate).toBeUndefined();
 	});
 
 	test('rule', () => {
@@ -233,14 +249,14 @@ div#hoge.foo.bar
 		expect(
 			createTestElement('<div tabIndex className><label htmlFor></label></div>', {
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).matches('[tabindex][class]:has(>label[for])'),
 		).toBeTruthy();
 
 		expect(
 			createTestElement('<svg><image clipPath /></svg>', {
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			}).matches('svg:has(>image[clip-path])'),
 		).toBeTruthy();
 	});
@@ -581,7 +597,7 @@ describe('Rule', () => {
 					],
 				},
 				parser: await import('@markuplint/jsx-parser'),
-				specs: { ...specs, useIDLAttributeNames: true },
+				specs: { ...specs, acceptedAttrNames: 'idl' },
 			},
 		);
 		const ruleA = createRule({

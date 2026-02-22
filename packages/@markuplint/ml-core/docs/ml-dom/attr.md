@@ -30,7 +30,7 @@ When `astToken.potentialName` is not set by the parser, the `MLAttr` constructor
 
 ### IDL Attribute Name Resolution
 
-After directive pattern resolution, if the spec sets `useIDLAttributeNames: true` (e.g., `@markuplint/react-spec`, `@markuplint/svelte-spec`) and the attribute is not a directive, the constructor calls `searchIDLAttribute()` from `@markuplint/parser-utils` to map IDL property names to HTML content attribute names (e.g., `className` -> `class`, `htmlFor` -> `for`). This is a core-level concern, not a parser-level one.
+After directive pattern resolution, if the spec sets `acceptedAttrNames` (e.g., `'idl'` in `@markuplint/react-spec`, `'both'` in `@markuplint/svelte-spec`) and the attribute is not a directive, the constructor calls `searchIDLAttribute()` from `@markuplint/parser-utils` to map IDL property names to HTML content attribute names (e.g., `className` -> `class`, `htmlFor` -> `for`). In `'idl'` mode, the IDL property name is set as a candidate for suggestion (e.g., `tabindex` -> "Did you mean `tabIndex`?"). In `'both'` mode, both content and IDL names are accepted without suggestions. This is a core-level concern, not a parser-level one.
 
 ## Token Decomposition
 
