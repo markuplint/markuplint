@@ -12,6 +12,8 @@ export {
 } from '@markuplint/ml-spec';
 export { Ruleset } from './ruleset/index.js';
 export { enableDebug } from './debug.js';
+export { applyFixes } from './fix-applier.js';
+export type { FixResult } from './fix-applier.js';
 export { getIndent } from './ml-dom/helper/get-indent.js';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';

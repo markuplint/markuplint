@@ -49,9 +49,11 @@ src/
 ├── ml-rule/
 │   ├── ml-rule.ts                    — MLRule class (rule execution)
 │   ├── ml-rule-context.ts            — MLRuleContext (report collection)
+│   ├── rule-fixer.ts                 — RuleFixer (TextEdit builder for fix callbacks)
 │   ├── create-rule.ts                — createRule factory
 │   ├── create-test-rule.ts           — Test rule factory
 │   └── types.ts                      — RuleSeed, Checker types
+├── fix-applier.ts                    — applyFixes (overlap-aware TextEdit applicator)
 ├── ruleset/
 │   └── index.ts                      — Ruleset class (rules + nodeRules + childNodeRules)
 ├── plugin/
@@ -143,8 +145,8 @@ flowchart LR
 
 1. **Parse**: `MLCore` invokes the configured parser (`MLParser`) to produce an `MLASTDocument`
 2. **Create Document**: The AST is wrapped in an `MLDocument`, which builds the full MLDOM tree via `createNode()` factory. `RuleMapper` resolves rule configuration for every node
-3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`
-4. **Fix** (optional): When `fix=true`, rules may call `node.fix()` to modify token content. `document.toString(true)` produces the fixed source
+3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`. Rules may attach inline `fix` callbacks to reports that return `TextEdit` objects
+4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection
 
 ## MLDOM Class Hierarchy
 
@@ -210,10 +212,9 @@ The constructor receives an `MLASTDocument`, a `Ruleset`, and an `MLSchema` tupl
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `walkOn(type, walker)`            | Walks nodes of a given type (`'Element'`, `'Text'`, `'Comment'`, `'Attr'`, `'ElementCloseTag'`)                  |
 | `setRule(rule)`                   | Sets the current rule, used by `MLCore` during verification                                                      |
-| `getTokenList()`                  | Returns all tokens for source reconstruction                                                                     |
 | `searchNodeByLocation(line, col)` | Finds the node at a given source position                                                                        |
 | `getAccessibilityProp(node)`      | Computes ARIA accessibility properties (delegates to `MLElement.getAccessibleName()` for cached accessible name) |
-| `toString(fixed?)`                | Reconstructs source code, optionally with fixes applied                                                          |
+| `toString()`                      | Returns the raw source code of the document                                                                      |
 
 ## MLElement
 
@@ -292,7 +293,7 @@ type RuleSeed<T, O> = {
 - `translate` / `t` — Locale-aware message translator
 - `report(report)` — Reports a violation with node, message, and optional fix
 
-The `provide()` method returns the context object passed to `RuleSeed.verify()` and `RuleSeed.fix()`.
+The `provide()` method returns the context object passed to `RuleSeed.verify()`. Auto-fix logic is provided as an inline `fix` callback on individual `report()` calls, not as a separate lifecycle method.
 
 ### Rule Configuration Resolution
 
@@ -366,6 +367,125 @@ Virtual rules can be disabled at three levels in the `rules` config:
 1. **Exact name**: `rules["a11y/html-lang"]: false`
 2. **Group disable**: `rules["custom/multi"]: false` (for multi-entry named nodeRules)
 3. **Namespace wildcard**: `rules["a11y/*"]: false` (disables all virtual rules starting with `a11y/`)
+
+## Autofix System
+
+The autofix system allows rules to provide automatic fixes for violations. It operates through three components: **RuleFixer** (TextEdit builder), **fix callbacks** (rule-authored logic), and **FixApplier** (edit application engine).
+
+### Autofix Data Flow
+
+```mermaid
+flowchart LR
+    subgraph RulePhase ["Rule Phase"]
+        report["context.report({\n  message,\n  scope,\n  fix: callback\n})"]
+    end
+
+    subgraph FixPhase ["Fix Callback Execution"]
+        callback["fix(fixer) → TextEdit[]"]
+        fixer["RuleFixer\n(shared instance)"]
+        callback --> fixer
+    end
+
+    subgraph ApplyPhase ["Apply Phase"]
+        fixdata["FixData\n{ edits: TextEdit[] }"]
+        applier["applyFixes(\n  sourceCode,\n  allFixes\n)"]
+        output["fixedCode"]
+        fixdata --> applier --> output
+    end
+
+    report --> callback
+    fixer --> fixdata
+```
+
+### How Fix Callbacks Work
+
+Rules attach an optional `fix` callback to each `report()` call. The callback is **not** executed during rule verification — it is stored and only invoked when `fix=true` is passed to `MLCore.verify()`.
+
+```mermaid
+sequenceDiagram
+    participant Rule as Rule (verify)
+    participant Ctx as MLRuleContext
+    participant MLR as MLRule.verify()
+    participant Fixer as RuleFixer
+    participant Core as MLCore.verify()
+    participant FA as applyFixes()
+
+    Rule->>Ctx: report({ scope, message, fix })
+    Note over Ctx: Stores report with fix callback
+
+    MLR->>Ctx: context.reports
+    loop Each report with fix callback
+        MLR->>Fixer: report.fix(sharedFixer)
+        Fixer-->>MLR: TextEdit | TextEdit[]
+        MLR->>MLR: Wrap as FixData { edits }
+    end
+    MLR-->>Core: Violation[] (with FixData)
+
+    Core->>Core: Collect all FixData from violations
+    Core->>FA: applyFixes(sourceCode, allFixes)
+    FA-->>Core: FixResult { output, applied, skipped }
+```
+
+### RuleFixer API
+
+`RuleFixer` implements `IRuleFixer` (defined in `@markuplint/ml-config`). It is a **stateless** helper — a single instance is shared across all rules. Each method builds a `TextEdit` object describing a range replacement on the source code.
+
+| Method                      | Input                            | TextEdit Produced                          |
+| --------------------------- | -------------------------------- | ------------------------------------------ |
+| `replaceText(token, text)`  | Token with `startOffset` + `raw` | `range: [start, start+len], text`          |
+| `replaceRange(range, text)` | Explicit `[start, end)` range    | `range: [start, end], text`                |
+| `insertBefore(token, text)` | Token with `startOffset`         | `range: [start, start], text` (zero-width) |
+| `insertAfter(token, text)`  | Token with `startOffset` + `raw` | `range: [end, end], text` (zero-width)     |
+| `remove(token)`             | Token with `startOffset` + `raw` | `range: [start, start+len], text: ""`      |
+| `removeRange(range)`        | Explicit `[start, end)` range    | `range: [start, end], text: ""`            |
+
+The `token` parameter accepts any object with `startOffset` and `raw` properties. MLDOM tokens (`MLToken`, `MLAttr`, etc.) satisfy this naturally.
+
+### FixApplier Algorithm
+
+`applyFixes()` (in `fix-applier.ts`) merges all `FixData` from all rules and applies them in a single pass:
+
+```mermaid
+flowchart TD
+    A["Flatten: FixData[] → tagged TextEdit[]"]
+    B["Sort: by range start ascending,\nthen range end descending"]
+    C["Apply sequentially:\nfor each edit, check overlap"]
+    D{{"edit.start < lastAppliedEnd?"}}
+    E["Skip edit\n(mark parent FixData as skipped)"]
+    F["Apply edit\n(splice into output)"]
+    G["Classify: each FixData as\napplied or skipped"]
+    H["Return FixResult\n{ output, applied, skipped }"]
+
+    A --> B --> C --> D
+    D -- Yes --> E --> C
+    D -- No --> F --> C
+    C -. "all edits processed" .-> G --> H
+```
+
+Key constraints:
+
+- Edits within a single `FixData` must not overlap each other
+- Inter-`FixData` overlap is handled by the skip mechanism
+- If any edit in a `FixData` is skipped, the entire `FixData` is classified as skipped
+
+### Example: Rule Fix in Practice
+
+```typescript
+// In a rule's verify function:
+context.report({
+  scope: node,
+  message: 'Attribute value must use double quotes',
+  fix: fixer => fixer.replaceText(node.attrValueToken, `"${value}"`),
+});
+```
+
+This produces:
+
+1. **Report** → stored in `MLRuleContext`
+2. **Fix callback** → `(fixer) => fixer.replaceText(token, text)` (not yet called)
+3. **When `fix=true`** → callback invoked with shared `RuleFixer` → returns `TextEdit`
+4. **TextEdit** → wrapped as `FixData { edits: [{ range: [12, 17], text: '"hello"' }] }`
+5. **applyFixes** → splices the replacement into source code
 
 ## Pretender System
 

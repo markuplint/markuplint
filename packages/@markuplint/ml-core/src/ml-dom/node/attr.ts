@@ -296,23 +296,6 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Fixes the attribute value.
-	 * If the attribute is not a spread attribute, it calls the `fix` method of the `valueNode`.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLAttr`
-	 *
-	 * @param raw - The raw attribute value.
-	 */
-	fix(raw: string) {
-		if (this.localName === '#spread') {
-			return;
-		}
-
-		// `valueNode` is not null when it is no spread.
-		this.valueNode?.fix(raw);
-	}
-
-	/**
 	 * Returns a normalized string representation of the attribute,
 	 * stripping extraneous whitespace around the name, equal sign, and value tokens.
 	 * Falls back to the raw string if any token is missing.
@@ -328,42 +311,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Returns a string representation of the attribute.
+	 * Returns the raw string representation of the attribute.
 	 *
 	 * @implements DOM API: `Attr`
-	 *
-	 * @param includesSpacesBeforeName - Whether to include spaces before the attribute name.
 	 * @returns The string representation of the attribute.
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-
-		if (this.localName === '#spread') {
-			return this.raw;
-		}
-
-		const tokens = [this.nameNode?.toString(true) ?? ''];
-		if (this.equal && this.equal.toString(true) !== '') {
-			tokens.push(
-				this.spacesBeforeEqual?.toString(true) ?? '',
-				this.equal?.toString(true) ?? '',
-				this.spacesAfterEqual?.toString(true) ?? '',
-				this.startQuote?.toString(true) ?? '',
-				this.valueNode?.toString(true) ?? '',
-				this.endQuote?.toString(true) ?? '',
-			);
-		} else if (this.valueNode && this.valueNode.toString(true) !== '') {
-			tokens.push(
-				//
-				'=',
-				this.startQuote?.toString(true) || '"',
-				this.valueNode.toString(true),
-				this.endQuote?.toString(true) || '"',
-			);
-		}
-
-		return tokens.join('');
+	toString() {
+		return this.raw;
 	}
 }

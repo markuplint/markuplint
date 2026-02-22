@@ -123,9 +123,9 @@ Rules with rich i18n usage:
 
 Browse the `packages/@markuplint/rules/src/` directory to find rules similar to what you are building.
 
-## About the `fix` Function
+## About the `fix` Callback
 
-The `fix` function is an optional property of `RuleSeed` that enables auto-fixing violations. However, many existing rules have incomplete or missing `fix` implementations. When creating a new rule, focus on the `verify` function first. Add `fix` only if the auto-fix behavior is straightforward and well-defined.
+Auto-fix is provided as an inline `fix` callback on individual `report()` calls within `verify()`, not as a separate `RuleSeed` method. The callback receives an `IRuleFixer` helper for building `TextEdit` objects. When creating a new rule, focus on the `verify` function first. Add a `fix` callback to `report()` only if the auto-fix behavior is straightforward and well-defined.
 
 ## Command Reference
 

@@ -482,8 +482,20 @@ jobs:
                   echo "=== Check markuplint.config.ts ==="
                   cat markuplint.config.ts 2>/dev/null || echo "markuplint.config.ts not found"
 
+            - name: Setup Yarn v4 for sandbox
+              if: matrix.pm == 'yarn'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              run: |
+                  cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
+                  echo 'enableHardenedMode: false' >> .yarnrc.yml
+                  # Build resolutions from dependencies to force yarn to use file: versions
+                  # for transitive dependencies (prevents npm registry fallback)
+                  jq '. + {"packageManager": "yarn@4.12.0"} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
+
             - name: Install dependencies
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
               run: ${{ matrix.pm }} install
 
             - name: Debug - After install

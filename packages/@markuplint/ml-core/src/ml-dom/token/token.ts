@@ -4,12 +4,11 @@ import { getEndCol, getEndLine } from '@markuplint/parser-utils/location';
 /**
  * Represents a single token in the markuplint AST.
  * Wraps an AST token with positional information (line, column, offset)
- * and provides both raw and fixed string representations.
+ * and provides the raw string representation.
  *
  * @template A - The AST token type this token wraps
  */
 export class MLToken<A extends MLASTToken = MLASTToken> {
-	#fixed: string;
 	readonly #raw: string;
 
 	/**
@@ -30,7 +29,6 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	constructor(astToken: A) {
 		this._astToken = astToken;
 		this.#raw = astToken.raw;
-		this.#fixed = astToken.raw;
 		this.uuid = astToken.uuid;
 	}
 
@@ -40,7 +38,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endCol() {
-		return getEndCol(this.fixed, this.startCol);
+		return getEndCol(this.raw, this.startCol);
 	}
 
 	/**
@@ -49,7 +47,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endLine() {
-		return getEndLine(this.fixed, this.startLine);
+		return getEndLine(this.raw, this.startLine);
 	}
 
 	/**
@@ -58,16 +56,7 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
 	 */
 	get endOffset() {
-		return this.startOffset + this.fixed.length;
-	}
-
-	/**
-	 * The fixed (potentially modified) string content of this token.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 */
-	get fixed() {
-		return this.#fixed;
+		return this.startOffset + this.raw.length;
 	}
 
 	/**
@@ -107,24 +96,12 @@ export class MLToken<A extends MLASTToken = MLASTToken> {
 	}
 
 	/**
-	 * Replaces the fixed content of this token with the given string,
-	 * used when applying lint fixes.
+	 * Returns the raw string representation of this token.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 * @param raw - The new string content to set as the fixed value
-	 */
-	fix(raw: string) {
-		this.#fixed = raw;
-	}
-
-	/**
-	 * Returns the string representation of this token.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDOMToken`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of this token
 	 */
-	toString(fixed = false) {
-		return fixed ? this.#fixed : this.#raw;
+	toString() {
+		return this.#raw;
 	}
 }

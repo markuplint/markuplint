@@ -49,7 +49,6 @@ export function getIndent(
 	const matched = isFirstToken(prevToken)
 		? prevToken.raw.match(/^(?:[\t ]*\r?\n)*([\t ]*)$/)
 		: prevToken.raw.match(/\r?\n([\t ]*)$/);
-	// console.log({ [`${this}`]: matched, _: prevToken.raw, f: prevToken._isFirstToken() });
 	if (matched) {
 		// Spaces will include empty string.
 		const spaces = matched[1];
@@ -62,7 +61,7 @@ export function getIndent(
 }
 
 class MLDOMIndentation {
-	#fixed: string;
+	readonly #raw: string;
 	readonly line: number;
 	#node: MLText<any, any>;
 	#parent: MLNode<any, any>;
@@ -78,21 +77,21 @@ class MLDOMIndentation {
 		this.line = line;
 		this.#node = originTextNode;
 		this.#parent = parentNode;
-		this.#fixed = raw;
+		this.#raw = raw;
 	}
 
 	get raw() {
 		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
 			return '';
 		}
-		return this.#fixed;
+		return this.#raw;
 	}
 
 	get type(): 'tab' | 'space' | 'mixed' | 'none' {
 		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
 			return 'none';
 		}
-		const raw = this.#fixed;
+		const raw = this.#raw;
 		return raw === '' ? 'none' : /^\t+$/.test(raw) ? 'tab' : /^[^\t]+$/.test(raw) ? 'space' : 'mixed';
 	}
 
@@ -100,21 +99,7 @@ class MLDOMIndentation {
 		if (!this.#parent.is(this.#parent.TEXT_NODE) && this.line !== this.#node.endLine) {
 			return 0;
 		}
-		return this.#fixed.length;
-	}
-
-	fix(raw: string) {
-		const current = this.#fixed;
-		this.#fixed = raw;
-
-		const node = this.#node;
-		const line = node.startLine;
-		const lines = node.raw.split(/\r?\n/);
-		const index = this.line - line;
-		if (lines[index] != null) {
-			lines[index] = lines[index].replace(current, this.#fixed);
-		}
-		node.fix(lines.join('\n'));
+		return this.#raw.length;
 	}
 }
 

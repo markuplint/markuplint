@@ -9,6 +9,7 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	readonly document: MLDocument<T, O>;
 	readonly locale: string;
 	#reports: Report<T, O>[] = [];
+	#reportKeys = new Set<string>();
 	readonly translate: Translator;
 
 	constructor(
@@ -22,10 +23,7 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	}
 
 	get reports() {
-		return this.#reports.map(report => ({
-			...report,
-			message: finish(report.message, this.locale),
-		}));
+		return this.#reports;
 	}
 
 	provide() {
@@ -53,8 +51,13 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 	}
 
 	private _push(report: Report<T, O>) {
-		if (!this.#reports.some(r => is(r, report))) {
-			this.#reports.push(report);
+		const key = reportKey(report);
+		if (!this.#reportKeys.has(key)) {
+			this.#reportKeys.add(key);
+			this.#reports.push({
+				...report,
+				message: finish(report.message, this.locale),
+			});
 		}
 	}
 }
@@ -68,18 +71,12 @@ function finish(message: string, locale = 'en') {
 	return message;
 }
 
-function is<T extends RuleConfigValue, O extends PlainData = undefined>(r1: Report<T, O>, r2: Report<T, O>): boolean {
-	if ('col' in r1 && 'col' in r2) {
-		return r1.col === r2.col && r1.line === r2.line && r1.message === r2.message && r1.raw === r2.raw;
+function reportKey<T extends RuleConfigValue, O extends PlainData>(report: Report<T, O>): string {
+	if ('col' in report && report.col != null) {
+		return `${report.line}:${report.col}:${report.message}:${report.raw}`;
 	}
-
-	if ('scope' in r1) {
-		if (!('scope' in r2)) {
-			return false;
-		}
-
-		return r1.scope === r2.scope && r1.message === r2.message;
+	if ('scope' in report) {
+		return `${report.scope.startLine}:${report.scope.startCol}:${report.message}`;
 	}
-
-	return false;
+	return report.message;
 }

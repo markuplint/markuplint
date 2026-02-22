@@ -1,7 +1,6 @@
 import type { MLElement } from '../ml-dom/node/element.js';
 import type { MLNode } from '../ml-dom/node/node.js';
-import type { MLToken } from '../ml-dom/token/token.js';
-import type { MLASTNode, MLASTToken, MLParser } from '@markuplint/ml-ast';
+import type { MLASTNode, MLParser } from '@markuplint/ml-ast';
 import type { Config, PlainData, Pretender, RuleConfigValue } from '@markuplint/ml-config';
 import type { MLMLSpec } from '@markuplint/ml-spec';
 
@@ -64,18 +63,6 @@ export function createTestNodeList(
 ): readonly MLNode<any, any, MLASTNode>[] {
 	const document = createTestDocument(sourceCode, options);
 	return document.nodeList;
-}
-
-/**
- * Parses markup source code and returns the flat list of tokens.
- *
- * @param sourceCode - The markup source code to parse
- * @param options - Options for parser, config, specs, and pretenders
- * @returns A readonly array of all tokens in the parsed document
- */
-export function createTestTokenList(sourceCode: string, options?: CreateTestOptions): readonly MLToken<MLASTToken>[] {
-	const document = createTestDocument(sourceCode, options);
-	return document.getTokenList();
 }
 
 /**

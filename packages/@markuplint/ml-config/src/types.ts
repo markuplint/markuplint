@@ -490,6 +490,8 @@ export type Report<T extends RuleConfigValue, O extends PlainData = undefined> =
 export type Report1<T extends RuleConfigValue, O extends PlainData = undefined> = {
 	readonly message: string;
 	readonly scope: Scope<T, O>;
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	readonly fix?: (fixer: IRuleFixer) => TextEdit | readonly TextEdit[];
 };
 
 /**
@@ -500,6 +502,8 @@ export type Report2 = {
 	readonly line: number;
 	readonly col: number;
 	readonly raw: string;
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	readonly fix?: (fixer: IRuleFixer) => TextEdit | readonly TextEdit[];
 };
 
 /**
@@ -514,6 +518,38 @@ export type Scope<T extends RuleConfigValue, O extends PlainData = undefined> = 
 	readonly startCol: number;
 	readonly raw: string;
 };
+
+/**
+ * A text range replacement on the source code.
+ * Used by the autofix system to describe edits.
+ */
+export type TextEdit = {
+	/** 0-based character offsets (UTF-16 code units): [start, end) */
+	readonly range: readonly [start: number, end: number];
+	/** Replacement text (empty string = deletion) */
+	readonly text: string;
+};
+
+/**
+ * Fix information attached to a {@link Violation}.
+ * Contains one or more {@link TextEdit}s to apply to the source.
+ */
+export type FixData = {
+	readonly edits: readonly TextEdit[];
+};
+
+/**
+ * A helper interface for building {@link TextEdit}s inside a fix callback.
+ * Passed to the `fix` function on {@link Report1} and {@link Report2}.
+ */
+export interface IRuleFixer {
+	replaceText(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit;
+	replaceRange(range: readonly [number, number], text: string): TextEdit;
+	insertBefore(token: { readonly startOffset: number }, text: string): TextEdit;
+	insertAfter(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit;
+	remove(token: { readonly startOffset: number; readonly raw: string }): TextEdit;
+	removeRange(range: readonly [number, number]): TextEdit;
+}
 
 /**
  * A fully resolved lint violation with all information needed for reporting.
@@ -534,6 +570,8 @@ export type Violation = {
 	readonly line: number;
 	readonly col: number;
 	readonly raw: string;
+	/** Fix information for autofix. Present only when the rule provides a fix callback. */
+	readonly fix?: FixData;
 };
 
 /**

@@ -3,6 +3,7 @@ import type { MLDocument } from '../ml-dom/node/document.js';
 import type { Ruleset } from '../ruleset/index.js';
 import type { LocaleSet } from '@markuplint/i18n';
 import type {
+	FixData,
 	GlobalRuleInfo,
 	SpecConformance,
 	PlainData,
@@ -12,14 +13,18 @@ import type {
 	RuleInfo,
 	Rules,
 	Severity,
+	TextEdit,
 	Violation,
 } from '@markuplint/ml-config';
 
-import { deleteUndefProp } from '@markuplint/ml-config';
 // @ts-ignore
 import { isPlainObject } from 'is-plain-object';
 
+import { RuleFixer } from './rule-fixer.js';
 import { MLRuleContext } from './ml-rule-context.js';
+
+// Stateless — safe to share across all rule instances
+const sharedFixer = new RuleFixer();
 
 /**
  * Represents a single markuplint rule that can verify documents and report violations.
@@ -29,14 +34,13 @@ import { MLRuleContext } from './ml-rule-context.js';
  */
 export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	/**
-	 * For virtual rules, the name of the base rule whose verify/fix logic is reused.
+	 * For virtual rules, the name of the base rule whose verify logic is reused.
 	 * When set, violations report this as `ruleId` for backwards compatibility.
 	 */
 	readonly baseRuleId?: string;
 	readonly defaultOptions: O;
 	readonly defaultSeverity: Severity;
 	readonly defaultValue: T;
-	#f: RuleSeed<T, O>['fix'];
 	/**
 	 * For multi-entry named nodeRules, the group name shared by all derived virtual rules.
 	 * Allows `rules["groupName"]: false` to disable all rules in the group.
@@ -69,17 +73,16 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.defaultValue = (o.defaultValue === undefined ? true : o.defaultValue) as T;
 		this.defaultOptions = o.defaultOptions as O;
 		this.#v = o.verify;
-		this.#f = o.fix;
 	}
 
 	/**
-	 * Creates a virtual rule that reuses this rule's verify/fix logic
+	 * Creates a virtual rule that reuses this rule's verify logic
 	 * under a different name (alias). Used by named nodeRules to produce
 	 * independent rule instances that can be individually configured.
 	 *
 	 * @param aliasName - The alias name (must contain `/`)
 	 * @param options - Override options for the virtual rule
-	 * @returns A new MLRule instance sharing the same verify/fix logic
+	 * @returns A new MLRule instance sharing the same verify logic
 	 */
 	createAlias(
 		aliasName: string,
@@ -98,16 +101,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 			defaultValue: this.defaultValue,
 			defaultOptions: this.defaultOptions,
 			verify: this.#v,
-			fix: this.#f,
 		});
-	}
-
-	/**
-	 * The following getter is unused internally,
-	 * only for extending from 3rd party library
-	 */
-	protected get f(): RuleSeed<T, O>['fix'] {
-		return this.#f;
 	}
 
 	/**
@@ -177,12 +171,13 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	}
 
 	/**
-	 * Executes this rule's verify (and optionally fix) function against a document,
+	 * Executes this rule's verify function against a document,
 	 * then collects and returns the resulting violations.
+	 * When `fix` is true, fix callbacks on reports are executed to produce {@link FixData}.
 	 *
 	 * @param document - The parsed document to verify
 	 * @param locale - The locale set for translating violation messages
-	 * @param fix - Whether to also run the fix function
+	 * @param fix - Whether to execute fix callbacks and attach FixData to violations
 	 * @returns An array of violations found by this rule
 	 */
 	async verify(
@@ -197,15 +192,22 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		const providableContext = context.provide();
 
 		await this.#v(providableContext);
-		if (this.#f && fix) {
-			await this.#f(providableContext);
-		}
 
 		const ruleId = this.baseRuleId ?? this.name;
 		// Only include name and specConformance for virtual rules (named nodeRules)
 		const aliasName = this.baseRuleId ? this.name : undefined;
 
-		const violation = context.reports.map<Violation>(report => {
+		const violations = context.reports.map<Violation>(report => {
+			// Execute fix callback if fix mode is enabled
+			let fixData: FixData | undefined;
+			if (fix && report.fix) {
+				const edits = report.fix(sharedFixer);
+				const editArray: readonly TextEdit[] = Array.isArray(edits) ? edits : [edits];
+				if (editArray.length > 0) {
+					fixData = { edits: editArray };
+				}
+			}
+
 			if ('scope' in report) {
 				let line = report.scope.startLine;
 				let col = report.scope.startCol;
@@ -215,40 +217,39 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 					col = report.col;
 					raw = report.raw;
 				}
-				const violation: Violation = {
+				return {
 					severity: report.scope.rule.severity,
 					message: report.message,
 					line,
 					col,
 					raw,
 					ruleId,
-					name: aliasName,
-					specConformance: this.specConformance,
-					reason: report.scope.rule.reason ?? document.rule.reason,
+					...(aliasName != null && { name: aliasName }),
+					...(this.specConformance != null && { specConformance: this.specConformance }),
+					...((report.scope.rule.reason ?? document.rule.reason)
+						? { reason: report.scope.rule.reason ?? document.rule.reason }
+						: {}),
+					...(fixData != null && { fix: fixData }),
 				};
-				deleteUndefProp(violation);
-				return violation;
 			}
 
-			const violation: Violation = {
+			return {
 				severity: document.rule.severity,
 				message: report.message,
 				line: report.line,
 				col: report.col,
 				raw: report.raw,
 				ruleId,
-				name: aliasName,
-				specConformance: this.specConformance,
-				reason: document.rule.reason,
+				...(aliasName != null && { name: aliasName }),
+				...(this.specConformance != null && { specConformance: this.specConformance }),
+				...(document.rule.reason ? { reason: document.rule.reason } : {}),
+				...(fixData != null && { fix: fixData }),
 			};
-
-			deleteUndefProp(violation);
-			return violation;
 		});
 
 		document.setRule(null);
 
-		return violation;
+		return violations;
 	}
 
 	private _optimize(rules: Rules | undefined, ruleName: string) {

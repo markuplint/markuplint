@@ -4,7 +4,7 @@ import type { Translator } from '@markuplint/i18n';
 import type { PlainData, Report, RuleConfigValue, Severity } from '@markuplint/ml-config';
 
 /**
- * The definition of a markuplint rule, including verification logic, optional fix logic,
+ * The definition of a markuplint rule, including verification logic
  * and default configuration values.
  *
  * @template T - The type of the rule's configuration value (defaults to boolean)
@@ -19,10 +19,6 @@ export type RuleSeed<T extends RuleConfigValue = boolean, O extends PlainData = 
 	readonly defaultValue?: T;
 	readonly defaultOptions?: O;
 	verify(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		context: ReturnType<MLRuleContext<T, O>['provide']>,
-	): void | Promise<void>;
-	fix?(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		context: ReturnType<MLRuleContext<T, O>['provide']>,
 	): void | Promise<void>;

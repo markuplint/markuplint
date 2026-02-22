@@ -67,7 +67,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * - `authored`:  Authored element (JSX Element etc.) through the view framework or the template engine.
 	 */
 	readonly elementType: ElementType;
-	#fixedNodeName: string;
 	#getChildElementsAndTextNodeWithoutWhitespacesCache: (MLElement<T, O> | MLText<T, O>)[] | null = null;
 	/**
 	 * Whether this element belongs to a non-HTML namespace (e.g., SVG or MathML).
@@ -202,7 +201,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		this.elementType = astNode.elementType;
 		this.#localName = ns.localName;
 		this.isForeignElement = this.namespaceURI !== HTML_NAMESPACE;
-		this.#fixedNodeName = astNode.nodeName;
 
 		this.isOmitted = astNode.isGhost;
 
@@ -1008,16 +1006,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get enterKeyHint(): string {
 		throw new UnexpectedCallError('Not supported "enterKeyHint" property');
-	}
-
-	/**
-	 * Returns the fixed (potentially corrected) node name, which may differ from the
-	 * original node name after lint fixes such as case normalization.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 */
-	get fixedNodeName() {
-		return this.#fixedNodeName;
 	}
 
 	/**
@@ -3386,16 +3374,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Overrides the fixed node name for this element, used when the element's
-	 * tag name needs to be corrected during linting (e.g., case normalization).
-	 *
-	 * @param name - The new node name to set
-	 */
-	fixNodeName(name: string) {
-		this.#fixedNodeName = name;
-	}
-
-	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @deprecated
@@ -4269,59 +4247,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Returns a string representation of this element. When `fixed` is true,
-	 * returns the element with any lint fixes applied to the tag name,
-	 * attributes, and embedded comment nodes.
+	 * Returns the raw string representation of this element.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of this element
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-
-		if (this.pretenderContext?.type === 'pretender') {
-			return this.raw;
-		}
-
-		if (this.nodeName.startsWith('#')) {
-			return this.raw;
-		}
-
-		if (this.isOmitted) {
-			return this.raw;
-		}
-
-		let raw = this.raw;
-		let offset = 0;
-
-		const overriddenCommentNodes = this.ownerMLDocument.nodeList.filter(node => {
-			if (node.is(node.COMMENT_NODE)) {
-				return this.startOffset < node.startOffset && node.endOffset < this.endOffset;
-			}
-			return false;
-		});
-
-		const nodes = [
-			{
-				toString: () => this.tagOpenChar + this.fixedNodeName,
-				startOffset: this.startOffset,
-				endOffset: this.startOffset + this.tagOpenChar.length + this.nodeName.length,
-			},
-			...overriddenCommentNodes,
-			...this.attributes,
-		];
-		for (const node of nodes) {
-			const before = raw.slice(0, node.startOffset + offset - this.startOffset);
-			const rawCode = node.toString(true);
-			const after = raw.slice(node.endOffset + offset - this.startOffset);
-			raw = before + rawCode + after;
-			offset += rawCode.length - (node.endOffset - node.startOffset);
-		}
-
-		return raw;
+	toString() {
+		return this.raw;
 	}
 
 	/**

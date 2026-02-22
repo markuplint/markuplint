@@ -157,8 +157,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	readonly ruleCommonSettings: RuleCommonSettings;
 
-	#tokenList: ReadonlyArray<MLToken> | null = null;
-
 	/**
 	 * @param ast node list of markuplint AST
 	 * @param ruleset ruleset object
@@ -3118,28 +3116,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Returns a flat, offset-sorted list of all tokens in the document,
-	 * including element close tags. The result is cached after the first call.
-	 *
-	 * @implements `@markuplint/ml-core` API: `MLDocument`
-	 * @returns A frozen array of tokens sorted by their starting offset
-	 */
-	getTokenList() {
-		if (this.#tokenList) {
-			return this.#tokenList;
-		}
-		const tokens: MLToken[] = [];
-		for (const node of this.nodeList) {
-			tokens.push(node);
-			if (node.is(node.ELEMENT_NODE) && node.closeTag) {
-				tokens.push(node.closeTag);
-			}
-		}
-		this.#tokenList = Object.freeze(tokens.toSorted((a, b) => a.startOffset - b.startOffset));
-		return this.#tokenList;
-	}
-
-	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported
@@ -3294,29 +3270,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * Returns a string representation of the entire document. When `fixed` is true,
-	 * returns the document with all lint fixes applied by substituting
-	 * fixed token content at the appropriate offsets.
+	 * Returns the raw string representation of the document.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
-	 * @param fixed - When true, returns the fixed content; otherwise returns the original raw content
 	 * @returns The string content of the document
 	 */
-	toString(fixed = false) {
-		if (!fixed) {
-			return this.raw;
-		}
-		let raw = this.raw;
-		let offset = 0;
-		for (const node of this.getTokenList()) {
-			const nodeRaw = node.toString(true);
-			if (nodeRaw === node.raw) {
-				continue;
-			}
-			raw = raw.slice(0, node.startOffset + offset) + nodeRaw + raw.slice(node.endOffset + offset);
-			offset += nodeRaw.length - (node.endOffset - node.startOffset);
-		}
-		return raw;
+	toString() {
+		return this.raw;
 	}
 
 	/**

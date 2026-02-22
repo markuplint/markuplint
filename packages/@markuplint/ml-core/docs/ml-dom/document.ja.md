@@ -109,15 +109,9 @@ await document.walkOn(
 
 `AccessibilityProperties` を返します（[型ユーティリティ](./helpers.ja.md#型ユーティリティ)を参照）。
 
-## `toString(fixed?)`
+## `toString()`
 
-トークンリストからソースコードを再構築します。
-
-- `fixed=false`（デフォルト）：元の `raw` 文字列を返す
-- `fixed=true`：オフセット追跡による置換を適用する：
-  1. `getTokenList()` を取得する（`startOffset` でソート済み）
-  2. 各トークンに対して：`toString(true) !== raw` の場合、修正済みコンテンツを文字列にスプライスする
-  3. 正確な位置を維持するために累積オフセット差を追跡する
+ドキュメントの元の `raw` ソース文字列を返します。修正は DOM ノードの変更とトークンリストの再構築を通じて適用されなくなりました。代わりに、レポートの修正コールバックが `RuleFixer` を通じて実行され、`TextEdit[]` を生成します。`FixApplier.applyFixes()` がすべての編集をソーステキストに直接適用します。
 
 ## `defaultView`
 
@@ -125,12 +119,11 @@ await document.walkOn(
 
 ## その他のメソッド
 
-| メソッド               | シグネチャ                                        | 説明                                                                                                 |
-| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `setRule`              | `setRule(rule: MLRule \| null): void`             | 現在評価中のルールを設定/クリアする                                                                  |
-| `getTokenList`         | `getTokenList(): ReadonlyArray<MLToken>`          | ソース再構築用のすべてのトークン。オフセットでソート済み（キャッシュ）。ノードと閉じタグの両方を含む |
-| `searchNodeByLocation` | `searchNodeByLocation(line, col): MLNode \| null` | 1始まりのソース位置でノードを検索する                                                                |
-| `debugMap`             | `debugMap(): string[]`                            | ドキュメントツリー構造のデバッグ出力                                                                 |
+| メソッド               | シグネチャ                                        | 説明                                  |
+| ---------------------- | ------------------------------------------------- | ------------------------------------- |
+| `setRule`              | `setRule(rule: MLRule \| null): void`             | 現在評価中のルールを設定/クリアする   |
+| `searchNodeByLocation` | `searchNodeByLocation(line, col): MLNode \| null` | 1始まりのソース位置でノードを検索する |
+| `debugMap`             | `debugMap(): string[]`                            | ドキュメントツリー構造のデバッグ出力  |
 
 ## endTag モード
 

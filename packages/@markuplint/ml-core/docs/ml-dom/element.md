@@ -8,20 +8,18 @@ HTML/SVG/MathML element node. Extends `MLParentNode` and implements `Element`, `
 
 The element has multiple name-related properties that serve different purposes:
 
-| Property        | HTML `<DIV>`                   | SVG `<foreignObject>` | Pretender (`MyButton` → `button`) |
-| --------------- | ------------------------------ | --------------------- | --------------------------------- |
-| `localName`     | `"div"`                        | `"foreignObject"`     | `"button"`                        |
-| `nodeName`      | `"DIV"`                        | `"foreignObject"`     | `"BUTTON"`                        |
-| `rawName`       | `"DIV"`                        | `"foreignObject"`     | `"MyButton"`                      |
-| `fixedNodeName` | `"DIV"` (or `"div"` after fix) | `"foreignObject"`     | `"MyButton"`                      |
-| `tagName`       | `"DIV"`                        | `"foreignObject"`     | `"BUTTON"`                        |
+| Property    | HTML `<DIV>` | SVG `<foreignObject>` | Pretender (`MyButton` → `button`) |
+| ----------- | ------------ | --------------------- | --------------------------------- |
+| `localName` | `"div"`      | `"foreignObject"`     | `"button"`                        |
+| `nodeName`  | `"DIV"`      | `"foreignObject"`     | `"BUTTON"`                        |
+| `rawName`   | `"DIV"`      | `"foreignObject"`     | `"MyButton"`                      |
+| `tagName`   | `"DIV"`      | `"foreignObject"`     | `"BUTTON"`                        |
 
 **Rules:**
 
 - **`localName`**: HTML elements → lowercased. Foreign elements or non-`'html'` elementType → as-is. Pretender context → pretender's `localName`. If `tagNameCaseSensitive` is `true` → no lowercasing.
 - **`nodeName`**: HTML elements → uppercased (DOM convention). Foreign elements or non-`'html'` elementType → as-is from AST. Pretender context → pretender's `nodeName`.
 - **`rawName`**: Always the original AST `nodeName`, with no normalization and no pretender influence.
-- **`fixedNodeName`**: Starts as `rawName`. Updated by `fixNodeName(name)` when a lint fix modifies the tag name.
 - **`tagName`**: Same as `nodeName` (follows pretender context).
 
 ## Element Type Resolution
@@ -98,7 +96,6 @@ For comprehensive documentation on the pretender system's architecture, initiali
 
 | Method                   | Signature                                         | Description                                                                                                  |
 | ------------------------ | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `fixNodeName`            | `fixNodeName(name: string): void`                 | Updates `fixedNodeName` for lint auto-fix of the tag name                                                    |
 | `getAccessibleName`      | `getAccessibleName(version: ARIAVersion): string` | Computes the accessible name via `getAccname()`                                                              |
 | `toNormalizeString`      | `toNormalizeString(): string`                     | Returns a normalized representation for comparison (cached). Recursively normalizes children and attributes. |
 | `nextElementSibling`     | `get nextElementSibling: MLElement \| null`       | Next sibling element                                                                                         |
@@ -134,7 +131,7 @@ Elements with `isOmitted === true` were implicitly inserted by the parser (e.g.,
 
 - Have no corresponding source tokens
 - Are skipped by `prevToken` (to maintain valid offset chains)
-- Return `raw` from `toString(fixed)` (no fix is applied since there's nothing in the source to fix)
+- Return `raw` from `toString()` (there's nothing in the source to represent)
 - Are flattened by `getChildElementsAndTextNodeWithoutWhitespaces()`
 
 ## Close Tag
@@ -143,21 +140,9 @@ Elements with `isOmitted === true` were implicitly inserted by the parser (e.g.,
 | ---------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
 | `closeTag` | `MLElementCloseTag \| null` | Paired close tag. `null` for void elements, self-closing elements, or when `endTag === 'never'`. |
 
-## `toString(fixed?)`
+## `toString()`
 
-Reconstructs the element's source string with fixes applied.
-
-- `fixed=false` or pretender/omitted/`#`-prefixed nodeName → return `raw`
-- `fixed=true`:
-  1. Build a list of replaceable nodes: `[tagOpenChar + fixedNodeName, ...overriddenCommentNodes, ...attributes]`
-  2. For each node, splice `node.toString(true)` at the correct offset
-  3. Track cumulative offset differences for accurate positioning
-
-```
-Original: <DIV class="foo" >
-Fixed:    <div class="foo" >
-          ^^^^              (fixedNodeName changed from "DIV" to "div")
-```
+Returns the element's raw source string. This method simply returns the original `raw` source text as it appeared in the parsed document. Fixes are no longer applied through DOM node mutation; instead, fix operations produce `TextEdit[]` via `RuleFixer`, and `FixApplier.applyFixes()` applies all edits directly to the source text.
 
 ## Other Properties
 

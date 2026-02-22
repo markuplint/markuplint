@@ -5,6 +5,7 @@ import type { LocaleSet } from '@markuplint/i18n';
 import type { MLASTDocument, MLParser, ParserOptions } from '@markuplint/ml-ast';
 import type {
 	ChildNodeRule,
+	FixData,
 	NodeRule,
 	PlainData,
 	Pretender,
@@ -17,10 +18,21 @@ import type {
 import { ParserError } from '@markuplint/parser-utils';
 
 import { log, enableDebug } from './debug.js';
+import { applyFixes } from './fix-applier.js';
 import { Document } from './ml-dom/index.js';
 import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 const resultLog = log.extend('result');
+
+/**
+ * The result of running {@link MLCore.verify}.
+ */
+export type VerifyResult = {
+	/** Violations found during verification */
+	readonly violations: readonly Violation[];
+	/** The source code after applying fixes. `undefined` when fix is not enabled. */
+	readonly fixedCode: string | undefined;
+};
 
 /**
  * Parameters for constructing an {@link MLCore} instance.
@@ -204,10 +216,13 @@ export class MLCore {
 	 * If the document failed to parse, a single parse-error violation is returned
 	 * (unless parse errors are suppressed via severity options).
 	 *
+	 * When `fix` is true, fix callbacks are executed and the resulting TextEdits
+	 * are applied to produce `fixedCode`.
+	 *
 	 * @param fix - Whether to attempt auto-fixing violations
-	 * @returns An array of violations found during verification
+	 * @returns Violations and the (possibly fixed) source code
 	 */
-	async verify(fix = false): Promise<Violation[]> {
+	async verify(fix = false): Promise<VerifyResult> {
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
@@ -219,12 +234,12 @@ export class MLCore {
 			);
 
 			if (!parseError) {
-				return [];
+				return { violations: [], fixedCode: fix ? this.#sourceCode : undefined };
 			}
 
 			violations.push(parseError);
 			log('verify: error %o', this.#document.message);
-			return violations;
+			return { violations, fixedCode: fix ? this.#sourceCode : undefined };
 		}
 
 		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
@@ -318,8 +333,27 @@ export class MLCore {
 			resultLog('Warning: %d', w);
 			resultLog('Info: %d', i);
 		}
+
+		// Apply fixes if enabled
+		let fixedCode: string | undefined;
+		if (fix) {
+			fixedCode = this.#sourceCode;
+			const allFixes: FixData[] = [];
+			for (const v of violations) {
+				if (v.fix) {
+					allFixes.push(v.fix);
+				}
+			}
+			if (allFixes.length > 0) {
+				const result = applyFixes(this.#sourceCode, allFixes);
+				fixedCode = result.output;
+				// TODO(Phase 2): If skipped fixes exist, implement multi-pass re-verify loop
+				// (similar to ESLint's 10-pass fix loop) to resolve conflicts iteratively.
+			}
+		}
+
 		log('verify: end');
-		return violations;
+		return { violations, fixedCode };
 	}
 
 	private _createDocument() {
