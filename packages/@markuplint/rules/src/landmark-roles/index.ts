@@ -15,10 +15,10 @@ type Options = {
 };
 
 /** Landmark roles that should appear at the top level of the document. */
-type TopLevelRoles = 'banner' | 'main' | 'complementary' | 'contentinfo';
+type TopLevelRoles = 'banner' | 'main' | 'contentinfo';
 
 /** All recognized ARIA landmark roles for this rule. */
-type Roles = TopLevelRoles | 'form' | 'navigation' | 'region';
+type Roles = TopLevelRoles | 'complementary' | 'form' | 'navigation' | 'region';
 
 /** A mapping from each landmark role to its matched elements in the document. */
 type RoleSet = {
@@ -37,12 +37,12 @@ const selectors: { readonly [role in Roles]: string[] } = {
 };
 
 /** Roles that are required to be top-level landmarks per WAI-ARIA practices. */
-const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'complementary', 'contentinfo'];
+const topLevelRoles: TopLevelRoles[] = ['banner', 'main', 'contentinfo'];
 
 /**
  * Rule that validates proper usage of ARIA landmark roles.
  *
- * Checks that `banner`, `main`, `complementary`, and `contentinfo` landmarks are
+ * Checks that `banner`, `main`, and `contentinfo` landmarks are
  * top-level (not nested inside other landmarks), and that when duplicate landmarks
  * of the same role exist, each has a unique accessible name.
  */
