@@ -88,7 +88,16 @@ function collectLabelText(
 				continue;
 			}
 			const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
-			parts.push(result.name);
+			if (result.name) {
+				parts.push(result.name);
+			} else {
+				// Transparent traversal: when the child element has no accessible name
+				// (e.g., <span> with role="generic"), recursively collect its descendant text.
+				// This matches the behavior of resolveNameFromContent's fallback.
+				parts.push(
+					collectLabelText(childEl, labeledElement, resolver, visited, computeFn, inLabelledbyTraversal),
+				);
+			}
 		}
 	}
 	return parts.join(' ');
