@@ -480,8 +480,9 @@ describe('Issues', () => {
 
 	// https://github.com/markuplint/markuplint/issues/658
 	test('#658', async () => {
-		expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(1);
+		// ARIA 1.3: dialog no longer requires an accessible name
+		expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(0);
+		expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(0);
 	});
 
 	test('#1018', async () => {
