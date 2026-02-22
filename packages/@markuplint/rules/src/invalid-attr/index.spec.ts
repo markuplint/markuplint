@@ -1350,6 +1350,7 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 		const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>');
 		expect(violations.length).toBe(1);
 		expect(violations[0].raw).toBe('inherit');
+		expect(violations[0].message).toMatch(/contenteditable/);
 	});
 
 	test('React: contentEditable="inherit" is valid via react-spec override', async () => {
@@ -1375,10 +1376,23 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 		});
 		expect(violations.length).toBe(1);
 		expect(violations[0].raw).toBe('banana');
+		expect(violations[0].message).toMatch(/contenteditable/);
 	});
 
 	test('Svelte: contentEditable="inherit" is valid via svelte-spec override', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contentEditable="inherit"></div>', {
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+			specs: {
+				'.*': '@markuplint/svelte-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('Svelte: contenteditable="inherit" is valid (lowercase content attribute name)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
 			},
@@ -1405,6 +1419,18 @@ describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
 
 	test('Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div className="foo"></div>', {
+			parser: {
+				'.*': '@markuplint/svelte-parser',
+			},
+			specs: {
+				'.*': '@markuplint/svelte-spec',
+			},
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('Svelte: tabIndex is valid (IDL name accepted in both mode)', async () => {
+		const { violations } = await mlRuleTest(rule, '<div tabIndex="0"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
 			},
