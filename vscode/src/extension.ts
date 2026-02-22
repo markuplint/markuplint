@@ -1,4 +1,4 @@
-import type { Config, LangConfigs } from './types.js';
+import type { Config, InitializationOptions, LangConfigs } from './types.js';
 import type { ExtensionContext } from 'vscode';
 import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
 
@@ -108,6 +108,16 @@ export function activate(
 		};
 	}
 
+	const workingDirectories: InitializationOptions['workingDirectories'] =
+		config.get('workingDirectories') ?? undefined;
+	const workspaceFolders = (workspace.workspaceFolders ?? []).map(f => f.uri.fsPath);
+
+	const initializationOptions: InitializationOptions = {
+		langConfigs,
+		workingDirectories,
+		workspaceFolders,
+	};
+
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
 			...languageList.map(language => ({ language, scheme: 'file' })),
@@ -119,9 +129,7 @@ export function activate(
 		},
 		outputChannel: logger.outputChannel,
 		revealOutputChannelOn: RevealOutputChannelOn.Error,
-		initializationOptions: {
-			langConfigs,
-		},
+		initializationOptions,
 	};
 
 	client = new LanguageClient(ID, OUTPUT_CHANNEL_PRIMARY_CHANNEL_NAME, serverOptions, clientOptions);

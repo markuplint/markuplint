@@ -1,5 +1,6 @@
 import type { Module } from './get-module.js';
 import type { LangConfigs, Log } from '../types.js';
+import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
@@ -21,6 +22,8 @@ export type EventHandlerOptions = {
 	mod: Module;
 	locale: string;
 	langConfigs: LangConfigs;
+	workingDirectories?: readonly WorkingDirectoryEntry[];
+	workspaceFolders: readonly string[];
 	log: Log;
 	diagnosticsLog: Log;
 	errorLog: Log;
@@ -62,6 +65,9 @@ export function createEventHandlers(
 					options.locale,
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
+					options.workingDirectories,
+					options.workspaceFolders,
+					options.log,
 				);
 				return;
 			}
@@ -76,6 +82,8 @@ export function createEventHandlers(
 					options.diagnosticsLog,
 					options.sendDiagnostics,
 					notFoundParserError(languageId, options.errorLog),
+					options.workingDirectories,
+					options.workspaceFolders,
 				);
 				return;
 			}
@@ -89,6 +97,8 @@ export function createEventHandlers(
 				options.diagnosticsLog,
 				options.sendDiagnostics,
 				notFoundParserError(languageId, options.errorLog),
+				options.workingDirectories,
+				options.workspaceFolders,
 			);
 		},
 

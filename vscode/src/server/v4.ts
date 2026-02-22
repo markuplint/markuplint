@@ -1,5 +1,6 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { Config, Log } from '../types.js';
+import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
 import type { ConfigSet } from '@markuplint/file-resolver';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine as _MLEngine } from 'markuplint';
@@ -8,6 +9,7 @@ import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';
+import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 
 import { convertDiagnostics } from './convert-diagnostics.js';
 import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
@@ -26,6 +28,8 @@ export async function onDidOpen(
 	diagnosticsLog: Log,
 	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
+	workingDirectories?: readonly WorkingDirectoryEntry[],
+	workspaceFolders?: readonly string[],
 ) {
 	const key = document.uri;
 	log(`Opened: ${key}`, 'debug');
@@ -37,8 +41,15 @@ export async function onDidOpen(
 	const filePath = getFilePath(document.uri, document.languageId);
 	log(`${filePath.dirname}/${filePath.basename}`, 'debug');
 
+	const absoluteFilePath = `${filePath.dirname}/${filePath.basename}`;
+	const resolved = resolveWorkingDirectory(absoluteFilePath, workspaceFolders ?? [], workingDirectories);
+	const workspace = resolved?.directory ?? filePath.dirname;
+	if (resolved) {
+		log(`Resolved working directory: ${workspace} (for ${filePath.basename})`, 'debug');
+	}
+
 	const sourceCode = document.getText();
-	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace: filePath.dirname });
+	const file = await MLEngine.toMLFile({ sourceCode, name: filePath.basename, workspace });
 
 	if (!file) {
 		log(`File not found: ${filePath.basename}`, 'warn');

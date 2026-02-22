@@ -1,6 +1,8 @@
 import type { Config as MLConfig } from '@markuplint/ml-config';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
+import type { WorkingDirectoryEntry } from './utils/resolve-working-directory.js';
+
 export type Config = {
 	enable: boolean;
 	debug: boolean;
@@ -20,6 +22,12 @@ export type Status = {
 };
 
 export type LangConfigs = Record<string, Config>;
+
+export type InitializationOptions = {
+	readonly langConfigs: LangConfigs;
+	readonly workingDirectories?: readonly WorkingDirectoryEntry[];
+	readonly workspaceFolders?: readonly string[];
+};
 
 export type Log = (...args: LogArg) => void;
 
