@@ -155,21 +155,28 @@ result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec
 （最初のマッチが優先）。そのため、フレームワーク spec はパターンを
 最も具体的なものから最も一般的なものの順で定義する必要があります。
 
-#### 6. `useIDLAttributeNames`
+#### 6. `acceptedAttrNames`
 
-拡張仕様が `useIDLAttributeNames` を明示的に設定している場合（`true` または
-`false`）、現在の値を上書きします：
+拡張仕様が `acceptedAttrNames` を明示的に設定している場合、
+現在の値を上書きします：
 
 ```ts
-if (extendedSpec.useIDLAttributeNames != null) {
-  result.useIDLAttributeNames = extendedSpec.useIDLAttributeNames;
+if (extendedSpec.acceptedAttrNames != null) {
+  result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
 }
 ```
 
 これは明示的な `null` ガード付きの last-write-wins セマンティクスです。
 プロパティを省略しても以前に設定された値はリセットされません。
-このフラグは `@markuplint/ml-core` の `MLAttr` コンストラクタで使用され、
-IDL-コンテンツ属性名解決（例: `className` → `class`）を有効化します。
+この値は `@markuplint/ml-core` の `MLAttr` コンストラクタで使用され、
+属性名の解決方法を制御します：
+
+- `'idl'` -- IDL-コンテンツ属性名解決を有効化（例: `className` → `class`）し、
+  コンテンツ属性名が使用された場合にIDL名を候補として提案します
+  （例: `tabindex` → 「`tabIndex` の間違いでは？」）。Reactで使用されます。
+- `'both'` -- IDL-コンテンツ属性名解決を有効化しますが、IDL名を候補として
+  提案**しません**。コンテンツ属性名（例: `class`）とIDLプロパティ名
+  （例: `className`）の両方が警告なしで受け入れられます。Svelteで使用されます。
 
 #### 7. 要素仕様
 

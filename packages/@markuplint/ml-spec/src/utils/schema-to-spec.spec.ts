@@ -60,24 +60,29 @@ describe('schemaToSpec', () => {
 		expect(mergedSpec.directivePatterns ?? []).toStrictEqual([]);
 	});
 
-	test('useIDLAttributeNames defaults to undefined', () => {
+	test('acceptedAttrNames defaults to undefined', () => {
 		const mergedSpec = schemaToSpec([htmlSpec]);
-		expect(mergedSpec.useIDLAttributeNames).toBeUndefined();
+		expect(mergedSpec.acceptedAttrNames).toBeUndefined();
 	});
 
-	test('useIDLAttributeNames can be set to true', () => {
-		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }]);
-		expect(mergedSpec.useIDLAttributeNames).toBe(true);
+	test('acceptedAttrNames can be set to idl', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { acceptedAttrNames: 'idl' }]);
+		expect(mergedSpec.acceptedAttrNames).toBe('idl');
 	});
 
-	test('useIDLAttributeNames=false overrides previous true', () => {
-		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }, { useIDLAttributeNames: false }]);
-		expect(mergedSpec.useIDLAttributeNames).toBe(false);
+	test('acceptedAttrNames can be set to both', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { acceptedAttrNames: 'both' }]);
+		expect(mergedSpec.acceptedAttrNames).toBe('both');
 	});
 
-	test('useIDLAttributeNames is not overridden when omitted', () => {
-		const mergedSpec = schemaToSpec([htmlSpec, { useIDLAttributeNames: true }, { specs: [] }]);
-		expect(mergedSpec.useIDLAttributeNames).toBe(true);
+	test('acceptedAttrNames is overridden by later spec', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { acceptedAttrNames: 'idl' }, { acceptedAttrNames: 'both' }]);
+		expect(mergedSpec.acceptedAttrNames).toBe('both');
+	});
+
+	test('acceptedAttrNames is not overridden when omitted', () => {
+		const mergedSpec = schemaToSpec([htmlSpec, { acceptedAttrNames: 'idl' }, { specs: [] }]);
+		expect(mergedSpec.acceptedAttrNames).toBe('idl');
 	});
 
 	test('globalAttrs.extends', () => {
