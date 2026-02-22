@@ -1,0 +1,92 @@
+name: Website Visual Regression Test
+
+on:
+    pull_request_target:
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+        types: [opened, labeled]
+    push:
+        branches:
+            - dev
+        paths:
+            - 'website/**'
+            - '.github/workflows/website-vrt.yml'
+
+env:
+    NODE_BUILD_VERSION: 24
+
+jobs:
+    visual-regression-test:
+        # Security: only run on push or when explicitly labeled
+        # https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+        if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'pull_request_target ok')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Cache Restore website dependencies
+              uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  path: 'website/node_modules'
+                  key: website-depends-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install website dependencies
+              run: cd website && yarn install --immutable
+
+            - name: Cache Playwright binaries
+              uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: playwright-${{ runner.os }}-${{ hashFiles('website/yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              run: cd website && npx playwright install --with-deps chromium
+
+            - name: Capture screenshots
+              run: cd website && yarn site:screenshot
+
+            - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+              id: get-target-hash
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  result-encoding: string
+                  script: |
+                      const runs = await github.rest.actions.listWorkflowRuns({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          workflow_id: 'website-vrt.yml',
+                          branch: context.payload.pull_request.base.ref,
+                      });
+                      if (runs.data.workflow_runs.length === 0) {
+                          return context.payload.pull_request.base.sha;
+                      } else {
+                          return runs.data.workflow_runs[0].head_sha;
+                      }
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name == 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
+                  target-hash: '${{ steps.get-target-hash.outputs.result }}'
+
+            - uses: reg-viz/reg-actions@v2
+              if: github.event_name != 'pull_request_target'
+              with:
+                  github-token: '${{ secrets.GITHUB_TOKEN }}'
+                  image-directory-path: './website/__screenshots__'
