@@ -151,6 +151,22 @@ describe('AST', () => {
 		).toBeUndefined();
 	});
 
+	test('IDL attribute candidate in idl mode vs both mode', async () => {
+		// In 'idl' mode, using content name suggests the IDL name
+		const idlEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'idl' },
+		});
+		expect(idlEl.getAttributeNode('tabindex')?.candidate).toBe('tabIndex');
+
+		// In 'both' mode, no candidate is set (both names are accepted)
+		const bothEl = createTestElement('<div tabindex="0"></div>', {
+			parser: await import('@markuplint/jsx-parser'),
+			specs: { ...specs, acceptedAttrNames: 'both' },
+		});
+		expect(bothEl.getAttributeNode('tabindex')?.candidate).toBeUndefined();
+	});
+
 	test('rule', () => {
 		const document = createTestDocument('<div><span>text</span></div>', {
 			config: {
