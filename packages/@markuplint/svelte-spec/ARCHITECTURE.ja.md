@@ -6,9 +6,13 @@
 
 ## ExtendedSpec の内容
 
-### `useIDLAttributeNames`
+### `acceptedAttrNames`
 
-この spec は `useIDLAttributeNames: true` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `defaultValue` → 対応するコンテンツ属性）。この解決はパーサーではなくコアレベルで行われます。
+この spec は `acceptedAttrNames: 'both'` を設定しており、`@markuplint/ml-core` の `MLAttr` コンストラクタに IDL 属性名を HTML コンテンツ属性名に解決するよう指示します（例: `defaultValue` → 対応するコンテンツ属性）。`'both'` モードではコンテンツ属性名と IDL 名の両方が受け入れられ、リネーム候補は提示されません。この解決はパーサーではなくコアレベルで行われます。
+
+### `contenteditable` オーバーライド
+
+Svelte は `contentEditable` 属性の値として `"inherit"` を受け付けます（ContentEditable インターフェースの IDL 状態値）。この仕様はグローバル属性 `contenteditable` の型を拡張し、`"inherit"` を有効な列挙値として追加します。
 
 ### `directivePatterns`
 
