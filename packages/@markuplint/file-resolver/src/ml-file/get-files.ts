@@ -15,6 +15,6 @@ import { getFile } from './get-file.js';
  */
 export async function getFiles(filePathOrGlob: string, ignoreGlob?: string): Promise<MLFile[]> {
 	const fileList = await glob(normalizeForGlob(filePathOrGlob), {}).catch<string[]>(() => []);
-	const filtered = fileList.filter(fileName => !minimatch(fileName, ignoreGlob ?? ''));
+	const filtered = fileList.filter(fileName => !minimatch(fileName, normalizeForGlob(ignoreGlob ?? '')));
 	return filtered.map(fileName => getFile(fileName));
 }

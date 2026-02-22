@@ -29,7 +29,7 @@ export function normalizeForIgnore(filePath: string, relative = false): string {
 
 	// Remove the local disk scheme of Windows OS (e.g. "C:", "P:")
 	if (path.isAbsolute(filePath) || /^[a-z]:/i.test(filePath)) {
-		filePath = filePath.replace(/^[a-z]+:/i, '');
+		filePath = filePath.replace(/^[a-z]:/i, '');
 	}
 
 	// Convert backslashes to forward slashes

@@ -7,7 +7,7 @@ import path from 'node:path';
 import ignore from 'ignore';
 import { minimatch } from 'minimatch';
 
-import { normalizeForGlob, normalizeForIgnore } from '../path-utils.js';
+import { normalizeForIgnore } from '../path-utils.js';
 
 export class MLFile {
 	#basename: string;
@@ -102,7 +102,7 @@ export class MLFile {
 	}
 
 	matches(globPath: string) {
-		return minimatch(normalizeForIgnore(this.path), normalizeForGlob(globPath));
+		return minimatch(normalizeForIgnore(this.path), normalizeForIgnore(globPath));
 	}
 
 	setCode(code: string) {

@@ -58,10 +58,70 @@ test('normalizeForGlob: converts backslashes', () => {
 	expect(normalizeForGlob('src\\**\\*.html')).toBe('src/**/*.html');
 });
 
+test('normalizeForIgnore: lowercase drive letter', () => {
+	expect(normalizeForIgnore('c:\\Users\\file.html', true)).toBe('Users/file.html');
+});
+
+test('normalizeForIgnore: D: drive', () => {
+	expect(normalizeForIgnore('D:\\Data\\file.html')).toBe('/Data/file.html');
+});
+
+test('normalizeForIgnore: forward-slash Windows path', () => {
+	expect(normalizeForIgnore('C:/Users/project/file.html')).toBe('/Users/project/file.html');
+});
+
+test('normalizeForIgnore: does not strip non-drive-letter prefixes', () => {
+	expect(normalizeForIgnore('npm:package')).toBe('npm:package');
+});
+
+test('normalizeForIgnore: empty string', () => {
+	expect(normalizeForIgnore('')).toBe('');
+});
+
+test('normalizeForIgnore: POSIX root only', () => {
+	expect(normalizeForIgnore('/')).toBe('/');
+});
+
+test('normalizeForIgnore: POSIX root with relative', () => {
+	expect(normalizeForIgnore('/', true)).toBe('');
+});
+
+test('normalizeForIgnore: path with spaces', () => {
+	expect(normalizeForIgnore('C:\\Program Files\\app\\file.html', true)).toBe('Program Files/app/file.html');
+});
+
+test('normalizeForIgnore: path with CJK characters', () => {
+	expect(normalizeForIgnore('C:\\Users\\日本語\\file.html', true)).toBe('Users/日本語/file.html');
+});
+
+test('normalizeForIgnore: bang prefix with Windows drive', () => {
+	expect(normalizeForIgnore('!C:\\Users\\file.html', true)).toBe('!Users/file.html');
+});
+
+test('normalizeForIgnore: UNC-style backslash path', () => {
+	expect(normalizeForIgnore('\\\\server\\share\\file.html')).toBe('//server/share/file.html');
+});
+
+test('normalizeForIgnore: UNC-style backslash path with relative', () => {
+	expect(normalizeForIgnore('\\\\server\\share\\file.html', true)).toBe('server/share/file.html');
+});
+
+test('normalizeForGlob: preserves drive letter', () => {
+	expect(normalizeForGlob('C:\\Users\\**\\*.html')).toBe('C:/Users/**/*.html');
+});
+
 test('fromFileURL: POSIX file URL', () => {
 	expect(fromFileURL('file:///home/user/file')).toBe('/home/user/file');
 });
 
 test('fromFileURL: handles URL-encoded characters', () => {
 	expect(fromFileURL('file:///home/user/my%20file')).toBe('/home/user/my file');
+});
+
+test('fromFileURL: throws on non-file protocol', () => {
+	expect(() => fromFileURL('http://example.com')).toThrow();
+});
+
+test('fromFileURL: throws on invalid URL', () => {
+	expect(() => fromFileURL('not-a-url')).toThrow();
 });
