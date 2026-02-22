@@ -141,7 +141,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const violations = await core.verify(this.#options?.fix).catch(error => {
+		const verifyResult = await core.verify(this.#options?.fix).catch(error => {
 			if (error instanceof Error) {
 				return error;
 			}
@@ -149,11 +149,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		});
 
 		const sourceCode = await this.#file.getCode();
-		const fixedCode = core.document.toString(true);
 
-		if (violations instanceof Error) {
-			this.emit('lint-error', this.#file.path, sourceCode, violations);
-			const errMessage = violations.stack ?? violations.message;
+		if (verifyResult instanceof Error) {
+			this.emit('lint-error', this.#file.path, sourceCode, verifyResult);
+			const errMessage = verifyResult.stack ?? verifyResult.message;
 			log('exec: error %O', errMessage);
 			return {
 				violations: [
@@ -168,20 +167,22 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				],
 				filePath: this.#file.path,
 				sourceCode,
-				fixedCode,
+				fixedCode: sourceCode,
 				status: 'processed',
 			};
 		}
 
+		const { violations, fixedCode } = verifyResult;
 		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
 
-		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, debugMap);
+		const resolvedFixedCode = fixedCode ?? sourceCode;
+		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap);
 		log('exec: end');
 		return {
-			violations,
+			violations: [...violations],
 			filePath: this.#file.path,
 			sourceCode,
-			fixedCode,
+			fixedCode: resolvedFixedCode,
 			status: 'processed',
 		};
 	}
