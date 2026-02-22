@@ -337,7 +337,7 @@ When the attribute value is wrapped in `{}`, the `attrParser` function is invoke
 
 ### IDL Attribute Mapping
 
-IDL-to-content attribute mapping (e.g., `className` -> `class`, `htmlFor` -> `for`) is **not** performed by the parser. Instead, it is handled declaratively at the core level by `@markuplint/ml-core`'s `MLAttr` constructor when the paired spec (`@markuplint/react-spec`) sets `useIDLAttributeNames: true`. See the [MLAttr documentation](../../ml-core/docs/ml-dom/attr.md) for details.
+IDL-to-content attribute mapping (e.g., `className` -> `class`, `htmlFor` -> `for`) is **not** performed by the parser. Instead, it is handled declaratively at the core level by `@markuplint/ml-core`'s `MLAttr` constructor when the paired spec (`@markuplint/react-spec`) sets `acceptedAttrNames: 'idl'`. See the [MLAttr documentation](../../ml-core/docs/ml-dom/attr.md) for details.
 
 ### Dynamic Value Flag
 

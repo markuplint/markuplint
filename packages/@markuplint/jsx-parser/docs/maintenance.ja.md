@@ -147,7 +147,7 @@ yarn test --scope @markuplint/jsx-parser
 
 **症状:** `className` のような JSX 属性が AST 出力で `potentialName: class` を取得しない。
 
-**原因:** 属性が `@markuplint/parser-utils/src/idl-attributes.ts` の `idlContentMap` にない、または `@markuplint/react-spec` が `useIDLAttributeNames: true` を設定していない。
+**原因:** 属性が `@markuplint/parser-utils/src/idl-attributes.ts` の `idlContentMap` にない、または `@markuplint/react-spec` が `acceptedAttrNames: 'idl'` を設定していない。
 
 **解決策:**
 

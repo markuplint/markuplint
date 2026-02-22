@@ -255,7 +255,7 @@ JSX を返す `.map()` 呼び出し（例: `{items.map(item => <li>{item}</li>)}
 
 ### IDL 属性マッピング
 
-IDL-コンテンツ属性マッピング（例: `className` -> `class`、`htmlFor` -> `for`）はパーサーでは**行いません**。代わりに、ペアとなる spec（`@markuplint/react-spec`）が `useIDLAttributeNames: true` を設定している場合に、`@markuplint/ml-core` の `MLAttr` コンストラクタでコアレベルで宣言的に処理されます。詳細は [MLAttr ドキュメント](../../ml-core/docs/ml-dom/attr.ja.md)を参照してください。
+IDL-コンテンツ属性マッピング（例: `className` -> `class`、`htmlFor` -> `for`）はパーサーでは**行いません**。代わりに、ペアとなる spec（`@markuplint/react-spec`）が `acceptedAttrNames: 'idl'` を設定している場合に、`@markuplint/ml-core` の `MLAttr` コンストラクタでコアレベルで宣言的に処理されます。詳細は [MLAttr ドキュメント](../../ml-core/docs/ml-dom/attr.ja.md)を参照してください。
 
 ### 動的値フラグ
 

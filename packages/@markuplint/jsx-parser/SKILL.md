@@ -42,7 +42,7 @@ Add a new IDL-to-content attribute mapping for JSX. Follow recipe #1 in `docs/ma
 1. Read `@markuplint/parser-utils/src/idl-attributes.ts`
 2. Add the new entry to the `idlContentMap` object (key = IDL property name, value = content attribute name)
 3. The `searchIDLAttribute()` function will automatically pick up the new mapping
-4. IDL attribute resolution is performed at the core level by `MLAttr` when `@markuplint/react-spec` sets `useIDLAttributeNames: true`
+4. IDL attribute resolution is performed at the core level by `MLAttr` when `@markuplint/react-spec` sets `acceptedAttrNames: 'idl'`
 
 ### Step 2: Verify
 
@@ -97,7 +97,7 @@ Modify the element type detection regex. Follow recipe #3 in `docs/maintenance.m
 ## Rules
 
 1. **Use `@typescript-eslint/typescript-estree` for parsing** -- never use a custom JSX parser or regex-based approach.
-2. **IDL attribute mapping is a core-level concern** -- IDL-to-content attribute mappings are resolved by `MLAttr` in `@markuplint/ml-core` when the paired spec sets `useIDLAttributeNames: true`. The mappings themselves live in `@markuplint/parser-utils`.
+2. **IDL attribute mapping is a core-level concern** -- IDL-to-content attribute mappings are resolved by `MLAttr` in `@markuplint/ml-core` when the paired spec sets `acceptedAttrNames: 'idl'`. The mappings themselves live in `@markuplint/parser-utils`.
 3. **Test with `nodeListToDebugMaps`** -- all integration tests use this pattern for snapshot-style assertions.
 4. **Handle all AST node types exhaustively** -- `recursiveSearchJSXElements()` must handle every `AST_NODE_TYPES` value; unhandled types throw `'Unsupported node'`.
 5. **Preserve `#parentIdMap` tracking** -- every nodeize branch must register created nodes in the WeakMap for correct parent-child rebuilding.

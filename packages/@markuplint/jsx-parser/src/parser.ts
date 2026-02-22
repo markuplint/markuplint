@@ -282,7 +282,7 @@ class JSXParser extends Parser<JSXNode, State> {
 	/**
 	 * Visits an attribute token, handling JSX-specific quoting (curly braces for expressions)
 	 * and dynamic value detection. IDL attribute name mapping is now handled declaratively
-	 * by react-spec's useIDLAttributeNames and ml-core's attr resolution.
+	 * by react-spec's acceptedAttrNames and ml-core's attr resolution.
 	 *
 	 * @param token - The token representing the attribute
 	 * @returns The parsed attribute node
