@@ -295,9 +295,14 @@ describe('Issues', () => {
 		const fixedFilePath = path.resolve(__dirname, '../../test/fix/fixed.html');
 		const originContent = await readFile(originFilePath, { encoding: 'utf8' });
 
-		await execa(entryFilePath, ['--fix', escape(fixedFilePath)], {
-			reject: false,
-		});
+		const configFilePath = path.resolve(__dirname, '../../test/fix/fix-test.markuplintrc');
+		await execa(
+			entryFilePath,
+			['--fix', escape(fixedFilePath), '--config', escape(configFilePath), '--no-search-config'],
+			{
+				reject: false,
+			},
+		);
 
 		const fixedContent = await readFile(fixedFilePath, { encoding: 'utf8' });
 		expect(originContent).toBe(fixedContent);
