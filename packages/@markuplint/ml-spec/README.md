@@ -6,7 +6,7 @@
 
 This package serves as the foundational layer for markuplint's specification system, providing:
 
-- **Type definitions** for markup language specifications (HTML, ARIA, SVG)
+- **Type definitions** for markup language specifications (HTML, ARIA, SVG, MathML)
 - **W3C specification algorithms** (HTML Standard, WAI-ARIA 1.1/1.2/1.3 compliance)
 - **JSON schemas** that define the structure of element specifications
 - **Runtime utilities** for specification resolution, attribute validation, and content model checking

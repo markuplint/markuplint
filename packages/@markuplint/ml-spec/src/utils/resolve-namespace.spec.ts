@@ -15,6 +15,12 @@ test('tag', () => {
 		namespace: 'svg',
 		namespaceURI: 'http://www.w3.org/2000/svg',
 	});
+	expect(resolveNamespace('mml:math')).toStrictEqual({
+		localName: 'math',
+		localNameWithNS: 'mml:math',
+		namespace: 'mml',
+		namespaceURI: 'http://www.w3.org/1998/Math/MathML',
+	});
 });
 
 test('attr', () => {
@@ -35,5 +41,11 @@ test('attr', () => {
 		localNameWithNS: 'xlink:href',
 		namespace: 'xlink',
 		namespaceURI: 'http://www.w3.org/1999/xlink',
+	});
+	expect(resolveNamespace('class', 'http://www.w3.org/1998/Math/MathML')).toStrictEqual({
+		localName: 'class',
+		localNameWithNS: 'mml:class',
+		namespace: 'mml',
+		namespaceURI: 'http://www.w3.org/1998/Math/MathML',
 	});
 });

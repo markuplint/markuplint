@@ -17,7 +17,17 @@ export function contentModelCategoryToTagNames(contentModel: Category, def: MLML
 	if (cached) {
 		return cached;
 	}
-	const tags: readonly string[] | undefined = def['#contentModels'][contentModel];
+	let tags: readonly string[] | undefined = def['#contentModels'][contentModel];
+	if (!tags) {
+		// Case-insensitive fallback for mixed-case categories (e.g., #MathMLPresentation, #SVGAnimation)
+		const lowerKey = contentModel.toLowerCase();
+		for (const key of Object.keys(def['#contentModels'])) {
+			if (key.toLowerCase() === lowerKey) {
+				tags = def['#contentModels'][key as Category];
+				break;
+			}
+		}
+	}
 	const sortedTag = Object.freeze(tags && Array.isArray(tags) ? tags.toSorted() : []);
 	cache.set(contentModel, sortedTag);
 	return sortedTag;
