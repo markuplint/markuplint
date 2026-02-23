@@ -3061,7 +3061,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @implements DOM API: `Document`
 	 */
 	getElementById(elementId: string) {
-		// TODO:
 		return this.querySelector(`#${elementId}`);
 	}
 
