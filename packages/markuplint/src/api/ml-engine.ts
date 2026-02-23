@@ -172,7 +172,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			};
 		}
 
-		const { violations, fixedCode } = verifyResult;
+		const { violations, fixedCode, fixSummary } = verifyResult;
 		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
 
 		const resolvedFixedCode = fixedCode ?? sourceCode;
@@ -184,6 +184,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			sourceCode,
 			fixedCode: resolvedFixedCode,
 			status: 'processed',
+			fixSummary,
 		};
 	}
 

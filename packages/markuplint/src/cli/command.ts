@@ -12,6 +12,7 @@ import { ViolationCollector } from '@markuplint/ml-core';
 import { MLEngine } from '../api/index.js';
 import { log } from '../debug.js';
 
+import { outputDryRunDiff } from './dry-run-output.js';
 import { output } from './output.js';
 
 /**
@@ -27,7 +28,8 @@ import { output } from './output.js';
  * @returns `true` if any errors were found (or warnings exceeded the limit), `false` otherwise.
  */
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
-	const fix = options.fix;
+	const fix = options.fix || options.fixDryRun;
+	const fixDryRun = options.fixDryRun;
 	const configFile =
 		options.config &&
 		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
@@ -154,9 +156,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			hasError = true;
 		}
 
-		if (fix) {
+		if (fix && !fixDryRun) {
 			log('Overwrite file: %s', result.filePath);
 			await fs.writeFile(result.filePath, result.fixedCode, { encoding: 'utf8' });
+		} else if (fix && fixDryRun && result.sourceCode !== result.fixedCode) {
+			outputDryRunDiff(result.filePath, result.sourceCode, result.fixedCode);
 		}
 	}
 
