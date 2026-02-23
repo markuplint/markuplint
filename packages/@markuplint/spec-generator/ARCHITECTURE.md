@@ -2,7 +2,7 @@
 
 ## Overview
 
-`@markuplint/spec-generator` is a build tool that generates the markuplint extended specification JSON. It scrapes W3C and MDN web standards documentation, aggregates HTML/SVG element specs, global attributes, ARIA roles and properties, and content model definitions into a single `index.json` file consumed by `@markuplint/html-spec`.
+`@markuplint/spec-generator` is a build tool that generates the markuplint extended specification JSON. It scrapes W3C and MDN web standards documentation, aggregates HTML/SVG/MathML element specs, global attributes, ARIA roles and properties, and content model definitions into a single `index.json` file consumed by `@markuplint/html-spec`.
 
 This package is not published for direct use. It is invoked exclusively from `@markuplint/html-spec/build.mjs`.
 
@@ -16,6 +16,7 @@ src/
 ├── aria.ts           — W3C ARIA specification scraping (roles, properties, states)
 ├── global-attrs.ts   — Global attribute definition loader
 ├── svg.ts            — SVG deprecated element list fetcher
+├── mathml.ts         — MathML deprecated element list fetcher
 ├── fetch.ts          — HTTP fetch with in-process caching and progress bar
 ├── read-json.ts      — JSON file reader with comment stripping and glob support
 └── utils.ts          — Shared helper functions (sorting, deduplication, name parsing)
@@ -40,6 +41,7 @@ flowchart TD
     subgraph scraping ["Web Scraping"]
         mdnHTML["MDN HTML Element Pages\n(scraping.ts)"]
         mdnSVG["MDN SVG Element Index\n(svg.ts)"]
+        mdnMathML["MDN MathML Element Index\n(mathml.ts)"]
         ariaSpecs["W3C ARIA 1.1 / 1.2 / 1.3\n(aria.ts)"]
         graphicsAria["Graphics ARIA\n(aria.ts)"]
         dpubAria["DPub ARIA\n(aria.ts)"]
@@ -63,6 +65,7 @@ flowchart TD
     getElements --> specFiles
     getElements --> mdnHTML
     getElements --> mdnSVG
+    getElements --> mdnMathML
     getGlobalAttrs --> commonAttrs
     getAria --> ariaSpecs
     getAria --> graphicsAria
@@ -86,6 +89,7 @@ flowchart TD
 | `aria.ts`          | `getAria()`                                                                                                           | Scrapes W3C ARIA specs for roles, properties, states             |
 | `global-attrs.ts`  | `getGlobalAttrs()`                                                                                                    | Reads global attribute definitions from JSON                     |
 | `svg.ts`           | `getSVGElementList()`                                                                                                 | Fetches deprecated SVG element names from MDN                    |
+| `mathml.ts`        | `getMathMLElementList()`                                                                                              | Fetches deprecated MathML element names from MDN                 |
 | `fetch.ts`         | `fetch()`, `fetchText()`, `getReferences()`                                                                           | HTTP fetching with dual-layer cache and progress bar             |
 | `read-json.ts`     | `readJson()`, `readJsons()`                                                                                           | JSON reading with comment stripping and glob matching            |
 | `utils.ts`         | `nameCompare()`, `sortObjectByKey()`, `arrayUnique()`, `getName()`, `getThisOutline()`, `mergeAttributes()`, `keys()` | Shared utilities                                                 |

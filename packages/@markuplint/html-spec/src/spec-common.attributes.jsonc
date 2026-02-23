@@ -1679,6 +1679,68 @@
 			"animatable": true
 		}
 	},
+	// https://www.w3.org/TR/mathml-core/#attributes-common-to-html-and-mathml-elements
+	"#MathMLGlobalAttrs": {
+		// https://www.w3.org/TR/mathml-core/#dfn-autofocus
+		"autofocus": {
+			"type": "Boolean"
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-class
+		"class": {
+			"type": "Any"
+		},
+		// https://www.w3.org/TR/mathml-core/#dom-mathmlelement-dataset
+		"data-*": {
+			"type": "Any"
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-dir
+		"dir": {
+			"type": {
+				"enum": ["ltr", "rtl"]
+			}
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-displaystyle
+		"displaystyle": {
+			"type": {
+				"enum": ["true", "false"]
+			}
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-id
+		"id": {
+			"type": "DOMID"
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathbackground
+		"mathbackground": {
+			"type": "<color>",
+			"deprecated": true
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathcolor
+		"mathcolor": {
+			"type": "<color>",
+			"deprecated": true
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathsize
+		"mathsize": {
+			"type": "<length-percentage>",
+			"deprecated": true
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-nonce
+		"nonce": {
+			"type": "Any"
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-scriptlevel
+		"scriptlevel": {
+			"type": "Any"
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-style
+		"style": {
+			"type": "<css-declaration-list>"
+		},
+		// https://www.w3.org/TR/mathml-core/#dfn-tabindex
+		"tabindex": {
+			"type": "TabIndex"
+		}
+	},
 	"#XLinkAttrs": {
 		// https://www.w3.org/TR/xlink11/#link-locators
 		"xlink:href": {

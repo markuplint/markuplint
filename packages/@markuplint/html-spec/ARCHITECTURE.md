@@ -2,9 +2,9 @@
 
 ## Overview
 
-`@markuplint/html-spec` is the canonical HTML Living Standard dataset provider for markuplint. It is a pure data package with no TypeScript source code. It contains 177 per-element JSON specification files and 2 common definition files that are processed by `@markuplint/spec-generator` to produce a single consolidated `index.json` (48K+ lines, 1.4MB).
+`@markuplint/html-spec` is the canonical HTML Living Standard dataset provider for markuplint. It is a pure data package with no TypeScript source code. It contains 208 per-element JSON specification files (HTML, SVG, and MathML) and 2 common definition files that are processed by `@markuplint/spec-generator` to produce a single consolidated `index.json` (48K+ lines, 1.4MB).
 
-During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, and SVG specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
+During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C ARIA specifications (1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges that external data with the hand-authored JSON files. Manual specifications always take precedence over fetched data, ensuring stable, curated definitions while still benefiting from automated enrichment.
 
 ## Directory Structure
 
@@ -12,10 +12,11 @@ During the build, `@markuplint/spec-generator` fetches live data from MDN, W3C A
 src/
 ├── spec.a.jsonc                      # <a> element specification
 ├── spec.abbr.jsonc                   # <abbr> element specification
-├── ... (177 element specification files total)
+├── ... (208 element specification files total)
 ├── spec.svg_text.jsonc               # <svg:text> element specification
-├── spec-common.attributes.jsonc      # 19 global attribute category definitions
-└── spec-common.contents.jsonc        # 10 HTML + 19 SVG content model category definitions
+├── spec.mml_math.jsonc               # <mml:math> element specification
+├── spec-common.attributes.jsonc      # 20 global attribute category definitions
+└── spec-common.contents.jsonc        # 10 HTML + 19 SVG + 3 MathML content model category definitions
 
 build.mjs                             # Build script invoking @markuplint/spec-generator
 index.json                            # Generated output (48K+ lines, DO NOT EDIT)
@@ -32,7 +33,7 @@ flowchart TD
     subgraph sources ["Source Layer"]
         elemSpecs["177 element specs\n(src/spec.*.jsonc)"]
         commonAttrs["spec-common.attributes.jsonc\n(19 global attribute categories)"]
-        commonContents["spec-common.contents.jsonc\n(10 HTML + 19 SVG content models)"]
+        commonContents["spec-common.contents.jsonc\n(10 HTML + 19 SVG + 3 MathML content models)"]
     end
 
     subgraph build ["Build Pipeline"]
@@ -48,6 +49,7 @@ flowchart TD
         htmlAria["HTML-ARIA Mappings"]
         htmlLS["HTML Living Standard\n(elements, attributes)"]
         svg["SVG Specification\n(elements, attributes)"]
+        mathml["MathML Specification\n(elements, attributes)"]
     end
 
     subgraph output ["Generated Output"]
@@ -72,6 +74,7 @@ flowchart TD
     htmlAria --> specGen
     htmlLS --> specGen
     svg --> specGen
+    mathml --> specGen
 
     specGen -->|"merge\n(manual takes precedence)"| indexJson
 
@@ -94,7 +97,7 @@ Global definitions shared across all element specifications.
 
 | Key              | Description                                                                                                          |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `#globalAttrs`   | 19 global attribute categories defining attributes available on all or specific groups of elements                   |
+| `#globalAttrs`   | 20 global attribute categories defining attributes available on all or specific groups of elements                   |
 | `#aria`          | ARIA role and property definitions per specification version (1.1, 1.2, 1.3), plus Graphics ARIA and DPub ARIA roles |
 | `#contentModels` | Content model category macros mapping category names to their member elements                                        |
 
@@ -120,22 +123,24 @@ Global definitions shared across all element specifications.
 | `#SVGFilterPrimitiveAttrs`          | SVG filter primitive attributes       |
 | `#SVGPresentationAttrs`             | SVG presentation attributes           |
 | `#SVGTransferFunctionAttrs`         | SVG transfer function attributes      |
+| `#MathMLGlobalAttrs`                | MathML global attributes              |
 | `#XLinkAttrs`                       | XLink attributes                      |
 
 **Content Model Categories** (`#contentModels`):
 
 - **HTML (10):** `#metadata`, `#flow`, `#sectioning`, `#heading`, `#phrasing`, `#embedded`, `#interactive`, `#palpable`, `#script-supporting`, plus one empty placeholder
 - **SVG (19):** `#SVGAnimation`, `#SVGBasicShapes`, `#SVGContainer`, `#SVGDescriptive`, `#SVGFilterPrimitive`, `#SVGFont`, `#SVGGradient`, `#SVGGraphics`, `#SVGGraphicsReferencing`, `#SVGLightSource`, `#SVGNeverRendered`, `#SVGPaintServer`, `#SVGRenderable`, `#SVGShape`, `#SVGStructural`, `#SVGStructurallyExternal`, `#SVGTextContent`, `#SVGTextContentChild`, plus one empty placeholder
+- **MathML (3):** `#MathMLPresentation`, `#MathMLScript`, `#MathMLTabular`
 
 ### `specs`
 
-An array of element specifications. Each entry defines a single HTML or SVG element with its content model, permitted attributes, ARIA role mappings, and categorization.
+An array of element specifications. Each entry defines a single HTML, SVG, or MathML element with its content model, permitted attributes, ARIA role mappings, and categorization.
 
 ## Core Components
 
 | Component             | Files                                                        | Purpose                                                                        |
 | --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| Source Specifications | 177 `src/spec.*.jsonc` files                                 | Per-element definitions: content models, attributes, ARIA mappings             |
+| Source Specifications | 208 `src/spec.*.jsonc` files                                 | Per-element definitions: content models, attributes, ARIA mappings             |
 | Common Definitions    | `spec-common.attributes.jsonc`, `spec-common.contents.jsonc` | Shared global attribute categories and content model category macros           |
 | Build System          | `build.mjs`                                                  | Invokes `@markuplint/spec-generator` to merge sources with external data       |
 | Generated Output      | `index.json`                                                 | Single consolidated dataset consumed by downstream packages                    |
@@ -187,7 +192,7 @@ flowchart LR
 ### Upstream
 
 - **`@markuplint/ml-spec`** provides the TypeScript type definitions (`MLMLSpec`, `ElementSpec`, `SpecDefs`) and JSON schemas used to validate the generated output. The `index.d.ts` re-exports these types.
-- **`@markuplint/spec-generator`** is the build tool invoked by `build.mjs`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, and SVG specifications, then merges everything into `index.json`.
+- **`@markuplint/spec-generator`** is the build tool invoked by `build.mjs`. It reads the source JSON files, fetches live data from MDN Web Docs, W3C ARIA specifications (versions 1.1, 1.2, 1.3), Graphics ARIA, DPub ARIA, HTML-ARIA mappings, the HTML Living Standard, SVG specifications, and MathML specifications, then merges everything into `index.json`.
 
 ### Downstream
 

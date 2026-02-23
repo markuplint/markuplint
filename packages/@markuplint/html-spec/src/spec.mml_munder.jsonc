@@ -1,0 +1,35 @@
+// https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				],
+				"max": 2
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover
+		"accentunder": {
+			"type": {
+				"enum": ["true", "false"],
+				"disallowToSurroundBySpaces": false
+			}
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

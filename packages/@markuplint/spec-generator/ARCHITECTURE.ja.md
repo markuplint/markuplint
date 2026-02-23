@@ -2,7 +2,7 @@
 
 ## 概要
 
-`@markuplint/spec-generator` は、markuplint の拡張仕様 JSON を生成するビルドツールです。W3C および MDN のウェブ標準ドキュメントをスクレイピングし、HTML/SVG 要素仕様、グローバル属性、ARIA ロール・プロパティ、コンテンツモデル定義を集約して、`@markuplint/html-spec` が消費する単一の `index.json` ファイルに出力します。
+`@markuplint/spec-generator` は、markuplint の拡張仕様 JSON を生成するビルドツールです。W3C および MDN のウェブ標準ドキュメントをスクレイピングし、HTML/SVG/MathML 要素仕様、グローバル属性、ARIA ロール・プロパティ、コンテンツモデル定義を集約して、`@markuplint/html-spec` が消費する単一の `index.json` ファイルに出力します。
 
 このパッケージは直接利用するために公開されるものではありません。`@markuplint/html-spec/build.mjs` からのみ呼び出されます。
 
@@ -16,6 +16,7 @@ src/
 ├── aria.ts           — W3C ARIA 仕様のスクレイピング（ロール、プロパティ、ステート）
 ├── global-attrs.ts   — グローバル属性定義の読み込み
 ├── svg.ts            — MDN から SVG 非推奨要素名を取得
+├── mathml.ts         — MDN から MathML 非推奨要素名を取得
 ├── fetch.ts          — HTTP フェッチ（プロセス内キャッシュ＋プログレスバー付き）
 ├── read-json.ts      — コメント除去付き JSON ファイル読み込み＋ glob 対応
 └── utils.ts          — 共有ヘルパー関数（ソート、重複排除、名前解析）
@@ -40,6 +41,7 @@ flowchart TD
     subgraph scraping ["ウェブスクレイピング"]
         mdnHTML["MDN HTML 要素ページ\n(scraping.ts)"]
         mdnSVG["MDN SVG 要素インデックス\n(svg.ts)"]
+        mdnMathML["MDN MathML 要素インデックス\n(mathml.ts)"]
         ariaSpecs["W3C ARIA 1.1 / 1.2 / 1.3\n(aria.ts)"]
         graphicsAria["Graphics ARIA\n(aria.ts)"]
         htmlAria["HTML-ARIA マッピング\n(aria.ts)"]
@@ -62,6 +64,7 @@ flowchart TD
     getElements --> specFiles
     getElements --> mdnHTML
     getElements --> mdnSVG
+    getElements --> mdnMathML
     getGlobalAttrs --> commonAttrs
     getAria --> ariaSpecs
     getAria --> graphicsAria
@@ -84,6 +87,7 @@ flowchart TD
 | `aria.ts`          | `getAria()`                                                                                                           | W3C ARIA 仕様からロール、プロパティ、ステートをスクレイピング        |
 | `global-attrs.ts`  | `getGlobalAttrs()`                                                                                                    | JSON からグローバル属性定義を読み込み                                |
 | `svg.ts`           | `getSVGElementList()`                                                                                                 | MDN から非推奨 SVG 要素名を取得                                      |
+| `mathml.ts`        | `getMathMLElementList()`                                                                                              | MDN から非推奨 MathML 要素名を取得                                   |
 | `fetch.ts`         | `fetch()`, `fetchText()`, `getReferences()`                                                                           | 2層キャッシュとプログレスバー付き HTTP フェッチ                      |
 | `read-json.ts`     | `readJson()`, `readJsons()`                                                                                           | コメント除去と glob マッチング付き JSON 読み込み                     |
 | `utils.ts`         | `nameCompare()`, `sortObjectByKey()`, `arrayUnique()`, `getName()`, `getThisOutline()`, `mergeAttributes()`, `keys()` | 共有ユーティリティ                                                   |

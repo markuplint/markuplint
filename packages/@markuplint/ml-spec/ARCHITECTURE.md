@@ -146,16 +146,16 @@ flowchart TD
 
 The type system defines the structure of markup language specifications, element specs, ARIA roles, and attributes.
 
-| File                            | Purpose                                                                                              |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `types/index.ts`                | Hand-written types: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole`, etc.      |
-| `types/aria.ts`                 | Generated: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties` |
-| `types/attributes.ts`           | Generated: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`            |
-| `types/permitted-structures.ts` | Generated: `PermittedContentPattern`, `ContentModel`, `Category` (HTML 13 + SVG 19 categories)       |
+| File                            | Purpose                                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `types/index.ts`                | Hand-written types: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole`, etc.           |
+| `types/aria.ts`                 | Generated: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`      |
+| `types/attributes.ts`           | Generated: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`                 |
+| `types/permitted-structures.ts` | Generated: `PermittedContentPattern`, `ContentModel`, `Category` (HTML 13 + SVG 19 + MathML 3 categories) |
 
 ### 2. ARIA Algorithms
 
-ARIA algorithms implement WAI-ARIA, HTML-AAM, SVG-AAM, and AccName 1.2 specifications for role computation and accessibility tree management.
+ARIA algorithms implement WAI-ARIA, HTML-AAM, SVG-AAM, MathML-AAM, and AccName 1.2 specifications for role computation and accessibility tree management.
 
 | File                             | Purpose                                                                           |
 | -------------------------------- | --------------------------------------------------------------------------------- |
@@ -183,7 +183,7 @@ HTML algorithms implement content model evaluation and element classification fr
 | `get-content-model.ts`                       | Retrieves content model with conditional pattern evaluation       |
 | `content-model-category-to-tag-names.ts`     | Converts content model category to sorted tag name array          |
 | `get-selectors-by-content-model-category.ts` | Maps content model category to CSS selectors                      |
-| `is-palpable-elements.ts`                    | Palpable content detection with SVG/exposable extensions          |
+| `is-palpable-elements.ts`                    | Palpable content detection with SVG/MathML/exposable extensions   |
 | `is-void-element.ts`                         | Void element check (13 HTML void elements)                        |
 | `is-nothing-content-model.ts`                | "Nothing" content model check (void + iframe + template)          |
 | `may-be-focusable.ts`                        | Focusability heuristic (interactive + tabindex + contenteditable) |

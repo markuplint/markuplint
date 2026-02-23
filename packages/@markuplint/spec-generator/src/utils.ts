@@ -123,16 +123,19 @@ export function keys<T, K = keyof T>(object: T): K[] {
 
 /**
  * Parses an element name string to extract the local name, namespace, and markup language type.
- * Handles SVG-prefixed names (e.g., `"svg_circle"`) and plain HTML names.
+ * Handles SVG-prefixed names (e.g., `"svg_circle"`), MathML-prefixed names (e.g., `"mml_math"`),
+ * and plain HTML names.
  *
- * @param origin - The raw element name, optionally prefixed with `"svg_"` for SVG elements
- * @returns An object containing the `localName`, optional SVG `namespace` URI, and `ml` type (`"SVG"` or `"HTML"`)
+ * @param origin - The raw element name, optionally prefixed with `"svg_"` or `"mml_"` for SVG/MathML elements
+ * @returns An object containing the `localName`, optional `namespace` URI, and `ml` type (`"SVG"`, `"MathML"`, or `"HTML"`)
  */
 export function getName(origin: string) {
-	const [, ns, localName] = origin.match(/^(?:(svg)_)?(\w+)/i) ?? [];
+	const [, rawNs, localName] = origin.match(/^(?:(svg|mml)_)?([\w-]+)/i) ?? [];
+	const ns = rawNs?.toLowerCase();
 	const name = localName ?? origin;
-	const ml = ns === 'svg' ? 'SVG' : 'HTML';
-	const namespace: 'http://www.w3.org/2000/svg' | undefined = ns === 'svg' ? 'http://www.w3.org/2000/svg' : undefined;
+	const ml = ns === 'svg' ? 'SVG' : ns === 'mml' ? 'MathML' : 'HTML';
+	const namespace: 'http://www.w3.org/2000/svg' | 'http://www.w3.org/1998/Math/MathML' | undefined =
+		ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns === 'mml' ? 'http://www.w3.org/1998/Math/MathML' : undefined;
 
 	return {
 		localName: name,

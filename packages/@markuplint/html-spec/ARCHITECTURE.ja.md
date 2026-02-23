@@ -2,9 +2,9 @@
 
 ## 概要
 
-`@markuplint/html-spec` は HTML Living Standard のデータセットプロバイダです。TypeScript ソースコードを含まない純粋なデータパッケージであり、177 個の要素 JSON 仕様ファイルと 2 個の共通定義ファイルから構成されます。
+`@markuplint/html-spec` は HTML Living Standard のデータセットプロバイダです。TypeScript ソースコードを含まない純粋なデータパッケージであり、208 個の要素 JSON 仕様ファイル（HTML、SVG、MathML）と 2 個の共通定義ファイルから構成されます。
 
-ビルド時に `@markuplint/spec-generator` が外部ソース（MDN、W3C ARIA 1.1/1.2/1.3、HTML Living Standard、SVG 仕様）からデータをフェッチし、手動で管理されたローカル仕様とマージして、統合された `index.json`（48,000 行以上、約 1.4MB）を生成します。手動データは常に外部データより優先され、仕様の正確性を保証します。
+ビルド時に `@markuplint/spec-generator` が外部ソース（MDN、W3C ARIA 1.1/1.2/1.3、HTML Living Standard、SVG 仕様、MathML 仕様）からデータをフェッチし、手動で管理されたローカル仕様とマージして、統合された `index.json`（48,000 行以上、約 1.4MB）を生成します。手動データは常に外部データより優先され、仕様の正確性を保証します。
 
 ## ディレクトリ構成
 
@@ -12,10 +12,11 @@
 src/
 ├── spec.a.jsonc                      # <a> 要素の仕様
 ├── spec.abbr.jsonc                   # <abbr> 要素の仕様
-├── ... (計 177 個の要素仕様ファイル)
+├── ... (計 208 個の要素仕様ファイル)
 ├── spec.svg_text.jsonc               # <svg:text> 要素の仕様
-├── spec-common.attributes.jsonc      # 19 個のグローバル属性カテゴリ定義
-└── spec-common.contents.jsonc        # HTML 10 + SVG 19 のコンテンツモデルカテゴリ定義
+├── spec.mml_math.jsonc               # <mml:math> 要素の仕様
+├── spec-common.attributes.jsonc      # 20 個のグローバル属性カテゴリ定義
+└── spec-common.contents.jsonc        # HTML 10 + SVG 19 + MathML 3 のコンテンツモデルカテゴリ定義
 
 build.mjs                             # @markuplint/spec-generator を呼び出すビルドスクリプト
 index.json                            # 生成出力（48K 行以上、編集不可）
@@ -32,7 +33,7 @@ flowchart TD
     subgraph sources ["ソースデータ"]
         specFiles["src/spec.*.jsonc\n(177 個の要素仕様)"]
         commonAttrs["src/spec-common.attributes.jsonc\n(19 グローバル属性カテゴリ)"]
-        commonContents["src/spec-common.contents.jsonc\n(HTML 10 + SVG 19 コンテンツモデル)"]
+        commonContents["src/spec-common.contents.jsonc\n(HTML 10 + SVG 19 + MathML 3 コンテンツモデル)"]
     end
 
     subgraph build ["ビルドパイプライン"]
@@ -45,6 +46,7 @@ flowchart TD
         aria["W3C ARIA\n(1.1 / 1.2 / 1.3)"]
         htmlLs["HTML Living Standard"]
         svg["SVG 仕様"]
+        mathml["MathML 仕様"]
     end
 
     subgraph output ["生成出力"]
@@ -66,6 +68,7 @@ flowchart TD
     aria --> specGen
     htmlLs --> specGen
     svg --> specGen
+    mathml --> specGen
 
     specGen -->|"手動データ優先で\n外部データとマージ"| indexJson
 
@@ -86,11 +89,11 @@ flowchart TD
 
 グローバル定義を格納するオブジェクトです。
 
-| キー             | 内容                                                                 |
-| ---------------- | -------------------------------------------------------------------- |
-| `#globalAttrs`   | 19 個のグローバル属性カテゴリ（`#HTMLGlobalAttrs` 等）               |
-| `#aria`          | バージョン別 ARIA 定義（1.1, 1.2, 1.3）                              |
-| `#contentModels` | コンテンツモデルカテゴリマクロ（HTML 10 カテゴリ + SVG 19 カテゴリ） |
+| キー             | 内容                                                                   |
+| ---------------- | ---------------------------------------------------------------------- |
+| `#globalAttrs`   | 20 個のグローバル属性カテゴリ（`#HTMLGlobalAttrs` 等）                 |
+| `#aria`          | バージョン別 ARIA 定義（1.1, 1.2, 1.3）                                |
+| `#contentModels` | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19 + MathML 3 カテゴリ） |
 
 ### `specs`
 
@@ -114,7 +117,7 @@ export = json;
 
 | コンポーネント | ファイル                                | 説明                                                          |
 | -------------- | --------------------------------------- | ------------------------------------------------------------- |
-| ソース仕様     | `src/spec.*.jsonc`（177 ファイル）      | 要素ごとの仕様定義（コンテンツモデル、属性、ARIA マッピング） |
+| ソース仕様     | `src/spec.*.jsonc`（208 ファイル）      | 要素ごとの仕様定義（コンテンツモデル、属性、ARIA マッピング） |
 | 共通定義       | `src/spec-common.*.jsonc`（2 ファイル） | グローバル属性カテゴリとコンテンツモデルマクロの共有定義      |
 | ビルドシステム | `build.mjs`                             | `@markuplint/spec-generator` の `main()` を呼び出すエントリー |
 | 生成出力       | `index.json`                            | 統合データセット（48K 行以上、直接編集不可）                  |
@@ -179,6 +182,7 @@ export = json;
 
 - **HTML カテゴリ**（10 個）: `#metadata`, `#flow`, `#sectioning`, `#heading`, `#phrasing`, `#embedded`, `#interactive`, `#palpable`, `#scriptSupporting`, `#formAssociated`
 - **SVG カテゴリ**（19 個）: `#SVGAnimation`, `#SVGDescriptive`, `#SVGShape`, `#SVGStructural` 等
+- **MathML カテゴリ**（3 個）: `#MathMLPresentation`, `#MathMLScript`, `#MathMLTabular`
 
 ## ビルドパイプライン
 
@@ -199,7 +203,7 @@ await main({
 ビルドプロセスの流れ:
 
 1. `src/spec.*.jsonc` と `src/spec-common.*.jsonc` を読み込む
-2. MDN、W3C ARIA（1.1/1.2/1.3）、HTML Living Standard、SVG 仕様から外部データをフェッチ
+2. MDN、W3C ARIA（1.1/1.2/1.3）、HTML Living Standard、SVG 仕様、MathML 仕様から外部データをフェッチ
 3. 手動仕様と外部データをマージ（手動データが優先）
 4. 統合された `index.json` を出力
 

@@ -21,7 +21,7 @@ src/
 ├── debugger.ts            — デバッグ・テスト用ユーティリティ
 ├── parser-error.ts        — ParserError, TargetParserError, ConfigParserError
 ├── sort-nodes.ts          — ノード位置ソート
-├── const.ts               — MASK_CHAR, SVG 要素リスト, defaultSpaces
+├── const.ts               — MASK_CHAR, SVG/MathML 要素リスト, defaultSpaces
 ├── get-location.ts        — 行/列/オフセット計算ユーティリティ
 └── decision.ts            — カスタム要素名判定
 ```
@@ -99,7 +99,7 @@ flowchart TD
 | `debugger.ts`            | テスト・デバッグユーティリティ             | `nodeListToDebugMaps`, `attributesToDebugMaps`, `nodeTreeDebugView`                                                                       |
 | `parser-error.ts`        | エラークラス                               | `ParserError`, `TargetParserError`, `ConfigParserError`                                                                                   |
 | `sort-nodes.ts`          | ノードの位置ソート                         | `sortNodes`                                                                                                                               |
-| `const.ts`               | 定数                                       | `MASK_CHAR`, `svgElementList`, `defaultSpaces`                                                                                            |
+| `const.ts`               | 定数                                       | `MASK_CHAR`, `svgElementList`, `mathmlElementList`, `defaultSpaces`                                                                       |
 | `get-location.ts`        | 位置計算                                   | `getPosition`, `getEndLine`, `getEndCol`, `getEndPosition`, `getOffsetsFromCode`                                                          |
 | `decision.ts`            | カスタム要素名判定                         | `isPotentialCustomElementName`, `isSVGElement`                                                                                            |
 

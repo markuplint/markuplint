@@ -42,7 +42,10 @@ export type Category =
 	| '#SVGStructural'
 	| '#SVGStructurallyExternal'
 	| '#SVGTextContent'
-	| '#SVGTextContentChild';
+	| '#SVGTextContentChild'
+	| '#MathMLPresentation'
+	| '#MathMLScript'
+	| '#MathMLTabular';
 
 export interface ContentModelsSchema {
 	__contentModel?: ContentModel;

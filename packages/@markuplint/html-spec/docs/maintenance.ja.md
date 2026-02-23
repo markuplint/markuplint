@@ -68,7 +68,22 @@
 5. SVG属性には `animatable` フラグと SVG/CSS 型（`<svg-length>`, `<percentage>` 等）を指定
 6. `yarn workspace @markuplint/html-spec run gen` を実行
 
-### 4. グローバル属性カテゴリの変更
+### 4. MathML要素の追加
+
+1. `src/spec.mml_<localname>.jsonc` を作成（例: `src/spec.mml_mfrac.jsonc`）
+2. ファイル名の `mml_` プレフィックスから、要素名は `mml:<localname>` として自動推論される
+3. MathML固有のグローバル属性カテゴリ（`#MathMLGlobalAttrs`）を使用
+4. ARIAの `permittedRoles` にはMathML-AAM参照オブジェクト（`{ "mathml-aam": true }`）を使用
+5. 子要素の最大数に制約がある要素（例: `mfrac` はちょうど2つ）では `max` フィールドを使用:
+   ```jsonc
+   "contentModel": {
+     "contents": [{ "oneOrMore": ":model(MathMLPresentation)", "max": 2 }],
+   }
+   ```
+6. 要素が MathML コンテンツカテゴリに属する場合、`src/spec-common.contents.jsonc` の該当カテゴリ（例: `#MathMLPresentation`）に追加する
+7. `yarn workspace @markuplint/html-spec run gen` を実行
+
+### 5. グローバル属性カテゴリの変更
 
 1. `src/spec-common.attributes.jsonc` を編集
 2. 各トップレベルキーがカテゴリ（例: `#HTMLGlobalAttrs`, `#SVGCoreAttrs`）
@@ -76,11 +91,11 @@
 4. `yarn workspace @markuplint/html-spec run gen` を実行
 5. そのカテゴリを参照する全要素に変更が反映される
 
-### 5. コンテンツモデルカテゴリの追加・更新
+### 6. コンテンツモデルカテゴリの追加・更新
 
 1. `src/spec-common.contents.jsonc` を編集
 2. `models` オブジェクトに新しいエントリを追加、または既存カテゴリに要素を追加
-3. SVG要素には `svg|<name>` プレフィックスを使用
+3. SVG要素には `svg|<name>`、MathML要素には `mml|<name>` プレフィックスを使用
 4. 要素仕様で `:model(newCategory)` として参照
 5. `yarn workspace @markuplint/html-spec run gen` を実行
 
@@ -95,7 +110,7 @@
 - 新しいカテゴリ名は `@markuplint/ml-spec/schemas/content-models.schema.json`
   の `Category` 列挙型にも適合する必要がある
 
-### 6. ARIAマッピングの更新
+### 7. ARIAマッピングの更新
 
 1. 該当する `src/spec.<element>.jsonc` を開く
 2. `aria` オブジェクトを変更:
@@ -112,7 +127,7 @@
 バージョンの動作を保持するために存在する。WAI-ARIA 1.3 はまだ草案段階であり、
 `yarn up:gen` による ARIA 変更の主な発生源である
 
-### 7. 定期的な仕様更新
+### 8. 定期的な仕様更新
 
 本パッケージの仕様データは、`index.json` を再生成することで最新の MDN・W3C データを
 取り込む。これがウェブ標準の変更を反映するための標準的なワークフローである。
@@ -197,7 +212,7 @@ description の表現変更などの表面的な変更は、更新された `ind
 このプロセスは多少複雑だが、差分をレビューすることでウェブ標準の変更内容を把握でき、
 仕様データの正確性を維持するために重要である。
 
-### 8. 要素を非推奨としてマーク
+### 9. 要素を非推奨としてマーク
 
 要素を非推奨にする方法は2つある:
 
@@ -214,12 +229,12 @@ description の表現変更などの表面的な変更は、更新された `ind
 
 ### 編集可能なファイル（これらを変更）
 
-| ファイル                           | 説明                                               |
-| ---------------------------------- | -------------------------------------------------- |
-| `src/spec.*.jsonc`                 | 要素ごとの仕様（177ファイル）                      |
-| `src/spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（19カテゴリ）           |
-| `src/spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
-| `build.mjs`                        | ビルドスクリプト設定                               |
+| ファイル                           | 説明                                                         |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `src/spec.*.jsonc`                 | 要素ごとの仕様（208ファイル）                                |
+| `src/spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（20カテゴリ）                     |
+| `src/spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 9 + SVG 18 + MathML 3） |
+| `build.mjs`                        | ビルドスクリプト設定                                         |
 
 ### 生成ファイル（編集不可）
 
@@ -312,7 +327,7 @@ yarn workspace @markuplint/html-spec run test
 
 **原因**: ソース仕様ファイルが削除されたか、命名規則に違反している
 
-**解決策**: `src/spec.<element>.json` ファイルの存在と命名を確認する。HTML要素は `spec.<tag>.json`、SVG要素は `spec.svg_<localname>.json` の命名規則に従う必要がある。
+**解決策**: `src/spec.<element>.jsonc` ファイルの存在と命名を確認する。HTML要素は `spec.<tag>.jsonc`、SVG要素は `spec.svg_<localname>.jsonc`、MathML要素は `spec.mml_<localname>.jsonc` の命名規則に従う必要がある。
 
 ### ビルド時間が長い
 

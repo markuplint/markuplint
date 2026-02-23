@@ -45,25 +45,26 @@
 
 ## html-elements.ts
 
-HTML および SVG 要素仕様の完全なリストを構築します。
+HTML、SVG、MathML 要素仕様の完全なリストを構築します。
 
 ### `getElements(filePattern: string): Promise<ExtendedElementSpec[]>`
 
 **フロー:**
 
 1. `readJsons()` で glob パターンにマッチする全仕様ファイルを読み込み。要素名は正規表現 `spec.([\w-]+).jsonc` でファイル名から抽出（例: `spec.a.jsonc` → `a`）
-2. `getSVGElementList()` で非推奨 SVG 要素リストを取得
+2. `getSVGElementList()` で非推奨 SVG 要素リストを取得、`getMathMLElementList()` で非推奨 MathML 要素リストを取得
 3. `fetchObsoleteElements()` で既存の仕様にない非推奨要素のスタブを生成
 4. 各要素について MDN URL を構築し、`fetchHTMLElement()` でメタデータをスクレイピング:
    - 見出し要素（`h1`-`h6`）は MDN パス `Heading_Elements` にマッピング
    - SVG 要素は `/Web/SVG/Reference/Element/<name>` パスを使用
+   - MathML 要素は `/Web/MathML/Element/<name>` パスを使用
    - HTML 要素は `/Web/HTML/Reference/Elements/<name>` パスを使用
 5. スクレイピングデータとローカル仕様データをマージ。**ローカル仕様データが優先**:
    - `cite` -- ローカル値があればそちらを使用、なければ MDN URL
    - `description`, `categories`, `omission` -- MDN から
    - `contentModel`, `aria` -- ローカル仕様のみ（スクレイピングされない）
    - `attributes` -- 属性名ごとにマージ; ローカルエントリが MDN エントリをオーバーライド
-6. アルファベット順にソートし、SVG 要素を HTML 要素の後に配置
+6. アルファベット順にソートし、MathML 要素を HTML 要素の後、SVG 要素をその後に配置
 
 ### `obsoleteList`
 
@@ -71,7 +72,24 @@ HTML および SVG 要素仕様の完全なリストを構築します。
 
 `applet`, `acronym`, `bgsound`, `dir`, `frame`, `frameset`, `noframes`, `isindex`, `keygen`, `listing`, `menuitem`, `nextid`, `noembed`, `param`, `plaintext`, `rb`, `rtc`, `strike`, `xmp`, `basefont`, `big`, `blink`, `center`, `font`, `marquee`, `multicol`, `nobr`, `spacer`, `tt`
 
-MDN から取得した非推奨 SVG 要素と組み合わせて、完全な非推奨セットを構成します。
+MDN から取得した非推奨 SVG・MathML 要素と組み合わせて、完全な非推奨セットを構成します。
+
+---
+
+## mathml.ts
+
+### `getMathMLElementList(): Promise<string[]>`
+
+MDN MathML 要素インデックスページ（`https://developer.mozilla.org/en-US/docs/Web/MathML/Element`）をフェッチし、非推奨および非標準の MathML 要素名を抽出します。
+
+**処理:**
+
+1. メインコンテンツ領域内の全 `<td> <code>` 要素を検索
+2. `m` で始まる名前（MathML の命名規則）でフィルタリング
+3. 含まれる `<tr>` の `.icon-deprecated` または `.icon-nonstandard` アイコンクラスを確認
+4. 各名前に `mml_` プレフィックスを付加（例: `maction` → `mml_maction`）
+
+SVG と異なり、MathML には「Obsolete and deprecated elements」の独立セクションはない。要素テーブル内のアイコンでインラインにステータスが表示される。
 
 ---
 
@@ -250,7 +268,8 @@ MDN SVG 要素インデックスページ（`https://developer.mozilla.org/en-US
 
 要素名文字列をパース:
 
-| 入力           | `localName` | `namespace`                    | `ml`     |
-| -------------- | ----------- | ------------------------------ | -------- |
-| `"div"`        | `"div"`     | `undefined`                    | `"HTML"` |
-| `"svg_circle"` | `"circle"`  | `"http://www.w3.org/2000/svg"` | `"SVG"`  |
+| 入力           | `localName` | `namespace`                            | `ml`       |
+| -------------- | ----------- | -------------------------------------- | ---------- |
+| `"div"`        | `"div"`     | `undefined`                            | `"HTML"`   |
+| `"svg_circle"` | `"circle"`  | `"http://www.w3.org/2000/svg"`         | `"SVG"`    |
+| `"mml_math"`   | `"math"`    | `"http://www.w3.org/1998/Math/MathML"` | `"MathML"` |

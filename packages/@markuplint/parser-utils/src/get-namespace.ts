@@ -26,7 +26,7 @@ function getParentNamespace(parentNode: MLASTParentNode | null): NamespaceURI {
 		return 'http://www.w3.org/1999/xhtml';
 	}
 	if ('namespace' in parentNode && parentNode.namespace) {
-		const ns = parentNode.namespace.toLowerCase().trim();
+		const ns = parentNode.namespace.trim();
 		return ns === 'http://www.w3.org/1999/xhtml'
 			? 'http://www.w3.org/1999/xhtml'
 			: ns === 'http://www.w3.org/2000/svg'

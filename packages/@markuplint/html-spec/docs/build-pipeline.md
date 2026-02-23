@@ -6,7 +6,7 @@ This document describes how `index.json` is generated from the source files and 
 
 The `@markuplint/html-spec` package uses `@markuplint/spec-generator` to produce a single consolidated `index.json` file. The build process:
 
-1. Reads 177 per-element JSON spec files and 2 common definition files from `src/`
+1. Reads 208 per-element JSON spec files (HTML, SVG, MathML) and 2 common definition files from `src/`
 2. Fetches external data from MDN Web Docs, W3C ARIA specifications, and the HTML Living Standard
 3. Merges manual specifications with external data (manual data takes precedence)
 4. Writes the consolidated output to `index.json` (~48K lines, ~1.4MB)
@@ -18,8 +18,8 @@ The build is network-dependent because external data is fetched live. Expect sev
 ```mermaid
 flowchart TD
     subgraph inputs ["Source Files (html-spec)"]
-        specFiles["src/spec.*.jsonc\n(177 element files)"]
-        commonAttrs["src/spec-common.attributes.jsonc\n(19 global attribute categories)"]
+        specFiles["src/spec.*.jsonc\n(208 element files)"]
+        commonAttrs["src/spec-common.attributes.jsonc\n(20 global attribute categories)"]
         commonContents["src/spec-common.contents.jsonc\n(content model macros)"]
     end
 
@@ -32,6 +32,7 @@ flowchart TD
         mdn["MDN Web Docs"]
         aria["W3C ARIA (1.1 / 1.2 / 1.3)"]
         svg["SVG / Graphics ARIA"]
+        mathml["MathML"]
     end
 
     subgraph output ["Output"]
@@ -46,6 +47,7 @@ flowchart TD
     mdn --> specGen
     aria --> specGen
     svg --> specGen
+    mathml --> specGen
 
     specGen -->|"merge\n(manual takes precedence)"| indexJson
 ```
@@ -81,6 +83,7 @@ The spec-generator fetches live data from the following sources during the build
 | ---------------------------------------- | --------------------------------------------------------------------------------- |
 | MDN Web Docs (HTML)                      | Element descriptions, content categories, attribute metadata, compatibility flags |
 | MDN Web Docs (SVG)                       | SVG element descriptions and deprecated element list                              |
+| MDN Web Docs (MathML)                    | MathML element descriptions and deprecated element list                           |
 | WAI-ARIA 1.1 (`w3.org/TR/wai-aria-1.1/`) | Role definitions, properties, states                                              |
 | WAI-ARIA 1.2 (`w3.org/TR/wai-aria-1.2/`) | Updated role definitions                                                          |
 | WAI-ARIA 1.3 (`w3c.github.io/aria/`)     | Latest editor's draft                                                             |
@@ -128,7 +131,7 @@ The `index.json` follows the `ExtendedSpec` type from `@markuplint/ml-spec`:
 {
   cites: string[];           // Sorted list of all URLs fetched during generation
   def: {
-    "#globalAttrs": { ... }, // 19 global attribute categories
+    "#globalAttrs": { ... }, // 20 global attribute categories
     "#aria": {               // ARIA definitions per version
       "1.1": { roles, props, graphicsRoles },
       "1.2": { roles, props, graphicsRoles },
@@ -136,7 +139,7 @@ The `index.json` follows the `ExtendedSpec` type from `@markuplint/ml-spec`:
     },
     "#contentModels": { ... } // Content model category macros
   },
-  specs: ElementSpec[]       // Element specifications, sorted alphabetically (SVG after HTML)
+  specs: ElementSpec[]       // Element specifications, sorted alphabetically (MathML after HTML, SVG after MathML)
 }
 ```
 

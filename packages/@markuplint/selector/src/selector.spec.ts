@@ -233,6 +233,13 @@ describe('selector matching', () => {
 		expect(createSelector('|a').match(htmlA)).toBeTruthy();
 		expect(createSelector('*|a').match(htmlA)).toBeTruthy();
 		expect(createSelector('svg|a').match(htmlA)).toBeFalsy();
+
+		const mathMi = createTestElement('<math><mi>x</mi></math>', 'mi');
+		expect(createSelector('mml|mi').match(mathMi)).toBeTruthy();
+		expect(createSelector('svg|mi').match(mathMi)).toBeFalsy();
+
+		const htmlMath = createTestElement('<div><math></math></div>', 'math');
+		expect(createSelector('mml|math').match(htmlMath)).toBeTruthy();
 	});
 
 	test('namespaced attribute', () => {

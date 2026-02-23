@@ -35,14 +35,14 @@ Core packages (Application Layer)
 
 ### Source Files (EDIT THESE)
 
-- **`src/spec.*.jsonc`** - Individual element specifications (177 files)
-- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (19 categories)
-- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 categories)
+- **`src/spec.*.jsonc`** - Individual element specifications (208 files)
+- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (20 categories)
+- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 + MathML 3 categories)
 
 ### Build System
 
 - **`build.mjs`** - Generation script that invokes `@markuplint/spec-generator`
-- Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, and SVG specs
+- Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, SVG specs, and MathML specs
 
 ## Relationship to @markuplint/ml-spec
 

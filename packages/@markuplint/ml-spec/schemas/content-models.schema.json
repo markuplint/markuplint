@@ -80,7 +80,10 @@
 				"#SVGStructural",
 				"#SVGStructurallyExternal",
 				"#SVGTextContent",
-				"#SVGTextContentChild"
+				"#SVGTextContentChild",
+				"#MathMLPresentation",
+				"#MathMLScript",
+				"#MathMLTabular"
 			]
 		},
 		"Model": {

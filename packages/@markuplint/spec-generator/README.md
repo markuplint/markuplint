@@ -27,7 +27,7 @@ You normally don't run this directly; use:
 
 1. **Read element sources** -- Load every `src/spec.*.jsonc` and infer the element name from the filename
 2. **Enrich from MDN** -- Fetch MDN element pages for descriptions, categories, and attribute metadata (manual specs take precedence)
-3. **Add obsolete elements** -- Inject HTML obsolete elements and deprecated SVG elements
+3. **Add obsolete elements** -- Inject HTML obsolete elements, deprecated SVG elements, and deprecated MathML elements
 4. **Load shared data** -- Read global attributes and content model definitions
 5. **Build ARIA definitions** -- Scrape WAI-ARIA (1.1/1.2/1.3), Graphics-ARIA, DPub-ARIA, and HTML-ARIA
 6. **Emit Extended Spec JSON** -- Write `{ cites, def, specs }` to `index.json`

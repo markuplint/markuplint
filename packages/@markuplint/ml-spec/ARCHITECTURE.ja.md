@@ -146,16 +146,16 @@ flowchart TD
 
 型システムは、マークアップ言語仕様・要素仕様・ARIA ロール・属性の構造を定義します。
 
-| ファイル                        | 役割                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `types/index.ts`                | 手書き型: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole` 等                |
-| `types/aria.ts`                 | 生成型: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties` |
-| `types/attributes.ts`           | 生成型: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`            |
-| `types/permitted-structures.ts` | 生成型: `PermittedContentPattern`, `ContentModel`, `Category`（HTML 13 + SVG 19 カテゴリ）        |
+| ファイル                        | 役割                                                                                                  |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `types/index.ts`                | 手書き型: `MLMLSpec`, `ElementSpec`, `ExtendedSpec`, `ARIARole`, `ComputedRole` 等                    |
+| `types/aria.ts`                 | 生成型: `ARIA`, `PermittedRoles`, `ImplicitRole`, `PermittedARIAProperties`, `ImplicitProperties`     |
+| `types/attributes.ts`           | 生成型: `AttributeType`, `GlobalAttributes`, `AttributeJSON`, `List`, `Enum`, `Number`                |
+| `types/permitted-structures.ts` | 生成型: `PermittedContentPattern`, `ContentModel`, `Category`（HTML 13 + SVG 19 + MathML 3 カテゴリ） |
 
 ### 2. ARIA アルゴリズム
 
-ARIA アルゴリズムは WAI-ARIA, HTML-AAM, SVG-AAM, AccName 1.2 仕様に基づくロール計算とアクセシビリティツリー管理を実装します。
+ARIA アルゴリズムは WAI-ARIA, HTML-AAM, SVG-AAM, MathML-AAM, AccName 1.2 仕様に基づくロール計算とアクセシビリティツリー管理を実装します。
 
 | ファイル                         | 役割                                                                            |
 | -------------------------------- | ------------------------------------------------------------------------------- |
@@ -183,7 +183,7 @@ HTML アルゴリズムは HTML Living Standard に基づくコンテンツモ�
 | `get-content-model.ts`                       | 条件付きパターン評価を含むコンテンツモデルの取得                               |
 | `content-model-category-to-tag-names.ts`     | コンテンツモデルカテゴリをソート済みタグ名配列に変換                           |
 | `get-selectors-by-content-model-category.ts` | コンテンツモデルカテゴリを CSS セレクタにマッピング                            |
-| `is-palpable-elements.ts`                    | SVG/露出可能要素拡張付きパルパブルコンテンツ検出                               |
+| `is-palpable-elements.ts`                    | SVG/MathML/露出可能要素拡張付きパルパブルコンテンツ検出                        |
 | `is-void-element.ts`                         | ボイド要素判定（13 の HTML ボイド要素）                                        |
 | `is-nothing-content-model.ts`                | 「Nothing」コンテンツモデル判定（void + iframe + template）                    |
 | `may-be-focusable.ts`                        | フォーカス可能性ヒューリスティック（interactive + tabindex + contenteditable） |

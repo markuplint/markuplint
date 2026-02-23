@@ -513,6 +513,15 @@ class SelectorTarget {
 					}
 					break;
 				}
+				case 'mml': {
+					if (el.namespaceURI !== 'http://www.w3.org/1998/Math/MathML') {
+						return {
+							specificity,
+							matched: false,
+						};
+					}
+					break;
+				}
 				default: {
 					throw new InvalidSelectorError(`The ${namespace} namespace is not supported`);
 				}
