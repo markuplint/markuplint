@@ -1,4 +1,4 @@
-import type { IRuleFixer, TextEdit } from '@markuplint/ml-config';
+import type { FixToken, IRuleFixer, TextEdit } from '@markuplint/ml-config';
 
 /**
  * Stateless implementation of {@link IRuleFixer}.
@@ -6,33 +6,39 @@ import type { IRuleFixer, TextEdit } from '@markuplint/ml-config';
  * inside rule fix callbacks.
  */
 export class RuleFixer implements IRuleFixer {
-	replaceText(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit {
+	/** @see {@link IRuleFixer.replaceText} */
+	replaceText(token: FixToken, text: string): TextEdit {
 		return {
 			range: [token.startOffset, token.startOffset + token.raw.length],
 			text,
 		};
 	}
 
+	/** @see {@link IRuleFixer.replaceRange} */
 	replaceRange(range: readonly [number, number], text: string): TextEdit {
 		return { range, text };
 	}
 
-	insertBefore(token: { readonly startOffset: number }, text: string): TextEdit {
+	/** @see {@link IRuleFixer.insertBefore} */
+	insertBefore(token: Pick<FixToken, 'startOffset'>, text: string): TextEdit {
 		return { range: [token.startOffset, token.startOffset], text };
 	}
 
-	insertAfter(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit {
+	/** @see {@link IRuleFixer.insertAfter} */
+	insertAfter(token: FixToken, text: string): TextEdit {
 		const end = token.startOffset + token.raw.length;
 		return { range: [end, end], text };
 	}
 
-	remove(token: { readonly startOffset: number; readonly raw: string }): TextEdit {
+	/** @see {@link IRuleFixer.remove} */
+	remove(token: FixToken): TextEdit {
 		return {
 			range: [token.startOffset, token.startOffset + token.raw.length],
 			text: '',
 		};
 	}
 
+	/** @see {@link IRuleFixer.removeRange} */
 	removeRange(range: readonly [number, number]): TextEdit {
 		return { range, text: '' };
 	}

@@ -439,7 +439,7 @@ sequenceDiagram
 | `remove(token)`             | Token with `startOffset` + `raw` | `range: [start, start+len], text: ""`      |
 | `removeRange(range)`        | Explicit `[start, end)` range    | `range: [start, end], text: ""`            |
 
-The `token` parameter accepts any object with `startOffset` and `raw` properties. MLDOM tokens (`MLToken`, `MLAttr`, etc.) satisfy this naturally.
+The `token` parameter accepts any object satisfying the `FixToken` type (defined in `@markuplint/ml-config`) — i.e., `{ startOffset: number; raw: string }`. MLDOM tokens (`MLToken`, `MLAttr`, etc.) satisfy this naturally.
 
 ### FixApplier Algorithm
 
@@ -467,6 +467,39 @@ Key constraints:
 - Edits within a single `FixData` must not overlap each other
 - Inter-`FixData` overlap is handled by the skip mechanism
 - If any edit in a `FixData` is skipped, the entire `FixData` is classified as skipped
+
+### Multi-Pass Fix Loop
+
+When `applyFixes()` skips some fixes due to range overlap, the engine enters a multi-pass loop (`_multiPassFix()`) that re-parses and re-verifies until all fixable violations are resolved:
+
+```mermaid
+flowchart TD
+    A["Extract fixes from violations"] --> B["applyFixes(code, fixes)"]
+    B --> C{"applied.length === 0?"}
+    C -- Yes --> Z["Return current code"]
+    C -- No --> D{"output === currentCode?"}
+    D -- Yes --> Z
+    D -- No --> E{"Cycle detected?\n(output === code from 2 passes ago)"}
+    E -- Yes --> Z
+    E -- No --> F{"skipped.length === 0?"}
+    F -- Yes --> Z["Return fixed code\n(all fixes applied)"]
+    F -- No --> G["Re-parse + re-verify"]
+    G --> H{"ParserError?"}
+    H -- Yes --> Z["Revert to last good code"]
+    H -- No --> I{"New fixable violations?"}
+    I -- No --> Z
+    I -- Yes --> B
+```
+
+Key design points:
+
+- **Zero-cost path**: If no violations have fixes, the multi-pass loop is skipped entirely
+- **Single-pass fast path**: When `skipped.length === 0`, the loop exits immediately — equivalent to Phase 1 behavior
+- **Cycle detection**: Compares current output against the output from two passes ago to detect A→B→A oscillation
+- **Safety cap**: Maximum 10 passes (same as ESLint's `SourceCodeFixer`)
+- **State restoration**: `verify()` saves and restores `#sourceCode`, `#ast`, and `#document` via `try/finally`
+
+**Important**: The `violations` array in `VerifyResult` reflects the first pass only, while `fixedCode` may be the result of multiple passes. Callers needing an accurate violation list for the fixed code should re-verify the output.
 
 ### Example: Rule Fix in Practice
 

@@ -439,7 +439,7 @@ sequenceDiagram
 | `remove(token)`             | `startOffset` + `raw` を持つトークン | `range: [start, start+len], text: ""`   |
 | `removeRange(range)`        | 明示的な `[start, end)` レンジ       | `range: [start, end], text: ""`         |
 
-`token` パラメータは `startOffset` と `raw` プロパティを持つ任意のオブジェクトを受け付けます。MLDOM トークン（`MLToken`, `MLAttr` 等）は自然にこの要件を満たします。
+`token` パラメータは `FixToken` 型（`@markuplint/ml-config` で定義）を満たす任意のオブジェクト — つまり `{ startOffset: number; raw: string }` — を受け付けます。MLDOM トークン（`MLToken`, `MLAttr` 等）は自然にこの要件を満たします。
 
 ### FixApplier アルゴリズム
 
@@ -467,6 +467,39 @@ flowchart TD
 - 1 つの `FixData` 内の edit は互いに重複してはならない
 - `FixData` 間の重複はスキップ機構で処理される
 - `FixData` 内のいずれかの edit がスキップされると、その `FixData` 全体がスキップとして分類される
+
+### マルチパス Fix ループ
+
+`applyFixes()` がレンジの重複により一部の fix をスキップした場合、エンジンはマルチパスループ（`_multiPassFix()`）に入り、再パース・再検証を繰り返して修正可能な違反をすべて解決します:
+
+```mermaid
+flowchart TD
+    A["violations から fix を抽出"] --> B["applyFixes(code, fixes)"]
+    B --> C{"applied.length === 0?"}
+    C -- Yes --> Z["現在のコードを返す"]
+    C -- No --> D{"output === currentCode?"}
+    D -- Yes --> Z
+    D -- No --> E{"サイクル検出?\n(2パス前の出力と一致)"}
+    E -- Yes --> Z
+    E -- No --> F{"skipped.length === 0?"}
+    F -- Yes --> Z["修正済みコードを返す\n(全 fix 適用完了)"]
+    F -- No --> G["再パース + 再検証"]
+    G --> H{"ParserError?"}
+    H -- Yes --> Z["最後の正常なコードに戻す"]
+    H -- No --> I{"新たな修正可能な違反?"}
+    I -- No --> Z
+    I -- Yes --> B
+```
+
+主な設計ポイント:
+
+- **ゼロコストパス**: fix を持つ violation がなければ、マルチパスループは完全にスキップされる
+- **シングルパス高速パス**: `skipped.length === 0` のとき即座にループを抜ける（Phase 1 と同等の動作）
+- **サイクル検出**: 2パス前の出力と比較し、A→B→A の振動パターンを検出
+- **安全上限**: 最大10パス（ESLint の `SourceCodeFixer` と同じ）
+- **状態復元**: `verify()` は `try/finally` で `#sourceCode`、`#ast`、`#document` を保存・復元
+
+**重要**: `VerifyResult` の `violations` 配列は初回パスの結果のみを反映し、`fixedCode` は複数パスの結果である場合があります。修正後コードの正確な違反リストが必要な場合は、出力を再検証してください。
 
 ### 実例: ルールの Fix 実装
 
