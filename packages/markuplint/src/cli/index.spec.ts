@@ -442,3 +442,74 @@ describe('--max-warnings option', () => {
 		expect(exitCode).toBe(0);
 	});
 });
+
+describe('--fix-dry-run', () => {
+	test('produces diff output for fixable file without modifying it', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../test/fix/dry-run-target.html');
+		const configFilePath = path.resolve(__dirname, '../../test/fix/dry-run-config.json');
+
+		const originalContent = await readFile(targetFilePath, { encoding: 'utf8' });
+
+		const result = await execa(
+			entryFilePath,
+			[
+				'--fix-dry-run',
+				'--no-color',
+				'--config',
+				escape(configFilePath),
+				'--no-search-config',
+				escape(targetFilePath),
+			],
+			{ reject: false },
+		);
+
+		// File must NOT be modified
+		const afterContent = await readFile(targetFilePath, { encoding: 'utf8' });
+		expect(afterContent).toBe(originalContent);
+
+		// stdout should contain unified diff output
+		expect(result.stdout).toContain('--- a/');
+		expect(result.stdout).toContain('+++ b/');
+		expect(result.stdout).toContain('@@');
+	});
+
+	test('produces no diff output for file without fixable issues', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../../../test/fixture/001.html');
+
+		const { stdout } = await execa(entryFilePath, ['--fix-dry-run', '--no-color', escape(targetFilePath)], {
+			reject: false,
+		});
+
+		// No diff output because there are no fixable violations
+		expect(stdout).not.toContain('--- a/');
+		expect(stdout).not.toContain('+++ b/');
+	});
+
+	test('--fix and --fix-dry-run combined: dry-run takes precedence', async () => {
+		const targetFilePath = path.resolve(__dirname, '../../test/fix/dry-run-target.html');
+		const configFilePath = path.resolve(__dirname, '../../test/fix/dry-run-config.json');
+
+		const originalContent = await readFile(targetFilePath, { encoding: 'utf8' });
+
+		const { stderr } = await execa(
+			entryFilePath,
+			[
+				'--fix',
+				'--fix-dry-run',
+				'--no-color',
+				'--config',
+				escape(configFilePath),
+				'--no-search-config',
+				escape(targetFilePath),
+			],
+			{ reject: false },
+		);
+
+		// File must NOT be modified (dry-run takes precedence)
+		const afterContent = await readFile(targetFilePath, { encoding: 'utf8' });
+		expect(afterContent).toBe(originalContent);
+
+		// Warning should be emitted
+		expect(stderr).toContain('--fix-dry-run takes precedence');
+	});
+});

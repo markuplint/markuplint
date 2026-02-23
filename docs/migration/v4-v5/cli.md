@@ -9,9 +9,28 @@
 
 | Change | Impact |
 |--------|--------|
+| New: `--fix-dry-run` flag | Preview fix changes without writing files |
 | `--allow-warnings` default changed to `true` | Exit code behavior |
 | `--allow-warnings` renamed to `--no-allow-warnings` | CLI flag name |
 | `--config` no longer merges with auto-discovered config | Config loading behavior |
+
+## New: `--fix-dry-run` Flag
+
+v5 adds a `--fix-dry-run` flag that shows what `--fix` would change without modifying any files. It outputs a unified diff to stdout:
+
+```bash
+markuplint --fix-dry-run index.html
+```
+
+```diff
+--- a/index.html
++++ b/index.html
+@@ -1,1 +1,1 @@
+-<input required="required" />
++<input required />
+```
+
+When both `--fix` and `--fix-dry-run` are specified, `--fix-dry-run` takes precedence and files are not modified.
 
 ## `--allow-warnings` Default Changed
 

@@ -10,6 +10,8 @@ export type FixResult = {
 	readonly applied: readonly FixData[];
 	/** Fixes that were skipped due to overlapping ranges */
 	readonly skipped: readonly FixData[];
+	/** Flat list of successfully applied edits, sorted by range[0] ascending */
+	readonly appliedEdits: readonly TextEdit[];
 };
 
 /**
@@ -31,7 +33,7 @@ export type FixResult = {
  */
 export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixResult {
 	if (fixes.length === 0) {
-		return { output: sourceCode, applied: [], skipped: [] };
+		return { output: sourceCode, applied: [], skipped: [], appliedEdits: [] };
 	}
 
 	// Tag each edit with its parent FixData index
@@ -51,6 +53,7 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 
 	// Track which FixData indices had at least one skipped edit
 	const skippedFixIndices = new Set<number>();
+	const appliedEdits: TextEdit[] = [];
 	let lastAppliedEnd = -1;
 	const parts: string[] = [];
 	let cursor = 0;
@@ -66,6 +69,7 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 
 		// Append the source text between the last edit and this one
 		parts.push(sourceCode.slice(cursor, start), edit.text);
+		appliedEdits.push(edit);
 
 		cursor = end;
 		lastAppliedEnd = end;
@@ -89,5 +93,6 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 		output: parts.join(''),
 		applied,
 		skipped,
+		appliedEdits,
 	};
 }

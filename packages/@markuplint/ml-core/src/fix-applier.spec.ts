@@ -124,3 +124,60 @@ describe('applyFixes', () => {
 		expect(result.applied).toStrictEqual([fix1, fix2]);
 	});
 });
+
+describe('applyFixes appliedEdits', () => {
+	test('empty fixes returns empty appliedEdits', () => {
+		const result = applyFixes('hello world', []);
+		expect(result.appliedEdits).toStrictEqual([]);
+	});
+
+	test('appliedEdits is sorted by range[0] ascending', () => {
+		const fix1: FixData = { edits: [{ range: [6, 11], text: 'WORLD' }] };
+		const fix2: FixData = { edits: [{ range: [0, 5], text: 'HELLO' }] };
+		const result = applyFixes('hello world', [fix1, fix2]);
+		// Edits are sorted internally, so appliedEdits should be in source order
+		expect(result.appliedEdits).toStrictEqual([
+			{ range: [0, 5], text: 'HELLO' },
+			{ range: [6, 11], text: 'WORLD' },
+		]);
+	});
+
+	test('appliedEdits excludes skipped edits', () => {
+		const fix1: FixData = { edits: [{ range: [0, 7], text: 'HELLO' }] };
+		const fix2: FixData = { edits: [{ range: [5, 11], text: 'WORLD' }] };
+		const result = applyFixes('hello world', [fix1, fix2]);
+		// fix2 is skipped due to overlap
+		expect(result.appliedEdits).toStrictEqual([{ range: [0, 7], text: 'HELLO' }]);
+		expect(result.skipped).toStrictEqual([fix2]);
+	});
+
+	test('appliedEdits contains all edits from multi-edit FixData', () => {
+		const fix: FixData = {
+			edits: [
+				{ range: [0, 1], text: 'H' },
+				{ range: [6, 7], text: 'W' },
+			],
+		};
+		const result = applyFixes('hello world', [fix]);
+		expect(result.appliedEdits).toStrictEqual([
+			{ range: [0, 1], text: 'H' },
+			{ range: [6, 7], text: 'W' },
+		]);
+	});
+});
+
+describe('applyFixes edge cases', () => {
+	test('edit at end of source string (append)', () => {
+		const fix: FixData = { edits: [{ range: [11, 11], text: '!' }] };
+		const result = applyFixes('hello world', [fix]);
+		expect(result.output).toBe('hello world!');
+		expect(result.applied).toStrictEqual([fix]);
+	});
+
+	test('edit replacing entire source', () => {
+		const fix: FixData = { edits: [{ range: [0, 11], text: 'goodbye' }] };
+		const result = applyFixes('hello world', [fix]);
+		expect(result.output).toBe('goodbye');
+		expect(result.applied).toStrictEqual([fix]);
+	});
+});

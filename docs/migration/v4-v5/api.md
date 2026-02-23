@@ -10,6 +10,8 @@
 | Change | Impact |
 |--------|--------|
 | `exec` function removed (v1 API) | Users calling `exec()` |
+| New: `FixSummary` on `MLResultInfo` | API users accessing fix diagnostics |
+| New: `computeCursorOffset()` exported from `@markuplint/ml-core` | Editor integration developers |
 
 ## `exec` Function Removed
 
@@ -53,3 +55,42 @@ const result = await engine.exec();
 | `rulesAutoResolve` | `autoLoad` option |
 | `fix` | `fix` option |
 | `locale` | `locale` option |
+
+## New: `FixSummary` on `MLResultInfo`
+
+When `fix: true` is set, `MLResultInfo` now includes a `fixSummary` field with diagnostics about the fix process:
+
+```typescript
+const result = await engine.exec();
+if (result?.fixSummary) {
+  console.log(`Passes: ${result.fixSummary.passCount}`);
+  console.log(`Applied: ${result.fixSummary.totalApplied}`);
+  console.log(`Skipped: ${result.fixSummary.totalSkipped}`);
+}
+```
+
+`FixSummary` fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `passCount` | `number` | Number of fix passes executed |
+| `totalApplied` | `number` | Total fixes applied across all passes |
+| `totalSkipped` | `number` | Total fixes skipped due to overlap |
+| `reachedMaxPasses` | `boolean` | Whether the 10-pass safety cap was reached |
+| `firstPassEdits` | `readonly TextEdit[]` | Applied edits from the first pass (original offsets) |
+
+## New: `computeCursorOffset()`
+
+For editor integrations, `@markuplint/ml-core` exports `computeCursorOffset()` to remap a cursor position from the original source to the fixed source:
+
+```typescript
+import { computeCursorOffset } from '@markuplint/ml-core';
+
+// After fixing, remap the cursor
+const newOffset = computeCursorOffset(
+  result.fixSummary.firstPassEdits,
+  originalCursorOffset,
+);
+```
+
+This uses the first-pass edits (which reference original source offsets) to compute where the cursor should be placed in the fixed code.

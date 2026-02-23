@@ -329,3 +329,49 @@ describe('async and sync rules', () => {
 		expect(violations).toMatchObject([asyncReport, syncReport]);
 	});
 });
+
+describe('fixSummary pipeline', () => {
+	it('fixSummary is present when fix=true and fixes exist', async () => {
+		const { fixSummary, fixedCode } = await mlTest(
+			'<input required="required" />',
+			{ rules: { 'no-boolean-attr-value': true } },
+			undefined,
+			'en',
+			true,
+		);
+		expect(fixedCode).toBe('<input required />');
+		expect(fixSummary).toBeDefined();
+		expect(fixSummary!.passCount).toBeGreaterThanOrEqual(1);
+		expect(fixSummary!.totalApplied).toBeGreaterThanOrEqual(1);
+		expect(fixSummary!.totalSkipped).toBeGreaterThanOrEqual(0);
+		expect(fixSummary!.reachedMaxPasses).toBe(false);
+		expect(fixSummary!.firstPassEdits.length).toBeGreaterThanOrEqual(1);
+	});
+
+	it('fixSummary is present with zero counts when fix=true but no fixes', async () => {
+		const { fixSummary } = await mlTest(
+			'<input required />',
+			{ rules: { 'no-boolean-attr-value': true } },
+			undefined,
+			'en',
+			true,
+		);
+		expect(fixSummary).toBeDefined();
+		expect(fixSummary!.passCount).toBe(0);
+		expect(fixSummary!.totalApplied).toBe(0);
+		expect(fixSummary!.totalSkipped).toBe(0);
+		expect(fixSummary!.reachedMaxPasses).toBe(false);
+		expect(fixSummary!.firstPassEdits).toStrictEqual([]);
+	});
+
+	it('fixSummary is undefined when fix=false', async () => {
+		const { fixSummary } = await mlTest(
+			'<input required="required" />',
+			{ rules: { 'no-boolean-attr-value': true } },
+			undefined,
+			'en',
+			false,
+		);
+		expect(fixSummary).toBeUndefined();
+	});
+});

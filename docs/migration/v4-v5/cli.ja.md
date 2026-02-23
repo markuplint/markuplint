@@ -9,9 +9,28 @@
 
 | 変更内容 | 影響範囲 |
 |---------|---------|
+| 新機能: `--fix-dry-run` フラグ | ファイルを変更せずに修正内容をプレビュー |
 | `--allow-warnings` のデフォルトが `true` に変更 | 終了コードの動作 |
 | `--allow-warnings` が `--no-allow-warnings` にリネーム | CLI フラグ名 |
 | `--config` 指定時にデフォルト設定ファイルの自動読み込みを停止 | 設定ファイルの読み込み動作 |
+
+## 新機能: `--fix-dry-run` フラグ
+
+v5 では `--fix-dry-run` フラグが追加されました。`--fix` が行う変更を、ファイルを変更せずに unified diff 形式で標準出力に表示します:
+
+```bash
+markuplint --fix-dry-run index.html
+```
+
+```diff
+--- a/index.html
++++ b/index.html
+@@ -1,1 +1,1 @@
+-<input required="required" />
++<input required />
+```
+
+`--fix` と `--fix-dry-run` の両方が指定された場合、`--fix-dry-run` が優先され、ファイルは変更されません。
 
 ## `--allow-warnings` のデフォルト変更
 

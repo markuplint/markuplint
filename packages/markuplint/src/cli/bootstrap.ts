@@ -14,6 +14,7 @@ Usage
 Options
 	--config,                -c FILE_PATH  A configuration file path.
 	--fix,                                 Fix HTML.
+	--fix-dry-run                          Show what --fix would change without writing files.
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
@@ -54,6 +55,10 @@ export const cli = meow(help, {
 			shortFlag: 'c',
 		},
 		fix: {
+			type: 'boolean',
+			default: false,
+		},
+		fixDryRun: {
 			type: 'boolean',
 			default: false,
 		},

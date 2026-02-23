@@ -13,6 +13,8 @@ export type APIOptions = {
 	readonly noSearchConfig?: boolean;
 	readonly locale?: string;
 	readonly fix?: boolean;
+	/** When true, compute fixes without writing files (CLI dry-run mode). */
+	readonly fixDryRun?: boolean;
 	readonly ignoreExt?: boolean;
 	readonly rules?: readonly Readonly<AnyMLRule>[];
 	readonly importPresetRules?: boolean;

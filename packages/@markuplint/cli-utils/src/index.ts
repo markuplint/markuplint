@@ -19,3 +19,4 @@ export { messageToString } from './message-to-string.js';
 export { name } from './name.js';
 export { pad } from './pad.js';
 export { space } from './space.js';
+export { unifiedDiff } from './unified-diff.js';

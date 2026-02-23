@@ -53,6 +53,7 @@ src/
 │   ├── create-rule.ts                — createRule factory
 │   ├── create-test-rule.ts           — Test rule factory
 │   └── types.ts                      — RuleSeed, Checker types
+├── cursor-offset.ts                  — computeCursorOffset (cursor remapping after edits)
 ├── fix-applier.ts                    — applyFixes (overlap-aware TextEdit applicator)
 ├── ruleset/
 │   └── index.ts                      — Ruleset class (rules + nodeRules + childNodeRules)
@@ -133,7 +134,7 @@ flowchart LR
     A["MLCore\nconstructor"]
     B["_parse()\nParser → MLASTDocument"]
     C["_createDocument()\nMLASTDocument → MLDocument"]
-    D["verify(fix?)\nFor each rule:"]
+    D["verify(fix? | options?)\nFor each rule:"]
     E["document.setRule(rule)\nRuleMapper maps config → nodes"]
     F["rule.verify(document)\nMLRuleContext collects reports"]
     G["Violations[]"]
@@ -146,7 +147,7 @@ flowchart LR
 1. **Parse**: `MLCore` invokes the configured parser (`MLParser`) to produce an `MLASTDocument`
 2. **Create Document**: The AST is wrapped in an `MLDocument`, which builds the full MLDOM tree via `createNode()` factory. `RuleMapper` resolves rule configuration for every node
 3. **Verify**: For each `MLRule`, the engine calls `document.setRule(rule)` then `rule.verify(document)`. The rule walks relevant nodes via `document.walkOn()` and reports violations through `MLRuleContext`. Rules may attach inline `fix` callbacks to reports that return `TextEdit` objects
-4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection
+4. **Fix** (optional): When `fix=true`, fix callbacks on reports are executed via `RuleFixer` to produce `TextEdit[]`. `FixApplier.applyFixes(sourceCode, fixes)` applies all edits to the source text with overlap detection. When fixes require multiple passes, `_multiPassFix()` orchestrates re-parsing and re-verification, returning a `FixSummary` with pass count, applied/skipped totals, and first-pass edits for cursor offset computation
 
 ## MLDOM Class Hierarchy
 
@@ -423,7 +424,7 @@ sequenceDiagram
 
     Core->>Core: Collect all FixData from violations
     Core->>FA: applyFixes(sourceCode, allFixes)
-    FA-->>Core: FixResult { output, applied, skipped }
+    FA-->>Core: FixResult { output, applied, skipped, appliedEdits }
 ```
 
 ### RuleFixer API
@@ -454,7 +455,7 @@ flowchart TD
     E["Skip edit\n(mark parent FixData as skipped)"]
     F["Apply edit\n(splice into output)"]
     G["Classify: each FixData as\napplied or skipped"]
-    H["Return FixResult\n{ output, applied, skipped }"]
+    H["Return FixResult\n{ output, applied, skipped, appliedEdits }"]
 
     A --> B --> C --> D
     D -- Yes --> E --> C
@@ -467,6 +468,7 @@ Key constraints:
 - Edits within a single `FixData` must not overlap each other
 - Inter-`FixData` overlap is handled by the skip mechanism
 - If any edit in a `FixData` is skipped, the entire `FixData` is classified as skipped
+- `appliedEdits` is a flat list of all successfully applied `TextEdit` objects, sorted by `range[0]` ascending — used for cursor offset computation
 
 ### Multi-Pass Fix Loop
 
@@ -500,6 +502,54 @@ Key design points:
 - **State restoration**: `verify()` saves and restores `#sourceCode`, `#ast`, and `#document` via `try/finally`
 
 **Important**: The `violations` array in `VerifyResult` reflects the first pass only, while `fixedCode` may be the result of multiple passes. Callers needing an accurate violation list for the fixed code should re-verify the output.
+
+### VerifyResult and FixSummary
+
+`MLCore.verify()` accepts either a `boolean` or a `VerifyOptions` object:
+
+```typescript
+verify(fix?: boolean): Promise<VerifyResult>;
+verify(options?: VerifyOptions): Promise<VerifyResult>;
+```
+
+`VerifyResult` contains:
+
+| Field        | Type                      | Description                                                   |
+| ------------ | ------------------------- | ------------------------------------------------------------- |
+| `violations` | `readonly Violation[]`    | Violations from the first verification pass                   |
+| `fixedCode`  | `string \| undefined`     | Source after all fix passes; `undefined` when fix is disabled |
+| `fixSummary` | `FixSummary \| undefined` | Fix process summary; present when `fix=true`                  |
+
+`FixSummary` provides diagnostics about the multi-pass fix process:
+
+| Field              | Type                  | Description                                                      |
+| ------------------ | --------------------- | ---------------------------------------------------------------- |
+| `passCount`        | `number`              | Number of fix passes executed                                    |
+| `totalApplied`     | `number`              | Total fixes applied across all passes                            |
+| `totalSkipped`     | `number`              | Total fixes skipped (overlap) across all passes                  |
+| `reachedMaxPasses` | `boolean`             | Whether the 10-pass safety cap was reached                       |
+| `firstPassEdits`   | `readonly TextEdit[]` | Applied edits from the first pass only (original source offsets) |
+
+`firstPassEdits` references the original source code offsets, making them suitable for cursor remapping via `computeCursorOffset()`.
+
+### Cursor Offset Computation
+
+`computeCursorOffset()` (in `cursor-offset.ts`) maps a cursor position from the original source to the fixed source using the first-pass applied edits:
+
+```typescript
+import { computeCursorOffset } from '@markuplint/ml-core';
+
+const newOffset = computeCursorOffset(fixSummary.firstPassEdits, originalCursorOffset);
+```
+
+Algorithm:
+
+1. Walk through edits sorted by `range[0]` ascending
+2. For each edit before the cursor: accumulate `delta = text.length - (end - start)`
+3. For edits after the cursor: stop (no effect)
+4. If the cursor falls inside a replaced range `[start, end)`: place at `start + text.length`
+
+Ranges use half-open intervals: a cursor at position `end` is considered **outside** the edit.
 
 ### Example: Rule Fix in Practice
 
