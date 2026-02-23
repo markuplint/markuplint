@@ -96,6 +96,13 @@ type RuleConfig<T, O> = {
 - `OriginalNode` -- Defines an element's name, slots, namespace, attributes, inherited attributes, and ARIA properties
 - `PretenderDetails` -- Normalized form `{data?, files?, imports?}` used after merging
 
+### Autofix Types
+
+- `TextEdit` -- A single source code replacement: `{ range: [start, end), text }`. An empty `text` means deletion
+- `FixData` -- Contains one or more `TextEdit`s to apply atomically. If any edit in a `FixData` overlaps with another `FixData`, the entire group is skipped
+- `FixToken` -- Minimal token shape (`{ startOffset, raw }`) accepted by `IRuleFixer` methods. Any MLDOM token satisfies this constraint
+- `IRuleFixer` -- Interface for building `TextEdit`s inside fix callbacks. Provides `replaceText`, `replaceRange`, `insertBefore`, `insertAfter`, `remove`, and `removeRange`
+
 ## Merge Algorithm
 
 This is the core of the package. The `mergeConfig()` function combines two configurations with property-specific strategies.
@@ -225,7 +232,7 @@ This function is used by `nodeRules` and `childNodeRules` with `regexSelector`, 
 
 | File                  | Purpose                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `src/types.ts`        | All type definitions (Config, Rule, Pretender, Violation, etc.)                                         |
+| `src/types.ts`        | All type definitions (Config, Rule, Pretender, Violation, FixToken, IRuleFixer, etc.)                   |
 | `src/merge-config.ts` | `mergeConfig()`, `mergeRule()`, and all helper functions                                                |
 | `src/utils.ts`        | `provideValue()`, `exchangeValueOnRule()`, `cleanOptions()`, `isRuleConfigValue()`, `deleteUndefProp()` |
 | `src/index.ts`        | Re-exports all public APIs                                                                              |

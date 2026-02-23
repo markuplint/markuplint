@@ -539,15 +539,69 @@ export type FixData = {
 };
 
 /**
+ * Minimal token shape required by {@link IRuleFixer} methods.
+ * Any object with a character offset and raw source text satisfies this constraint.
+ */
+export type FixToken = {
+	readonly startOffset: number;
+	readonly raw: string;
+};
+
+/**
  * A helper interface for building {@link TextEdit}s inside a fix callback.
  * Passed to the `fix` function on {@link Report1} and {@link Report2}.
  */
 export interface IRuleFixer {
-	replaceText(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit;
+	/**
+	 * Replaces a token's entire text with new content.
+	 *
+	 * @param token - The token whose range will be replaced
+	 * @param text - The replacement text
+	 * @returns A TextEdit spanning the token's range
+	 */
+	replaceText(token: FixToken, text: string): TextEdit;
+
+	/**
+	 * Replaces an explicit character range with new content.
+	 *
+	 * @param range - The `[start, end)` character offsets to replace
+	 * @param text - The replacement text
+	 * @returns A TextEdit spanning the given range
+	 */
 	replaceRange(range: readonly [number, number], text: string): TextEdit;
-	insertBefore(token: { readonly startOffset: number }, text: string): TextEdit;
-	insertAfter(token: { readonly startOffset: number; readonly raw: string }, text: string): TextEdit;
-	remove(token: { readonly startOffset: number; readonly raw: string }): TextEdit;
+
+	/**
+	 * Inserts text immediately before a token.
+	 *
+	 * @param token - The token before which to insert
+	 * @param text - The text to insert
+	 * @returns A zero-width TextEdit at the token's start offset
+	 */
+	insertBefore(token: Pick<FixToken, 'startOffset'>, text: string): TextEdit;
+
+	/**
+	 * Inserts text immediately after a token.
+	 *
+	 * @param token - The token after which to insert
+	 * @param text - The text to insert
+	 * @returns A zero-width TextEdit at the token's end offset
+	 */
+	insertAfter(token: FixToken, text: string): TextEdit;
+
+	/**
+	 * Removes a token's entire text from the source.
+	 *
+	 * @param token - The token to remove
+	 * @returns A TextEdit that replaces the token's range with an empty string
+	 */
+	remove(token: FixToken): TextEdit;
+
+	/**
+	 * Removes an explicit character range from the source.
+	 *
+	 * @param range - The `[start, end)` character offsets to remove
+	 * @returns A TextEdit that replaces the range with an empty string
+	 */
 	removeRange(range: readonly [number, number]): TextEdit;
 }
 

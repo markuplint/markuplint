@@ -96,6 +96,13 @@ type RuleConfig<T, O> = {
 - `OriginalNode` -- 要素名、スロット、名前空間、属性、継承属性、ARIA プロパティを定義
 - `PretenderDetails` -- マージ後に使用される正規化形式 `{data?, files?, imports?}`
 
+### 自動修正型
+
+- `TextEdit` -- ソースコードの単一置換: `{ range: [start, end), text }`。`text` が空文字列の場合は削除を意味する
+- `FixData` -- 1つ以上の `TextEdit` をアトミックに適用する単位。`FixData` 内のいずれかの edit が他の `FixData` と重複すると、グループ全体がスキップされる
+- `FixToken` -- `IRuleFixer` メソッドが受け付ける最小トークン型（`{ startOffset, raw }`）。すべての MLDOM トークンはこの制約を満たす
+- `IRuleFixer` -- fix コールバック内で `TextEdit` を構築するためのインターフェース。`replaceText`、`replaceRange`、`insertBefore`、`insertAfter`、`remove`、`removeRange` を提供
+
 ## マージアルゴリズム
 
 このパッケージの中核です。`mergeConfig()` 関数はプロパティごとの戦略で2つの設定を統合します。
@@ -225,7 +232,7 @@ Mustache テンプレート文字列を提供されたデータでレンダリ�
 
 | ファイル              | 目的                                                                                                    |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `src/types.ts`        | 全型定義（Config, Rule, Pretender, Violation 等）                                                       |
+| `src/types.ts`        | 全型定義（Config, Rule, Pretender, Violation, FixToken, IRuleFixer 等）                                 |
 | `src/merge-config.ts` | `mergeConfig()`、`mergeRule()`、全ヘルパー関数                                                          |
 | `src/utils.ts`        | `provideValue()`、`exchangeValueOnRule()`、`cleanOptions()`、`isRuleConfigValue()`、`deleteUndefProp()` |
 | `src/index.ts`        | 全公開 API の再エクスポート                                                                             |
