@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Features
+
+- **selector:** add MathML namespace selector support ([59c385d](https://github.com/markuplint/markuplint/commit/59c385dedb28c0be2fa9fbbb351e8debd0401412))
+
 # [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
 
 **Note:** Version bump only for package @markuplint/selector

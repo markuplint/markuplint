@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Bug Fixes
+
+- **vscode:** handle empty string from VS Code config for ariaVersion ([7cef580](https://github.com/markuplint/markuplint/commit/7cef58014d433de7acd0126e500784410c727edc))
+- **vscode:** remove hardcoded ARIA version default to follow markuplint's default ([f94a692](https://github.com/markuplint/markuplint/commit/f94a692378a18688ffff433ed42efc37ee24887c))
+
+### Features
+
+- **vscode:** add workingDirectories option for monorepo support ([69aa2ee](https://github.com/markuplint/markuplint/commit/69aa2ee66e2ffd3973ebc6953dc6e48aa4320288)), closes [#1287](https://github.com/markuplint/markuplint/issues/1287)
+
 # [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
 
 **Note:** Version bump only for package vscode-markuplint

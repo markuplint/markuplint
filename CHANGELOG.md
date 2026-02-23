@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
+
+### Bug Fixes
+
+- **vscode:** handle empty string from VS Code config for ariaVersion ([7cef580](https://github.com/markuplint/markuplint/commit/7cef58014d433de7acd0126e500784410c727edc))
+- **vscode:** remove hardcoded ARIA version default to follow markuplint's default ([f94a692](https://github.com/markuplint/markuplint/commit/f94a692378a18688ffff433ed42efc37ee24887c))
+
+### Features
+
+- **html-spec:** add 32 MathML element specifications ([2acf2e1](https://github.com/markuplint/markuplint/commit/2acf2e1f1c6f536a6de424a6b7eb6c9b9ca2c178))
+- **markuplint:** integrate autofix results into MLEngine ([1558a5c](https://github.com/markuplint/markuplint/commit/1558a5cbdddda6845cf2570252920f5c489a6acc))
+- **ml-config:** add autofix type definitions ([d7149c3](https://github.com/markuplint/markuplint/commit/d7149c319fe5f24dc96bfcbd5d83206c0f8e61ed))
+- **ml-core:** implement autofix engine with fix-applier and rule-fixer ([36efcec](https://github.com/markuplint/markuplint/commit/36efcecb17e2f4e0729390b1684e571c13c38a38))
+- **ml-spec:** add MathML content model categories and namespace support ([80f0945](https://github.com/markuplint/markuplint/commit/80f0945595aed48c9766423e83e8cd2b1c454a54))
+- **parser-utils:** add MathML namespace detection ([6c27e45](https://github.com/markuplint/markuplint/commit/6c27e45475104d744a8109e8e36698bd9dba4e8b))
+- **rules:** add inline fix callbacks to three rules ([16f9600](https://github.com/markuplint/markuplint/commit/16f9600a1f495046541c195859e218ca6dd61eca))
+- **selector:** add MathML namespace selector support ([59c385d](https://github.com/markuplint/markuplint/commit/59c385dedb28c0be2fa9fbbb351e8debd0401412))
+- **spec-generator:** add MathML element scraping support ([0c56ba4](https://github.com/markuplint/markuplint/commit/0c56ba4c8ca1a2e401da5cfea0f5cf8f9056f737))
+- **vscode:** add workingDirectories option for monorepo support ([69aa2ee](https://github.com/markuplint/markuplint/commit/69aa2ee66e2ffd3973ebc6953dc6e48aa4320288)), closes [#1287](https://github.com/markuplint/markuplint/issues/1287)
+- **website:** add visual regression tests and improve CI workflow ([d1286d6](https://github.com/markuplint/markuplint/commit/d1286d611f140b87308ad7f57eca3cacfa7b36b7)), closes [#1386](https://github.com/markuplint/markuplint/issues/1386)
+
+### BREAKING CHANGES
+
+- **ml-core:** verify() now returns VerifyResult instead of
+  Violation[]. RuleSeed.fix() is removed in favor of inline fix
+  callbacks on report().
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 # [5.0.0-alpha.1](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.0...v5.0.0-alpha.1) (2026-02-22)
 
 ### Bug Fixes

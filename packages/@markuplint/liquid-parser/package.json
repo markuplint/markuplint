@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/liquid-parser",
-	"version": "5.0.0-alpha.1",
+	"version": "5.0.0-alpha.2",
 	"description": "Liquid template parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,9 +24,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.0.0-alpha.1"
+		"@markuplint/html-parser": "5.0.0-alpha.2"
 	},
 	"devDependencies": {
-		"@markuplint/parser-utils": "5.0.0-alpha.1"
+		"@markuplint/parser-utils": "5.0.0-alpha.2"
 	}
 }
