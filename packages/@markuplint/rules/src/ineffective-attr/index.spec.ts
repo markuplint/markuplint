@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -29,4 +29,21 @@ test('script[src][type=module][defer]', async () => {
 			raw: 'defer',
 		},
 	]);
+});
+
+describe('fix', () => {
+	test('remove ineffective defer from inline script', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>', undefined, true);
+		expect(fixedCode).toBe('<script>const foo = "foo";</script>');
+	});
+
+	test('remove ineffective defer from module script', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<script type="module" src="path/to" defer></script>',
+			undefined,
+			true,
+		);
+		expect(fixedCode).toBe('<script type="module" src="path/to"></script>');
+	});
 });

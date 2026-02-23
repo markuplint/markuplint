@@ -1,5 +1,7 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
+import { removeAttrValue } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -55,6 +57,7 @@ export default createRule({
 						t('{0} is {1}', t('the "{0*}" {1}', name, 'attribute'), t('a {0}', 'boolean attribute')) +
 						t('. ') +
 						t("It doesn't need {0}", t('the {0}', 'value')),
+					fix: fixer => removeAttrValue(fixer, attr),
 				});
 			}
 		});

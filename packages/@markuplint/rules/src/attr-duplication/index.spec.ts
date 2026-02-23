@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -174,4 +174,26 @@ test('Astro', async () => {
 	});
 
 	expect(violations.length).toBe(1);
+});
+
+describe('fix', () => {
+	test('remove duplicate attribute', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<div class="a" class="b"></div>', undefined, true);
+		expect(fixedCode).toBe('<div class="a"></div>');
+	});
+
+	test('remove duplicate boolean attribute', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<input disabled disabled />', undefined, true);
+		expect(fixedCode).toBe('<input disabled />');
+	});
+
+	test('remove third duplicate attribute', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<div data-attr="value" data-Attr=\'db\' data-attR=tr></div>',
+			undefined,
+			true,
+		);
+		expect(fixedCode).toBe('<div data-attr="value"></div>');
+	});
 });

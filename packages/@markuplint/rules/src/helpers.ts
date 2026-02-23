@@ -1,6 +1,6 @@
 import type { Log } from './debug.js';
 import type { Translator } from '@markuplint/i18n';
-import type { PlainData } from '@markuplint/ml-config';
+import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
@@ -303,4 +303,95 @@ export class Collection<T> {
  */
 export function deepCopy<T>(value: T): WritableDeep<T> {
 	return structuredClone(value as any) as WritableDeep<T>;
+}
+
+/**
+ * Computes a removal range from a list of nullable tokens.
+ * Filters out null/undefined tokens and tokens with empty `raw`,
+ * then returns the range spanning from the first to the last token.
+ *
+ * @param tokens - An array of nullable tokens to compute the range from
+ * @returns `[start, end]` tuple, or `null` if no valid tokens
+ */
+function tokenRange(tokens: readonly (FixToken | null | undefined)[]): readonly [number, number] | null {
+	const valid = tokens.filter((t): t is FixToken => t != null && t.raw.length > 0);
+	const first = valid[0];
+	const last = valid.at(-1);
+	if (!first || !last) {
+		return null;
+	}
+	return [first.startOffset, last.startOffset + last.raw.length];
+}
+
+/**
+ * Creates a fix that removes an entire attribute (name + value + surrounding whitespace).
+ * Used by rules that need to remove a whole attribute from an element.
+ *
+ * @param fixer - The rule fixer instance for building TextEdits
+ * @param attr - The attribute token parts to remove (from `spacesBeforeName` through `endQuote`)
+ * @returns A TextEdit (or empty array if no valid tokens exist) that removes the attribute
+ */
+export function removeAttr(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	fixer: IRuleFixer,
+	attr: {
+		readonly spacesBeforeName: FixToken | null;
+		readonly nameNode: FixToken | null;
+		readonly spacesBeforeEqual: FixToken | null;
+		readonly equal: FixToken | null;
+		readonly spacesAfterEqual: FixToken | null;
+		readonly startQuote: FixToken | null;
+		readonly valueNode: FixToken | null;
+		readonly endQuote: FixToken | null;
+	},
+): TextEdit | TextEdit[] {
+	const range = tokenRange([
+		attr.spacesBeforeName,
+		attr.nameNode,
+		attr.spacesBeforeEqual,
+		attr.equal,
+		attr.spacesAfterEqual,
+		attr.startQuote,
+		attr.valueNode,
+		attr.endQuote,
+	]);
+	if (!range) {
+		return [];
+	}
+	return fixer.removeRange(range);
+}
+
+/**
+ * Creates a fix that removes only the value portion of an attribute
+ * (equals sign, quotes, and value), keeping the attribute name.
+ * Used by `no-boolean-attr-value` to convert `disabled="disabled"` to `disabled`.
+ *
+ * @param fixer - The rule fixer instance for building TextEdits
+ * @param attr - The attribute token parts to remove (from `spacesBeforeEqual` through `endQuote`)
+ * @returns A TextEdit (or empty array if no valid tokens exist) that removes the value portion
+ */
+export function removeAttrValue(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	fixer: IRuleFixer,
+	attr: {
+		readonly spacesBeforeEqual: FixToken | null;
+		readonly equal: FixToken | null;
+		readonly spacesAfterEqual: FixToken | null;
+		readonly startQuote: FixToken | null;
+		readonly valueNode: FixToken | null;
+		readonly endQuote: FixToken | null;
+	},
+): TextEdit | TextEdit[] {
+	const range = tokenRange([
+		attr.spacesBeforeEqual,
+		attr.equal,
+		attr.spacesAfterEqual,
+		attr.startQuote,
+		attr.valueNode,
+		attr.endQuote,
+	]);
+	if (!range) {
+		return [];
+	}
+	return fixer.removeRange(range);
 }

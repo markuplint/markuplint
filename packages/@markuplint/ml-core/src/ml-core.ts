@@ -217,10 +217,16 @@ export class MLCore {
 	 * (unless parse errors are suppressed via severity options).
 	 *
 	 * When `fix` is true, fix callbacks are executed and the resulting TextEdits
-	 * are applied to produce `fixedCode`.
+	 * are applied via a multi-pass loop to produce `fixedCode`.
+	 *
+	 * **Important**: `violations` reflects the *first* pass only, while `fixedCode`
+	 * may be the result of multiple fix passes. This means some violations in the
+	 * array may already be resolved in `fixedCode`, and new violations introduced
+	 * during later passes are not included in the array. Callers needing an accurate
+	 * violation list for the fixed code should re-verify the output.
 	 *
 	 * @param fix - Whether to attempt auto-fixing violations
-	 * @returns Violations and the (possibly fixed) source code
+	 * @returns Violations from the initial analysis and the (possibly fixed) source code
 	 */
 	async verify(fix = false): Promise<VerifyResult> {
 		log('verify: start');
@@ -278,46 +284,9 @@ export class MLCore {
 			});
 		}
 
-		for (const rule of this.#rules) {
-			// For virtual rules, check disable conditions:
-			// 1. Exact name match: rules["alias/name"]: false
-			// 2. Group disable: rules["groupName"]: false (multi-entry named nodeRules)
-			// 3. Namespace wildcard: rules["scope/*"]: false
-			// Note: base rule name disable (rules["baseRuleName"]: false) is handled
-			// during expandNamedRules for named rule groups in the rules section.
-			if (
-				rule.baseRuleId &&
-				(this.#ruleset.rules[rule.name] === false ||
-					(rule.groupName && this.#ruleset.rules[rule.groupName] === false) ||
-					this.#disabledNamespaces.some(ns => rule.name.startsWith(ns)))
-			) {
-				continue;
-			}
+		const ruleViolations = await this._runAllRules(fix);
+		violations.push(...ruleViolations);
 
-			const ruleInfo = rule.getRuleInfo(this.#ruleset, rule.name);
-			if (ruleInfo.disabled && ruleInfo.nodeRules.length === 0 && ruleInfo.childNodeRules.length === 0) {
-				continue;
-			}
-
-			log('%s Rule: verify', rule.name);
-			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
-				if (error instanceof ParserError) {
-					return error;
-				}
-				throw error;
-			});
-
-			if (results instanceof ParserError) {
-				const parseError = this._createParseError(results.message, results.line, results.col, results.raw);
-				if (parseError) {
-					log('%s Rule: verify error %o', rule.name, results.message);
-					violations.push(parseError);
-				}
-			} else {
-				violations.push(...results);
-			}
-			log('%s Rule: verify end', rule.name);
-		}
 		if (resultLog.enabled) {
 			// eslint-disable-next-line unicorn/no-array-reduce
 			const { e, w, i } = violations.reduce(
@@ -337,18 +306,22 @@ export class MLCore {
 		// Apply fixes if enabled
 		let fixedCode: string | undefined;
 		if (fix) {
-			fixedCode = this.#sourceCode;
-			const allFixes: FixData[] = [];
-			for (const v of violations) {
-				if (v.fix) {
-					allFixes.push(v.fix);
+			const hasFixes = violations.some(v => v.fix);
+			if (hasFixes) {
+				const originalSourceCode = this.#sourceCode;
+				const originalAst = this.#ast;
+				const originalDocument = this.#document;
+
+				try {
+					fixedCode = await this._multiPassFix(violations);
+				} finally {
+					// Restore original state - verify() must be non-mutating
+					this.#sourceCode = originalSourceCode;
+					this.#ast = originalAst;
+					this.#document = originalDocument;
 				}
-			}
-			if (allFixes.length > 0) {
-				const result = applyFixes(this.#sourceCode, allFixes);
-				fixedCode = result.output;
-				// TODO(Phase 2): If skipped fixes exist, implement multi-pass re-verify loop
-				// (similar to ESLint's 10-pass fix loop) to resolve conflicts iteratively.
+			} else {
+				fixedCode = this.#sourceCode;
 			}
 		}
 
@@ -398,6 +371,137 @@ export class MLCore {
 		};
 	}
 
+	/**
+	 * Iteratively applies fixes, re-parses, and re-verifies until no overlapping
+	 * fixes remain or the maximum pass count is reached (ESLint-style multi-pass loop).
+	 *
+	 * **Callers must save/restore `#sourceCode`, `#ast`, and `#document`** because
+	 * this method mutates them during intermediate re-parse steps.
+	 *
+	 * @param initialViolations - Violations from the first verification pass
+	 * @returns The final fixed source code
+	 */
+	private async _multiPassFix(initialViolations: readonly Violation[]): Promise<string> {
+		const MAX_FIX_PASSES = 10;
+		let currentCode = this.#sourceCode;
+		let previousCode: string | undefined;
+		let fixes = extractFixes(initialViolations);
+
+		let pass = 0;
+		for (; pass < MAX_FIX_PASSES; pass++) {
+			log('fix pass %d: %d fixes', pass, fixes.length);
+			const result = applyFixes(currentCode, fixes);
+
+			if (result.applied.length === 0) {
+				log('fix pass %d: no fixes applied, stopping', pass);
+				break;
+			}
+
+			if (result.output === currentCode) {
+				log('fix pass %d: output unchanged, stopping', pass);
+				break;
+			}
+
+			// Cycle detection: if the output matches the code from two passes ago,
+			// fixes are oscillating (A → B → A) and will never converge.
+			if (previousCode !== undefined && result.output === previousCode) {
+				log('fix pass %d: cycle detected (output matches pass %d), stopping', pass, pass - 2);
+				currentCode = result.output;
+				break;
+			}
+
+			previousCode = currentCode;
+			currentCode = result.output;
+
+			if (result.skipped.length === 0) {
+				log('fix pass %d: all fixes applied, stopping', pass);
+				break;
+			}
+
+			// --- Multi-pass path (only when overlapping fixes exist) ---
+			log('fix pass %d: %d skipped, re-parsing for next pass', pass, result.skipped.length);
+			const previousGoodCode = currentCode;
+
+			this.#sourceCode = currentCode;
+			this._parse();
+			this._createDocument();
+
+			if (this.#document instanceof ParserError) {
+				log('fix pass %d: produced unparsable code, reverting to previous state', pass);
+				currentCode = previousGoodCode;
+				break;
+			}
+
+			const newViolations = await this._runAllRules(true);
+			fixes = extractFixes(newViolations);
+			if (fixes.length === 0) {
+				log('fix pass %d: no more fixable violations, stopping', pass);
+				break;
+			}
+		}
+
+		if (pass === MAX_FIX_PASSES) {
+			log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
+		}
+
+		return currentCode;
+	}
+
+	/**
+	 * Executes all configured rules against the current document and collects violations.
+	 * Skips disabled rules and handles virtual rule disable conditions.
+	 *
+	 * @param fix - Whether to execute fix callbacks on violations
+	 * @returns All violations produced by the rule set
+	 */
+	private async _runAllRules(fix: boolean): Promise<Violation[]> {
+		const violations: Violation[] = [];
+		if (this.#document instanceof ParserError) {
+			return violations;
+		}
+		for (const rule of this.#rules) {
+			// For virtual rules, check disable conditions:
+			// 1. Exact name match: rules["alias/name"]: false
+			// 2. Group disable: rules["groupName"]: false (multi-entry named nodeRules)
+			// 3. Namespace wildcard: rules["scope/*"]: false
+			// Note: base rule name disable (rules["baseRuleName"]: false) is handled
+			// during expandNamedRules for named rule groups in the rules section.
+			if (
+				rule.baseRuleId &&
+				(this.#ruleset.rules[rule.name] === false ||
+					(rule.groupName && this.#ruleset.rules[rule.groupName] === false) ||
+					this.#disabledNamespaces.some(ns => rule.name.startsWith(ns)))
+			) {
+				continue;
+			}
+
+			const ruleInfo = rule.getRuleInfo(this.#ruleset, rule.name);
+			if (ruleInfo.disabled && ruleInfo.nodeRules.length === 0 && ruleInfo.childNodeRules.length === 0) {
+				continue;
+			}
+
+			log('%s Rule: verify', rule.name);
+			const results = await rule.verify(this.#document, this.#locale, fix).catch(error => {
+				if (error instanceof ParserError) {
+					return error;
+				}
+				throw error;
+			});
+
+			if (results instanceof ParserError) {
+				const parseError = this._createParseError(results.message, results.line, results.col, results.raw);
+				if (parseError) {
+					log('%s Rule: verify error %o', rule.name, results.message);
+					violations.push(parseError);
+				}
+			} else {
+				violations.push(...results);
+			}
+			log('%s Rule: verify end', rule.name);
+		}
+		return violations;
+	}
+
 	private _parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
@@ -421,4 +525,20 @@ function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): 
 	return Object.entries(rules)
 		.filter(([key, value]) => key.endsWith('/*') && value === false)
 		.map(([key]) => key.slice(0, -1)); // "a11y/*" → "a11y/"
+}
+
+/**
+ * Collects all `FixData` from violations that have a fix callback result.
+ *
+ * @param violations - The violations to extract fixes from
+ * @returns An array of `FixData` objects ready for `applyFixes()`
+ */
+function extractFixes(violations: readonly Violation[]): FixData[] {
+	const fixes: FixData[] = [];
+	for (const v of violations) {
+		if (v.fix) {
+			fixes.push(v.fix);
+		}
+	}
+	return fixes;
 }

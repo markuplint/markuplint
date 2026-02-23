@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -56,4 +56,36 @@ test('The `as` attribute', async () => {
 			raw: '="required"',
 		},
 	]);
+});
+
+describe('fix', () => {
+	test('remove value from boolean attribute', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<input type="text" required="required" />', undefined, true);
+		expect(fixedCode).toBe('<input type="text" required />');
+	});
+
+	test('multiple boolean attributes', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<input disabled="disabled" required="required" />',
+			undefined,
+			true,
+		);
+		expect(fixedCode).toBe('<input disabled required />');
+	});
+
+	test('spaces around equals', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<input required = "required" />', undefined, true);
+		expect(fixedCode).toBe('<input required />');
+	});
+
+	test('single-quoted value', async () => {
+		const { fixedCode } = await mlRuleTest(rule, "<input required='required' />", undefined, true);
+		expect(fixedCode).toBe('<input required />');
+	});
+
+	test('unquoted value', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<input required=required />', undefined, true);
+		expect(fixedCode).toBe('<input required />');
+	});
 });
