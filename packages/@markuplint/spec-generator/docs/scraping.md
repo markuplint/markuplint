@@ -20,6 +20,12 @@ SVG elements:
 https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/<name>
 ```
 
+MathML elements:
+
+```
+https://developer.mozilla.org/en-US/docs/Web/MathML/Element/<name>
+```
+
 **Special case:** Heading elements (`h1`-`h6`) are mapped to a single page:
 
 ```
@@ -119,6 +125,27 @@ https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 3. Use `getThisOutline()` to collect all siblings until the next `<h2>`
 4. Extract element names from `div > a` elements, stripping angle brackets
 5. Prefix each name with `svg_` (e.g., `altGlyph` becomes `svg_altGlyph`)
+
+---
+
+## MDN MathML Index Scraping
+
+**Module:** `mathml.ts`
+
+### Target
+
+```
+https://developer.mozilla.org/en-US/docs/Web/MathML/Element
+```
+
+### Extraction Process
+
+1. Find all `<td> <code>` elements in the main content area
+2. Filter for element names starting with `m` (MathML convention)
+3. Check the containing `<tr>` for deprecated/non-standard icon classes (`.icon-deprecated`, `.icon-nonstandard`)
+4. Prefix each deprecated/non-standard element name with `mml_` (e.g., `maction` becomes `mml_maction`)
+
+Unlike SVG, MathML does not have a separate "Obsolete and deprecated elements" section. Instead, deprecated/non-standard status is indicated inline with icons in the element table.
 
 ---
 

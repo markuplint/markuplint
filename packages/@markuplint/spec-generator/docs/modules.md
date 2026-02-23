@@ -45,25 +45,26 @@ Coordinates three parallel data-gathering tasks, assembles the results into an `
 
 ## html-elements.ts
 
-Builds the complete list of HTML and SVG element specifications.
+Builds the complete list of HTML, SVG, and MathML element specifications.
 
 ### `getElements(filePattern: string): Promise<ExtendedElementSpec[]>`
 
 **Flow:**
 
 1. Read all spec files matching the glob pattern via `readJsons()`. Element names are extracted from filenames using the regex `spec.([\w-]+).jsonc` (e.g., `spec.a.jsonc` becomes `a`)
-2. Fetch the deprecated SVG element list via `getSVGElementList()`
+2. Fetch the deprecated SVG element list via `getSVGElementList()` and MathML element list via `getMathMLElementList()`
 3. Generate stubs for obsolete elements not already present via `fetchObsoleteElements()`
 4. For each element, construct the MDN URL and scrape metadata via `fetchHTMLElement()`:
    - Heading elements (`h1`-`h6`) are mapped to MDN path `Heading_Elements`
    - SVG elements use the path `/Web/SVG/Reference/Element/<name>`
+   - MathML elements use the path `/Web/MathML/Element/<name>`
    - HTML elements use `/Web/HTML/Reference/Elements/<name>`
 5. Merge scraped data with local spec data. **Local spec data takes precedence**:
    - `cite` -- local value wins if present, otherwise MDN URL
    - `description`, `categories`, `omission` -- from MDN
    - `contentModel`, `aria` -- from local spec only (never scraped)
    - `attributes` -- merged per attribute name; local entries override MDN entries
-6. Sort alphabetically, with SVG elements placed after HTML elements
+6. Sort alphabetically, with MathML elements placed after HTML elements and SVG elements after MathML
 
 ### `obsoleteList`
 
@@ -71,7 +72,24 @@ A hardcoded list of 31 non-conforming HTML elements:
 
 `applet`, `acronym`, `bgsound`, `dir`, `frame`, `frameset`, `noframes`, `isindex`, `keygen`, `listing`, `menuitem`, `nextid`, `noembed`, `param`, `plaintext`, `rb`, `rtc`, `strike`, `xmp`, `basefont`, `big`, `blink`, `center`, `font`, `marquee`, `multicol`, `nobr`, `spacer`, `tt`
 
-These are combined with deprecated SVG elements fetched from MDN to form the complete obsolete set.
+These are combined with deprecated SVG and MathML elements fetched from MDN to form the complete obsolete set.
+
+---
+
+## mathml.ts
+
+### `getMathMLElementList(): Promise<string[]>`
+
+Fetches the MDN MathML element index page (`https://developer.mozilla.org/en-US/docs/Web/MathML/Element`) and extracts deprecated and non-standard MathML element names.
+
+**Processing:**
+
+1. Find all `<td> <code>` elements in the main content area
+2. Filter for names starting with `m` (MathML naming convention)
+3. Check the containing `<tr>` for `.icon-deprecated` or `.icon-nonstandard` icon classes
+4. Prefix each name with `mml_` (e.g., `maction` becomes `mml_maction`)
+
+Unlike SVG, MathML does not have a separate "Obsolete and deprecated elements" section. Status is indicated inline with icons in the element table.
 
 ---
 
@@ -250,7 +268,8 @@ Returns `Object.keys()` with a custom type cast.
 
 Parses an element name string:
 
-| Input          | `localName` | `namespace`                    | `ml`     |
-| -------------- | ----------- | ------------------------------ | -------- |
-| `"div"`        | `"div"`     | `undefined`                    | `"HTML"` |
-| `"svg_circle"` | `"circle"`  | `"http://www.w3.org/2000/svg"` | `"SVG"`  |
+| Input          | `localName` | `namespace`                            | `ml`       |
+| -------------- | ----------- | -------------------------------------- | ---------- |
+| `"div"`        | `"div"`     | `undefined`                            | `"HTML"`   |
+| `"svg_circle"` | `"circle"`  | `"http://www.w3.org/2000/svg"`         | `"SVG"`    |
+| `"mml_math"`   | `"math"`    | `"http://www.w3.org/1998/Math/MathML"` | `"MathML"` |

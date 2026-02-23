@@ -20,6 +20,12 @@ SVG 要素:
 https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/<name>
 ```
 
+MathML 要素:
+
+```
+https://developer.mozilla.org/en-US/docs/Web/MathML/Element/<name>
+```
+
 **特殊ケース:** 見出し要素（`h1`-`h6`）は単一のページにマッピング:
 
 ```
@@ -119,6 +125,27 @@ https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 3. `getThisOutline()` で次の `<h2>` まで全兄弟要素を収集
 4. `div > a` 要素から要素名を抽出し、山括弧を除去
 5. 各名前に `svg_` プレフィックスを付加（例: `altGlyph` → `svg_altGlyph`）
+
+---
+
+## MDN MathML インデックススクレイピング
+
+**モジュール:** `mathml.ts`
+
+### 対象
+
+```
+https://developer.mozilla.org/en-US/docs/Web/MathML/Element
+```
+
+### 抽出プロセス
+
+1. メインコンテンツ領域内の全 `<td> <code>` 要素を検索
+2. `m` で始まる要素名（MathML の慣例）でフィルタリング
+3. 含まれる `<tr>` の非推奨/非標準アイコンクラス（`.icon-deprecated`, `.icon-nonstandard`）を確認
+4. 各非推奨/非標準要素名に `mml_` プレフィックスを付加（例: `maction` → `mml_maction`）
+
+SVG と異なり、MathML には「Obsolete and deprecated elements」の独立したセクションはない。代わりに、要素テーブル内のアイコンでインラインに非推奨/非標準ステータスが表示される。
 
 ---
 

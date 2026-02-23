@@ -1,5 +1,6 @@
 import type { ExtendedElementSpec } from '@markuplint/ml-spec';
 
+import { getMathMLElementList } from './mathml.js';
 import { readJsons } from './read-json.js';
 import { fetchHTMLElement, fetchObsoleteElements } from './scraping.js';
 import { getSVGElementList } from './svg.js';
@@ -43,9 +44,17 @@ const obsoleteList = [
 ];
 
 /**
- * Builds the complete list of HTML and SVG element specifications by reading local JSON spec files,
+ * Namespace sort order: HTML first, then MathML, then SVG.
+ */
+const namespaceSortOrder: Record<string, number> = {
+	'http://www.w3.org/2000/svg': 2,
+	'http://www.w3.org/1998/Math/MathML': 1,
+};
+
+/**
+ * Builds the complete list of HTML, SVG, and MathML element specifications by reading local JSON spec files,
  * enriching them with data scraped from MDN, and appending obsolete/deprecated elements.
- * Elements are sorted alphabetically with SVG elements placed after HTML elements.
+ * Elements are sorted alphabetically with MathML elements after HTML and SVG elements after MathML.
  *
  * @param filePattern - An absolute glob pattern matching the per-element JSON spec files
  * @returns A sorted array of extended element specification objects
@@ -60,9 +69,12 @@ export async function getElements(filePattern: string) {
 		};
 	});
 
-	const deprecatedList = await getSVGElementList();
+	const [svgDeprecatedList, mathmlDeprecatedList] = await Promise.all([getSVGElementList(), getMathMLElementList()]);
 
-	const obsoleteElements = fetchObsoleteElements([...obsoleteList, ...deprecatedList], specs);
+	const obsoleteElements = fetchObsoleteElements(
+		[...obsoleteList, ...svgDeprecatedList, ...mathmlDeprecatedList],
+		specs,
+	);
 	specs.push(...obsoleteElements);
 
 	specs = await Promise.all(
@@ -71,15 +83,26 @@ export async function getElements(filePattern: string) {
 			const urlTagName = /^h[1-6]$/i.test(localName) ? 'Heading_Elements' : localName;
 			// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a
 			// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a
+			// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math
 			const cite = `https://developer.mozilla.org/en-US/docs/Web/${ml}/Reference/Element${ml === 'HTML' ? 's' : ''}/${urlTagName}`;
 			const mdnData = await fetchHTMLElement(cite);
 			// @ts-ignore
 			delete el.name;
 			// @ts-ignore
 			delete el.namespace;
+
+			let qualifiedName: string;
+			if (namespace === 'http://www.w3.org/2000/svg') {
+				qualifiedName = `svg:${localName}`;
+			} else if (namespace === 'http://www.w3.org/1998/Math/MathML') {
+				qualifiedName = `mml:${localName}`;
+			} else {
+				qualifiedName = localName;
+			}
+
 			const spec = {
 				// @ts-ignore
-				name: namespace === 'http://www.w3.org/2000/svg' ? `svg:${localName}` : localName,
+				name: qualifiedName,
 				namespace,
 				cite: el.cite ?? mdnData.cite,
 				description: mdnData.description,
@@ -143,7 +166,9 @@ export async function getElements(filePattern: string) {
 		}),
 	);
 
-	return specs
-		.toSorted(nameCompare)
-		.toSorted((a, b) => (a.namespace == b.namespace ? 0 : a.namespace === 'http://www.w3.org/2000/svg' ? 1 : -1));
+	return specs.toSorted(nameCompare).toSorted((a, b) => {
+		const orderA = namespaceSortOrder[a.namespace ?? ''] ?? 0;
+		const orderB = namespaceSortOrder[b.namespace ?? ''] ?? 0;
+		return orderA - orderB;
+	});
 }
