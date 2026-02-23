@@ -42,10 +42,7 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 							'{0} according to {1}',
 							t('{0} does not exist', t('the "{0*}" {1}', token.raw, 'role')),
 							'the WAI-ARIA specification',
-						) +
-						t('.') +
-						// TODO: Translate
-						` This "${token.raw}" role does not exist in WAI-ARIA.`,
+						) + t('.'),
 				};
 			}
 		}
