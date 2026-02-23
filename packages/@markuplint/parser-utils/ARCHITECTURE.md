@@ -22,7 +22,7 @@ src/
 ├── debug.ts               — Performance timer and debug logging via `debug` package
 ├── parser-error.ts        — ParserError, TargetParserError, ConfigParserError
 ├── sort-nodes.ts          — Node position sorting
-├── const.ts               — MASK_CHAR, SVG element list, defaultSpaces
+├── const.ts               — MASK_CHAR, SVG/MathML element lists, defaultSpaces
 ├── get-location.ts        — Line/column/offset calculation utilities
 └── decision.ts            — Custom element name detection
 ```
@@ -59,7 +59,7 @@ flowchart TD
         parserError["parser-error.ts\nParserError hierarchy"]
         sortNodes["sort-nodes.ts\nsortNodes()"]
         getLoc["get-location.ts\ngetPosition(), getEndLine()"]
-        constMod["const.ts\nMASK_CHAR, svgElementList"]
+        constMod["const.ts\nMASK_CHAR, svgElementList,\nmathmlElementList"]
     end
 
     subgraph external ["External Dependencies"]
@@ -112,9 +112,9 @@ flowchart TD
 | `debug.ts`               | Performance timing and debug logging                                            | `PerformanceTimer`, `domLog`, `log`                                                                                                       |
 | `parser-error.ts`        | Error classes with positional information                                       | `ParserError`, `TargetParserError`, `ConfigParserError`                                                                                   |
 | `sort-nodes.ts`          | Node position sorting by offset                                                 | `sortNodes`                                                                                                                               |
-| `const.ts`               | Constants used across the package                                               | `MASK_CHAR`, `svgElementList`, `defaultSpaces`                                                                                            |
+| `const.ts`               | Constants used across the package                                               | `MASK_CHAR`, `svgElementList`, `mathmlElementList`, `defaultSpaces`                                                                       |
 | `get-location.ts`        | Line/column/offset position calculations                                        | `getPosition`, `getEndLine`, `getEndCol`, `getEndPosition`, `getOffsetsFromCode`                                                          |
-| `decision.ts`            | Custom element name detection and SVG element lookup                            | `isPotentialCustomElementName`, `isSVGElement`                                                                                            |
+| `decision.ts`            | Custom element name detection and SVG/MathML element lookup                     | `isPotentialCustomElementName`, `isSVGElement`                                                                                            |
 
 ## Parse Pipeline Overview
 
