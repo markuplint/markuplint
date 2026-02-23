@@ -10,6 +10,8 @@
 | 変更内容 | 影響範囲 |
 |---------|---------|
 | `exec` 関数の削除（v1 API） | `exec()` を呼び出しているユーザー |
+| 新機能: `MLResultInfo` に `FixSummary` | Fix 診断情報にアクセスする API ユーザー |
+| 新機能: `@markuplint/ml-core` から `computeCursorOffset()` をエクスポート | エディタ連携開発者 |
 
 ## `exec` 関数の削除
 
@@ -53,3 +55,42 @@ const result = await engine.exec();
 | `rulesAutoResolve` | `autoLoad` オプション |
 | `fix` | `fix` オプション |
 | `locale` | `locale` オプション |
+
+## 新機能: `MLResultInfo` の `FixSummary`
+
+`fix: true` を設定した場合、`MLResultInfo` に fix プロセスの診断情報を含む `fixSummary` フィールドが追加されました:
+
+```typescript
+const result = await engine.exec();
+if (result?.fixSummary) {
+  console.log(`パス数: ${result.fixSummary.passCount}`);
+  console.log(`適用数: ${result.fixSummary.totalApplied}`);
+  console.log(`スキップ数: ${result.fixSummary.totalSkipped}`);
+}
+```
+
+`FixSummary` のフィールド:
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `passCount` | `number` | 実行された fix パスの回数 |
+| `totalApplied` | `number` | 全パスで適用された fix の合計数 |
+| `totalSkipped` | `number` | 重複によりスキップされた fix の合計数 |
+| `reachedMaxPasses` | `boolean` | 10パスの安全上限に達したかどうか |
+| `firstPassEdits` | `readonly TextEdit[]` | 最初のパスで適用された編集（元のオフセット） |
+
+## 新機能: `computeCursorOffset()`
+
+エディタ連携のために、`@markuplint/ml-core` から `computeCursorOffset()` がエクスポートされました。元のソースコード上のカーソル位置を修正後のソースコード上の位置にリマップします:
+
+```typescript
+import { computeCursorOffset } from '@markuplint/ml-core';
+
+// 修正後、カーソルをリマップ
+const newOffset = computeCursorOffset(
+  result.fixSummary.firstPassEdits,
+  originalCursorOffset,
+);
+```
+
+最初のパスの編集情報（元のソースコードのオフセットを参照）を使用して、修正後のコードでカーソルを配置すべき位置を計算します。
