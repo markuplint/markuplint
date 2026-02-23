@@ -54895,6 +54895,9 @@
 					"description": "Sets the value of the clonable property of a ShadowRoot created using this element to true. If set, a clone of the shadow host (the parent element of this <template>) created with Node.cloneNode() or Document.importNode() will include a shadow root in the copy.",
 					"type": "Boolean"
 				},
+				"shadowrootcustomelementregistry": {
+					"description": "Sets the customElementRegistry property of a ShadowRoot created using this element to null, rather than the document's custom element registry. This allows a scoped CustomElementRegistry to be attached later using CustomElementRegistry.initialize()."
+				},
 				"shadowrootdelegatesfocus": {
 					"description": "Sets the value of the delegatesFocus property of a ShadowRoot created using this element to true. If this is set and a non-focusable element in the shadow tree is selected, then focus is delegated to the first focusable element in the tree. The value defaults to false.",
 					"type": "Boolean"
