@@ -44,7 +44,8 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document, astNode.isFragment);
-		// TODO:
+		// Always transparent: blockBehavior may restrict child treatment in the future,
+		// but currently all preprocessor blocks are transparent for tree traversal.
 		this.isTransparent = true;
 		this.blockBehavior = astNode.blockBehavior;
 	}

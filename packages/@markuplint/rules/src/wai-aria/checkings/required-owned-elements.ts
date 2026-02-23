@@ -66,7 +66,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
-		// TODO: Needs to resolve `aria-own`
+		// TODO: Needs to resolve `aria-owns` references to include virtually owned elements.
+		// Currently, only DOM-tree children are checked. Elements referenced via `aria-owns`
+		// should also be considered as owned elements per the ARIA specification.
 
 		const ariaVersion =
 			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;

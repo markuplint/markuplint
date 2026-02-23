@@ -13,7 +13,49 @@ beforeAll(() => {
 	t = translator(locale);
 });
 
-// TODO: doesnt-exist-in-enum
+describe('doesnt-exist-in-enum', () => {
+	test('expects: without, partName: without', () => {
+		expect(
+			__createMessageValueExpected(t, 'A', '', {
+				ref: 'REF',
+				raw: 'RAW',
+				reason: 'doesnt-exist-in-enum',
+			}),
+		).toBe(' (REF)');
+	});
+
+	test('expects: without, partName: with', () => {
+		expect(
+			__createMessageValueExpected(t, 'A', '', {
+				ref: 'REF',
+				raw: 'RAW',
+				reason: 'doesnt-exist-in-enum',
+				partName: 'C',
+			}),
+		).toBe(' (REF)');
+	});
+
+	test('expects: with, partName: without', () => {
+		expect(
+			__createMessageValueExpected(t, 'A', 'B', {
+				ref: 'REF',
+				raw: 'RAW',
+				reason: 'doesnt-exist-in-enum',
+			}),
+		).toBe('A expects B (REF)');
+	});
+
+	test('expects: with, partName: with', () => {
+		expect(
+			__createMessageValueExpected(t, 'A', 'B', {
+				ref: 'REF',
+				raw: 'RAW',
+				reason: 'doesnt-exist-in-enum',
+				partName: 'C',
+			}),
+		).toBe('the C part of A expects B (REF)');
+	});
+});
 
 describe('duplicated', () => {
 	test('expects: without, partName: without', () => {

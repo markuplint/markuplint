@@ -17,7 +17,8 @@ export default createRule({
 
 			const names = new Set<string>();
 			for (const dt of dtList) {
-				// TODO: Supoort for alternative text for images and accessible names for contained elements.
+				// Support for alternative text for images and accessible names for contained elements
+				// is not yet implemented; currently only textContent is used for comparison.
 				const name = dt.textContent?.trim();
 				if (!name) {
 					continue;

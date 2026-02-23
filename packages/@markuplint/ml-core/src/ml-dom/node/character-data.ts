@@ -27,7 +27,6 @@ export abstract class MLCharacterData<
 	 * @see https://dom.spec.whatwg.org/#dom-characterdata-data
 	 */
 	get data(): string {
-		// TODO:
 		return this.raw;
 	}
 
@@ -86,7 +85,13 @@ export abstract class MLCharacterData<
 		after(this, ...nodes);
 	}
 
-	// TODO
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-appenddata
+	 */
 	appendData(data: string): void {}
 
 	/**
@@ -99,10 +104,22 @@ export abstract class MLCharacterData<
 		before(this, ...nodes);
 	}
 
-	// TODO
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-deletedata
+	 */
 	deleteData(offset: number, count: number): void {}
 
-	// TODO
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-insertdata
+	 */
 	insertData(offset: number, data: string): void {}
 
 	/**
@@ -112,7 +129,13 @@ export abstract class MLCharacterData<
 		remove(this);
 	}
 
-	// TODO
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-replacedata
+	 */
 	replaceData(offset: number, count: number, data: string): void {}
 
 	/**
@@ -125,7 +148,13 @@ export abstract class MLCharacterData<
 		replaceWith(this, ...nodes);
 	}
 
-	// TODO
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @unsupported
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-substringdata
+	 */
 	substringData(offset: number, count: number): string {
 		return '';
 	}

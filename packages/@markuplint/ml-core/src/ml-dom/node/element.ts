@@ -3759,7 +3759,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		element: MLElement<T, O>,
 	): MLElement<T, O> | null {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentElement" method yet');
 	}
 
@@ -3771,7 +3770,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://w3c.github.io/DOM-Parsing/#widl-Element-insertAdjacentHTML-void-DOMString-position-DOMString-text
 	 */
 	insertAdjacentHTML(position: InsertPosition, text: string): void {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentHTML" method yet');
 	}
 
@@ -3783,7 +3781,6 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-insertadjacenttext
 	 */
 	insertAdjacentText(where: InsertPosition, data: string): void {
-		// TODO:
 		throw new UnexpectedCallError('Does not implement "insertAdjacentText" method yet');
 	}
 

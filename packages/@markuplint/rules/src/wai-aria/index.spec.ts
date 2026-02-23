@@ -10,8 +10,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 				severity: 'error',
 				line: 1,
 				col: 12,
-				message:
-					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
+				message: 'The "hoge" role does not exist according to the WAI-ARIA specification.',
 				raw: 'hoge',
 			},
 		]);
@@ -21,8 +20,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 				severity: 'error',
 				line: 1,
 				col: 17,
-				message:
-					'The "hoge" role does not exist according to the WAI-ARIA specification. This "hoge" role does not exist in WAI-ARIA.',
+				message: 'The "hoge" role does not exist according to the WAI-ARIA specification.',
 				raw: 'hoge',
 			},
 		]);
@@ -34,8 +32,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 				severity: 'error',
 				line: 1,
 				col: 12,
-				message:
-					'The "graphics-document" role does not exist according to the WAI-ARIA specification. This "graphics-document" role does not exist in WAI-ARIA.',
+				message: 'The "graphics-document" role does not exist according to the WAI-ARIA specification.',
 				raw: 'graphics-document',
 			},
 		]);
@@ -1615,8 +1612,7 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 				severity: 'error',
 				line: 1,
 				col: 38,
-				message:
-					'The "image" role does not exist according to the WAI-ARIA specification. This "image" role does not exist in WAI-ARIA.',
+				message: 'The "image" role does not exist according to the WAI-ARIA specification.',
 				raw: 'image',
 			},
 		]);

@@ -102,7 +102,7 @@ export function restoreNode(
 				childNodes: [],
 				blockBehavior: null,
 				isBogus: false,
-				isFragment: false, // TODO: Case by case
+				isFragment: false, // Whether this block is a fragment depends on the preprocessor directive type, but defaults to false as a safe assumption for ignore-block replacements.
 			};
 
 			replacementChildNodes.push(psNode);
@@ -138,7 +138,7 @@ export function restoreNode(
 				childNodes: [],
 				blockBehavior: null,
 				isBogus: false,
-				isFragment: false, // TODO: Case by case
+				isFragment: false, // Whether this block is a fragment depends on the preprocessor directive type, but defaults to false as a safe assumption for ignore-block replacements.
 			};
 			replacementChildNodes.push(psNode);
 

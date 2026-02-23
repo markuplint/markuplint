@@ -94,10 +94,6 @@ test('the input element type case-insensitive', async () => {
 	expect(violations2.length).toBe(0);
 });
 
-test.skip('ancestor condition', async () => {
-	// TODO: Find instead of test
-});
-
 test('Add allow attr', async () => {
 	expect((await mlRuleTest(rule, '<div x-attr></div>')).violations).toStrictEqual([
 		{
