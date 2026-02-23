@@ -15,10 +15,14 @@ export function unifiedDiff(filePath: string, original: string, fixed: string): 
 
 	const edits = computeLineEdits(originalLines, fixedLines);
 
-	const lines: string[] = [c.red(`--- a/${filePath}`), c.green(`+++ b/${filePath}`)];
-
 	const CONTEXT = 3;
 	const hunks = groupIntoHunks(edits, CONTEXT);
+
+	if (hunks.length === 0) {
+		return '';
+	}
+
+	const lines: string[] = [c.red(`--- a/${filePath}`), c.green(`+++ b/${filePath}`)];
 
 	for (const hunk of hunks) {
 		let origCount = 0;
@@ -60,6 +64,7 @@ type Hunk = {
 	readonly edits: readonly LineEdit[];
 };
 
+// O(n*m) LCS — acceptable for typical HTML files; consider Myers' algorithm if performance issues arise.
 function computeLineEdits(a: readonly string[], b: readonly string[]): LineEdit[] {
 	const n = a.length;
 	const m = b.length;
