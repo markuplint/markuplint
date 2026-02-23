@@ -12,6 +12,7 @@ import type {
 	RuleCommonSettings,
 	RuleConfigValue,
 	SeverityOptions,
+	TextEdit,
 	Violation,
 } from '@markuplint/ml-config';
 
@@ -25,6 +26,30 @@ import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 const resultLog = log.extend('result');
 
 /**
+ * Summary of the multi-pass fix process.
+ */
+export type FixSummary = {
+	/** Number of fix passes executed */
+	readonly passCount: number;
+	/** Total fixes applied across all passes */
+	readonly totalApplied: number;
+	/** Total fixes skipped (overlap) across all passes */
+	readonly totalSkipped: number;
+	/** Whether the maximum pass count was reached */
+	readonly reachedMaxPasses: boolean;
+	/** Applied edits from the FIRST pass (for cursor offset computation) */
+	readonly appliedEdits: readonly TextEdit[];
+};
+
+/**
+ * Options for {@link MLCore.verify}.
+ */
+export type VerifyOptions = {
+	readonly fix?: boolean;
+	readonly dryRun?: boolean;
+};
+
+/**
  * The result of running {@link MLCore.verify}.
  */
 export type VerifyResult = {
@@ -32,6 +57,8 @@ export type VerifyResult = {
 	readonly violations: readonly Violation[];
 	/** The source code after applying fixes. `undefined` when fix is not enabled. */
 	readonly fixedCode: string | undefined;
+	/** Fix process summary. Present only when fix=true and fixes were found. */
+	readonly fixSummary?: FixSummary;
 };
 
 /**
@@ -225,10 +252,15 @@ export class MLCore {
 	 * during later passes are not included in the array. Callers needing an accurate
 	 * violation list for the fixed code should re-verify the output.
 	 *
-	 * @param fix - Whether to attempt auto-fixing violations
+	 * @param fixOrOptions - Whether to attempt auto-fixing violations, or an options object
 	 * @returns Violations from the initial analysis and the (possibly fixed) source code
 	 */
-	async verify(fix = false): Promise<VerifyResult> {
+	async verify(fix?: boolean): Promise<VerifyResult>;
+	async verify(options?: VerifyOptions): Promise<VerifyResult>;
+	async verify(fixOrOptions?: boolean | VerifyOptions): Promise<VerifyResult> {
+		const options: VerifyOptions = typeof fixOrOptions === 'boolean' ? { fix: fixOrOptions } : (fixOrOptions ?? {});
+		const fix = options.fix ?? false;
+
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
@@ -305,6 +337,7 @@ export class MLCore {
 
 		// Apply fixes if enabled
 		let fixedCode: string | undefined;
+		let fixSummary: FixSummary | undefined;
 		if (fix) {
 			const hasFixes = violations.some(v => v.fix);
 			if (hasFixes) {
@@ -313,7 +346,9 @@ export class MLCore {
 				const originalDocument = this.#document;
 
 				try {
-					fixedCode = await this._multiPassFix(violations);
+					const fixResult = await this._multiPassFix(violations);
+					fixedCode = fixResult.code;
+					fixSummary = fixResult.summary;
 				} finally {
 					// Restore original state - verify() must be non-mutating
 					this.#sourceCode = originalSourceCode;
@@ -326,7 +361,7 @@ export class MLCore {
 		}
 
 		log('verify: end');
-		return { violations, fixedCode };
+		return { violations, fixedCode, fixSummary };
 	}
 
 	private _createDocument() {
@@ -379,18 +414,30 @@ export class MLCore {
 	 * this method mutates them during intermediate re-parse steps.
 	 *
 	 * @param initialViolations - Violations from the first verification pass
-	 * @returns The final fixed source code
+	 * @returns The final fixed source code and a summary of the fix process
 	 */
-	private async _multiPassFix(initialViolations: readonly Violation[]): Promise<string> {
+	private async _multiPassFix(
+		initialViolations: readonly Violation[],
+	): Promise<{ code: string; summary: FixSummary }> {
 		const MAX_FIX_PASSES = 10;
 		let currentCode = this.#sourceCode;
 		let previousCode: string | undefined;
 		let fixes = extractFixes(initialViolations);
 
+		let totalApplied = 0;
+		let totalSkipped = 0;
+		let firstPassEdits: readonly TextEdit[] = [];
+
 		let pass = 0;
 		for (; pass < MAX_FIX_PASSES; pass++) {
 			log('fix pass %d: %d fixes', pass, fixes.length);
 			const result = applyFixes(currentCode, fixes);
+
+			totalApplied += result.applied.length;
+			totalSkipped += result.skipped.length;
+			if (pass === 0) {
+				firstPassEdits = result.appliedEdits;
+			}
 
 			if (result.applied.length === 0) {
 				log('fix pass %d: no fixes applied, stopping', pass);
@@ -440,11 +487,21 @@ export class MLCore {
 			}
 		}
 
-		if (pass === MAX_FIX_PASSES) {
+		const reachedMaxPasses = pass === MAX_FIX_PASSES;
+		if (reachedMaxPasses) {
 			log('fix: reached maximum number of passes (%d), some fixes may not have been applied', MAX_FIX_PASSES);
 		}
 
-		return currentCode;
+		return {
+			code: currentCode,
+			summary: {
+				passCount: Math.min(pass + 1, MAX_FIX_PASSES),
+				totalApplied,
+				totalSkipped,
+				reachedMaxPasses,
+				appliedEdits: firstPassEdits,
+			},
+		};
 	}
 
 	/**

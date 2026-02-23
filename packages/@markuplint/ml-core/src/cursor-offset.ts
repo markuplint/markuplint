@@ -1,0 +1,37 @@
+import type { TextEdit } from '@markuplint/ml-config';
+
+/**
+ * Computes the new cursor offset after text edits have been applied.
+ *
+ * For each edit before the cursor: delta += text.length - (end - start).
+ * If the cursor falls inside a replaced range [start, end), it is placed
+ * at start + text.length (immediately after the replacement).
+ *
+ * @param appliedEdits - Applied edits sorted by range[0] ascending
+ * @param cursorOffset - Original 0-based cursor offset
+ * @returns New cursor offset in the fixed code
+ */
+export function computeCursorOffset(appliedEdits: readonly TextEdit[], cursorOffset: number): number {
+	let newOffset = cursorOffset;
+
+	for (const edit of appliedEdits) {
+		const [start, end] = edit.range;
+		const delta = edit.text.length - (end - start);
+
+		if (start > cursorOffset) {
+			// Edit is after cursor — no effect
+			break;
+		}
+
+		if (end <= cursorOffset) {
+			// Edit is entirely before cursor — shift by delta
+			newOffset += delta;
+		} else {
+			// Cursor falls inside the replaced range [start, end)
+			newOffset = start + edit.text.length;
+			break;
+		}
+	}
+
+	return Math.max(0, newOffset);
+}
