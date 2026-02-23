@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -92,4 +92,11 @@ test('The `as` attribute', async () => {
 			message: 'It is the default value',
 		},
 	]);
+});
+
+describe('fix', () => {
+	test('remove default value attribute', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>', undefined, true);
+		expect(fixedCode).toBe('<canvas></canvas>');
+	});
 });

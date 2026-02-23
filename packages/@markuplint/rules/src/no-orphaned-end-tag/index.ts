@@ -17,6 +17,7 @@ export default createRule<boolean, null>({
 				report({
 					scope: text,
 					message: t('{0} detected', t('Orphaned end tag')),
+					fix: fixer => fixer.remove({ startOffset: text.startOffset, raw: text.raw }),
 				});
 			}
 		});

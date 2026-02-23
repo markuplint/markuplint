@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { removeAttr } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -31,6 +33,7 @@ export default createRule({
 							raw: scope.raw,
 						},
 						message,
+						fix: fixer => removeAttr(fixer, attr),
 					});
 				} else {
 					attrNameStack.push(name);

@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -41,4 +41,16 @@ test('#1575: orphaned end tag with newlines', async () => {
 			message: 'Orphaned end tag detected',
 		},
 	]);
+});
+
+describe('fix', () => {
+	test('remove orphaned end tag', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<div></div></span>', undefined, true);
+		expect(fixedCode).toBe('<div></div>');
+	});
+
+	test('remove multiple orphaned end tags', async () => {
+		const { fixedCode } = await mlRuleTest(rule, '<div></p></br><p></span></p></div>', undefined, true);
+		expect(fixedCode).toBe('<div><p></p></div>');
+	});
 });

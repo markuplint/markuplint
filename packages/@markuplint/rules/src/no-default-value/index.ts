@@ -1,6 +1,6 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
-import { toNormalizedValue } from '../helpers.js';
+import { removeAttr, toNormalizedValue } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -42,6 +42,7 @@ export default createRule({
 					col: attr.valueNode?.startCol,
 					raw: attr.valueNode?.raw,
 					message: t('It is {0}', t('the {0}', 'default value')),
+					fix: fixer => removeAttr(fixer, attr),
 				});
 			}
 		});

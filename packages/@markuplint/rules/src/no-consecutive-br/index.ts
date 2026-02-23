@@ -22,9 +22,11 @@ export default createRule({
 				next = next.nextSibling;
 			}
 			if (next && next.nodeName === 'BR') {
+				const target = next;
 				report({
-					scope: next,
+					scope: target,
 					message: t('{0} detected', t('Consecutive {0}', t('"{0*}" {1}', 'br', 'elements'))),
+					fix: fixer => fixer.remove({ startOffset: target.startOffset, raw: target.raw }),
 				});
 			}
 		}
