@@ -33,68 +33,68 @@ export const cssDefs: Defs = {
 
 	'<svg-font-size>': {
 		ref: 'https://drafts.csswg.org/css-fonts-5/#descdef-font-face-font-size',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<svg-font-size-adjust>': {
 		ref: 'https://drafts.csswg.org/css-fonts-5/#propdef-font-size-adjust',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	"<'color-profile'>": {
 		ref: 'https://www.w3.org/TR/SVG11/color.html#ColorProfileProperty',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	"<'color-rendering'>": {
 		ref: 'https://www.w3.org/TR/SVG11/painting.html#ColorRenderingProperty',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	"<'enable-background'>": {
 		ref: 'https://www.w3.org/TR/SVG11/filters.html#EnableBackgroundProperty',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<list-of-svg-feature-string>': {
 		ref: 'https://www.w3.org/TR/SVG11/feature.html',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<animatable-value>': {
 		ref: 'https://svgwg.org/specs/animations/#FromAttribute',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<begin-value-list>': {
 		ref: 'https://svgwg.org/specs/animations/#BeginValueListSyntax',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<end-value-list>': {
 		ref: 'https://svgwg.org/specs/animations/#EndValueListSyntax',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<list-of-value>': {
 		ref: 'https://svgwg.org/specs/animations/#ValuesAttribute',
-		// TODO:
+		// Validation not yet implemented; always passes.
 		is: () => matched(),
 	},
 
 	'<clock-value>': {
 		ref: 'https://www.w3.org/TR/2001/REC-smil-animation-20010904/#Timing-ClockValueSyntax',
 		syntax: {
-			// TODO:
+			// Validation not yet implemented; accepts any value.
 			apply: '<clock-value>',
 			def: {
 				'clock-value': '<any-value>',
@@ -177,7 +177,7 @@ export const cssDefs: Defs = {
 		ref: 'https://svgwg.org/svg2-draft/paths.html#PathDataBNF',
 		syntax: {
 			apply: '<svg-path>',
-			// TODO:
+			// Validation not yet implemented; accepts any value.
 			def: {
 				'svg-path': '<any-value>',
 			},
