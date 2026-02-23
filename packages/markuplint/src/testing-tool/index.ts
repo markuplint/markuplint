@@ -39,6 +39,7 @@ export async function mlTest(
 	return {
 		violations: result?.violations ?? [],
 		fixedCode: result?.fixedCode ?? sourceCode,
+		fixSummary: result?.fixSummary,
 	};
 }
 

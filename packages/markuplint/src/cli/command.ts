@@ -28,8 +28,12 @@ import { output } from './output.js';
  * @returns `true` if any errors were found (or warnings exceeded the limit), `false` otherwise.
  */
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
-	const fix = options.fix || options.fixDryRun;
 	const fixDryRun = options.fixDryRun;
+	if (options.fix && fixDryRun) {
+		log('Both --fix and --fix-dry-run specified; --fix-dry-run takes precedence');
+		process.stderr.write('Warning: --fix-dry-run takes precedence over --fix. Files will not be modified.\n');
+	}
+	const fix = options.fix || fixDryRun;
 	const configFile =
 		options.config &&
 		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
