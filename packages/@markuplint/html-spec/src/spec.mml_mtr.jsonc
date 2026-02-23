@@ -1,0 +1,20 @@
+// https://www.w3.org/TR/mathml-core/#row-in-table-or-matrix-mtr
+{
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": ["mml|mtd"]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

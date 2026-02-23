@@ -18,9 +18,15 @@ Pattern: `src/spec.svg_<local>.jsonc` (e.g., `spec.svg_text.jsonc`, `spec.svg_ci
 The local name preserves case (`svg_animateMotion.jsonc`). The element name is inferred
 at runtime as `svg:<local>` (e.g., `svg:text`, `svg:clipPath`).
 
+### MathML Elements
+
+Pattern: `src/spec.mml_<local>.jsonc` (e.g., `spec.mml_math.jsonc`, `spec.mml_mfrac.jsonc`)
+
+The element name is inferred at runtime as `mml:<local>` (e.g., `mml:math`, `mml:mfrac`).
+
 ### Common Files
 
-- `spec-common.attributes.jsonc` -- Global attribute category definitions (19 categories)
+- `spec-common.attributes.jsonc` -- Global attribute category definitions (20 categories)
 - `spec-common.contents.jsonc` -- Content model category macros
 
 ### JSON with Comments
@@ -127,6 +133,7 @@ element inherits its parent's content model, excluding elements matching the sel
 | `"#text"`                              | Text nodes                  |
 | `"#custom"`                            | Custom elements             |
 | `"svg\|a"`, `"svg\|circle"`            | SVG namespace elements      |
+| `"mml\|mi"`, `"mml\|mn"`               | MathML namespace elements   |
 | `"link[itemprop]"`                     | Attribute selectors         |
 
 ## Global Attributes
@@ -148,7 +155,7 @@ The `globalAttrs` object maps category names (prefixed with `#`) to inclusion ru
 }
 ```
 
-### Available Categories (19)
+### Available Categories (20)
 
 | Category                            | Description                                                         |
 | ----------------------------------- | ------------------------------------------------------------------- |
@@ -171,6 +178,7 @@ The `globalAttrs` object maps category names (prefixed with `#`) to inclusion ru
 | `#SVGPresentationAttrs`             | SVG presentation attributes (fill, stroke, transform, etc.)         |
 | `#SVGTransferFunctionAttrs`         | SVG transfer function attributes                                    |
 | `#XLinkAttrs`                       | XLink attributes (deprecated)                                       |
+| `#MathMLGlobalAttrs`                | MathML global attributes (dir, displaystyle, mathcolor, etc.)       |
 
 ## Element-Specific Attributes
 
@@ -307,7 +315,7 @@ The `aria` object defines ARIA role and property integration.
 - `true` -- Any role is permitted
 - `false` -- No explicit roles permitted
 - `string[]` -- Specific permitted role names
-- Object with AAM references (SVG): `{ "core-aam": true, "graphics-aam": true }`
+- Object with AAM references (SVG/MathML): `{ "core-aam": true, "graphics-aam": true }` or `{ "mathml-aam": true }`
 
 Role entries can also be objects: `{ "name": "directory", "deprecated": true }`.
 
@@ -356,7 +364,7 @@ spec versions. Version overrides can contain their own `conditions` object:
 
 ### spec-common.attributes.jsonc
 
-Defines the 19 global attribute categories. Each category maps attribute names to
+Defines the 20 global attribute categories. Each category maps attribute names to
 definitions using the same format described in the attributes section.
 
 ### spec-common.contents.jsonc
@@ -369,7 +377,7 @@ Defines content model category macros referenced via `:model()`. Structure:
 
 ### Content Model Categories
 
-**HTML categories (10):**
+**HTML categories (9):**
 
 | Category             | Description                                                |
 | -------------------- | ---------------------------------------------------------- |
@@ -383,7 +391,7 @@ Defines content model category macros referenced via `:model()`. Structure:
 | `#palpable`          | Elements that render visible content                       |
 | `#script-supporting` | Script-supporting elements (script, template)              |
 
-**SVG categories (19):**
+**SVG categories (18):**
 
 | Category                   | Description                                                       |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -405,6 +413,14 @@ Defines content model category macros referenced via `:model()`. Structure:
 | `#SVGStructurallyExternal` | Structurally external elements (currently empty)                  |
 | `#SVGTextContent`          | Text content elements (text, textPath, tspan, etc.)               |
 | `#SVGTextContentChild`     | Text content child elements (textPath, tspan, etc.)               |
+
+**MathML categories (3):**
+
+| Category              | Description                                                   |
+| --------------------- | ------------------------------------------------------------- |
+| `#MathMLPresentation` | MathML presentation elements (mi, mn, mo, mfrac, msqrt, etc.) |
+| `#MathMLScript`       | MathML script elements (msub, msup, msubsup, munder, mover)   |
+| `#MathMLTabular`      | MathML tabular elements (mtable, mtr, mtd)                    |
 
 ## Full Examples
 
@@ -516,6 +532,28 @@ Defines content model category macros referenced via `:model()`. Structure:
   "aria": {
     "implicitRole": "group",
     "permittedRoles": { "core-aam": true, "graphics-aam": true }
+  }
+}
+```
+
+### MathML Element -- `mml:mfrac`
+
+```json
+// https://w3c.github.io/mathml-core/#fractions-mfrac
+{
+  "contentModel": {
+    "contents": [{ "oneOrMore": ":model(MathMLPresentation)", "max": 2 }]
+  },
+  "globalAttrs": {
+    "#HTMLGlobalAttrs": true,
+    "#GlobalEventAttrs": true,
+    "#ARIAAttrs": true,
+    "#MathMLGlobalAttrs": true
+  },
+  "attributes": {},
+  "aria": {
+    "implicitRole": false,
+    "permittedRoles": { "mathml-aam": true }
   }
 }
 ```

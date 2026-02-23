@@ -60,7 +60,7 @@
 			"main",
 			"map",
 			"mark",
-			"math",
+			"mml|math",
 			"menu",
 			"meta[itemprop]",
 			"meter",
@@ -140,7 +140,7 @@
 			"link[rel=stylesheet]",
 			"map",
 			"mark",
-			"math",
+			"mml|math",
 			"meta[itemprop]",
 			"meter",
 			"noscript",
@@ -171,7 +171,7 @@
 			"#custom",
 			"#text"
 		],
-		"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg|svg", "video"],
+		"#embedded": ["audio", "canvas", "embed", "iframe", "img", "mml|math", "object", "picture", "svg|svg", "video"],
 		// https://html.spec.whatwg.org/multipage/dom.html#interactive-content
 		"#interactive": [
 			"a[href]",
@@ -233,7 +233,7 @@
 			"main",
 			"map",
 			"mark",
-			"math",
+			"mml|math",
 			"menu:has(>li)",
 			"meter",
 			"nav",
@@ -390,6 +390,45 @@
 			"svg|tref",
 			"svg|tspan"
 		],
-		"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"]
+		"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"],
+		// https://www.w3.org/TR/mathml-core/#dom-and-javascript
+		"#MathMLPresentation": [
+			"mml|merror",
+			"mml|mfrac",
+			"mml|mi",
+			"mml|mmultiscripts",
+			"mml|mn",
+			"mml|mo",
+			"mml|mover",
+			"mml|mpadded",
+			"mml|mphantom",
+			"mml|mroot",
+			"mml|mrow",
+			"mml|ms",
+			"mml|mspace",
+			"mml|msqrt",
+			"mml|mstyle",
+			"mml|msub",
+			"mml|msup",
+			"mml|msubsup",
+			"mml|mtable",
+			"mml|mtext",
+			"mml|munder",
+			"mml|munderover",
+			"mml|maction",
+			"mml|menclose",
+			"mml|mfenced"
+		],
+		"#MathMLScript": [
+			"mml|msub",
+			"mml|msup",
+			"mml|msubsup",
+			"mml|mmultiscripts"
+		],
+		"#MathMLTabular": [
+			"mml|mtable",
+			"mml|mtr",
+			"mml|mtd"
+		]
 	}
 }

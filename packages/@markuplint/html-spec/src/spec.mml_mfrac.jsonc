@@ -1,0 +1,30 @@
+// https://www.w3.org/TR/mathml-core/#fractions-mfrac
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"#text"
+				],
+				"max": 2
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://www.w3.org/TR/mathml-core/#fractions-mfrac
+		"linethickness": {
+			"type": "<length-percentage>"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

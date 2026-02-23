@@ -72,7 +72,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/math",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menuitem",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
@@ -137,6 +136,39 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/xmp",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Element",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation-xml",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/merror",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfrac",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mi",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mmultiscripts",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mn",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mo",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mover",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mpadded",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mphantom",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mprescripts",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mroot",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mrow",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/ms",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mspace",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msqrt",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mstyle",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msub",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msubsup",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msup",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtable",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtd",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtext",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtr",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munder",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munderover",
+		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/semantics",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a",
 		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animate",
@@ -1585,6 +1617,54 @@
 					"type": "<number>",
 					"defaultValue": "0",
 					"animatable": true
+				}
+			},
+			"#MathMLGlobalAttrs": {
+				"autofocus": {
+					"type": "Boolean"
+				},
+				"class": {
+					"type": "Any"
+				},
+				"data-*": {
+					"type": "Any"
+				},
+				"dir": {
+					"type": {
+						"enum": ["ltr", "rtl"]
+					}
+				},
+				"displaystyle": {
+					"type": {
+						"enum": ["true", "false"]
+					}
+				},
+				"id": {
+					"type": "DOMID"
+				},
+				"mathbackground": {
+					"type": "<color>",
+					"deprecated": true
+				},
+				"mathcolor": {
+					"type": "<color>",
+					"deprecated": true
+				},
+				"mathsize": {
+					"type": "<length-percentage>",
+					"deprecated": true
+				},
+				"nonce": {
+					"type": "Any"
+				},
+				"scriptlevel": {
+					"type": "Any"
+				},
+				"style": {
+					"type": "<css-declaration-list>"
+				},
+				"tabindex": {
+					"type": "TabIndex"
 				}
 			},
 			"#XLinkAttrs": {
@@ -48286,7 +48366,7 @@
 				"main",
 				"map",
 				"mark",
-				"math",
+				"mml|math",
 				"menu",
 				"meta[itemprop]",
 				"meter",
@@ -48365,7 +48445,7 @@
 				"link[rel=stylesheet]",
 				"map",
 				"mark",
-				"math",
+				"mml|math",
 				"meta[itemprop]",
 				"meter",
 				"noscript",
@@ -48396,7 +48476,18 @@
 				"#custom",
 				"#text"
 			],
-			"#embedded": ["audio", "canvas", "embed", "iframe", "img", "math", "object", "picture", "svg|svg", "video"],
+			"#embedded": [
+				"audio",
+				"canvas",
+				"embed",
+				"iframe",
+				"img",
+				"mml|math",
+				"object",
+				"picture",
+				"svg|svg",
+				"video"
+			],
 			"#interactive": [
 				"a[href]",
 				"audio[controls]",
@@ -48456,7 +48547,7 @@
 				"main",
 				"map",
 				"mark",
-				"math",
+				"mml|math",
 				"menu:has(>li)",
 				"meter",
 				"nav",
@@ -48621,7 +48712,36 @@
 				"svg|tref",
 				"svg|tspan"
 			],
-			"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"]
+			"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"],
+			"#MathMLPresentation": [
+				"mml|merror",
+				"mml|mfrac",
+				"mml|mi",
+				"mml|mmultiscripts",
+				"mml|mn",
+				"mml|mo",
+				"mml|mover",
+				"mml|mpadded",
+				"mml|mphantom",
+				"mml|mroot",
+				"mml|mrow",
+				"mml|ms",
+				"mml|mspace",
+				"mml|msqrt",
+				"mml|mstyle",
+				"mml|msub",
+				"mml|msup",
+				"mml|msubsup",
+				"mml|mtable",
+				"mml|mtext",
+				"mml|munder",
+				"mml|munderover",
+				"mml|maction",
+				"mml|menclose",
+				"mml|mfenced"
+			],
+			"#MathMLScript": ["mml|msub", "mml|msup", "mml|msubsup", "mml|mmultiscripts"],
+			"#MathMLTabular": ["mml|mtable", "mml|mtr", "mml|mtd"]
 		}
 	},
 	"specs": [
@@ -52863,28 +52983,6 @@
 			}
 		},
 		{
-			"name": "math",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/math",
-			"description": "",
-			"categories": [],
-			"contentModel": {
-				"contents": true
-			},
-			"aria": {
-				"implicitRole": "math",
-				"permittedRoles": false,
-				"properties": {
-					"global": true,
-					"role": "math"
-				}
-			},
-			"omission": false,
-			"globalAttrs": {
-				"#ARIAAttrs": true
-			},
-			"attributes": {}
-		},
-		{
 			"name": "menu",
 			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
 			"description": "The <menu> HTML element is described in the HTML specification as a semantic alternative to <ul>, but treated by browsers (and exposed through the accessibility tree) as no different than <ul>. It represents an unordered list of items (which are represented by <li> elements).",
@@ -55662,6 +55760,1323 @@
 			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
+			"attributes": {}
+		},
+		{
+			"name": "mml:annotation",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation",
+			"description": "The <annotation> MathML element contains an annotation to the MathML expression in a textual format, for example LaTeX. Note: Annotations are not supposed to be rendered by browsers and are hidden by default. However, Firefox and Safari render some annotation formats if the first child of the <semantics> element contains errors or is missing.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": ["#text"]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"encoding": {
+					"description": "The encoding of the semantic information in the annotation (e.g., \"application/x-tex\")",
+					"type": "MIMEType"
+				},
+				"src": {
+					"description": "The location of an external source for semantic information.",
+					"deprecated": true,
+					"type": "URL"
+				}
+			}
+		},
+		{
+			"name": "mml:annotation-xml",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation-xml",
+			"description": "The <annotation-xml> MathML element contains an annotation to the MathML expression in the XML format, for example Content MathML or SVG. Note: Annotations are not supposed to be rendered by browsers and are hidden by default. However, Firefox and Safari render some annotation formats if the first child of the <semantics> element contains errors or is missing.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"encoding": {
+					"description": "The encoding of the semantic information in the annotation (e.g., \"application/mathml+xml\", \"application/mathml-presentation+xml\", \"application/mathml-content+xml\")",
+					"type": "MIMEType"
+				},
+				"src": {
+					"description": "The location of an external source for semantic information.",
+					"deprecated": true,
+					"type": "URL"
+				}
+			}
+		},
+		{
+			"name": "mml:maction",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. The <maction> MathML element allows to bind actions to mathematical expressions. By default, only the first child is rendered but some browsers may take into account actiontype and selection attributes to implement custom behaviors. Note: Historically, this element provided a mechanism to make MathML formulas interactive. Nowadays, it is recommended to rely on JavaScript and other Web technologies to implement this use case.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"deprecated": true,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"actiontype": {
+					"description": "The action which specifies what happens for this element. Special behavior for the following values were implemented by some browsers: statusline: If there is a click on the expression or the reader moves the pointer over it, the message is sent to the browser's status line. The syntax is: <maction actiontype=\"statusline\"> expression message </maction>. toggle: When there is a click on the subexpression, the rendering alternates the display of selected subexpressions. Therefore each click increments the selection value. The syntax is: <maction actiontype=\"toggle\" selection=\"positive-integer\" > expression1 expression2 expressionN </maction>.",
+					"deprecated": true,
+					"nonStandard": true,
+					"type": "Any"
+				},
+				"selection": {
+					"description": "The child element currently visible, only taken into account for actiontype=\"toggle\" or non-standard actiontype values. The default value is 1, which is the first child element.",
+					"deprecated": true,
+					"nonStandard": true,
+					"type": "Any"
+				}
+			}
+		},
+		{
+			"name": "mml:math",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math",
+			"description": "The <math> MathML element is the top-level MathML element, used to write a single mathematical formula. It can be placed in HTML content where flow content is permitted. Note: See the Authoring MathML page for tips to properly integrate MathML formulas in your web pages and the Guides page for more demos.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"mml|mtr",
+							"mml|mtd",
+							"mml|mprescripts",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": "math",
+				"permittedRoles": false,
+				"properties": {
+					"global": true,
+					"role": "math"
+				}
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"alttext": {
+					"type": "Any"
+				},
+				"display": {
+					"description": "This enumerated attribute specifies how the enclosed MathML markup should be rendered. It can have one of the following values: block, which means that this element will be displayed in its own block outside the current span of text and with math-style set to normal. inline, which means that this element will be displayed inside the current span of text and with math-style set to compact. If not present, its default value is inline.",
+					"type": {
+						"enum": ["block", "inline"],
+						"disallowToSurroundBySpaces": false
+					},
+					"defaultValue": "inline"
+				},
+				"xmlns": {
+					"type": "URL"
+				}
+			}
+		},
+		{
+			"name": "mml:menclose",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose",
+			"description": "Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <menclose> MathML element renders its content inside an enclosing notation specified by the notation attribute.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"nonStandard": true,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"notation": {
+					"description": "A list of notations, separated by white space, to apply to the child elements. The symbols are each drawn as if the others are not present, and therefore may overlap. Possible values are: Value Sample Rendering Rendering in your browser Description longdiv (default) a2+b2 long division symbol actuarial a2+b2 actuarial symbol box a2+b2 box roundedbox a2+b2 rounded box circle a2+b2 circle left a2+b2 line to the left of the contents right a2+b2 line to the right of the contents top a2+b2 line above of the contents bottom a2+b2 line below of the contents updiagonalstrike a2+b2 strikeout line through contents from lower left to upper right downdiagonalstrike a2+b2 strikeout line through contents from upper left to lower right verticalstrike a2+b2 vertical strikeout line through contents horizontalstrike a2+b2 horizontal strikeout line through contents madruwb a2+b2 Arabic factorial symbol updiagonalarrow a2+b2 diagonal arrow phasorangle a2+b2 phasor angle",
+					"nonStandard": true,
+					"type": "Any"
+				}
+			}
+		},
+		{
+			"name": "mml:merror",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/merror",
+			"description": "The <merror> MathML element is used to display contents as error messages. The intent of this element is to provide a standard way for programs that generate MathML from other input to report syntax errors.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mfenced",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
+			"description": "Deprecated: This feature is no longer recommended. Though some browsers might still support it, it may have already been removed from the relevant web standards, may be in the process of being dropped, or may only be kept for compatibility purposes. Avoid using it, and update existing code if possible; see the compatibility table at the bottom of this page to guide your decision. Be aware that this feature may cease to work at any time. Non-standard: This feature is not standardized. We do not recommend using non-standard features in production, as they have limited browser support, and may change or be removed. However, they can be a suitable alternative in specific cases where no standard option exists. The <mfenced> MathML element provides the possibility to add custom opening and closing brackets (such as parentheses) and separators (such as commas or semicolons) to an expression. Note: Historically, the <mfenced> element was defined as a shorthand for writing fenced expressions and equivalent to an expanded form involving <mrow> and <mo> elements. Nowadays, it is recommended to use that equivalent form instead.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"deprecated": true,
+			"nonStandard": true,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"close": {
+					"description": "A string for the closing delimiter. The default value is \")\" and any white space is trimmed.",
+					"type": "Any",
+					"defaultValue": ")"
+				},
+				"open": {
+					"description": "A string for the opening delimiter. The default value is \"(\" and any white space is trimmed.",
+					"type": "Any",
+					"defaultValue": "("
+				},
+				"separators": {
+					"description": "A sequence of zero or more characters to be used for different separators, optionally divided by white space, which is ignored. The default value is \",\". By specifying more than one character, it is possible to set different separators for each argument in the expression. If there are too many separators, all excess is ignored. If there are too few separators in the expression, the last specified separator is repeated.",
+					"type": "Any",
+					"defaultValue": ","
+				}
+			}
+		},
+		{
+			"name": "mml:mfrac",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfrac",
+			"description": "The <mfrac> MathML element is used to display fractions. It can also be used to mark up fraction-like objects such as binomial coefficients and Legendre symbols.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"denomalign": {
+					"description": "The alignment of the denominator under the fraction. Possible values are: left, center (default), and right.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"linethickness": {
+					"description": "A <length-percentage> indicating the thickness of the horizontal fraction line.",
+					"type": "<length-percentage>"
+				},
+				"numalign": {
+					"description": "The alignment of the numerator over the fraction. Possible values are: left, center (default), and right.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:mi",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mi",
+			"description": "The <mi> MathML element indicates that the content should be rendered as an identifier, such as a function name, variable or symbolic constant. By default <mi> elements that contain multiple characters are a rendered as normal text, while single character characters are rendered as italic: the same formatting behavior as the CSS text-transform property with a value of math-auto. The mathvariant attribute with a value of normal can be used to reset a single character to the normal font. In order to use a particular form of a character such as bold/italic, serif, sans-serif, script/calligraphy, monospaced, double-struck, and so on, you should use the appropriate Mathematical Alphanumeric Symbols. Note: In a previous specification (MathML3), the mathvariant attribute was used to define logical classes that could apply the character formatting for mathematical alphanumeric symbols. The associated values are now deprecated, and expected to be removed from browsers in future releases.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"mathvariant": {
+					"description": "The only value allowed in the current specification is normal (case insensitive): normal Use default/normal rendering, removing automatic styling of single characters to italic. Deprecated legacy values are: bold Deprecated Try and use bold characters e.g., \"𝐀\". italic Deprecated Try and use italic characters e.g., \"𝐴\". bold-italic Deprecated Try and use bold-italic characters e.g., \"𝑨\". double-struck Deprecated Try and use double-struck characters e.g., \"𝔸\". bold-fraktur Deprecated Try and use bold-fraktur characters e.g., \"𝕬\". script Deprecated Try and use script characters e.g., \"𝒜\". bold-script Deprecated Try and use bold-script characters e.g., \"𝓐\". fraktur Deprecated Try and use fraktur characters e.g., \"𝔄\". sans-serif Deprecated Try and use sans-serif characters e.g., \"𝖠\". bold-sans-serif Deprecated Try and use bold-sans-serif characters e.g., \"𝗔\". sans-serif-italic Deprecated Try and use sans-serif-italic characters e.g., \"𝘈\". sans-serif-bold-italic Deprecated Try and use sans-serif-bold-italic characters e.g., \"𝘼\". monospace Deprecated Try and use monospace characters e.g., \"𝙰\". initial Deprecated Try and use initial characters e.g., \"𞸢\". tailed Deprecated Try and use tailed characters e.g., \"𞹂\". looped Deprecated Try and use looped characters e.g., \"𞺂\". stretched Deprecated Try and use stretched characters e.g., \"𞹢\".",
+					"type": {
+						"enum": ["normal"],
+						"disallowToSurroundBySpaces": false
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:mmultiscripts",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mmultiscripts",
+			"description": "The <mmultiscripts> MathML element is used to attach an arbitrary number of subscripts and superscripts to an expression at once, generalizing the <msubsup> element. Scripts can be either pre-scripts (placed before the expression) or post-scripts (placed after it). MathML uses the syntax below, that is a base expression, followed by an arbitrary number of post-subscript and post-superscript pairs (attached in the given order) optionally followed by an <mprescripts> element and an arbitrary number of pre-subscript and pre-superscript pairs (attached in the given order). In addition, empty <mrow> elements can be used to represent absent scripts. html<mmultiscripts> base post-sub-script-1 post-sup-script-1 post-sub-script-2 post-sup-script-2 post-sub-script-3 post-sup-script-3 ... post-sub-script-N post-sup-script-N <mprescripts /> ⎫ pre-sub-script-1 pre-sup-script-1 ⎪ pre-sub-script-2 pre-sup-script-2 ⎬ Optional pre-sub-script-3 pre-sup-script-3 ⎪ ... ⎪ pre-sub-script-M pre-sup-script-N ⎭ </mmultiscripts>",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [":model(MathMLPresentation)", "mml|semantics", "mml|mprescripts", "#text"]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"subscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"superscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:mn",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mn",
+			"description": "The <mn> MathML element represents a numeric literal which is normally a sequence of digits with a possible separator (a dot or a comma). However, it is also allowed to have arbitrary text in it which is actually a numeric quantity, for example \"eleven\".",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mo",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mo",
+			"description": "The <mo> MathML element represents an operator in a broad sense. Besides operators in strict mathematical meaning, this element also includes \"operators\" like parentheses, separators like comma and semicolon, or \"absolute value\" bars.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"accent": {
+					"description": "A <boolean> indicating whether the operator should be treated as an accent when used as an under- or overscript (i.e., drawn bigger and closer to the base expression).",
+					"nonStandard": true,
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"fence": {
+					"description": "A <boolean> indicating whether the operator is a fence (such as parentheses). There is no visual effect for this attribute.",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"form": {
+					"description": "An enumerated attribute specifying how the operator is to be presented. For example, depending on the value, a different amount of space might be rendered on either side of the operator. It can have one of the following values: prefix: The operator appears before its operands. For example, in the expression + a, the + is a prefix operator. infix: The operator appears between its operands. In the expression a + b, the + is an infix operator. postfix: The operator appears after its operands. For example, in the expression a +, the + is a postfix operator.",
+					"type": {
+						"enum": ["prefix", "infix", "postfix"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"largeop": {
+					"description": "A <boolean> indicating whether the operator should be drawn bigger when math-style is set to normal.",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"lspace": {
+					"description": "A <length-percentage> indicating the amount of space before the operator.",
+					"type": "<length-percentage>"
+				},
+				"maxsize": {
+					"description": "A <length-percentage> indicating the maximum size of the operator when it is stretchy.",
+					"type": "<length-percentage>"
+				},
+				"minsize": {
+					"description": "A <length-percentage> indicating the minimum size of the operator when it is stretchy.",
+					"type": "<length-percentage>"
+				},
+				"movablelimits": {
+					"description": "A <boolean> indicating whether attached under- and overscripts move to sub- and superscript positions when math-style is set to compact.",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"rspace": {
+					"description": "A <length-percentage> indicating the amount of space after the operator.",
+					"type": "<length-percentage>"
+				},
+				"separator": {
+					"description": "A <boolean> indicating whether the operator is a separator (such as commas). There is no visual effect for this attribute.",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"stretchy": {
+					"description": "A <boolean> indicating whether the operator stretches to the size of the adjacent element.",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"symmetric": {
+					"description": "A <boolean> indicating whether a stretchy operator should be vertically symmetric around the imaginary math axis (centered fraction line).",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:mover",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mover",
+			"description": "The <mover> MathML element is used to attach an accent or a limit over an expression. Use the following syntax: <mover> base overscript </mover>",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"accent": {
+					"description": "A <boolean> indicating whether the over script should be treated as an accent (i.e., drawn bigger and closer to the base expression).",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:mpadded",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mpadded",
+			"description": "The <mpadded> MathML element is used to add extra padding and to set the general adjustment of position and size of enclosed contents.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"depth": {
+					"description": "A <length-percentage> indicating the desired depth (below the baseline) of the <mpadded> element.",
+					"type": "<length-percentage>"
+				},
+				"height": {
+					"description": "A <length-percentage> indicating the desired height (above the baseline) of the <mpadded> element.",
+					"type": "<length-percentage>"
+				},
+				"lspace": {
+					"description": "A <length-percentage> indicating the horizontal location of the positioning point of the child content with respect to the positioning point of the <mpadded> element.",
+					"type": "<length-percentage>"
+				},
+				"voffset": {
+					"description": "A <length-percentage> indicating the vertical location of the positioning point of the child content with respect to the positioning point of the <mpadded> element.",
+					"type": "<length-percentage>"
+				},
+				"width": {
+					"description": "A <length-percentage> indicating the desired horizontal length of the <mpadded> element.",
+					"type": "<length-percentage>"
+				}
+			}
+		},
+		{
+			"name": "mml:mphantom",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mphantom",
+			"description": "The <mphantom> MathML element is rendered invisibly, but dimensions (such as height, width, and baseline position) are still kept.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mprescripts",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mprescripts",
+			"description": "The <mprescripts> MathML element is used within an <mmultiscripts> element to indicate the start of the pre-scripts elements (subscripts and superscripts that are placed before the base expression).",
+			"categories": [],
+			"contentModel": {
+				"contents": false
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mroot",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mroot",
+			"description": "The <mroot> MathML element is used to display roots with an explicit index. Two arguments are accepted, which leads to the syntax: <mroot> base index </mroot>.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mrow",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mrow",
+			"description": "The <mrow> MathML element is used to group sub-expressions, which usually contain one or more operators with their respective operands (such as <mi> and <mn>). This element renders as a horizontal row containing its arguments. When writing a MathML expression, you should group elements within an <mrow> in the same way as they are grouped in the mathematical interpretation of the expression. Proper grouping helps the rendering of the expression in several ways: It can improve the display by possibly affecting spacing and preventing line breaks. It simplifies the interpretation of the expression by automated systems such as computer algebra systems and audio renderers.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"mml|mtr",
+							"mml|mtd",
+							"mml|mprescripts",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:ms",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/ms",
+			"description": "The <ms> MathML element represents a string literal meant to be interpreted by programming languages and computer algebra systems.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mspace",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mspace",
+			"description": "The <mspace> MathML element is used to display a blank space, whose size is set by its attributes.",
+			"categories": [],
+			"contentModel": {
+				"contents": false
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"depth": {
+					"description": "A <length-percentage> indicating the desired depth (below the baseline) of the space.",
+					"type": "<length-percentage>"
+				},
+				"height": {
+					"description": "A <length-percentage> indicating the desired height (above the baseline) of the space.",
+					"type": "<length-percentage>"
+				},
+				"width": {
+					"description": "A <length-percentage> indicating the desired width of the space.",
+					"type": "<length-percentage>"
+				}
+			}
+		},
+		{
+			"name": "mml:msqrt",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msqrt",
+			"description": "The <msqrt> MathML element is used to display square roots (no index is displayed). The square root accepts only one argument, which leads to the following syntax: <msqrt> base </msqrt>.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [":model(MathMLPresentation)", "mml|semantics", "#text"]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mstyle",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mstyle",
+			"description": "The <mstyle> MathML element is used to change the style of its children. Note: Historically, this element accepted almost all the MathML attributes and it was used to override the default attribute values of its descendants. It was later restricted to only a few relevant styling attributes that were used in existing web pages. Nowadays, these styling attributes are common to all MathML elements and so <mstyle> is really just equivalent to an <mrow> element. However, <mstyle> may still be relevant for compatibility with MathML implementations outside browsers.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"background": {
+					"description": "Use CSS property background-color instead.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"color": {
+					"description": "Use CSS property color instead.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"fontsize": {
+					"description": "Use CSS property font-size instead.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"fontstyle": {
+					"description": "Use CSS property font-style instead.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"fontweight": {
+					"description": "Use CSS property font-weight instead.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:msub",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msub",
+			"description": "The <msub> MathML element is used to attach a subscript to an expression. It uses the following syntax: <msub> base subscript </msub>.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"subscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:msubsup",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msubsup",
+			"description": "The <msubsup> MathML element is used to attach both a subscript and a superscript, together, to an expression. It uses the following syntax: <msubsup> base subscript superscript </msubsup>.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 3
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"subscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the subscript down.",
+					"deprecated": true,
+					"nonStandard": true
+				},
+				"superscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:msup",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msup",
+			"description": "The <msup> MathML element is used to attach a superscript to an expression. It uses the following syntax: <msup> base superscript </msup>.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"superscriptshift": {
+					"description": "A <length-percentage> indicating the minimum amount to shift the baseline of the superscript up.",
+					"deprecated": true,
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:mtable",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtable",
+			"description": "The <mtable> MathML element allows you to create tables or matrices. Its children are <mtr> elements (representing rows), each of them having <mtd> elements as its children (representing cells). These elements are similar to <table>, <tr> and <td> elements of HTML.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": ["mml|mtr"]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"align": {
+					"description": "Specifies the vertical alignment of the table with respect to its environment. Possible values are: axis (default): The vertical center of the table aligns on the environment's axis (typically the minus sign). baseline: The vertical center of the table aligns on the environment's baseline. bottom: The bottom of the table aligns on the environments baseline. center: See baseline. top: The top of the table aligns on the environments baseline. In addition, values of the align attribute can end with a row number (e.g., align=\"center 3\"). This allows you to align the specified row of the table rather than the whole table. A negative Integer value counts rows from the bottom of the table.",
+					"nonStandard": true
+				},
+				"columnalign": {
+					"description": "Specifies the horizontal alignment of the cells. Multiple values separated by space are allowed and apply to the corresponding columns (e.g., columnalign=\"left right center\"). Possible values are: left, center (default) and right.",
+					"nonStandard": true
+				},
+				"columnlines": {
+					"description": "Specifies column borders. Multiple values separated by space are allowed and apply to the corresponding columns (e.g., columnlines=\"none none solid\"). Possible values are: none (default), solid and dashed.",
+					"nonStandard": true
+				},
+				"columnspacing": {
+					"description": "Specifies the space between table columns. Multiple values separated by space are allowed and apply to the corresponding columns (e.g., columnspacing=\"1em 2em\"). Possible values are <length-percentage>.",
+					"nonStandard": true
+				},
+				"frame": {
+					"description": "Specifies borders of the entire table. Possible values are: none (default), solid and dashed.",
+					"nonStandard": true
+				},
+				"framespacing": {
+					"description": "Specifies additional space added between the table and frame. The first value specifies the spacing on the right and left; the second value specifies the spacing above and below. Possible values are <length-percentage>.",
+					"nonStandard": true
+				},
+				"rowalign": {
+					"description": "Specifies the vertical alignment of the cells. Multiple values separated by space are allowed and apply to the corresponding rows (e.g., rowalign=\"top bottom axis\"). Possible values are: axis, baseline (default), bottom, center and top.",
+					"nonStandard": true
+				},
+				"rowlines": {
+					"description": "Specifies row borders. Multiple values separated by space are allowed and apply to the corresponding rows (e.g., rowlines=\"none none solid\"). Possible values are: none (default), solid and dashed.",
+					"nonStandard": true
+				},
+				"rowspacing": {
+					"description": "Specifies the space between table rows. Multiple values separated by space are allowed and apply to the corresponding rows (e.g., rowspacing=\"1em 2em\"). Possible values are <length-percentage>.",
+					"nonStandard": true
+				},
+				"width": {
+					"description": "A <length-percentage> indicating the width of the entire table.",
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:mtd",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtd",
+			"description": "The <mtd> MathML element represents a cell in a table or a matrix. It may only appear in a <mtr> element. This element is similar to the <td> element of HTML.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"columnalign": {
+					"description": "Specifies the horizontal alignment of this cell and overrides values specified by <mtable> or <mtr>. Possible values are: left, center and right.",
+					"nonStandard": true
+				},
+				"columnspan": {
+					"description": "A non-negative integer value that indicates on how many columns does the cell extend.",
+					"type": {
+						"type": "integer",
+						"gt": 0
+					}
+				},
+				"rowalign": {
+					"description": "Specifies the vertical alignment of this cell and overrides values specified by <mtable> or <mtr>. Possible values are: axis, baseline, bottom, center and top.",
+					"nonStandard": true
+				},
+				"rowspan": {
+					"description": "A non-negative integer value that indicates on how many rows does the cell extend.",
+					"type": {
+						"type": "integer",
+						"gt": 0
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:mtext",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtext",
+			"description": "The <mtext> MathML element is used to render arbitrary text with no notational meaning, such as comments or annotations. To display text with notational meaning, use <mi>, <mn>, <mo> or <ms> instead.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {}
+		},
+		{
+			"name": "mml:mtr",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtr",
+			"description": "The <mtr> MathML element represents a row in a table or a matrix. It may only appear in a <mtable> element and its children are <mtd> elements representing cells. This element is similar to the <tr> element of HTML.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": ["mml|mtd"]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"columnalign": {
+					"description": "Overrides the horizontal alignment of cells specified by <mtable> for this row. Multiple values separated by space are allowed and apply to the corresponding columns (e.g., columnalign=\"left center right\"). Possible values are: left, center and right.",
+					"nonStandard": true
+				},
+				"rowalign": {
+					"description": "Overrides the vertical alignment of cells specified by <mtable> for this row. Possible values are: axis, baseline, bottom, center and top.",
+					"nonStandard": true
+				}
+			}
+		},
+		{
+			"name": "mml:munder",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munder",
+			"description": "The <munder> MathML element is used to attach an accent or a limit under an expression. It uses the following syntax: <munder> base underscript </munder>",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 2
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"accentunder": {
+					"description": "A <boolean> indicating whether the under script should be treated as an accent (i.e., drawn bigger and closer to the base expression).",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:munderover",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munderover",
+			"description": "The <munderover> MathML element is used to attach accents or limits both under and over an expression. It uses the following syntax: <munderover> base underscript overscript </munderover>",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"oneOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						],
+						"max": 3
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"accent": {
+					"description": "A <boolean> indicating whether the over script should be treated as an accent (i.e., drawn bigger and closer to the base expression).",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				},
+				"accentunder": {
+					"description": "A <boolean> indicating whether the under script should be treated as an accent (i.e., drawn bigger and closer to the base expression).",
+					"type": {
+						"enum": ["true", "false"],
+						"disallowToSurroundBySpaces": false
+					}
+				}
+			}
+		},
+		{
+			"name": "mml:semantics",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/semantics",
+			"description": "The <semantics> MathML element associates annotations with a MathML expression, for example its text source as a lightweight markup language or mathematical meaning expressed in a special XML dialect. Typically, its structure is: a first child which is a MathML expression to be annotated. subsequent <annotation> or <annotation-xml> elements, the latter being reserved for XML formats such as Content MathML or SVG. By default, only the first child of the <semantics> element is rendered while the others have their display set to none. csssemantics > :not(:first-child) { display: none; } Note: Legacy MathML specifications allowed renderers to decide the default rendering according to available annotations. The following rules for determining the visible child have been implemented in some browsers. See MathML 4 for the distinction between Presentation and Content MathML. If no other rules apply: By default only the first child is rendered, which is supposed to be Presentation MathML. If the first child is a Presentation MathML element other than <annotation> or <annotation-xml>, render the first child. If no Presentation MathML is found, render the first <annotation> or <annotation-xml> child element of <semantics> without a src attribute. For <annotation-xml> elements the encoding attribute must be equal to one of following values: \"application/mathml-presentation+xml\" \"MathML-Presentation\" \"SVG1.1\" \"text/html\" \"image/svg+xml\" \"application/xml\" Note that \"application/mathml+xml\" is not mentioned here as it does not distinguish between Content or Presentation MathML.",
+			"categories": [],
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"omission": false,
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#MathMLGlobalAttrs": true
+			},
 			"attributes": {}
 		},
 		{

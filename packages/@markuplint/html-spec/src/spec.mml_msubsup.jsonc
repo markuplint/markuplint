@@ -1,0 +1,27 @@
+// https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup
+{
+	"contentModel": {
+		"contents": [
+			{
+				"oneOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				],
+				"max": 3
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

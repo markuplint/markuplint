@@ -1,0 +1,36 @@
+// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+{
+	"deprecated": true,
+	"contentModel": {
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true
+	},
+	"attributes": {
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+		"actiontype": {
+			"type": "Any"
+		},
+		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+		"selection": {
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}

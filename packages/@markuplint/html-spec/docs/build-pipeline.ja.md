@@ -6,7 +6,7 @@
 
 `@markuplint/html-spec` は `@markuplint/spec-generator` を使用して、単一の統合 `index.json` ファイルを生成します。ビルドプロセス:
 
-1. `src/` から 177 個の要素 JSON 仕様ファイルと 2 個の共通定義ファイルを読み込む
+1. `src/` から 208 個の要素 JSON 仕様ファイル（HTML、SVG、MathML）と 2 個の共通定義ファイルを読み込む
 2. MDN Web Docs、W3C ARIA 仕様、HTML Living Standard から外部データをフェッチ
 3. 手動仕様と外部データをマージ（手動データが常に優先）
 4. 統合結果を `index.json` に出力（約 48K 行、約 1.4MB）
@@ -18,8 +18,8 @@
 ```mermaid
 flowchart TD
     subgraph inputs ["ソースファイル（html-spec）"]
-        specFiles["src/spec.*.jsonc\n（177 要素ファイル）"]
-        commonAttrs["src/spec-common.attributes.jsonc\n（19 グローバル属性カテゴリ）"]
+        specFiles["src/spec.*.jsonc\n（208 要素ファイル）"]
+        commonAttrs["src/spec-common.attributes.jsonc\n（20 グローバル属性カテゴリ）"]
         commonContents["src/spec-common.contents.jsonc\n（コンテンツモデルマクロ）"]
     end
 
@@ -32,6 +32,7 @@ flowchart TD
         mdn["MDN Web Docs"]
         aria["W3C ARIA（1.1 / 1.2 / 1.3）"]
         svg["SVG / Graphics ARIA"]
+        mathml["MathML"]
     end
 
     subgraph output ["出力"]
@@ -46,6 +47,7 @@ flowchart TD
     mdn --> specGen
     aria --> specGen
     svg --> specGen
+    mathml --> specGen
 
     specGen -->|"手動データ優先で\nマージ"| indexJson
 ```
@@ -81,6 +83,7 @@ spec-generator はビルド時に以下の外部ソースからデータをフ�
 | ----------------------------------------- | ------------------------------------------------------------ |
 | MDN Web Docs（HTML）                      | 要素の説明、コンテンツカテゴリ、属性メタデータ、互換性フラグ |
 | MDN Web Docs（SVG）                       | SVG 要素の説明、非推奨要素リスト                             |
+| MDN Web Docs（MathML）                    | MathML 要素の説明、非推奨要素リスト                          |
 | WAI-ARIA 1.1（`w3.org/TR/wai-aria-1.1/`） | ロール定義、プロパティ、ステート                             |
 | WAI-ARIA 1.2（`w3.org/TR/wai-aria-1.2/`） | 更新されたロール定義                                         |
 | WAI-ARIA 1.3（`w3c.github.io/aria/`）     | 最新の Editor's Draft                                        |
@@ -127,7 +130,7 @@ spec-generator の内部アーキテクチャ（スクレイピング、キャ�
 {
   cites: string[];           // フェッチされた全 URL のソート済みリスト
   def: {
-    "#globalAttrs": { ... }, // 19 グローバル属性カテゴリ
+    "#globalAttrs": { ... }, // 20 グローバル属性カテゴリ
     "#aria": {               // バージョン別 ARIA 定義
       "1.1": { roles, props, graphicsRoles },
       "1.2": { roles, props, graphicsRoles },
@@ -135,7 +138,7 @@ spec-generator の内部アーキテクチャ（スクレイピング、キャ�
     },
     "#contentModels": { ... } // コンテンツモデルカテゴリマクロ
   },
-  specs: ElementSpec[]       // 要素仕様配列（アルファベット順、SVG は末尾）
+  specs: ElementSpec[]       // 要素仕様配列（アルファベット順、MathML は HTML の後、SVG はその後）
 }
 ```
 

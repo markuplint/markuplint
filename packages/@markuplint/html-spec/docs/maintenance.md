@@ -33,6 +33,8 @@ The build script derives element names from file names using a regex replacement
 - `spec.div.jsonc` becomes element name `div`
 - `spec.svg_circle.jsonc` becomes element name `svg_circle`, which is later resolved
   to namespace `svg:circle` by `resolveNamespace()`
+- `spec.mml_math.jsonc` becomes element name `mml_math`, which is later resolved
+  to namespace `mml:math` by `resolveNamespace()`
 - Heading elements (`h1` through `h6`) are mapped to the MDN URL path `Heading_Elements`
 
 This naming convention is critical. Any deviation from the `spec.<name>.jsonc` pattern
@@ -98,7 +100,38 @@ will cause the element to be silently excluded from the build output.
    ```
 5. Run `yarn workspace @markuplint/html-spec run gen`
 
-### 4. Updating Global Attribute Categories
+### 4. Adding a MathML Element
+
+1. Create `src/spec.mml_<localname>.jsonc` (e.g., `src/spec.mml_mfrac.jsonc`)
+2. The element name will be inferred as `mml:<localname>` (e.g., `mml:mfrac`)
+3. Use MathML-specific global attribute categories:
+   ```json
+   "globalAttrs": {
+     "#HTMLGlobalAttrs": true,
+     "#GlobalEventAttrs": true,
+     "#ARIAAttrs": true,
+     "#MathMLGlobalAttrs": true
+   }
+   ```
+4. For ARIA, MathML elements typically use the MathML-AAM reference:
+   ```json
+   "aria": {
+     "implicitRole": false,
+     "permittedRoles": { "mathml-aam": true }
+   }
+   ```
+5. For elements with a fixed number of children (e.g., `mfrac` has exactly 2),
+   use the `max` field:
+   ```json
+   "contentModel": {
+     "contents": [{ "oneOrMore": ":model(MathMLPresentation)", "max": 2 }]
+   }
+   ```
+6. If the element belongs to a MathML content category, add it to the appropriate
+   category in `src/spec-common.contents.jsonc` (e.g., `#MathMLPresentation`)
+7. Run `yarn workspace @markuplint/html-spec run gen`
+
+### 5. Updating Global Attribute Categories
 
 1. Edit `src/spec-common.attributes.jsonc`
 2. Each top-level key is a category (e.g., `#HTMLGlobalAttrs`)
@@ -106,14 +139,14 @@ will cause the element to be silently excluded from the build output.
 4. Run `yarn workspace @markuplint/html-spec run gen`
 5. All elements referencing that category will pick up the changes
 
-### 5. Adding or Updating Content Model Categories
+### 6. Adding or Updating Content Model Categories
 
 1. Edit `src/spec-common.contents.jsonc`
 2. Add a new entry to the `models` object or add elements to existing categories:
    ```json
    "#newCategory": ["element1", "element2", "svg|element3"]
    ```
-3. Use `svg|<name>` prefix for SVG elements in category lists
+3. Use `svg|<name>` prefix for SVG elements and `mml|<name>` prefix for MathML elements in category lists
 4. Reference the new category in element specs: `":model(newCategory)"`
 5. Run `yarn workspace @markuplint/html-spec run gen`
 
@@ -129,7 +162,7 @@ will cause the element to be silently excluded from the build output.
 - New category names must also conform to the `Category` enum in
   `@markuplint/ml-spec/schemas/content-models.schema.json`.
 
-### 6. Updating ARIA Mappings
+### 7. Updating ARIA Mappings
 
 1. Open the relevant `src/spec.<element>.jsonc`
 2. Modify the `aria` object:
@@ -149,7 +182,7 @@ to preserve backward-compatible behavior for these fixed versions. WAI-ARIA 1.3 
 still a Working Draft and is the primary source of ongoing ARIA changes in
 `yarn up:gen`.
 
-### 7. Periodic Specification Update
+### 8. Periodic Specification Update
 
 The specification data in this package is kept up-to-date by regenerating `index.json`,
 which fetches the latest data from MDN and W3C. This is the standard workflow for
@@ -238,7 +271,7 @@ single PR.
 This process may seem involved, but reviewing the diff is essential for understanding
 what has changed in web standards and ensuring the spec data remains accurate.
 
-### 8. Marking an Element as Obsolete
+### 9. Marking an Element as Obsolete
 
 Elements can be marked obsolete in two ways:
 
@@ -257,7 +290,7 @@ Obsolete elements automatically get:
 
 | File                               | Description                            |
 | ---------------------------------- | -------------------------------------- |
-| `src/spec.*.jsonc`                 | Per-element specifications (177 files) |
+| `src/spec.*.jsonc`                 | Per-element specifications (208 files) |
 | `src/spec-common.attributes.jsonc` | Global attribute category definitions  |
 | `src/spec-common.contents.jsonc`   | Content model category macros          |
 | `build.mjs`                        | Build script configuration             |
@@ -378,6 +411,7 @@ grep -A5 '"accept"' index.json
 - Verify the file exists: `src/spec.<element>.json`
 - Check file naming: must match `spec.*.jsonc` glob pattern
 - For SVG: must be `spec.svg_<name>.jsonc`
+- For MathML: must be `spec.mml_<name>.jsonc`
 
 ### JSON Comment Syntax Errors
 

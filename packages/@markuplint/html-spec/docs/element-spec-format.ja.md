@@ -31,12 +31,25 @@ spec.svg_path.jsonc     # <svg:path> 要素
 
 ファイル名のプレフィックス `svg_` から、要素名は `svg:<local>` として推論されます（例: `spec.svg_text.jsonc` は `svg:text` に対応）。
 
+### MathML 要素
+
+ファイル名パターン: `src/spec.mml_<local>.jsonc`
+
+```
+spec.mml_math.jsonc     # <mml:math> 要素
+spec.mml_mfrac.jsonc    # <mml:mfrac> 要素
+spec.mml_mi.jsonc       # <mml:mi> 要素
+spec.mml_mn.jsonc       # <mml:mn> 要素
+```
+
+ファイル名のプレフィックス `mml_` から、要素名は `mml:<local>` として推論されます（例: `spec.mml_math.jsonc` は `mml:math` に対応）。
+
 ### 共通定義ファイル
 
-| ファイル                       | 内容                                               |
-| ------------------------------ | -------------------------------------------------- |
-| `spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（19 カテゴリ）          |
-| `spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 10 + SVG 19） |
+| ファイル                       | 内容                                                         |
+| ------------------------------ | ------------------------------------------------------------ |
+| `spec-common.attributes.jsonc` | グローバル属性カテゴリ定義（20 カテゴリ）                    |
+| `spec-common.contents.jsonc`   | コンテンツモデルカテゴリマクロ（HTML 9 + SVG 18 + MathML 3） |
 
 ## 要素仕様の構造
 
@@ -171,15 +184,16 @@ spec.svg_path.jsonc     # <svg:path> 要素
 
 コンテンツモデルパターンのセレクタとして使用可能な形式です。
 
-| セレクタ形式   | 説明                                | 例                                     |
-| -------------- | ----------------------------------- | -------------------------------------- |
-| タグ名         | HTML 要素名                         | `"dt"`, `"dd"`, `"li"`, `"option"`     |
-| カテゴリ参照   | `:model()` 擬似クラスによるカテゴリ | `":model(flow)"`, `":model(phrasing)"` |
-| 否定セレクタ   | `:not()` との組み合わせ             | `":not(:model(interactive), a)"`       |
-| テキストノード | テキストコンテンツ                  | `"#text"`                              |
-| カスタム要素   | カスタム要素のワイルドカード        | `"#custom"`                            |
-| SVG 名前空間   | パイプ記法による名前空間指定        | `"svg\|a"`, `"svg\|circle"`            |
-| 属性セレクタ   | 属性条件付き要素                    | `"a[href]"`, `"link[itemprop]"`        |
+| セレクタ形式    | 説明                                | 例                                     |
+| --------------- | ----------------------------------- | -------------------------------------- |
+| タグ名          | HTML 要素名                         | `"dt"`, `"dd"`, `"li"`, `"option"`     |
+| カテゴリ参照    | `:model()` 擬似クラスによるカテゴリ | `":model(flow)"`, `":model(phrasing)"` |
+| 否定セレクタ    | `:not()` との組み合わせ             | `":not(:model(interactive), a)"`       |
+| テキストノード  | テキストコンテンツ                  | `"#text"`                              |
+| カスタム要素    | カスタム要素のワイルドカード        | `"#custom"`                            |
+| SVG 名前空間    | パイプ記法による名前空間指定        | `"svg\|a"`, `"svg\|circle"`            |
+| MathML 名前空間 | パイプ記法による名前空間指定        | `"mml\|mi"`, `"mml\|mn"`               |
+| 属性セレクタ    | 属性条件付き要素                    | `"a[href]"`, `"link[itemprop]"`        |
 
 ---
 
@@ -210,7 +224,7 @@ spec.svg_path.jsonc     # <svg:path> 要素
 }
 ```
 
-### 利用可能なグローバル属性カテゴリ（19 カテゴリ）
+### 利用可能なグローバル属性カテゴリ（20 カテゴリ）
 
 #### HTML カテゴリ
 
@@ -240,6 +254,12 @@ spec.svg_path.jsonc     # <svg:path> 要素
 | `#SVGPresentationAttrs`             | SVG プレゼンテーション属性（`fill`, `stroke`, `opacity`, `transform` 等） |
 | `#SVGTransferFunctionAttrs`         | SVG 転送関数属性                                                          |
 | `#XLinkAttrs`                       | XLink 属性（非推奨）                                                      |
+
+#### MathML カテゴリ
+
+| カテゴリ             | 説明                                                                       |
+| -------------------- | -------------------------------------------------------------------------- |
+| `#MathMLGlobalAttrs` | MathML グローバル属性（`dir`, `displaystyle`, `mathcolor`, `mathsize` 等） |
 
 ---
 
@@ -455,6 +475,11 @@ ARIA（Accessible Rich Internet Applications）統合仕様を定義します。
   "core-aam": true,
   "graphics-aam": true
 }
+
+// AAM 参照（MathML 要素で使用）
+"permittedRoles": {
+  "mathml-aam": true
+}
 ```
 
 ### `conditions`
@@ -522,7 +547,7 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 
 `spec-common.contents.jsonc` に定義されるカテゴリマクロです。コンテンツモデルパターンのセレクタで `:model(<category>)` の形式で参照されます。
 
-### HTML カテゴリ（10）
+### HTML カテゴリ（9）
 
 | カテゴリ             | 説明                                     | 代表的な要素                                                  |
 | -------------------- | ---------------------------------------- | ------------------------------------------------------------- |
@@ -536,7 +561,7 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 | `#palpable`          | 実質的なコンテンツをレンダリングする要素 | `a`, `div`, `p`, `img`, `table` 等                            |
 | `#script-supporting` | スクリプトサポート要素                   | `script`, `template`                                          |
 
-### SVG カテゴリ（19）
+### SVG カテゴリ（18）
 
 | カテゴリ                   | 説明                     | 代表的な要素                                                   |
 | -------------------------- | ------------------------ | -------------------------------------------------------------- |
@@ -559,13 +584,21 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 | `#SVGTextContent`          | テキストコンテンツ要素   | `svg\|text`, `svg\|textPath`, `svg\|tspan`                     |
 | `#SVGTextContentChild`     | テキストコンテンツ子要素 | `svg\|textPath`, `svg\|tref`, `svg\|tspan`                     |
 
+### MathML カテゴリ（3）
+
+| カテゴリ              | 説明                          | 代表的な要素                                                          |
+| --------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| `#MathMLPresentation` | MathML プレゼンテーション要素 | `mml\|mi`, `mml\|mn`, `mml\|mo`, `mml\|mfrac`, `mml\|msqrt`           |
+| `#MathMLScript`       | MathML スクリプト要素         | `mml\|msub`, `mml\|msup`, `mml\|msubsup`, `mml\|munder`, `mml\|mover` |
+| `#MathMLTabular`      | MathML テーブル要素           | `mml\|mtable`, `mml\|mtr`, `mml\|mtd`                                 |
+
 ---
 
 ## 共通定義ファイル
 
 ### `spec-common.attributes.jsonc`
 
-19 個のグローバル属性カテゴリの定義ファイルです。各カテゴリはキーに `#` プレフィックス付きの名前を持ち、値は属性名から属性定義へのマッピングです。
+20 個のグローバル属性カテゴリの定義ファイルです。各カテゴリはキーに `#` プレフィックス付きの名前を持ち、値は属性名から属性定義へのマッピングです。
 
 ```jsonc
 {
@@ -856,6 +889,36 @@ ARIA 仕様のバージョンごとに異なるマッピングを定義できま
 }
 ```
 
+### MathML 要素（`<mml:mfrac>`）
+
+```jsonc
+// https://w3c.github.io/mathml-core/#fractions-mfrac
+{
+  "contentModel": {
+    "contents": [{ "oneOrMore": ":model(MathMLPresentation)", "max": 2 }],
+  },
+  "globalAttrs": {
+    "#HTMLGlobalAttrs": true,
+    "#GlobalEventAttrs": true,
+    "#ARIAAttrs": true,
+    "#MathMLGlobalAttrs": true,
+  },
+  "attributes": {},
+  "aria": {
+    "implicitRole": false,
+    "permittedRoles": { "mathml-aam": true },
+  },
+}
+```
+
+MathML 要素は HTML 要素と比較して以下の特徴があります。
+
+- **コンテンツモデル**: MathML カテゴリ（`:model(MathMLPresentation)` 等）を使用。`max` フィールドで子要素の最大数を制約可能（例: `<mfrac>` は分子と分母の2つのみ）
+- **グローバル属性**: MathML 固有のカテゴリ（`#MathMLGlobalAttrs`）をインクルード
+- **ARIA**: `permittedRoles` で MathML-AAM 参照オブジェクト（`mathml-aam`）を使用
+
+---
+
 SVG 要素は HTML 要素と比較して以下の特徴があります。
 
 - **コンテンツモデル**: SVG カテゴリ（`:model(SVGAnimation)` 等）とパイプ記法による名前空間指定（`svg|a`）を使用
@@ -949,4 +1012,5 @@ SVG 要素は HTML 要素と比較して以下の特徴があります。
 | 条件付き ARIA          | `conditions` オブジェクト    | `<a>` の href 依存ロール      |
 | バージョン固有 ARIA    | `"1.1"`, `"1.2"` キー        | ARIA バージョン間の差異       |
 | SVG 名前空間           | `svg\|` プレフィックス       | SVG 要素のコンテンツモデル    |
+| MathML 名前空間        | `mml\|` プレフィックス       | MathML 要素のコンテンツモデル |
 | カテゴリ参照           | `:model()` 擬似クラス        | コンテンツモデルパターン      |
