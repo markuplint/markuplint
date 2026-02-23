@@ -731,6 +731,22 @@ describe('verify', () => {
 		]);
 	});
 
+	test('mml:mfrac', async () => {
+		// OK: exactly 2 children
+		const { violations: v1 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>');
+		expect(v1).toStrictEqual([]);
+
+		// NG: 3 children (too many)
+		const { violations: v2 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>');
+		expect(v2.length).toBeGreaterThan(0);
+	});
+
+	test('mml:math', async () => {
+		// OK: MathML presentation elements
+		const { violations: v1 } = await mlRuleTest(rule, '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>');
+		expect(v1).toStrictEqual([]);
+	});
+
 	test('The SVG <image> element and the HTML obsolete <image> element', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
