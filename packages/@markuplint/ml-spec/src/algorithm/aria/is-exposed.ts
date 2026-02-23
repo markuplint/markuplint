@@ -178,6 +178,9 @@ function isIncluding(
 	 * - Elements that are a valid target of an aria-activedescendant attribute.
 	 */
 	// TODO: Compute aria-activedescendant.
+	// To implement this, we need to find all elements with `aria-activedescendant`
+	// in the document and check if any of them reference this element's ID.
+	// This requires cross-element analysis that is not yet supported.
 	// results.push(true);
 
 	/**
@@ -206,7 +209,10 @@ function isIncluding(
 	 * Elements that are not hidden and have an ID that is referenced
 	 * by another element via a WAI-ARIA property.
 	 */
-	// TODO: Compute refering ID.
+	// TODO: Compute referring ID.
+	// To implement this, we need to find all ARIA relationship attributes
+	// (e.g., aria-labelledby, aria-describedby, aria-owns, aria-controls)
+	// across the document that reference this element's ID.
 	// results.push(true);
 
 	return results.includes(true);
@@ -220,7 +226,9 @@ function hasDisplayNodeOrVisibilityHidden(
 	if (!style) {
 		return false;
 	}
-	// TODO: Improve accuracy
+	// TODO: Improve accuracy by using a proper CSS parser instead of regex.
+	// This regex does not handle shorthand properties, `!important`, or values
+	// inside comments/strings. A CSS declaration parser would be more reliable.
 	return /display\s*:\s*none|visibility\s*:\s*hidden/i.test(style);
 }
 

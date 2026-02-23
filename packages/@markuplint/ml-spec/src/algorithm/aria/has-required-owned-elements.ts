@@ -30,7 +30,9 @@ export function hasRequiredOwnedElement(
 	 * THIS CONDITION IS PARTIAL SUPPORT.
 	 */
 	if (el.hasAttribute('aria-owns')) {
-		// FIXME
+		// FIXME: Partial support — assumes aria-owns always provides required owned elements.
+		// A complete implementation would resolve the ID references in the aria-owns value
+		// and verify that the referenced elements actually have the required roles.
 		return true;
 	}
 
