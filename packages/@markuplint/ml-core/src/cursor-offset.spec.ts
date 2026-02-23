@@ -62,4 +62,34 @@ describe('computeCursorOffset', () => {
 		// Cursor at 0: end (0) <= cursorOffset (0), so shift by delta = 6
 		expect(computeCursorOffset(edits, 0)).toBe(6);
 	});
+
+	test('cursor at exact end of replacement → shifts by delta (half-open interval)', () => {
+		const edits: TextEdit[] = [{ range: [3, 8], text: 'AB' }];
+		// Cursor at 8: end(8) <= cursorOffset(8), so delta = 2-5 = -3, newOffset = 8-3 = 5
+		expect(computeCursorOffset(edits, 8)).toBe(5);
+	});
+
+	test('cursor at exact start of replacement → placed at end of replacement', () => {
+		const edits: TextEdit[] = [{ range: [3, 8], text: 'AB' }];
+		// Cursor at 3: start(3) is NOT > cursorOffset(3), end(8) is NOT <= 3,
+		// so falls into else: newOffset = 3 + 2 = 5
+		expect(computeCursorOffset(edits, 3)).toBe(5);
+	});
+
+	test('cursor inside second edit with prior delta', () => {
+		const edits: TextEdit[] = [
+			{ range: [0, 3], text: 'A' }, // delta = -2
+			{ range: [5, 10], text: 'XY' }, // cursor at 7 is inside [5,10)
+		];
+		// Edit [0,3]: end(3) <= cursorOffset(7), shift by -2 → newOffset = 5
+		// Edit [5,10]: start(5) NOT > cursorOffset(7), end(10) NOT <= 7
+		//   → else: newOffset = 5 + 2 = 7
+		expect(computeCursorOffset(edits, 7)).toBe(7);
+	});
+
+	test('delete range ending exactly at cursor → shifts left', () => {
+		const edits: TextEdit[] = [{ range: [2, 5], text: '' }];
+		// Cursor at 5: end(5) <= cursorOffset(5), delta = 0-3 = -3, newOffset = 5-3 = 2
+		expect(computeCursorOffset(edits, 5)).toBe(2);
+	});
 });

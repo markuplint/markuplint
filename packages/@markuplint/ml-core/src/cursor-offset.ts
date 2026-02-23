@@ -24,7 +24,8 @@ export function computeCursorOffset(appliedEdits: readonly TextEdit[], cursorOff
 		}
 
 		if (end <= cursorOffset) {
-			// Edit is entirely before cursor — shift by delta
+			// Edit is entirely before cursor — shift by delta.
+			// Range is half-open [start, end), so cursor at `end` is outside the edit.
 			newOffset += delta;
 		} else {
 			// Cursor falls inside the replaced range [start, end)
@@ -33,5 +34,6 @@ export function computeCursorOffset(appliedEdits: readonly TextEdit[], cursorOff
 		}
 	}
 
+	// Defensive guard: should never go negative with well-formed, non-overlapping edits
 	return Math.max(0, newOffset);
 }

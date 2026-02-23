@@ -29,7 +29,7 @@ const resultLog = log.extend('result');
  * Summary of the multi-pass fix process.
  */
 export type FixSummary = {
-	/** Number of fix passes executed */
+	/** Number of fix passes executed (i.e., the number of times applyFixes was called) */
 	readonly passCount: number;
 	/** Total fixes applied across all passes */
 	readonly totalApplied: number;
@@ -37,8 +37,14 @@ export type FixSummary = {
 	readonly totalSkipped: number;
 	/** Whether the maximum pass count was reached */
 	readonly reachedMaxPasses: boolean;
-	/** Applied edits from the FIRST pass (for cursor offset computation) */
-	readonly appliedEdits: readonly TextEdit[];
+	/**
+	 * Applied edits from the FIRST pass only.
+	 * These reference the original source code offsets, making them suitable
+	 * for cursor offset computation via {@link computeCursorOffset}.
+	 * Note: `firstPassEdits.length` may differ from `totalApplied` when
+	 * multiple passes are executed.
+	 */
+	readonly firstPassEdits: readonly TextEdit[];
 };
 
 /**
@@ -46,7 +52,6 @@ export type FixSummary = {
  */
 export type VerifyOptions = {
 	readonly fix?: boolean;
-	readonly dryRun?: boolean;
 };
 
 /**
@@ -57,7 +62,7 @@ export type VerifyResult = {
 	readonly violations: readonly Violation[];
 	/** The source code after applying fixes. `undefined` when fix is not enabled. */
 	readonly fixedCode: string | undefined;
-	/** Fix process summary. Present only when fix=true and fixes were found. */
+	/** Fix process summary. Present when fix=true. */
 	readonly fixSummary?: FixSummary;
 };
 
@@ -357,6 +362,13 @@ export class MLCore {
 				}
 			} else {
 				fixedCode = this.#sourceCode;
+				fixSummary = {
+					passCount: 0,
+					totalApplied: 0,
+					totalSkipped: 0,
+					reachedMaxPasses: false,
+					firstPassEdits: [],
+				};
 			}
 		}
 
@@ -499,7 +511,7 @@ export class MLCore {
 				totalApplied,
 				totalSkipped,
 				reachedMaxPasses,
-				appliedEdits: firstPassEdits,
+				firstPassEdits,
 			},
 		};
 	}

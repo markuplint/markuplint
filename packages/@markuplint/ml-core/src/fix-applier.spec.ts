@@ -165,3 +165,19 @@ describe('applyFixes appliedEdits', () => {
 		]);
 	});
 });
+
+describe('applyFixes edge cases', () => {
+	test('edit at end of source string (append)', () => {
+		const fix: FixData = { edits: [{ range: [11, 11], text: '!' }] };
+		const result = applyFixes('hello world', [fix]);
+		expect(result.output).toBe('hello world!');
+		expect(result.applied).toStrictEqual([fix]);
+	});
+
+	test('edit replacing entire source', () => {
+		const fix: FixData = { edits: [{ range: [0, 11], text: 'goodbye' }] };
+		const result = applyFixes('hello world', [fix]);
+		expect(result.output).toBe('goodbye');
+		expect(result.applied).toStrictEqual([fix]);
+	});
+});
