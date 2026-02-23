@@ -50,7 +50,8 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		severity: mergeObject(a.severity, b.severity),
 		pretenders: mergePretenders(a.pretenders, b.pretenders),
 		rules: mergeRules(
-			// TODO: Deep merge
+			// Shallow merge: rule-level options are replaced entirely by the overriding config.
+			// Deep merging individual rule options would require schema-aware merging logic.
 			a.rules,
 			b.rules,
 		),

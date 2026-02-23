@@ -447,8 +447,9 @@ async function getAriaInHtml() {
 	for (const $implicitProp of $implicitProps) {
 		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
 		if (htmlAttrName === 'contenteditable') {
-			// FIXME:
-			// Cannot design yet because the contenteditable attribute is evaluated with ancestors.
+			// FIXME: The contenteditable attribute's ARIA semantics depend on ancestor elements
+			// (an element inherits contenteditable from its parent). Evaluating this requires
+			// cross-element ancestor traversal which is not available during spec generation.
 			continue;
 		}
 		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();

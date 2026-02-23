@@ -79,7 +79,9 @@ describe('Watcher', () => {
 });
 
 describe('Resolving the plugin', () => {
-	// TODO: Importing the plugin as an ES module
+	// TODO: Importing the plugin as an ES module.
+	// Node 22+ has stable ESM support via `import()`, but plugin loading
+	// currently uses CommonJS `require()`. Migration requires changes to the plugin loader.
 	it('config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file!, {

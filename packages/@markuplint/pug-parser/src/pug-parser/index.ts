@@ -272,7 +272,8 @@ function optimizeAST(
 				continue;
 			}
 			case 'Mixin': {
-				// TODO: Attributes when call mixin
+				// TODO: Mixin call arguments are dynamic expressions, not static HTML attributes.
+				// Parsing them as attributes would require evaluating Pug/JS expressions at build time.
 				// const attrs = getAttrs(node.attrs, tokens, offsets, pug);
 				const attrs: ASTAttr[] = [];
 
