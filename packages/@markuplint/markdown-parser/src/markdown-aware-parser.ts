@@ -489,10 +489,10 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 				return this.visitCodeBlock(originNode, token, depth, parentNode);
 			}
 			case 'linkReference': {
-				return this.visitLinkReference(originNode, token, depth, parentNode);
+				return this.#visitLinkReference(originNode, token, depth, parentNode);
 			}
 			case 'imageReference': {
-				return this.visitImageReference(originNode, token, depth, parentNode);
+				return this.#visitImageReference(originNode, token, depth, parentNode);
 			}
 			case 'table': {
 				return this.visitTableElement(originNode, token, depth, parentNode);
@@ -552,7 +552,7 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	 * Resolves a linkReference using collected definitions, producing an `<a>` element.
 	 * Falls back to a psblock when the definition is not found.
 	 */
-	private visitLinkReference(
+	#visitLinkReference(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: LinkReference,
 		token: Token,
@@ -582,7 +582,7 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 	 * Resolves an imageReference using collected definitions, producing an `<img>` element.
 	 * Falls back to a psblock when the definition is not found.
 	 */
-	private visitImageReference(
+	#visitImageReference(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		originNode: ImageReference,
 		token: Token,
