@@ -103,6 +103,49 @@ const sidebars: SidebarsConfig = {
       ],
     },
   ],
+  migration: [
+    {
+      type: 'category',
+      collapsible: false,
+      label: 'Migration',
+      link: {
+        type: 'doc',
+        id: 'migration/index',
+      },
+      items: [
+        {
+          type: 'category',
+          label: 'v4 to v5',
+          collapsible: false,
+          link: {
+            type: 'doc',
+            id: 'migration/v4-to-v5/index',
+          },
+          items: [
+            'migration/v4-to-v5/nodejs',
+            'migration/v4-to-v5/cli',
+            'migration/v4-to-v5/config',
+            'migration/v4-to-v5/aria',
+            'migration/v4-to-v5/framework',
+            'migration/v4-to-v5/rule-fix-function',
+            'migration/v4-to-v5/api',
+            'migration/v4-to-v5/ast',
+            {
+              type: 'category',
+              label: 'Rules',
+              collapsed: false,
+              items: [
+                'migration/v4-to-v5/rules/invalid-attr',
+                'migration/v4-to-v5/rules/required-element',
+                'migration/v4-to-v5/rules/deprecated-element',
+                'migration/v4-to-v5/rules/textlint',
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 export default sidebars;

@@ -29,6 +29,18 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 community/contributing.md
 community/code-of-conduct.md
 
+# Migration docs (copied from docs/migration/ by prebuild)
+docs/migration/v4-to-v5/*.md
+!docs/migration/v4-to-v5/.gitkeep
+!docs/migration/v4-to-v5/index.md
+docs/migration/v4-to-v5/rules/*.md
+!docs/migration/v4-to-v5/rules/.gitkeep
+i18n/ja/docusaurus-plugin-content-docs/current/migration/v4-to-v5/*.md
+!i18n/ja/docusaurus-plugin-content-docs/current/migration/v4-to-v5/.gitkeep
+!i18n/ja/docusaurus-plugin-content-docs/current/migration/v4-to-v5/index.md
+i18n/ja/docusaurus-plugin-content-docs/current/migration/v4-to-v5/rules/*.md
+!i18n/ja/docusaurus-plugin-content-docs/current/migration/v4-to-v5/rules/.gitkeep
+
 # Env
 .env
 

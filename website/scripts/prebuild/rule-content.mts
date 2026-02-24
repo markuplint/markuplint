@@ -77,6 +77,14 @@ function type(value: any, escape = false): string {
   return value.type;
 }
 
+/**
+ * Escape HTML-like tags in plain text so MDX does not interpret them as JSX elements.
+ * For example, `<head>` becomes `` `<head>` ``.
+ */
+function escapeMdx(text: string): string {
+	return text.replaceAll(/<([a-zA-Z][a-zA-Z0-9-]*)>/g, '`<$1>`');
+}
+
 function code(value: any, escape = false): string {
   const arraySeparator = escape ? ',<wbr />' : ',';
 
@@ -112,7 +120,7 @@ function valueDoc(value: any, lang?: string): string[] {
   const desc = value[`description:${lang}`] ?? value.description;
 
   if (desc) {
-    return [desc];
+    return [escapeMdx(desc)];
   }
 
   return [];
