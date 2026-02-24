@@ -9,6 +9,10 @@ test('default-rules', () => {
 			category: 'validation',
 			defaultValue: true,
 		},
+		'attr-order': {
+			category: 'style',
+			defaultValue: false,
+		},
 		'attr-value-quotes': {
 			category: 'style',
 			defaultValue: false,

@@ -9,6 +9,9 @@
 				"attr-duplication": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-duplication/schema.json"
 				},
+				"attr-order": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-order/schema.json"
+				},
 				"attr-value-quotes": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/attr-value-quotes/schema.json"
 				},
