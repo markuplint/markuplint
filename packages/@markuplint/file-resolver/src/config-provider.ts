@@ -69,7 +69,7 @@ export class ConfigProvider {
 		let config = this.#store.get(key);
 
 		if (!config) {
-			config = await this._load(key, cache, referrer);
+			config = await this.#load(key, cache, referrer);
 		}
 
 		if (!config) {
@@ -121,7 +121,7 @@ export class ConfigProvider {
 		if (currentConfig) {
 			return currentConfig;
 		}
-		let configSet = await this._mergeConfigs(keys, cache, targetFile.path);
+		let configSet = await this.#mergeConfigs(keys, cache, targetFile.path);
 
 		const filePath = [...configSet.files].toReversed()[0];
 		if (!filePath) {
@@ -129,7 +129,7 @@ export class ConfigProvider {
 				filePath: targetFile.path,
 			});
 		}
-		const errors = this._validateConfig(configSet.config, filePath);
+		const errors = this.#validateConfig(configSet.config, filePath);
 		configSet.errs.push(...errors);
 
 		const { plugins, errors: pluginErrors } = await resolvePlugins(configSet.config.plugins);
@@ -152,7 +152,7 @@ export class ConfigProvider {
 				}
 			}
 
-			configSet = await this._mergeConfigs([...keys, ...extendHelds], cache, targetFile.path);
+			configSet = await this.#mergeConfigs([...keys, ...extendHelds], cache, targetFile.path);
 
 			this.#held.clear();
 		}
@@ -212,7 +212,7 @@ export class ConfigProvider {
 			return null;
 		}
 		const { filePath, config } = res;
-		const pathResolvedConfig = await this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this.#pathResolve(config, filePath);
 		this.#store.set(filePath, pathResolvedConfig);
 
 		cpLog('Store key: %s', filePath);
@@ -232,7 +232,7 @@ export class ConfigProvider {
 		return key;
 	}
 
-	private async _load(filePath: string, cache: boolean, referrer: string) {
+	async #load(filePath: string, cache: boolean, referrer: string) {
 		const entity = this.#store.get(filePath);
 		if (entity) {
 			return entity;
@@ -241,7 +241,7 @@ export class ConfigProvider {
 		if (isPresetModuleName(filePath)) {
 			const [, name] = filePath.match(/^markuplint:(.+)$/i) ?? [];
 			const config = await getPreset(name ?? filePath);
-			const pathResolvedConfig = await this._pathResolve(config, filePath);
+			const pathResolvedConfig = await this.#pathResolve(config, filePath);
 
 			this.#store.set(filePath, pathResolvedConfig);
 			return pathResolvedConfig;
@@ -262,13 +262,13 @@ export class ConfigProvider {
 			return config;
 		}
 
-		const pathResolvedConfig = await this._pathResolve(config, filePath);
+		const pathResolvedConfig = await this.#pathResolve(config, filePath);
 
 		this.#store.set(filePath, pathResolvedConfig);
 		return pathResolvedConfig;
 	}
 
-	private async _mergeConfigs(keys: readonly string[], cache: boolean, referrer: string) {
+	async #mergeConfigs(keys: readonly string[], cache: boolean, referrer: string) {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
@@ -296,7 +296,7 @@ export class ConfigProvider {
 		};
 	}
 
-	private async _pathResolve(config: Config, filePath: string): Promise<OptimizedConfig> {
+	async #pathResolve(config: Config, filePath: string): Promise<OptimizedConfig> {
 		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
 		return {
@@ -316,7 +316,7 @@ export class ConfigProvider {
 		};
 	}
 
-	private _validateConfig(config: Config, filePath: string) {
+	#validateConfig(config: Config, filePath: string) {
 		const errors: ConfigParserError[] = [];
 		if (config.nodeRules)
 			for (const rule of config.nodeRules) {
