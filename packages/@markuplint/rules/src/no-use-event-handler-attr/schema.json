@@ -2,7 +2,22 @@
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"definitions": {
 		"value": {
-			"type": "boolean"
+			"oneOf": [
+				{
+					"type": "boolean"
+				},
+				{
+					"type": "array",
+					"uniqueItems": true,
+					"minItems": 1,
+					"items": {
+						"type": "string",
+						"minLength": 1
+					}
+				}
+			],
+			"description": "Set to true to disallow all event handler attributes, or specify an array of event names (without the 'on' prefix) to selectively disallow.",
+			"description:ja": "trueですべてのイベントハンドラ属性を禁止、またはイベント名の配列（onプレフィックスなし）で選択的に禁止します。"
 		},
 		"options": {
 			"type": "object",
