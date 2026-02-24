@@ -200,10 +200,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this._pretending(options?.pretenders);
+		this.#pretending(options?.pretenders);
 
 		try {
-			this._ruleMapping(ruleset);
+			this.#ruleMapping(ruleset);
 		} catch (error: unknown) {
 			if (error instanceof InvalidSelectorError) {
 				throw new ConfigParserError(error.message, {
@@ -3346,7 +3346,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 *
 	 * @param pretenders - Optional pretender configurations from the document options
 	 */
-	private _pretending(pretenders?: readonly Pretender[]) {
+	#pretending(pretenders?: readonly Pretender[]) {
 		if (docLog.enabled) {
 			docLog('Pretending: %O', pretenders);
 		}
@@ -3364,7 +3364,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 *
 	 * @param ruleset - The ruleset containing rules, nodeRules, and childNodeRules
 	 */
-	private _ruleMapping(ruleset: Ruleset) {
+	#ruleMapping(ruleset: Ruleset) {
 		if (docLog.enabled) {
 			docLog('Rule Mapping: %O', Object.keys(ruleset.rules));
 		}

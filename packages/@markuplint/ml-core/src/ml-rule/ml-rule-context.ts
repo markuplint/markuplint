@@ -42,15 +42,15 @@ export class MLRuleContext<T extends RuleConfigValue, O extends PlainData = unde
 		if (typeof report === 'function') {
 			const r = report(this.translate);
 			if (r) {
-				this._push(r);
+				this.#push(r);
 				return true;
 			}
 			return false;
 		}
-		this._push(report);
+		this.#push(report);
 	}
 
-	private _push(report: Report<T, O>) {
+	#push(report: Report<T, O>) {
 		const key = reportKey(report);
 		if (!this.#reportKeys.has(key)) {
 			this.#reportKeys.add(key);

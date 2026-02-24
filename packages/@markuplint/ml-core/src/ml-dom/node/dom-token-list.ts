@@ -64,7 +64,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			if (!token) {
 				break;
 			}
-			const loc = this._pick(token, offset);
+			const loc = this.#pick(token, offset);
 			if (!loc) {
 				offset = 0;
 				continue;
@@ -97,7 +97,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	 * @implements `@markuplint/ml-core` API: `MLDomTokenList`
 	 */
 	pick(token: string): Scope | null {
-		const r = this._pick(token);
+		const r = this.#pick(token);
 		if (!r) {
 			return null;
 		}
@@ -130,7 +130,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		throw new UnexpectedCallError('Not supported "toggle" method');
 	}
 
-	private _pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {
+	#pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {
 		token = token.trim().split(/\s+/)[0] ?? '';
 		if (!token) {
 			return null;
