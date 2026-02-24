@@ -57,6 +57,10 @@ test('default-rules', () => {
 			category: 'style',
 			defaultValue: false,
 		},
+		'head-element-order': {
+			category: 'style',
+			defaultValue: false,
+		},
 		'heading-levels': {
 			category: 'validation',
 			defaultValue: true,
