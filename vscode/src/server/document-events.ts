@@ -1,10 +1,15 @@
 import type { Module } from './get-module.js';
 import type { LangConfigs, Log } from '../types.js';
 import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
-import type { PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver/node.js';
+import type {
+	CodeAction,
+	CodeActionParams,
+	PublishDiagnosticsParams,
+	HoverParams,
+} from 'vscode-languageserver/node.js';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { satisfies, lt } from 'semver';
+import { satisfies, lt, gte } from 'semver';
 import { MarkupKind } from 'vscode-languageserver/node.js';
 
 import { t } from '../i18n.js';
@@ -144,6 +149,19 @@ export function createEventHandlers(
 			}
 
 			v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+		},
+
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		onCodeAction(params: CodeActionParams): CodeAction[] {
+			// Code Actions require v5.0.0+ (Violation.fix data + lint event fixSummary)
+			// Use '5.0.0-0' to include alpha/beta prereleases
+			if (!gte(options.mod.version, '5.0.0-0')) {
+				options.log(`Code Actions skipped: markuplint ${options.mod.version} < 5.0.0`, 'debug');
+				return [];
+			}
+			const actions = v4.onCodeAction(params);
+			options.log(`Code Actions: ${actions.length} for ${params.textDocument.uri}`, 'debug');
+			return actions;
 		},
 
 		async onHover(

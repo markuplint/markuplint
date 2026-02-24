@@ -103,7 +103,7 @@ export function convertGlobToRegex(pattern: string): RegExp {
 export function resolveWorkingDirectory(
 	filePath: string,
 	workspaceFolders: readonly string[],
-	workingDirectories: readonly WorkingDirectoryEntry[] | undefined,
+	workingDirectories?: readonly WorkingDirectoryEntry[],
 ): ResolvedWorkingDirectory | undefined {
 	if (!workingDirectories || workingDirectories.length === 0) {
 		return undefined;

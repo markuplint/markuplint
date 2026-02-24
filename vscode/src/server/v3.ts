@@ -112,7 +112,13 @@ export async function onDidOpen(
 				}
 			}
 
-			const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
+			const diagnostics = convertDiagnostics({
+				filePath,
+				sourceCode,
+				violations,
+				fixedCode,
+				status: 'processed',
+			});
 			sendDiagnostics({
 				uri: document.uri,
 				diagnostics,

@@ -89,7 +89,7 @@ export async function onDidOpen(
 
 		console.log(`Linted(${date} ${time}): ${document.uri}`);
 
-		const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode });
+		const diagnostics = convertDiagnostics({ filePath, sourceCode, violations, fixedCode, status: 'processed' });
 		sendDiagnostics({
 			uri: document.uri,
 			diagnostics,
