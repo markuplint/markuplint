@@ -71,3 +71,93 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div class="a" data-foo="val"></div>');
 	});
 });
+
+describe('multi-pass fix with parsers', () => {
+	test('Pug: attr-value-quotes + no-boolean-attr-value', async () => {
+		const { fixedCode } = await mlTest(
+			"input(disabled='disabled' type='text')",
+			{
+				parser: { '.*': '@markuplint/pug-parser' },
+				rules: {
+					'attr-value-quotes': { severity: 'error', value: 'double' },
+					'no-boolean-attr-value': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		// disabled='disabled' → disabled (boolean fix), type='text' → type="text" (quote fix)
+		expect(fixedCode).toBe('input(disabled type="text")');
+	});
+
+	test('Pug: attr-value-quotes + no-default-value', async () => {
+		const { fixedCode } = await mlTest(
+			"input(type='text' placeholder='enter')",
+			{
+				parser: { '.*': '@markuplint/pug-parser' },
+				rules: {
+					'attr-value-quotes': { severity: 'error', value: 'double' },
+					'no-default-value': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		// type='text' → removed (default value), placeholder='enter' → placeholder="enter" (quote fix)
+		// Leading space remains after attribute removal in Pug bracket syntax
+		expect(fixedCode).toBe('input( placeholder="enter")');
+	});
+
+	test('Vue: attr-value-quotes + no-boolean-attr-value', async () => {
+		const { fixedCode } = await mlTest(
+			"<template><input disabled='disabled' data-foo='bar' /></template>",
+			{
+				parser: { '.*': '@markuplint/vue-parser' },
+				rules: {
+					'attr-value-quotes': { severity: 'error', value: 'double' },
+					'no-boolean-attr-value': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		expect(fixedCode).toBe('<template><input disabled data-foo="bar" /></template>');
+	});
+
+	test('Vue: attr-value-quotes + attr-duplication', async () => {
+		const { fixedCode } = await mlTest(
+			"<template><div class='a' class='b'></div></template>",
+			{
+				parser: { '.*': '@markuplint/vue-parser' },
+				rules: {
+					'attr-value-quotes': { severity: 'error', value: 'double' },
+					'attr-duplication': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		// Duplicate removed + quotes normalized
+		expect(fixedCode).toBe('<template><div class="a"></div></template>');
+	});
+
+	test('JSX: no-boolean-attr-value on element with multiple attrs', async () => {
+		const { fixedCode } = await mlTest(
+			'<><input disabled="disabled" required="required" /></>',
+			{
+				parser: { '.*': '@markuplint/jsx-parser' },
+				rules: {
+					'no-boolean-attr-value': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		expect(fixedCode).toBe('<><input disabled required /></>');
+	});
+});

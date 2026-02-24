@@ -37,3 +37,16 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<p>text<br>  \n  </p>');
 	});
 });
+
+describe('fix with parsers', () => {
+	test('fix: Pug remove consecutive br', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'p\n\tbr\n\tbr',
+			{ parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		// The br tag is removed but the preceding whitespace (newline + tab) remains
+		expect(fixedCode).toBe('p\n\tbr\n\t');
+	});
+});

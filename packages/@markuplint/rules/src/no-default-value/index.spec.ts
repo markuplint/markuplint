@@ -100,3 +100,16 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<canvas></canvas>');
 	});
 });
+
+describe('fix with parsers', () => {
+	test('fix: Pug remove default value', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'input(type="text")',
+			{ parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		// Empty parentheses remain after removing the only attribute in Pug
+		expect(fixedCode).toBe('input()');
+	});
+});

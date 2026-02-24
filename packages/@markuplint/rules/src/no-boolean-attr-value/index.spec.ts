@@ -89,3 +89,35 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<input required />');
 	});
 });
+
+describe('fix with parsers', () => {
+	test('fix: Pug remove boolean attr value', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'input(disabled="disabled")',
+			{ parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('input(disabled)');
+	});
+
+	test('fix: JSX remove boolean attr value', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<><input disabled="disabled" /></>',
+			{ parser: { '.*': '@markuplint/jsx-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('<><input disabled /></>');
+	});
+
+	test('fix: Vue remove boolean attr value', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<template><input disabled="disabled" /></template>',
+			{ parser: { '.*': '@markuplint/vue-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('<template><input disabled /></template>');
+	});
+});
