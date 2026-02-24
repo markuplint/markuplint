@@ -478,7 +478,6 @@ class SelectorTarget {
 	 *
 	 * @param el
 	 * @param scope
-	 * @private
 	 */
 	#matchWithoutCombineChecking(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
 		const specificity: Writable<Specificity> = [0, 0, 0];
