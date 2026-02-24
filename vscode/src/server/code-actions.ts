@@ -3,7 +3,6 @@ import type { TextEdit as MLTextEdit } from '@markuplint/ml-config';
 import type { CodeAction, Diagnostic, Position, Range } from 'vscode-languageserver';
 
 import { CodeActionKind } from 'vscode-languageserver';
-import { getPosition } from '@markuplint/shared';
 
 /**
  * Code Action kind for "Fix all markuplint issues".
@@ -19,8 +18,8 @@ export const SOURCE_FIX_ALL_MARKUPLINT = `${CodeActionKind.SourceFixAll}.markupl
  * @returns A 0-based LSP Position (line and character)
  */
 export function offsetToPosition(sourceCode: string, offset: number): Position {
-	const pos = getPosition(sourceCode, offset);
-	return { line: pos.line - 1, character: pos.column - 1 };
+	const lines = sourceCode.slice(0, offset).split('\n');
+	return { line: lines.length - 1, character: (lines.at(-1) ?? '').length };
 }
 
 /**
