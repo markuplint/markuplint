@@ -151,4 +151,14 @@ describe('fix with parsers', () => {
 		);
 		expect(fixedCode).toBe('<template><div :class="foo"></div></template>');
 	});
+
+	test('fix: Markdown raw HTML single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"Some text\n\n<div data-attr='value'>content</div>\n",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/markdown-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('Some text\n\n<div data-attr="value">content</div>\n');
+	});
 });

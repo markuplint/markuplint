@@ -120,4 +120,14 @@ describe('fix with parsers', () => {
 		);
 		expect(fixedCode).toBe('<template><input disabled /></template>');
 	});
+
+	test('fix: Markdown raw HTML remove boolean attr value', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'Some text\n\n<input disabled="disabled" />\n',
+			{ parser: { '.*': '@markuplint/markdown-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('Some text\n\n<input disabled />\n');
+	});
 });

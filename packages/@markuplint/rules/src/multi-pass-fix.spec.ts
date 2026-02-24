@@ -160,4 +160,21 @@ describe('multi-pass fix with parsers', () => {
 		);
 		expect(fixedCode).toBe('<><input disabled required /></>');
 	});
+
+	test('Markdown: attr-value-quotes + no-boolean-attr-value on raw HTML', async () => {
+		const { fixedCode } = await mlTest(
+			"Some text\n\n<input disabled='disabled' data-foo='bar' />\n",
+			{
+				parser: { '.*': '@markuplint/markdown-parser' },
+				rules: {
+					'attr-value-quotes': { severity: 'error', value: 'double' },
+					'no-boolean-attr-value': true,
+				},
+			},
+			undefined,
+			'en',
+			true,
+		);
+		expect(fixedCode).toBe('Some text\n\n<input disabled data-foo="bar" />\n');
+	});
 });
