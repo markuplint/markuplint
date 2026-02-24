@@ -1,13 +1,11 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { describe, test, expect } from 'vitest';
 
 import { jsxScanner } from './index.js';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const _ = (filePath: string) => filePath.split('/').join(path.sep);
-const testDir = path.resolve(__dirname, '..', '..', 'test', 'fixtures');
+const testDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures');
 
 describe('jsxScanner', () => {
 	test('001.tsx', async () => {

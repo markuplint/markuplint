@@ -2,13 +2,9 @@ import type { CreateRuleCreatorParams, CreateRuleHelperResult } from './types.js
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { fsExists } from './fs-exists.js';
 import { transfer } from './transfer.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * Installs scaffold template files to the destination directory and optionally
@@ -36,7 +32,7 @@ export async function installScaffold(
 		await fs.mkdir(dest);
 	}
 
-	const scaffoldDir = path.resolve(__dirname, '..', 'scaffold', scaffoldType);
+	const scaffoldDir = path.resolve(import.meta.dirname, '..', 'scaffold', scaffoldType);
 
 	const transferred = await transfer(scaffoldType, scaffoldDir, dest, {
 		transpile: params.lang === 'JAVASCRIPT',

@@ -1,15 +1,11 @@
 import type { ConfigLoadError } from './config-load-error.js';
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { test, expect, vi } from 'vitest';
 
 import { ConfigProvider } from './config-provider.js';
 import { getFile } from './ml-file/index.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 vi.mock('packaged-config', () => {
 	return {
@@ -22,7 +18,7 @@ vi.mock('packaged-config', () => {
 const configProvider = new ConfigProvider();
 
 test('001 + 002', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '002', '.markuplintrc.json');
 	const file = getFile(path.resolve(testDir, '002', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -93,7 +89,7 @@ test('001 + 002', async () => {
 });
 
 test('001 + 002 + 003', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const file = getFile(path.resolve(testDir, '003', 'dir', 'target.html'));
 	const key = await configProvider.search(file);
 	const configSet = await configProvider.resolve(file, [key]);
@@ -190,7 +186,7 @@ test('001 + 002 + 003', async () => {
 });
 
 test('Deep target', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '004', 'dir', 'dir', 'dir', 'dir', 'dir', 'deep-target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -208,7 +204,7 @@ test('Deep target', async () => {
 });
 
 test('Import packaged config (Issue: #403)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '005', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '005', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -218,7 +214,7 @@ test('Import packaged config (Issue: #403)', async () => {
 });
 
 test('Overrides', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '006', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '006', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -230,7 +226,7 @@ test('Overrides', async () => {
 });
 
 test('Config Presets', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '007', '.markuplintrc');
 	const file = getFile(path.resolve(testDir, '007', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -241,7 +237,7 @@ test('Config Presets', async () => {
 });
 
 test('TypeScript (.markuplintrc.ts)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '008', '.markuplintrc.ts');
 	const file = getFile(path.resolve(testDir, '008', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -249,7 +245,7 @@ test('TypeScript (.markuplintrc.ts)', async () => {
 });
 
 test('TypeScript (markuplint.config.ts)', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '009', 'markuplint.config.ts');
 	const file = getFile(path.resolve(testDir, '009', 'target.html'));
 	const configSet = await configProvider.resolve(file, [key]);
@@ -258,7 +254,7 @@ test('TypeScript (markuplint.config.ts)', async () => {
 
 test('Link', async () => {
 	const configProvider = new ConfigProvider();
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures', '010');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '010');
 	const start = path.resolve(testDir, 'a.json');
 	const files = await configProvider.recursiveLoad(start, false, 'path/to/index.html');
 
@@ -276,7 +272,7 @@ test('Link', async () => {
 });
 
 test('Overrides with OverrideMode', async () => {
-	const testDir = path.resolve(__dirname, '..', 'test', 'fixtures');
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const resetKey = path.resolve(testDir, '011', '.markuplintrc.reset.json');
 	const mergeKey = path.resolve(testDir, '011', '.markuplintrc.merge.json');
 	const htmlFile = getFile(path.resolve(testDir, '011', 'target.html'));

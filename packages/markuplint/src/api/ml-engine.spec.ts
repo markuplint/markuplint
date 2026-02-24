@@ -3,14 +3,10 @@ import type { Violation } from '@markuplint/ml-config';
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { describe, it, expect } from 'vitest';
 
 import { MLEngine } from './ml-engine.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 describe('Event notification', () => {
 	it('config', async () => {
@@ -89,7 +85,7 @@ describe('Resolving the plugin', () => {
 			config: {
 				plugins: [
 					{
-						name: path.resolve(__dirname, '..', '..', 'test', 'plugin001.js'),
+						name: path.resolve(import.meta.dirname, '..', '..', 'test', 'plugin001.js'),
 						settings: {
 							foo: 'IT IS SUCCESS',
 						},
@@ -220,8 +216,8 @@ describe('Config Priority', () => {
 
 describe('#1862 configFile skips default config search', () => {
 	it('configFile only — default config file is not loaded', async () => {
-		const filePath = path.resolve(__dirname, '../../test/issue1862/index.html');
-		const configFilePath = path.resolve(__dirname, '../../test/issue1862/config.json');
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/issue1862/config.json');
 		const file = await MLEngine.toMLFile(filePath);
 		const engine = new MLEngine(file!, {
 			configFile: configFilePath,
@@ -242,8 +238,8 @@ describe('#1862 configFile skips default config search', () => {
 	});
 
 	it('configFile + noSearchConfig — consistent behavior', async () => {
-		const filePath = path.resolve(__dirname, '../../test/issue1862/index.html');
-		const configFilePath = path.resolve(__dirname, '../../test/issue1862/config.json');
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/issue1862/config.json');
 		const file = await MLEngine.toMLFile(filePath);
 		const engine = new MLEngine(file!, {
 			configFile: configFilePath,
