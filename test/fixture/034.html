@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>no-orphaned-end-tag</title>
+</head>
+<body>
+	<!-- Orphaned end tags (no matching open tag) -->
+	<div></span></div>
+	<p>text</p></span>
+
+	<!-- Orphaned br end tag -->
+	</br>
+
+	<!-- Multiple orphaned end tags -->
+	<div></p></em></div>
+
+	<!-- Correct usage - should NOT be flagged -->
+	<div><span>content</span></div>
+	<p><em>emphasized</em></p>
+</body>
+</html>

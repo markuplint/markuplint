@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>no-consecutive-br</title>
+</head>
+<body>
+	<!-- Two consecutive br -->
+	<p>First<br><br>Second</p>
+
+	<!-- Three consecutive br -->
+	<p>Alpha<br><br><br>Beta</p>
+
+	<!-- Consecutive br with whitespace between -->
+	<p>Before<br>
+	<br>After</p>
+
+	<!-- Single br - should NOT be flagged -->
+	<p>Line 1<br>Line 2</p>
+	<p>Another<br>paragraph</p>
+</body>
+</html>

@@ -109,6 +109,10 @@ describe('basic test', () => {
 			'Attribute value is must quote on double quotation mark',
 			'Attribute value is must quote on double quotation mark',
 			'Attribute value is must quote on double quotation mark',
+			'Attribute names of HTML elements should be lowercase',
+			'Tag names of HTML elements should be lowercase',
+			'Tag names of HTML elements should be lowercase',
+			'It is the default value',
 		]);
 	});
 
@@ -131,6 +135,7 @@ describe('basic test', () => {
 		expect(violations.map(v => v.ruleId)).toStrictEqual([
 			'invalid-attr',
 			'invalid-attr',
+			'no-default-value',
 			'required-attr',
 			'required-attr',
 			'placeholder-label-option',
