@@ -166,8 +166,8 @@ export class MLCore {
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
 		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
 
-		this._parse();
-		this._createDocument();
+		this.#parse();
+		this.#createDocument();
 	}
 
 	/**
@@ -184,8 +184,8 @@ export class MLCore {
 	 */
 	setCode(sourceCode: string) {
 		this.#sourceCode = sourceCode;
-		this._parse();
-		this._createDocument();
+		this.#parse();
+		this.#createDocument();
 	}
 
 	/**
@@ -237,9 +237,9 @@ export class MLCore {
 			(parserOptions.ignoreFrontMatter !== this.#parserOptions.ignoreFrontMatter ||
 				parserOptions.authoredElementName !== this.#parserOptions.authoredElementName)
 		) {
-			this._parse();
+			this.#parse();
 		}
-		this._createDocument();
+		this.#createDocument();
 	}
 
 	/**
@@ -269,7 +269,7 @@ export class MLCore {
 		log('verify: start');
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
-			const parseError = this._createParseError(
+			const parseError = this.#createParseError(
 				this.#document.message,
 				this.#document.line,
 				this.#document.col,
@@ -321,7 +321,7 @@ export class MLCore {
 			});
 		}
 
-		const ruleViolations = await this._runAllRules(fix);
+		const ruleViolations = await this.#runAllRules(fix);
 		violations.push(...ruleViolations);
 
 		if (resultLog.enabled) {
@@ -351,7 +351,7 @@ export class MLCore {
 				const originalDocument = this.#document;
 
 				try {
-					const fixResult = await this._multiPassFix(violations);
+					const fixResult = await this.#multiPassFix(violations);
 					fixedCode = fixResult.code;
 					fixSummary = fixResult.summary;
 				} finally {
@@ -376,7 +376,7 @@ export class MLCore {
 		return { violations, fixedCode, fixSummary };
 	}
 
-	private _createDocument() {
+	#createDocument() {
 		if (!this.#ast) {
 			return;
 		}
@@ -397,7 +397,7 @@ export class MLCore {
 		}
 	}
 
-	private _createParseError(message: string, line: number, col: number, raw: string): Violation | null {
+	#createParseError(message: string, line: number, col: number, raw: string): Violation | null {
 		if (this.#severity.parseError === false || this.#severity.parseError === 'off') {
 			return null;
 		}
@@ -428,9 +428,7 @@ export class MLCore {
 	 * @param initialViolations - Violations from the first verification pass
 	 * @returns The final fixed source code and a summary of the fix process
 	 */
-	private async _multiPassFix(
-		initialViolations: readonly Violation[],
-	): Promise<{ code: string; summary: FixSummary }> {
+	async #multiPassFix(initialViolations: readonly Violation[]): Promise<{ code: string; summary: FixSummary }> {
 		const MAX_FIX_PASSES = 10;
 		let currentCode = this.#sourceCode;
 		let previousCode: string | undefined;
@@ -482,8 +480,8 @@ export class MLCore {
 			const previousGoodCode = currentCode;
 
 			this.#sourceCode = currentCode;
-			this._parse();
-			this._createDocument();
+			this.#parse();
+			this.#createDocument();
 
 			if (this.#document instanceof ParserError) {
 				log('fix pass %d: produced unparsable code, reverting to previous state', pass);
@@ -491,7 +489,7 @@ export class MLCore {
 				break;
 			}
 
-			const newViolations = await this._runAllRules(true);
+			const newViolations = await this.#runAllRules(true);
 			fixes = extractFixes(newViolations);
 			if (fixes.length === 0) {
 				log('fix pass %d: no more fixable violations, stopping', pass);
@@ -523,7 +521,7 @@ export class MLCore {
 	 * @param fix - Whether to execute fix callbacks on violations
 	 * @returns All violations produced by the rule set
 	 */
-	private async _runAllRules(fix: boolean): Promise<Violation[]> {
+	async #runAllRules(fix: boolean): Promise<Violation[]> {
 		const violations: Violation[] = [];
 		if (this.#document instanceof ParserError) {
 			return violations;
@@ -558,7 +556,7 @@ export class MLCore {
 			});
 
 			if (results instanceof ParserError) {
-				const parseError = this._createParseError(results.message, results.line, results.col, results.raw);
+				const parseError = this.#createParseError(results.message, results.line, results.col, results.raw);
 				if (parseError) {
 					log('%s Rule: verify error %o', rule.name, results.message);
 					violations.push(parseError);
@@ -571,7 +569,7 @@ export class MLCore {
 		return violations;
 	}
 
-	private _parse() {
+	#parse() {
 		try {
 			this.#ast = this.#parser.parse(this.#sourceCode, this.#parserOptions);
 		} catch (error) {

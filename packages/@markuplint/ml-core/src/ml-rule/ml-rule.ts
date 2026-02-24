@@ -121,12 +121,12 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 	 * @returns The global rule info with node and child-node overrides
 	 */
 	getRuleInfo(ruleSet: Ruleset, ruleName: string): GlobalRuleInfo<T, O> {
-		const info = this._optimize(ruleSet.rules, ruleName);
+		const info = this.#optimize(ruleSet.rules, ruleName);
 
 		return {
 			...info,
-			nodeRules: ruleSet.nodeRules.map(r => this._optimize(r.rules, ruleName)).filter(r => !r.disabled),
-			childNodeRules: ruleSet.childNodeRules.map(r => this._optimize(r.rules, ruleName)).filter(r => !r.disabled),
+			nodeRules: ruleSet.nodeRules.map(r => this.#optimize(r.rules, ruleName)).filter(r => !r.disabled),
+			childNodeRules: ruleSet.childNodeRules.map(r => this.#optimize(r.rules, ruleName)).filter(r => !r.disabled),
 		};
 	}
 
@@ -252,7 +252,7 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 		return violations;
 	}
 
-	private _optimize(rules: Rules | undefined, ruleName: string) {
+	#optimize(rules: Rules | undefined, ruleName: string) {
 		const rule = (rules?.[ruleName] ?? false) as Rule<T, O>;
 		const info = this.optimizeOption(rule);
 		return info;

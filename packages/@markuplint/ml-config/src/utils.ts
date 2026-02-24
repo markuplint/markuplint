@@ -157,7 +157,7 @@ export function deleteUndefProp(obj: any) {
 	if (!isPlainObject(obj)) {
 		return;
 	}
-	for (const key in obj) {
+	for (const key of Object.keys(obj)) {
 		if (obj[key] === undefined) {
 			delete obj[key];
 		}

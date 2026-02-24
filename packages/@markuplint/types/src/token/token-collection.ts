@@ -91,11 +91,21 @@ export class TokenCollection extends Array<Token> {
 			addToken(strings);
 		}
 
-		return TokenCollection._new(tokens, new TokenCollection('', typeOptions));
+		return TokenCollection.#new(tokens, new TokenCollection('', typeOptions));
 	}
 
 	static get [Symbol.species]() {
 		return Array;
+	}
+
+	static #new(
+		tokens: readonly Readonly<Token>[],
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		old?: TokenCollection,
+	) {
+		const newCollection = new TokenCollection('', old);
+		newCollection.push(...tokens);
+		return newCollection;
 	}
 
 	readonly allowEmpty: NonNullable<List['allowEmpty']>;
@@ -294,7 +304,7 @@ export class TokenCollection extends Array<Token> {
 		const tokens = this.slice();
 		while (tokens.length > 0) {
 			const chunkTokens = tokens.splice(0, split);
-			const chunk = TokenCollection._new(chunkTokens, this);
+			const chunk = TokenCollection.#new(chunkTokens, this);
 			chunks.push(chunk);
 		}
 		return chunks;
@@ -332,8 +342,8 @@ export class TokenCollection extends Array<Token> {
 	divide(position: number) {
 		const _a = this.slice(0, position);
 		const _b = this.slice(position);
-		const a = TokenCollection._new(_a, this);
-		const b = TokenCollection._new(_b, this);
+		const a = TokenCollection.#new(_a, this);
+		const b = TokenCollection.#new(_b, this);
 		return [a, b] as const;
 	}
 
@@ -420,7 +430,7 @@ export class TokenCollection extends Array<Token> {
 	 * @returns A new TokenCollection with the filtered tokens
 	 */
 	filter(callback: Parameters<Array<Token>['filter']>[0]): TokenCollection {
-		return TokenCollection._new(super.filter(callback), this);
+		return TokenCollection.#new(super.filter(callback), this);
 	}
 
 	/**
@@ -495,9 +505,9 @@ export class TokenCollection extends Array<Token> {
 		const copy = this.slice();
 		const head = copy.shift();
 		if (!head) {
-			return { head: head ?? null, tail: TokenCollection._new([], this) };
+			return { head: head ?? null, tail: TokenCollection.#new([], this) };
 		}
-		const tail = TokenCollection._new(copy, this);
+		const tail = TokenCollection.#new(copy, this);
 		return { head, tail };
 	}
 
@@ -556,15 +566,5 @@ export class TokenCollection extends Array<Token> {
 	 */
 	toJSON() {
 		return this.map(t => t.toJSON());
-	}
-
-	private static _new(
-		tokens: readonly Readonly<Token>[],
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		old?: TokenCollection,
-	) {
-		const newCollection = new TokenCollection('', old);
-		newCollection.push(...tokens);
-		return newCollection;
 	}
 }

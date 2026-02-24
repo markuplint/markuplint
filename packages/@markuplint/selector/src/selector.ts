@@ -238,7 +238,7 @@ class SelectorTarget {
 	}
 
 	match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult {
-		const result = this._match(el, scope, count);
+		const result = this.#match(el, scope, count);
 		if (selLog.enabled) {
 			const nodeName = el.nodeName;
 			const selector = this.#combinedFrom?.target.toString() ?? this.toString();
@@ -262,12 +262,8 @@ class SelectorTarget {
 		].join('');
 	}
 
-	private _match(
-		el: SelectorNode,
-		scope: SelectorNode | null,
-		count: number,
-	): SelectorResult & { combinator?: string } {
-		const unitCheck = this._matchWithoutCombineChecking(el, scope);
+	#match(el: SelectorNode, scope: SelectorNode | null, count: number): SelectorResult & { combinator?: string } {
+		const unitCheck = this.#matchWithoutCombineChecking(el, scope);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
@@ -482,9 +478,8 @@ class SelectorTarget {
 	 *
 	 * @param el
 	 * @param scope
-	 * @private
 	 */
-	private _matchWithoutCombineChecking(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
+	#matchWithoutCombineChecking(el: SelectorNode, scope: SelectorNode | null): SelectorResult {
 		const specificity: Writable<Specificity> = [0, 0, 0];
 
 		if (!isElement(el)) {

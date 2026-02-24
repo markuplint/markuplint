@@ -2,12 +2,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { globalAttrs } from './global-attribute.data.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const defs = {};
 const properties = {};
@@ -72,7 +68,7 @@ for (const key of Object.keys(globalAttrs)) {
 }
 
 fs.writeFileSync(
-	path.resolve(__dirname, '..', 'schemas', 'global-attributes.schema.json'),
+	path.resolve(import.meta.dirname, '..', 'schemas', 'global-attributes.schema.json'),
 	JSON.stringify({
 		definitions: {
 			category: {
@@ -92,7 +88,7 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-	path.resolve(__dirname, '..', 'schemas', 'attributes.schema.json'),
+	path.resolve(import.meta.dirname, '..', 'schemas', 'attributes.schema.json'),
 	JSON.stringify({
 		definitions: {
 			AttributeName: {

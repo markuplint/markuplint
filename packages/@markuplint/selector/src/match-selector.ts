@@ -101,7 +101,7 @@ class SelectorTarget {
 	}
 
 	match(el: SelectorNode): SelectorMatches {
-		const unitCheck = this._matchWithoutCombineChecking(el);
+		const unitCheck = this.#matchWithoutCombineChecking(el);
 		if (!unitCheck.matched) {
 			return unitCheck;
 		}
@@ -191,7 +191,7 @@ class SelectorTarget {
 		}
 	}
 
-	private _matchWithoutCombineChecking(el: SelectorNode) {
+	#matchWithoutCombineChecking(el: SelectorNode) {
 		return uncombinedRegexSelect(el, this.#selector);
 	}
 }

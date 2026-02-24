@@ -71,7 +71,7 @@ export class MLFile {
 			return this.#code;
 		}
 		if (this.#type === 'file-base' && (await this.isExist())) {
-			return await this._fetch();
+			return await this.#fetch();
 		}
 		return '';
 	}
@@ -89,7 +89,7 @@ export class MLFile {
 		if (this.#type === 'code-base') {
 			return true;
 		}
-		const stat = await this._stat();
+		const stat = await this.#loadStat();
 		return !!stat;
 	}
 
@@ -97,7 +97,7 @@ export class MLFile {
 		if (this.#type === 'code-base') {
 			return true;
 		}
-		const stat = await this._stat();
+		const stat = await this.#loadStat();
 		return !!stat && stat.isFile();
 	}
 
@@ -112,13 +112,13 @@ export class MLFile {
 		this.#code = code;
 	}
 
-	private async _fetch() {
+	async #fetch() {
 		const code = await fs.readFile(this.path, { encoding: 'utf8' });
 		this.#code = code;
 		return code;
 	}
 
-	private async _stat() {
+	async #loadStat() {
 		if (this.#stat) {
 			return this.#stat;
 		}

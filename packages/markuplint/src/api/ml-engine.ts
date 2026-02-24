@@ -134,7 +134,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 */
 	async exec(): Promise<MLResultInfo | null> {
 		log('exec: start');
-		const core = await this.setup();
+		const core = await this.#setup();
 
 		if (!core) {
 			log('exec: cancel (unsetuped yet)');
@@ -194,7 +194,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * @param code - The new markup source code
 	 */
 	async setCode(code: string) {
-		const core = await this.setup();
+		const core = await this.#setup();
 
 		if (!core) {
 			return;
@@ -217,13 +217,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		};
 
 		if (enable) {
-			this.#watcher.on('change', this.onChange.bind(this));
+			this.#watcher.on('change', this.#onChange.bind(this));
 		} else {
 			this.#watcher.removeAllListeners();
 		}
 	}
 
-	private async createCore(fabric: MLFabric) {
+	async #createCore(fabric: MLFabric) {
 		fileLog('Get source code');
 		const sourceCode = await this.#file.getCode();
 		fileLog('Source code path: %s', this.#file.path);
@@ -242,20 +242,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return core;
 	}
 
-	private i18n() {
-		const i18nSettings = i18n(this.#options?.locale);
-		this.emit('i18n', this.#file.path, i18nSettings);
-		return i18nSettings;
-	}
-
-	private async onChange(filePath: string) {
+	async #onChange(filePath: string) {
 		if (!this.#options?.watch) {
 			return;
 		}
 
 		this.emit('log', 'watch:onChange', filePath);
 
-		const fabric = await this.provide(false);
+		const fabric = await this.#provide(false);
 
 		if (!fabric) {
 			return;
@@ -270,7 +264,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		await this.exec();
 	}
 
-	private async provide(cache = true): Promise<MLFabric | null> {
+	async #provide(cache = true): Promise<MLFabric | null> {
 		let configSet: ConfigSet;
 
 		try {
@@ -306,7 +300,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const { parser, parserOptions, matched } = await this.resolveParser(configSet);
+		const { parser, parserOptions, matched } = await this.#resolveParser(configSet);
 		const checkingExt = !this.#options?.ignoreExt;
 
 		if (checkingExt && !matched) {
@@ -324,13 +318,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			...this.#options?.severity,
 		};
 
-		const pretenders = await this.resolvePretenders(configSet);
+		const pretenders = await this.#resolvePretenders(configSet);
 		fileLog('Resolved pretenders: %O', pretenders);
 
-		const ruleset = this.resolveRuleset(configSet);
+		const ruleset = this.#resolveRuleset(configSet);
 		fileLog('Resolved ruleset: %O', ruleset);
 
-		const schemas = await this.resolveSchemas(configSet);
+		const schemas = await this.#resolveSchemas(configSet);
 		if (fileLog.enabled) {
 			if (schemas[0].cites.length > 0) {
 				const [, ...additionalSpecs] = schemas;
@@ -343,7 +337,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			}
 		}
 
-		const rules = await this.resolveRules(configSet.plugins, ruleset);
+		const rules = await this.#resolveRules(configSet.plugins, ruleset);
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = i18n(this.#options?.locale);
@@ -419,7 +413,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return configSet;
 	}
 
-	private async resolveParser(
+	async #resolveParser(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
 	) {
@@ -429,7 +423,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return parser;
 	}
 
-	private async resolvePretenders(
+	async #resolvePretenders(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
 	) {
@@ -438,7 +432,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return pretenders;
 	}
 
-	private async resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
+	async #resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
 		const rules = await resolveRules(
 			plugins,
 			ruleset,
@@ -453,7 +447,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return rules;
 	}
 
-	private resolveRuleset(
+	#resolveRuleset(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
 	) {
@@ -462,7 +456,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return ruleset;
 	}
 
-	private async resolveSchemas(
+	async #resolveSchemas(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
 	) {
@@ -471,11 +465,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return schemas;
 	}
 
-	private async setup() {
+	async #setup() {
 		if (this.#core) {
 			return this.#core;
 		}
-		const fabric = await this.provide();
+		const fabric = await this.#provide();
 
 		if (!fabric) {
 			return null;
@@ -485,6 +479,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		return this.createCore(fabric);
+		return this.#createCore(fabric);
 	}
 }
