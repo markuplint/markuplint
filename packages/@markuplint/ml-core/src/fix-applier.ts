@@ -61,8 +61,10 @@ export function applyFixes(sourceCode: string, fixes: readonly FixData[]): FixRe
 	for (const { edit, fixIndex } of taggedEdits) {
 		const [start, end] = edit.range;
 
-		// Overlap check: if this edit starts before the end of the last applied edit, skip it
-		if (start < lastAppliedEnd) {
+		// Overlap check: if this edit starts before the end of the last applied edit, skip it.
+		// Also skip if a sibling edit from the same FixData was already skipped —
+		// edits within a single FixData are atomic (all-or-nothing).
+		if (start < lastAppliedEnd || skippedFixIndices.has(fixIndex)) {
 			skippedFixIndices.add(fixIndex);
 			continue;
 		}
