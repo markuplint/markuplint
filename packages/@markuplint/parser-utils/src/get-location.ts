@@ -1,3 +1,5 @@
+export { getPosition } from '@markuplint/shared';
+
 const LINE_BREAK = '\n';
 
 /**
@@ -13,20 +15,6 @@ export function getLine(rawCodeFragment: string, startOffset: number) {
 export function getCol(rawCodeFragment: string, startOffset: number) {
 	const lines = rawCodeFragment.slice(0, startOffset).split(LINE_BREAK);
 	return (lines.at(-1) ?? '').length + 1;
-}
-
-/**
- * Computes the line and column of a position within a code fragment.
- *
- * @param rawCodeFragment - The full raw source text
- * @param startOffset - The zero-based byte offset to compute the position of
- * @returns An object containing one-based `line` and `column`
- */
-export function getPosition(rawCodeFragment: string, startOffset: number) {
-	const lines = rawCodeFragment.slice(0, startOffset).split(LINE_BREAK);
-	const line = lines.length;
-	const column = (lines.at(-1) ?? '').length + 1;
-	return { line, column } as const;
 }
 
 export function getEndLine(rawCodeFragment: string, startLine: number) {

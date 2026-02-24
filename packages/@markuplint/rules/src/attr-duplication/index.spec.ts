@@ -197,3 +197,26 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<div data-attr="value"></div>');
 	});
 });
+
+describe('fix with parsers', () => {
+	test('fix: Pug duplicate attr (no fix — Pug merges class attributes)', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'div(class="a" class="b")',
+			{ parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		// Pug parser merges duplicate class attributes, so no violation is detected
+		expect(fixedCode).toBe('div(class="a" class="b")');
+	});
+
+	test('fix: Vue remove duplicate attr', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<template><div class="a" class="b"></div></template>',
+			{ parser: { '.*': '@markuplint/vue-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('<template><div class="a"></div></template>');
+	});
+});

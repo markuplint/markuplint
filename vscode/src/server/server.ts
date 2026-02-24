@@ -1,14 +1,21 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { InitializationOptions, Log } from '../types.js';
-import type { InitializeResult } from 'vscode-languageserver/node.js';
+import type { CodeAction, CodeActionParams, InitializeResult } from 'vscode-languageserver/node.js';
 
-import { createConnection, TextDocuments, TextDocumentSyncKind, ProposedFeatures } from 'vscode-languageserver/node.js';
+import {
+	CodeActionKind,
+	createConnection,
+	TextDocuments,
+	TextDocumentSyncKind,
+	ProposedFeatures,
+} from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { IMPORT_ASSERTION_COMPAT_WARNING, NO_INSTALL_WARNING } from '../const.js';
 import { t } from '../i18n.js';
 import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 
+import { SOURCE_FIX_ALL_MARKUPLINT } from './code-actions.js';
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
 import { getModule } from './get-module.js';
@@ -45,6 +52,11 @@ export function bootServer() {
 
 	documents.listen(connection);
 
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	let codeActionHandler: (params: CodeActionParams) => CodeAction[] = () => [];
+
+	connection.onCodeAction(params => codeActionHandler(params));
+
 	connection.onInitialize((params): InitializeResult => {
 		log('onInitialize');
 
@@ -68,7 +80,7 @@ export function bootServer() {
 				log(`Working directories: ${JSON.stringify(workingDirectories)}`, 'info');
 			}
 
-			const { onDidOpen, onDidChangeContent, onHover } = createEventHandlers({
+			const { onDidOpen, onDidChangeContent, onHover, onCodeAction } = createEventHandlers({
 				mod,
 				locale,
 				langConfigs,
@@ -105,12 +117,16 @@ export function bootServer() {
 			documents.onDidChangeContent(e => onDidChangeContent(e.document));
 
 			connection.onHover(onHover);
+			codeActionHandler = onCodeAction;
 		});
 
 		return {
 			capabilities: {
 				textDocumentSync: TextDocumentSyncKind.Incremental,
 				hoverProvider: true,
+				codeActionProvider: {
+					codeActionKinds: [CodeActionKind.QuickFix, SOURCE_FIX_ALL_MARKUPLINT],
+				},
 			},
 		};
 	});

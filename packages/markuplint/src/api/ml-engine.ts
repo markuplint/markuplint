@@ -176,7 +176,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const debugMap = 'debugMap' in core.document ? core.document.debugMap() : null;
 
 		const resolvedFixedCode = fixedCode ?? sourceCode;
-		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap);
+		this.emit('lint', this.#file.path, sourceCode, violations, resolvedFixedCode, debugMap, fixSummary ?? null);
 		log('exec: end');
 		return {
 			violations: [...violations],

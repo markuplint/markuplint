@@ -32,3 +32,5 @@ export interface MLResultInfo_v1 {
 		error: string[];
 	};
 }
+
+export { type FixSummary } from '@markuplint/ml-core';

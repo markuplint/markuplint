@@ -168,6 +168,15 @@
 				"title": "Restart Language Server",
 				"category": "Markuplint"
 			}
+		],
+		"codeActions": [
+			{
+				"kind": "source.fixAll.markuplint",
+				"title": "Fix all Markuplint auto-fixable problems",
+				"languages": [
+					"html"
+				]
+			}
 		]
 	},
 	"scripts": {
@@ -203,7 +212,7 @@
 		"@markuplint/ml-spec": "5.0.0-alpha.2",
 		"debug": "4.4.3",
 		"glob": "13.0.6",
-		"markuplint": "4.13.0",
+		"markuplint": "5.0.0-alpha.2",
 		"mocha": "11.7.5",
 		"semver": "7.7.4",
 		"vscode-languageclient": "9.0.1",

@@ -166,6 +166,43 @@ describe('applyFixes appliedEdits', () => {
 	});
 });
 
+describe('applyFixes atomic FixData', () => {
+	test('sibling edit at boundary is skipped when another sibling was skipped', () => {
+		// Simulates: no-default-value removes " type=text" [6,16]
+		// attr-value-quotes inserts quotes at [12,12] and [16,16]
+		// Edit [12,12] is inside [6,16] → skipped, so [16,16] must also be skipped
+		const source = '<input type=text name=field>';
+		const fixRemove: FixData = { edits: [{ range: [6, 16], text: '' }] };
+		const fixQuotes: FixData = {
+			edits: [
+				{ range: [12, 12], text: '"' },
+				{ range: [16, 16], text: '"' },
+			],
+		};
+		const result = applyFixes(source, [fixRemove, fixQuotes]);
+		expect(result.output).toBe('<input name=field>');
+		expect(result.applied).toStrictEqual([fixRemove]);
+		expect(result.skipped).toStrictEqual([fixQuotes]);
+	});
+
+	test('all edits of a FixData are skipped if any one overlaps', () => {
+		// fix1 covers [0,10], fix2 has edits at [5,5] and [20,20]
+		// [5,5] overlaps with [0,10] → fix2 entirely skipped including [20,20]
+		const source = '0123456789----------ABCDE';
+		const fix1: FixData = { edits: [{ range: [0, 10], text: 'X' }] };
+		const fix2: FixData = {
+			edits: [
+				{ range: [5, 5], text: 'Y' },
+				{ range: [20, 20], text: 'Z' },
+			],
+		};
+		const result = applyFixes(source, [fix1, fix2]);
+		expect(result.output).toBe('X----------ABCDE');
+		expect(result.applied).toStrictEqual([fix1]);
+		expect(result.skipped).toStrictEqual([fix2]);
+	});
+});
+
 describe('applyFixes edge cases', () => {
 	test('edit at end of source string (append)', () => {
 		const fix: FixData = { edits: [{ range: [11, 11], text: '!' }] };

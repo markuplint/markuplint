@@ -5,6 +5,15 @@ import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
 
 import { NAME, WEBSITE_URL_RULE_PAGE } from '../const.js';
 
+/**
+ * Converts markuplint violations into LSP diagnostics.
+ *
+ * Each diagnostic includes a `data.violationIndex` property that maps back
+ * to the original violation for use in Code Action resolution.
+ *
+ * @param result - The markuplint lint result, or null if no result is available
+ * @returns An array of LSP diagnostics augmented with line and col numbers
+ */
 export function convertDiagnostics(result: MLResultInfo | null) {
 	const diagnostics: (Diagnostic & { line: number; col: number })[] = [];
 
@@ -12,7 +21,7 @@ export function convertDiagnostics(result: MLResultInfo | null) {
 		return diagnostics;
 	}
 
-	for (const violation of result.violations) {
+	for (const [i, violation] of result.violations.entries()) {
 		diagnostics.push({
 			severity:
 				violation.severity === 'error'
@@ -38,6 +47,7 @@ export function convertDiagnostics(result: MLResultInfo | null) {
 			codeDescription: {
 				href: `${WEBSITE_URL_RULE_PAGE}${violation.ruleId}`,
 			},
+			data: { violationIndex: i },
 		});
 	}
 

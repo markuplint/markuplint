@@ -130,3 +130,35 @@ describe('fix', () => {
 		expect(fixedCode).toEqual("<div attr noop='noop' foo='bar' hoge='fuga'>");
 	});
 });
+
+describe('fix with parsers', () => {
+	test('fix: Pug single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"div(class='foo')",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/pug-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('div(class="foo")');
+	});
+
+	test('fix: Vue single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"<template><div :class='foo'></div></template>",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/vue-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('<template><div :class="foo"></div></template>');
+	});
+
+	test('fix: Markdown raw HTML single → double', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			"Some text\n\n<div data-attr='value'>content</div>\n",
+			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/markdown-parser' } },
+			true,
+		);
+		expect(fixedCode).toBe('Some text\n\n<div data-attr="value">content</div>\n');
+	});
+});

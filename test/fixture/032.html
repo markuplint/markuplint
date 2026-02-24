@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ineffective-attr</title>
+	<!-- defer on inline script has no effect -->
+	<script defer>const foo = "foo";</script>
+	<!-- defer on module script has no effect (modules are implicitly deferred) -->
+	<script type="module" src="module.js" defer></script>
+</head>
+<body>
+	<!-- Correct usage - should NOT be flagged -->
+	<script defer src="app.js"></script>
+	<script async src="analytics.js"></script>
+</body>
+</html>

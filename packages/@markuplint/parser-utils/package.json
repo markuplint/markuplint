@@ -33,6 +33,7 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "5.0.0-alpha.2",
 		"@markuplint/ml-spec": "5.0.0-alpha.2",
+		"@markuplint/shared": "5.0.0-alpha.2",
 		"@markuplint/types": "5.0.0-alpha.2",
 		"debug": "4.4.3",
 		"espree": "11.1.1",
