@@ -10,6 +10,7 @@
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
 import AttrDuplication from './attr-duplication/index.js';
+import AttrOrder from './attr-order/index.js';
 import AttrValueQuotes from './attr-value-quotes/index.js';
 import CaseSensitiveAttrName from './case-sensitive-attr-name/index.js';
 import CaseSensitiveTagName from './case-sensitive-tag-name/index.js';
@@ -60,6 +61,7 @@ import WaiAria from './wai-aria/index.js';
  */
 const rules = {
 	'attr-duplication': AttrDuplication,
+	'attr-order': AttrOrder,
 	'attr-value-quotes': AttrValueQuotes,
 	'case-sensitive-attr-name': CaseSensitiveAttrName,
 	'case-sensitive-tag-name': CaseSensitiveTagName,

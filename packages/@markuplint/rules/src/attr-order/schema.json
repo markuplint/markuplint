@@ -1,0 +1,101 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"definitions": {
+		"value": {
+			"type": "array",
+			"minItems": 1,
+			"items": {
+				"$ref": "#/definitions/orderEntry"
+			},
+			"description": "An ordered list of attribute order entries. Each entry can be a string (attribute name), or an object specifying a group or pattern.",
+			"description:ja": "属性の順序を定義するエントリのリスト。各エントリは文字列（属性名）またはグループ/パターンを指定するオブジェクトです。"
+		},
+		"orderEntry": {
+			"oneOf": [
+				{
+					"type": "string",
+					"minLength": 1,
+					"description": "An attribute name to match exactly."
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"oneOf": [{ "required": ["name"] }, { "required": ["pattern"] }, { "required": ["group"] }],
+					"properties": {
+						"name": {
+							"type": "string",
+							"minLength": 1,
+							"description": "Exact attribute name to match."
+						},
+						"pattern": {
+							"type": "string",
+							"minLength": 1,
+							"description": "Regular expression pattern to match attribute names."
+						},
+						"group": {
+							"type": "string",
+							"enum": ["global", "event", "aria", "data", "spread"],
+							"description": "A predefined group of attributes."
+						},
+						"order": {
+							"$ref": "#/definitions/sortOrder"
+						}
+					}
+				}
+			]
+		},
+		"sortOrder": {
+			"oneOf": [
+				{
+					"type": "string",
+					"enum": ["alphabetical", "source-order"],
+					"description": "Sort strategy within a group."
+				},
+				{
+					"type": "array",
+					"items": {
+						"type": "string",
+						"minLength": 1
+					},
+					"minItems": 1,
+					"description": "Fixed order array of attribute names."
+				}
+			]
+		},
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"alphabetical": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to sort unmatched attributes alphabetically.",
+					"description:ja": "マッチしなかった属性をアルファベット順にソートするかどうか。"
+				}
+			}
+		}
+	},
+	"oneOf": [
+		{
+			"type": "boolean"
+		},
+		{
+			"$ref": "#/definitions/value"
+		},
+		{
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"value": { "$ref": "#/definitions/value" },
+				"options": { "$ref": "#/definitions/options" },
+				"severity": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity",
+					"default": "warning"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	]
+}
