@@ -44,6 +44,6 @@
 		"ignore": "7.0.5",
 		"import-meta-resolve": "4.2.0",
 		"jsonc": "2.0.0",
-		"minimatch": "10.2.2"
+		"minimatch": "10.2.3"
 	}
 }
