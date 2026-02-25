@@ -11,6 +11,9 @@
   "item.label.API": {
     "message": "API"
   },
+  "item.label.Migration": {
+    "message": "マイグレーション"
+  },
   "item.label.Community": {
     "message": "コミュニティ"
   },

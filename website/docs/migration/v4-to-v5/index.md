@@ -5,26 +5,43 @@ title: 'v4 to v5'
 
 # Migrating from v4 to v5
 
-This section covers all breaking changes and new features introduced in markuplint v5.
+This guide covers all breaking changes in Markuplint v5. Read through the areas that apply to your setup.
 
-## Overview
+:::caution Before you start
+Update your Node.js to **v22.0.0 or later**. This is required for all Markuplint v5 packages.
+:::
 
-| Area                                                            | Description                                                 | Impact                   |
-| --------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------ |
-| [Node.js](/docs/migration/v4-to-v5/nodejs)                      | Minimum version raised to v18.18.0+                         | All users                |
-| [CLI](/docs/migration/v4-to-v5/cli)                             | `--fix` removed; exit code changes                          | CLI users                |
-| [Config](/docs/migration/v4-to-v5/config)                       | `ariaVersion` removed; `overrides` → `overrideMode` renamed | Config authors           |
-| [ARIA](/docs/migration/v4-to-v5/aria)                           | ARIA 1.2 only; deprecated role handling changes             | Rule users               |
-| [Framework](/docs/migration/v4-to-v5/framework)                 | htmx/Alpine.js parsers removed                              | htmx/Alpine.js users     |
-| [Rule Fix Function](/docs/migration/v4-to-v5/rule-fix-function) | New auto-fix API for custom rules                           | Custom rule authors      |
-| [API](/docs/migration/v4-to-v5/api)                             | `MLEngine` removed; new `mlml()` API                        | API users                |
-| [AST](/docs/migration/v4-to-v5/ast)                             | Token property changes at AST level                         | Parser plugin developers |
+## For Users
+
+Changes that affect CLI users, config authors, and CI/CD pipelines.
+
+| Area                                            | Summary                                                                                                                                                                               | Who's Affected                 |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| [Node.js](/docs/migration/v4-to-v5/nodejs)      | Minimum version raised to v22.0.0 (was v18.18.0). Polyfills removed. TypeScript target changed to ES2022.                                                                             | All users                      |
+| [CLI](/docs/migration/v4-to-v5/cli)             | New `--fix-dry-run` flag. `--allow-warnings` default flipped to `true`. `--config` no longer merges with auto-discovered config.                                                      | CLI users, CI/CD pipelines     |
+| [Config](/docs/migration/v4-to-v5/config)       | New `ruleCommonSettings` for shared ARIA version. Named nodeRules for independently configurable checks. Array values now override instead of concatenate. Options use shallow merge. | Config authors, preset authors |
+| [ARIA](/docs/migration/v4-to-v5/aria)           | ARIA 1.3 support added (opt-in). `generic` role becomes transparent. `image`/`img` role synonyms. `wai-aria` option renamed.                                                          | Users with ARIA rules          |
+| [Framework](/docs/migration/v4-to-v5/framework) | `@markuplint/htmx-parser` removed (use `@markuplint/htmx-spec`). `@markuplint/alpine-parser/spec` removed (use `@markuplint/alpine-spec`). New `directivePatterns` system.            | htmx / Alpine.js users         |
 
 ### Rules
 
-| Rule                                                                    | Description                                      |
-| ----------------------------------------------------------------------- | ------------------------------------------------ |
-| [invalid-attr](/docs/migration/v4-to-v5/rules/invalid-attr)             | `allowAttrs` removed; new `disallowAttrs` option |
-| [required-element](/docs/migration/v4-to-v5/rules/required-element)     | Option format changed from string to object      |
-| [deprecated-element](/docs/migration/v4-to-v5/rules/deprecated-element) | New rule for detecting deprecated HTML elements  |
-| [textlint](/docs/migration/v4-to-v5/rules/textlint)                     | Removed from core                                |
+| Rule                                                                    | Summary                                                                                                           | Who's Affected                                      |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [invalid-attr](/docs/migration/v4-to-v5/rules/invalid-attr)             | `{ type: X }` wrapper removed from attribute values. Deprecated `attrs` option deleted. Object format deprecated. | Config authors using `allowAttrs` / `disallowAttrs` |
+| [required-element](/docs/migration/v4-to-v5/rules/required-element)     | `ignoreOmittedElements` default changed from `false` to `true`. Ghost elements no longer satisfy requirements.    | Config authors using `required-element`             |
+| [deprecated-element](/docs/migration/v4-to-v5/rules/deprecated-element) | Non-standard element detection moved to `no-unsupported-features`.                                                | Config authors relying on non-standard detection    |
+| [textlint](/docs/migration/v4-to-v5/rules/textlint)                     | `@markuplint/rule-textlint` package removed. Use textlint standalone with `textlint-plugin-html`.                 | Users of the `textlint` rule                        |
+
+## For Developers
+
+Changes that affect custom rule authors, parser plugin developers, and Node.js API users.
+
+| Area                                                            | Summary                                                                                                                          | Who's Affected           |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| [Rule Fix Function](/docs/migration/v4-to-v5/rule-fix-function) | New auto-fix API for custom rules. Nine built-in rules now support `--fix`.                                                      | Custom rule authors      |
+| [API](/docs/migration/v4-to-v5/api)                             | Legacy `exec()` function removed. New `FixSummary` on results. `computeCursorOffset()` exported.                                 | Node.js API users        |
+| [AST](/docs/migration/v4-to-v5/ast)                             | Token properties renamed (`startOffset` to `offset`, etc.). `selfClosingSolidus` removed. `MLMarkupLanguageParser` type removed. | Parser plugin developers |
+
+:::tip
+If you only use Markuplint through the CLI or CI/CD, you can skip the "For Developers" section.
+:::
