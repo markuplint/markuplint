@@ -38,21 +38,12 @@ console.log(result.violations);
 
 ## CommonJSで使う
 
-[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint)はESMです。通常CommonJSのエコシステムでは利用できません。CommonJSからAPIを利用する場合、**[@markuplint/esm-adapter](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/esm-adapter)を利用します。**
+[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint)はESMです。CommonJSからAPIを利用する場合は、動的 `import()` を使用してください:
 
 ```js
-const { MLEngine } = require('@markuplint/esm-adapter');
-
-const result = await MLEngine.fromCode(htmlCode);
-
-console.log(result);
+const { MLEngine } = await import('markuplint');
 ```
 
-:::info
-`@markuplint/esm-adapter`はESMの対応していない**VS Code拡張機能**のために作られたモジュールです。拡張機能で利用しないAPIは実装されていないため極めて限定的です。
-また、内部的には**[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**を利用しているため、プラットフォームはNode.jsのみとなります。
-:::
-
-:::warning
-`@markuplint/esm-adapter`はNode.jsのバージョン**22未満**でのみサポートしています。
+:::note
+`@markuplint/esm-adapter` は v5 で削除されました。Markuplint v5 は Node.js v22 以上を必須としており、ESM が安定サポートされているためアダプターは不要になりました。
 :::

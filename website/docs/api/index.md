@@ -38,21 +38,12 @@ console.log(result.violations);
 
 ## Using with CommonJS
 
-[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint) is an ESM (ECMAScript Module). Normally, it can't be used in a CommonJS ecosystem. To use the API from CommonJS, you use **[@markuplint/esm-adapter](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/esm-adapter)**.
+[`markuplint`](https://github.com/markuplint/markuplint/tree/main/packages/markuplint) is an ESM (ECMAScript Module). To use the API from CommonJS, use dynamic `import()`:
 
 ```js
-const { MLEngine } = require('@markuplint/esm-adapter');
-
-const result = await MLEngine.fromCode(htmlCode);
-
-console.log(result);
+const { MLEngine } = await import('markuplint');
 ```
 
-:::info
-`@markuplint/esm-adapter` was created specifically for VS Code extensions that do not support ESM. Because of this, the implemented APIs are extremely limited if you are not using them within an extension.
-Additionally, it internally uses **[Worker threads](https://nodejs.org/api/worker_threads.html#worker-threads)**, so it only works on the Node.js platform.
-:::
-
-:::warning
-`@markuplint/esm-adapter` is supported only on Node.js versions **below 22**.
+:::note
+`@markuplint/esm-adapter` was removed in v5. Since Markuplint v5 requires Node.js v22+, which has stable ESM support, the adapter is no longer needed.
 :::
