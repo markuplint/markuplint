@@ -31,7 +31,7 @@ When a non-existent attribute name is similar to a valid attribute for the eleme
 
 :::note
 
-This rule doesn't evaluate the element that has the **spread attribute** in some condition. For example, it disallows to set the `target` attribute to the `a` element that doesn't have the `href` attribute, but markuplint can't evaluate because doesn't know whether the spread attribute includes the `href` property.
+This rule doesn't evaluate the element that has the **spread attribute** in some condition. For example, it disallows to set the `target` attribute to the `a` element that doesn't have the `href` attribute, but Markuplint can't evaluate because doesn't know whether the spread attribute includes the `href` property.
 
 ```jsx
 const Component = (props) => {

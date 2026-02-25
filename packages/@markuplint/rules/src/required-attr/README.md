@@ -29,7 +29,7 @@ This rule refer [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN
 
 :::note
 
-This rule doesn't evaluate the element that has the **spread attribute**. In the below code, it doesn't evaluate whether the `img` element includes the `src` attribute. Because markuplint can't know whether the spread attribute includes the `src` property.
+This rule doesn't evaluate the element that has the **spread attribute**. In the below code, it doesn't evaluate whether the `img` element includes the `src` attribute. Because Markuplint can't know whether the spread attribute includes the `src` property.
 
 ```jsx
 const Component = (props) => {
