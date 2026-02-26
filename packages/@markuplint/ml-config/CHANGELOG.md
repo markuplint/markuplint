@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Features
+
+- **ml-config:** add FixToken type and JSDoc to IRuleFixer methods ([c39d3ce](https://github.com/markuplint/markuplint/commit/c39d3ceaf81ba131d4c1d0efb500d36f327081c4))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Features

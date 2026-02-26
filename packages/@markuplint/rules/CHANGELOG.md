@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Bug Fixes
+
+- **rules:** remove redundant untranslated message from non-existent-role ([6c002bb](https://github.com/markuplint/markuplint/commit/6c002bb03d44c9a5561c4a40840820e1ada31025))
+
+### Features
+
+- **rules:** add attr-order rule for attribute sorting ([993c0a5](https://github.com/markuplint/markuplint/commit/993c0a53823206dfa24ba699bffc27e25b11ab00))
+- **rules:** add fix callbacks to 6 rules and extract shared helpers ([a3bf3c6](https://github.com/markuplint/markuplint/commit/a3bf3c69c028917548c2cc762e1562e8d99dbd9b))
+- **rules:** add fixable flag to rule metadata ([10e3f26](https://github.com/markuplint/markuplint/commit/10e3f266a3431a0cae9eb402f02f00031421ac7b))
+- **rules:** add head-element-order rule for head element sorting ([4f72f35](https://github.com/markuplint/markuplint/commit/4f72f350fe2fceafbb811e3538e771834fb87854))
+- **rules:** support event name array for no-use-event-handler-attr ([5e854b2](https://github.com/markuplint/markuplint/commit/5e854b2198aff43b83fd5b8a8f93f840c50536ea))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Features

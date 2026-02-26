@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Features
+
+- **markuplint:** add --fix-dry-run CLI flag and fix summary passthrough ([ecd4550](https://github.com/markuplint/markuplint/commit/ecd455042d732f950b16ca79c283bd95dc3c2a72))
+- **markuplint:** add fixSummary to lint event and fixable test fixtures ([287a8be](https://github.com/markuplint/markuplint/commit/287a8be7d96e121115e357f1696314dd6b0f1a1c))
+- **markuplint:** display specConformance in CLI reporters ([aaae2de](https://github.com/markuplint/markuplint/commit/aaae2de8166d6b6151f7c397ba7cd99d4a867442))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Features

@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Bug Fixes
+
+- **cli-utils:** return empty string from unifiedDiff for identical inputs ([a738284](https://github.com/markuplint/markuplint/commit/a738284e439724da17d3444ac176ccc3d9bd2008))
+- **ml-core:** treat edits within a single FixData as atomic unit ([0bb980b](https://github.com/markuplint/markuplint/commit/0bb980b7cc6fc9b89a82f3d4df58b7137a6b8766))
+- **rules:** remove redundant untranslated message from non-existent-role ([6c002bb](https://github.com/markuplint/markuplint/commit/6c002bb03d44c9a5561c4a40840820e1ada31025))
+- **vscode:** inline offsetToPosition to avoid unpublished @markuplint/shared export ([350bac4](https://github.com/markuplint/markuplint/commit/350bac41d9d898ac22047d324cbf4de13580e4bd))
+- **website:** remove broken anchor from fixable note links ([0352cca](https://github.com/markuplint/markuplint/commit/0352ccaee06b647aca55a9ec2455335bc8e91b68))
+
+### Features
+
+- **cli-utils:** add specConformance to messageToString ([fda8660](https://github.com/markuplint/markuplint/commit/fda866061dbd8a989ca3c393487ea95be89b5a67))
+- **i18n:** add "should/must be before" sentence translations for attr-order rule ([4a61c63](https://github.com/markuplint/markuplint/commit/4a61c63ceba21e77db77f70a263737fc0f692326))
+- **markuplint:** add --fix-dry-run CLI flag and fix summary passthrough ([ecd4550](https://github.com/markuplint/markuplint/commit/ecd455042d732f950b16ca79c283bd95dc3c2a72))
+- **markuplint:** add fixSummary to lint event and fixable test fixtures ([287a8be](https://github.com/markuplint/markuplint/commit/287a8be7d96e121115e357f1696314dd6b0f1a1c))
+- **markuplint:** display specConformance in CLI reporters ([aaae2de](https://github.com/markuplint/markuplint/commit/aaae2de8166d6b6151f7c397ba7cd99d4a867442))
+- **ml-config:** add FixToken type and JSDoc to IRuleFixer methods ([c39d3ce](https://github.com/markuplint/markuplint/commit/c39d3ceaf81ba131d4c1d0efb500d36f327081c4))
+- **ml-core:** add cursor offset computation and fix summary metadata ([74b6e28](https://github.com/markuplint/markuplint/commit/74b6e28e4be2802e841697899f57f6ae04e4ffe9))
+- **ml-core:** add multi-pass fix loop and cycle detection ([866b1d5](https://github.com/markuplint/markuplint/commit/866b1d54199ed1f1b5195cd0f61f3ee392b1d8a7))
+- **rules:** add attr-order rule for attribute sorting ([993c0a5](https://github.com/markuplint/markuplint/commit/993c0a53823206dfa24ba699bffc27e25b11ab00))
+- **rules:** add fix callbacks to 6 rules and extract shared helpers ([a3bf3c6](https://github.com/markuplint/markuplint/commit/a3bf3c69c028917548c2cc762e1562e8d99dbd9b))
+- **rules:** add fixable flag to rule metadata ([10e3f26](https://github.com/markuplint/markuplint/commit/10e3f266a3431a0cae9eb402f02f00031421ac7b))
+- **rules:** add head-element-order rule for head element sorting ([4f72f35](https://github.com/markuplint/markuplint/commit/4f72f350fe2fceafbb811e3538e771834fb87854))
+- **rules:** support event name array for no-use-event-handler-attr ([5e854b2](https://github.com/markuplint/markuplint/commit/5e854b2198aff43b83fd5b8a8f93f840c50536ea))
+- **shared:** add getPosition utility for offset-to-line/column conversion ([1cfab8b](https://github.com/markuplint/markuplint/commit/1cfab8b69614e9f9e8da87cfce5a96b2865b9a0e))
+- **vscode:** add Code Action support for autofix ([2e5e04e](https://github.com/markuplint/markuplint/commit/2e5e04e6cb6fdefcd14e476d362b1ab69a83a89c))
+- **vscode:** display specConformance and unify separator ([dfba104](https://github.com/markuplint/markuplint/commit/dfba1046c052a0d6c631dc174b6fadd2006c2b74))
+- **website:** show fixable badge on rule list and detail pages ([8523569](https://github.com/markuplint/markuplint/commit/85235696e6fa5f8c8b91931216ba4f1b07957e8d))
+
+### Reverts
+
+- restore eslint config and lint globs to match dev ([d71a7a5](https://github.com/markuplint/markuplint/commit/d71a7a52d2743c5a09a07f566fd5ae157fad4a3b))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Bug Fixes

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Bug Fixes
+
+- **ml-core:** treat edits within a single FixData as atomic unit ([0bb980b](https://github.com/markuplint/markuplint/commit/0bb980b7cc6fc9b89a82f3d4df58b7137a6b8766))
+
+### Features
+
+- **ml-core:** add cursor offset computation and fix summary metadata ([74b6e28](https://github.com/markuplint/markuplint/commit/74b6e28e4be2802e841697899f57f6ae04e4ffe9))
+- **ml-core:** add multi-pass fix loop and cycle detection ([866b1d5](https://github.com/markuplint/markuplint/commit/866b1d54199ed1f1b5195cd0f61f3ee392b1d8a7))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Features

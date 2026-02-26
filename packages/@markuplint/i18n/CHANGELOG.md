@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Features
+
+- **i18n:** add "should/must be before" sentence translations for attr-order rule ([4a61c63](https://github.com/markuplint/markuplint/commit/4a61c63ceba21e77db77f70a263737fc0f692326))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 **Note:** Version bump only for package @markuplint/i18n

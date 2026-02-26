@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
+
+### Bug Fixes
+
+- **vscode:** inline offsetToPosition to avoid unpublished @markuplint/shared export ([350bac4](https://github.com/markuplint/markuplint/commit/350bac41d9d898ac22047d324cbf4de13580e4bd))
+
+### Features
+
+- **vscode:** add Code Action support for autofix ([2e5e04e](https://github.com/markuplint/markuplint/commit/2e5e04e6cb6fdefcd14e476d362b1ab69a83a89c))
+- **vscode:** display specConformance and unify separator ([dfba104](https://github.com/markuplint/markuplint/commit/dfba1046c052a0d6c631dc174b6fadd2006c2b74))
+
 # [5.0.0-alpha.2](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.1...v5.0.0-alpha.2) (2026-02-23)
 
 ### Bug Fixes
