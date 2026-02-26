@@ -236,7 +236,7 @@ type ARIAAttributeValue =
 type ARIAVersion = '1.1' | '1.2' | '1.3';
 ```
 
-推奨デフォルトバージョンは `'1.2'` です（`src/utils/aria-version.ts` の `ARIA_RECOMMENDED_VERSION` として定義）。
+推奨デフォルトバージョンは `'1.3'` です（`src/utils/aria-version.ts` の `ARIA_RECOMMENDED_VERSION` として定義）。
 
 ### `ComputedRole`
 
