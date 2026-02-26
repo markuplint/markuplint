@@ -19,8 +19,8 @@ export function rewriteRuleContent(
   if (fixable) {
     const fixableNote =
       lang === 'ja'
-        ? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli#--fix)に対応しています。\n:::'
-        : ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli#--fix) with the `--fix` option.\n:::';
+        ? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli)に対応しています。\n:::'
+        : ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli) with the `--fix` option.\n:::';
     content = content.replace(/(#[^\n]+\n)/, '$1\n' + fixableNote + '\n');
   }
 
