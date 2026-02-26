@@ -12,8 +12,9 @@ v5 adds ARIA 1.3 support and changes the default ARIA version to 1.3. The `wai-a
 | Change                                    | Who is affected                                      |
 | ----------------------------------------- | ---------------------------------------------------- |
 | ARIA 1.3 support added (now default)      | All users                                            |
-| `generic` role becomes transparent in 1.3 | Users enabling ARIA 1.3                              |
-| `image` / `img` role synonym in 1.3       | Users enabling ARIA 1.3                              |
+| `generic` role becomes transparent in 1.3 | All users                                            |
+| `<aside>` conditional role mapping in 1.3 | All users                                            |
+| `image` / `img` role synonym in 1.3       | All users                                            |
 | `wai-aria` option renamed                 | Users with `checkingRequiredOwnedElements` in config |
 
 ## ARIA version configuration
@@ -84,6 +85,19 @@ The same HTML passes. ARIA 1.3 says user agents must ignore elements with the `g
 | `generic` transparent for parent role               | No                | Yes     |
 | `presentation` / `none` transparent for child roles | Yes               | Yes     |
 | `presentation` / `none` transparent for parent role | No                | Yes     |
+
+## `<aside>` conditional role mapping (ARIA 1.3)
+
+The `<aside>` element now uses **conditional role mapping** per the ARIA 1.3 spec:
+
+- When `<aside>` is **not** a descendant of `<article>`, `<aside>`, `<main>`, `<nav>`, or `<section>` → role is `complementary`
+- When `<aside>` **is** a descendant of one of those sectioning elements → role is `generic`
+
+The `landmark-roles` rule has been updated accordingly: `complementary` is no longer checked as a top-level landmark.
+
+:::caution
+Since ARIA 1.3 is now the default, this change affects all users immediately. If your markup uses `<aside>` inside sectioning elements, you may see new or different lint results.
+:::
 
 ## `image` / `img` role synonym (ARIA 1.3)
 

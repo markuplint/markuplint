@@ -15,6 +15,7 @@ v5 changes how htmx and Alpine.js are supported. Most other framework parsers (V
 | `@markuplint/alpine-parser/spec` removed | Alpine.js users      |
 | New `@markuplint/alpine-spec` package    | Alpine.js users      |
 | New `directivePatterns` system           | Spec package authors |
+| `useIDLAttributeNames` renamed           | Spec package authors |
 
 ## htmx: Switch from parser to spec package
 
@@ -130,6 +131,23 @@ In this example, `hx-on:click` resolves to `onclick`. The `$1` placeholder refer
 | Directive attributes mapping to standard attributes | `directivePatterns` in a spec package |
 | Structural transformations that change the AST      | A parser package                      |
 | Custom components with special semantics            | Pretenders or a spec package          |
+
+## `useIDLAttributeNames` renamed to `acceptedAttrNames`
+
+:::info
+This section is for spec package authors. Skip it if you are an end user.
+:::
+
+The `ExtendedSpec` property `useIDLAttributeNames` has been renamed to `acceptedAttrNames` to better reflect its purpose.
+
+```diff
+ const spec: ExtendedSpec = {
+-  useIDLAttributeNames: true,
++  acceptedAttrNames: 'idl',
+ };
+```
+
+Both `@markuplint/react-spec` and `@markuplint/svelte-spec` now use this API. If you have a custom spec package that sets `useIDLAttributeNames`, update it to `acceptedAttrNames`.
 
 ## Other framework parsers
 
