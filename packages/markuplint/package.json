@@ -43,7 +43,7 @@
 		"meow": "14.1.0",
 		"os-locale": "8.0.0",
 		"strict-event-emitter": "0.5.1",
-		"strip-ansi": "7.1.2",
+		"strip-ansi": "7.2.0",
 		"type-fest": "5.4.4"
 	}
 }
