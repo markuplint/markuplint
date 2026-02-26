@@ -152,6 +152,8 @@ v5 で自動修正をサポートする組み込みルール:
 | `ineffective-attr`         | 無効な属性を削除                 |
 | `no-orphaned-end-tag`      | 孤立した終了タグを削除           |
 | `no-consecutive-br`        | 連続する `<br>` 要素を削除       |
+| `attr-order`               | 設定された順序に属性を並べ替え   |
+| `head-element-order`       | head 内の子要素を並べ替え        |
 
 ## 型のインポート
 

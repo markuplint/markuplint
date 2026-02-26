@@ -236,7 +236,7 @@ A union type of supported ARIA specification version strings, derived from the `
 type ARIAVersion = '1.1' | '1.2' | '1.3';
 ```
 
-The recommended default version is `'1.2'` (defined as `ARIA_RECOMMENDED_VERSION` in `src/utils/aria-version.ts`).
+The recommended default version is `'1.3'` (defined as `ARIA_RECOMMENDED_VERSION` in `src/utils/aria-version.ts`).
 
 ### `ComputedRole`
 

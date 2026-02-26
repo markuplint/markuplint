@@ -152,6 +152,8 @@ These built-in rules support auto-fix in v5:
 | `ineffective-attr`         | Removes ineffective attribute              |
 | `no-orphaned-end-tag`      | Removes orphaned end tag                   |
 | `no-consecutive-br`        | Removes consecutive `<br>` elements        |
+| `attr-order`               | Reorders attributes to configured order    |
+| `head-element-order`       | Reorders head child elements               |
 
 ## Type imports
 

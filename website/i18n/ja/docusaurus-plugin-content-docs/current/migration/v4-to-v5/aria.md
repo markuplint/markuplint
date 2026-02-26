@@ -5,25 +5,26 @@ title: ARIA
 
 # ARIA の変更
 
-v5 では ARIA 1.3 のサポートが追加され、`wai-aria` ルールのオプション名が変更されました。デフォルトの ARIA バージョンは 1.2 のままなので、**既存の設定はそのまま動作します**。
+v5 では ARIA 1.3 のサポートが追加され、デフォルトの ARIA バージョンが 1.3 に変更されました。`wai-aria` ルールのオプション名も変更されています。
 
 ## 変更点
 
-| 変更内容                              | 影響を受けるユーザー                                  |
-| ------------------------------------- | ----------------------------------------------------- |
-| ARIA 1.3 サポートの追加（オプトイン） | 最新の ARIA 仕様を使いたいユーザー                    |
-| 1.3 で `generic` ロールが透過的に     | ARIA 1.3 を有効化するユーザー                         |
-| 1.3 で `image` / `img` ロールが同義に | ARIA 1.3 を有効化するユーザー                         |
-| `wai-aria` オプションのリネーム       | 設定に `checkingRequiredOwnedElements` があるユーザー |
+| 変更内容                                    | 影響を受けるユーザー                                  |
+| ------------------------------------------- | ----------------------------------------------------- |
+| ARIA 1.3 サポートの追加（デフォルト）       | すべてのユーザー                                      |
+| 1.3 で `generic` ロールが透過的に           | すべてのユーザー                                      |
+| 1.3 で `<aside>` の条件付きロールマッピング | すべてのユーザー                                      |
+| 1.3 で `image` / `img` ロールが同義に       | すべてのユーザー                                      |
+| `wai-aria` オプションのリネーム             | 設定に `checkingRequiredOwnedElements` があるユーザー |
 
-## ARIA 1.3 の有効化
+## ARIA バージョンの設定
 
-`ruleCommonSettings` で `ariaVersion` をグローバルに設定します。このプロパティの詳細は[設定の移行ガイド](/docs/migration/v4-to-v5/config)を参照してください。
+デフォルトの ARIA バージョンは `"1.3"` になりました。以前の動作が必要な場合は、`ruleCommonSettings` で `ariaVersion` をグローバルに設定します。このプロパティの詳細は[設定の移行ガイド](/docs/migration/v4-to-v5/config)を参照してください。
 
 ```json
 {
   "ruleCommonSettings": {
-    "ariaVersion": "1.3"
+    "ariaVersion": "1.2"
   }
 }
 ```
@@ -35,7 +36,7 @@ v5 では ARIA 1.3 のサポートが追加され、`wai-aria` ルールのオ�
   "rules": {
     "wai-aria": {
       "options": {
-        "version": "1.3"
+        "version": "1.2"
       }
     }
   }
@@ -43,7 +44,7 @@ v5 では ARIA 1.3 のサポートが追加され、`wai-aria` ルールのオ�
 ```
 
 :::note
-デフォルトは `"1.2"` のままです。ARIA 1.3 の動作が必要な場合のみ設定を変更してください。
+デフォルトは `"1.3"` です。ARIA 1.2 の動作が必要な場合のみ設定を変更してください。
 :::
 
 ## Generic ロールの透過性（ARIA 1.3）
@@ -52,15 +53,15 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 
 ### 変更前（ARIA 1.2）
 
-`<ul>` と `<li>` の間に `<div>` を挟むと、親子ロールの関係が壊れていました:
+`tablist` と `tab` の間に `<div>` ラッパーを挟むと、親子ロールの関係が壊れていました:
 
 ```html
-<!-- ARIA 1.2: エラー -- <div> が list > listitem の関係をブロック -->
-<ul>
-  <div>
-    <li>item</li>
+<!-- ARIA 1.2: エラー -- <div> が tablist > tab の関係をブロック -->
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### 変更後（ARIA 1.3）
@@ -69,11 +70,11 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 
 ```html
 <!-- ARIA 1.3: OK -- <div>（generic）は透過的 -->
-<ul>
-  <div>
-    <li>item</li>
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### バージョンによる動作の違い
@@ -84,6 +85,19 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 | `generic` が親ロールで透過的               | いいえ            | はい    |
 | `presentation` / `none` が子ロールで透過的 | はい              | はい    |
 | `presentation` / `none` が親ロールで透過的 | いいえ            | はい    |
+
+## `<aside>` の条件付きロールマッピング（ARIA 1.3）
+
+`<aside>` 要素が ARIA 1.3 仕様に基づく**条件付きロールマッピング**を使用するようになりました:
+
+- `<aside>` が `<article>`、`<aside>`、`<main>`、`<nav>`、`<section>` の**子孫でない**場合 → ロールは `complementary`
+- `<aside>` がこれらのセクショニング要素の**子孫である**場合 → ロールは `generic`
+
+`landmark-roles` ルールもこれに合わせて更新されました。`complementary` はトップレベルのランドマークとしてチェックされなくなりました。
+
+:::caution
+ARIA 1.3 がデフォルトになったため、この変更は全ユーザーに即座に影響します。セクショニング要素内で `<aside>` を使用している場合、リント結果が変わる可能性があります。
+:::
 
 ## `image` / `img` ロールの同義語（ARIA 1.3）
 

@@ -15,6 +15,7 @@ v5 では htmx と Alpine.js のサポート方法が変更されました。そ
 | `@markuplint/alpine-parser/spec` の削除 | Alpine.js ユーザー       |
 | 新パッケージ `@markuplint/alpine-spec`  | Alpine.js ユーザー       |
 | 新しい `directivePatterns` システム     | スペックパッケージ作成者 |
+| `useIDLAttributeNames` のリネーム       | スペックパッケージ作成者 |
 
 ## htmx: パーサーからスペックパッケージへ
 
@@ -130,6 +131,23 @@ const spec: ExtendedSpec = {
 | 標準属性にマッピングされるディレクティブ属性     | スペックパッケージの `directivePatterns` |
 | AST を変更する構造的な変換                       | パーサーパッケージ                       |
 | 特別なセマンティクスを持つカスタムコンポーネント | Pretenders またはスペックパッケージ      |
+
+## `useIDLAttributeNames` から `acceptedAttrNames` へリネーム
+
+:::info
+このセクションはスペックパッケージの作成者向けです。一般ユーザーは読み飛ばして構いません。
+:::
+
+`ExtendedSpec` のプロパティ `useIDLAttributeNames` が、目的をより正確に表す `acceptedAttrNames` にリネームされました。
+
+```diff
+ const spec: ExtendedSpec = {
+-  useIDLAttributeNames: true,
++  acceptedAttrNames: 'idl',
+ };
+```
+
+`@markuplint/react-spec` と `@markuplint/svelte-spec` はこの API を使用するように更新済みです。カスタムスペックパッケージで `useIDLAttributeNames` を設定している場合は、`acceptedAttrNames` に更新してください。
 
 ## その他のフレームワークパーサー
 

@@ -31,13 +31,12 @@ npm uninstall @markuplint/rule-textlint
 
 Delete the `textlint` entry from your Markuplint configuration file:
 
-```json
-{
-  "rules": {
-    // Remove this line:
-    "textlint": { ... }
-  }
-}
+```diff
+ {
+   "rules": {
+-    "textlint": { ... }
+   }
+ }
 ```
 
 ### Step 3: Use alternatives
@@ -46,4 +45,5 @@ Delete the `textlint` entry from your Markuplint configuration file:
 
 - **For text linting in HTML**: Use [textlint](https://textlint.github.io/) with [`textlint-plugin-html`](https://github.com/textlint/textlint-plugin-html) as a standalone tool.
 - **For Markdown linting with Markuplint**: Use `@markuplint/markdown-parser` to lint your Markdown files directly.
-  :::
+
+:::
