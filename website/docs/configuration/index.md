@@ -34,14 +34,18 @@ The priority applied names are:
 
 - `markuplint` field in `package.json`
 - `.markuplintrc.json`
+- `.markuplintrc.jsonc`
 - `.markuplintrc.yaml`
 - `.markuplintrc.yml`
 - `.markuplintrc.js`
 - `.markuplintrc.cjs`
+- `.markuplintrc.mjs`
 - `.markuplintrc.ts`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
+- `markuplint.config.mjs`
 - `markuplint.config.ts`
+- `markuplint.config.jsonc`
 
 `.markuplintrc`'s format is JSON (with comment) and also YAML.
 

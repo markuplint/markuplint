@@ -29,6 +29,7 @@ i18n/ja/docusaurus-plugin-content-docs/current/rules/*.md
 community/contributing.md
 community/code-of-conduct.md
 
+
 # Env
 .env
 

@@ -12,10 +12,9 @@ We don't care if you report the bug after that. It's best to you to [create an i
 
 The possibility of a bug is very high, but we want something you should check before doing so.
 
-- Using newline codes is CRLF [#31](https://github.com/markuplint/markuplint/issues/31)
 - Using a [syntax that is not yet supported](/docs/guides/besides-html#supported-syntaxes) [#240](https://github.com/markuplint/markuplint/issues/240)
 
-These are known problems, but we are having difficulty dealing with them now. We are sorry, but we ask that you partially disable the rules.
+This is a known problem, but we are having difficulty dealing with it now. We are sorry, but we ask that you partially disable the rules.
 
 If you find any problems other than those listed above, please report them to us.
 
@@ -69,16 +68,15 @@ If you want a spec plugin that helps syntax or framework ([Next.js](https://next
 
 You can solve [accessible names](https://www.w3.org/TR/wai-aria-1.2/#dfn-accessible-name) using `aria-label`, but you _SHOULD NOT_ use it as your first solution. The [accessible name computation](https://www.w3.org/TR/accname-1.2/) is complex, and there are different places to get them for other elements, so please refer to the following table.
 
-| Element    | Name form             | Using `aria-label`          |
-| ---------- | --------------------- | --------------------------- |
-| `a`        | Content               | Permit（_NOT RECOMMENDED_） |
-| `img`      | The `alt` attribute   | Permit（_NOT RECOMMENDED_） |
-| `h1`〜`h6` | Content               | Permit（_NOT RECOMMENDED_） |
-| `button`   | Content               | Permit（_NOT RECOMMENDED_） |
-| `table`    | The `caption` element | Permit（_NOT RECOMMENDED_） |
-| `input`    | The `label` element   | Permit（_NOT RECOMMENDED_） |
-| `select`   | The `label` element   | Permit（_NOT RECOMMENDED_） |
-| `textarea` | The `label` element   | Permit（_NOT RECOMMENDED_） |
+| Element    | Name form           | Using `aria-label`          |
+| ---------- | ------------------- | --------------------------- |
+| `a`        | Content             | Permit（_NOT RECOMMENDED_） |
+| `img`      | The `alt` attribute | Permit（_NOT RECOMMENDED_） |
+| `h1`〜`h6` | Content             | Permit（_NOT RECOMMENDED_） |
+| `button`   | Content             | Permit（_NOT RECOMMENDED_） |
+| `input`    | The `label` element | Permit（_NOT RECOMMENDED_） |
+| `select`   | The `label` element | Permit（_NOT RECOMMENDED_） |
+| `textarea` | The `label` element | Permit（_NOT RECOMMENDED_） |
 
 ## The glob format does not work as expected in the CLI
 
@@ -104,7 +102,7 @@ We do not have official support for Angular, but a volunteer has created [`marku
 
 ## Is VS Code the only editor that is supported?
 
-Sorry, **only VS Code** is officially supported. Atom used to be supported, but now only VS Code is supported. [The source code for the VS Code extension](https://github.com/markuplint/markuplint/tree/dev/vscode) is available to the public, so we expect volunteers will develop it.
+The officially supported editor is **VS Code**, but VS Code-based editors such as **Cursor** are also expected to work since they support VS Code extensions. [The source code for the VS Code extension](https://github.com/markuplint/markuplint/tree/main/vscode) is available to the public, so we expect volunteers will develop extensions for other editors as well.
 
 ## Is JSON output supported?
 

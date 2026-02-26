@@ -36,14 +36,18 @@
 
 - `markuplint`プロパティ（`package.json`内）
 - `.markuplintrc.json`
+- `.markuplintrc.jsonc`
 - `.markuplintrc.yaml`
 - `.markuplintrc.yml`
 - `.markuplintrc.js`
 - `.markuplintrc.cjs`
+- `.markuplintrc.mjs`
 - `.markuplintrc.ts`
 - `markuplint.config.js`
 - `markuplint.config.cjs`
+- `markuplint.config.mjs`
 - `markuplint.config.ts`
+- `markuplint.config.jsonc`
 
 `.markuplintrc`のフォーマットはJSON（コメント対応）かYAML形式となります。
 

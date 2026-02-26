@@ -16,7 +16,7 @@ It applies [recommended preset](/docs/guides/presets) if it doesn't find a [conf
 
 ### The required spec
 
-- **Node.js** v18.18.0 or later
+- **Node.js** v22.0.0 or later
 
 ### Using in your project
 

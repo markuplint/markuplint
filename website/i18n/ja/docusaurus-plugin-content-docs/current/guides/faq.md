@@ -14,10 +14,9 @@
 
 バグの可能性が大いに高いですが、その前に確認していただきたいことがあります。
 
-- 改行コードがCRLFになっている [#31](https://github.com/markuplint/markuplint/issues/31)
 - [サポートが間に合っていない構文](/docs/guides/besides-html#supported-syntaxes)を使っている [#240](https://github.com/markuplint/markuplint/issues/240)
 
-これらは既知の問題ですが、現在のところ対応が難航しています。申し訳ありませんが、部分的にルールの無効化をしてください。
+これは既知の問題ですが、現在のところ対応が難航しています。申し訳ありませんが、部分的にルールの無効化をしてください。
 
 上記以外の問題を発見したら、ご報告ください。
 
@@ -90,7 +89,6 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 | `img`      | `alt`属性              | 可能（**推奨しない**） |
 | `h1`〜`h6` | コンテンツ             | 可能（**推奨しない**） |
 | `button`   | コンテンツ             | 可能（**推奨しない**） |
-| `table`    | `caption`要素          | 可能（**推奨しない**） |
 | `input`    | `label`要素            | 可能（**推奨しない**） |
 | `select`   | `label`要素            | 可能（**推奨しない**） |
 | `textarea` | `label`要素            | 可能（**推奨しない**） |
@@ -117,7 +115,7 @@ markuplint "**/*.html"
 
 ## 対応しているエディタはVS Codeだけですか？
 
-ごめんなさい、公式に対応しているのは**VS Codeだけ**です。かつてはAtomも対応していましたが、現在はVS Codeのみです。[VS Code拡張のソースコード](https://github.com/markuplint/vscode-markuplint)は公開しているので、有志による開発がなされることに期待しています。
+公式に対応しているのは**VS Code**ですが、**Cursor**などVS Codeベースのエディタであれば、VS Code拡張機能がそのまま利用できるため動作が期待できます。[VS Code拡張のソースコード](https://github.com/markuplint/markuplint/tree/main/vscode)は公開しているので、その他のエディタについても有志による開発がなされることに期待しています。
 
 ## JSONの出力に対応していますか？
 

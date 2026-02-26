@@ -6,8 +6,6 @@ description: 要素の属性の順序を統一します。
 
 要素の**属性**の順序を統一します。デフォルトではアルファベット順にソートされます。優先度リスト、定義済みグループ（`global`、`event`、`aria`、`data`、`spread`）、カスタムパターンを使って順序を指定できます。
 
-このルールは `--fix` による自動修正に対応しています。
-
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例
