@@ -2352,7 +2352,7 @@ __metadata:
     "@markuplint/parser-utils": "npm:5.0.0-alpha.2"
     "@markuplint/selector": "npm:5.0.0-alpha.2"
     "@markuplint/shared": "npm:5.0.0-alpha.2"
-    "@types/node": "npm:24.5.1"
+    "@types/node": "npm:24.10.14"
     cosmiconfig: "npm:9.0.0"
     debug: "npm:4.4.3"
     glob: "npm:13.0.6"
@@ -4414,12 +4414,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.5.1":
-  version: 24.5.1
-  resolution: "@types/node@npm:24.5.1"
+"@types/node@npm:24.10.14":
+  version: 24.10.14
+  resolution: "@types/node@npm:24.10.14"
   dependencies:
-    undici-types: "npm:~7.12.0"
-  checksum: 10c0/5f0cb038be789b58170e616452ba1f8ebb85bf2fbce58a7e32b1eb08391f64f5e31a9cdbccefbfcd9e6d73b66b564b5e037a1d678ab20213559a32e1d7b6ce17
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/d26224c654bb028ec9f917152a4e9e562e589b321c1433d5445bc0f742575822ecb9c7aa6a4d90a73a85971369e4daee05e4101d31741ba1745f27139c0d3fe8
   languageName: node
   linkType: hard
 
@@ -18126,10 +18126,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.12.0":
-  version: 7.12.0
-  resolution: "undici-types@npm:7.12.0"
-  checksum: 10c0/326e455bbc0026db1d6b81c76a1cf10c63f7e2f9821db2e24fdc258f482814e5bfa8481f8910d07c68e305937c5c049610fdc441c5e8b7bb0daca7154fb8a306
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
   languageName: node
   linkType: hard
 
