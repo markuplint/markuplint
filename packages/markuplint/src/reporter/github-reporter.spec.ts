@@ -88,6 +88,49 @@ describe('githubReporter', () => {
 		]);
 	});
 
+	it('includes specConformance tag when present', () => {
+		const result = githubReporter({
+			filePath: '/path/to/file.html',
+			fixedCode: '',
+			sourceCode: '',
+			violations: [
+				{
+					severity: 'error',
+					message: 'Not allowed here',
+					reason: 'content model violation',
+					specConformance: 'normative',
+					line: 1,
+					col: 1,
+					raw: '<div>',
+					ruleId: 'permitted-contents',
+					name: 'html-standard/permitted-contents',
+				},
+			],
+		});
+		expect(result).toEqual([
+			'::error file=/path/to/file.html,line=1,col=1::Not allowed here [normative] / content model violation (html-standard/permitted-contents)',
+		]);
+	});
+
+	it('omits specConformance tag when absent', () => {
+		const result = githubReporter({
+			filePath: '/path/to/file.html',
+			fixedCode: '',
+			sourceCode: '',
+			violations: [
+				{
+					severity: 'warning',
+					message: 'Some issue',
+					line: 1,
+					col: 1,
+					raw: '<div>',
+					ruleId: 'some-rule',
+				},
+			],
+		});
+		expect(result).toEqual(['::warning file=/path/to/file.html,line=1,col=1::Some issue (some-rule)']);
+	});
+
 	it('falls back to ruleId when violation.name is undefined', () => {
 		const result = githubReporter({
 			filePath: '/path/to/file.html',

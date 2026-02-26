@@ -29,7 +29,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 	for (const violation of results.violations) {
 		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
-		const meg = messageToString(violation.message, violation.reason);
+		const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 		sizes.meg = Math.max(sizes.meg, getWidth(meg));
 	}
 
@@ -39,7 +39,7 @@ export function standardReporter(results: MLResultInfo, options: CLIOptions) {
 		const lines = results.sourceCode.split(/\r?\n/);
 		for (const violation of results.violations) {
 			const logger = violation.severity === 'error' ? loggerError : loggerWarning;
-			const meg = messageToString(violation.message, violation.reason);
+			const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 			const startLine = violation.line - 1;
 
 			// Main message

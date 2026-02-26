@@ -28,7 +28,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 	for (const violation of results.violations) {
 		sizes.line = Math.max(sizes.line, violation.line.toString(10).length);
 		sizes.col = Math.max(sizes.col, violation.col.toString(10).length);
-		const meg = messageToString(violation.message, violation.reason);
+		const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 		sizes.meg = Math.max(sizes.meg, getWidth(meg));
 	}
 
@@ -38,7 +38,7 @@ export function simpleReporter(results: MLResultInfo, options: CLIOptions) {
 		out.push(`<${commandName}> ${font.underline(results.filePath)}: ${loggerError('✗')}`);
 		for (const violation of results.violations) {
 			const s = violation.severity === 'error' ? loggerError('✖') : loggerWarning('⚠️');
-			const meg = messageToString(violation.message, violation.reason);
+			const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 			out.push(
 				`  ${font.cyan(
 					`${pad(violation.line, sizes.line, true)}:${pad(violation.col, sizes.col)}`,

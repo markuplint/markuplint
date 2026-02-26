@@ -17,7 +17,7 @@ export function githubReporter(results: MLResultInfo) {
 
 	for (const violation of results.violations) {
 		const command = severityToCommand(violation.severity);
-		const meg = messageToString(violation.message, violation.reason);
+		const meg = messageToString(violation.message, violation.specConformance, violation.reason);
 		out.push(
 			`::${command} file=${results.filePath},line=${violation.line},col=${violation.col}::${meg} (${violation.name ?? violation.ruleId})`,
 		);
