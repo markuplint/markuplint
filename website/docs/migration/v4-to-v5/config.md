@@ -93,7 +93,7 @@ You can still override for a specific rule:
 ```
 
 :::info
-v5 also adds `"1.3"` as a valid ARIA version. The default remains `"1.2"`. See the [ARIA migration guide](/docs/migration/v4-to-v5/aria) for details.
+v5 also adds `"1.3"` as a valid ARIA version and makes it the default. See the [ARIA migration guide](/docs/migration/v4-to-v5/aria) for details.
 :::
 
 ### For custom rule authors

@@ -5,25 +5,25 @@ title: ARIA
 
 # ARIA Changes
 
-v5 adds ARIA 1.3 support and renames a `wai-aria` rule option. The default ARIA version is still 1.2, so **your existing config works without changes**.
+v5 adds ARIA 1.3 support and changes the default ARIA version to 1.3. The `wai-aria` rule option is also renamed.
 
 ## What changed
 
 | Change                                    | Who is affected                                      |
 | ----------------------------------------- | ---------------------------------------------------- |
-| ARIA 1.3 support added (opt-in)           | Users who want the latest ARIA spec                  |
+| ARIA 1.3 support added (now default)      | All users                                            |
 | `generic` role becomes transparent in 1.3 | Users enabling ARIA 1.3                              |
 | `image` / `img` role synonym in 1.3       | Users enabling ARIA 1.3                              |
 | `wai-aria` option renamed                 | Users with `checkingRequiredOwnedElements` in config |
 
-## Enabling ARIA 1.3
+## ARIA version configuration
 
-Set `ariaVersion` globally via `ruleCommonSettings`. See the [Config migration guide](/docs/migration/v4-to-v5/config) for details on this new property.
+The default ARIA version is now `"1.3"`. If you need the previous behavior, set `ariaVersion` globally via `ruleCommonSettings`. See the [Config migration guide](/docs/migration/v4-to-v5/config) for details on this new property.
 
 ```json
 {
   "ruleCommonSettings": {
-    "ariaVersion": "1.3"
+    "ariaVersion": "1.2"
   }
 }
 ```
@@ -35,7 +35,7 @@ You can also set it per rule:
   "rules": {
     "wai-aria": {
       "options": {
-        "version": "1.3"
+        "version": "1.2"
       }
     }
   }
@@ -43,7 +43,7 @@ You can also set it per rule:
 ```
 
 :::note
-The default remains `"1.2"`. You only need to change your config if you want ARIA 1.3 behavior.
+The default is `"1.3"`. You only need to change your config if you want ARIA 1.2 behavior.
 :::
 
 ## Generic role transparency (ARIA 1.3)
