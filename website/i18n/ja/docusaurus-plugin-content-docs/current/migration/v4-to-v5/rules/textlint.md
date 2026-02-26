@@ -31,13 +31,12 @@ npm uninstall @markuplint/rule-textlint
 
 Markuplint の設定ファイルから `textlint` エントリを削除してください：
 
-```json
-{
-  "rules": {
-    // この行を削除：
-    "textlint": { ... }
-  }
-}
+```diff
+ {
+   "rules": {
+-    "textlint": { ... }
+   }
+ }
 ```
 
 ### ステップ3: 代替手段を使用
@@ -46,4 +45,5 @@ Markuplint の設定ファイルから `textlint` エントリを削除してく
 
 - **HTML 内のテキスト検査**: [textlint](https://textlint.github.io/) と [`textlint-plugin-html`](https://github.com/textlint/textlint-plugin-html) を単体ツールとして使用してください。
 - **Markuplint での Markdown lint**: `@markuplint/markdown-parser` を使用して Markdown ファイルを直接 lint できます。
-  :::
+
+:::

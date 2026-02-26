@@ -53,15 +53,15 @@ This is the most significant change in ARIA 1.3. Elements with the `generic` rol
 
 ### Before (ARIA 1.2)
 
-A `<div>` wrapper between `<ul>` and `<li>` breaks the parent-child role relationship:
+A `<div>` wrapper between a `tablist` and its `tab` children breaks the parent-child role relationship:
 
 ```html
-<!-- ARIA 1.2: Error -- <div> blocks the list > listitem relationship -->
-<ul>
-  <div>
-    <li>item</li>
+<!-- ARIA 1.2: Error -- <div> blocks the tablist > tab relationship -->
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### After (ARIA 1.3)
@@ -70,11 +70,11 @@ The same HTML passes. ARIA 1.3 says user agents must ignore elements with the `g
 
 ```html
 <!-- ARIA 1.3: OK -- <div> (generic) is transparent -->
-<ul>
-  <div>
-    <li>item</li>
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### Version comparison

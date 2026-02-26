@@ -53,15 +53,15 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 
 ### 変更前（ARIA 1.2）
 
-`<ul>` と `<li>` の間に `<div>` を挟むと、親子ロールの関係が壊れていました:
+`tablist` と `tab` の間に `<div>` ラッパーを挟むと、親子ロールの関係が壊れていました:
 
 ```html
-<!-- ARIA 1.2: エラー -- <div> が list > listitem の関係をブロック -->
-<ul>
-  <div>
-    <li>item</li>
+<!-- ARIA 1.2: エラー -- <div> が tablist > tab の関係をブロック -->
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### 変更後（ARIA 1.3）
@@ -70,11 +70,11 @@ ARIA 1.3 で最も重要な変更です。`generic` ロールを持つ要素（�
 
 ```html
 <!-- ARIA 1.3: OK -- <div>（generic）は透過的 -->
-<ul>
-  <div>
-    <li>item</li>
+<div role="tablist">
+  <div class="wrapper">
+    <button role="tab">Tab 1</button>
   </div>
-</ul>
+</div>
 ```
 
 ### バージョンによる動作の違い
