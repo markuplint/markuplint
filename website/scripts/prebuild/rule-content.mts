@@ -8,12 +8,21 @@ export function rewriteRuleContent(
   options: object,
   severity: string,
   lang?: string,
+  fixable?: boolean,
 ): string {
   // Replace internal page URL
   content = content.replaceAll('(https://markuplint.dev/', '(/');
 
   const separator = /\n\n---\n\n/;
   const target = content.search(separator) === -1 ? /$/ : separator;
+
+  if (fixable) {
+    const fixableNote =
+      lang === 'ja'
+        ? ':::info\n🔧 このルールは `--fix` オプションによる[自動修正](/docs/guides/cli#--fix)に対応しています。\n:::'
+        : ':::info\n🔧 This rule supports [auto-fix](/docs/guides/cli#--fix) with the `--fix` option.\n:::';
+    content = content.replace(/(#[^\n]+\n)/, '$1\n' + fixableNote + '\n');
+  }
 
   content = content.replace(
     target,
