@@ -41,9 +41,13 @@ export function convertDiagnostics(result: MLResultInfo | null) {
 					character: Math.max(violation.col + violation.raw.length - 1, 0),
 				},
 			},
-			message: violation.message + (violation.reason ? ' - ' + violation.reason : ''),
+			message:
+				violation.message +
+				(violation.specConformance ? ` [${violation.specConformance}]` : '') +
+				(violation.reason ? ' / ' + violation.reason : '') +
+				(violation.name ? ` (${violation.ruleId})` : ''),
 			source: NAME,
-			code: violation.ruleId,
+			code: violation.name ?? violation.ruleId,
 			codeDescription: {
 				href: `${WEBSITE_URL_RULE_PAGE}${violation.ruleId}`,
 			},
