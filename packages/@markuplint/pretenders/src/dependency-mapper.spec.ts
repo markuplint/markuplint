@@ -105,6 +105,35 @@ describe('dependencyMapper', () => {
 		]);
 	});
 
+	test('Intermediate Recursive: A -> B -> C -> B', () => {
+		expect(
+			dependencyMapper(
+				new Map([
+					//
+					['A', ['B']],
+					['B', ['C']],
+					['C', ['B']],
+				]),
+			),
+		).toStrictEqual([
+			{
+				selector: 'A',
+				as: 'C',
+				_via: ['B', 'C', '...[Recursive]'],
+			},
+			{
+				selector: 'B',
+				as: 'C',
+				_via: ['C', '...[Recursive]'],
+			},
+			{
+				selector: 'C',
+				as: 'B',
+				_via: ['B', '...[Recursive]'],
+			},
+		]);
+	});
+
 	test('Recursive', () => {
 		expect(
 			dependencyMapper(

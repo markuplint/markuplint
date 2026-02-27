@@ -61,6 +61,7 @@ export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender
 		let filePath = _filePath;
 		let elName = getElName(identity);
 		const via: string[] = [];
+		const visited = new Set<string>([identifier]);
 
 		while (true) {
 			const mappedPretender = map.get(elName);
@@ -71,11 +72,12 @@ export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender
 			identity = mappedPretender[0];
 			filePath = mappedPretender[1];
 
-			if (elName === identifier) {
+			if (visited.has(elName)) {
 				via.push('...[Recursive]');
 				break;
 			}
 
+			visited.add(elName);
 			via.push(elName);
 			elName = getElName(identity);
 		}
