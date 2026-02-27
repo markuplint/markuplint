@@ -2291,7 +2291,7 @@ __metadata:
     enquirer: "npm:2.4.1"
     has-yarn: "npm:4.0.0"
     picocolors: "npm:1.1.1"
-    strip-ansi: "npm:7.1.2"
+    strip-ansi: "npm:7.2.0"
   languageName: unknown
   linkType: soft
 
@@ -12103,7 +12103,7 @@ __metadata:
     meow: "npm:14.1.0"
     os-locale: "npm:8.0.0"
     strict-event-emitter: "npm:0.5.1"
-    strip-ansi: "npm:7.1.2"
+    strip-ansi: "npm:7.2.0"
     type-fest: "npm:5.4.4"
   bin:
     markuplint: ./bin/markuplint.mjs
@@ -16746,7 +16746,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:7.1.2, strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:^7.1.2":
+"strip-ansi@npm:7.2.0":
+  version: 7.2.0
+  resolution: "strip-ansi@npm:7.2.0"
+  dependencies:
+    ansi-regex: "npm:^6.2.2"
+  checksum: 10c0/544d13b7582f8254811ea97db202f519e189e59d35740c46095897e254e4f1aa9fe1524a83ad6bc5ad67d4dd6c0281d2e0219ed62b880a6238a16a17d375f221
+  languageName: node
+  linkType: hard
+
+"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:^7.1.2":
   version: 7.1.2
   resolution: "strip-ansi@npm:7.1.2"
   dependencies:
