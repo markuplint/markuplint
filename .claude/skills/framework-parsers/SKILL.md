@@ -1,5 +1,7 @@
 ---
 description: Create and maintain framework parser and spec packages for markuplint
+metadata:
+  internal: true
 globs:
   - packages/@markuplint/*-parser/src/**
   - packages/@markuplint/*-spec/src/**

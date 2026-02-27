@@ -1,5 +1,7 @@
 ---
 name: product-manager
+metadata:
+  internal: true
 description: >
   Analyze, review, and generate documentation for any repository from a Product Manager (PdM) perspective.
   Language- and framework-agnostic — works with any repository.

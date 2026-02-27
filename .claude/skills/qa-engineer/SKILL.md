@@ -1,5 +1,7 @@
 ---
 name: qa-engineer
+metadata:
+  internal: true
 description: >
   A skill for performing code reviews and test quality checks as a QA engineer.
   Improves code coverage, detects test-faking code, catches swallowed exceptions,
