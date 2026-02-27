@@ -54,13 +54,25 @@ let bcdPromise: Promise<CompatData> | undefined;
  * at startup, even when this rule is disabled. Dynamic import defers the
  * cost until the rule actually runs.
  *
+ * Uses `forLegacyNode` to avoid `ERR_IMPORT_ATTRIBUTE_MISSING` on Node.js >= 22.
+ * The main entry (`@mdn/browser-compat-data`) points directly to `data.json`,
+ * which requires `import ... with { type: "json" }` on Node.js >= 22.
+ * The `forLegacyNode` wrapper uses `fs.readFileSync` instead, compatible
+ * with all Node.js versions.
+ *
+ * NOTE: If `forLegacyNode` is removed in a future BCD version, migrate to:
+ *   `import('...', { with: { type: 'json' } })`
+ * once the minimum supported Node.js version supports import attributes.
+ *
  * Uses a Promise-based cache to prevent race conditions when multiple
  * concurrent calls trigger the import simultaneously.
  */
 
 function loadBcd(): Promise<CompatData> {
 	if (!bcdPromise) {
-		bcdPromise = import('@mdn/browser-compat-data').then(mod => mod.default ?? mod);
+		// `?? mod` is a defensive fallback for CJS interop environments
+		// where `default` may not be set on the module namespace object.
+		bcdPromise = import('@mdn/browser-compat-data/forLegacyNode').then(mod => mod.default ?? mod);
 	}
 	return bcdPromise;
 }
