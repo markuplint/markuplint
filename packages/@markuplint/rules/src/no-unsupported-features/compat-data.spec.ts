@@ -4,7 +4,14 @@ import { describe, test, expect } from 'vitest';
 
 import type { TargetBrowser } from './compat-data.js';
 
-import { checkSupport, isVersionSatisfied, parseVersion, toBcdBrowserId } from './compat-data.js';
+import {
+	checkAttributeSupport,
+	checkElementSupport,
+	checkSupport,
+	isVersionSatisfied,
+	parseVersion,
+	toBcdBrowserId,
+} from './compat-data.js';
 
 describe('parseVersion', () => {
 	test('normal version', () => {
@@ -159,5 +166,60 @@ describe('checkSupport', () => {
 			{ version_added: '40', prefix: 'webkit' },
 		];
 		expect(checkSupport(support, target)).toBeNull();
+	});
+});
+
+// These async tests load BCD data via `loadBcd()` internally.
+// NOTE: vitest intercepts dynamic imports, so these tests do NOT reproduce
+// the `ERR_IMPORT_ATTRIBUTE_MISSING` error that occurs with Node.js native
+// ESM loader on Node.js >= 22. The import path fix (`forLegacyNode`) is
+// validated by Node.js-level execution, not by vitest. These tests serve
+// as functional coverage for `checkElementSupport` / `checkAttributeSupport`.
+//
+// The `bcdPromise` cache (module-level `let`) is intentionally shared across
+// tests because BCD data is immutable — reloading ~70MB per test is wasteful.
+// Test execution order does not affect correctness.
+//
+// Assertion values depend on BCD data; if BCD updates change support versions,
+// these tests may need updating.
+describe('checkElementSupport', () => {
+	test('known element with old browser returns unsupported', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '30', displayName: 'Chrome' }];
+		const results = await checkElementSupport('dialog', targets);
+		expect(results.length).toBe(1);
+		expect(results[0]?.browser).toBe('chrome');
+	});
+
+	test('common element returns empty array', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
+		const results = await checkElementSupport('div', targets);
+		expect(results).toEqual([]);
+	});
+
+	test('unknown element returns empty array without crashing', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
+		const results = await checkElementSupport('nonexistentelement', targets);
+		expect(results).toEqual([]);
+	});
+});
+
+describe('checkAttributeSupport', () => {
+	test('known attribute with old browser returns unsupported', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '30', displayName: 'Chrome' }];
+		const results = await checkAttributeSupport('video', 'controlslist', targets);
+		expect(results.length).toBe(1);
+		expect(results[0]?.browser).toBe('chrome');
+	});
+
+	test('common attribute returns empty array', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
+		const results = await checkAttributeSupport('input', 'type', targets);
+		expect(results).toEqual([]);
+	});
+
+	test('unknown attribute returns empty array without crashing', async () => {
+		const targets: readonly TargetBrowser[] = [{ browser: 'chrome', version: '100', displayName: 'Chrome' }];
+		const results = await checkAttributeSupport('div', 'data-unknown', targets);
+		expect(results).toEqual([]);
 	});
 });
