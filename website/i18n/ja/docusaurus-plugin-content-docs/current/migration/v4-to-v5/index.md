@@ -11,6 +11,15 @@ Markuplint v5 の破壊的変更をまとめたガイドです。該当する項
 Node.js を **v22.0.0 以降**にアップデートしてください。Markuplint v5 の全パッケージで必須です。
 :::
 
+:::tip AI によるマイグレーション支援
+[Claude Code](https://claude.com/claude-code) を使用している場合、対話的にアップグレードを進めるマイグレーションスキルをインストールできます:
+
+```bash
+npx skills add markuplint/markuplint@migrate4-5
+```
+
+:::
+
 ## ユーザー向け
 
 CLI ユーザー、設定ファイル作成者、CI/CD パイプラインに影響する変更です。

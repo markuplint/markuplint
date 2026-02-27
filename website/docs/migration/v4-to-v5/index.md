@@ -11,6 +11,15 @@ This guide covers all breaking changes in Markuplint v5. Read through the areas 
 Update your Node.js to **v22.0.0 or later**. This is required for all Markuplint v5 packages.
 :::
 
+:::tip AI-Assisted Migration
+If you use [Claude Code](https://claude.com/claude-code), you can install a migration skill that walks you through the upgrade interactively:
+
+```bash
+npx skills add markuplint/markuplint@migrate4-5
+```
+
+:::
+
 ## For Users
 
 Changes that affect CLI users, config authors, and CI/CD pipelines.
