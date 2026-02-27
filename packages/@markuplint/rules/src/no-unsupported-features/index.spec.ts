@@ -31,8 +31,7 @@ describe('browser support (BCD-based)', () => {
 	});
 
 	test('attribute not supported in old browsers', async () => {
-		// Use <dialog> + closedby which was added more recently in browsers
-		// The dialog element itself may also be unsupported, so we check attribute-specific violations
+		// <dialog> element and its "open" attribute are both unsupported in IE
 		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: {
 				options: {
@@ -40,9 +39,12 @@ describe('browser support (BCD-based)', () => {
 				},
 			},
 		});
-		// At minimum, the dialog element is unsupported in IE
-		expect(violations.length).toBeGreaterThanOrEqual(1);
+		// 2 violations: one for the element, one for the attribute
+		expect(violations.length).toBe(2);
 		expect(violations[0]?.message).toContain('"dialog"');
+		expect(violations[0]?.message).toContain('element');
+		expect(violations[1]?.message).toContain('"open"');
+		expect(violations[1]?.message).toContain('attribute');
 	});
 
 	test('common attribute supported everywhere', async () => {
@@ -156,10 +158,9 @@ describe('checkExperimental', () => {
 				},
 			},
 		});
-		expect(violations.length).toBeGreaterThanOrEqual(1);
-		const experimentalViolation = violations.find(v => v.message.includes('experimental'));
-		expect(experimentalViolation).toBeDefined();
-		expect(experimentalViolation?.message).toContain('"credentialless"');
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('experimental');
+		expect(violations[0]?.message).toContain('"credentialless"');
 	});
 
 	test('works without browserslist config', async () => {
@@ -171,8 +172,8 @@ describe('checkExperimental', () => {
 				},
 			},
 		});
-		expect(violations.length).toBeGreaterThanOrEqual(1);
-		expect(violations.some(v => v.message.includes('experimental'))).toBe(true);
+		expect(violations.length).toBe(1);
+		expect(violations[0]?.message).toContain('experimental');
 	});
 });
 
