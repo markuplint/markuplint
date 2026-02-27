@@ -8,8 +8,8 @@ describe('dependencyMapper', () => {
 			dependencyMapper(
 				new Map([
 					//
-					['A', ['div']],
-					['B', ['A']],
+					['A', ['A', 'div']],
+					['B', ['B', 'A']],
 				]),
 			),
 		).toStrictEqual([
@@ -30,11 +30,11 @@ describe('dependencyMapper', () => {
 			dependencyMapper(
 				new Map([
 					//
-					['A', ['div']],
-					['B', ['A']],
-					['C', ['B']],
-					['D', ['C']],
-					['E', ['D']],
+					['A', ['A', 'div']],
+					['B', ['B', 'A']],
+					['C', ['C', 'B']],
+					['D', ['D', 'C']],
+					['E', ['E', 'D']],
 				]),
 			),
 		).toStrictEqual([
@@ -70,11 +70,11 @@ describe('dependencyMapper', () => {
 			dependencyMapper(
 				new Map([
 					//
-					['E', ['D']],
-					['D', ['C']],
-					['C', ['B']],
-					['B', ['A']],
-					['A', ['div']],
+					['E', ['E', 'D']],
+					['D', ['D', 'C']],
+					['C', ['C', 'B']],
+					['B', ['B', 'A']],
+					['A', ['A', 'div']],
 				]),
 			),
 		).toStrictEqual([
@@ -110,9 +110,9 @@ describe('dependencyMapper', () => {
 			dependencyMapper(
 				new Map([
 					//
-					['A', ['B']],
-					['B', ['C']],
-					['C', ['B']],
+					['A', ['A', 'B']],
+					['B', ['B', 'C']],
+					['C', ['C', 'B']],
 				]),
 			),
 		).toStrictEqual([
@@ -139,10 +139,10 @@ describe('dependencyMapper', () => {
 			dependencyMapper(
 				new Map([
 					//
-					['A', ['B']],
-					['B', ['C']],
-					['C', ['D']],
-					['D', ['A']],
+					['A', ['A', 'B']],
+					['B', ['B', 'C']],
+					['C', ['C', 'D']],
+					['D', ['D', 'A']],
 				]),
 			),
 		).toStrictEqual([
@@ -165,6 +165,59 @@ describe('dependencyMapper', () => {
 				selector: 'D',
 				as: 'A',
 				_via: ['A', 'B', 'C', '...[Recursive]'],
+			},
+		]);
+	});
+
+	test('Import-path-based resolution with nameIndex', () => {
+		const map = new Map([
+			['./components/A/Button', ['Button', 'button']],
+			['./components/B/Button', ['Button', 'div']],
+			['./components/MyButton', ['MyButton', 'Button']],
+		]) as Parameters<typeof dependencyMapper>[0];
+
+		const nameIndex = new Map([
+			['Button', './components/A/Button'],
+			['MyButton', './components/MyButton'],
+		]);
+
+		expect(dependencyMapper(map, nameIndex)).toStrictEqual([
+			{
+				selector: 'Button',
+				as: 'button',
+			},
+			{
+				selector: 'Button',
+				as: 'div',
+			},
+			{
+				selector: 'MyButton',
+				_via: ['Button'],
+				as: 'button',
+			},
+		]);
+	});
+
+	test('Import-path-based resolution avoids name collision', () => {
+		const map = new Map([
+			['./lib/Button', ['Button', 'button']],
+			['./app/MyButton', ['MyButton', { element: 'Button', slots: true, inheritAttrs: true }]],
+		]) as Parameters<typeof dependencyMapper>[0];
+
+		const nameIndex = new Map([
+			['Button', './lib/Button'],
+			['MyButton', './app/MyButton'],
+		]);
+
+		expect(dependencyMapper(map, nameIndex)).toStrictEqual([
+			{
+				selector: 'Button',
+				as: 'button',
+			},
+			{
+				selector: 'MyButton',
+				_via: ['Button'],
+				as: 'button',
 			},
 		]);
 	});

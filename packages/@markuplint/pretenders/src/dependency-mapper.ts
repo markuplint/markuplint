@@ -1,83 +1,48 @@
+import type { PretenderDirectorMap } from './pretender-director.js';
 import type { Identifier, Identity } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
 
 /**
- * Internal map structure storing component identifiers to their identity and source location.
- */
-type PretenderDirectorMap = Map<Identifier, [identity: Identity, filePath?: string]>;
-
-/**
- * Collects and manages pretender mappings discovered during source file scanning.
- * Acts as a registry where component-to-element relationships are added during
- * traversal, then resolved into a flat list of pretenders with dependency linking.
- */
-export class PretenderDirector {
-	#map: PretenderDirectorMap = new Map();
-
-	/**
-	 * Registers a component as a pretender mapping. If the identifier is already
-	 * registered, the call is silently ignored (first definition wins).
-	 *
-	 * @param identifier - The component selector (e.g., component name)
-	 * @param identity - The native HTML element the component renders as
-	 * @param filePath - The relative file path where the component is defined
-	 * @param line - The line number of the component declaration
-	 * @param col - The column number of the component declaration
-	 */
-	add(identifier: Identifier, identity: Identity, filePath: string, line: number, col: number) {
-		if (this.#map.has(identifier)) {
-			return;
-		}
-
-		this.#map.set(identifier, [identity, `${filePath}:${line}:${col}`]);
-	}
-
-	/**
-	 * Resolves all registered mappings into a sorted array of Pretender objects.
-	 * Follows component-to-component chains to determine the final native element identity.
-	 *
-	 * @returns A sorted array of resolved Pretender objects
-	 */
-	getPretenders() {
-		return dependencyMapper(this.#map);
-	}
-}
-
-/**
  * Resolves a map of component-to-identity mappings into a flat array of Pretender objects.
  * Follows chains where one component wraps another (e.g., MyButton -> Button -> button)
- * until a native element is reached or a recursive loop is detected.
+ * until a native element is reached or a cycle is detected.
  *
- * @param map - The map of component identifiers to their identity and file path
+ * Uses import-path-based resolution when a name index is provided, falling back to
+ * name-based lookup for backward compatibility.
+ *
+ * @param map - The map of component keys to their [identifier, identity, filePath] tuples
+ * @param nameIndex - Optional mapping from component names to map keys for resolving references
  * @returns A sorted array of fully resolved Pretender objects
  */
-export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender[] {
+export function dependencyMapper(
+	map: Readonly<PretenderDirectorMap>,
+	nameIndex?: Readonly<Map<Identifier, string>>,
+): Pretender[] {
+	const resolvedNameIndex = nameIndex ?? buildNameIndex(map);
 	const linkedPretenders: Pretender[] = [];
 
-	const collection = [...map.entries()];
-
-	for (const [identifier, [_identity, _filePath]] of collection) {
+	for (const [key, [identifier, _identity, _filePath]] of map) {
 		let identity = _identity;
 		let filePath = _filePath;
 		let elName = getElName(identity);
 		const via: string[] = [];
-		const visited = new Set<string>([identifier]);
+		const visited = new Set<string>([key]);
 
 		while (true) {
-			const mappedPretender = map.get(elName);
+			const lookupKey = resolvedNameIndex.get(elName) ?? elName;
+			const mappedPretender = map.get(lookupKey);
 			if (!mappedPretender) {
 				break;
 			}
 
-			identity = mappedPretender[0];
-			filePath = mappedPretender[1];
+			identity = mappedPretender[1];
+			filePath = mappedPretender[2];
 
-			if (visited.has(elName)) {
+			if (visited.has(lookupKey)) {
 				via.push('...[Recursive]');
 				break;
 			}
-
-			visited.add(elName);
+			visited.add(lookupKey);
 			via.push(elName);
 			elName = getElName(identity);
 		}
@@ -99,6 +64,20 @@ export function dependencyMapper(map: Readonly<PretenderDirectorMap>): Pretender
 	}
 
 	return linkedPretenders.toSorted(propSort('selector'));
+}
+
+/**
+ * Builds a name-to-key index from the map for backward-compatible name-based lookup.
+ * First definition wins when multiple entries share the same identifier.
+ */
+function buildNameIndex(map: Readonly<PretenderDirectorMap>): Map<Identifier, string> {
+	const index = new Map<Identifier, string>();
+	for (const [key, [identifier]] of map) {
+		if (!index.has(identifier)) {
+			index.set(identifier, key);
+		}
+	}
+	return index;
 }
 
 function getElName(identity: Identity) {
