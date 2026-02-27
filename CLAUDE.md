@@ -80,29 +80,40 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 ## Worktree Usage (MANDATORY)
 
 **CRITICAL: Direct commits to `dev` are BLOCKED. All work requires a feature branch.**
-**CRITICAL: NEVER create a feature branch in the main working directory. ALWAYS use `git worktree`.**
+**CRITICAL: NEVER create a feature branch in the main working directory. ALWAYS use `git wt`.**
 
 The main working directory MUST stay on `dev` at all times. Any feature branch work — no matter how small (even a single-file docs change) — MUST be done in a worktree.
 
+Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). Worktrees are created under `../markuplint-wt/<branch-name>` (`wt.basedir` setting).
+
+### Setup
+
+If `git wt` is not available, install and configure it:
+
+```bash
+brew install k1LoW/tap/git-wt
+git config wt.basedir "../{gitroot}-wt"
+git config --add wt.hook "yarn install"
+git config --add wt.hook "yarn build"
+```
+
 ### Procedure
 
-1. **Check for existing worktrees first**: `git worktree list`
+1. **Check for existing worktrees first**: `git wt`
    - If the target branch already has a worktree, work there
 2. **Create a new worktree** for new branches:
    ```bash
-   git worktree add ../markuplint-worktree-<short-name> -b <branch-name> dev
+   git wt <branch-name> dev
    ```
-3. **Install and build** in the worktree before any work:
+   `wt.hook` により `yarn install` → `yarn build` が自動実行される
+3. **Move into the worktree**:
    ```bash
-   cd ../markuplint-worktree-<short-name>
-   yarn install
-   yarn build
+   cd ../markuplint-wt/<branch-name>
    ```
 4. **Do all edits, commits, and pushes** from within the worktree
 5. **Clean up** when done:
    ```bash
-   git worktree remove ../markuplint-worktree-<short-name>
-   git branch -D <branch-name>   # only if branch was merged
+   git wt -d <branch-name>   # worktree remove + branch delete in one step
    ```
 
 ### Important Notes

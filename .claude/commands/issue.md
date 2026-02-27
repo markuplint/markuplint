@@ -30,15 +30,15 @@ Follow these steps in order:
 1. Generate a branch name:
    - With Issue URL: `issue/<number>-<slug>` (slug from title, lowercase, hyphens, max 50 chars)
    - Without Issue URL: `fix/<short-description>` or `feat/<short-description>` as appropriate
-2. Check for existing worktrees: `git worktree list`
+2. Check for existing worktrees: `git wt`
    - If a worktree for this branch already exists, use it
-3. Worktree path: `../markuplint-worktree-<short-name>` (under the parent directory of the current repository)
+3. Worktree path: `../markuplint-wt/<branch-name>` (automatically determined by `wt.basedir`)
 4. Execute:
    ```bash
-   git worktree add ../markuplint-worktree-<short-name> -b <branch-name> dev
-   cd ../markuplint-worktree-<short-name>
-   yarn install && yarn build
+   git wt <branch-name> dev
+   cd ../markuplint-wt/<branch-name>
    ```
+   `wt.hook` により `yarn install` → `yarn build` が自動実行される
 5. **All subsequent work (analysis, edits, commits) MUST happen in the worktree**
 
 ## Step 3: Analyze the Problem

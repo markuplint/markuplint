@@ -12,7 +12,7 @@ git rev-parse --show-toplevel
 
 - If the result is the main repository path (e.g., ends with `/markuplint`), **STOP immediately**
 - Warn the user: "You are in the main working directory. Commits must be made in a worktree."
-- Do NOT proceed with any git operations — create or switch to a worktree first
+- Do NOT proceed with any git operations — use `git wt <branch-name> dev` to create a worktree first
 - Only continue if you are confirmed to be inside a worktree
 
 # Commit creation
