@@ -7,4 +7,5 @@
  */
 
 export { jsxScanner } from './jsx/index.js';
+export { templateScanner } from './template/index.js';
 export type * from './types.js';
