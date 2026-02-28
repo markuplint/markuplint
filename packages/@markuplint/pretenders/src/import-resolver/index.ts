@@ -12,26 +12,63 @@
  * - Vue `<script setup>` (direct static imports only)
  * - Svelte `<script>` tags
  * - Astro frontmatter (`---...---`)
+ * - MDX top-level ESM
  *
  * Phase 1 excludes:
  * - Vue Options API `components` property registration
  * - Dynamic imports (`import()`)
  * - `import.meta` references
+ * - Barrel file re-export resolution (planned for Phase 2)
+ *
+ * Note: The current implementation uses regex-based source extraction.
+ * When the CLI multi-framework dispatch (#3340) creates a unified parsing
+ * pipeline, MLAST psblock-based extraction can be integrated by parsing
+ * the file once and passing the document to both templateScanner and
+ * import-resolver.
  */
 
 import type { ImportBinding, ImportAnalysisResult } from './types.js';
 
-import { getFrameworkType } from '../template/parse-component.js';
+import path from 'node:path';
 
-import { extractVueScriptSetup, extractSvelteScript, extractAstroFrontmatter } from './extract-script-source.js';
+import {
+	extractVueScriptSetup,
+	extractSvelteScript,
+	extractAstroFrontmatter,
+	extractMdxEsm,
+} from './extract-script-source.js';
 import { parseImports } from './parse-imports.js';
 
 export type { ImportBinding, ImportAnalysisResult } from './types.js';
 
 /**
+ * Supported framework types for import analysis.
+ * Superset of templateScanner's framework types — includes MDX which
+ * is a component usage site (not definition), making it relevant
+ * for import analysis but not for template scanning.
+ */
+type ImportFrameworkType = 'vue' | 'svelte' | 'astro' | 'mdx';
+
+const EXTENSION_MAP: Record<string, ImportFrameworkType> = {
+	'.vue': 'vue',
+	'.svelte': 'svelte',
+	'.astro': 'astro',
+	'.mdx': 'mdx',
+};
+
+/**
+ * Determines the framework type from the file extension.
+ * Local to import-resolver to include MDX without affecting templateScanner.
+ */
+function getImportFrameworkType(filePath: string): ImportFrameworkType | null {
+	const ext = path.extname(filePath).toLowerCase();
+	return EXTENSION_MAP[ext] ?? null;
+}
+
+/**
  * Analyzes a component file's source text and extracts all static import bindings.
  * Automatically detects the framework type from the file extension and extracts
- * the appropriate source block (script setup, script, or frontmatter).
+ * the appropriate source block (script setup, script, frontmatter, or top-level ESM).
  *
  * @param filePath - The absolute or relative file path (used for framework detection)
  * @param source - The full source text of the component file
@@ -39,7 +76,7 @@ export type { ImportBinding, ImportAnalysisResult } from './types.js';
  *          is not supported or no relevant script block is found
  */
 export async function analyzeImports(filePath: string, source: string): Promise<ImportAnalysisResult | null> {
-	const framework = getFrameworkType(filePath);
+	const framework = getImportFrameworkType(filePath);
 	if (!framework) {
 		return null;
 	}
@@ -57,6 +94,10 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 		}
 		case 'astro': {
 			scriptSource = extractAstroFrontmatter(source);
+			break;
+		}
+		case 'mdx': {
+			scriptSource = extractMdxEsm(source);
 			break;
 		}
 	}

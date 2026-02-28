@@ -56,6 +56,19 @@ import { Card as MyCard } from './ui'
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button.vue' });
 			expect(result!.bindings[1]).toMatchObject({ localName: 'MyCard', importedName: 'Card' });
 		});
+
+		test('excludes import type from bindings', async () => {
+			const source = `<script setup lang="ts">
+import Button from './Button.vue'
+import type { ButtonProps } from './types'
+</script>
+
+<template><Button /></template>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({ localName: 'Button' });
+		});
 	});
 
 	describe('Svelte', () => {
@@ -71,6 +84,22 @@ import { onMount } from 'svelte'
 			expect(result!.bindings).toHaveLength(2);
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button.svelte' });
 			expect(result!.bindings[1]).toMatchObject({ localName: 'onMount', source: 'svelte' });
+		});
+
+		test('prefers instance script over module script', async () => {
+			const source = `<script context="module">
+export const prerender = true
+</script>
+
+<script>
+import Button from './Button.svelte'
+</script>
+
+<Button />`;
+			const result = await analyzeImports('App.svelte', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button.svelte' });
 		});
 	});
 
@@ -93,6 +122,30 @@ import { getStaticPaths } from 'astro'
 				localName: 'getStaticPaths',
 				source: 'astro',
 			});
+		});
+	});
+
+	describe('MDX', () => {
+		test('extracts imports from top-level ESM', async () => {
+			const source = `import Button from './Button'
+import { Card } from './ui'
+
+# Hello World
+
+<Button>Click me</Button>
+<Card>Content</Card>`;
+			const result = await analyzeImports('page.mdx', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(2);
+			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button' });
+			expect(result!.bindings[1]).toMatchObject({ localName: 'Card', source: './ui' });
+		});
+
+		test('returns empty bindings for MDX without imports', async () => {
+			const source = '# Hello World\n\nSome content';
+			const result = await analyzeImports('page.mdx', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toStrictEqual([]);
 		});
 	});
 
@@ -128,6 +181,13 @@ describe('resolveComponentImport', () => {
 
 	test('Vue kebab-case to PascalCase resolution', () => {
 		expect(resolveComponentImport('my-button', bindings)).toStrictEqual(bindings[0]);
+	});
+
+	test('Vue kebab-case with 3+ segments', () => {
+		const extBindings: ImportBinding[] = [
+			{ localName: 'MyFancyButton', importedName: 'default', source: './MyFancyButton.vue', type: 'default' },
+		];
+		expect(resolveComponentImport('my-fancy-button', extBindings)).toStrictEqual(extBindings[0]);
 	});
 
 	test('non-matching kebab-case returns undefined', () => {

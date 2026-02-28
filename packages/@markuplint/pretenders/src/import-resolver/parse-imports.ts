@@ -10,6 +10,9 @@ import type { ImportBinding } from './types.js';
 
 import { init, parse } from 'es-module-lexer';
 
+/** Matches `import type` — TypeScript type-only import (no runtime binding) */
+const RE_TYPE_ONLY_IMPORT = /^import\s+type\s/;
+
 /** Matches `import X from` — default import */
 const RE_DEFAULT_IMPORT = /import\s+(\w+)\s+from/;
 
@@ -54,6 +57,11 @@ function parseNamedEntries(raw: string, source: string): ImportBinding[] {
 			continue;
 		}
 
+		// Skip inline type-only imports: `import { type Foo } from '...'`
+		if (/^type\s+/.test(trimmed)) {
+			continue;
+		}
+
 		const asParts = trimmed.split(/\s+as\s+/);
 		if (asParts.length === 2 && asParts[0] && asParts[1]) {
 			bindings.push({
@@ -85,6 +93,11 @@ function parseNamedEntries(raw: string, source: string): ImportBinding[] {
  * @returns An array of import bindings found in this statement
  */
 function extractBindingsFromStatement(statementText: string, source: string): ImportBinding[] {
+	// TypeScript `import type { ... }` — no runtime binding, skip entirely
+	if (RE_TYPE_ONLY_IMPORT.test(statementText)) {
+		return [];
+	}
+
 	// Try default + named: `import X, { A, B } from '...'`
 	const defaultAndNamed = RE_DEFAULT_AND_NAMED.exec(statementText);
 	if (defaultAndNamed?.[1] && defaultAndNamed[2] !== undefined) {
@@ -166,7 +179,15 @@ function extractBindingsFromStatement(statementText: string, source: string): Im
 export async function parseImports(source: string): Promise<readonly ImportBinding[]> {
 	await ensureInit();
 
-	const [imports] = parse(source);
+	let imports;
+	try {
+		[imports] = parse(source);
+	} catch {
+		// Source may contain non-JS content (e.g., MDX with markdown).
+		// Return empty bindings rather than propagating the parse error.
+		return [];
+	}
+
 	const bindings: ImportBinding[] = [];
 
 	for (const imp of imports) {

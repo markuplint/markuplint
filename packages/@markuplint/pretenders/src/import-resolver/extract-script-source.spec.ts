@@ -1,6 +1,11 @@
 import { describe, test, expect } from 'vitest';
 
-import { extractVueScriptSetup, extractSvelteScript, extractAstroFrontmatter } from './extract-script-source.js';
+import {
+	extractVueScriptSetup,
+	extractSvelteScript,
+	extractAstroFrontmatter,
+	extractMdxEsm,
+} from './extract-script-source.js';
 
 describe('extractVueScriptSetup', () => {
 	test('extracts basic <script setup> content', () => {
@@ -101,6 +106,50 @@ let count: number = 0
 		const result = extractSvelteScript(source);
 		expect(result).toBeNull();
 	});
+
+	test('prefers instance <script> over <script context="module">', () => {
+		const source = `<script context="module">
+export const metadata = {}
+</script>
+
+<script>
+import Button from './Button.svelte'
+</script>
+
+<Button />`;
+		const result = extractSvelteScript(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("import Button from './Button.svelte'");
+		expect(result!.content).not.toContain('metadata');
+	});
+
+	test('falls back to module script when no instance script exists', () => {
+		const source = `<script context="module">
+import { API_URL } from './config'
+export const metadata = { url: API_URL }
+</script>
+
+<p>Static content</p>`;
+		const result = extractSvelteScript(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("import { API_URL } from './config'");
+	});
+
+	test('prefers instance script when module script comes after', () => {
+		const source = `<script>
+import Button from './Button.svelte'
+</script>
+
+<script context="module">
+export const metadata = {}
+</script>
+
+<Button />`;
+		const result = extractSvelteScript(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("import Button from './Button.svelte'");
+		expect(result!.content).not.toContain('metadata');
+	});
 });
 
 describe('extractAstroFrontmatter', () => {
@@ -136,5 +185,32 @@ some unclosed frontmatter`;
 		const result = extractAstroFrontmatter(source);
 		expect(result).not.toBeNull();
 		expect(result!.offset).toBe(4); // After "---\n"
+	});
+});
+
+describe('extractMdxEsm', () => {
+	test('extracts source when import statements are present', () => {
+		const source = `import Button from './Button'
+import { Card } from './ui'
+
+# Hello World
+
+<Button>Click me</Button>`;
+		const result = extractMdxEsm(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("import Button from './Button'");
+		expect(result!.content).toContain("import { Card } from './ui'");
+		expect(result!.offset).toBe(0);
+	});
+
+	test('returns null when no import statements exist', () => {
+		const source = '# Hello World\n\nSome markdown content';
+		const result = extractMdxEsm(source);
+		expect(result).toBeNull();
+	});
+
+	test('returns null for empty source', () => {
+		const result = extractMdxEsm('');
+		expect(result).toBeNull();
 	});
 });

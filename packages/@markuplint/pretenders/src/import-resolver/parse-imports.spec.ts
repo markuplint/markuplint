@@ -175,17 +175,50 @@ describe('parseImports', () => {
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ localName: 'Button' });
 		});
+
+		test('import.meta is ignored', async () => {
+			const source = ["import Button from './B.vue'", 'const url = import.meta.env.BASE_URL'].join('\n');
+			const result = await parseImports(source);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toMatchObject({ localName: 'Button' });
+		});
 	});
 
-	describe('TypeScript sources', () => {
-		test('import with type keyword is parsed as static import', async () => {
+	describe('TypeScript type-only imports', () => {
+		test('import type statement is excluded from bindings', async () => {
 			const source = ["import Button from './Button.vue'", "import type { ButtonProps } from './types'"].join(
 				'\n',
 			);
 			const result = await parseImports(source);
-			// es-module-lexer treats `import type` as a regular import specifier
-			// Both should be captured as bindings
-			expect(result.some(b => b.localName === 'Button')).toBe(true);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toStrictEqual({
+				localName: 'Button',
+				importedName: 'default',
+				source: './Button.vue',
+				type: 'default',
+			});
+		});
+
+		test('import type default is excluded', async () => {
+			const result = await parseImports("import type Foo from './types'");
+			expect(result).toStrictEqual([]);
+		});
+
+		test('inline type keyword in named imports is excluded', async () => {
+			const source = "import { type ButtonProps, Card } from './ui'";
+			const result = await parseImports(source);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toStrictEqual({
+				localName: 'Card',
+				importedName: 'Card',
+				source: './ui',
+				type: 'named',
+			});
+		});
+
+		test('all inline type-only named imports produce no bindings', async () => {
+			const result = await parseImports("import { type Foo, type Bar } from './types'");
+			expect(result).toStrictEqual([]);
 		});
 	});
 
@@ -204,6 +237,11 @@ describe('parseImports', () => {
 			const result = await parseImports("import { Button, } from './components'");
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ localName: 'Button' });
+		});
+
+		test('non-JS content returns empty bindings without throwing', async () => {
+			const result = await parseImports('# Hello World\nSome markdown content');
+			expect(result).toStrictEqual([]);
 		});
 	});
 });
