@@ -1,3 +1,5 @@
+import type { PretenderDirectorMap } from './pretender-director.js';
+
 import { describe, test, expect } from 'vitest';
 
 import { dependencyMapper } from './dependency-mapper.js';
@@ -170,11 +172,11 @@ describe('dependencyMapper', () => {
 	});
 
 	test('Import-path-based resolution with nameIndex', () => {
-		const map = new Map([
+		const map: PretenderDirectorMap = new Map([
 			['./components/A/Button', ['Button', 'button']],
 			['./components/B/Button', ['Button', 'div']],
 			['./components/MyButton', ['MyButton', 'Button']],
-		]) as Parameters<typeof dependencyMapper>[0];
+		]);
 
 		const nameIndex = new Map([
 			['Button', './components/A/Button'],
@@ -199,10 +201,10 @@ describe('dependencyMapper', () => {
 	});
 
 	test('Import-path-based resolution avoids name collision', () => {
-		const map = new Map([
+		const map: PretenderDirectorMap = new Map([
 			['./lib/Button', ['Button', 'button']],
 			['./app/MyButton', ['MyButton', { element: 'Button', slots: true, inheritAttrs: true }]],
-		]) as Parameters<typeof dependencyMapper>[0];
+		]);
 
 		const nameIndex = new Map([
 			['Button', './lib/Button'],
@@ -216,6 +218,75 @@ describe('dependencyMapper', () => {
 			},
 			{
 				selector: 'MyButton',
+				_via: ['Button'],
+				as: 'button',
+			},
+		]);
+	});
+
+	test('buildNameIndex fallback: import-path keys without explicit nameIndex', () => {
+		const map: PretenderDirectorMap = new Map([
+			['./lib/Button', ['Button', 'button']],
+			['./app/MyButton', ['MyButton', 'Button']],
+		]);
+
+		// No nameIndex provided → buildNameIndex derives it from the map
+		expect(dependencyMapper(map)).toStrictEqual([
+			{
+				selector: 'Button',
+				as: 'button',
+			},
+			{
+				selector: 'MyButton',
+				_via: ['Button'],
+				as: 'button',
+			},
+		]);
+	});
+
+	test('cycle detection with import-path keys', () => {
+		const map: PretenderDirectorMap = new Map([
+			['./a', ['A', 'B']],
+			['./b', ['B', 'A']],
+		]);
+
+		const nameIndex = new Map([
+			['A', './a'],
+			['B', './b'],
+		]);
+
+		// identity is updated before cycle check, so 'as' reflects the cyclic entry's identity
+		expect(dependencyMapper(map, nameIndex)).toStrictEqual([
+			{
+				selector: 'A',
+				as: 'B',
+				_via: ['B', '...[Recursive]'],
+			},
+			{
+				selector: 'B',
+				as: 'A',
+				_via: ['A', '...[Recursive]'],
+			},
+		]);
+	});
+
+	test('nameIndex miss falls through to direct key lookup', () => {
+		const map: PretenderDirectorMap = new Map([
+			['./Button', ['Button', 'button']],
+			['Card', ['Card', 'Button']],
+		]);
+
+		// nameIndex only has Button, not Card
+		const nameIndex = new Map([['Button', './Button']]);
+
+		// Card's identity is 'Button' → nameIndex resolves to './Button' → 'button'
+		expect(dependencyMapper(map, nameIndex)).toStrictEqual([
+			{
+				selector: 'Button',
+				as: 'button',
+			},
+			{
+				selector: 'Card',
 				_via: ['Button'],
 				as: 'button',
 			},
