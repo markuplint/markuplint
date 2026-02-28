@@ -45,4 +45,11 @@ describe('extractAttrs', () => {
 		const attrs = extractAttrs(root!);
 		expect(attrs).toStrictEqual([{ name: 'class', value: 'wrapper' }]);
 	});
+
+	test('extracts boolean attribute without value property', async () => {
+		const doc = await parseComponent(path.resolve(fixtureDir, 'DisabledButton.vue'));
+		const root = extractRoot(doc!);
+		const attrs = extractAttrs(root!);
+		expect(attrs).toStrictEqual([{ name: 'disabled' }]);
+	});
 });

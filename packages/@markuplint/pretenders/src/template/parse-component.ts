@@ -19,30 +19,32 @@ export function getFrameworkType(filePath: string): FrameworkType | null {
 	return EXTENSION_MAP[ext] ?? null;
 }
 
+const PARSER_PACKAGES: Record<FrameworkType, string> = {
+	vue: '@markuplint/vue-parser',
+	svelte: '@markuplint/svelte-parser',
+	astro: '@markuplint/astro-parser',
+};
+
 /**
  * Dynamically imports the appropriate parser for the given framework.
+ *
+ * @returns The parser, or `null` if the parser package is not installed.
  */
-async function getParser(framework: FrameworkType): Promise<MLParser> {
-	switch (framework) {
-		case 'vue': {
-			const { parser } = await import('@markuplint/vue-parser');
-			return parser;
-		}
-		case 'svelte': {
-			const { parser } = await import('@markuplint/svelte-parser');
-			return parser;
-		}
-		case 'astro': {
-			const { parser } = await import('@markuplint/astro-parser');
-			return parser;
-		}
+async function getParser(framework: FrameworkType): Promise<MLParser | null> {
+	const pkg = PARSER_PACKAGES[framework];
+	try {
+		const mod: { parser: MLParser } = await import(pkg);
+		return mod.parser;
+	} catch {
+		return null;
 	}
 }
 
 /**
  * Parses a component file into an MLASTDocument using the appropriate framework parser.
  *
- * @returns The parsed document, or `null` if the file extension is not supported.
+ * @returns The parsed document, or `null` if the file extension is not supported
+ *          or the required parser package is not installed.
  */
 export async function parseComponent(filePath: string): Promise<MLASTDocument | null> {
 	const framework = getFrameworkType(filePath);
@@ -50,7 +52,11 @@ export async function parseComponent(filePath: string): Promise<MLASTDocument | 
 		return null;
 	}
 
-	const sourceCode = fs.readFileSync(filePath, 'utf8');
 	const parser = await getParser(framework);
+	if (!parser) {
+		return null;
+	}
+
+	const sourceCode = fs.readFileSync(filePath, 'utf8');
 	return parser.parse(sourceCode);
 }
