@@ -2322,6 +2322,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@markuplint/datastar-spec@workspace:packages/@markuplint/datastar-spec":
+  version: 0.0.0-use.local
+  resolution: "@markuplint/datastar-spec@workspace:packages/@markuplint/datastar-spec"
+  dependencies:
+    "@markuplint/ml-spec": "npm:5.0.0-alpha.3"
+  languageName: unknown
+  linkType: soft
+
 "@markuplint/ejs-parser@workspace:packages/@markuplint/ejs-parser":
   version: 0.0.0-use.local
   resolution: "@markuplint/ejs-parser@workspace:packages/@markuplint/ejs-parser"

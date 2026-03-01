@@ -44,6 +44,7 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 | `@markuplint/spec-generator`  | Maintenance tasks for spec-generator                                  | [SKILL.md](packages/@markuplint/spec-generator/SKILL.md)  |
 | `@markuplint/i18n`            | Maintenance tasks for i18n (internationalization)                     | [SKILL.md](packages/@markuplint/i18n/SKILL.md)            |
 | `@markuplint/create-rule`     | Maintenance tasks for create-rule (CLI scaffolding tool)              | [SKILL.md](packages/@markuplint/create-rule/SKILL.md)     |
+| `@markuplint/datastar-spec`   | Maintenance tasks for datastar-spec                                   | [SKILL.md](packages/@markuplint/datastar-spec/SKILL.md)   |
 | `@markuplint/react-spec`      | Maintenance tasks for react-spec                                      | [SKILL.md](packages/@markuplint/react-spec/SKILL.md)      |
 | `@markuplint/vue-parser`      | Maintenance tasks for vue-parser                                      | [SKILL.md](packages/@markuplint/vue-parser/SKILL.md)      |
 | `@markuplint/vue-spec`        | Maintenance tasks for vue-spec                                        | [SKILL.md](packages/@markuplint/vue-spec/SKILL.md)        |
