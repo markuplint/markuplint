@@ -13,6 +13,8 @@
 
 export { jsxScanner } from './jsx/index.js';
 export { templateScanner } from './template/index.js';
+export { scan } from './scan.js';
+export type { ScanOptions } from './scan.js';
 export { analyzeImports, resolveComponentImport } from './import-resolver/index.js';
 export type { ImportBinding, ImportAnalysisResult } from './import-resolver/types.js';
 export type * from './types.js';

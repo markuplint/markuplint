@@ -87,7 +87,7 @@ function getElName(identity: Identity) {
 	return identity.element;
 }
 
-function propSort<T, P extends keyof T>(propName: P) {
+export function propSort<T, P extends keyof T>(propName: P) {
 	return (a: T, b: T) => {
 		const nameA = toLowerCase(a[propName]);
 		const nameB = toLowerCase(b[propName]);

@@ -14,9 +14,8 @@ import path from 'node:path';
 import meow from 'meow';
 
 import { getFileList } from './input.js';
-import { jsxScanner } from './jsx/index.js';
 import { out } from './out.js';
-import { templateScanner } from './template/index.js';
+import { scan } from './scan.js';
 
 const commands = meow({
 	importMeta: import.meta,
@@ -39,22 +38,8 @@ if (commands.input.length === 0) {
 async function main() {
 	const files = await getFileList(commands.input);
 
-	const jsxFiles = files.filter(filePath => /\.[jt]sx?$/.test(filePath));
-	const templateFiles = files.filter(filePath => /\.(?:vue|svelte|astro)$/.test(filePath));
-
-	const ignoreComponentNames = commands.flags.ignore?.split(',').map(s => s.trim());
-
-	const [jsxPretenders, templatePretenders] = await Promise.all([
-		jsxFiles.length > 0 ? jsxScanner(jsxFiles, { ignoreComponentNames }) : Promise.resolve([]),
-		templateFiles.length > 0 ? templateScanner(templateFiles, { ignoreComponentNames }) : Promise.resolve([]),
-	]);
-
-	const pretenders = [...jsxPretenders, ...templatePretenders].toSorted((a, b) => {
-		const nameA = a.selector.toLowerCase();
-		const nameB = b.selector.toLowerCase();
-		if (nameA < nameB) return -1;
-		if (nameA > nameB) return 1;
-		return 0;
+	const pretenders = await scan(files, {
+		ignoreComponentNames: commands.flags.ignore?.split(',').map(s => s.trim()),
 	});
 
 	const outFilePath = path.resolve(process.cwd(), commands.flags.out);
