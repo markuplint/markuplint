@@ -204,6 +204,134 @@ describe('resolveDirective', () => {
 		});
 	});
 
+	describe('datastar patterns', () => {
+		const datastarPatterns = [
+			{
+				pattern: '^data-on[-:]([a-z]+)(?:__.*)?$',
+				potentialName: 'on$1',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
+			{
+				pattern: '^data-attr[-:]([^_]+)(?:__.*)?$',
+				potentialName: '$1',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
+			{
+				pattern: '^data-(?:class|style)[-:].+$',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
+			{
+				pattern: '^data-(?:signals|computed|bind|indicator|ref|persist)[-:].+$',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
+			{
+				pattern: '^data-on[-:](?:intersect|interval|signal-patch|raf|resize)(?:__.*)?$',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
+			{
+				pattern: '^data-(?:init|ignore|json-signals|scroll-into-view|persist|query-string)__.+$',
+				isDirective: true as const,
+			},
+		];
+		const compiled = compileDirectivePatterns(datastarPatterns);
+
+		test('resolves data-on-click to onclick', () => {
+			const result = resolveDirective('data-on-click', compiled);
+			expect(result?.potentialName).toBe('onclick');
+			expect(result?.isDirective).toBe(true);
+			expect(result?.isDynamicValue).toBe(true);
+		});
+
+		test('resolves data-on:keydown to onkeydown', () => {
+			const result = resolveDirective('data-on:keydown', compiled);
+			expect(result?.potentialName).toBe('onkeydown');
+		});
+
+		test('resolves data-on-click__debounce.500ms to onclick', () => {
+			const result = resolveDirective('data-on-click__debounce.500ms', compiled);
+			expect(result?.potentialName).toBe('onclick');
+		});
+
+		test('resolves data-attr-href to href', () => {
+			const result = resolveDirective('data-attr-href', compiled);
+			expect(result?.potentialName).toBe('href');
+			expect(result?.isDynamicValue).toBe(true);
+		});
+
+		test('resolves data-attr:class to class', () => {
+			const result = resolveDirective('data-attr:class', compiled);
+			expect(result?.potentialName).toBe('class');
+		});
+
+		test('matches data-class:active as directive', () => {
+			const result = resolveDirective('data-class:active', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+			expect(result?.potentialName).toBeUndefined();
+		});
+
+		test('matches data-style:color as directive', () => {
+			const result = resolveDirective('data-style:color', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+		});
+
+		test('matches data-signals:foo as directive', () => {
+			const result = resolveDirective('data-signals:foo', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+		});
+
+		test('matches data-bind:name as directive', () => {
+			const result = resolveDirective('data-bind:name', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+		});
+
+		test('matches data-computed:total as directive', () => {
+			const result = resolveDirective('data-computed:total', compiled);
+			expect(result).not.toBeNull();
+		});
+
+		test('matches data-on-intersect as browser event', () => {
+			const result = resolveDirective('data-on-intersect', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+		});
+
+		test('matches data-on-intersect__once as browser event with modifier', () => {
+			const result = resolveDirective('data-on-intersect__once', compiled);
+			expect(result).not.toBeNull();
+		});
+
+		test('matches data-init__delay.500ms as static directive with modifier', () => {
+			const result = resolveDirective('data-init__delay.500ms', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.isDirective).toBe(true);
+			expect(result?.isDynamicValue).toBeUndefined();
+		});
+
+		test('matches data-scroll-into-view__smooth as static directive with modifier', () => {
+			const result = resolveDirective('data-scroll-into-view__smooth', compiled);
+			expect(result).not.toBeNull();
+		});
+
+		test('does not match plain data-signals (no key suffix)', () => {
+			// data-signals without a suffix is a static global attr, not a directive pattern match
+			expect(resolveDirective('data-signals', compiled)).toBeNull();
+		});
+
+		test('does not match unrelated attributes', () => {
+			expect(resolveDirective('class', compiled)).toBeNull();
+			expect(resolveDirective('data-custom', compiled)).toBeNull();
+		});
+	});
+
 	describe('x-transition patterns', () => {
 		const patterns = [{ pattern: '^x-transition(?:$|:|\\.)', isDirective: true as const }];
 		const compiled = compileDirectivePatterns(patterns);

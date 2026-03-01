@@ -85,6 +85,69 @@ describe('schemaToSpec', () => {
 		expect(mergedSpec.acceptedAttrNames).toBe('idl');
 	});
 
+	test('datastar directivePatterns are merged', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{
+				directivePatterns: [
+					{
+						pattern: '^data-on[-:]([a-z]+)(?:__.*)?$',
+						potentialName: 'on$1',
+						isDirective: true,
+						isDynamicValue: true,
+					},
+					{
+						pattern: '^data-attr[-:]([^_]+)(?:__.*)?$',
+						potentialName: '$1',
+						isDirective: true,
+						isDynamicValue: true,
+					},
+				],
+			},
+		]);
+		expect(mergedSpec.directivePatterns).toHaveLength(2);
+		expect(mergedSpec.directivePatterns[0].pattern).toBe('^data-on[-:]([a-z]+)(?:__.*)?$');
+		expect(mergedSpec.directivePatterns[1].pattern).toBe('^data-attr[-:]([^_]+)(?:__.*)?$');
+	});
+
+	test('datastar globalAttrs are merged into resolved spec', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{
+				def: {
+					'#globalAttrs': {
+						'#extends': {
+							'data-signals': { type: 'Any' },
+							'data-show': { type: 'Any' },
+							'data-ignore': { type: 'Boolean' },
+						},
+					},
+				},
+			},
+		]);
+		const globalAttrs = mergedSpec.def['#globalAttrs']['#HTMLGlobalAttrs'];
+		expect(globalAttrs['data-signals']).toStrictEqual({ type: 'Any' });
+		expect(globalAttrs['data-show']).toStrictEqual({ type: 'Any' });
+		expect(globalAttrs['data-ignore']).toStrictEqual({ type: 'Boolean' });
+	});
+
+	test('datastar directivePatterns coexist with htmx patterns', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{
+				directivePatterns: [{ pattern: '^hx-on[:-]([a-z]+)$', potentialName: 'on$1', isDirective: true }],
+			},
+			{
+				directivePatterns: [
+					{ pattern: '^data-on[-:]([a-z]+)(?:__.*)?$', potentialName: 'on$1', isDirective: true },
+				],
+			},
+		]);
+		expect(mergedSpec.directivePatterns).toHaveLength(2);
+		expect(mergedSpec.directivePatterns[0].pattern).toBe('^hx-on[:-]([a-z]+)$');
+		expect(mergedSpec.directivePatterns[1].pattern).toBe('^data-on[-:]([a-z]+)(?:__.*)?$');
+	});
+
 	test('globalAttrs.extends', () => {
 		const keyAttr = {
 			type: 'NoEmptyAny',
