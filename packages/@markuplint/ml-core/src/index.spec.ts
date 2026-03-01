@@ -289,6 +289,52 @@ div#hoge.foo.bar
 			}).matches('Custom'),
 		).toBeTruthy();
 	});
+
+	test('pretenders: slots: null treats component as void-like (no children shared)', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		// slots: null — virtual element should have no children
+		const voidEl = createTestElement('<VoidComp>child text</VoidComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'VoidComp',
+					as: { element: 'img', slots: null },
+				},
+			],
+		});
+		expect(voidEl.pretenderContext?.type).toBe('pretender');
+		expect([...(voidEl.pretenderContext as any).as.childNodes]).toHaveLength(0);
+
+		// slots: true — virtual element should share children
+		const slotEl = createTestElement('<SlotComp>child text</SlotComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'SlotComp',
+					as: { element: 'div', slots: true },
+				},
+			],
+		});
+		expect(slotEl.pretenderContext?.type).toBe('pretender');
+		expect([...(slotEl.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
+	});
+
+	test('pretenders: bare string identity (slots undefined) shares children for backward compat', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		const el = createTestElement('<Comp>child text</Comp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'Comp',
+					as: 'div',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect([...(el.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
+	});
 });
 
 describe('Rule', () => {

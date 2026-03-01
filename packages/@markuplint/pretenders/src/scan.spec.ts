@@ -69,6 +69,42 @@ describe('scan', () => {
 		});
 	});
 
+	describe('slots flow', () => {
+		test('JSX scanner produces correct slots values', async () => {
+			const result = await scan([jsxFixture('005.tsx')]);
+			const withChildren = result.find(p => p.selector === 'WithChildren');
+			const voidComp = result.find(p => p.selector === 'VoidComponent');
+			const staticComp = result.find(p => p.selector === 'StaticContent');
+
+			expect(typeof withChildren!.as).toBe('object');
+			expect((withChildren!.as as any).slots).toBe(true);
+
+			expect(typeof voidComp!.as).toBe('object');
+			expect((voidComp!.as as any).slots).toBe(null);
+
+			// Static content with no attrs returns bare string — slots info implicit
+			expect(typeof staticComp!.as).toBe('string');
+		});
+
+		test('template scanner produces correct slots values', async () => {
+			const result = await scan([templateFixture('SimpleButton.vue'), templateFixture('WithSlot.vue')]);
+			const noSlot = result.find(p => p.selector === 'SimpleButton');
+			const withSlot = result.find(p => p.selector === 'WithSlot');
+
+			expect((noSlot!.as as any).slots).toBe(null);
+			expect((withSlot!.as as any).slots).toBe(true);
+		});
+
+		test('mixed input preserves slots from both scanners', async () => {
+			const result = await scan([jsxFixture('005.tsx'), templateFixture('WithSlot.vue')]);
+			const jsxSlot = result.find(p => p.selector === 'WithChildren');
+			const templateSlot = result.find(p => p.selector === 'WithSlot');
+
+			expect((jsxSlot!.as as any).slots).toBe(true);
+			expect((templateSlot!.as as any).slots).toBe(true);
+		});
+	});
+
 	describe('edge cases', () => {
 		test('empty file list returns empty result', async () => {
 			const result = await scan([]);

@@ -94,6 +94,11 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 			allowJs: true,
 		});
 
+		// Trigger the binder so that parent pointers are set on AST nodes.
+		// getChildren() relies on node.parent to navigate from JsxOpeningElement
+		// to its containing JsxElement for children slot detection.
+		program.getTypeChecker();
+
 		for (const sourceFile of program.getSourceFiles()) {
 			if (!sourceFile.isDeclarationFile) {
 				forEachChild(sourceFile, node => visit(node, sourceFile));

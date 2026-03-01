@@ -26,7 +26,7 @@ describe('jsxScanner', () => {
 							name: 'aria-yyy',
 						},
 					],
-					slots: [],
+					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:1:6'),
 			},
@@ -35,7 +35,7 @@ describe('jsxScanner', () => {
 				as: {
 					element: 'BReturns',
 					inheritAttrs: true,
-					slots: [],
+					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/001.tsx:11:6'),
 			},
@@ -154,6 +154,67 @@ describe('jsxScanner', () => {
 					inheritAttrs: true,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/004.tsx:1:6'),
+			},
+		]);
+	});
+
+	test('005 — children slot detection', async () => {
+		expect(await jsxScanner([path.resolve(testDir, '005.tsx')])).toStrictEqual([
+			{
+				selector: 'AttrOnlyChildren',
+				as: {
+					element: 'div',
+					attrs: [{ name: 'data-ref' }],
+					slots: null,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
+			},
+			{
+				selector: 'NestedChildren',
+				as: {
+					element: 'div',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:22:6'),
+			},
+			{
+				selector: 'StaticContent',
+				as: 'p',
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
+			},
+			{
+				selector: 'TernaryChildren',
+				as: {
+					element: 'div',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
+			},
+			{
+				selector: 'VoidComponent',
+				as: {
+					element: 'img',
+					attrs: [{ name: 'src' }],
+					slots: null,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:12:6'),
+			},
+			{
+				selector: 'WithChildren',
+				as: {
+					element: 'div',
+					attrs: [{ name: 'className', value: 'wrapper' }],
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:2:6'),
+			},
+			{
+				selector: 'WithPropsChildren',
+				as: {
+					element: 'section',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:7:6'),
 			},
 		]);
 	});
