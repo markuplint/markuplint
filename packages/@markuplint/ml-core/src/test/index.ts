@@ -44,9 +44,13 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			: options.parser.parse(sourceCode, options.config?.parserOptions)
 		: parser.parse(sourceCode, options?.config?.parserOptions);
 	const ruleset = convertRuleset(options?.config);
-	const document = new MLDocument<T, O>(ast, ruleset, [options?.specs ?? ({} as any), {}], {
-		ariaVersion: ARIA_RECOMMENDED_VERSION,
-	});
+	const document = new MLDocument<T, O>(
+		ast,
+		ruleset,
+		[options?.specs ?? ({} as any), {}],
+		{ ariaVersion: ARIA_RECOMMENDED_VERSION },
+		options?.pretenders ? { pretenders: options.pretenders } : undefined,
+	);
 	return document;
 }
 

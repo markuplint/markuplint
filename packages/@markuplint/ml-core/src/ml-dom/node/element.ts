@@ -33,7 +33,7 @@ import { MLAttr } from './attr.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
-import { toHTMLCollection } from './node-list.js';
+import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { UnexpectedCallError } from './unexpected-call-error.js';
 
@@ -3968,6 +3968,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			aria = pretenderElement.aria;
 		}
 
+		const slots = typeof pretenderElement === 'string' ? undefined : pretenderElement.slots;
+
 		const as = new MLElement<T, O>(
 			{
 				...this._astToken,
@@ -3981,7 +3983,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			this.ownerMLDocument,
 		);
 
-		as.resetChildren(this.childNodes);
+		// When slots is null, the component does not accept children (void-like).
+		// Explicitly set empty children to prevent inheriting from the AST token.
+		if (slots === null) {
+			as.resetChildren(toNodeList([]));
+		} else {
+			as.resetChildren(this.childNodes);
+		}
 		as.pretenderContext = {
 			type: 'origin',
 			origin: this,

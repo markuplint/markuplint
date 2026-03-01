@@ -289,6 +289,42 @@ div#hoge.foo.bar
 			}).matches('Custom'),
 		).toBeTruthy();
 	});
+
+	test('pretenders: slots: null treats component as void-like (no children shared)', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		// slots: null — virtual element should have no children
+		const voidEl = createTestElement('<VoidComp>child text</VoidComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'VoidComp',
+					as: { element: 'img', slots: null },
+				},
+			],
+		});
+		const voidPretender = voidEl.pretenderContext;
+		expect(voidPretender?.type).toBe('pretender');
+		if (voidPretender?.type === 'pretender') {
+			expect([...voidPretender.as.childNodes]).toHaveLength(0);
+		}
+
+		// slots: true — virtual element should share children
+		const slotEl = createTestElement('<SlotComp>child text</SlotComp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'SlotComp',
+					as: { element: 'div', slots: true },
+				},
+			],
+		});
+		const slotPretender = slotEl.pretenderContext;
+		expect(slotPretender?.type).toBe('pretender');
+		if (slotPretender?.type === 'pretender') {
+			expect([...slotPretender.as.childNodes].length).toBeGreaterThan(0);
+		}
+	});
 });
 
 describe('Rule', () => {
