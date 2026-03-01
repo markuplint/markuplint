@@ -303,11 +303,8 @@ div#hoge.foo.bar
 				},
 			],
 		});
-		const voidPretender = voidEl.pretenderContext;
-		expect(voidPretender?.type).toBe('pretender');
-		if (voidPretender?.type === 'pretender') {
-			expect([...voidPretender.as.childNodes]).toHaveLength(0);
-		}
+		expect(voidEl.pretenderContext?.type).toBe('pretender');
+		expect([...(voidEl.pretenderContext as any).as.childNodes]).toHaveLength(0);
 
 		// slots: true — virtual element should share children
 		const slotEl = createTestElement('<SlotComp>child text</SlotComp>', {
@@ -319,11 +316,24 @@ div#hoge.foo.bar
 				},
 			],
 		});
-		const slotPretender = slotEl.pretenderContext;
-		expect(slotPretender?.type).toBe('pretender');
-		if (slotPretender?.type === 'pretender') {
-			expect([...slotPretender.as.childNodes].length).toBeGreaterThan(0);
-		}
+		expect(slotEl.pretenderContext?.type).toBe('pretender');
+		expect([...(slotEl.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
+	});
+
+	test('pretenders: bare string identity (slots undefined) shares children for backward compat', async () => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+
+		const el = createTestElement('<Comp>child text</Comp>', {
+			parser: jsxParser,
+			pretenders: [
+				{
+					selector: 'Comp',
+					as: 'div',
+				},
+			],
+		});
+		expect(el.pretenderContext?.type).toBe('pretender');
+		expect([...(el.pretenderContext as any).as.childNodes].length).toBeGreaterThan(0);
 	});
 });
 

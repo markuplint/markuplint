@@ -5,18 +5,21 @@ import ts from 'typescript';
 const {
 	forEachChild,
 	isIdentifier,
+	isJsxAttributes,
 	isJsxElement,
-	isJsxExpression,
 	isJsxSelfClosingElement,
 	isPropertyAccessExpression,
 } = ts;
 
 /**
  * Detects whether a JSX element accepts children by searching for
- * `{children}` or `{props.children}` expressions in its subtree.
+ * `{children}` or `{props.children}` expressions in its content subtree.
+ *
+ * Only searches content children (text, expressions, nested elements),
+ * NOT attribute values on the element or nested elements.
  *
  * - Self-closing elements (`<Foo />`) cannot have children → returns `null`
- * - Opening elements with `{children}` or `{props.children}` → returns `true`
+ * - Opening elements with `{children}` or `{props.children}` in content → returns `true`
  * - Opening elements without children expressions → returns `null`
  *
  * @param el - The JSX opening or self-closing element to inspect
@@ -38,42 +41,53 @@ export function getChildren(
 		return null;
 	}
 
-	return hasChildrenExpression(parent, sourceFile) ? true : null;
+	// Search only through content children (JsxChild[]),
+	// which excludes opening/closing tags and their attributes.
+	for (const child of parent.children) {
+		if (hasChildrenIdentifier(child, sourceFile)) {
+			return true;
+		}
+	}
+	return null;
 }
 
 /**
  * Recursively checks whether a node or its descendants contain a
- * `{children}` or `{props.children}` JSX expression.
+ * `children` identifier or `props.children` property access.
+ *
+ * Skips JsxAttributes nodes to avoid false positives from
+ * `{children}` used as attribute values on nested elements.
  */
-function hasChildrenExpression(
+function hasChildrenIdentifier(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Node,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	sourceFile: SourceFile,
 ): boolean {
-	if (isJsxExpression(node) && node.expression) {
-		const expr = node.expression;
+	// Skip attribute containers — {children} in attrs is not a slot indicator
+	if (isJsxAttributes(node)) {
+		return false;
+	}
 
-		// {children}
-		if (isIdentifier(expr) && expr.getText(sourceFile) === 'children') {
-			return true;
-		}
+	// {children}
+	if (isIdentifier(node) && node.getText(sourceFile) === 'children') {
+		return true;
+	}
 
-		// {props.children}
-		if (
-			isPropertyAccessExpression(expr) &&
-			isIdentifier(expr.name) &&
-			expr.name.getText(sourceFile) === 'children' &&
-			isIdentifier(expr.expression) &&
-			expr.expression.getText(sourceFile) === 'props'
-		) {
-			return true;
-		}
+	// {props.children}
+	if (
+		isPropertyAccessExpression(node) &&
+		isIdentifier(node.name) &&
+		node.name.getText(sourceFile) === 'children' &&
+		isIdentifier(node.expression) &&
+		node.expression.getText(sourceFile) === 'props'
+	) {
+		return true;
 	}
 
 	let found = false;
 	forEachChild(node, child => {
-		if (!found && hasChildrenExpression(child, sourceFile)) {
+		if (!found && hasChildrenIdentifier(child, sourceFile)) {
 			found = true;
 		}
 	});

@@ -27,3 +27,13 @@ const NestedChildren = ({ children }) => {
 		</div>
 	);
 };
+
+// Edge case: {children} appears only in an attribute value, not as element content
+const AttrOnlyChildren = ({ children }) => {
+	return <div data-ref={children}>static text</div>;
+};
+
+// Edge case: ternary with props.children
+const TernaryChildren = props => {
+	return <div>{props.children ? props.children : 'fallback'}</div>;
+};

@@ -161,6 +161,15 @@ describe('jsxScanner', () => {
 	test('005 — children slot detection', async () => {
 		expect(await jsxScanner([path.resolve(testDir, '005.tsx')])).toStrictEqual([
 			{
+				selector: 'AttrOnlyChildren',
+				as: {
+					element: 'div',
+					attrs: [{ name: 'data-ref' }],
+					slots: null,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),
+			},
+			{
 				selector: 'NestedChildren',
 				as: {
 					element: 'div',
@@ -172,6 +181,14 @@ describe('jsxScanner', () => {
 				selector: 'StaticContent',
 				as: 'p',
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:17:6'),
+			},
+			{
+				selector: 'TernaryChildren',
+				as: {
+					element: 'div',
+					slots: true,
+				},
+				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:37:6'),
 			},
 			{
 				selector: 'VoidComponent',
