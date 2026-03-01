@@ -10,7 +10,7 @@
  * exclusively for reactive behavior, event handling, and server
  * communication directly in HTML.
  *
- * @see https://data-star.dev/reference/plugins_core
+ * @see https://data-star.dev/reference/attributes
  */
 
 import type { ExtendedSpec } from '@markuplint/ml-spec';
@@ -22,12 +22,24 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * Datastar attributes are all global and prefixed with `data-`.
  */
 const spec: ExtendedSpec = {
-	cites: ['https://data-star.dev/reference/plugins_core'],
+	cites: ['https://data-star.dev/reference/attributes'],
 	directivePatterns: [
+		/**
+		 * Browser plugin event handlers (must precede generic data-on pattern):
+		 * data-on-intersect, data-on-interval, data-on-signal-patch,
+		 * data-on-raf, data-on-resize
+		 * with optional `__modifier` suffixes.
+		 * @see https://data-star.dev/reference/attributes#data-on-intersect
+		 */
+		{
+			pattern: '^data-on[-:](?:intersect|interval|signal-patch|raf|resize)(?:__.*)?$',
+			isDirective: true,
+			isDynamicValue: true,
+		},
 		/**
 		 * Event handlers: data-on-click, data-on:keydown, data-on-click__debounce.500ms
 		 * Supports both `-` and `:` separators after `on`, and `__modifier` suffixes.
-		 * @see https://data-star.dev/reference/plugins_dom#on
+		 * @see https://data-star.dev/reference/attributes#data-on
 		 */
 		{
 			pattern: '^data-on[-:]([a-z]+)(?:__.*)?$',
@@ -37,8 +49,8 @@ const spec: ExtendedSpec = {
 		},
 		/**
 		 * Attribute binding: data-attr-href, data-attr:class
-		 * Binds HTML attributes via expressions.
-		 * @see https://data-star.dev/reference/plugins_dom#attr
+		 * Sets the value of any HTML attribute to an expression.
+		 * @see https://data-star.dev/reference/attributes#data-attr
 		 */
 		{
 			pattern: '^data-attr[-:]([^_]+)(?:__.*)?$',
@@ -48,8 +60,8 @@ const spec: ExtendedSpec = {
 		},
 		/**
 		 * Class/style binding with suffix: data-class:active, data-style:color
-		 * @see https://data-star.dev/reference/plugins_dom#class
-		 * @see https://data-star.dev/reference/plugins_dom#style
+		 * @see https://data-star.dev/reference/attributes#data-class
+		 * @see https://data-star.dev/reference/attributes#data-style
 		 */
 		{
 			pattern: '^data-(?:class|style)[-:].+$',
@@ -60,8 +72,8 @@ const spec: ExtendedSpec = {
 		 * Signal/binding directives with key suffix:
 		 * data-signals:foo, data-computed:total, data-bind:name,
 		 * data-indicator:loading, data-ref:myEl, data-persist:prefs
-		 * @see https://data-star.dev/reference/plugins_core#signals
-		 * @see https://data-star.dev/reference/plugins_dom#bind
+		 * @see https://data-star.dev/reference/attributes#data-signals
+		 * @see https://data-star.dev/reference/attributes#data-bind
 		 */
 		{
 			pattern: '^data-(?:signals|computed|bind|indicator|ref|persist)[-:].+$',
@@ -69,22 +81,10 @@ const spec: ExtendedSpec = {
 			isDynamicValue: true,
 		},
 		/**
-		 * Browser plugin event handlers:
-		 * data-on-intersect, data-on-interval, data-on-signal-patch,
-		 * data-on-raf, data-on-resize
-		 * with optional `__modifier` suffixes.
-		 * @see https://data-star.dev/reference/plugins_browser
-		 */
-		{
-			pattern: '^data-on[-:](?:intersect|interval|signal-patch|raf|resize)(?:__.*)?$',
-			isDirective: true,
-			isDynamicValue: true,
-		},
-		/**
 		 * Static directives with `__modifier` suffix:
-		 * data-init__delay.500ms, data-ignore__self, data-persist__local,
-		 * data-scroll-into-view__smooth, data-query-string__push, etc.
-		 * @see https://data-star.dev/reference/plugins_core
+		 * data-init__delay.500ms, data-ignore__self, data-persist__session,
+		 * data-scroll-into-view__smooth, data-query-string__history, etc.
+		 * @see https://data-star.dev/reference/attributes#data-init
 		 */
 		{
 			pattern: '^data-(?:init|ignore|json-signals|scroll-into-view|persist|query-string)__.+$',
@@ -94,223 +94,226 @@ const spec: ExtendedSpec = {
 	def: {
 		'#globalAttrs': {
 			'#extends': {
-				// ───── Core Plugin ─────
-
 				/**
-				 * Defines reactive signals (state) on the element
-				 * @see https://data-star.dev/reference/plugins_core#signals
-				 */
-				'data-signals': {
-					type: 'Any',
-				},
-				/**
-				 * Defines read-only computed signals derived from other signals
-				 * @see https://data-star.dev/reference/plugins_core#computed
-				 */
-				'data-computed': {
-					type: 'Any',
-				},
-				/**
-				 * Runs an initialization expression when the element is first processed
-				 * @see https://data-star.dev/reference/plugins_core#init
-				 */
-				'data-init': {
-					type: 'Any',
-				},
-				/**
-				 * Runs a reactive side-effect expression whenever its dependencies change
-				 * @see https://data-star.dev/reference/plugins_core#effect
-				 */
-				'data-effect': {
-					type: 'Any',
-				},
-
-				// ───── DOM Plugin ─────
-
-				/**
-				 * Sets HTML attributes via an expression or object
-				 * @see https://data-star.dev/reference/plugins_dom#attr
+				 * Sets the value of any HTML attribute to an expression,
+				 * and keeps it in sync
+				 * @see https://data-star.dev/reference/attributes#data-attr
 				 */
 				'data-attr': {
 					type: 'Any',
 				},
 				/**
-				 * Two-way data binding between a form element and a signal
-				 * @see https://data-star.dev/reference/plugins_dom#bind
+				 * Creates a signal and sets up two-way data binding
+				 * between it and an element's value
+				 * @see https://data-star.dev/reference/attributes#data-bind
 				 */
 				'data-bind': {
 					type: 'Any',
 				},
 				/**
-				 * Conditionally applies CSS classes based on expressions
-				 * @see https://data-star.dev/reference/plugins_dom#class
+				 * Adds or removes a class to or from an element
+				 * based on an expression
+				 * @see https://data-star.dev/reference/attributes#data-class
 				 */
 				'data-class': {
 					type: 'Any',
 				},
 				/**
-				 * Sets reactive inline styles on the element
-				 * @see https://data-star.dev/reference/plugins_dom#style
+				 * Creates a signal that is computed based on an expression
+				 * @see https://data-star.dev/reference/attributes#data-computed
 				 */
-				'data-style': {
+				'data-computed': {
 					type: 'Any',
 				},
 				/**
-				 * Sets the text content of the element reactively
-				 * @see https://data-star.dev/reference/plugins_dom#text
+				 * Executes an expression on page load and whenever any
+				 * signals in the expression change
+				 * @see https://data-star.dev/reference/attributes#data-effect
 				 */
-				'data-text': {
+				'data-effect': {
 					type: 'Any',
 				},
 				/**
-				 * Conditionally shows or hides the element
-				 * @see https://data-star.dev/reference/plugins_dom#show
-				 */
-				'data-show': {
-					type: 'Any',
-				},
-				/**
-				 * Prevents Datastar from processing this element and its children
-				 * @see https://data-star.dev/reference/plugins_dom#ignore
+				 * Tells Datastar to ignore an element and its descendants
+				 * @see https://data-star.dev/reference/attributes#data-ignore
 				 */
 				'data-ignore': {
 					type: 'Boolean',
 				},
 				/**
-				 * Prevents the element from being morphed during DOM updates
-				 * @see https://data-star.dev/reference/plugins_dom#ignore-morph
+				 * Skips processing an element and its children when
+				 * morphing elements
+				 * @see https://data-star.dev/reference/attributes#data-ignore-morph
 				 */
 				'data-ignore-morph': {
 					type: 'Boolean',
 				},
 				/**
-				 * Creates a signal reference to the element
-				 * @see https://data-star.dev/reference/plugins_dom#ref
-				 */
-				'data-ref': {
-					type: 'Any',
-				},
-
-				// ───── Browser Plugin ─────
-
-				/**
-				 * Tracks fetch/request status via an indicator signal
-				 * @see https://data-star.dev/reference/plugins_browser#indicator
+				 * Creates a signal set to true while a fetch request
+				 * is in flight, otherwise false
+				 * @see https://data-star.dev/reference/attributes#data-indicator
 				 */
 				'data-indicator': {
 					type: 'Any',
 				},
 				/**
-				 * Handles viewport intersection events
-				 * @see https://data-star.dev/reference/plugins_browser#on-intersect
+				 * Runs an expression when the attribute is initialized
+				 * @see https://data-star.dev/reference/attributes#data-init
+				 */
+				'data-init': {
+					type: 'Any',
+				},
+				/**
+				 * Sets text content to a reactive JSON stringified
+				 * version of signals
+				 * @see https://data-star.dev/reference/attributes#data-json-signals
+				 */
+				'data-json-signals': {
+					type: 'Any',
+				},
+				/**
+				 * Runs an expression when the element intersects
+				 * with the viewport
+				 * @see https://data-star.dev/reference/attributes#data-on-intersect
 				 */
 				'data-on-intersect': {
 					type: 'Any',
 				},
 				/**
-				 * Executes expressions at a regular interval
-				 * @see https://data-star.dev/reference/plugins_browser#on-interval
+				 * Runs an expression at a regular interval
+				 * @see https://data-star.dev/reference/attributes#data-on-interval
 				 */
 				'data-on-interval': {
 					type: 'Any',
 				},
 				/**
-				 * Handles signal change events
-				 * @see https://data-star.dev/reference/plugins_browser#on-signal-patch
+				 * Runs an expression whenever any signals are patched
+				 * @see https://data-star.dev/reference/attributes#data-on-signal-patch
 				 */
 				'data-on-signal-patch': {
 					type: 'Any',
 				},
 				/**
-				 * Filters which signal changes trigger the handler
-				 * @see https://data-star.dev/reference/plugins_browser#on-signal-patch
+				 * Filters which signals to watch with data-on-signal-patch
+				 * @see https://data-star.dev/reference/attributes#data-on-signal-patch-filter
 				 */
 				'data-on-signal-patch-filter': {
 					type: 'Any',
 				},
 				/**
-				 * Preserves specified attributes during DOM morphing
-				 * @see https://data-star.dev/reference/plugins_browser#preserve-attr
+				 * Preserves the value of an attribute when morphing DOM elements
+				 * @see https://data-star.dev/reference/attributes#data-preserve-attr
 				 */
 				'data-preserve-attr': {
 					type: 'Any',
 				},
 				/**
-				 * Displays signals as JSON for debugging
-				 * @see https://data-star.dev/reference/plugins_browser#json-signals
+				 * Creates a new signal that is a reference to the element
+				 * @see https://data-star.dev/reference/attributes#data-ref
 				 */
-				'data-json-signals': {
+				'data-ref': {
+					type: 'Any',
+				},
+				/**
+				 * Shows or hides an element based on whether an expression
+				 * evaluates to true or false
+				 * @see https://data-star.dev/reference/attributes#data-show
+				 */
+				'data-show': {
+					type: 'Any',
+				},
+				/**
+				 * Patches (adds, updates or removes) one or more signals
+				 * @see https://data-star.dev/reference/attributes#data-signals
+				 */
+				'data-signals': {
+					type: 'Any',
+				},
+				/**
+				 * Sets the value of inline CSS styles on an element
+				 * based on an expression
+				 * @see https://data-star.dev/reference/attributes#data-style
+				 */
+				'data-style': {
+					type: 'Any',
+				},
+				/**
+				 * Binds the text content of an element to an expression
+				 * @see https://data-star.dev/reference/attributes#data-text
+				 */
+				'data-text': {
 					type: 'Any',
 				},
 
-				// ───── Pro Plugins ─────
+				// ───── Pro Attributes ─────
 
 				/**
-				 * Animates the element
-				 * @see https://data-star.dev/reference/plugins_pro#animate
+				 * Animates element attributes over time reactively
+				 * @see https://data-star.dev/reference/attributes#data-animate
 				 */
 				'data-animate': {
 					type: 'Any',
 				},
 				/**
-				 * Sets custom form validation messages
-				 * @see https://data-star.dev/reference/plugins_pro#custom-validity
+				 * Allows you to add custom validity to an element
+				 * using an expression
+				 * @see https://data-star.dev/reference/attributes#data-custom-validity
 				 */
 				'data-custom-validity': {
 					type: 'Any',
 				},
 				/**
-				 * Handles requestAnimationFrame events
-				 * @see https://data-star.dev/reference/plugins_pro#on-raf
+				 * Runs an expression on every requestAnimationFrame event
+				 * @see https://data-star.dev/reference/attributes#data-on-raf
 				 */
 				'data-on-raf': {
 					type: 'Any',
 				},
 				/**
-				 * Handles element resize events via ResizeObserver
-				 * @see https://data-star.dev/reference/plugins_pro#on-resize
+				 * Runs an expression whenever an element's dimensions change
+				 * @see https://data-star.dev/reference/attributes#data-on-resize
 				 */
 				'data-on-resize': {
 					type: 'Any',
 				},
 				/**
-				 * Persists signal values across page loads
-				 * @see https://data-star.dev/reference/plugins_pro#persist
+				 * Persists signals in local storage
+				 * @see https://data-star.dev/reference/attributes#data-persist
 				 */
 				'data-persist': {
 					type: 'Any',
 				},
 				/**
-				 * Synchronizes signals with URL query parameters
-				 * @see https://data-star.dev/reference/plugins_pro#query-string
+				 * Syncs query string params to signal values on page load
+				 * @see https://data-star.dev/reference/attributes#data-query-string
 				 */
 				'data-query-string': {
 					type: 'Any',
 				},
 				/**
-				 * Replaces the current URL without navigation
-				 * @see https://data-star.dev/reference/plugins_pro#replace-url
+				 * Replaces the URL in the browser without reloading the page
+				 * @see https://data-star.dev/reference/attributes#data-replace-url
 				 */
 				'data-replace-url': {
 					type: 'Any',
 				},
 				/**
-				 * Rocket web component for server communication
-				 * @see https://data-star.dev/reference/plugins_pro#rocket
+				 * Creates a Rocket web component for server communication
+				 * @see https://data-star.dev/reference/attributes#data-rocket
 				 */
 				'data-rocket': {
 					type: 'Any',
 				},
 				/**
-				 * Scrolls the element into the viewport
-				 * @see https://data-star.dev/reference/plugins_pro#scroll-into-view
+				 * Scrolls the element into view
+				 * @see https://data-star.dev/reference/attributes#data-scroll-into-view
 				 */
 				'data-scroll-into-view': {
 					type: 'Boolean',
 				},
 				/**
-				 * Sets the view-transition-name for the element
-				 * @see https://data-star.dev/reference/plugins_pro#view-transition
+				 * Sets the view-transition-name style attribute explicitly
+				 * @see https://data-star.dev/reference/attributes#data-view-transition
 				 */
 				'data-view-transition': {
 					type: 'Any',

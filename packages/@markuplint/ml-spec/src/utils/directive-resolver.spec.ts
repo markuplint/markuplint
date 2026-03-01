@@ -205,7 +205,14 @@ describe('resolveDirective', () => {
 	});
 
 	describe('datastar patterns', () => {
+		// Order matters: browser event patterns must precede generic data-on
+		// to prevent data-on-intersect from matching as a native DOM event.
 		const datastarPatterns = [
+			{
+				pattern: '^data-on[-:](?:intersect|interval|signal-patch|raf|resize)(?:__.*)?$',
+				isDirective: true as const,
+				isDynamicValue: true as const,
+			},
 			{
 				pattern: '^data-on[-:]([a-z]+)(?:__.*)?$',
 				potentialName: 'on$1',
@@ -225,11 +232,6 @@ describe('resolveDirective', () => {
 			},
 			{
 				pattern: '^data-(?:signals|computed|bind|indicator|ref|persist)[-:].+$',
-				isDirective: true as const,
-				isDynamicValue: true as const,
-			},
-			{
-				pattern: '^data-on[-:](?:intersect|interval|signal-patch|raf|resize)(?:__.*)?$',
 				isDirective: true as const,
 				isDynamicValue: true as const,
 			},
@@ -298,15 +300,29 @@ describe('resolveDirective', () => {
 			expect(result).not.toBeNull();
 		});
 
-		test('matches data-on-intersect as browser event', () => {
+		test('matches data-on-intersect as browser event (not native DOM event)', () => {
 			const result = resolveDirective('data-on-intersect', compiled);
 			expect(result).not.toBeNull();
 			expect(result?.isDirective).toBe(true);
+			expect(result?.potentialName).toBeUndefined();
+		});
+
+		test('matches data-on-interval as browser event (not native DOM event)', () => {
+			const result = resolveDirective('data-on-interval', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.potentialName).toBeUndefined();
+		});
+
+		test('matches data-on-raf as browser event (not native DOM event)', () => {
+			const result = resolveDirective('data-on-raf', compiled);
+			expect(result).not.toBeNull();
+			expect(result?.potentialName).toBeUndefined();
 		});
 
 		test('matches data-on-intersect__once as browser event with modifier', () => {
 			const result = resolveDirective('data-on-intersect__once', compiled);
 			expect(result).not.toBeNull();
+			expect(result?.potentialName).toBeUndefined();
 		});
 
 		test('matches data-init__delay.500ms as static directive with modifier', () => {
