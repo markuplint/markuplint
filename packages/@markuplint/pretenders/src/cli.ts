@@ -14,8 +14,8 @@ import path from 'node:path';
 import meow from 'meow';
 
 import { getFileList } from './input.js';
-import { jsxScanner } from './jsx/index.js';
 import { out } from './out.js';
+import { scan } from './scan.js';
 
 const commands = meow({
 	importMeta: import.meta,
@@ -38,9 +38,7 @@ if (commands.input.length === 0) {
 async function main() {
 	const files = await getFileList(commands.input);
 
-	const jsxFiles = files.filter(filePath => /\.[jt]sx?$/.test(filePath));
-
-	const pretenders = await jsxScanner(jsxFiles, {
+	const pretenders = await scan(files, {
 		ignoreComponentNames: commands.flags.ignore?.split(',').map(s => s.trim()),
 	});
 
