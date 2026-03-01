@@ -1,12 +1,14 @@
 import type { OptimizedConfig, Pretender, PretenderFileData } from '@markuplint/ml-config';
 
+import { glob } from 'glob';
+
 import { generalImport } from './general-import.js';
 
 type PretendersConfig = OptimizedConfig['pretenders'];
 
 /**
- * Resolves pretender definitions from files, imported modules, and inline data
- * in the configuration.
+ * Resolves pretender definitions from files, imported modules, inline data,
+ * and dynamic component scanning in the configuration.
  *
  * @param config - The pretenders configuration section from the optimized config
  * @returns An array of all resolved pretender definitions
@@ -43,6 +45,21 @@ export async function resolvePretenders(config: PretendersConfig): Promise<Prete
 
 	if (config.data) {
 		data.push(...config.data);
+	}
+
+	if (config.scan) {
+		const { scan } = await import('@markuplint/pretenders');
+		for (const entry of config.scan) {
+			const patterns = typeof entry.files === 'string' ? [entry.files] : [...entry.files];
+			const globResults = await Promise.all(patterns.map(p => glob(p)));
+			const resolved = globResults.flat();
+			if (resolved.length > 0) {
+				const scanned = await scan(resolved, {
+					ignoreComponentNames: entry.ignoreComponentNames ? [...entry.ignoreComponentNames] : undefined,
+				});
+				data.push(...scanned);
+			}
+		}
 	}
 
 	return data;

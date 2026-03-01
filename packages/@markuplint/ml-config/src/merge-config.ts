@@ -141,11 +141,12 @@ function mergePretenders(
 	}
 
 	// files/imports: override (right-side wins)
-	// data: append (concatenate)
+	// data/scan: append (concatenate)
 	const details: PretenderDetails = {
 		files: bDetails.files ?? aDetails.files,
 		imports: bDetails.imports ?? aDetails.imports,
 		data: concatArray(aDetails.data, bDetails.data),
+		scan: concatArray(aDetails.scan, bDetails.scan),
 	};
 	deleteUndefProp(details);
 	return details;

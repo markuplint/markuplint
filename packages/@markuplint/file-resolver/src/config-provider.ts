@@ -310,6 +310,13 @@ export class ConfigProvider {
 				? {
 						...optimizedConfig.pretenders,
 						files: await relPathToNameOrAbsPath(dir, optimizedConfig.pretenders?.files),
+						scan: optimizedConfig.pretenders?.scan?.map(entry => ({
+							...entry,
+							files:
+								typeof entry.files === 'string'
+									? path.resolve(dir, entry.files)
+									: entry.files.map(f => path.resolve(dir, f)),
+						})),
 					}
 				: undefined,
 			overrides: await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true),
