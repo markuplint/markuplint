@@ -31,7 +31,7 @@
 		"@markuplint/ml-ast": "5.0.0-alpha.3",
 		"@markuplint/ml-config": "5.0.0-alpha.3",
 		"@markuplint/parser-utils": "5.0.0-alpha.3",
-		"es-module-lexer": "1.7.0",
+		"es-module-lexer": "2.0.0",
 		"glob": "13.0.6",
 		"meow": "14.1.0",
 		"typescript": "5.9.3"
