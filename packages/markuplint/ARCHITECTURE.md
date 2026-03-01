@@ -146,7 +146,7 @@ flowchart TD
     ExcludeCheck -->|No| ResolveParser["resolveParser()\n parser module selection"]
     ResolveParser --> ExtCheck{"extension matched?\n(unless --ignore-ext)"}
     ExtCheck -->|No| ReturnNull3["Return null"]
-    ExtCheck -->|Yes| ResolvePretenders["resolvePretenders()"]
+    ExtCheck -->|Yes| ResolvePretenders["resolvePretenders()\n files + imports + data + scan"]
     ResolvePretenders --> ResolveRuleset["resolveRuleset()\n convertRuleset()"]
     ResolveRuleset --> ResolveSchemas["resolveSchemas()"]
     ResolveSchemas --> ResolveRules["resolveRules()\n plugins + custom rules"]

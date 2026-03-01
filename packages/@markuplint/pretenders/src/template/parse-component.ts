@@ -13,6 +13,9 @@ const EXTENSION_MAP: Record<string, FrameworkType> = {
 
 /**
  * Determines the framework type from the file extension.
+ *
+ * @param filePath - The file path to check
+ * @returns The framework type, or `null` if the extension is not recognized
  */
 export function getFrameworkType(filePath: string): FrameworkType | null {
 	const ext = path.extname(filePath).toLowerCase();
@@ -43,6 +46,7 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 /**
  * Parses a component file into an MLASTDocument using the appropriate framework parser.
  *
+ * @param filePath - The absolute path to the component file
  * @returns The parsed document, or `null` if the file extension is not supported
  *          or the required parser package is not installed.
  */

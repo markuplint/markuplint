@@ -146,7 +146,7 @@ flowchart TD
     ExcludeCheck -->|No| ResolveParser["resolveParser()\n パーサーモジュール選択"]
     ResolveParser --> ExtCheck{"拡張子が一致?\n(--ignore-ext でなければ)"}
     ExtCheck -->|No| ReturnNull3["null を返却"]
-    ExtCheck -->|Yes| ResolvePretenders["resolvePretenders()"]
+    ExtCheck -->|Yes| ResolvePretenders["resolvePretenders()\n files + imports + data + scan"]
     ResolvePretenders --> ResolveRuleset["resolveRuleset()\n convertRuleset()"]
     ResolveRuleset --> ResolveSchemas["resolveSchemas()"]
     ResolveSchemas --> ResolveRules["resolveRules()\n プラグイン + カスタムルール"]

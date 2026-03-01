@@ -1,18 +1,54 @@
 # @markuplint/pretenders
 
 [![npm version](https://badge.fury.io/js/%40markuplint%2Fpretenders.svg)](https://www.npmjs.com/package/@markuplint/pretenders)
-[![Build Status](https://travis-ci.org/markuplint/markuplint.svg?branch=main)](https://travis-ci.org/markuplint/markuplint)
-[![Coverage Status](https://coveralls.io/repos/github/markuplint/markuplint/badge.svg?branch=main)](https://coveralls.io/github/markuplint/markuplint?branch=main)
 
-This module features both an API and a CLI that generate **[Pretenders](https://markuplint.dev/docs/guides/besides-html#pretenders) data** from the loaded components
+This module features both an API and a CLI that generate **[Pretenders](https://markuplint.dev/docs/guides/besides-html#pretenders) data** from the loaded components.
 
-## Usage
+## Supported Frameworks
+
+| Framework   | Extensions                   | Scanner           | Approach                              |
+| ----------- | ---------------------------- | ----------------- | ------------------------------------- |
+| React / JSX | `.js`, `.jsx`, `.ts`, `.tsx` | `jsxScanner`      | TypeScript compiler API               |
+| Vue         | `.vue`                       | `templateScanner` | MLAST via `@markuplint/vue-parser`    |
+| Svelte      | `.svelte`                    | `templateScanner` | MLAST via `@markuplint/svelte-parser` |
+| Astro       | `.astro`                     | `templateScanner` | MLAST via `@markuplint/astro-parser`  |
+
+## CLI Usage
 
 ```sh
-$ npx @markuplint/pretenders "./src/**/*.jsx" --out "./pretenders.json"
+$ npx @markuplint/pretenders "./src/**/*.{jsx,tsx,vue,svelte,astro}" --out "./pretenders.json"
 ```
 
-The module analyzes components defined in files using a parser, currently supporting JSX (both `*.jsx` and `*.tsx` formats). It searches for functions or function objects that return elements and maps their function names or the variable names holding these function objects. For example, if a function object named `Foo` returns a `<div>`, the component `Foo` is considered as pretending to be a `div`. In the CLI, it exports the mapped data as a JSON file. By loading this JSON file into the Pretenders feature, the module evaluates the `Foo` component as equivalent to a `div`.
+The CLI accepts glob patterns covering any combination of the supported frameworks. It dispatches files to the appropriate scanner based on file extension, runs them in parallel, and writes the merged results as JSON.
+
+| Flag          | Description                                        |
+| ------------- | -------------------------------------------------- |
+| `-O`, `--out` | Output file path (required)                        |
+| `--ignore`    | Comma-separated list of component names to exclude |
+
+### Configuration-based Scanning
+
+Instead of the CLI, you can configure dynamic scanning directly in your markuplint config file. The `scan` field in `pretenders` accepts glob patterns and automatically dispatches to the appropriate scanner:
+
+```jsonc
+// .markuplintrc
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.{vue,tsx,svelte,astro}",
+        "ignoreComponentNames": ["InternalHelper"],
+      },
+    ],
+  },
+}
+```
+
+## How It Works
+
+### JSX Scanner
+
+The JSX scanner analyzes components defined in files using the TypeScript compiler API. It searches for functions or function objects that return elements and maps their function names or the variable names holding these function objects. For example, if a function object named `Foo` returns a `<div>`, the component `Foo` is considered as pretending to be a `div`.
 
 ```jsx
 const Foo = () => <div />;
@@ -24,20 +60,12 @@ function Bar() {
 
 ```json
 [
-  {
-    "selector": "Foo",
-    "as": "div"
-  },
-  {
-    "selector": "Bar",
-    "as": "span"
-  }
+  { "selector": "Foo", "as": "div" },
+  { "selector": "Bar", "as": "span" }
 ]
 ```
 
-The module is **experimental**. It uses the TypeScript compiler to identify functions or function objects in JSX files where the return values are components or HTML elements. Currently, it only performs a simplistic mapping based on function and variable names without considering dependencies between files. **Consequently, it does not handle name duplications across files or variable scopes;** components with duplicate names overwrite existing data during processing.
-
-In addition to definitions based on function and variable names, the module also infers HTML elements from properties, as exemplified by `styled-components`, and infers dependencies from arguments.
+The JSX scanner also infers HTML elements from styled-components patterns and infers dependencies from wrapper function arguments:
 
 ```jsx
 const Foo = styled.div`
@@ -51,88 +79,143 @@ const Bar = styled(Foo)`
 
 ```json
 [
+  { "selector": "Foo", "as": "div" },
+  { "selector": "Bar", "as": "div" }
+]
+```
+
+The JSX scanner detects **slots** (children). If a component accepts `children` props, the resulting pretender includes `slots: true` in its `as` field.
+
+### Template Scanner
+
+The template scanner uses markuplint's own framework parsers (Vue, Svelte, Astro) to extract the root element from component templates at depth=0. It also detects static attributes and slot/children usage.
+
+```vue
+<template>
+  <button type="submit"><slot /></button>
+</template>
+```
+
+```json
+[
   {
-    "selector": "Foo",
-    "as": "div"
-  },
-  {
-    "selector": "Bar",
-    "as": "div"
+    "selector": "SubmitButton",
+    "as": {
+      "element": "button",
+      "attrs": [{ "name": "type", "value": "submit" }],
+      "slots": true
+    }
   }
 ]
 ```
 
+Slot detection covers:
+
+- `<slot>` elements in Vue, Svelte, and Astro
+- `{@render children()}` snippets in Svelte 5
+
+### Import Resolver
+
+The import resolver analyzes `<script>` / frontmatter / ESM blocks in component files and extracts static import bindings. This links template component usage to source file locations, enabling cross-file dependency resolution.
+
+Supported script block types:
+
+- Vue `<script setup>`
+- Svelte `<script>`
+- Astro frontmatter (`---...---`)
+- MDX top-level ESM
+
 ## API
 
+### `scan(files, options)`
+
+The unified entry point. Dispatches files to the appropriate scanner based on file extension, runs both scanners in parallel, and returns the merged, sorted results.
+
+```ts
+import { scan } from '@markuplint/pretenders';
+
+const pretenders = await scan([
+  './src/components/Button.tsx',
+  './src/components/Card.vue',
+  './src/components/Alert.svelte',
+]);
+```
+
+#### Parameters
+
+| Parameter                      | Type                | Description                             |
+| ------------------------------ | ------------------- | --------------------------------------- |
+| `files`                        | `readonly string[]` | Absolute file paths to scan             |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results |
+
 ### `jsxScanner(files, options)`
+
+Scans JSX/TSX files using the TypeScript compiler API.
 
 ```ts
 import { jsxScanner } from '@markuplint/pretenders';
 
-const pretenders = jsxScanner(['./src/**/*.jsx'], {
+const pretenders = await jsxScanner(['./src/**/*.jsx'], {
   cwd: process.cwd(),
   asFragment: [/(?:^|\.)provider$/i],
   ignoreComponentNames: [],
-  taggedStylingComponent: [
-    // PropertyAccessExpression: styled.button`css-prop: value;`
-    /^styled\.(?<tagName>[a-z][\da-z]*)$/i,
-    // CallExpression: styled(Button)`css-prop: value;`
-    /^styled\s*\(\s*(?<tagName>[a-z][\da-z]*)\s*\)$/i,
-  ],
+  taggedStylingComponent: [/^styled\.(?<tagName>[a-z][\da-z]*)$/i, /^styled\s*\(\s*(?<tagName>[a-z][\da-z]*)\s*\)$/i],
   extendingWrapper: [],
 });
 ```
 
-#### `files`
+#### Parameters
 
-Type: `string[]`
+| Parameter                        | Type                   | Description                                  |
+| -------------------------------- | ---------------------- | -------------------------------------------- |
+| `files`                          | `string[]`             | File paths to scan                           |
+| `options.cwd`                    | `string`               | Current working directory                    |
+| `options.asFragment`             | `RegExp[]`             | Patterns for components treated as fragments |
+| `options.ignoreComponentNames`   | `string[]`             | Component names to ignore                    |
+| `options.taggedStylingComponent` | `RegExp[]`             | Patterns for styled-components               |
+| `options.extendingWrapper`       | `RegExp[] \| object[]` | Patterns for HOC/wrapper components          |
 
-An array of file paths to scan.
+### `templateScanner(files, options)`
 
-##### `options.cwd`
+Scans Vue, Svelte, and Astro component files using markuplint's own parsers (MLAST-based).
 
-Type: `string`
+```ts
+import { templateScanner } from '@markuplint/pretenders';
 
-The current working directory.
-
-##### `options.asFragment`
-
-Type: `RegExp[]`
-
-A list of regular expressions to match components that should be treated as fragments.
-
-##### `options.ignoreComponentNames`
-
-Type: `string[]`
-
-A list of component names to ignore.
-
-##### `options.taggedStylingComponent`
-
-Type: `RegExp[]`
-
-A list of regular expressions to match components that are styled.
-
-##### `options.extendingWrapper`
-
-Type: `RegExp[]` | `{ identifier: RegExp, numberOfArgument: number }[]`
-
-```js
-jsxScanner(['./src/**/*.jsx'], {
-  extendingWrapper: [
-    {
-      identifier: /^namespace\.primary$/i,
-      numberOfArgument: 1,
-    },
-  ],
-});
+const pretenders = await templateScanner(
+  ['./src/components/Button.vue', './src/components/Alert.svelte', './src/components/Card.astro'],
+  {
+    ignoreComponentNames: ['InternalHelper'],
+  },
+);
 ```
 
-```jsx
-const Foo = <div />;
-const Bar = namespace.primary(true, Foo);
+#### Parameters
+
+| Parameter                      | Type                | Description                                    |
+| ------------------------------ | ------------------- | ---------------------------------------------- |
+| `files`                        | `readonly string[]` | Absolute file paths to scan                    |
+| `options.cwd`                  | `string`            | Current working directory (for relative paths) |
+| `options.ignoreComponentNames` | `readonly string[]` | Component names to exclude from results        |
+
+### `analyzeImports(filePath, source)`
+
+Extracts import bindings from a component file's script block.
+
+```ts
+import { analyzeImports } from '@markuplint/pretenders';
+
+const result = await analyzeImports('App.vue', source);
+// result.bindings: [{ localName: 'MyButton', source: './components/MyButton.vue' }, ...]
 ```
 
-A list of regular expressions to match components that are extended.
-`identifier` is a regular expression to match the component name.
-`numberOfArgument` is the number of arguments to pass to the component.
+### `resolveComponentImport(componentName, bindings)`
+
+Resolves a component name used in a template to its import source path. Handles Vue's kebab-case to PascalCase normalization (e.g., `<my-button>` resolves to `MyButton`).
+
+```ts
+import { resolveComponentImport } from '@markuplint/pretenders';
+
+const binding = resolveComponentImport('my-button', bindings);
+// binding: { localName: 'MyButton', source: './components/MyButton.vue' }
+```
