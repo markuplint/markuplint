@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
-import { getFrameworkType, parseComponent } from './parse-component.js';
+import { getFrameworkType, isModuleNotFoundError, parseComponent } from './parse-component.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 
@@ -29,6 +29,35 @@ describe('getFrameworkType', () => {
 
 	test('is case-insensitive for extensions', () => {
 		expect(getFrameworkType('Component.VUE')).toBe('vue');
+	});
+});
+
+describe('isModuleNotFoundError', () => {
+	test('returns true for ERR_MODULE_NOT_FOUND error', () => {
+		const err = new Error("Cannot find module '@markuplint/vue-parser'");
+		(err as NodeJS.ErrnoException).code = 'ERR_MODULE_NOT_FOUND';
+		expect(isModuleNotFoundError(err)).toBe(true);
+	});
+
+	test('returns false for TypeError', () => {
+		expect(isModuleNotFoundError(new TypeError('Parser initialization failed'))).toBe(false);
+	});
+
+	test('returns false for Error without code property', () => {
+		expect(isModuleNotFoundError(new Error('Something went wrong'))).toBe(false);
+	});
+
+	test('returns false for Error with different code', () => {
+		const err = new Error('Permission denied');
+		(err as NodeJS.ErrnoException).code = 'EACCES';
+		expect(isModuleNotFoundError(err)).toBe(false);
+	});
+
+	test('returns false for non-Error values', () => {
+		expect(isModuleNotFoundError(null)).toBe(false);
+		expect(isModuleNotFoundError()).toBe(false);
+		expect(isModuleNotFoundError('ERR_MODULE_NOT_FOUND')).toBe(false);
+		expect(isModuleNotFoundError({ code: 'ERR_MODULE_NOT_FOUND' })).toBe(false);
 	});
 });
 

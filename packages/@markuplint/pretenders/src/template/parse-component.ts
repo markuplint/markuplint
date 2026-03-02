@@ -29,6 +29,15 @@ const PARSER_PACKAGES: Record<FrameworkType, string> = {
 };
 
 /**
+ * Checks if an error is a Node.js ERR_MODULE_NOT_FOUND error.
+ */
+export function isModuleNotFoundError(error: unknown): boolean {
+	return (
+		error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
+	);
+}
+
+/**
  * Dynamically imports the appropriate parser for the given framework.
  *
  * @returns The parser, or `null` if the parser package is not installed.
@@ -39,11 +48,7 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 		const mod: { parser: MLParser } = await import(pkg);
 		return mod.parser;
 	} catch (error: unknown) {
-		if (
-			error instanceof Error &&
-			'code' in error &&
-			(error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
-		) {
+		if (isModuleNotFoundError(error)) {
 			return null;
 		}
 		throw error;
