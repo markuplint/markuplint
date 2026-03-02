@@ -405,6 +405,35 @@
 				"$ref": "#/definitions/pretender"
 			}
 		},
+		"pretenderScanConfig": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["files"],
+			"properties": {
+				"files": {
+					"description": "Glob pattern(s) for component files to scan. File extensions determine the scanner: .js/.jsx/.ts/.tsx use the JSX scanner, .vue/.svelte/.astro use the template scanner.",
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "array",
+							"minItems": 1,
+							"items": {
+								"type": "string"
+							}
+						}
+					]
+				},
+				"ignoreComponentNames": {
+					"description": "Component names to exclude from scanning results.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		},
 		"pretenderDetails": {
 			"type": "object",
 			"additionalProperties": false,
@@ -427,6 +456,14 @@
 				},
 				"data": {
 					"$ref": "#/definitions/pretenders"
+				},
+				"scan": {
+					"description": "@experimental Dynamic component scanning configuration. Each entry specifies glob pattern(s) for component files.",
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"$ref": "#/definitions/pretenderScanConfig"
+					}
 				}
 			}
 		}

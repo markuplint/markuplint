@@ -38,8 +38,15 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 	try {
 		const mod: { parser: MLParser } = await import(pkg);
 		return mod.parser;
-	} catch {
-		return null;
+	} catch (error: unknown) {
+		if (
+			error instanceof Error &&
+			'code' in error &&
+			(error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
+		) {
+			return null;
+		}
+		throw error;
 	}
 }
 
