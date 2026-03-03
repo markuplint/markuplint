@@ -18,6 +18,10 @@ import { parseComponent } from './parse-component.js';
  * Parses component files using markuplint's existing framework parsers,
  * extracts root elements at depth=0, detects static attributes and slot usage,
  * and registers component-to-element mappings via PretenderDirector.
+ *
+ * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
+ * @param options - Template scanner configuration (cwd, component names to ignore)
+ * @returns Discovered pretender mappings for all components found in the given files
  */
 export const templateScanner = createScanner<PretenderScanTemplateOptions>(async (files, options) => {
 	const cwd = options?.cwd ?? process.cwd();

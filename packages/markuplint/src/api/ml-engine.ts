@@ -152,7 +152,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		if (verifyResult instanceof Error) {
 			this.emit('lint-error', this.#file.path, sourceCode, verifyResult);
-			const errMessage = verifyResult.stack ?? verifyResult.message;
+			// Accessing `.stack` can throw in Deno when source map resolution
+			// encounters invalid mappings (e.g., negative column values).
+			let errMessage: string;
+			try {
+				errMessage = verifyResult.stack ?? verifyResult.message;
+			} catch {
+				errMessage = verifyResult.message;
+			}
 			log('exec: error %O', errMessage);
 			return {
 				violations: [
