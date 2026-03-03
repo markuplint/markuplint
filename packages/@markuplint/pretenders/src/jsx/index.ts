@@ -76,6 +76,10 @@ const defaultOptions: Required<PretenderScanJSXOptions> = {
  * - HOC / wrapper function patterns
  * - Fragment and provider component transparency
  * - `@pretends null` JSDoc tag to opt out a component
+ *
+ * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
+ * @param options - JSX scanner configuration (fragment patterns, styled-components, wrappers, etc.)
+ * @returns Discovered pretender mappings for all components found in the given files
  */
 export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 	(files, options = defaultOptions): Promise<Pretender[]> => {

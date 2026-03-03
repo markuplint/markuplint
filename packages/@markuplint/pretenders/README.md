@@ -116,14 +116,19 @@ Slot detection covers:
 
 ### Import Resolver
 
-The import resolver analyzes `<script>` / frontmatter / ESM blocks in component files and extracts static import bindings. This links template component usage to source file locations, enabling cross-file dependency resolution.
+The import resolver analyzes `<script>` / frontmatter / ESM blocks in component files and extracts import bindings. This links template component usage to source file locations, enabling cross-file dependency resolution.
 
 Supported script block types:
 
-- Vue `<script setup>`
-- Svelte `<script>`
+- Vue `<script setup>` (all static imports are exposed as bindings)
+- Vue Options API `<script>` (fallback when no `<script setup>`; only imports registered in `components: { ... }` are returned)
+- Svelte `<script>` (prefers instance script over module script)
 - Astro frontmatter (`---...---`)
 - MDX top-level ESM
+
+Dynamic imports with string literal specifiers (`import('./path')`) are included in bindings with `type: 'dynamic'`. Template literal and variable specifiers are excluded.
+
+Barrel file re-exports can be resolved with `resolveBarrelExport`, which maps a named import from a directory with an index file back to its original source module (single-level only).
 
 ## API
 
@@ -135,9 +140,9 @@ The unified entry point. Dispatches files to the appropriate scanner based on fi
 import { scan } from '@markuplint/pretenders';
 
 const pretenders = await scan([
-  './src/components/Button.tsx',
-  './src/components/Card.vue',
-  './src/components/Alert.svelte',
+  '/absolute/path/to/Button.tsx',
+  '/absolute/path/to/Card.vue',
+  '/absolute/path/to/Alert.svelte',
 ]);
 ```
 
@@ -155,7 +160,7 @@ Scans JSX/TSX files using the TypeScript compiler API.
 ```ts
 import { jsxScanner } from '@markuplint/pretenders';
 
-const pretenders = await jsxScanner(['./src/**/*.jsx'], {
+const pretenders = await jsxScanner(['/absolute/path/to/Component.jsx'], {
   cwd: process.cwd(),
   asFragment: [/(?:^|\.)provider$/i],
   ignoreComponentNames: [],
@@ -166,14 +171,14 @@ const pretenders = await jsxScanner(['./src/**/*.jsx'], {
 
 #### Parameters
 
-| Parameter                        | Type                   | Description                                  |
-| -------------------------------- | ---------------------- | -------------------------------------------- |
-| `files`                          | `string[]`             | File paths to scan                           |
-| `options.cwd`                    | `string`               | Current working directory                    |
-| `options.asFragment`             | `RegExp[]`             | Patterns for components treated as fragments |
-| `options.ignoreComponentNames`   | `string[]`             | Component names to ignore                    |
-| `options.taggedStylingComponent` | `RegExp[]`             | Patterns for styled-components               |
-| `options.extendingWrapper`       | `RegExp[] \| object[]` | Patterns for HOC/wrapper components          |
+| Parameter                        | Type                                                             | Description                                                |
+| -------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------- |
+| `files`                          | `readonly string[]`                                              | Absolute file paths to scan                                |
+| `options.cwd`                    | `string`                                                         | Current working directory                                  |
+| `options.asFragment`             | `readonly (RegExp \| string)[]`                                  | Patterns for components treated as transparent fragments   |
+| `options.ignoreComponentNames`   | `readonly string[]`                                              | Component names to ignore                                  |
+| `options.taggedStylingComponent` | `readonly (RegExp \| string)[]`                                  | Patterns for styled-components tagged template expressions |
+| `options.extendingWrapper`       | `readonly (string \| RegExp \| ExtendingWrapperCallerOptions)[]` | Patterns for HOC/wrapper components                        |
 
 ### `templateScanner(files, options)`
 
@@ -183,7 +188,7 @@ Scans Vue, Svelte, and Astro component files using markuplint's own parsers (MLA
 import { templateScanner } from '@markuplint/pretenders';
 
 const pretenders = await templateScanner(
-  ['./src/components/Button.vue', './src/components/Alert.svelte', './src/components/Card.astro'],
+  ['/absolute/path/to/Button.vue', '/absolute/path/to/Alert.svelte', '/absolute/path/to/Card.astro'],
   {
     ignoreComponentNames: ['InternalHelper'],
   },
@@ -200,22 +205,74 @@ const pretenders = await templateScanner(
 
 ### `analyzeImports(filePath, source)`
 
-Extracts import bindings from a component file's script block.
+Extracts import bindings from a component file's script block. Detects the framework from the file extension and extracts the appropriate source block automatically.
+
+Returns `null` if the file extension is not a supported framework (`.vue`, `.svelte`, `.astro`, `.mdx`).
 
 ```ts
 import { analyzeImports } from '@markuplint/pretenders';
 
 const result = await analyzeImports('App.vue', source);
-// result.bindings: [{ localName: 'MyButton', source: './components/MyButton.vue' }, ...]
+// result.bindings: [{ localName: 'MyButton', importedName: 'default', source: './components/MyButton.vue', type: 'default' }, ...]
 ```
+
+#### Parameters
+
+| Parameter  | Type     | Description                                           |
+| ---------- | -------- | ----------------------------------------------------- |
+| `filePath` | `string` | File path (used for framework detection by extension) |
+| `source`   | `string` | Full source text of the component file                |
+
+#### Returns
+
+`Promise<ImportAnalysisResult | null>` — The analysis result with all import bindings, or `null` if the framework is not supported.
 
 ### `resolveComponentImport(componentName, bindings)`
 
-Resolves a component name used in a template to its import source path. Handles Vue's kebab-case to PascalCase normalization (e.g., `<my-button>` resolves to `MyButton`).
+Resolves a component name used in a template to its import binding. Handles Vue's kebab-case to PascalCase normalization (e.g., `<my-button>` resolves to `MyButton`).
 
 ```ts
 import { resolveComponentImport } from '@markuplint/pretenders';
 
 const binding = resolveComponentImport('my-button', bindings);
-// binding: { localName: 'MyButton', source: './components/MyButton.vue' }
+// binding: { localName: 'MyButton', importedName: 'default', source: './components/MyButton.vue', type: 'default' }
 ```
+
+#### Parameters
+
+| Parameter       | Type                       | Description                            |
+| --------------- | -------------------------- | -------------------------------------- |
+| `componentName` | `string`                   | Component name as used in the template |
+| `bindings`      | `readonly ImportBinding[]` | Import bindings from `analyzeImports`  |
+
+#### Returns
+
+`ImportBinding | undefined` — The matching binding, or `undefined` if no match.
+
+### `resolveBarrelExport(specifier, importedName, importerPath)`
+
+Resolves a barrel file (`index.ts`/`index.js`) re-export to the original source module path. Only handles relative specifiers and single-level barrel resolution.
+
+```ts
+import { analyzeImports, resolveComponentImport, resolveBarrelExport } from '@markuplint/pretenders';
+
+const result = await analyzeImports('App.vue', source);
+const binding = resolveComponentImport('Button', result.bindings);
+
+if (binding) {
+  const originalSource = resolveBarrelExport(binding.source, binding.importedName, '/absolute/path/to/App.vue');
+  // originalSource: './Button.vue' (resolved from './components' barrel)
+}
+```
+
+#### Parameters
+
+| Parameter      | Type     | Description                                     |
+| -------------- | -------- | ----------------------------------------------- |
+| `specifier`    | `string` | The import specifier (e.g., `'./components'`)   |
+| `importedName` | `string` | The name being imported (e.g., `'Button'`)      |
+| `importerPath` | `string` | Absolute path of the file containing the import |
+
+#### Returns
+
+`string | null` — The relative source path from the barrel file, or `null` if not a barrel or name not found.
