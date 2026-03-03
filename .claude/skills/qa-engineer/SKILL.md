@@ -5,7 +5,8 @@ metadata:
 description: >
   A skill for performing code reviews and test quality checks as a QA engineer.
   Improves code coverage, detects test-faking code, catches swallowed exceptions,
-  flags conditional logic in tests, and promotes hardcoded assertions.
+  flags conditional logic in tests, promotes hardcoded assertions, and checks
+  cross-platform/cross-runtime compatibility (Windows, Deno, Bun).
   Language- and framework-agnostic — works with any repository.
   Trigger this skill on keywords: code review, test, coverage, QA, quality check,
   test generation, refactoring, review, test, coverage, refactor.
@@ -180,6 +181,92 @@ test("input exceeding max length is truncated")
 
 With tests like these, you can understand "this function accepts empty lists" and "it handles negative numbers" without reading the README.
 
+### 10. Cross-Platform and Cross-Runtime Compatibility
+
+Code developed on Node.js + Linux may silently break on Windows, Deno, Bun, or other environments. Review changes for assumptions that only hold in the developer's own environment.
+
+**Why this matters:** Users run markuplint in diverse environments — Windows machines, CI with different OSes, Deno/Bun runtimes. Code that works perfectly on Linux + Node.js can fail in surprising ways elsewhere, and these failures are often discovered only by end users.
+
+#### File Paths and Filesystem
+
+**Detection patterns:**
+
+- Hardcoded `/` path separators instead of using `path.sep`, `path.join()`, or `path.resolve()`
+- Constructing paths with template literals (`` `${dir}/${file}` ``) instead of `path.join(dir, file)`
+- Comparing paths with string equality (`===`) — fails on Windows where paths are case-insensitive and may use `\`
+- Assuming case-sensitive filesystems (Linux: case-sensitive, macOS/Windows: case-insensitive by default)
+- Using `file://` URLs without `url.pathToFileURL()` — bare concatenation breaks on Windows drive letters (`C:\`)
+- Relying on symlink behavior without considering that Windows requires elevated privileges for symlinks
+
+**Bad example:**
+```typescript
+const configPath = `${rootDir}/markuplint.config.json`;
+```
+
+**Good example:**
+```typescript
+import path from "node:path";
+const configPath = path.join(rootDir, "markuplint.config.json");
+```
+
+#### Line Endings
+
+**Detection patterns:**
+
+- Splitting on `\n` only — misses `\r\n` on Windows, causing off-by-one errors in line/column calculations
+- Regex patterns using `$` without the `m` flag, or not accounting for `\r` before `\n`
+- Snapshot tests or string comparisons that embed `\n` literally — may fail if the test fixture file has Windows line endings
+
+**Suggest:** Use `/\r?\n/` or `/\r\n|\n/` when splitting lines. For parsers that track positions, ensure `\r` is handled or stripped consistently.
+
+#### Node.js Built-in API Assumptions
+
+**Detection patterns:**
+
+- Using Node.js-specific APIs without `node:` prefix — Deno requires `node:fs`, `node:path`, etc.
+- Using `process.cwd()`, `process.env`, `__dirname`, `__filename` without considering runtime differences
+  - `__dirname` / `__filename` do not exist in ESM (use `import.meta.url` + `fileURLToPath` instead)
+  - `process` may not be globally available in Deno/Bun without explicit import
+- Using `require()` in ESM contexts — not available in Deno
+- Relying on `node_modules` resolution behavior that differs in Deno/Bun
+
+**Suggest:** When new code uses Node.js-specific globals or APIs, flag it and ask: "Does this need to work outside Node.js? If so, can we use a cross-runtime alternative or guard it?"
+
+#### Environment-Specific Behavior
+
+**Detection patterns:**
+
+- Tests that rely on specific environment variables (e.g., `HOME`, `USERPROFILE`, `SHELL`)
+- Assuming specific shell behavior (`/bin/sh`, `cmd.exe`) in child process spawning
+- Hardcoding Unix-style glob patterns without verifying glob library handles Windows paths
+- Using `os.tmpdir()` result in string concatenation instead of `path.join()`
+- Locale or encoding assumptions (e.g., assuming UTF-8 system encoding)
+
+#### CI and Test Portability
+
+**Detection patterns:**
+
+- Tests with hardcoded absolute paths (`/home/user/...`, `/tmp/...`)
+- Tests that depend on Unix-only commands (`chmod`, `ln -s`, `which`)
+- Tests that create files with names invalid on Windows (containing `:`, `<`, `>`, `|`, `?`, `*`)
+- Permission-based tests (`chmod 000`) that behave differently on Windows
+- Tests that assume specific directory separators in snapshot outputs
+
+**Suggest:** Use `os.tmpdir()` + `path.join()` for temp paths. For platform-specific tests, use conditional skips:
+```typescript
+import { platform } from "node:os";
+const isWindows = platform() === "win32";
+test.skipIf(isWindows)("unix symlink behavior", () => { ... });
+```
+
+#### What to Check in Review
+
+1. Search the diff for raw `/` in path construction — suggest `path.join()` / `path.resolve()`
+2. Search for `\n` splitting — suggest `\r?\n`
+3. Search for `__dirname`, `__filename`, bare `require()` — flag ESM / cross-runtime concerns
+4. Check new test fixtures and snapshots for hardcoded paths or OS-specific values
+5. For new dependencies: check if the dependency supports Windows / Deno / Bun (check its CI matrix or issue tracker)
+
 ## Refactoring Suggestions
 
 During code review, also suggest structural improvements to production code, separate from test quality.
@@ -195,9 +282,10 @@ During code review, also suggest structural improvements to production code, sep
 2. **Assess the scope of change**: Count affected packages/modules. If 3+, integration test requirements apply (Perspective 7)
 3. **Check the test-to-code ratio**: Compare the production code diff size against the test diff size. A large feature with minimal test changes is a red flag (Perspective 5)
 4. **Check for breaking change signals**: If commits mention breaking changes, new behavior, or migration, verify that existing tests were updated (Perspective 6)
-5. **Read the test code**: Understand the spec from the tests, then check for drift from production code
-6. **Identify issues using all perspectives**: List findings organized by each perspective
-7. **Report with priorities**: Present findings from highest severity first, always paired with rationale and a suggested fix
+5. **Scan for platform/runtime assumptions**: Check for hardcoded path separators, `\n`-only splitting, Node.js-specific globals, and OS-dependent test fixtures (Perspective 10)
+6. **Read the test code**: Understand the spec from the tests, then check for drift from production code
+7. **Identify issues using all perspectives**: List findings organized by each perspective
+8. **Report with priorities**: Present findings from highest severity first, always paired with rationale and a suggested fix
 
 ## Review Report Format
 
