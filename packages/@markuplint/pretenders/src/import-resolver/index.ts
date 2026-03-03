@@ -8,21 +8,52 @@
  * Uses es-module-lexer (WASM-based) to identify import specifiers, then
  * supplements with regex parsing on statement slices to extract local names.
  *
- * Supports:
- * - Vue `<script setup>` (static imports)
- * - Vue Options API `components` property registration (fallback when no `<script setup>`)
- * - Svelte `<script>` tags
+ * ## Supported frameworks
+ *
+ * - Vue `<script setup>` (all static imports are exposed as bindings)
+ * - Vue Options API `components` property (fallback when no `<script setup>`;
+ *   only imports registered in `components: { ... }` are returned)
+ * - Svelte `<script>` tags (prefers instance script over module script)
  * - Astro frontmatter (`---...---`)
  * - MDX top-level ESM
- * - Dynamic imports with string literal specifiers (`import('./path')`)
- * - Barrel file re-export resolution (single-level, via `resolveBarrelExport`)
  *
- * Excludes:
+ * ## Dynamic imports
+ *
+ * Dynamic imports with string literal specifiers (`import('./path')`) are
+ * included in the bindings with `type: 'dynamic'`. These bindings use
+ * `localName: '*'` as a sentinel since dynamic imports have no local binding.
+ * Template literal and variable specifiers are excluded.
+ *
+ * ## Barrel file resolution
+ *
+ * `resolveBarrelExport` is a standalone utility (not called by `analyzeImports`)
+ * that resolves a named import from a barrel directory (e.g., `'./components'`)
+ * to its original source module. Only single-level re-exports are resolved.
+ *
+ * ### Usage example: resolving barrel imports
+ *
+ * ```ts
+ * import { analyzeImports, resolveComponentImport, resolveBarrelExport } from '@markuplint/pretenders';
+ *
+ * const result = await analyzeImports('App.vue', source);
+ * const binding = resolveComponentImport('Button', result.bindings);
+ *
+ * if (binding) {
+ *   // Check if the import source is a barrel directory
+ *   const originalSource = resolveBarrelExport(binding.source, binding.importedName, filePath);
+ *   // originalSource: './Button.vue' (resolved from './components' barrel)
+ * }
+ * ```
+ *
+ * ## Excludes
+ *
  * - `import.meta` references
  * - Dynamic imports with template literals or variable specifiers
  * - Multi-level barrel chains (only single-level re-exports are resolved)
  *
- * Note: The current implementation uses regex-based source extraction.
+ * ## Future integration
+ *
+ * The current implementation uses regex-based source extraction.
  * When the CLI multi-framework dispatch (#3340) creates a unified parsing
  * pipeline, MLAST psblock-based extraction can be integrated by parsing
  * the file once and passing the document to both templateScanner and
