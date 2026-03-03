@@ -121,6 +121,14 @@ import { ref } from 'vue'
 		expect(result).toBeNull();
 	});
 
+	test('offset points to content start (after opening tag)', () => {
+		const source = "<script>\nimport X from './X'\n</script>";
+		const result = extractVueScript(source);
+		expect(result).not.toBeNull();
+		// offset is right after '<script>' (8 chars)
+		expect(result!.offset).toBe('<script>'.length);
+	});
+
 	test('picks regular <script> when both setup and regular exist', () => {
 		const source = `<script setup>
 import { ref } from 'vue'
@@ -190,6 +198,33 @@ export default {
 	test('returns empty array for empty source', () => {
 		const result = extractVueOptionsApiComponents('');
 		expect(result).toStrictEqual([]);
+	});
+
+	test('works inside defineComponent wrapper', () => {
+		const source = `
+import { defineComponent } from 'vue'
+import Button from './Button.vue'
+export default defineComponent({
+  components: { Button }
+})`;
+		const result = extractVueOptionsApiComponents(source);
+		expect(result).toStrictEqual(['Button']);
+	});
+
+	test('works with defineComponent and multiple components', () => {
+		const source = `
+import { defineComponent } from 'vue'
+import Button from './Button.vue'
+import Card from './Card.vue'
+export default defineComponent({
+  components: {
+    Button,
+    MyCard: Card,
+  },
+  setup() { return {} }
+})`;
+		const result = extractVueOptionsApiComponents(source);
+		expect(result).toStrictEqual(['Button', 'Card']);
 	});
 });
 

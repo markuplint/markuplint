@@ -87,6 +87,46 @@ export default {
 			});
 		});
 
+		test('Options API with defineComponent wrapper', async () => {
+			const source = `<template><Button /></template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Button from './Button.vue'
+export default defineComponent({
+  components: { Button }
+})
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({
+				localName: 'Button',
+				source: './Button.vue',
+				type: 'default',
+			});
+		});
+
+		test('Options API with named imports', async () => {
+			const source = `<template><Card /></template>
+
+<script>
+import { Card } from './ui'
+export default {
+  components: { Card }
+}
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({
+				localName: 'Card',
+				importedName: 'Card',
+				source: './ui',
+				type: 'named',
+			});
+		});
+
 		test('prefers <script setup> over Options API when both exist', async () => {
 			const source = `<script setup>
 import Button from './Button.vue'
@@ -119,6 +159,20 @@ import { Card as MyCard } from './ui'
 			expect(result!.bindings).toHaveLength(2);
 			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', source: './Button.vue' });
 			expect(result!.bindings[1]).toMatchObject({ localName: 'MyCard', importedName: 'Card' });
+		});
+
+		test('extracts dynamic import from <script setup>', async () => {
+			const source = `<script setup>
+import Button from './Button.vue'
+const Dialog = import('./Dialog.vue')
+</script>
+
+<template><Button /></template>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(2);
+			expect(result!.bindings[0]).toMatchObject({ localName: 'Button', type: 'default' });
+			expect(result!.bindings[1]).toMatchObject({ source: './Dialog.vue', type: 'dynamic' });
 		});
 
 		test('excludes import type from bindings', async () => {
@@ -260,5 +314,16 @@ describe('resolveComponentImport', () => {
 
 	test('single-word name without hyphen is not transformed', () => {
 		expect(resolveComponentImport('card', bindings)).toBeUndefined();
+	});
+
+	test('does not match dynamic import bindings (localName is sentinel *)', () => {
+		const bindingsWithDynamic: ImportBinding[] = [
+			{ localName: '*', importedName: '*', source: './Dialog.vue', type: 'dynamic' },
+			{ localName: 'Button', importedName: 'default', source: './Button.vue', type: 'default' },
+		];
+		// Dynamic binding should not match any component name
+		expect(resolveComponentImport('Dialog', bindingsWithDynamic)).toBeUndefined();
+		// Static binding still resolves
+		expect(resolveComponentImport('Button', bindingsWithDynamic)).toStrictEqual(bindingsWithDynamic[1]);
 	});
 });

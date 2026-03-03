@@ -168,10 +168,11 @@ function extractBindingsFromStatement(statementText: string, source: string): Im
 }
 
 /**
- * Analyzes source text and extracts all static import bindings using es-module-lexer.
+ * Analyzes source text and extracts import bindings using es-module-lexer.
  *
- * Only processes static imports (type === 1). Dynamic imports and `import.meta`
- * references are ignored as specified in Phase 1 constraints.
+ * Processes static imports and dynamic imports with string literal specifiers.
+ * `import.meta` references and dynamic imports with non-literal specifiers
+ * (template literals, variables) are excluded.
  *
  * @param source - The source text to analyze (e.g., content of a `<script setup>` block)
  * @returns An array of all import bindings found in the source
@@ -203,7 +204,8 @@ export async function parseImports(source: string): Promise<readonly ImportBindi
 
 		if (imp.d >= 0) {
 			// Dynamic import with a string literal specifier (e.g., `import('./Foo.vue')`)
-			// We record a wildcard binding since the consumer decides how to use it.
+			// Dynamic imports have no local binding name, so we use '*' as a sentinel.
+			// Consumers should check `type === 'dynamic'` to distinguish from namespace imports.
 			bindings.push({
 				localName: '*',
 				importedName: '*',

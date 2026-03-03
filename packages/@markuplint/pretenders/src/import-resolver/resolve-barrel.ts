@@ -12,8 +12,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-/** Regex to match `export { Name } from './source'` or `export { default as Name } from './source'` */
-const RE_NAMED_REEXPORT = /export\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/g;
+/** Pattern to match `export { Name } from './source'` or `export { default as Name } from './source'` */
+const RE_NAMED_REEXPORT = /export\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/;
 
 /** Index file names to check, in priority order */
 const INDEX_FILES = ['index.ts', 'index.js', 'index.mts', 'index.mjs'];

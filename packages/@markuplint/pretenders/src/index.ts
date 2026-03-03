@@ -10,12 +10,13 @@
  * - {@link templateScanner} — Scans Vue, Svelte, and Astro SFC files using markuplint's parsers
  * - {@link analyzeImports} — Extracts import bindings from component script blocks
  * - {@link resolveComponentImport} — Resolves component template usage to import source paths
+ * - {@link resolveBarrelExport} — Resolves barrel file re-exports to original source modules
  */
 
 export { jsxScanner } from './jsx/index.js';
 export { templateScanner } from './template/index.js';
 export { scan } from './scan.js';
 export type { ScanOptions } from './scan.js';
-export { analyzeImports, resolveComponentImport } from './import-resolver/index.js';
+export { analyzeImports, resolveComponentImport, resolveBarrelExport } from './import-resolver/index.js';
 export type { ImportBinding, ImportAnalysisResult } from './import-resolver/types.js';
 export type * from './types.js';

@@ -116,13 +116,17 @@ export function extractVueOptionsApiComponents(scriptContent: string): string[] 
 			continue;
 		}
 
-		// Aliased form: `Btn: MyButton` → use value `MyButton`
-		const colonParts = trimmed.split(':');
-		if (colonParts.length === 2 && colonParts[1]) {
-			names.push(colonParts[1].trim());
-		} else {
+		// Split on first colon only to handle values containing colons
+		const colonIdx = trimmed.indexOf(':');
+		if (colonIdx === -1) {
 			// Shorthand: `Button` → use as-is
 			names.push(trimmed);
+		} else {
+			// Aliased form: `Btn: MyButton` → use value `MyButton`
+			const value = trimmed.slice(colonIdx + 1).trim();
+			if (value) {
+				names.push(value);
+			}
 		}
 	}
 
