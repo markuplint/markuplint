@@ -31,7 +31,7 @@ import { ref } from 'vue'
 			});
 		});
 
-		test('returns empty bindings for Vue without <script setup>', async () => {
+		test('returns empty bindings for Vue without <script setup> and no components', async () => {
 			const source = `<template><div /></template>
 <script>
 export default { name: 'MyComp' }
@@ -39,6 +39,70 @@ export default { name: 'MyComp' }
 			const result = await analyzeImports('App.vue', source);
 			expect(result).not.toBeNull();
 			expect(result!.bindings).toStrictEqual([]);
+		});
+
+		test('extracts imports from Options API components registration', async () => {
+			const source = `<template>
+  <Button /><Card />
+</template>
+
+<script>
+import Button from './Button.vue'
+import Card from './Card.vue'
+import { someHelper } from './utils'
+export default {
+  components: { Button, Card }
+}
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(2);
+			expect(result!.bindings[0]).toMatchObject({
+				localName: 'Button',
+				source: './Button.vue',
+				type: 'default',
+			});
+			expect(result!.bindings[1]).toMatchObject({
+				localName: 'Card',
+				source: './Card.vue',
+				type: 'default',
+			});
+		});
+
+		test('Options API with aliased component registration', async () => {
+			const source = `<template><Btn /></template>
+
+<script>
+import MyButton from './Button.vue'
+export default {
+  components: { Btn: MyButton }
+}
+</script>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({
+				localName: 'MyButton',
+				source: './Button.vue',
+			});
+		});
+
+		test('prefers <script setup> over Options API when both exist', async () => {
+			const source = `<script setup>
+import Button from './Button.vue'
+</script>
+
+<script>
+import Card from './Card.vue'
+export default { components: { Card } }
+</script>
+
+<template><Button /><Card /></template>`;
+			const result = await analyzeImports('App.vue', source);
+			expect(result).not.toBeNull();
+			// Should use <script setup> bindings, not Options API
+			expect(result!.bindings).toHaveLength(1);
+			expect(result!.bindings[0]).toMatchObject({ localName: 'Button' });
 		});
 
 		test('extracts from <script setup lang="ts">', async () => {

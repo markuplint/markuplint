@@ -191,17 +191,29 @@ export async function parseImports(source: string): Promise<readonly ImportBindi
 	const bindings: ImportBinding[] = [];
 
 	for (const imp of imports) {
-		// Skip dynamic imports (d >= 0) and import.meta (d === -2)
-		// Static imports have d === -1
-		if (imp.d !== -1) {
+		// import.meta (d === -2) — always skip
+		if (imp.d === -2) {
 			continue;
 		}
 
-		// n = normalized module specifier
+		// n = normalized module specifier (absent for template-literal dynamic imports)
 		if (!imp.n) {
 			continue;
 		}
 
+		if (imp.d >= 0) {
+			// Dynamic import with a string literal specifier (e.g., `import('./Foo.vue')`)
+			// We record a wildcard binding since the consumer decides how to use it.
+			bindings.push({
+				localName: '*',
+				importedName: '*',
+				source: imp.n,
+				type: 'dynamic',
+			});
+			continue;
+		}
+
+		// Static imports (d === -1)
 		// ss/se = statement start/end positions
 		const statementText = source.slice(imp.ss, imp.se);
 		bindings.push(...extractBindingsFromStatement(statementText, imp.n));

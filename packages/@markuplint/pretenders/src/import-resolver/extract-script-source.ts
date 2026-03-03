@@ -55,6 +55,81 @@ export function extractVueScriptSetup(source: string): ScriptSourceBlock | null 
 }
 
 /**
+ * Extracts the content of a regular `<script>` block (NOT `<script setup>`) from a Vue SFC source.
+ * Only matches `<script>` without the `setup` attribute.
+ *
+ * @param source - The full Vue SFC source text
+ * @returns The extracted script block, or `null` if no regular `<script>` is found
+ */
+export function extractVueScript(source: string): ScriptSourceBlock | null {
+	const re = /<script(?:\s[^>]*)?>/gi;
+	let match: RegExpExecArray | null;
+
+	while ((match = re.exec(source)) !== null) {
+		const startTag = match[0];
+
+		// Skip <script setup> blocks
+		if (/\bsetup\b/i.test(startTag)) {
+			continue;
+		}
+
+		const contentStart = match.index + startTag.length;
+		const remaining = source.slice(contentStart);
+		const endMatch = /<\/script\s*>/i.exec(remaining);
+		if (!endMatch) {
+			continue;
+		}
+
+		return {
+			content: remaining.slice(0, endMatch.index),
+			offset: contentStart,
+		};
+	}
+
+	return null;
+}
+
+/**
+ * Extracts component names registered in the Vue Options API `components` property.
+ * Handles both shorthand (`{ Button }`) and aliased (`{ Btn: MyButton }`) forms.
+ * For aliased forms, returns the value (the import name), not the key (the template name).
+ *
+ * @param scriptContent - The content of the `<script>` block (without tags)
+ * @returns An array of component local names referenced in the `components` registration
+ */
+export function extractVueOptionsApiComponents(scriptContent: string): string[] {
+	if (!scriptContent) {
+		return [];
+	}
+
+	// Match `components: { ... }` allowing for multiline
+	const re = /\bcomponents\s*:\s*\{([^}]*)\}/;
+	const match = re.exec(scriptContent);
+	if (!match?.[1]) {
+		return [];
+	}
+
+	const names: string[] = [];
+	for (const entry of match[1].split(',')) {
+		const trimmed = entry.trim();
+		if (!trimmed) {
+			continue;
+		}
+
+		// Aliased form: `Btn: MyButton` → use value `MyButton`
+		const colonParts = trimmed.split(':');
+		if (colonParts.length === 2 && colonParts[1]) {
+			names.push(colonParts[1].trim());
+		} else {
+			// Shorthand: `Button` → use as-is
+			names.push(trimmed);
+		}
+	}
+
+	return names;
+}
+
+/**
  * Extracts the content of the `<script>` block from a Svelte component source.
  * Prefers the instance `<script>` over `<script context="module">`.
  * Falls back to the module script if no instance script is found.

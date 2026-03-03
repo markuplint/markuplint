@@ -168,19 +168,51 @@ describe('parseImports', () => {
 		});
 	});
 
-	describe('dynamic imports are excluded', () => {
-		test('dynamic import is ignored', async () => {
+	describe('dynamic imports', () => {
+		test('dynamic import with string literal is resolved', async () => {
 			const source = ["import Button from './Button.vue'", "const Lazy = import('./Lazy.vue')"].join('\n');
+			const result = await parseImports(source);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toMatchObject({ localName: 'Button' });
+			expect(result[1]).toStrictEqual({
+				localName: '*',
+				importedName: '*',
+				source: './Lazy.vue',
+				type: 'dynamic',
+			});
+		});
+
+		test('dynamic import with double-quoted string literal', async () => {
+			const source = 'const Lazy = import("./Lazy.vue")';
+			const result = await parseImports(source);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toStrictEqual({
+				localName: '*',
+				importedName: '*',
+				source: './Lazy.vue',
+				type: 'dynamic',
+			});
+		});
+
+		test('import.meta is still ignored', async () => {
+			const source = ["import Button from './B.vue'", 'const url = import.meta.env.BASE_URL'].join('\n');
 			const result = await parseImports(source);
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ localName: 'Button' });
 		});
 
-		test('import.meta is ignored', async () => {
-			const source = ["import Button from './B.vue'", 'const url = import.meta.env.BASE_URL'].join('\n');
+		test('dynamic import with template literal is excluded', async () => {
+			const source = 'const Lazy = import(`./components/${name}.vue`)';
 			const result = await parseImports(source);
-			expect(result).toHaveLength(1);
-			expect(result[0]).toMatchObject({ localName: 'Button' });
+			expect(result).toStrictEqual([]);
+		});
+
+		test('multiple dynamic imports', async () => {
+			const source = ["const A = import('./A.vue')", "const B = import('./B.vue')"].join('\n');
+			const result = await parseImports(source);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toMatchObject({ source: './A.vue', type: 'dynamic' });
+			expect(result[1]).toMatchObject({ source: './B.vue', type: 'dynamic' });
 		});
 	});
 

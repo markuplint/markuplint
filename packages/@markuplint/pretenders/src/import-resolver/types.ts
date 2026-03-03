@@ -10,7 +10,7 @@ export interface ImportBinding {
 	/** The module specifier string (e.g., `./components/Button.vue`, `@/lib/utils`) */
 	readonly source: string;
 	/** The type of import binding */
-	readonly type: 'default' | 'named' | 'namespace';
+	readonly type: 'default' | 'named' | 'namespace' | 'dynamic';
 }
 
 /**
