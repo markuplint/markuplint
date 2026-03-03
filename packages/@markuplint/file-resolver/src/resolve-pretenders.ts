@@ -1,5 +1,7 @@
 import type { OptimizedConfig, Pretender, PretenderFileData } from '@markuplint/ml-config';
 
+import path from 'node:path';
+
 import { glob } from 'glob';
 
 import { generalImport } from './general-import.js';
@@ -52,7 +54,7 @@ export async function resolvePretenders(config: PretendersConfig): Promise<Prete
 		for (const entry of config.scan) {
 			const patterns = typeof entry.files === 'string' ? [entry.files] : [...entry.files];
 			const globResults = await Promise.all(patterns.map(p => glob(p)));
-			const resolved = globResults.flat();
+			const resolved = globResults.flat().map(f => path.resolve(f));
 			if (resolved.length > 0) {
 				const scanned = await scan(resolved, {
 					ignoreComponentNames: entry.ignoreComponentNames ? [...entry.ignoreComponentNames] : undefined,
