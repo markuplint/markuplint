@@ -1,5 +1,5 @@
 ---
-description: Analyze a GitHub Issue and create a resolution plan
+description: Analyze or create a GitHub Issue and build a resolution plan
 ---
 
 Input: $ARGUMENTS
@@ -29,29 +29,50 @@ Follow these steps in order:
 
 > This step runs ONLY when no Issue URL was provided in Step 1.
 
-Based on the information gathered from the user, create a GitHub Issue:
+Based on the information gathered from the user, create a GitHub Issue.
+Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the format reference:
 
-1. **Draft the Issue content**:
-   - Title: concise summary (e.g., `Bug: <description>` or `Feature: <description>`)
-   - Body: structured with the following sections:
+1. **Determine the Issue type** and match to an existing template:
+   - Bug → `bug_report.md` format (label: `Bug`)
+   - Feature request → `feature.md` format (label: `Features: Proposal`)
+   - Spec update → `update_specs.md` format (label: `Specs`)
+2. **Fetch available labels** to avoid typos:
+   ```bash
+   gh label list --limit 50
+   ```
+3. **Draft the Issue content** following the matched template format:
+   - **Bug** (based on `bug_report.md`):
      ```
-     ## Summary
+     - Markuplint version: `<version>`
+     - Parser lang: <parser>
+     - Node.js version: `<version>`
+     - OS: <os>
+
+     ## Describe the bug
      <problem statement>
 
-     ## Reproduction (if bug)
-     <steps to reproduce>
+     ## Code Example or Playground URL
+     <code snippet or URL>
 
-     ## Expected Behavior
+     ## Steps To Reproduce
+     1. ...
+
+     ## The current behavior
+     <what happens now>
+
+     ## The expected behavior
      <what should happen>
-
-     ## Affected Packages
-     <list of packages/rules if known>
      ```
-   - Labels: assign appropriate labels (`bug`, `enhancement`, etc.) if known
-2. **Show the draft to the user** and ask for confirmation before creating
-3. **Create the Issue**:
+   - **Feature** (based on `feature.md`): free-form description of the proposal
+   - **Spec update** (based on `update_specs.md`):
+     ```
+     ## Document or Issue Link
+     <link to spec or merged PR>
+     ```
+4. **Show the draft to the user** and ask for confirmation before creating
+5. **Create the Issue**:
    ```bash
-   gh issue create --title "<title>" --body "<body>" [--label "<label>"]
+   gh issue create --title "<title>" --body "<body>" --label "<label>"
    ```
 4. **Capture the Issue number and URL** from the output for use in subsequent steps
 5. From this point forward, treat the newly created Issue the same as if it had been provided via URL
