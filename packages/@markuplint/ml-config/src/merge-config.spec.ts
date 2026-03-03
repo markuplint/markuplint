@@ -740,6 +740,71 @@ describe('Pretenders', () => {
 			},
 		});
 	});
+
+	test('scan configs are concatenated', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						scan: [{ files: './src/**/*.vue' }],
+					},
+				},
+				{
+					pretenders: {
+						scan: [{ files: './src/**/*.tsx', ignoreComponentNames: ['Internal'] }],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				scan: [{ files: './src/**/*.vue' }, { files: './src/**/*.tsx', ignoreComponentNames: ['Internal'] }],
+			},
+		});
+	});
+
+	test('scan from one side only', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						data: [{ selector: 'Comp', as: 'div' }],
+					},
+				},
+				{
+					pretenders: {
+						scan: [{ files: './src/**/*.vue' }],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [{ selector: 'Comp', as: 'div' }],
+				scan: [{ files: './src/**/*.vue' }],
+			},
+		});
+	});
+
+	test('scan preserved when b has no scan', () => {
+		expect(
+			mergeConfig(
+				{
+					pretenders: {
+						scan: [{ files: './src/**/*.vue' }],
+					},
+				},
+				{
+					pretenders: {
+						data: [{ selector: 'Comp', as: 'div' }],
+					},
+				},
+			),
+		).toStrictEqual({
+			pretenders: {
+				data: [{ selector: 'Comp', as: 'div' }],
+				scan: [{ files: './src/**/*.vue' }],
+			},
+		});
+	});
 });
 
 describe('Named rule group merging', () => {

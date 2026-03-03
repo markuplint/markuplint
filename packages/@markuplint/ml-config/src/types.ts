@@ -116,7 +116,8 @@ export type SeverityOptions = {
 
 /**
  * Normalized form of pretender configuration used after merging.
- * Contains optional file references, import paths, and inline pretender data.
+ * Contains optional file references, import paths, inline pretender data,
+ * and dynamic scanning configuration.
  */
 export type PretenderDetails = {
 	/**
@@ -129,6 +130,16 @@ export type PretenderDetails = {
 	 */
 	readonly imports?: readonly string[];
 	readonly data?: readonly Pretender[];
+
+	/**
+	 * Dynamic scanning configuration. Each entry specifies a glob pattern
+	 * for component files to scan. File extensions determine the scanner:
+	 * `.js/.jsx/.ts/.tsx` use the JSX scanner, `.vue/.svelte/.astro` use
+	 * the template scanner.
+	 *
+	 * @experimental
+	 */
+	readonly scan?: readonly PretenderScanConfig[];
 };
 
 /**
@@ -168,13 +179,6 @@ export type Pretender = {
 	 * @experimental
 	 */
 	readonly filePath?: string;
-
-	/**
-	 * Dynamic scaning
-	 *
-	 * @experimental
-	 */
-	readonly scan?: readonly PretenderScanConfig[];
 };
 
 export type OriginalNode = {
@@ -301,18 +305,27 @@ export type PretenderARIA = {
 };
 
 /**
+ * Configuration for dynamic component scanning.
+ * File extensions determine the scanner automatically:
+ * `.js/.jsx/.ts/.tsx` → JSX scanner, `.vue/.svelte/.astro` → template scanner.
+ *
  * @experimental
  */
 export type PretenderScanConfig = {
 	/**
-	 * Supporting for Glob format
+	 * Glob pattern(s) for component files to scan.
 	 */
-	readonly files: string;
-	readonly type: string;
-	readonly options: PretenderScanOptions;
+	readonly files: string | readonly string[];
+
+	/**
+	 * Component names to exclude from scanning results.
+	 */
+	readonly ignoreComponentNames?: readonly string[];
 };
 
 /**
+ * Base options for pretender scanners.
+ *
  * @experimental
  */
 export interface PretenderScanOptions {

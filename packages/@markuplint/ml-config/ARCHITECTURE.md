@@ -94,7 +94,8 @@ type RuleConfig<T, O> = {
 
 - `Pretender` -- Uses a CSS selector to make custom elements appear as standard elements for linting purposes; the `as` field specifies the element name or a detailed `OriginalNode`
 - `OriginalNode` -- Defines an element's name, slots, namespace, attributes, inherited attributes, and ARIA properties
-- `PretenderDetails` -- Normalized form `{data?, files?, imports?}` used after merging
+- `PretenderDetails` -- Normalized form `{data?, files?, imports?, scan?}` used after merging
+- `PretenderScanConfig` -- Dynamic scanning configuration `{files, ignoreComponentNames?}` for automatic component detection; file extensions determine the scanner (`.js/.jsx/.ts/.tsx` → JSX scanner, `.vue/.svelte/.astro` → template scanner)
 
 ### Autofix Types
 
@@ -139,7 +140,7 @@ flowchart TD
 | `specs`          | Object shallow merge             | `mergeObject()`                                      | Same as above                                        |
 | `excludeFiles`   | Concat + deduplicate             | `concatArray(uniquely=true)`                         | Simple value deduplication                           |
 | `severity`       | Object shallow merge             | `mergeObject()`                                      | Same as parser                                       |
-| `pretenders`     | Semantic merge                   | `mergePretenders()`                                  | files/imports: override, data: append                |
+| `pretenders`     | Semantic merge                   | `mergePretenders()`                                  | files/imports: override, data/scan: append           |
 | `rules`          | Per-rule merge                   | `mergeRules()` then `mergeRule()`                    | **Most complex -- see next section**                 |
 | `nodeRules`      | Concat + deduplicate by name     | `concatArray(uniquely=true, comparePropName='name')` | Named entries deduplicated; unnamed entries appended |
 | `childNodeRules` | Concat + deduplicate by name     | `concatArray(uniquely=true, comparePropName='name')` | Same as nodeRules                                    |
@@ -198,7 +199,7 @@ Collects the union of all keys from both override records. For each key, calls `
 
 #### mergePretenders(a, b)
 
-Converts array-form pretenders to the normalized `PretenderDetails` form (`{data: [...]}`) then applies semantic merge: `files`/`imports` are overridden (right-side wins), `data` is appended (concatenated).
+Converts array-form pretenders to the normalized `PretenderDetails` form (`{data: [...]}`) then applies semantic merge: `files`/`imports` are overridden (right-side wins), `data` and `scan` are appended (concatenated).
 
 ## Template Rendering System
 

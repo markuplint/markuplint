@@ -2359,6 +2359,7 @@ __metadata:
     "@markuplint/ml-core": "npm:5.0.0-alpha.3"
     "@markuplint/ml-spec": "npm:5.0.0-alpha.3"
     "@markuplint/parser-utils": "npm:5.0.0-alpha.3"
+    "@markuplint/pretenders": "npm:5.0.0-alpha.3"
     "@markuplint/selector": "npm:5.0.0-alpha.3"
     "@markuplint/shared": "npm:5.0.0-alpha.3"
     "@types/node": "npm:24.5.1"

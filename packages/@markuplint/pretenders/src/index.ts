@@ -5,6 +5,7 @@
  * in source files. Pretenders allow markuplint to understand which native HTML
  * elements a component renders, enabling accurate linting of component-based code.
  *
+ * - {@link scan} — Unified entry point that dispatches to the appropriate scanner by file extension
  * - {@link jsxScanner} — Scans JSX/TSX files using the TypeScript compiler API
  * - {@link templateScanner} — Scans Vue, Svelte, and Astro SFC files using markuplint's parsers
  * - {@link analyzeImports} — Extracts import bindings from component script blocks

@@ -4,7 +4,11 @@ import { propSort } from './dependency-mapper.js';
 import { jsxScanner } from './jsx/index.js';
 import { templateScanner } from './template/index.js';
 
+/**
+ * Options for the unified {@link scan} function.
+ */
 export interface ScanOptions {
+	/** Component names to exclude from scanning results */
 	readonly ignoreComponentNames?: readonly string[];
 }
 
@@ -14,6 +18,10 @@ export interface ScanOptions {
  *
  * - `.js`, `.jsx`, `.ts`, `.tsx` → {@link jsxScanner}
  * - `.vue`, `.svelte`, `.astro` → {@link templateScanner}
+ *
+ * @param files - Absolute file paths to scan
+ * @param options - Optional scan configuration
+ * @returns All discovered pretender mappings, sorted by selector
  */
 export async function scan(files: readonly string[], options?: ScanOptions): Promise<Pretender[]> {
 	const jsxFiles = files.filter(filePath => /\.[jt]sx?$/.test(filePath));

@@ -20,6 +20,9 @@
 			"path": "../parser-utils"
 		},
 		{
+			"path": "../pretenders"
+		},
+		{
 			"path": "../selector"
 		},
 		{

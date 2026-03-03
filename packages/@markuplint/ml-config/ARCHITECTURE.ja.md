@@ -94,7 +94,8 @@ type RuleConfig<T, O> = {
 
 - `Pretender` -- CSS セレクタを使用してカスタム要素を標準要素に見せかける。`as` フィールドで要素名または詳細な `OriginalNode` を指定
 - `OriginalNode` -- 要素名、スロット、名前空間、属性、継承属性、ARIA プロパティを定義
-- `PretenderDetails` -- マージ後に使用される正規化形式 `{data?, files?, imports?}`
+- `PretenderDetails` -- マージ後に使用される正規化形式 `{data?, files?, imports?, scan?}`
+- `PretenderScanConfig` -- 動的スキャン設定 `{files, ignoreComponentNames?}`。拡張子によりスキャナーを自動判定（`.js/.jsx/.ts/.tsx` → JSX スキャナー、`.vue/.svelte/.astro` → テンプレートスキャナー）
 
 ### 自動修正型
 
@@ -139,7 +140,7 @@ flowchart TD
 | `specs`          | オブジェクト shallow merge | `mergeObject()`                                      | 同上                                          |
 | `excludeFiles`   | 結合+重複排除              | `concatArray(uniquely=true)`                         | 単純な値の重複排除                            |
 | `severity`       | オブジェクト shallow merge | `mergeObject()`                                      | parser と同様                                 |
-| `pretenders`     | セマンティックマージ       | `mergePretenders()`                                  | files/imports: 上書き、data: 追加             |
+| `pretenders`     | セマンティックマージ       | `mergePretenders()`                                  | files/imports: 上書き、data/scan: 追加        |
 | `rules`          | ルール別マージ             | `mergeRules()` → `mergeRule()`                       | **最も複雑 -- 次節で詳述**                    |
 | `nodeRules`      | 結合+名前で重複排除        | `concatArray(uniquely=true, comparePropName='name')` | 名前付きエントリは重複排除、無名は追加        |
 | `childNodeRules` | 結合+名前で重複排除        | `concatArray(uniquely=true, comparePropName='name')` | nodeRules と同様                              |
@@ -198,7 +199,7 @@ flowchart TD
 
 #### mergePretenders(a, b)
 
-配列形式の pretenders を正規化形式 `PretenderDetails`（`{data: [...]}`）に変換してからセマンティックマージ: `files`/`imports` は上書き（右辺優先）、`data` は追加（連結）。
+配列形式の pretenders を正規化形式 `PretenderDetails`（`{data: [...]}`）に変換してからセマンティックマージ: `files`/`imports` は上書き（右辺優先）、`data` と `scan` は追加（連結）。
 
 ## テンプレートレンダリングシステム
 

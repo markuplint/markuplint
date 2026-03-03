@@ -87,6 +87,14 @@ function getElName(identity: Identity) {
 	return identity.element;
 }
 
+/**
+ * Creates a comparator function that sorts objects by a specified property.
+ *
+ * @template T - The object type
+ * @template P - The property key type
+ * @param propName - The property to sort by (case-insensitive for strings)
+ * @returns A comparator function for use with `Array.prototype.sort()`
+ */
 export function propSort<T, P extends keyof T>(propName: P) {
 	return (a: T, b: T) => {
 		const nameA = toLowerCase(a[propName]);
