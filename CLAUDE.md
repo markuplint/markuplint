@@ -88,9 +88,15 @@ The main working directory MUST stay on `dev` at all times. Any feature branch w
 
 Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). Worktrees are created under `../markuplint-wt/<branch-name>` (`wt.basedir` setting).
 
-### Setup
+### Prerequisites
 
-If `git wt` is not available, install and configure it:
+#### GitHub CLI (`gh`)
+
+Commands such as `/pr`, `/release`, `/issue`, and `/sponsors` require `gh` (GitHub CLI). If `gh` is not installed, install it following [the official instructions](https://github.com/cli/cli#installation) and authenticate with `gh auth login`.
+
+#### git-wt
+
+If `git wt` is not installed, install and configure it:
 
 ```bash
 brew install k1LoW/tap/git-wt
