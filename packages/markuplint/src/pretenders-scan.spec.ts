@@ -34,9 +34,10 @@ const jsxFixturesDir = path.resolve(import.meta.dirname, '..', '..', '@markuplin
 
 describe('pretenders.scan integration', () => {
 	describe('template scanner (Vue)', () => {
-		test('scanned component is validated as its pretended element', async () => {
+		test('Vue component scanned as button passes permitted-contents inside div', async () => {
 			// SimpleButton.vue pretends to be <button> (root element is <button>)
-			// Using it in HTML should make it pass rules as if it were <button>
+			// <button> is valid flow content inside <div>, so no violations expected.
+			// Without pretender mapping, "simplebutton" would be flagged as unknown.
 			const { violations } = await mlTest('<div><SimpleButton></SimpleButton></div>', {
 				pretenders: {
 					scan: [{ files: path.join(templateFixturesDir, 'SimpleButton.vue') }],
@@ -45,15 +46,34 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			// <button> is allowed inside <div>, so no violations expected
 			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 
-		test('slots: null component still follows pretended element content model', async () => {
-			// SimpleButton.vue has no <slot>, so slots is null.
-			// It pretends to be <button>, which allows phrasing content per HTML spec.
-			// Even with slots=null, the pretended element's content model applies,
-			// so phrasing content inside it is valid.
+		test('Vue component scanned as button triggers violation inside another button', async () => {
+			// SimpleButton.vue pretends to be <button>.
+			// <button> (interactive content) is forbidden inside another <button>.
+			// This positively proves pretender mapping occurred — without it,
+			// "simplebutton" would be flagged as unknown, not as interactive content.
+			const { violations } = await mlTest('<button><SimpleButton></SimpleButton></button>', {
+				pretenders: {
+					scan: [{ files: path.join(templateFixturesDir, 'SimpleButton.vue') }],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			expect(violations).toStrictEqual([
+				expect.objectContaining({
+					ruleId: 'permitted-contents',
+					severity: 'error',
+					raw: '<SimpleButton>',
+				}),
+			]);
+		});
+
+		test('component pretending to be button allows phrasing content per HTML spec', async () => {
+			// SimpleButton.vue has no <slot> (slots=null), but pretends to be <button>.
+			// <button> allows phrasing content per HTML spec regardless of slots value.
 			const { violations } = await mlTest('<div><SimpleButton><span>child</span></SimpleButton></div>', {
 				pretenders: {
 					scan: [{ files: path.join(templateFixturesDir, 'SimpleButton.vue') }],
@@ -62,14 +82,12 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			// <button> allows phrasing content, so <span> inside is valid
-			expect(permittedViolations).toStrictEqual([]);
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 
 		test('slots: true component accepts child content', async () => {
 			// WithSlot.vue has a <slot>, so slots is true (child-accepting).
-			// Putting child content inside it is valid.
+			// It pretends to be <div>, and <p> is valid flow content inside <div>.
 			const { violations } = await mlTest('<div><WithSlot><p>content</p></WithSlot></div>', {
 				pretenders: {
 					scan: [{ files: path.join(templateFixturesDir, 'WithSlot.vue') }],
@@ -78,13 +96,40 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			expect(permittedViolations).toStrictEqual([]);
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+		});
+	});
+
+	describe('template scanner (Svelte)', () => {
+		test('Svelte component scanned as button passes permitted-contents inside div', async () => {
+			// SimpleButton.svelte pretends to be <button>, same as the Vue variant.
+			const { violations } = await mlTest('<div><SimpleButton></SimpleButton></div>', {
+				pretenders: {
+					scan: [{ files: path.join(templateFixturesDir, 'SimpleButton.svelte') }],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
+		});
+
+		test('Svelte component with slot accepts child content', async () => {
+			// WithSlot.svelte has a <slot>, so slots is true.
+			const { violations } = await mlTest('<div><WithSlot><p>content</p></WithSlot></div>', {
+				pretenders: {
+					scan: [{ files: path.join(templateFixturesDir, 'WithSlot.svelte') }],
+				},
+				rules: {
+					'permitted-contents': true,
+				},
+			});
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 	});
 
 	describe('JSX scanner', () => {
-		test('scanned JSX component is validated as its pretended element', async () => {
+		test('JSX component scanned as div passes permitted-contents inside body', async () => {
 			// 002.tsx: FooBar pretends to be <div>
 			const { violations } = await mlTest('<body><FooBar></FooBar></body>', {
 				pretenders: {
@@ -94,9 +139,7 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			// <div> is valid flow content inside <body>, so no violations expected
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			expect(permittedViolations).toStrictEqual([]);
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 
 		test('slots: true JSX component accepts child content', async () => {
@@ -109,13 +152,12 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			expect(permittedViolations).toStrictEqual([]);
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 
-		test('slots: null JSX component rejects child content', async () => {
+		test('JSX component pretending to be img (void element) triggers violation when given children', async () => {
 			// 005.tsx: VoidComponent has no children (slots: null, pretends to be <img>)
-			// Putting child content inside it should trigger a violation.
+			// <img> is a void element — children are forbidden.
 			const { violations } = await mlTest('<div><VoidComponent><span>child</span></VoidComponent></div>', {
 				pretenders: {
 					scan: [{ files: path.join(jsxFixturesDir, '005.tsx') }],
@@ -124,14 +166,20 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			expect(permittedViolations.length).toBeGreaterThan(0);
+			expect(violations).toStrictEqual([
+				expect.objectContaining({
+					ruleId: 'permitted-contents',
+					severity: 'error',
+					raw: '<VoidComponent>',
+				}),
+			]);
 		});
 	});
 
 	describe('mixed scanners', () => {
-		test('scanning both Vue and JSX files together', async () => {
-			// Scan both template and JSX fixtures simultaneously
+		test('scanning both Vue and JSX files together resolves all components', async () => {
+			// Scan both template and JSX fixtures simultaneously.
+			// Both SimpleButton (<button>) and FooBar (<div>) are valid inside <div>.
 			const { violations } = await mlTest('<div><SimpleButton></SimpleButton><FooBar></FooBar></div>', {
 				pretenders: {
 					scan: [
@@ -143,13 +191,12 @@ describe('pretenders.scan integration', () => {
 					'permitted-contents': true,
 				},
 			});
-			const permittedViolations = violations.filter(v => v.ruleId === 'permitted-contents');
-			expect(permittedViolations).toStrictEqual([]);
+			expect(violations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 	});
 
 	describe('ignoreComponentNames', () => {
-		test('ignored component is not recognized as a pretender', async () => {
+		test('ignored component is treated as unknown element, recognized component passes', async () => {
 			// When SimpleButton is ignored, it is NOT mapped to <button>.
 			// As an unknown custom element, permitted-contents flags it
 			// because "simplebutton" is not in the HTML spec.
@@ -179,13 +226,16 @@ describe('pretenders.scan integration', () => {
 			});
 
 			// Ignored: unknown element triggers permitted-contents violation
-			const ignoredPermitted = ignoredViolations.filter(v => v.ruleId === 'permitted-contents');
-			expect(ignoredPermitted.length).toBeGreaterThan(0);
-			expect(ignoredPermitted[0]!.message).toContain('simplebutton');
+			expect(ignoredViolations).toStrictEqual([
+				expect.objectContaining({
+					ruleId: 'permitted-contents',
+					severity: 'error',
+					raw: '<SimpleButton>',
+				}),
+			]);
 
 			// Recognized: <button> is valid inside <div>, no violations
-			const recognizedPermitted = recognizedViolations.filter(v => v.ruleId === 'permitted-contents');
-			expect(recognizedPermitted).toStrictEqual([]);
+			expect(recognizedViolations.filter(v => v.ruleId === 'permitted-contents')).toStrictEqual([]);
 		});
 	});
 });
