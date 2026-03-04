@@ -129,6 +129,10 @@ export type PretenderDetails = {
 	 * @experimental
 	 */
 	readonly imports?: readonly string[];
+
+	/**
+	 * Inline pretender definitions.
+	 */
 	readonly data?: readonly Pretender[];
 
 	/**
@@ -146,7 +150,14 @@ export type PretenderDetails = {
  * Data structure for a pretender definition file.
  */
 export type PretenderFileData = {
+	/**
+	 * Schema version of the pretender file format.
+	 */
 	readonly version: string;
+
+	/**
+	 * Array of pretender definitions in this file.
+	 */
 	readonly data: readonly Pretender[];
 };
 
@@ -329,7 +340,14 @@ export type PretenderScanConfig = {
  * @experimental
  */
 export interface PretenderScanOptions {
+	/**
+	 * Working directory for resolving relative file paths.
+	 */
 	readonly cwd?: string;
+
+	/**
+	 * Component names to exclude from scanning results.
+	 */
 	readonly ignoreComponentNames?: readonly string[];
 }
 
