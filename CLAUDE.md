@@ -88,9 +88,34 @@ The main working directory MUST stay on `dev` at all times. Any feature branch w
 
 Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). Worktrees are created under `../markuplint-wt/<branch-name>` (`wt.basedir` setting).
 
-### Setup
+### Prerequisites
 
-If `git wt` is not available, install and configure it:
+#### GitHub CLI (`gh`)
+
+`/pr`、`/release`、`/issue`、`/sponsors` などのコマンドは `gh` (GitHub CLI) を使用する。未インストールの場合は事前にインストールすること:
+
+```bash
+# macOS
+brew install gh
+
+# Linux (Debian/Ubuntu)
+(type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
+  && sudo mkdir -p -m 755 /etc/apt/keyrings \
+  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+  && sudo apt update \
+  && sudo apt install gh -y
+
+# その他の環境: https://github.com/cli/cli#installation
+```
+
+インストール後、`gh auth login` で認証を行うこと。
+
+#### git-wt
+
+`git wt` が未インストールの場合:
 
 ```bash
 brew install k1LoW/tap/git-wt
