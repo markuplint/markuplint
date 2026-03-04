@@ -12,9 +12,16 @@ setGlobal({
 /**
  * Full pipeline integration test for the `pretenders.scan` feature.
  *
+ * @experimental `pretenders.scan` is experimental. These tests guard the
+ * cross-package pipeline while the feature retains that status. If the scan
+ * API surface changes, update these tests accordingly.
+ *
  * Exercises the complete flow:
  *   Config with `pretenders.scan` → glob resolution → component scanning
  *   → MLDOM pretender mapping → rule-based validation
+ *
+ * Packages involved: @markuplint/ml-config, @markuplint/file-resolver,
+ * @markuplint/pretenders, @markuplint/ml-core
  *
  * Uses existing fixtures from `@markuplint/pretenders` to avoid duplication.
  */
