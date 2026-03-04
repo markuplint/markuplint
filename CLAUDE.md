@@ -92,7 +92,7 @@ Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). 
 
 #### GitHub CLI (`gh`)
 
-`/pr`、`/release`、`/issue`、`/sponsors` などのコマンドは `gh` (GitHub CLI) を使用する。未インストールの場合は事前にインストールすること:
+Commands such as `/pr`, `/release`, `/issue`, and `/sponsors` require `gh` (GitHub CLI). Install it beforehand if not already available:
 
 ```bash
 # macOS
@@ -108,14 +108,14 @@ brew install gh
   && sudo apt update \
   && sudo apt install gh -y
 
-# その他の環境: https://github.com/cli/cli#installation
+# Other platforms: https://github.com/cli/cli#installation
 ```
 
-インストール後、`gh auth login` で認証を行うこと。
+After installation, authenticate with `gh auth login`.
 
 #### git-wt
 
-`git wt` が未インストールの場合:
+If `git wt` is not installed, install and configure it:
 
 ```bash
 brew install k1LoW/tap/git-wt
