@@ -827,7 +827,9 @@ interface Config {
 
 ### `pretenders`
 
-The [**Pretenders**](/docs/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered. Be careful to the value is an array.
+The [**Pretenders**](/docs/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered.
+
+The value can be either an **array** of pretender definitions or an **object** with `data`, `scan`, and other fields.
 
 #### `selector`
 
@@ -997,18 +999,126 @@ const MyIcon = ({ label }) => {
 </div>
 ```
 
+#### `as.slots` {#pretenders/as-slots}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+It specifies whether the component accepts children or has slots. It's optional.
+
+- **`null`**: The component does **not** accept children or does not have slots. For example, a component that renders as `<img>` (a void element).
+- **`true`**: The component accepts children, and the wrapper element is the outermost element.
+- **Array**: Multiple named slots, each described as an element specification (advanced usage).
+
+```jsx
+// This component accepts children — slots should be true
+const Wrapper = ({ children }) => <div>{children}</div>;
+
+// This component does not accept children — slots should be null
+const Icon = props => <img src={props.src} />;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Wrapper",
+      "as": {
+        "element": "div",
+        "slots": true
+      }
+    },
+    {
+      "selector": "Icon",
+      "as": {
+        "element": "img",
+        "slots": null
+      }
+    }
+  ]
+}
+```
+
+#### `scan` {#pretenders/scan}
+
+:::caution[Experimental]
+This property is **experimental** and may change in future releases.
+:::
+
+When using the **object form** of `pretenders`, the `scan` field enables **dynamic component scanning**. Instead of manually listing every component, markuplint scans your component files and automatically discovers pretender mappings.
+
+File extensions determine the scanner:
+
+- `.js`, `.jsx`, `.ts`, `.tsx` → JSX scanner
+- `.vue`, `.svelte`, `.astro` → template scanner
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      },
+      {
+        "files": "./src/components/**/*.vue",
+        "ignoreComponentNames": ["BaseLayout"]
+      }
+    ]
+  }
+}
+```
+
+##### `scan[].files`
+
+A glob pattern (or an array of glob patterns) for component files to scan. It's required.
+
+##### `scan[].ignoreComponentNames`
+
+An array of component names to exclude from scanning results. It's optional.
+
+#### `data` (object form) {#pretenders/data}
+
+When using the object form, inline pretender definitions go in the `data` field:
+
+```json class=config
+{
+  "pretenders": {
+    "data": [
+      {
+        "selector": "MyComponent",
+        "as": "div"
+      }
+    ],
+    "scan": [
+      {
+        "files": "./src/components/**/*.vue"
+      }
+    ]
+  }
+}
+```
+
 #### Interface {#pretenders/interface}
 
 ```ts
 interface Config {
-  pretenders?: {
-    selector: string;
-    as: string | OriginalNode;
-  }[];
+  pretenders?:
+    | Pretender[]
+    | {
+        data?: Pretender[];
+        scan?: PretenderScanConfig[]; // @experimental
+      };
 }
+
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
 
 type OriginalNode = {
   element: string;
+  slots?: null | true | Slot[]; // @experimental
   namespace?: 'svg';
 
   inheritAttrs?: boolean;
@@ -1028,6 +1138,13 @@ type OriginalNode = {
           fromAttr: string;
         };
   };
+};
+
+type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type PretenderScanConfig = {
+  files: string | string[];
+  ignoreComponentNames?: string[];
 };
 ```
 

@@ -224,6 +224,28 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
 
+### Dynamic scanning {#pretenders-scan}
+
+:::caution[Experimental]
+This feature is **experimental** and may change in future releases.
+:::
+
+Instead of manually listing every component, you can let markuplint **scan your component files** and discover pretender mappings automatically. The scanner analyzes JSX/TSX, Vue, Svelte, and Astro files to determine which native HTML element each component renders as.
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.{tsx,vue,svelte}"
+      }
+    ]
+  }
+}
+```
+
+See [`pretenders.scan`](/docs/configuration/properties#pretenders/scan) for the full configuration reference.
+
 ### The `as` attribute
 
 If a component has the `as` attribute, it is evaluated as the element specified by this attribute.
