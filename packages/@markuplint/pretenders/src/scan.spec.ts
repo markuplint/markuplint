@@ -113,9 +113,15 @@ describe('scan', () => {
 			expect(result).toStrictEqual([expect.objectContaining({ selector: 'JsButton', as: 'button' })]);
 		});
 
-		test('.ts files are dispatched to the JSX scanner (no JSX syntax produces empty)', async () => {
-			// .ts files cannot contain JSX syntax, so the scanner dispatches
-			// them but the TS compiler finds no JSX components
+		test('.ts files are dispatched to the JSX scanner', async () => {
+			// .ts files cannot contain JSX syntax, so the TS compiler finds
+			// no components. Verify dispatch by checking that a relative .ts
+			// path triggers ReferenceError (from createScanner validation),
+			// proving the file reached jsxScanner rather than being silently ignored.
+			await expect(scan(['relative/path.ts'])).rejects.toThrow(ReferenceError);
+		});
+
+		test('.ts files produce empty results (no JSX syntax)', async () => {
 			const result = await scan([jsxFixture('007.ts')]);
 			expect(result).toStrictEqual([]);
 		});
@@ -139,14 +145,16 @@ describe('scan', () => {
 			const customCwd = path.resolve(fixtureDir, '..');
 			const result = await jsxScanner([jsxFixture('002.tsx')], { cwd: customCwd });
 			const pretender = result[0];
-			expect(pretender.filePath).toContain(_('fixtures/002.tsx'));
+			// filePath must start with "fixtures/" (relative to customCwd), not an absolute path
+			expect(pretender.filePath).toMatch(/^fixtures[/\\]002\.tsx:/);
 		});
 
 		test('template scanner uses custom cwd for relative file paths in output', async () => {
 			const customCwd = path.resolve(fixtureDir);
 			const result = await templateScanner([templateFixture('SimpleButton.vue')], { cwd: customCwd });
 			const pretender = result[0];
-			expect(pretender.filePath).toContain(_('template/SimpleButton.vue'));
+			// filePath must start with "template/" (relative to customCwd), not an absolute path
+			expect(pretender.filePath).toMatch(/^template[/\\]SimpleButton\.vue:/);
 		});
 	});
 
