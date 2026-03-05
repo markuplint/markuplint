@@ -813,7 +813,9 @@ interface Config {
 
 ### `pretenders`
 
-[**プリテンダー**](/docs/guides/besides-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。値が配列であることに注意してください。
+[**プリテンダー**](/docs/guides/besides-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。
+
+値はプリテンダー定義の**配列**、または`data`、`scan`などのフィールドを持つ**オブジェクト**のいずれかです。
 
 #### `selector`
 
@@ -979,18 +981,126 @@ const MyIcon = ({ label }) => {
 </div>
 ```
 
+#### `as.slots` {#pretenders/as-slots}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+コンポーネントが子要素を受け入れるか、スロットを持つかどうかを指定します。省略可能です。
+
+- **`null`**: コンポーネントは子要素を受け入れない、またはスロットを持ちません。例えば、`<img>`（void要素）としてレンダリングされるコンポーネントです。
+- **`true`**: コンポーネントは子要素を受け入れ、ラッパー要素が最も外側の要素です。
+- **配列**: 複数の名前付きスロット。各スロットは要素仕様として記述されます（高度な使い方）。
+
+```jsx
+// このコンポーネントは子要素を受け入れる — slotsはtrueにすべき
+const Wrapper = ({ children }) => <div>{children}</div>;
+
+// このコンポーネントは子要素を受け入れない — slotsはnullにすべき
+const Icon = props => <img src={props.src} />;
+```
+
+```json class=config
+{
+  "pretenders": [
+    {
+      "selector": "Wrapper",
+      "as": {
+        "element": "div",
+        "slots": true
+      }
+    },
+    {
+      "selector": "Icon",
+      "as": {
+        "element": "img",
+        "slots": null
+      }
+    }
+  ]
+}
+```
+
+#### `scan` {#pretenders/scan}
+
+:::caution[実験的機能]
+このプロパティは**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+`pretenders`の**オブジェクト形式**を使用する場合、`scan`フィールドで**動的コンポーネントスキャン**を有効にできます。すべてのコンポーネントを手動でリストアップする代わりに、markuplintがコンポーネントファイルをスキャンしてプリテンダーマッピングを自動的に発見します。
+
+ファイルの拡張子によってスキャナーが決定されます:
+
+- `.js`, `.jsx`, `.ts`, `.tsx` → JSXスキャナー
+- `.vue`, `.svelte`, `.astro` → テンプレートスキャナー
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      },
+      {
+        "files": "./src/components/**/*.vue",
+        "ignoreComponentNames": ["BaseLayout"]
+      }
+    ]
+  }
+}
+```
+
+##### `scan[].files`
+
+スキャンするコンポーネントファイルのglobパターン（またはglobパターンの配列）。必須です。
+
+##### `scan[].ignoreComponentNames`
+
+スキャン結果から除外するコンポーネント名の配列。省略可能です。
+
+#### `data`（オブジェクト形式） {#pretenders/data}
+
+オブジェクト形式を使用する場合、インラインのプリテンダー定義は`data`フィールドに記述します:
+
+```json class=config
+{
+  "pretenders": {
+    "data": [
+      {
+        "selector": "MyComponent",
+        "as": "div"
+      }
+    ],
+    "scan": [
+      {
+        "files": "./src/components/**/*.vue"
+      }
+    ]
+  }
+}
+```
+
 #### インターフェイス {#pretenders/interface}
 
 ```ts
 interface Config {
-  pretenders?: {
-    selector: string;
-    as: string | OriginalNode;
-  }[];
+  pretenders?:
+    | Pretender[]
+    | {
+        data?: Pretender[];
+        scan?: PretenderScanConfig[]; // @experimental
+      };
 }
+
+type Pretender = {
+  selector: string;
+  as: string | OriginalNode;
+};
 
 type OriginalNode = {
   element: string;
+  slots?: null | true | Slot[]; // @experimental
   namespace?: 'svg';
 
   inheritAttrs?: boolean;
@@ -1010,6 +1120,13 @@ type OriginalNode = {
           fromAttr: string;
         };
   };
+};
+
+type Slot = Omit<OriginalNode, 'slots'>; // @experimental
+
+type PretenderScanConfig = {
+  files: string | string[];
+  ignoreComponentNames?: string[];
 };
 ```
 
