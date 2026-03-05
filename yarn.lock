@@ -2796,7 +2796,7 @@ __metadata:
     "@types/css-tree": "npm:2.3.11"
     "@types/debug": "npm:4.1.12"
     bcp-47: "npm:2.1.0"
-    css-tree: "npm:3.1.0"
+    css-tree: "npm:3.2.0"
     debug: "npm:4.4.3"
     leven: "npm:4.1.0"
     type-fest: "npm:5.4.4"
@@ -7145,7 +7145,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-tree@npm:3.1.0, css-tree@npm:^3.0.0, css-tree@npm:^3.1.0":
+"css-tree@npm:3.2.0":
+  version: 3.2.0
+  resolution: "css-tree@npm:3.2.0"
+  dependencies:
+    mdn-data: "npm:2.27.1"
+    source-map-js: "npm:^1.2.1"
+  checksum: 10c0/3b3747cdddc46bad1a1770b55e96fdd1edf87000a5dca50c51a32b94a03a2900492942649ce6ea54ad67e1cdfae7df09623cef2014d020c7f5293f74cbe1a7a7
+  languageName: node
+  linkType: hard
+
+"css-tree@npm:^3.0.0, css-tree@npm:^3.1.0":
   version: 3.1.0
   resolution: "css-tree@npm:3.1.0"
   dependencies:
@@ -12605,6 +12615,13 @@ __metadata:
   version: 2.12.2
   resolution: "mdn-data@npm:2.12.2"
   checksum: 10c0/b22443b71d70f72ccc3c6ba1608035431a8fc18c3c8fc53523f06d20e05c2ac10f9b53092759a2ca85cf02f0d37036f310b581ce03e7b99ac74d388ef8152ade
+  languageName: node
+  linkType: hard
+
+"mdn-data@npm:2.27.1":
+  version: 2.27.1
+  resolution: "mdn-data@npm:2.27.1"
+  checksum: 10c0/eb8abf5d22e4d1e090346f5e81b67d23cef14c83940e445da5c44541ad874dc8fb9f6ca236e8258c3a489d9fb5884188a4d7d58773adb9089ac2c0b966796393
   languageName: node
   linkType: hard
 
