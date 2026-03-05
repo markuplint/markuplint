@@ -388,13 +388,10 @@ import { Card } from './ui'
 	});
 
 	test('brace depth tracking skips intermediate lines in multi-line blocks', () => {
-		// When a multi-line import opens with { on the import line,
-		// the brace depth tracker prevents early exit on intermediate
-		// lines like "Button," that would otherwise be treated as non-ESM.
-		// However, the closing "} from './ui'" line is not recognized as
-		// ESM (doesn't start with import/export/comment/empty), so the
-		// block ends there. Since esmEnd is not advanced during braceDepth > 0,
-		// a standalone multi-line import returns null.
+		// BUG: Multi-line imports (e.g. `import {\n  Button,\n} from './ui'`)
+		// return null because esmEnd is not advanced while braceDepth > 0,
+		// and the closing `} from '...'` line is not recognized as ESM.
+		// TODO: Fix extractMdxEsm to handle multi-line imports properly.
 		const source = `import {
   Button,
   Card,
