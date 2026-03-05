@@ -418,6 +418,7 @@ import {
 		const result = extractMdxEsm(source);
 		expect(result).not.toBeNull();
 		expect(result!.content).toContain("import Layout from './Layout'");
+		expect(result!.content).not.toContain('Button');
 		expect(result!.offset).toBe(0);
 	});
 

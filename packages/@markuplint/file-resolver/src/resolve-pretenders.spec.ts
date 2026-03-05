@@ -17,7 +17,9 @@ test('files', async () => {
 	]);
 });
 
-test('imports', async () => {
+test('imports — falls back to pretenders.json when package.json has no pretenders field', async () => {
+	// @markuplint-test/react has no "pretenders" field in package.json,
+	// so the resolver falls back to reading pretenders.json
 	const pretenders = await resolvePretenders({
 		imports: ['@markuplint-test/react'],
 	});
@@ -140,21 +142,6 @@ test('imports fallback: reads pretenders field from package.json', async () => {
 			selector: 'PkgButton',
 			as: 'button',
 			filePath: 'pkg-button.jsx:1:10',
-		},
-	]);
-});
-
-test('imports fallback: falls back to pretenders.json when package.json has no pretenders field', async () => {
-	// @markuplint-test/react has no "pretenders" field in package.json
-	// but has a separate pretenders.json file — this tests the fallback
-	const pretenders = await resolvePretenders({
-		imports: ['@markuplint-test/react'],
-	});
-	expect(pretenders).toStrictEqual([
-		{
-			selector: 'Sample',
-			as: 'div',
-			filePath: 'sample.jsx:1:16',
 		},
 	]);
 });
