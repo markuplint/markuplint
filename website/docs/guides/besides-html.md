@@ -181,7 +181,7 @@ Besides, **spec plugins** include specific attributes and directives each owned.
 
 ## Pretenders
 
-In **React**, **Vue**, and more, It cannot evaluate custom components as HTML elements.
+In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
 
 <!-- prettier-ignore-start -->
 ```jsx
@@ -193,9 +193,11 @@ In **React**, **Vue**, and more, It cannot evaluate custom components as HTML el
 ```
 <!-- prettier-ignore-end -->
 
-The **Pretenders** feature resolves that.
+The **Pretenders** feature resolves that by telling markuplint what each component renders as.
 
-It evaluates components as rendered HTML elements on each rule if you specify a [selector](./selectors) for a component and properties of an element that it exposes.
+### Manual configuration
+
+You can manually specify a [selector](./selectors) for each component and the HTML element it renders:
 
 ```json class=config
 {
@@ -222,6 +224,8 @@ It evaluates components as rendered HTML elements on each rule if you specify a 
 ```
 <!-- prettier-ignore-end -->
 
+This works well for small projects, but manually maintaining the list becomes tedious as your component library grows. That's where **dynamic scanning** comes in.
+
 See the details of [`pretenders`](/docs/configuration/properties#pretenders) property on the configuration if you want.
 
 ### Dynamic scanning {#pretenders-scan}
@@ -230,14 +234,98 @@ See the details of [`pretenders`](/docs/configuration/properties#pretenders) pro
 This feature is **experimental** and may change in future releases.
 :::
 
-Instead of manually listing every component, you can let markuplint **scan your component files** and discover pretender mappings automatically. The scanner analyzes JSX/TSX, Vue, Svelte, and Astro files to determine which native HTML element each component renders as.
+Instead of manually listing every component, you can let markuplint **scan your component source files** and discover pretender mappings automatically.
 
 ```json class=config
 {
   "pretenders": {
     "scan": [
       {
-        "files": "./src/components/**/*.{tsx,vue,svelte}"
+        "files": "./src/components/**/*.tsx"
+      }
+    ]
+  }
+}
+```
+
+This single configuration replaces what might otherwise be dozens of manual pretender entries. When markuplint runs, it analyzes your component files and determines:
+
+- **Which HTML element** each component renders as its root element
+- **Whether the component accepts children** (slots detection)
+- **Static attributes** on the root element
+
+#### Supported file types
+
+File extensions determine the scanner automatically:
+
+| Extensions                   | Scanner          | Frameworks                 |
+| ---------------------------- | ---------------- | -------------------------- |
+| `.js`, `.jsx`, `.ts`, `.tsx` | JSX scanner      | React, Preact, Solid, etc. |
+| `.vue`                       | Template scanner | Vue                        |
+| `.svelte`                    | Template scanner | Svelte                     |
+| `.astro`                     | Template scanner | Astro                      |
+
+You can scan multiple file types at once:
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      },
+      {
+        "files": "./src/components/**/*.vue",
+        "ignoreComponentNames": ["BaseLayout"]
+      }
+    ]
+  }
+}
+```
+
+#### What the scanner detects
+
+Consider the following React component:
+
+```tsx
+const ProfileCard = ({ children }) => {
+  return <article className="profile">{children}</article>;
+};
+```
+
+The scanner automatically discovers that `ProfileCard` renders as `<article>` and accepts children. This is equivalent to writing:
+
+```json
+{
+  "selector": "ProfileCard",
+  "as": {
+    "element": "article",
+    "slots": true
+  }
+}
+```
+
+Now markuplint can correctly validate that `<ProfileCard>` contains only [flow content](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2) (as `<article>` does), and that nesting `<ProfileCard>` inside a `<p>` would be invalid.
+
+#### Combining scan with manual definitions
+
+You can use `scan` alongside manual `data` definitions. This is useful when the scanner cannot determine the correct mapping for a particular component, or when you want to override the scanned result:
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      }
+    ],
+    "data": [
+      {
+        "selector": "SpecialComponent",
+        "as": {
+          "element": "nav",
+          "aria": { "name": { "fromAttr": "label" } }
+        }
       }
     ]
   }
