@@ -8,7 +8,7 @@
     ".tsx$": "@markuplint/react-spec"
   },
   "pretenders": {
-    "files": ["./pretenders.json"]
+    "scan": [{ "files": "./src/**/*.tsx" }]
   },
   "rules": {
     "heading-levels": false
