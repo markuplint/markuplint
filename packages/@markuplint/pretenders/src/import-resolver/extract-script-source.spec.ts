@@ -75,6 +75,26 @@ export default {
 		// offset is right after '<script setup>' (14 chars)
 		expect(result!.offset).toBe('<script setup>'.length);
 	});
+
+	test('returns null when <script setup> has no closing </script> tag', () => {
+		const source = `<template>
+  <div>hello</div>
+</template>
+
+<script setup>
+import Button from './Button.vue'
+const msg = 'hello'`;
+		const result = extractVueScriptSetup(source);
+		expect(result).toBeNull();
+	});
+
+	test('returns null when <script setup lang="ts"> has no closing tag', () => {
+		const source = `<script setup lang="ts">
+import { ref } from 'vue'
+const count = ref(0)`;
+		const result = extractVueScriptSetup(source);
+		expect(result).toBeNull();
+	});
 });
 
 describe('extractVueScript', () => {
@@ -365,5 +385,51 @@ import { Card } from './ui'
 	test('returns null for empty source', () => {
 		const result = extractMdxEsm('');
 		expect(result).toBeNull();
+	});
+
+	test('brace depth tracking skips intermediate lines in multi-line blocks', () => {
+		// BUG: Multi-line imports (e.g. `import {\n  Button,\n} from './ui'`)
+		// return null because esmEnd is not advanced while braceDepth > 0,
+		// and the closing `} from '...'` line is not recognized as ESM.
+		// TODO: Fix extractMdxEsm to handle multi-line imports properly.
+		const source = `import {
+  Button,
+  Card,
+} from './ui'
+
+# Hello`;
+		const result = extractMdxEsm(source);
+		expect(result).toBeNull();
+	});
+
+	test('single-line import followed by multi-line import preserves the single-line portion', () => {
+		// A single-line import advances esmEnd. A subsequent multi-line
+		// import block does not advance esmEnd further, but the
+		// single-line import is still captured.
+		const source = `import Layout from './Layout'
+import {
+  Button,
+} from './ui'
+
+# Hello`;
+		const result = extractMdxEsm(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("import Layout from './Layout'");
+		expect(result!.content).not.toContain('Button');
+		expect(result!.offset).toBe(0);
+	});
+
+	test('handles single-line export with balanced braces', () => {
+		// Braces that open and close on the same line keep braceDepth at 0,
+		// so the line is evaluated normally as ESM.
+		const source = `export { Button } from './ui'
+import Card from './Card'
+
+# Hello`;
+		const result = extractMdxEsm(source);
+		expect(result).not.toBeNull();
+		expect(result!.content).toContain("export { Button } from './ui'");
+		expect(result!.content).toContain("import Card from './Card'");
+		expect(result!.content).not.toContain('# Hello');
 	});
 });

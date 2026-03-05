@@ -17,7 +17,9 @@ test('files', async () => {
 	]);
 });
 
-test('imports', async () => {
+test('imports — falls back to pretenders.json when package.json has no pretenders field', async () => {
+	// @markuplint-test/react has no "pretenders" field in package.json,
+	// so the resolver falls back to reading pretenders.json
 	const pretenders = await resolvePretenders({
 		imports: ['@markuplint-test/react'],
 	});
@@ -106,4 +108,40 @@ test('scan with empty glob match', async () => {
 		],
 	});
 	expect(pretenders).toStrictEqual([]);
+});
+
+test('scan with files as string[] (array of patterns)', async () => {
+	const fixtureDir = path.resolve(
+		import.meta.dirname,
+		'..',
+		'..',
+		'..',
+		'@markuplint',
+		'pretenders',
+		'test',
+		'fixtures',
+	);
+	const pretenders = await resolvePretenders({
+		scan: [
+			{
+				files: [path.resolve(fixtureDir, 'template', 'SimpleButton.vue'), path.resolve(fixtureDir, '002.tsx')],
+			},
+		],
+	});
+	const selectors = pretenders.map(p => p.selector);
+	expect(selectors).toContain('SimpleButton');
+	expect(selectors).toContain('FooBar');
+});
+
+test('imports fallback: reads pretenders field from package.json', async () => {
+	const pretenders = await resolvePretenders({
+		imports: ['@markuplint-test/react-pkg-pretenders'],
+	});
+	expect(pretenders).toStrictEqual([
+		{
+			selector: 'PkgButton',
+			as: 'button',
+			filePath: 'pkg-button.jsx:1:10',
+		},
+	]);
 });

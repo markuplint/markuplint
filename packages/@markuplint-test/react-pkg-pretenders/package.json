@@ -1,0 +1,15 @@
+{
+	"name": "@markuplint-test/react-pkg-pretenders",
+	"version": "5.0.0-alpha.3",
+	"private": true,
+	"type": "module",
+	"pretenders": {
+		"data": [
+			{
+				"selector": "PkgButton",
+				"as": "button",
+				"filePath": "pkg-button.jsx:1:10"
+			}
+		]
+	}
+}

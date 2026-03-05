@@ -2306,6 +2306,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@markuplint-test/react-pkg-pretenders@workspace:packages/@markuplint-test/react-pkg-pretenders":
+  version: 0.0.0-use.local
+  resolution: "@markuplint-test/react-pkg-pretenders@workspace:packages/@markuplint-test/react-pkg-pretenders"
+  languageName: unknown
+  linkType: soft
+
 "@markuplint-test/react@workspace:packages/@markuplint-test/react":
   version: 0.0.0-use.local
   resolution: "@markuplint-test/react@workspace:packages/@markuplint-test/react"

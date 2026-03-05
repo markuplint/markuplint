@@ -28,7 +28,7 @@ The CLI accepts glob patterns covering any combination of the supported framewor
 
 ### Configuration-based Scanning
 
-Instead of the CLI, you can configure dynamic scanning directly in your markuplint config file. The `scan` field in `pretenders` accepts glob patterns and automatically dispatches to the appropriate scanner:
+Instead of the CLI, you can configure dynamic scanning directly in your markuplint config file. The `scan` field in `pretenders` accepts glob patterns and automatically dispatches to the appropriate scanner. The `files` field accepts either a single glob string or an array of globs:
 
 ```jsonc
 // .markuplintrc
@@ -36,8 +36,13 @@ Instead of the CLI, you can configure dynamic scanning directly in your markupli
   "pretenders": {
     "scan": [
       {
+        // Single glob string
         "files": "./src/components/**/*.{vue,tsx,svelte,astro}",
         "ignoreComponentNames": ["InternalHelper"],
+      },
+      {
+        // Array of glob strings
+        "files": ["./src/pages/**/*.tsx", "./src/layouts/**/*.astro"],
       },
     ],
   },
