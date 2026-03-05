@@ -180,7 +180,7 @@ const Component = ({ list }) => {
 
 ## プリテンダー（偽装機能） {#pretenders}
 
-**React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。
+**React**や**Vue**などでは、カスタムコンポーネントをHTML要素として評価ができません。つまり、markuplintのコンテンツモデルルール — [`permitted-contents`](/docs/rules/permitted-contents)など — は、コンポーネントが実際に何をレンダリングするか知る手段がありません。この情報がないと、`<button>`要素をレンダリングする`<Button>`コンポーネントは未知の要素として扱われ、`<a><Button /></a>`（インタラクティブコンテンツの中にインタラクティブコンテンツ）のような不正なネストが検出されません。
 
 <!-- prettier-ignore-start -->
 ```jsx
@@ -192,9 +192,11 @@ const Component = ({ list }) => {
 ```
 <!-- prettier-ignore-end -->
 
-**プリテンダー**機能はそれを解決します。
+**プリテンダー**機能は、各コンポーネントが何としてレンダリングされるかをmarkuplintに伝えることでこれを解決します。
 
-コンポーネントとマッチする[セレクタ](./selectors)と、コンポーネントが公開する要素のプロパティを指定すると、各ルールでコンポーネントをレンダリングされたHTML要素として評価します。
+### 手動設定
+
+コンポーネントとマッチする[セレクタ](./selectors)と、コンポーネントが公開する要素を手動で指定できます。
 
 ```json class=config
 {
@@ -221,7 +223,115 @@ const Component = ({ list }) => {
 ```
 <!-- prettier-ignore-end -->
 
+小規模プロジェクトではこの方法で十分ですが、コンポーネントライブラリが大きくなるにつれて手動でリストを管理するのは面倒になります。そこで**動的スキャン**が活躍します。
+
 必要であれば、設定の[`pretenders`](/docs/configuration/properties#pretenders)プロパティの詳細を参照してください。
+
+### 動的スキャン {#pretenders-scan}
+
+:::caution[実験的機能]
+この機能は**実験的**であり、将来のリリースで変更される可能性があります。
+:::
+
+すべてのコンポーネントを手動でリスト化する代わりに、markuplintにコンポーネントの**ソースファイルをスキャン**させ、プリテンダーマッピングを自動的に発見させることができます。
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      }
+    ]
+  }
+}
+```
+
+この1つの設定で、数十の手動プリテンダー定義を置き換えることができます。markuplintは実行時にコンポーネントファイルを解析し、以下を判定します:
+
+- コンポーネントがルート要素として**レンダリングするHTML要素**
+- コンポーネントが**子要素を受け入れるか**どうか（スロット検出）
+- ルート要素の**静的な属性**
+
+#### 対応ファイルタイプ
+
+ファイル拡張子によって使用するスキャナーが自動的に決定されます:
+
+| 拡張子                       | スキャナー             | フレームワーク         |
+| ---------------------------- | ---------------------- | ---------------------- |
+| `.js`, `.jsx`, `.ts`, `.tsx` | JSXスキャナー          | React, Preact, Solid等 |
+| `.vue`                       | テンプレートスキャナー | Vue                    |
+| `.svelte`                    | テンプレートスキャナー | Svelte                 |
+| `.astro`                     | テンプレートスキャナー | Astro                  |
+
+複数のファイルタイプを同時にスキャンできます:
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      },
+      {
+        "files": "./src/components/**/*.vue",
+        "ignoreComponentNames": ["BaseLayout"]
+      }
+    ]
+  }
+}
+```
+
+#### スキャナーが検出するもの
+
+以下のようなReactコンポーネントを例に考えます:
+
+```tsx
+const ProfileCard = ({ children }) => {
+  return <article className="profile">{children}</article>;
+};
+```
+
+スキャナーは、`ProfileCard`が`<article>`としてレンダリングされ、子要素を受け入れることを自動的に発見します。これは以下の手動定義と同等です:
+
+```json
+{
+  "selector": "ProfileCard",
+  "as": {
+    "element": "article",
+    "slots": true
+  }
+}
+```
+
+これにより、markuplintは`<ProfileCard>`が[フローコンテンツ](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
+
+#### スキャンと手動定義の併用
+
+`scan`と手動の`data`定義を併用できます。スキャナーが特定のコンポーネントに対して正しいマッピングを判定できない場合や、スキャン結果をオーバーライドしたい場合に便利です:
+
+```json class=config
+{
+  "pretenders": {
+    "scan": [
+      {
+        "files": "./src/components/**/*.tsx"
+      }
+    ],
+    "data": [
+      {
+        "selector": "SpecialComponent",
+        "as": {
+          "element": "nav",
+          "aria": { "name": { "fromAttr": "label" } }
+        }
+      }
+    ]
+  }
+}
+```
+
+[`pretenders.scan`](/docs/configuration/properties#pretenders/scan)で設定リファレンスの全体を参照してください。
 
 ### `as`属性について
 
