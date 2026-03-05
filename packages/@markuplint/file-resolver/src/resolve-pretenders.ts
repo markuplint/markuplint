@@ -12,6 +12,15 @@ type PretendersConfig = OptimizedConfig['pretenders'];
  * Resolves pretender definitions from files, imported modules, inline data,
  * and dynamic component scanning in the configuration.
  *
+ * Resolution order:
+ * 1. `config.files` — direct import of pretender data files
+ * 2. `config.imports` — for each module, tries `<module>/package.json`
+ *    (reads the `pretenders` field) first, then falls back to
+ *    `<module>/pretenders.json`
+ * 3. `config.data` — inline pretender definitions
+ * 4. `config.scan` — dynamic component scanning via glob patterns
+ *    (`files` accepts `string | string[]`)
+ *
  * @param config - The pretenders configuration section from the optimized config
  * @returns An array of all resolved pretender definitions
  */

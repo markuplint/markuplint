@@ -208,7 +208,12 @@ export function extractAstroFrontmatter(source: string): ScriptSourceBlock | nul
  * block of import/export lines (including blank lines within the block),
  * stopping at the first line that is clearly non-ESM content.
  *
- * Handles multi-line imports by tracking brace depth.
+ * Tracks brace depth to skip intermediate lines inside multi-line
+ * import/export blocks (e.g., `import { A, B } from '...'`).
+ * Note: the closing line of a multi-line block (e.g., `} from '...'`)
+ * is not recognized as ESM, so standalone multi-line imports are
+ * not captured. Single-line imports preceding a multi-line block
+ * are still returned correctly.
  *
  * @param source - The full MDX source text
  * @returns The ESM block, or `null` if no import/export statements are found at the top
