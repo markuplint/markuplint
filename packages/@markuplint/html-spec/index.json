@@ -308,6 +308,34 @@
 						"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
 					}
 				},
+				"focusgroup": {
+					"type": {
+						"token": {
+							"enum": [
+								"toolbar",
+								"tablist",
+								"radiogroup",
+								"listbox",
+								"menu",
+								"menubar",
+								"none",
+								"inline",
+								"block",
+								"wrap",
+								"nowrap",
+								"nomemory"
+							]
+						},
+						"separator": "space",
+						"unique": true,
+						"caseInsensitive": true
+					},
+					"experimental": true
+				},
+				"focusgroupstart": {
+					"type": "Boolean",
+					"experimental": true
+				},
 				"headingoffset": {
 					"type": {
 						"type": "integer",
