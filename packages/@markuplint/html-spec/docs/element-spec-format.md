@@ -263,14 +263,25 @@ set that particular flag.
 { "token": "Accept", "separator": "comma", "unique": true, "caseInsensitive": true }
 ```
 
-| Field             | Description                                      |
-| ----------------- | ------------------------------------------------ |
-| `token`           | Token type name                                  |
-| `separator`       | `"space"` or `"comma"`                           |
-| `unique`          | Whether tokens must be unique                    |
-| `caseInsensitive` | Whether matching is case-insensitive             |
-| `ordered`         | Whether order matters                            |
-| `number`          | Cardinality: `"zeroOrMore"`, `"oneOrMore"`, etc. |
+| Field             | Description                                                             |
+| ----------------- | ----------------------------------------------------------------------- |
+| `token`           | Token type: a string (type name) or an object with `enum` (inline enum) |
+| `separator`       | `"space"` or `"comma"`                                                  |
+| `unique`          | Whether tokens must be unique                                           |
+| `caseInsensitive` | Whether matching is case-insensitive                                    |
+| `ordered`         | Whether order matters                                                   |
+| `number`          | Cardinality: `"zeroOrMore"`, `"oneOrMore"`, etc.                        |
+
+When `token` is a string, it references a named type (e.g., `"Accept"`, `"DOMID"`).
+When `token` is an object with `enum`, it defines an inline set of allowed keywords:
+
+```json
+{
+  "token": { "enum": ["allow-forms", "allow-scripts", "allow-popups"] },
+  "separator": "space",
+  "unique": true
+}
+```
 
 **Number constraint type:**
 
