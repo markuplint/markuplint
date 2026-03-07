@@ -362,16 +362,20 @@ spec.mml_mn.jsonc       # <mml:mn> 要素
 
 スペースまたはカンマ区切りのトークンリストを定義します。
 
-| フィールド        | 型                   | 説明                          |
-| ----------------- | -------------------- | ----------------------------- |
-| `token`           | `string`             | トークンの型名                |
-| `separator`       | `"space" \| "comma"` | 区切り文字                    |
-| `unique`          | `boolean`            | 重複を許可しない              |
-| `caseInsensitive` | `boolean`            | 大文字小文字を区別しない      |
-| `ordered`         | `boolean`            | 順序が重要                    |
-| `number`          | `string`             | 個数制約（`"zeroOrMore"` 等） |
+| フィールド        | 型                       | 説明                                                                      |
+| ----------------- | ------------------------ | ------------------------------------------------------------------------- |
+| `token`           | `string \| { enum: [] }` | トークンの型名（文字列）、またはインライン列挙定義（`enum` オブジェクト） |
+| `separator`       | `"space" \| "comma"`     | 区切り文字                                                                |
+| `unique`          | `boolean`                | 重複を許可しない                                                          |
+| `caseInsensitive` | `boolean`                | 大文字小文字を区別しない                                                  |
+| `ordered`         | `boolean`                | 順序が重要                                                                |
+| `number`          | `string`                 | 個数制約（`"zeroOrMore"` 等）                                             |
+
+`token` が文字列の場合、名前付き型（例: `"Accept"`, `"DOMID"`）を参照します。
+`token` が `enum` を含むオブジェクトの場合、許可されるキーワードのセットをインラインで定義します:
 
 ```jsonc
+// 文字列型名を参照する例
 "accept": {
   "type": {
     "token": "Accept",
@@ -380,6 +384,20 @@ spec.mml_mn.jsonc       # <mml:mn> 要素
     "separator": "comma"
   },
   "condition": "[type='file' i]"
+}
+
+// インライン列挙定義の例
+"focusgroup": {
+  "type": {
+    "token": {
+      "enum": ["toolbar", "tablist", "radiogroup", "listbox", "menu", "menubar", "none",
+               "inline", "block", "wrap", "nowrap", "nomemory"]
+    },
+    "separator": "space",
+    "unique": true,
+    "caseInsensitive": true
+  },
+  "experimental": true
 }
 ```
 

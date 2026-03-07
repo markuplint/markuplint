@@ -71,6 +71,36 @@
 				"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
 			}
 		},
+		// https://open-ui.org/components/focusgroup.explainer/
+		"focusgroup": {
+			"type": {
+				"token": {
+					"enum": [
+						"toolbar",
+						"tablist",
+						"radiogroup",
+						"listbox",
+						"menu",
+						"menubar",
+						"none",
+						"inline",
+						"block",
+						"wrap",
+						"nowrap",
+						"nomemory"
+					]
+				},
+				"separator": "space",
+				"unique": true,
+				"caseInsensitive": true
+			},
+			"experimental": true
+		},
+		// https://open-ui.org/components/focusgroup.explainer/
+		"focusgroupstart": {
+			"type": "Boolean",
+			"experimental": true
+		},
 		// https://html.spec.whatwg.org/multipage/sections.html#attr-heading-offset
 		"headingoffset": {
 			"type": {

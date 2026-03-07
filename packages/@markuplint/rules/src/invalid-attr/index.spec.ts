@@ -1952,3 +1952,65 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('focusgroup attribute (#3384)', () => {
+	test('focusgroup with valid behavior keyword', async () => {
+		expect((await mlRuleTest(rule, '<div focusgroup="toolbar"></div>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroup with multiple valid tokens', async () => {
+		expect((await mlRuleTest(rule, '<div focusgroup="tablist inline wrap"></div>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroup with all valid tokens', async () => {
+		expect((await mlRuleTest(rule, '<ul focusgroup="menu block nowrap nomemory"></ul>')).violations).toStrictEqual(
+			[],
+		);
+	});
+
+	test('focusgroup with invalid token', async () => {
+		const { violations } = await mlRuleTest(rule, '<div focusgroup="invalid"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message: expect.stringContaining('"focusgroup"'),
+				raw: 'invalid',
+			},
+		]);
+	});
+
+	test('focusgroup with valid and invalid tokens mixed', async () => {
+		const { violations } = await mlRuleTest(rule, '<div focusgroup="toolbar invalidmod"></div>');
+		expect(violations.length).toBe(1);
+		expect(violations[0]!.raw).toBe('invalidmod');
+	});
+
+	test('focusgroup="none" is valid', async () => {
+		expect((await mlRuleTest(rule, '<li focusgroup="none"></li>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroup is case-insensitive', async () => {
+		expect((await mlRuleTest(rule, '<div focusgroup="TOOLBAR"></div>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<div focusgroup="Menu Inline Wrap"></div>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroup rejects duplicate tokens', async () => {
+		const { violations } = await mlRuleTest(rule, '<div focusgroup="toolbar toolbar"></div>');
+		expect(violations.length).toBeGreaterThanOrEqual(1);
+	});
+
+	test('focusgroup with empty value is valid (zero tokens allowed)', async () => {
+		expect((await mlRuleTest(rule, '<div focusgroup=""></div>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroupstart boolean attribute is valid', async () => {
+		expect((await mlRuleTest(rule, '<button focusgroupstart></button>')).violations).toStrictEqual([]);
+	});
+
+	test('focusgroup on any element (global attribute)', async () => {
+		expect((await mlRuleTest(rule, '<nav focusgroup="menubar"></nav>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<span focusgroupstart></span>')).violations).toStrictEqual([]);
+	});
+});
