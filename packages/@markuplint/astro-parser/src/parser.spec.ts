@@ -652,3 +652,212 @@ describe('Issue', () => {
 		expect(ast).toBeTruthy();
 	});
 });
+
+describe('Directives', () => {
+	test('server:defer (Astro v5)', () => {
+		const ast = parse('<Component server:defer />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:27](0,26)Component: <Component␣server:defer␣/>',
+			'[1:12]>[1:24](11,23)server:defer: server:defer',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:24](11,23)name: server:defer',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:24](23,23)equal: ',
+			'  [1:24]>[1:24](23,23)aE: ',
+			'  [1:24]>[1:24](23,23)sQ: ',
+			'  [1:24]>[1:24](23,23)value: ',
+			'  [1:24]>[1:24](23,23)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('client:load', () => {
+		const ast = parse('<Component client:load />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:26](0,25)Component: <Component␣client:load␣/>',
+			'[1:12]>[1:23](11,22)client:load: client:load',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:23](11,22)name: client:load',
+			'  [1:23]>[1:23](22,22)bE: ',
+			'  [1:23]>[1:23](22,22)equal: ',
+			'  [1:23]>[1:23](22,22)aE: ',
+			'  [1:23]>[1:23](22,22)sQ: ',
+			'  [1:23]>[1:23](22,22)value: ',
+			'  [1:23]>[1:23](22,22)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('client:only', () => {
+		const ast = parse('<Component client:only="react" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:34](0,33)Component: <Component␣client:only="react"␣/>',
+			'[1:12]>[1:31](11,30)client:only: client:only="react"',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:23](11,22)name: client:only',
+			'  [1:23]>[1:23](22,22)bE: ',
+			'  [1:23]>[1:24](22,23)equal: =',
+			'  [1:24]>[1:24](23,23)aE: ',
+			'  [1:24]>[1:25](23,24)sQ: "',
+			'  [1:25]>[1:30](24,29)value: react',
+			'  [1:30]>[1:31](29,30)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('set:html', () => {
+		const ast = parse('<div set:html={rawHTML} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:27](0,26)div: <div␣set:html={rawHTML}␣/>',
+			'[1:6]>[1:24](5,23)set:html: set:html={rawHTML}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:14](5,13)name: set:html',
+			'  [1:14]>[1:14](13,13)bE: ',
+			'  [1:14]>[1:15](13,14)equal: =',
+			'  [1:15]>[1:15](14,14)aE: ',
+			'  [1:15]>[1:16](14,15)sQ: {',
+			'  [1:16]>[1:23](15,22)value: rawHTML',
+			'  [1:23]>[1:24](22,23)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+
+	test('set:text', () => {
+		const ast = parse('<div set:text={text} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:24](0,23)div: <div␣set:text={text}␣/>',
+			'[1:6]>[1:21](5,20)set:text: set:text={text}',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:14](5,13)name: set:text',
+			'  [1:14]>[1:14](13,13)bE: ',
+			'  [1:14]>[1:15](13,14)equal: =',
+			'  [1:15]>[1:15](14,14)aE: ',
+			'  [1:15]>[1:16](14,15)sQ: {',
+			'  [1:16]>[1:20](15,19)value: text',
+			'  [1:20]>[1:21](19,20)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+
+	test('is:inline', () => {
+		const ast = parse('<script is:inline>console.log("hello")</script>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:19](0,18)script: <script␣is:inline>',
+			'[1:9]>[1:18](8,17)is:inline: is:inline',
+			'  [1:8]>[1:9](7,8)bN: ␣',
+			'  [1:9]>[1:18](8,17)name: is:inline',
+			'  [1:18]>[1:18](17,17)bE: ',
+			'  [1:18]>[1:18](17,17)equal: ',
+			'  [1:18]>[1:18](17,17)aE: ',
+			'  [1:18]>[1:18](17,17)sQ: ',
+			'  [1:18]>[1:18](17,17)value: ',
+			'  [1:18]>[1:18](17,17)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:39]>[1:48](38,47)script: </script>',
+		]);
+	});
+
+	test('is:raw', () => {
+		const ast = parse('<div is:raw><span>{text}</span></div>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:13](0,12)div: <div␣is:raw>',
+			'[1:6]>[1:12](5,11)is:raw: is:raw',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:12](5,11)name: is:raw',
+			'  [1:12]>[1:12](11,11)bE: ',
+			'  [1:12]>[1:12](11,11)equal: ',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:12](11,11)sQ: ',
+			'  [1:12]>[1:12](11,11)value: ',
+			'  [1:12]>[1:12](11,11)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:13]>[1:32](12,31)#text: <span>{text}</span>',
+			'[1:32]>[1:38](31,37)div: </div>',
+		]);
+	});
+
+	test('define:vars', () => {
+		const ast = parse('<style define:vars={{ color }}>div { color: var(--color); }</style>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:32](0,31)style: <style␣define:vars={{␣color␣}}>',
+			'[1:8]>[1:31](7,30)define:vars: define:vars={{␣color␣}}',
+			'  [1:7]>[1:8](6,7)bN: ␣',
+			'  [1:8]>[1:19](7,18)name: define:vars',
+			'  [1:19]>[1:19](18,18)bE: ',
+			'  [1:19]>[1:20](18,19)equal: =',
+			'  [1:20]>[1:20](19,19)aE: ',
+			'  [1:20]>[1:21](19,20)sQ: {',
+			'  [1:21]>[1:30](20,29)value: {␣color␣}',
+			'  [1:30]>[1:31](29,30)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+			'[1:60]>[1:68](59,67)style: </style>',
+		]);
+	});
+
+	test('transition:animate', () => {
+		const ast = parse('<div transition:animate="slide">content</div>');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:33](0,32)div: <div␣transition:animate="slide">',
+			'[1:6]>[1:32](5,31)transition:animate: transition:animate="slide"',
+			'  [1:5]>[1:6](4,5)bN: ␣',
+			'  [1:6]>[1:24](5,23)name: transition:animate',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:25](23,24)equal: =',
+			'  [1:25]>[1:25](24,24)aE: ',
+			'  [1:25]>[1:26](24,25)sQ: "',
+			'  [1:26]>[1:31](25,30)value: slide',
+			'  [1:31]>[1:32](30,31)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:33]>[1:40](32,39)#text: content',
+			'[1:40]>[1:46](39,45)div: </div>',
+		]);
+	});
+
+	test('multiple directives on same element', () => {
+		const ast = parse('<Component client:visible set:html={content} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:48](0,47)Component: <Component␣client:visible␣set:html={content}␣/>',
+			'[1:12]>[1:26](11,25)client:visible: client:visible',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:26](11,25)name: client:visible',
+			'  [1:26]>[1:26](25,25)bE: ',
+			'  [1:26]>[1:26](25,25)equal: ',
+			'  [1:26]>[1:26](25,25)aE: ',
+			'  [1:26]>[1:26](25,25)sQ: ',
+			'  [1:26]>[1:26](25,25)value: ',
+			'  [1:26]>[1:26](25,25)eQ: ',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+			'[1:27]>[1:45](26,44)set:html: set:html={content}',
+			'  [1:26]>[1:27](25,26)bN: ␣',
+			'  [1:27]>[1:35](26,34)name: set:html',
+			'  [1:35]>[1:35](34,34)bE: ',
+			'  [1:35]>[1:36](34,35)equal: =',
+			'  [1:36]>[1:36](35,35)aE: ',
+			'  [1:36]>[1:37](35,36)sQ: {',
+			'  [1:37]>[1:44](36,43)value: content',
+			'  [1:44]>[1:45](43,44)eQ: }',
+			'  isDirective: true',
+			'  isDynamicValue: true',
+		]);
+	});
+});
