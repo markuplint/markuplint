@@ -769,7 +769,7 @@ describe('Directives', () => {
 		]);
 	});
 
-	test('is:raw', () => {
+	test('is:raw treats child content as raw text (not parsed HTML)', () => {
 		const ast = parse('<div is:raw><span>{text}</span></div>');
 		const map = nodeListToDebugMaps(ast.nodeList, true);
 		expect(map).toEqual([
@@ -859,5 +859,40 @@ describe('Directives', () => {
 			'  isDirective: true',
 			'  isDynamicValue: true',
 		]);
+	});
+
+	test('class:list is NOT a directive (special-cased to potentialName)', () => {
+		// class: prefix is special-cased in visitAttr — isDirective stays false, potentialName is set
+		const ast = parse('<div class:list={["a", "b"]} />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toContainEqual(expect.stringContaining('isDirective: false'));
+		expect(map).toContainEqual(expect.stringContaining('potentialName: class'));
+	});
+
+	test('client:media with special characters in value', () => {
+		const ast = parse('<Component client:media="(max-width: 600px)" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toEqual([
+			'[1:1]>[1:48](0,47)Component: <Component␣client:media="(max-width:␣600px)"␣/>',
+			'[1:12]>[1:45](11,44)client:media: client:media="(max-width:␣600px)"',
+			'  [1:11]>[1:12](10,11)bN: ␣',
+			'  [1:12]>[1:24](11,23)name: client:media',
+			'  [1:24]>[1:24](23,23)bE: ',
+			'  [1:24]>[1:25](23,24)equal: =',
+			'  [1:25]>[1:25](24,24)aE: ',
+			'  [1:25]>[1:26](24,25)sQ: "',
+			'  [1:26]>[1:44](25,43)value: (max-width:␣600px)',
+			'  [1:44]>[1:45](43,44)eQ: "',
+			'  isDirective: true',
+			'  isDynamicValue: false',
+		]);
+	});
+
+	test('arbitrary colon-separated attribute is treated as directive', () => {
+		// Any prefix:name pattern triggers isDirective: true (catch-all in switch default)
+		const ast = parse('<div custom:attr="val" />');
+		const map = nodeListToDebugMaps(ast.nodeList, true);
+		expect(map).toContainEqual(expect.stringContaining('isDirective: true'));
+		expect(map).toContainEqual(expect.stringContaining('name: custom:attr'));
 	});
 });
