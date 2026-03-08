@@ -455,7 +455,7 @@ jobs:
                   echo "parent: ${{ github.workspace }}/.."
 
             - name: Delete package manager settings
-              run: jq 'del(.packageManager, .volta)' package.json > tmp.json && mv tmp.json package.json
+              run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
