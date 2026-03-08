@@ -1,0 +1,4 @@
+[tools]
+node = "24.8.0"
+
+[settings]

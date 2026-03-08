@@ -102,10 +102,6 @@
 		}
 	},
 	"packageManager": "yarn@4.12.0",
-	"volta": {
-		"node": "24.8.0",
-		"yarn": "4.12.0"
-	},
 	"resolutions": {
 		"markuplint": "workspace:*"
 	}

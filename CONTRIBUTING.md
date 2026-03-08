@@ -20,7 +20,7 @@ Its purpose is all developers are able to better markup and fit each of diverse 
 
 You need:
 
-- Node.js v22 or later.
+- Node.js v24 or later (the exact version is pinned in `.mise.toml`; install [mise](https://mise.jdx.dev/) and run `mise install` to match it)
 - Yarn
 
 After cloning this repository, you can also install them through [Docker](https://github.com/markuplint/markuplint/blob/main/Dockerfile).

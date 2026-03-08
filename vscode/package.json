@@ -218,9 +218,5 @@
 		"vscode-languageclient": "9.0.1",
 		"vscode-languageserver": "9.0.1",
 		"vscode-languageserver-textdocument": "1.0.12"
-	},
-	"volta": {
-		"node": "22.22.1",
-		"yarn": "4.12.0"
 	}
 }
