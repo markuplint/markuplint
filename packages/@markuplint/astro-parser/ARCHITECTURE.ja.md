@@ -2,17 +2,18 @@
 
 ## 概要
 
-`@markuplint/astro-parser` は markuplint における Astro コンポーネントファイル（`.astro`）のパーサーです。`astro-eslint-parser`（`@astrojs/compiler` をラップ）を使用して Astro ソースコードをトークン化し、その結果の AST を markuplint の統一 AST 形式（`MLASTDocument`）に変換します。フロントマターブロック（`---...---`）、式コンテナ（`{expression}`）、テンプレートディレクティブ（例: `class:list`、`set:html`）、ショートハンド属性（`{prop}`）、名前空間対応の要素解決（XHTML vs SVG）など、Astro 固有の構文を処理します。
+`@markuplint/astro-parser` は markuplint における Astro コンポーネントファイル（`.astro`）のパーサーです。`astro-eslint-parser`（`@astrojs/compiler` をラップ）を使用して Astro ソースコードをトークン化し、その結果の AST を markuplint の統一 AST 形式（`MLASTDocument`）に変換します。フロントマターブロック（`---...---`）、式コンテナ（`{expression}`）、テンプレートディレクティブ（例: `class:list`、`set:html`、`client:load`）、ショートハンド属性（`{prop}`）など、Astro 固有の構文を処理します。
 
 ## ディレクトリ構成
 
 ```
 src/
-├── index.ts                — parser インスタンスを再エクスポート
-├── parser.ts               — Parser<Node, State> を拡張する AstroParser クラス
-├── astro-parser.ts         — astro-eslint-parser ラッパーと型の再エクスポート
-├── parser.spec.ts          — AstroParser 統合テスト
-└── astro-parser.spec.ts    — astro-eslint-parser ラッパーテスト
+├── index.ts                    — parser インスタンスを再エクスポート
+├── parser.ts                   — Parser<Node> を拡張する AstroParser クラス
+├── astro-parser.ts             — astro-eslint-parser ラッパーと型の再エクスポート
+├── detect-block-behavior.ts    — .map()/.filter() のブロック動作検出
+├── parser.spec.ts              — AstroParser 統合テスト
+└── astro-parser.spec.ts        — astro-eslint-parser ラッパーテスト
 ```
 
 ## アーキテクチャ図
@@ -27,8 +28,9 @@ flowchart TD
     end
 
     subgraph pkg ["@markuplint/astro-parser"]
-        astroParser["AstroParser\nextends Parser‹Node, State›"]
+        astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser ラッパー"]
+        detectBlock["detectBlockBehavior()\n.map()/.filter() 検出"]
     end
 
     subgraph downstream ["下流"]
@@ -40,6 +42,7 @@ flowchart TD
     astroEslintParser -->|"parseTemplate()"| astroParseFn
     astroCompiler -->|"Node 型"| astroParseFn
     astroParseFn -->|"RootNode.children"| astroParser
+    detectBlock -->|"blockBehavior"| astroParser
     astroParser -->|"MLASTDocument を生成"| mlCore
 ```
 
@@ -48,7 +51,7 @@ flowchart TD
 ### 継承関係
 
 ```
-Parser<Node, State>  (@markuplint/parser-utils)
+Parser<Node>  (@markuplint/parser-utils)
     └── AstroParser  (このパッケージ)
 ```
 
@@ -62,16 +65,6 @@ Parser<Node, State>  (@markuplint/parser-utils)
 | `selfCloseType`        | `'html+xml'` | HTML void 要素と XML スタイルの自己閉じ（`<Component />`）の両方を受け入れる |
 | `tagNameCaseSensitive` | `true`       | コンポーネント（`<MyComp>`）と HTML 要素（`<div>`）を区別                    |
 
-### State 型
-
-パーサーは `State` 型を通じて内部状態を管理します:
-
-| フィールド | 型       | 用途                                                            |
-| ---------- | -------- | --------------------------------------------------------------- |
-| `scopeNS`  | `string` | 現在の名前空間 URI、デフォルトは `http://www.w3.org/1999/xhtml` |
-
-`scopeNS` 状態は `#updateScopeNS()` によってパーサーが要素を走査する際に更新され、`<svg>` 要素内で SVG 名前空間に切り替わり、`<foreignObject>` 内で XHTML に戻ります。
-
 ### オーバーライドメソッド
 
 | メソッド              | 用途                                                                                                                           |
@@ -79,7 +72,7 @@ Parser<Node, State>  (@markuplint/parser-utils)
 | `tokenize()`          | `astroParse()` を呼び出して Astro AST を取得し、`{ ast: rootNode.children, isFragment: true }` を返す                          |
 | `nodeize()`           | Astro AST ノードを markuplint ノードに変換。ノードタイプ（frontmatter, doctype, text, comment, element, expression）で振り分け |
 | `afterFlattenNodes()` | `{ exposeInvalidNode: false }` で親に委譲                                                                                      |
-| `visitElement()`      | `parseCodeFragment()` で `namelessFragment: true` として生の HTML フラグメントをパースし、名前空間と終了タグ処理で親に委譲     |
+| `visitElement()`      | `parseCodeFragment()` で `namelessFragment: true` として生の HTML フラグメントをパースし、終了タグ処理で親に委譲               |
 | `visitChildren()`     | 親に委譲した後、予期しない兄弟ノードが残っていないことをアサート                                                               |
 | `visitAttr()`         | 波括弧式の値、ショートハンド属性、テンプレートディレクティブを処理                                                             |
 | `detectElementType()` | `/^[A-Z]/` パターンでコンポーネントと HTML 要素を検出（大文字始まりの名前はコンポーネント）                                    |
@@ -119,35 +112,6 @@ Astro の式（`{expression}`）は Astro AST で `type: 'expression'` ノード
 - 最後の子の開始から式の終了までの領域が終了フラグメントになる
 - 間の子は開始フラグメントの psblock 内で通常通り訪問される
 
-## 名前空間スコーピング
-
-`#updateScopeNS()` プライベートメソッドは、パーサーが要素を走査する際に名前空間コンテキストを管理します:
-
-| 条件                                                  | アクション                                           |
-| ----------------------------------------------------- | ---------------------------------------------------- |
-| 現在の名前空間が XHTML で、ノードが `<svg>` 要素      | `scopeNS` を `http://www.w3.org/2000/svg` に切り替え |
-| 現在の名前空間が SVG で、親ノードが `<foreignObject>` | `scopeNS` を `http://www.w3.org/1999/xhtml` に戻す   |
-
-これは `nodeize()` のノードタイプ switch の前に呼び出されるため、すべての子ノードが正しい名前空間を継承します。名前空間は `visitElement()` 内で `overwriteProps: { namespace: this.state.scopeNS }` を通じて要素に適用されます。
-
-名前空間解決の例:
-
-```html
-<div>
-  <!-- XHTML -->
-  <svg>
-    <!-- SVG -->
-    <text />
-    <!-- SVG -->
-    <foreignObject>
-      <!-- SVG -->
-      <div />
-      <!-- XHTML（リセット） -->
-    </foreignObject>
-  </svg>
-</div>
-```
-
 ## 属性処理
 
 ### クォートセット
@@ -173,15 +137,18 @@ Astro の式（`{expression}`）は Astro AST で `type: 'expression'` ノード
 
 Astro テンプレートディレクティブは `name:modifier` 構文を使用します。パーサーは正規表現 `/^([^:]+):([^:]+)$/` でこれらを検出します:
 
-| ディレクティブ | `potentialName` | `isDirective` | 動作                                   |
-| -------------- | --------------- | ------------- | -------------------------------------- |
-| `class:list`   | `'class'`       | `undefined`   | 標準の `class` 属性にマッピング        |
-| `set:html`     | `undefined`     | `true`        | Astro 固有ディレクティブとして扱われる |
-| `set:text`     | `undefined`     | `true`        | Astro 固有ディレクティブとして扱われる |
-| `is:raw`       | `undefined`     | `true`        | Astro 固有ディレクティブとして扱われる |
-| `transition:*` | `undefined`     | `true`        | Astro 固有ディレクティブとして扱われる |
+| ディレクティブプレフィックス | `potentialName` | `isDirective` | 動作                                                  |
+| ---------------------------- | --------------- | ------------- | ----------------------------------------------------- |
+| `class:`                     | `'class'`       | `false`       | 標準の `class` 属性にマッピング                       |
+| `client:`                    | —               | `true`        | Astro クライアントディレクティブ（load, idle 等）     |
+| `server:`                    | —               | `true`        | Astro サーバーディレクティブ（defer）                 |
+| `set:`                       | —               | `true`        | コンテンツディレクティブ（html, text）                |
+| `is:`                        | —               | `true`        | プロパティディレクティブ（inline, raw）               |
+| `define:`                    | —               | `true`        | スタイルディレクティブ（vars）                        |
+| `transition:`                | —               | `true`        | View Transition ディレクティブ（animate, name）       |
+| _（その他すべて）_           | —               | `true`        | キャッチオール: すべての `prefix:name` パターンに適用 |
 
-`class` ディレクティブは特別で、`potentialName: 'class'` を取得するため、`class` 属性に対する markuplint ルールが適用されます。その他すべてのディレクティブは `isDirective: true` を取得し、フレームワーク固有であり標準 HTML 属性として検証すべきでないことを markuplint に伝えます。
+`class:` プレフィックスは特別扱いで、`potentialName: 'class'` を取得するため、`class` 属性に対する markuplint ルールが適用されます。その他のコロン区切りプレフィックスは `default` ケースに該当し `isDirective: true` を取得します。これはフレームワーク固有であり標準 HTML 属性として検証すべきでないことを markuplint に伝えます。
 
 ### 動的な値
 
@@ -199,7 +166,7 @@ Astro テンプレートディレクティブは `name:modifier` 構文を使用
 | **フロントマター**             | サポート（`---...---` psblock）        | 該当なし                                          |
 | **式の構文**                   | `{expr}` を MustacheTag psblock として | `{expr}` を JSXExpressionContainer psblock として |
 | **テンプレートディレクティブ** | `class:list`、`set:html` 等            | 該当なし                                          |
-| **名前空間管理**               | `#updateScopeNS()` で手動管理          | html-parser の `getNamespace()` に委譲            |
+| **名前空間管理**               | 基底 `Parser` に委譲                   | html-parser の `getNamespace()` に委譲            |
 | **コンポーネント検出**         | `/^[A-Z]/` パターン                    | `/^[A-Z]/` パターン                               |
 | **自己閉じタイプ**             | `html+xml`                             | デフォルト（XML のみ）                            |
 | **booleanish 属性**            | 未設定                                 | `booleanish: true`                                |

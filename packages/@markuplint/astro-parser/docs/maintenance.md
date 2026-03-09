@@ -61,22 +61,12 @@ The second argument `true` to `nodeListToDebugMaps` includes attribute details i
 
 ### 2. Modifying Namespace Scoping
 
-1. Read `src/parser.ts` — the `#updateScopeNS()` private method
-2. The method has two conditions:
-   - XHTML → SVG: when current namespace is XHTML and node is a `<svg>` element
-   - SVG → XHTML: when current namespace is SVG and parent is `<foreignObject>`
-3. To add a new namespace transition (e.g., MathML):
-   ```ts
-   if (
-     parentNS === 'http://www.w3.org/1999/xhtml' &&
-     originNode.type === 'element' &&
-     originNode.name?.toLowerCase() === 'math'
-   ) {
-     this.state.scopeNS = 'http://www.w3.org/1998/Math/MathML';
-   }
-   ```
-4. Build and test: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser`
-5. Add namespace test cases to `src/parser.spec.ts`:
+Namespace resolution is currently handled by the base `Parser` class from `@markuplint/parser-utils`. The Astro parser does not override namespace logic.
+
+1. If you need to add custom namespace handling, you would override the relevant method in `AstroParser` in `src/parser.ts`
+2. For new namespaces (e.g., MathML), the override would need to detect the element name and switch the namespace
+3. Build and test: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser`
+4. Add namespace test cases to `src/parser.spec.ts`:
    ```ts
    test('MathML namespace', () => {
      const doc = parse('<div><math><mi>x</mi></math></div>');
@@ -161,14 +151,13 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 
 **Symptom:** Elements inside `<svg>` have XHTML namespace, or elements inside `<foreignObject>` have SVG namespace.
 
-**Cause:** `#updateScopeNS()` is not detecting the element type correctly, or the `scopeNS` state is not being reset.
+**Cause:** Namespace resolution is handled by the base `Parser` class from `@markuplint/parser-utils`. The Astro parser does not override namespace logic.
 
 **Solution:**
 
-1. Check that `originNode.type === 'element'` — only element nodes trigger namespace changes
-2. Check `originNode.name?.toLowerCase()` — the comparison must be case-insensitive for `svg`
-3. Check the `parentNode.nodeName === 'foreignObject'` comparison — this uses the markuplint node name, not the Astro AST name
-4. Add a test case with the specific nesting pattern to `src/parser.spec.ts`
+1. Check whether the issue is in the base `Parser` class in `@markuplint/parser-utils`
+2. Add a test case with the specific nesting pattern to `src/parser.spec.ts` to confirm expected behavior
+3. If the issue is upstream, investigate the base `Parser` namespace handling
 
 ### Template directive not detected
 

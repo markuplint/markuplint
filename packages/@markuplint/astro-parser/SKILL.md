@@ -29,7 +29,7 @@ for the full guide. The recipes there are the source of truth for procedures.
 
 Also read:
 
-- `ARCHITECTURE.md` -- Package overview, attribute processing, namespace scoping
+- `ARCHITECTURE.md` -- Package overview, attribute processing, directive handling
 - `src/parser.ts` -- AstroParser class (source of truth for override methods)
 - `src/astro-parser.ts` -- astro-eslint-parser wrapper
 
@@ -62,14 +62,14 @@ Modify the SVG/XHTML namespace scoping logic. Follow recipe #2 in `docs/maintena
 
 ### Step 1: Understand the current logic
 
-1. Read `src/parser.ts` — the `#updateScopeNS()` private method
-2. Understand the two conditions: `<svg>` → SVG namespace, `<foreignObject>` parent → XHTML namespace
-3. Note that `scopeNS` is applied in `visitElement()` via `overwriteProps`
+1. Namespace resolution is handled by the base `Parser` class from `@markuplint/parser-utils`
+2. The Astro parser does **not** override namespace logic — there is no `#updateScopeNS()` method
+3. Any namespace changes require modifications in the base `Parser` class or adding an override in `AstroParser`
 
 ### Step 2: Make the change
 
-1. Add or modify conditions in `#updateScopeNS()`
-2. For new namespaces (e.g., MathML), add a new condition checking `originNode.name`
+1. If adding namespace handling to the Astro parser, override the relevant method from the base `Parser`
+2. For new namespaces (e.g., MathML), add a condition checking `originNode.name`
 3. Ensure the namespace URI constant is correct
 
 ### Step 3: Verify

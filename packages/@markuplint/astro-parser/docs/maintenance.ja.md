@@ -61,22 +61,12 @@ expect(debugMaps).toStrictEqual([
 
 ### 2. 名前空間スコーピングの変更
 
-1. `src/parser.ts` を読む — `#updateScopeNS()` プライベートメソッド
-2. このメソッドには2つの条件がある:
-   - XHTML → SVG: 現在の名前空間が XHTML で、ノードが `<svg>` 要素の場合
-   - SVG → XHTML: 現在の名前空間が SVG で、親が `<foreignObject>` の場合
-3. 新しい名前空間遷移を追加する場合（例: MathML）:
-   ```ts
-   if (
-     parentNS === 'http://www.w3.org/1999/xhtml' &&
-     originNode.type === 'element' &&
-     originNode.name?.toLowerCase() === 'math'
-   ) {
-     this.state.scopeNS = 'http://www.w3.org/1998/Math/MathML';
-   }
-   ```
-4. ビルドとテスト: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser`
-5. `src/parser.spec.ts` に名前空間テストケースを追加:
+名前空間の解決は現在 `@markuplint/parser-utils` の基底 `Parser` クラスが処理しています。Astro パーサーは名前空間ロジックをオーバーライドしていません。
+
+1. カスタム名前空間処理が必要な場合は、`src/parser.ts` の `AstroParser` で該当メソッドをオーバーライド
+2. 新しい名前空間（例: MathML）の場合、要素名を検出して名前空間を切り替えるオーバーライドが必要
+3. ビルドとテスト: `yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/astro-parser`
+4. `src/parser.spec.ts` に名前空間テストケースを追加:
    ```ts
    test('MathML namespace', () => {
      const doc = parse('<div><math><mi>x</mi></math></div>');
@@ -161,14 +151,13 @@ yarn build --scope @markuplint/astro-parser && yarn test --scope @markuplint/ast
 
 **症状:** `<svg>` 内の要素が XHTML 名前空間を持つ、または `<foreignObject>` 内の要素が SVG 名前空間を持つ。
 
-**原因:** `#updateScopeNS()` が要素タイプを正しく検出していないか、`scopeNS` 状態がリセットされていない。
+**原因:** 名前空間の解決は `@markuplint/parser-utils` の基底 `Parser` クラスが処理します。Astro パーサーは名前空間ロジックをオーバーライドしていません。
 
 **解決策:**
 
-1. `originNode.type === 'element'` を確認 — 要素ノードのみが名前空間の変更をトリガー
-2. `originNode.name?.toLowerCase()` を確認 — `svg` の比較はケースインセンシティブである必要がある
-3. `parentNode.nodeName === 'foreignObject'` の比較を確認 — これは Astro AST の名前ではなく markuplint のノード名を使用
-4. 特定のネストパターンのテストケースを `src/parser.spec.ts` に追加
+1. 問題が `@markuplint/parser-utils` の基底 `Parser` クラスにあるかどうかを確認
+2. 特定のネストパターンのテストケースを `src/parser.spec.ts` に追加して期待される動作を確認
+3. 問題が上流にある場合は、基底 `Parser` の名前空間処理を調査
 
 ### テンプレートディレクティブが検出されない
 
