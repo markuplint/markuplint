@@ -2680,7 +2680,7 @@ __metadata:
     ajv: "npm:8.18.0"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
-    fast-xml-parser: "npm:5.4.2"
+    fast-xml-parser: "npm:5.5.1"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.4.4"
@@ -8813,22 +8813,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-builder@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "fast-xml-builder@npm:1.0.0"
-  checksum: 10c0/2631fda265c81e8008884d08944eeed4e284430116faa5b8b7a43a3602af367223b7bf01c933215c9ad2358b8666e45041bc038d64877156a2f88821841b3014
+"fast-xml-builder@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "fast-xml-builder@npm:1.1.0"
+  dependencies:
+    path-expression-matcher: "npm:^1.1.2"
+  checksum: 10c0/36edbc9cd7bda94b295adbda82e71dd26916c3e8b3f4211abf867ae121bc02f5a0a5b4819405175172b29bc65659983fb5bdb0cc6afaebd876ff02c2c0068e61
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:5.4.2":
-  version: 5.4.2
-  resolution: "fast-xml-parser@npm:5.4.2"
+"fast-xml-parser@npm:5.5.1":
+  version: 5.5.1
+  resolution: "fast-xml-parser@npm:5.5.1"
   dependencies:
-    fast-xml-builder: "npm:^1.0.0"
+    fast-xml-builder: "npm:^1.1.0"
+    path-expression-matcher: "npm:^1.1.2"
     strnum: "npm:^2.1.2"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/83ea57fda336f3fdcc8938ecc8730236a3e084843cbe6c2fb009c3f2fe2811570316735c1c7e76a4d3dbce2b0387312b106444d5d603dc6135b4bcf0e07251bb
+  checksum: 10c0/5ff876342e5a83e93f8ecee302e6be0b7472813bb17eca68e723a05d9c1954389dce99087dfa99ff57da80c8ca29cdb70172812092fc6aef3642fdf5ba01e7a6
   languageName: node
   linkType: hard
 
@@ -14734,6 +14737,13 @@ __metadata:
   version: 4.0.0
   resolution: "path-exists@npm:4.0.0"
   checksum: 10c0/8c0bd3f5238188197dc78dced15207a4716c51cc4e3624c44fc97acf69558f5ebb9a2afff486fe1b4ee148e0c133e96c5e11a9aa5c48a3006e3467da070e5e1b
+  languageName: node
+  linkType: hard
+
+"path-expression-matcher@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "path-expression-matcher@npm:1.1.2"
+  checksum: 10c0/d183616d1cc34acf4e3b2dc5a5515820bcf34c5fb5a6a2458f9f074dfeae6f919883d3e87490b0a9d1e5e120299544e478c66fcac30361f35f30207aeb16ecb3
   languageName: node
   linkType: hard
 

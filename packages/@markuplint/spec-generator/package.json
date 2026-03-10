@@ -28,7 +28,7 @@
 		"ajv": "8.18.0",
 		"cheerio": "1.2.0",
 		"cli-progress": "3.12.0",
-		"fast-xml-parser": "5.4.2",
+		"fast-xml-parser": "5.5.1",
 		"glob": "13.0.6",
 		"jsonc-parser": "3.3.1"
 	},
