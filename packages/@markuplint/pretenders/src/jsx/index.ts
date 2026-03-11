@@ -261,6 +261,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
+						`${filePath}#${name}`,
 					);
 				}
 			});
@@ -316,6 +317,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 						filePath,
 						line,
 						col,
+						`${filePath}#${name}`,
 					);
 				}
 			});
@@ -377,7 +379,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 				const attrs = getAttributes(el, sourceFile);
 				const children = getChildren(el, sourceFile);
 				const identity = createIdentity(tagName, attrs, children);
-				director.add(name, identity, filePath, line, col);
+				director.add(name, identity, filePath, line, col, `${filePath}#${name}`);
 			}
 		}
 

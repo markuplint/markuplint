@@ -59,7 +59,7 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 					}
 				: tagName;
 
-		director.add(componentName, identity, relFilePath, root.line, root.col);
+		director.add(componentName, identity, relFilePath, root.line, root.col, relFilePath);
 	}
 
 	return director.getPretenders();

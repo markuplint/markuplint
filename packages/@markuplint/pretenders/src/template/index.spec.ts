@@ -165,6 +165,23 @@ describe('templateScanner', () => {
 		});
 	});
 
+	describe('Name collision', () => {
+		test('same-name components from different directories are both registered', async () => {
+			const result = await templateScanner([resolve('subA/Button.vue'), resolve('subB/Button.vue')]);
+			expect(result).toHaveLength(2);
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Button',
+					as: expect.objectContaining({ element: 'button' }),
+				}),
+				expect.objectContaining({
+					selector: 'Button',
+					as: expect.objectContaining({ element: 'div' }),
+				}),
+			]);
+		});
+	});
+
 	describe('Edge cases', () => {
 		test('rejects relative file paths', () => {
 			expect(() => templateScanner(['relative/path.vue'])).toThrow(ReferenceError);

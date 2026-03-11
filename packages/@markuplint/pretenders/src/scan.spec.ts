@@ -158,6 +158,23 @@ describe('scan', () => {
 		});
 	});
 
+	describe('name collision via scan()', () => {
+		test('same-name template components from different directories are both output', async () => {
+			const result = await scan([templateFixture('subA/Button.vue'), templateFixture('subB/Button.vue')]);
+			expect(result).toHaveLength(2);
+			expect(result).toStrictEqual([
+				expect.objectContaining({
+					selector: 'Button',
+					as: expect.objectContaining({ element: 'button' }),
+				}),
+				expect.objectContaining({
+					selector: 'Button',
+					as: expect.objectContaining({ element: 'div' }),
+				}),
+			]);
+		});
+	});
+
 	describe('edge cases', () => {
 		test('empty file list returns empty result', async () => {
 			const result = await scan([]);
