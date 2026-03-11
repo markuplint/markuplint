@@ -12,7 +12,7 @@ import type { PretenderAttr } from '@markuplint/ml-config';
  * @param slots - Whether the component accepts children (`true`) or not (`null`)
  * @returns A simple tag name string or a detailed Identity object
  */
-export function createIndentity(tagName: string, attrs: readonly Attr[], slots: null | true) {
+export function createIdentity(tagName: string, attrs: readonly Attr[], slots: null | true) {
 	if (attrs.length === 0 && slots !== true) {
 		return tagName;
 	}

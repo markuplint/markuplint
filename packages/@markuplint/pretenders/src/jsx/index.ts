@@ -28,7 +28,7 @@ import ts from 'typescript';
 import { createScanner } from '../create-scanner.js';
 import { PretenderDirector } from '../pretender-director.js';
 
-import { createIndentity } from './create-identify.js';
+import { createIdentity } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes } from './get-attributes.js';
 import { getChildren } from './get-children.js';
@@ -376,7 +376,7 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 
 				const attrs = getAttributes(el, sourceFile);
 				const children = getChildren(el, sourceFile);
-				const identity = createIndentity(tagName, attrs, children);
+				const identity = createIdentity(tagName, attrs, children);
 				director.add(name, identity, filePath, line, col);
 			}
 		}
