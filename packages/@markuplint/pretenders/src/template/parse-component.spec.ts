@@ -86,6 +86,12 @@ describe('parseComponent', () => {
 	});
 
 	test('returns null when file does not exist (fs.readFileSync throws)', async () => {
-		await expect(parseComponent('/nonexistent/path/Component.vue')).rejects.toThrow();
+		const result = await parseComponent('/nonexistent/path/Component.vue');
+		expect(result).toBeNull();
+	});
+
+	test('returns null when file contains syntax errors (parser.parse throws)', async () => {
+		const result = await parseComponent(path.resolve(fixtureDir, 'Malformed.vue'));
+		expect(result).toBeNull();
 	});
 });
