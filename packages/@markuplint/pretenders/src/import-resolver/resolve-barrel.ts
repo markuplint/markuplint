@@ -46,7 +46,14 @@ export function resolveBarrelExport(specifier: string, importedName: string, imp
 		return null;
 	}
 
-	const indexSource = fs.readFileSync(indexPath, 'utf8');
+	let indexSource: string;
+	try {
+		indexSource = fs.readFileSync(indexPath, 'utf8');
+	} catch (error: unknown) {
+		// eslint-disable-next-line no-console
+		console.warn(`Failed to read barrel file: ${indexPath}`, error instanceof Error ? error.message : error);
+		return null;
+	}
 	return matchExportedName(indexSource, importedName);
 }
 

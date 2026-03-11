@@ -275,5 +275,14 @@ describe('parseImports', () => {
 			const result = await parseImports('# Hello World\nSome markdown content');
 			expect(result).toStrictEqual([]);
 		});
+
+		test('concurrent calls do not cause double initialization', async () => {
+			const results = await Promise.all([
+				parseImports("import { A } from './a'"),
+				parseImports("import { B } from './b'"),
+			]);
+			expect(results[0]).toHaveLength(1);
+			expect(results[1]).toHaveLength(1);
+		});
 	});
 });

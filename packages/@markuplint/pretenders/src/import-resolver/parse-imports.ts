@@ -28,17 +28,15 @@ const RE_DEFAULT_AND_NAMED = /import\s+(\w+)\s*,\s*\{([^}]+)\}\s*from/;
 /** Matches `import X, * as Y from` — default + namespace imports */
 const RE_DEFAULT_AND_NAMESPACE = /import\s+(\w+)\s*,\s*\*\s*as\s+(\w+)\s+from/;
 
-let initialized = false;
+let initPromise: Promise<void> | null = null;
 
 /**
  * Ensures the es-module-lexer WASM module is initialized.
  * Safe to call multiple times; initialization only happens once.
  */
 async function ensureInit() {
-	if (!initialized) {
-		await init;
-		initialized = true;
-	}
+	initPromise ??= init;
+	await initPromise;
 }
 
 /**

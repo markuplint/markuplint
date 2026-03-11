@@ -12,38 +12,23 @@ import type { PretenderAttr } from '@markuplint/ml-config';
  * @param slots - Whether the component accepts children (`true`) or not (`null`)
  * @returns A simple tag name string or a detailed Identity object
  */
-export function createIndentity(tagName: string, attrs: readonly Attr[], slots: null | true) {
+export function createIdentity(tagName: string, attrs: readonly Attr[], slots: null | true) {
 	if (attrs.length === 0 && slots !== true) {
 		return tagName;
 	}
 
 	const availableAttrs = attrs.filter(attr => attr.nodeType !== 'spread');
 	const hasSpread = attrs.some(attr => attr.nodeType === 'spread');
-	const pretenderAttrs: PretenderAttr[] = availableAttrs.map(attr => {
-		const pretenderAttr: PretenderAttr = {
-			name: attr.name,
-		};
-		if (attr.nodeType === 'static' && attr.value) {
-			// @ts-ignore initialize readonly property
-			pretenderAttr.value = attr.value;
-		}
-		return pretenderAttr;
-	});
+	const pretenderAttrs: PretenderAttr[] = availableAttrs.map(attr =>
+		attr.nodeType === 'static' && attr.value ? { name: attr.name, value: attr.value } : { name: attr.name },
+	);
 
 	const identify: Identity = {
 		element: tagName,
 		slots,
+		...(pretenderAttrs.length > 0 ? { attrs: pretenderAttrs } : {}),
+		...(hasSpread ? { inheritAttrs: true as const } : {}),
 	};
-
-	if (pretenderAttrs.length > 0) {
-		// @ts-ignore initialize readonly property
-		identify.attrs = pretenderAttrs;
-	}
-
-	if (hasSpread) {
-		// @ts-ignore initialize readonly property
-		identify.inheritAttrs = true;
-	}
 
 	return identify;
 }

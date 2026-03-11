@@ -49,6 +49,8 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 		return mod.parser;
 	} catch (error: unknown) {
 		if (isModuleNotFoundError(error)) {
+			// eslint-disable-next-line no-console
+			console.warn(`Parser package "${pkg}" is not installed. Skipping ${framework} files.`);
 			return null;
 		}
 		throw error;
@@ -73,6 +75,12 @@ export async function parseComponent(filePath: string): Promise<MLASTDocument | 
 		return null;
 	}
 
-	const sourceCode = fs.readFileSync(filePath, 'utf8');
-	return parser.parse(sourceCode);
+	try {
+		const sourceCode = fs.readFileSync(filePath, 'utf8');
+		return parser.parse(sourceCode);
+	} catch (error: unknown) {
+		// eslint-disable-next-line no-console
+		console.warn(`Failed to parse component: ${filePath}`, error instanceof Error ? error.message : error);
+		return null;
+	}
 }
