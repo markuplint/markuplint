@@ -50,14 +50,10 @@ export function dependencyMapper(
 		const pretender: Pretender = {
 			selector: identifier,
 			as: identity,
+			...(filePath ? { filePath } : {}),
 		};
-		if (filePath) {
-			// @ts-ignore initialize readonly property
-			pretender.filePath = filePath;
-		}
 		if (via.length > 0) {
-			// @ts-ignore
-			pretender._via = via;
+			Object.assign(pretender, { _via: via });
 		}
 
 		linkedPretenders.push(pretender);
@@ -112,8 +108,7 @@ export function propSort<T, P extends keyof T>(propName: P) {
 
 function toLowerCase<T>(value: T): T {
 	if (typeof value === 'string') {
-		// @ts-ignore
-		return value.toLowerCase();
+		return value.toLowerCase() as T;
 	}
 	return value;
 }
