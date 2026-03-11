@@ -15,7 +15,7 @@ export function deriveName(filePath: string): string {
 	const parsed = path.parse(filePath);
 	const baseName = parsed.name;
 
-	const nameToConvert = baseName === 'index' ? path.basename(parsed.dir) : baseName;
+	const nameToConvert = baseName === 'index' ? path.basename(parsed.dir) || 'index' : baseName;
 
 	return toPascalCase(nameToConvert);
 }

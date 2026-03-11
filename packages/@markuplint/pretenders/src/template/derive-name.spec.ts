@@ -58,4 +58,12 @@ describe('deriveName', () => {
 	test('handles camelCase filenames by uppercasing first letter', () => {
 		expect(deriveName('myComponent.vue')).toBe('MyComponent');
 	});
+
+	test('falls back to Index when path has no parent directory', () => {
+		expect(deriveName('index.vue')).toBe('Index');
+	});
+
+	test('empty string returns empty string', () => {
+		expect(deriveName('')).toBe('');
+	});
 });
