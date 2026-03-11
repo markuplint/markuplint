@@ -49,6 +49,8 @@ async function getParser(framework: FrameworkType): Promise<MLParser | null> {
 		return mod.parser;
 	} catch (error: unknown) {
 		if (isModuleNotFoundError(error)) {
+			// eslint-disable-next-line no-console
+			console.warn(`Parser package "${pkg}" is not installed. Skipping ${framework} files.`);
 			return null;
 		}
 		throw error;
