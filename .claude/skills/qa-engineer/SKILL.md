@@ -29,6 +29,10 @@ When reading code, always ask yourself:
 
 ## Review Perspectives
 
+### Scope Limitation
+
+When working on a topic branch, code-level feedback should be limited to **the scope of work in that branch**. However, if a localized fix is deemed to have broad impact, adding tests outside the scope is permitted. Coverage takes priority over scope limitations.
+
 ### 1. Detecting Test-Faking Code
 
 Find code written solely to make tests pass without actually verifying correctness.

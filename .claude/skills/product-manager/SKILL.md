@@ -164,6 +164,10 @@ For features with evolving specs, explicitly state:
 
 When reviewing PRs or code changes, focus on:
 
+### Scope Limitation
+
+When working on a topic branch, reviews and feedback should be limited to **the scope of changes in that branch**. However, if a change relates to something outside the scope and the resulting documentation update would be beneficial from an external perspective, updating out-of-scope documentation is permitted.
+
 ### 1. How much does this change increase maintenance cost?
 
 - Are new dependencies being added?
