@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+### Bug Fixes
+
+- **rules:** update ARIA version default from 1.2 to 1.3 in schema.json ([f25185f](https://github.com/markuplint/markuplint/commit/f25185f124815a2a51666e8b326ba59baf2c8c93))
+- **rules:** use forLegacyNode import for BCD to fix ERR_IMPORT_ATTRIBUTE_MISSING ([53f236e](https://github.com/markuplint/markuplint/commit/53f236e1e73d6dca569d7602a1d3e31e42bd0461)), closes [#3328](https://github.com/markuplint/markuplint/issues/3328)
+
 # [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
 
 ### Bug Fixes
