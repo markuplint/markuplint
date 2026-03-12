@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint-test/react-pkg-pretenders",
-	"version": "5.0.0-alpha.3",
+	"version": "5.0.0-rc.0",
 	"private": true,
 	"type": "module",
 	"pretenders": {

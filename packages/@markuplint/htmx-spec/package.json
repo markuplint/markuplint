@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/htmx-spec",
-	"version": "5.0.0-alpha.3",
+	"version": "5.0.0-rc.0",
 	"description": "Extended specification for tags and attributes in htmx",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -24,6 +24,6 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.0.0-alpha.3"
+		"@markuplint/ml-spec": "5.0.0-rc.0"
 	}
 }

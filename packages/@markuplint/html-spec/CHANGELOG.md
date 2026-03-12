@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
+
+### Features
+
+- **html-spec:** add experimental focusgroup and focusgroupstart global attributes ([ff406f1](https://github.com/markuplint/markuplint/commit/ff406f1be43c9669e57ea0f05de161b797fc5ecc)), closes [#3384](https://github.com/markuplint/markuplint/issues/3384)
+
 # [5.0.0-alpha.3](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.2...v5.0.0-alpha.3) (2026-02-26)
 
 **Note:** Version bump only for package @markuplint/html-spec
