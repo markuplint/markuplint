@@ -19,6 +19,7 @@ update SvelteKit placeholders, and modify attribute processing.
 | `add-directive`                 | Add a new Svelte directive to directivePatterns (svelte-spec) |
 | `add-control-flow-block`        | Add a new control flow block to nodeize()                     |
 | `update-sveltekit-placeholders` | Update SvelteKit template placeholder patterns                |
+| `update-component-scanner`      | Update component-scanner for pretenders auto scan             |
 
 If omitted, defaults to `add-directive`.
 
@@ -103,6 +104,29 @@ Update SvelteKit template placeholder patterns. Follow recipe #3 in `docs/mainte
 1. Build: `yarn build --scope @markuplint/svelte-parser`
 2. Add test cases to `src/sveltekit-parser.spec.ts`
 3. Test: `yarn test --scope @markuplint/svelte-parser`
+
+## Task: update-component-scanner
+
+Update `src/component-scanner.ts` when Svelte slot syntax or script block handling changes.
+
+### When to update
+
+- New slot-like syntax is added (e.g., Svelte 5 added `{@render children()}` alongside `<slot>`)
+- `<script>` vs `<script context="module">` priority logic needs to change
+- The `extractComponentInfo` shared logic needs a fix (also update vue-parser and astro-parser)
+
+### Step 1: Make the change
+
+1. Read `src/component-scanner.ts`
+2. Modify `detectSlots()` for new slot patterns (check psblock node names from the Svelte parser)
+3. If modifying `extractComponentInfo()`, apply the same change to all three parsers (vue, svelte, astro)
+
+### Step 2: Verify
+
+1. Update tests in `src/component-scanner.spec.ts`
+2. Build: `yarn build --scope @markuplint/svelte-parser`
+3. Test: `npx vitest run packages/@markuplint/svelte-parser/src/component-scanner.spec.ts`
+4. Run pretenders integration tests: `npx vitest run packages/@markuplint/pretenders`
 
 ## Rules
 

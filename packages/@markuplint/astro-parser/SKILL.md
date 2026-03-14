@@ -19,6 +19,7 @@ modify namespace scoping, update expression handling, and manage astro-eslint-pa
 | `add-directive`              | Add a new Astro template directive                  |
 | `modify-namespace-scoping`   | Modify SVG/XHTML namespace scoping logic            |
 | `update-expression-handling` | Update expression splitting or MustacheTag handling |
+| `update-component-scanner`   | Update component-scanner for pretenders auto scan   |
 
 If omitted, defaults to `add-directive`.
 
@@ -99,6 +100,29 @@ Update expression splitting or MustacheTag handling. Follow recipe #3 in `docs/m
 1. Build: `yarn build --scope @markuplint/astro-parser`
 2. Test with expressions containing nested HTML (e.g., `{list.map(item => <li>{item}</li>)}`)
 3. Test: `yarn test --scope @markuplint/astro-parser`
+
+## Task: update-component-scanner
+
+Update `src/component-scanner.ts` when Astro slot syntax or frontmatter handling changes.
+
+### When to update
+
+- New slot-like syntax is added to Astro
+- Frontmatter delimiter handling needs to change
+- The `extractComponentInfo` shared logic needs a fix (also update vue-parser and svelte-parser)
+
+### Step 1: Make the change
+
+1. Read `src/component-scanner.ts`
+2. Modify `detectSlots()` for new slot patterns, or `extractAstroFrontmatter()` for frontmatter changes
+3. If modifying `extractComponentInfo()`, apply the same change to all three parsers (vue, svelte, astro)
+
+### Step 2: Verify
+
+1. Update tests in `src/component-scanner.spec.ts`
+2. Build: `yarn build --scope @markuplint/astro-parser`
+3. Test: `npx vitest run packages/@markuplint/astro-parser/src/component-scanner.spec.ts`
+4. Run pretenders integration tests: `npx vitest run packages/@markuplint/pretenders`
 
 ## Rules
 
