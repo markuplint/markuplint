@@ -27,6 +27,10 @@ export interface ScriptSourceBlock {
  * Handles optional `lang` attribute (e.g., `<script setup lang="ts">`).
  * Only matches `<script setup>` — regular `<script>` blocks are ignored.
  *
+ * @deprecated Use `@markuplint/vue-parser/component-scanner` instead.
+ * The import-resolver now delegates to the parser's component-scanner.
+ * This function is retained only for its unit tests during the migration period.
+ *
  * @param source - The full Vue SFC source text
  * @returns The extracted script block, or `null` if no `<script setup>` is found
  */
@@ -138,6 +142,10 @@ export function extractVueOptionsApiComponents(scriptContent: string): string[] 
  * Prefers the instance `<script>` over `<script context="module">`.
  * Falls back to the module script if no instance script is found.
  *
+ * @deprecated Use `@markuplint/svelte-parser/component-scanner` instead.
+ * The import-resolver now delegates to the parser's component-scanner.
+ * This function is retained only for its unit tests during the migration period.
+ *
  * @param source - The full Svelte component source text
  * @returns The extracted script block, or `null` if no `<script>` is found
  */
@@ -176,6 +184,10 @@ export function extractSvelteScript(source: string): ScriptSourceBlock | null {
 
 /**
  * Extracts the content of the frontmatter block (`---...---`) from an Astro component source.
+ *
+ * @deprecated Use `@markuplint/astro-parser/component-scanner` instead.
+ * The import-resolver now delegates to the parser's component-scanner.
+ * This function is retained only for its unit tests during the migration period.
  *
  * @param source - The full Astro component source text
  * @returns The extracted frontmatter block, or `null` if no frontmatter is found

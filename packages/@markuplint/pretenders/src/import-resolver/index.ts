@@ -10,12 +10,11 @@
  *
  * ## Supported frameworks
  *
- * - Vue `<script setup>` (all static imports are exposed as bindings)
- * - Vue Options API `components` property (fallback when no `<script setup>`;
- *   only imports registered in `components: { ... }` are returned)
- * - Svelte `<script>` tags (prefers instance script over module script)
- * - Astro frontmatter (`---...---`)
- * - MDX top-level ESM
+ * - Vue `<script setup>` (via `@markuplint/vue-parser/component-scanner`)
+ * - Vue Options API `components` property (fallback; uses built-in regex extraction)
+ * - Svelte `<script>` tags (via `@markuplint/svelte-parser/component-scanner`)
+ * - Astro frontmatter (via `@markuplint/astro-parser/component-scanner`)
+ * - MDX top-level ESM (built-in extraction — no parser package)
  *
  * ## Dynamic imports
  *
@@ -29,49 +28,16 @@
  * `resolveBarrelExport` is a standalone utility (not called by `analyzeImports`)
  * that resolves a named import from a barrel directory (e.g., `'./components'`)
  * to its original source module. Only single-level re-exports are resolved.
- *
- * ### Usage example: resolving barrel imports
- *
- * ```ts
- * import { analyzeImports, resolveComponentImport, resolveBarrelExport } from '@markuplint/pretenders';
- *
- * const result = await analyzeImports('App.vue', source);
- * const binding = resolveComponentImport('Button', result.bindings);
- *
- * if (binding) {
- *   // Check if the import source is a barrel directory
- *   const originalSource = resolveBarrelExport(binding.source, binding.importedName, filePath);
- *   // originalSource: './Button.vue' (resolved from './components' barrel)
- * }
- * ```
- *
- * ## Excludes
- *
- * - `import.meta` references
- * - Dynamic imports with template literals or variable specifiers
- * - Multi-level barrel chains (only single-level re-exports are resolved)
- *
- * ## Future integration
- *
- * The current implementation uses regex-based source extraction.
- * When the CLI multi-framework dispatch (#3340) creates a unified parsing
- * pipeline, MLAST psblock-based extraction can be integrated by parsing
- * the file once and passing the document to both templateScanner and
- * import-resolver.
  */
 
+import type { ComponentScanScriptSource } from '../component-scanner.js';
 import type { ImportBinding, ImportAnalysisResult } from './types.js';
 
 import path from 'node:path';
 
-import {
-	extractVueScriptSetup,
-	extractVueScript,
-	extractVueOptionsApiComponents,
-	extractSvelteScript,
-	extractAstroFrontmatter,
-	extractMdxEsm,
-} from './extract-script-source.js';
+import { getScanner } from '../scanner-loader.js';
+
+import { extractVueScript, extractVueOptionsApiComponents, extractMdxEsm } from './extract-script-source.js';
 import { parseImports } from './parse-imports.js';
 export { resolveBarrelExport } from './resolve-barrel.js';
 
@@ -79,7 +45,7 @@ export type { ImportBinding, ImportAnalysisResult } from './types.js';
 
 /**
  * Supported framework types for import analysis.
- * Superset of templateScanner's framework types — includes MDX which
+ * Superset of template scanner's framework types — includes MDX which
  * is a component usage site (not definition), making it relevant
  * for import analysis but not for template scanning.
  */
@@ -94,7 +60,6 @@ const EXTENSION_MAP: Record<string, ImportFrameworkType> = {
 
 /**
  * Determines the framework type from the file extension.
- * Local to import-resolver to include MDX without affecting templateScanner.
  */
 function getImportFrameworkType(filePath: string): ImportFrameworkType | null {
 	const ext = path.extname(filePath).toLowerCase();
@@ -102,9 +67,31 @@ function getImportFrameworkType(filePath: string): ImportFrameworkType | null {
 }
 
 /**
+ * Extracts the script source from a component file using the component scanner
+ * if available, or falls back to built-in extraction for MDX.
+ */
+async function extractScriptSource(
+	filePath: string,
+	source: string,
+	framework: ImportFrameworkType,
+): Promise<ComponentScanScriptSource | null> {
+	if (framework === 'mdx') {
+		return extractMdxEsm(source);
+	}
+
+	const ext = path.extname(filePath).toLowerCase();
+	const scanner = await getScanner(ext);
+	if (scanner?.extractScriptSource) {
+		return scanner.extractScriptSource(source);
+	}
+
+	return null;
+}
+
+/**
  * Analyzes a component file's source text and extracts all static import bindings.
- * Automatically detects the framework type from the file extension and extracts
- * the appropriate source block (script setup, script, frontmatter, or top-level ESM).
+ * Automatically detects the framework type from the file extension and delegates
+ * script source extraction to the appropriate component scanner.
  *
  * @param filePath - The absolute or relative file path (used for framework detection)
  * @param source - The full source text of the component file
@@ -117,32 +104,18 @@ export async function analyzeImports(filePath: string, source: string): Promise<
 		return null;
 	}
 
-	let scriptSource: { content: string; offset: number } | null = null;
-
-	switch (framework) {
-		case 'vue': {
-			scriptSource = extractVueScriptSetup(source);
-			if (!scriptSource) {
-				// Fallback to Vue Options API: extract regular <script>, parse imports,
-				// then filter to only those registered in the `components` property.
-				return analyzeVueOptionsApi(source);
-			}
-			break;
+	// Vue Options API requires special handling: extract regular <script>,
+	// parse imports, then filter to only those registered in `components: { ... }`
+	if (framework === 'vue') {
+		const scriptSource = await extractScriptSource(filePath, source, framework);
+		if (!scriptSource) {
+			return analyzeVueOptionsApi(source);
 		}
-		case 'svelte': {
-			scriptSource = extractSvelteScript(source);
-			break;
-		}
-		case 'astro': {
-			scriptSource = extractAstroFrontmatter(source);
-			break;
-		}
-		case 'mdx': {
-			scriptSource = extractMdxEsm(source);
-			break;
-		}
+		const bindings = await parseImports(scriptSource.content);
+		return { bindings };
 	}
 
+	const scriptSource = await extractScriptSource(filePath, source, framework);
 	if (!scriptSource) {
 		return { bindings: [] };
 	}
@@ -207,10 +180,6 @@ export function resolveComponentImport(
 
 /**
  * Converts a kebab-case string to PascalCase.
- * Used for Vue's component name resolution where `<my-button>` maps to `MyButton`.
- *
- * @param str - The kebab-case string
- * @returns The PascalCase equivalent
  */
 function kebabToPascalCase(str: string): string {
 	if (!str.includes('-')) {

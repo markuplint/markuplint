@@ -93,7 +93,7 @@ The JSX scanner detects **slots** (children). If a component accepts `children` 
 
 ### Template Scanner
 
-The template scanner uses markuplint's own framework parsers (Vue, Svelte, Astro) to extract the root element from component templates at depth=0. It also detects static attributes and slot/children usage.
+The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect static attributes, slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
 
 ```vue
 <template>
@@ -123,13 +123,13 @@ Slot detection covers:
 
 The import resolver analyzes `<script>` / frontmatter / ESM blocks in component files and extracts import bindings. This links template component usage to source file locations, enabling cross-file dependency resolution.
 
-Supported script block types:
+Script source extraction is delegated to each parser's component-scanner (Vue, Svelte, Astro), while MDX extraction is built-in. Supported script block types:
 
-- Vue `<script setup>` (all static imports are exposed as bindings)
+- Vue `<script setup>` (via `@markuplint/vue-parser/component-scanner`)
 - Vue Options API `<script>` (fallback when no `<script setup>`; only imports registered in `components: { ... }` are returned)
-- Svelte `<script>` (prefers instance script over module script)
-- Astro frontmatter (`---...---`)
-- MDX top-level ESM
+- Svelte `<script>` (via `@markuplint/svelte-parser/component-scanner`; prefers instance script over module script)
+- Astro frontmatter (via `@markuplint/astro-parser/component-scanner`)
+- MDX top-level ESM (built-in)
 
 Dynamic imports with string literal specifiers (`import('./path')`) are included in bindings with `type: 'dynamic'`. Template literal and variable specifiers are excluded.
 

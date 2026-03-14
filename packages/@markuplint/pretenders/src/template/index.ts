@@ -1,23 +1,21 @@
 import type { PretenderScanTemplateOptions } from './types.js';
-import type { OriginalNode } from '@markuplint/ml-config';
+import type { OriginalNode, PretenderAttr } from '@markuplint/ml-config';
 
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { createScanner } from '../create-scanner.js';
 import { PretenderDirector } from '../pretender-director.js';
+import { getScanner } from '../scanner-loader.js';
 
 import { deriveName } from './derive-name.js';
-import { detectSlots } from './detect-slots.js';
-import { extractAttrs } from './extract-attrs.js';
-import { extractRoot } from './extract-root.js';
-import { parseComponent } from './parse-component.js';
 
 /**
  * Template scanner for Vue, Svelte, and Astro component files.
  *
- * Parses component files using markuplint's existing framework parsers,
- * extracts root elements at depth=0, detects static attributes and slot usage,
- * and registers component-to-element mappings via PretenderDirector.
+ * Delegates to each parser package's component-scanner subpath export
+ * via dynamic import, keeping framework-specific scanning logic co-located
+ * with the parser that understands the framework best.
  *
  * @param files - Absolute file paths to scan (relative paths cause a `ReferenceError`)
  * @param options - Template scanner configuration (cwd, component names to ignore)
@@ -35,31 +33,42 @@ export const templateScanner = createScanner<PretenderScanTemplateOptions>(async
 			continue;
 		}
 
-		const doc = await parseComponent(filePath);
-		if (!doc) {
+		const ext = path.extname(filePath).toLowerCase();
+		const scanner = await getScanner(ext);
+		if (!scanner) {
 			continue;
 		}
 
-		const root = extractRoot(doc);
-		if (!root) {
+		let sourceCode: string;
+		try {
+			sourceCode = fs.readFileSync(filePath, 'utf8');
+		} catch (error: unknown) {
+			// eslint-disable-next-line no-console
+			console.warn(`Failed to read component file: ${filePath}`, error instanceof Error ? error.message : error);
 			continue;
 		}
 
-		const tagName = root.nodeName;
-		const attrs = extractAttrs(root);
-		const hasSlots = detectSlots(doc);
+		const scan = scanner.scanComponent(sourceCode);
+		if (!scan?.rootElement) {
+			continue;
+		}
+
 		const relFilePath = path.relative(cwd, filePath);
 
-		const identity: string | OriginalNode =
-			attrs.length > 0 || hasSlots
-				? {
-						element: tagName,
-						...(attrs.length > 0 ? { attrs } : {}),
-						slots: hasSlots ? true : null,
-					}
-				: tagName;
+		const attrs: readonly PretenderAttr[] = scan.attrs.map(a =>
+			a.value === undefined ? { name: a.name } : { name: a.name, value: a.value },
+		);
 
-		director.add(componentName, identity, relFilePath, root.line, root.col, relFilePath);
+		const identity: string | OriginalNode =
+			attrs.length > 0 || scan.hasSlots
+				? {
+						element: scan.rootElement,
+						...(attrs.length > 0 ? { attrs } : {}),
+						slots: scan.hasSlots ? true : null,
+					}
+				: scan.rootElement;
+
+		director.add(componentName, identity, relFilePath, scan.line ?? 1, scan.col ?? 1, relFilePath);
 	}
 
 	return director.getPretenders();
