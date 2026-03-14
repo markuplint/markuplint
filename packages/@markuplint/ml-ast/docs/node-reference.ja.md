@@ -51,7 +51,7 @@ function handle(node: MLASTNode) {
 
 ### 特殊なノード
 
-- **`MLASTElementCloseTag`** は `createNode()` を**経由しません**。代わりに `MLElement` が内部で `pairNode` 参照から `MLElementCloseTag` を生成します。`MLElementCloseTag` は DOM ツリー走査の対象ではなく、ペアとなる要素の付属物としてのみ存在します。
+- **`MLASTElementCloseTag`** は `createNode()` を**経由しません**。代わりに `MLElement` が `pairNodeUuid` を解決して閉じタグの AST ノードを検索し、`MLElementCloseTag` を生成します。`MLElementCloseTag` は DOM ツリー走査の対象ではなく、ペアとなる要素の付属物としてのみ存在します。
 - **`MLASTPreprocessorSpecificBlock`** は `MLBlock` にマッピングされます。これは DOM Standard に相当するものがない **markuplint 独自の拡張**です。DOM Standard の範囲外であるカスタム `nodeType` `101` を使用します。`MLBlock` は透過的であり、子ノードはツリー走査時に親ノードに属するものとして扱われます。
 - **`MLASTHTMLAttr`** と **`MLASTSpreadAttr`** は `MLAttr` にマッピングされ、DOM `Attr` インターフェース（`nodeType: 2`）を実装します。属性は `createNode()` を経由せず、`MLElement.attributes`（`MLNamedNodeMap`）を通じてアクセスされます。
 
@@ -77,11 +77,11 @@ function handle(node: MLASTNode) {
 
 `MLASTToken` を継承し構造的メタデータを追加する内部（非エクスポート）基底インターフェースです。すべての具象ノード型がこれを継承します。
 
-| フィールド   | 型                        | 説明                                          |
-| ------------ | ------------------------- | --------------------------------------------- |
-| `type`       | `MLASTNodeType`           | 具象ノード種別を識別する判別タグ              |
-| `nodeName`   | `string`                  | ノード名（タグ名、`#text`、`#comment` など）  |
-| `parentNode` | `MLASTParentNode \| null` | 親ノードへの参照、トップレベルの場合は `null` |
+| フィールド       | 型               | 説明                                         |
+| ---------------- | ---------------- | -------------------------------------------- |
+| `type`           | `MLASTNodeType`  | 具象ノード種別を識別する判別タグ             |
+| `nodeName`       | `string`         | ノード名（タグ名、`#text`、`#comment` など） |
+| `parentNodeUuid` | `string \| null` | 親ノードの UUID、トップレベルの場合は `null` |
 
 ## MLASTDocument
 
@@ -124,21 +124,21 @@ function handle(node: MLASTNode) {
 
 **役割：** 開始タグ（例：`<div class="foo">`）を表します。AST における主要な要素表現であり、最も機能豊富なノード型です。子ノード、属性を所有し、対応する閉じタグへの参照を保持します。
 
-| フィールド      | 型                             | 説明                                                             |
-| --------------- | ------------------------------ | ---------------------------------------------------------------- |
-| `type`          | `'starttag'`                   | 判別タグ                                                         |
-| `depth`         | `number`                       | ドキュメントツリーでのネストの深さ                               |
-| `namespace`     | `string`                       | 名前空間 URI（例：`"http://www.w3.org/1999/xhtml"`）             |
-| `elementType`   | `ElementType`                  | `'html'`、`'web-component'`、`'authored'` のいずれか             |
-| `isFragment`    | `boolean`                      | フラグメントとして機能するか（例：React `<>`、Vue `<template>`） |
-| `attributes`    | `readonly MLASTAttr[]`         | この要素の属性                                                   |
-| `hasSpreadAttr` | `boolean \| undefined`         | スプレッド属性を持つかどうか                                     |
-| `childNodes`    | `readonly MLASTChildNode[]`    | この要素の直接の子ノード                                         |
-| `blockBehavior` | `MLASTBlockBehavior \| null`   | この要素に関連するブロック動作（ある場合）                       |
-| `pairNode`      | `MLASTElementCloseTag \| null` | 対応する閉じタグ、void/自己閉じ要素の場合は `null`               |
-| `tagOpenChar`   | `string`                       | タグを開く文字（通常 `"<"`）                                     |
-| `tagCloseChar`  | `string`                       | タグを閉じる文字（通常 `">"`）                                   |
-| `isGhost`       | `boolean`                      | ゴーストノード（パーサーが推定した省略タグ）かどうか             |
+| フィールド      | 型                           | 説明                                                             |
+| --------------- | ---------------------------- | ---------------------------------------------------------------- |
+| `type`          | `'starttag'`                 | 判別タグ                                                         |
+| `depth`         | `number`                     | ドキュメントツリーでのネストの深さ                               |
+| `namespace`     | `string`                     | 名前空間 URI（例：`"http://www.w3.org/1999/xhtml"`）             |
+| `elementType`   | `ElementType`                | `'html'`、`'web-component'`、`'authored'` のいずれか             |
+| `isFragment`    | `boolean`                    | フラグメントとして機能するか（例：React `<>`、Vue `<template>`） |
+| `attributes`    | `readonly MLASTAttr[]`       | この要素の属性                                                   |
+| `hasSpreadAttr` | `boolean \| undefined`       | スプレッド属性を持つかどうか                                     |
+| `childNodes`    | `readonly MLASTChildNode[]`  | この要素の直接の子ノード                                         |
+| `blockBehavior` | `MLASTBlockBehavior \| null` | この要素に関連するブロック動作（ある場合）                       |
+| `pairNodeUuid`  | `string \| null`             | 対応する閉じタグの UUID、void/自己閉じ要素の場合は `null`        |
+| `tagOpenChar`   | `string`                     | タグを開く文字（通常 `"<"`）                                     |
+| `tagCloseChar`  | `string`                     | タグを閉じる文字（通常 `">"`）                                   |
+| `isGhost`       | `boolean`                    | ゴーストノード（パーサーが推定した省略タグ）かどうか             |
 
 ### 要素タイプの分類
 
@@ -160,12 +160,14 @@ function handle(node: MLASTNode) {
 
 ### ペアノードの関係
 
-`pairNode` フィールドは開始タグと閉じタグの間に**双方向リンク**を作成します：
+`pairNodeUuid` フィールドは開始タグと閉じタグの間に UUID 文字列による**双方向リンク**を作成します（オブジェクト参照ではなく、JSON シリアライズが可能）：
 
-- `MLASTElement.pairNode` は対応する `MLASTElementCloseTag` を指す
-- `MLASTElementCloseTag.pairNode` は対応する `MLASTElement` を指す
+- `MLASTElement.pairNodeUuid` は対応する `MLASTElementCloseTag` の UUID を含む
+- `MLASTElementCloseTag.pairNodeUuid` は対応する `MLASTElement` の UUID を含む
 
-void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNode` は `null` です。
+UUID を実際のノードに解決するには、`MLASTDocument.nodeList` 内で `uuid` フィールドを照合して検索します。
+
+void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNodeUuid` は `null` です。
 
 ### フラグメント要素
 
@@ -186,24 +188,22 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 - `namespace: "http://www.w3.org/1999/xhtml"`
 - `attributes`：`class` と `id` 属性を含む配列
 - `childNodes`：`<p>` 要素とテキストノードを含む配列
-- `pairNode`：`</div>` 閉じタグへの参照
+- `pairNodeUuid`：`</div>` 閉じタグの UUID
 
 ## MLASTElementCloseTag
 
 **type 判別子：** `'endtag'`
 
-**役割：** 閉じタグ（例：`</div>`）を表します。`pairNode` フィールドを通じて常に `MLASTElement` とペアになります。
+**役割：** 閉じタグ（例：`</div>`）を表します。`pairNodeUuid` フィールドを通じて常に `MLASTElement` とペアになります。
 
-| フィールド     | 型             | 説明                               |
-| -------------- | -------------- | ---------------------------------- |
-| `type`         | `'endtag'`     | 判別タグ                           |
-| `depth`        | `number`       | ドキュメントツリーでのネストの深さ |
-| `parentNode`   | `null`         | 閉じタグでは常に `null`            |
-| `pairNode`     | `MLASTElement` | 対応する開始タグ                   |
-| `tagOpenChar`  | `string`       | タグを開く文字（通常 `"</"`）      |
-| `tagCloseChar` | `string`       | タグを閉じる文字（通常 `">"`）     |
-
-**`parentNode` が常に `null` である理由：** AST モデルでは、開始タグ（`MLASTElement`）のみが親子ツリー構造に参加します。閉じタグは `pairNode` を通じて開始タグにリンクされた別のノードとして存在しますが、どの親ノードの子でもありません。これによりツリー内での要素の重複を避けています。
+| フィールド       | 型               | 説明                                          |
+| ---------------- | ---------------- | --------------------------------------------- |
+| `type`           | `'endtag'`       | 判別タグ                                      |
+| `depth`          | `number`         | ドキュメントツリーでのネストの深さ            |
+| `parentNodeUuid` | `string \| null` | 親ノードの UUID（ペアとなる開始タグと同じ親） |
+| `pairNodeUuid`   | `string \| null` | 対応する開始タグの UUID                       |
+| `tagOpenChar`    | `string`         | タグを開く文字（通常 `"</"`）                 |
+| `tagCloseChar`   | `string`         | タグを閉じる文字（通常 `">"`）                |
 
 ## MLASTComment
 
@@ -414,7 +414,7 @@ void 要素（`<br>`、`<img>` など）と自己閉じ要素の場合、`pairNo
 | `type`     | `'spread'`  | 判別タグ         |
 | `nodeName` | `'#spread'` | 常に `'#spread'` |
 
-`MLASTSpreadAttr` は `MLASTAbstractNode` ではなく `MLASTToken` を直接継承するため、位置情報（`uuid`、`raw`、`offset` など）はありますが、`parentNode` や `depth` はありません。
+`MLASTSpreadAttr` は `MLASTAbstractNode` ではなく `MLASTToken` を直接継承するため、位置情報（`uuid`、`raw`、`offset` など）はありますが、`parentNodeUuid` や `depth` はありません。
 
 ## 共用体型リファレンス
 

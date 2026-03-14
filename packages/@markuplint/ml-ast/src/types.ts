@@ -100,8 +100,13 @@ interface MLASTAbstractNode extends MLASTToken {
 	readonly type: MLASTNodeType;
 	/** The node name (tag name, `#text`, `#comment`, etc.) */
 	readonly nodeName: string;
-	/** Reference to the parent node, or `null` for top-level nodes */
-	readonly parentNode: MLASTParentNode | null;
+	/** UUID of the parent node, or `null` for top-level nodes */
+	readonly parentNodeUuid: string | null;
+	/**
+	 * @internal Temporary object reference set during parsing and removed by post-processing.
+	 * Use {@link parentNodeUuid} instead.
+	 */
+	readonly parentNode?: MLASTParentNode | null;
 }
 
 /**
@@ -142,8 +147,13 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly childNodes: readonly MLASTChildNode[];
 	/** Block behavior associated with this element, if any */
 	readonly blockBehavior: MLASTBlockBehavior | null;
-	/** The matching closing tag, or `null` for void / self-closing elements */
-	readonly pairNode: MLASTElementCloseTag | null;
+	/** UUID of the matching closing tag, or `null` for void / self-closing elements */
+	readonly pairNodeUuid: string | null;
+	/**
+	 * @internal Temporary object reference set during parsing and removed by post-processing.
+	 * Use {@link pairNodeUuid} instead.
+	 */
+	readonly pairNode?: MLASTElementCloseTag | null;
 	/** The characters that open this tag (usually `"<"`) */
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
@@ -154,16 +164,19 @@ export interface MLASTElement extends MLASTAbstractNode {
 
 /**
  * A closing element tag (e.g. `</div>`).
- * Always paired with an {@link MLASTElement} via `pairNode`.
+ * Always paired with an {@link MLASTElement} via `pairNodeUuid`.
  */
 export interface MLASTElementCloseTag extends MLASTAbstractNode {
 	readonly type: 'endtag';
 	/** Nesting depth in the document tree */
 	readonly depth: number;
-	/** Closing tags do not have a parent node in the AST */
-	readonly parentNode: null;
-	/** The matching opening element tag */
-	readonly pairNode: MLASTElement;
+	/** UUID of the matching opening element tag */
+	readonly pairNodeUuid: string | null;
+	/**
+	 * @internal Temporary object reference set during parsing and removed by post-processing.
+	 * Use {@link pairNodeUuid} instead.
+	 */
+	readonly pairNode?: MLASTElement;
 	/** The characters that open this tag (usually `"</"`) */
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
