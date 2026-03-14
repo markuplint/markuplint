@@ -1,4 +1,4 @@
-import type { MLASTElement, MLASTInvalid } from '@markuplint/ml-ast';
+import type { MLASTElement, MLASTElementCloseTag, MLASTInvalid } from '@markuplint/ml-ast';
 
 import { nodeListToDebugMaps, attributesToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
@@ -774,22 +774,22 @@ describe('parser', () => {
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
 		// <html>
-		expect(doc.nodeList[0]?.parentNode).toEqual(null);
+		expect(doc.nodeList[0]?.parentNodeUuid).toEqual(null);
 
 		// </html>
-		expect(doc.nodeList[11]?.parentNode).toEqual(null);
+		expect(doc.nodeList[11]?.parentNodeUuid).toEqual(null);
 
 		// <head>
-		expect(doc.nodeList[1]?.parentNode?.uuid).toEqual(doc.nodeList[0]?.uuid);
+		expect(doc.nodeList[1]?.parentNodeUuid).toEqual(doc.nodeList[0]?.uuid);
 
 		// </head>
-		expect(doc.nodeList[5]?.parentNode?.uuid).toEqual(doc.nodeList[0]?.uuid);
+		expect(doc.nodeList[5]?.parentNodeUuid).toEqual(doc.nodeList[0]?.uuid);
 
 		// <body>
-		expect(doc.nodeList[6]?.parentNode?.uuid).toEqual(doc.nodeList[0]?.uuid);
+		expect(doc.nodeList[6]?.parentNodeUuid).toEqual(doc.nodeList[0]?.uuid);
 
 		// </body>
-		expect(doc.nodeList[10]?.parentNode?.uuid).toEqual(doc.nodeList[0]?.uuid);
+		expect(doc.nodeList[10]?.parentNodeUuid).toEqual(doc.nodeList[0]?.uuid);
 	});
 
 	test('UUID', () => {
@@ -843,16 +843,16 @@ describe('parser', () => {
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
 		// #text ⏎
-		expect(doc.nodeList[0]?.parentNode).toEqual(null);
+		expect(doc.nodeList[0]?.parentNodeUuid).toEqual(null);
 
 		// Doctype <!DOCTYPE␣html>
-		expect(doc.nodeList[1]?.parentNode).toEqual(null);
+		expect(doc.nodeList[1]?.parentNodeUuid).toEqual(null);
 
 		// #text ⏎
-		expect(doc.nodeList[2]?.parentNode).toEqual(null);
+		expect(doc.nodeList[2]?.parentNodeUuid).toEqual(null);
 
 		// html <html␣lang="en">
-		expect(doc.nodeList[3]?.parentNode).toEqual(null);
+		expect(doc.nodeList[3]?.parentNodeUuid).toEqual(null);
 		{
 			const node: MLASTElement = doc.nodeList[3] as MLASTElement;
 			expect(node.childNodes[0]?.uuid).toEqual(doc.nodeList[4]?.uuid);
@@ -863,10 +863,10 @@ describe('parser', () => {
 		}
 
 		// #text ⏎
-		expect(doc.nodeList[4]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[4]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// head <head>
-		expect(doc.nodeList[5]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[5]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		{
 			const node: MLASTElement = doc.nodeList[5] as MLASTElement;
@@ -883,50 +883,50 @@ describe('parser', () => {
 		}
 
 		// #text ⏎→
-		expect(doc.nodeList[6]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[6]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// meta <meta␣charset="UTF-8">
-		expect(doc.nodeList[7]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[7]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// #text ⏎→
-		expect(doc.nodeList[8]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[8]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// meta <meta␣name="viewport"␣content="width=device-width,␣initial-scale=1.0">
-		expect(doc.nodeList[9]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[9]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// #text ⏎→
-		expect(doc.nodeList[10]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[10]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// meta <meta␣http-equiv="X-UA-Compatible"␣content="ie=edge">
-		expect(doc.nodeList[11]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[11]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// #text ⏎→
-		expect(doc.nodeList[12]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[12]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// meta <title>
-		expect(doc.nodeList[13]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[13]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 		{
 			const node: MLASTElement = doc.nodeList[13] as MLASTElement;
 			expect(node.childNodes[0]?.uuid).toEqual(doc.nodeList[14]?.uuid);
 		}
 
 		// #text Document
-		expect(doc.nodeList[14]?.parentNode?.uuid).toEqual(doc.nodeList[13]?.uuid);
+		expect(doc.nodeList[14]?.parentNodeUuid).toEqual(doc.nodeList[13]?.uuid);
 
 		// meta </title>
-		expect(doc.nodeList[15]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[15]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// #text ⏎
-		expect(doc.nodeList[16]?.parentNode?.uuid).toEqual(doc.nodeList[5]?.uuid);
+		expect(doc.nodeList[16]?.parentNodeUuid).toEqual(doc.nodeList[5]?.uuid);
 
 		// meta </head>
-		expect(doc.nodeList[17]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[17]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// #text ⏎
-		expect(doc.nodeList[18]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[18]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// head <body>
-		expect(doc.nodeList[19]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[19]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 		{
 			const node: MLASTElement = doc.nodeList[19] as MLASTElement;
 			expect(node.childNodes[0]?.uuid).toEqual(doc.nodeList[20]?.uuid);
@@ -935,35 +935,35 @@ describe('parser', () => {
 		}
 
 		// #text ⏎→
-		expect(doc.nodeList[20]?.parentNode?.uuid).toEqual(doc.nodeList[19]?.uuid);
+		expect(doc.nodeList[20]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 
 		// head <h1>
-		expect(doc.nodeList[21]?.parentNode?.uuid).toEqual(doc.nodeList[19]?.uuid);
+		expect(doc.nodeList[21]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 		{
 			const node: MLASTElement = doc.nodeList[21] as MLASTElement;
 			expect(node.childNodes[0]?.uuid).toEqual(doc.nodeList[22]?.uuid);
 		}
 
 		// #text Title
-		expect(doc.nodeList[22]?.parentNode?.uuid).toEqual(doc.nodeList[21]?.uuid);
+		expect(doc.nodeList[22]?.parentNodeUuid).toEqual(doc.nodeList[21]?.uuid);
 
 		// head </h1>
-		expect(doc.nodeList[23]?.parentNode?.uuid).toEqual(doc.nodeList[19]?.uuid);
+		expect(doc.nodeList[23]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 
 		// #text ⏎
-		expect(doc.nodeList[24]?.parentNode?.uuid).toEqual(doc.nodeList[19]?.uuid);
+		expect(doc.nodeList[24]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 
 		// </body>
-		expect(doc.nodeList[25]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[25]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// #text ⏎
-		expect(doc.nodeList[26]?.parentNode?.uuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[26]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// </html>
-		expect(doc.nodeList[27]?.parentNode).toEqual(null);
+		expect(doc.nodeList[27]?.parentNodeUuid).toEqual(null);
 
 		// #text ⏎
-		expect(doc.nodeList[28]?.parentNode).toEqual(null);
+		expect(doc.nodeList[28]?.parentNodeUuid).toEqual(null);
 	});
 
 	test('Offset', () => {
@@ -1023,8 +1023,9 @@ describe('parser', () => {
 		// const map = nodeListToDebugMaps(doc.nodeList);
 		// console.log(map);
 
-		expect(doc.nodeList[0]?.parentNode).toEqual(null);
-		expect(doc.nodeList[1]?.parentNode?.parentNode).toEqual(null);
+		expect(doc.nodeList[0]?.parentNodeUuid).toEqual(null);
+		const parentOfNode1 = doc.nodeList.find(n => n.uuid === doc.nodeList[1]?.parentNodeUuid);
+		expect(parentOfNode1?.parentNodeUuid ?? null).toEqual(null);
 	});
 
 	test('code in script', () => {
@@ -1213,5 +1214,63 @@ describe('Issues', () => {
 			'[10:1]>[11:2](52,60)head: </head⏎>',
 			'[11:2]>[12:2](60,67)body: <body⏎>',
 		]);
+	});
+});
+
+describe('Circular reference removal', () => {
+	test('AST is JSON-serializable (no circular references)', () => {
+		const doc = parse('<div><span>text</span></div>');
+		let serialized: string;
+		expect(() => {
+			serialized = JSON.stringify(doc);
+		}).not.toThrow();
+
+		const parsed = JSON.parse(serialized!) as typeof doc;
+		expect(parsed.nodeList.length).toBeGreaterThan(0);
+	});
+
+	test('parentNode and pairNode object references are removed after parsing', () => {
+		const doc = parse('<div><span>text</span></div>');
+		for (const node of doc.nodeList) {
+			expect(node).not.toHaveProperty('parentNode');
+			expect(node).not.toHaveProperty('pairNode');
+		}
+	});
+
+	test('parentNodeUuid is correctly set for child nodes', () => {
+		const doc = parse('<div><span>text</span></div>');
+		const div = doc.nodeList.find(n => n.nodeName === 'div');
+		const span = doc.nodeList.find(n => n.nodeName === 'span');
+		const text = doc.nodeList.find(n => n.nodeName === '#text');
+
+		expect(div?.parentNodeUuid).toBeNull();
+		expect(span?.parentNodeUuid).toBe(div?.uuid);
+		expect(text?.parentNodeUuid).toBe(span?.uuid);
+	});
+
+	test('pairNodeUuid links start and end tags', () => {
+		const doc = parse('<div><span>text</span></div>');
+		const span = doc.nodeList.find(n => n.nodeName === 'span' && n.type === 'starttag') as MLASTElement;
+		const spanClose = doc.nodeList.find(n => n.nodeName === 'span' && n.type === 'endtag') as MLASTElementCloseTag;
+
+		expect(span.pairNodeUuid).toBe(spanClose.uuid);
+		expect(spanClose.pairNodeUuid).toBe(span.uuid);
+	});
+
+	test('void elements have null pairNodeUuid', () => {
+		const doc = parse('<div><br><img></div>');
+		const br = doc.nodeList.find(n => n.nodeName === 'br') as MLASTElement;
+		const img = doc.nodeList.find(n => n.nodeName === 'img') as MLASTElement;
+
+		expect(br.pairNodeUuid).toBeNull();
+		expect(img.pairNodeUuid).toBeNull();
+	});
+
+	test('endtag parentNodeUuid matches starttag parent', () => {
+		const doc = parse('<div><span>text</span></div>');
+		const div = doc.nodeList.find(n => n.nodeName === 'div' && n.type === 'starttag');
+		const spanClose = doc.nodeList.find(n => n.nodeName === 'span' && n.type === 'endtag');
+
+		expect(spanClose?.parentNodeUuid).toBe(div?.uuid);
 	});
 });
