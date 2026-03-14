@@ -8,11 +8,13 @@
 
 ```
 src/
-├── index.ts                — Re-exports parser
-├── parser.ts               — VueParser class extending Parser<ASTNode, State>
-├── index.spec.ts           — Integration tests for VueParser
+├── index.ts                    — Re-exports parser
+├── parser.ts                   — VueParser class extending Parser<ASTNode, State>
+├── component-scanner.ts        — Component scanner for pretenders auto scan (subpath export)
+├── index.spec.ts               — Integration tests for VueParser
+├── component-scanner.spec.ts   — Tests for component scanner
 └── vue-parser/
-    └── index.ts            — vue-eslint-parser wrapper, ASTNode/ASTComment type exports
+    └── index.ts                — vue-eslint-parser wrapper, ASTNode/ASTComment type exports
 ```
 
 ## Architecture Diagram
@@ -28,10 +30,12 @@ flowchart TD
     subgraph pkg ["@markuplint/vue-parser"]
         vueParser["VueParser\nextends Parser‹ASTNode, State›"]
         vueParseFn["vueParse()\nvue-eslint-parser wrapper"]
+        compScanner["componentScanner\n(subpath: ./component-scanner)"]
     end
 
     subgraph downstream ["Downstream"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(auto scan)"]
     end
 
     mlAst -->|"AST types"| vueParser
@@ -40,6 +44,8 @@ flowchart TD
     vueParseFn -->|"ESLintProgram AST"| vueParser
 
     vueParser -->|"produces MLASTDocument"| mlCore
+    vueParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## VueParser Class
@@ -249,12 +255,13 @@ The current Vue parser handles these directives at the attribute level only (`is
 
 ## Key Source Files
 
-| File                      | Purpose                                                              |
-| ------------------------- | -------------------------------------------------------------------- |
-| `src/parser.ts`           | VueParser class with all override methods                            |
-| `src/vue-parser/index.ts` | vue-eslint-parser wrapper and type definitions (ASTNode, ASTComment) |
-| `src/index.ts`            | Module entry point, re-exports parser instance                       |
-| `src/index.spec.ts`       | Integration tests covering parsing, directives, namespaces           |
+| File                       | Purpose                                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/parser.ts`            | VueParser class with all override methods                                                       |
+| `src/vue-parser/index.ts`  | vue-eslint-parser wrapper and type definitions (ASTNode, ASTComment)                            |
+| `src/index.ts`             | Module entry point, re-exports parser instance                                                  |
+| `src/index.spec.ts`        | Integration tests covering parsing, directives, namespaces                                      |
+| `src/component-scanner.ts` | Component scanner for `@markuplint/pretenders` auto scan (subpath export `./component-scanner`) |
 
 ## External Dependencies
 
@@ -277,14 +284,18 @@ flowchart TD
 
     subgraph pkg ["@markuplint/vue-parser"]
         vueParser["VueParser"]
+        compScanner["componentScanner\n(./component-scanner)"]
     end
 
     subgraph downstream ["Downstream"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(auto scan)"]
     end
 
     upstream -->|"types, parsing"| vueParser
     vueParser -->|"produces MLASTDocument"| mlCore
+    vueParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ### Upstream
@@ -296,6 +307,7 @@ flowchart TD
 ### Downstream
 
 - **`@markuplint/ml-core`** -- Consumes the `MLASTDocument` produced by `VueParser` and constructs the MLDOM for rule evaluation
+- **`@markuplint/pretenders`** -- Dynamically imports `./component-scanner` to extract root element, attributes, and slot information for auto scan
 
 ## Documentation Map
 

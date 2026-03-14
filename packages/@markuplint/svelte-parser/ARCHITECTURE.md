@@ -8,15 +8,17 @@
 
 ```
 src/
-├── index.ts                  — Re-exports parser from parser.ts
-├── parser.ts                 — SvelteParser class extending Parser<SvelteNode>
-├── parse-block.ts            — Utility: extracts open/close tokens from block constructs
+├── index.ts                    — Re-exports parser from parser.ts
+├── parser.ts                   — SvelteParser class extending Parser<SvelteNode>
+├── parse-block.ts              — Utility: extracts open/close tokens from block constructs
+├── component-scanner.ts        — Component scanner for pretenders auto scan (subpath export)
 ├── svelte-parser/
-│   ├── index.ts              — svelteParse() wrapper around svelte/compiler, type exports
-│   └── index.spec.ts         — Tests for svelte/compiler integration
-├── sveltekit-parser.ts       — SvelteKitTemplateParser extending HtmlParser
-├── sveltekit-parser.spec.ts  — Tests for SvelteKit template parsing
-└── index.spec.ts             — Integration tests for the main SvelteParser
+│   ├── index.ts                — svelteParse() wrapper around svelte/compiler, type exports
+│   └── index.spec.ts           — Tests for svelte/compiler integration
+├── sveltekit-parser.ts         — SvelteKitTemplateParser extending HtmlParser
+├── sveltekit-parser.spec.ts    — Tests for SvelteKit template parsing
+├── index.spec.ts               — Integration tests for the main SvelteParser
+└── component-scanner.spec.ts   — Tests for component scanner
 ```
 
 ## Architecture Diagram
@@ -35,10 +37,12 @@ flowchart TD
         svelteParse["svelteParse()\nsvelte/compiler wrapper"]
         parseBlock["parseBlock()\nBlock token extraction"]
         sveltekitParser["SvelteKitTemplateParser\nextends HtmlParser"]
+        compScanner["componentScanner\n(subpath: ./component-scanner)"]
     end
 
     subgraph downstream ["Downstream"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(auto scan)"]
     end
 
     mlAst -->|"AST types"| svelteParser
@@ -52,6 +56,8 @@ flowchart TD
 
     svelteParser -->|"produces MLASTDocument"| mlCore
     sveltekitParser -->|"produces MLASTDocument"| mlCore
+    svelteParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## SvelteParser Class
@@ -418,13 +424,14 @@ These Svelte 5 constructs are handled by the parser: `SnippetBlock` has dedicate
 
 ## Key Source Files
 
-| File                         | Purpose                                                                             |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| `src/parser.ts`              | `SvelteParser` class — main parser with all override methods and control flow logic |
-| `src/parse-block.ts`         | `parseBlock()` — shared utility for extracting open/close tokens from blocks        |
-| `src/svelte-parser/index.ts` | `svelteParse()` — `svelte/compiler` wrapper and Svelte AST type exports             |
-| `src/sveltekit-parser.ts`    | `SvelteKitTemplateParser` — HtmlParser extension for SvelteKit `app.html`           |
-| `src/index.ts`               | Package entry point — re-exports `parser`                                           |
+| File                         | Purpose                                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/parser.ts`              | `SvelteParser` class — main parser with all override methods and control flow logic             |
+| `src/parse-block.ts`         | `parseBlock()` — shared utility for extracting open/close tokens from blocks                    |
+| `src/svelte-parser/index.ts` | `svelteParse()` — `svelte/compiler` wrapper and Svelte AST type exports                         |
+| `src/sveltekit-parser.ts`    | `SvelteKitTemplateParser` — HtmlParser extension for SvelteKit `app.html`                       |
+| `src/index.ts`               | Package entry point — re-exports `parser`                                                       |
+| `src/component-scanner.ts`   | Component scanner for `@markuplint/pretenders` auto scan (subpath export `./component-scanner`) |
 
 ## External Dependencies
 
