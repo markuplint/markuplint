@@ -16,6 +16,9 @@ const scannerCache = new Map<string, ComponentScanner | null>();
 
 /**
  * Checks if an error is a Node.js ERR_MODULE_NOT_FOUND error.
+ *
+ * @param error - The caught error value
+ * @returns `true` if the error has code `ERR_MODULE_NOT_FOUND`
  */
 function isModuleNotFoundError(error: unknown): boolean {
 	return (
