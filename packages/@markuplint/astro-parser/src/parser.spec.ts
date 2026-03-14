@@ -225,9 +225,12 @@ test('Siblings2', () => {
 });
 
 test('Pair', () => {
-	expect(parse('<tag1></tag1>').nodeList[0].pairNode?.raw).toBe('</tag1>');
-	expect(parse('<tag1><tag2 /></tag1>').nodeList[1].pairNode?.raw).toBeUndefined();
-	expect(parse('<tag1><tag2></tag2></tag1>').nodeList[1].pairNode?.raw).toBe('</tag2>');
+	const doc1 = parse('<tag1></tag1>');
+	expect(doc1.nodeList.find(n => n.uuid === doc1.nodeList[0].pairNodeUuid)?.raw).toBe('</tag1>');
+	const doc2 = parse('<tag1><tag2 /></tag1>');
+	expect(doc2.nodeList[1].pairNodeUuid).toBeNull();
+	const doc3 = parse('<tag1><tag2></tag2></tag1>');
+	expect(doc3.nodeList.find(n => n.uuid === doc3.nodeList[1].pairNodeUuid)?.raw).toBe('</tag2>');
 });
 
 test('Missing end tag (HTML)', () => {

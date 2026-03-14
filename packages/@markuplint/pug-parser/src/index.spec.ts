@@ -1587,14 +1587,14 @@ describe('Issues', () => {
 		const text = doc.nodeList[3];
 		const spanClose = doc.nodeList[4];
 
-		expect(html.uuid).toBe(p.parentNode.uuid);
+		expect(html.uuid).toBe(p.parentNodeUuid);
 		expect(html.childNodes.length).toBe(1);
 		expect(p.uuid).toBe(html.childNodes[0].uuid);
 		expect(p.childNodes.length).toBe(2);
 		expect(span.uuid).toBe(p.childNodes[0].uuid);
 		expect(span.childNodes.length).toBe(1);
 		expect(text.uuid).toBe(span.childNodes[0].uuid);
-		expect(spanClose.uuid).toBe(span.pairNode.uuid);
+		expect(spanClose.uuid).toBe(span.pairNodeUuid);
 	});
 
 	test('#1741', () => {

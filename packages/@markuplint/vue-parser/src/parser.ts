@@ -144,7 +144,7 @@ class VueParser extends Parser<ASTNode, State> {
 					{
 						...token,
 						depth: node.depth,
-						parentNode: node.parentNode,
+						parentNode: node.parentNode ?? null,
 					},
 					{
 						isBogus: betweenComment.type === 'HTMLBogusComment',
