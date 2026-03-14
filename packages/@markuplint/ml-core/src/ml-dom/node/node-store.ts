@@ -37,6 +37,17 @@ class NodeStore {
 		return node as MappedNode<N, T, O>;
 	}
 
+	getNodeByUuid<T extends RuleConfigValue, O extends PlainData = undefined>(uuid: string): MLNode<T, O, any> {
+		const node = this.#store.get(uuid);
+		if (!node) {
+			nodeStoreError('Ref UUID: %s', uuid);
+			throw new TargetParserError('Broke mapping nodes.', {
+				raw: `uuid:${uuid}`,
+			});
+		}
+		return node as MLNode<T, O, any>;
+	}
+
 	setNode<A extends MLASTNode, T extends RuleConfigValue, O extends PlainData = undefined>(
 		astNode: A,
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

@@ -18,7 +18,7 @@ Factory function that dispatches AST node types to their corresponding MLDOM con
 | `'invalid'` (`kind: 'starttag'`) | `MLElement` (as `x-invalid`, `elementType: 'web-component'`) | `1`        |
 | `'invalid'` (other kind)         | `MLText`                                                     | `3`        |
 
-**Note:** `'endtag'` is not passed through `createNode()` -- it is skipped during document construction. `MLElement` creates `MLElementCloseTag` internally from its `pairNode` reference. `MLASTAttr` is handled by `MLElement` which creates `MLAttr` instances from the element's `attributes` array.
+**Note:** `'endtag'` is not passed through `createNode()` -- it is skipped during document construction. `MLElement` creates `MLElementCloseTag` internally by resolving its `pairNodeUuid`. `MLASTAttr` is handled by `MLElement` which creates `MLAttr` instances from the element's `attributes` array.
 
 ### Walkers
 

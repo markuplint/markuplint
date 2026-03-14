@@ -5,13 +5,7 @@ import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
 import type { RuleInfo } from '../../index.js';
-import type {
-	MLASTChildNode,
-	MLASTElementCloseTag,
-	MLASTInvalid,
-	MLASTNode,
-	MLASTParentNode,
-} from '@markuplint/ml-ast';
+import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
 import { branchesToPatterns } from '@markuplint/shared';
@@ -578,10 +572,14 @@ export abstract class MLNode<
 		if (this._astToken.type === 'attr' || this._astToken.type === 'spread') {
 			return null;
 		}
-		if (!this._astToken.parentNode) {
+		if (!this._astToken.parentNodeUuid) {
 			return this.ownerMLDocument;
 		}
-		return nodeStore.getNode<MLASTParentNode, T, O>(this._astToken.parentNode);
+		return nodeStore.getNodeByUuid<T, O>(this._astToken.parentNodeUuid) as
+			| MLDocument<any, any>
+			| MLDocumentFragment<any, any>
+			| MLElement<T, O>
+			| MLBlock<T, O>;
 	}
 
 	/**

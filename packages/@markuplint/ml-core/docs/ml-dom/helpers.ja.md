@@ -18,7 +18,7 @@ AST ノード型を対応する MLDOM コンストラクタにディスパッチ
 | `'invalid'`（`kind: 'starttag'`） | `MLElement`（`x-invalid`、`elementType: 'web-component'` として） | `1`        |
 | `'invalid'`（その他の kind）      | `MLText`                                                          | `3`        |
 
-**注:** `'endtag'` は `createNode()` を通過しません -- ドキュメントのコンストラクション中にスキップされます。`MLElement` は `pairNode` 参照から内部的に `MLElementCloseTag` を作成します。`MLASTAttr` は `MLElement` によって処理され、要素の `attributes` 配列から `MLAttr` インスタンスを作成します。
+**注:** `'endtag'` は `createNode()` を通過しません -- ドキュメントのコンストラクション中にスキップされます。`MLElement` は `pairNodeUuid` を解決して内部的に `MLElementCloseTag` を作成します。`MLASTAttr` は `MLElement` によって処理され、要素の `attributes` 配列から `MLAttr` インスタンスを作成します。
 
 ### ウォーカー
 
