@@ -12,8 +12,10 @@ src/
 ├── parser.ts                   — Parser<Node> を拡張する AstroParser クラス
 ├── astro-parser.ts             — astro-eslint-parser ラッパーと型の再エクスポート
 ├── detect-block-behavior.ts    — .map()/.filter() のブロック動作検出
+├── component-scanner.ts        — pretenders 自動スキャン用コンポーネントスキャナー（サブパスエクスポート）
 ├── parser.spec.ts              — AstroParser 統合テスト
-└── astro-parser.spec.ts        — astro-eslint-parser ラッパーテスト
+├── astro-parser.spec.ts        — astro-eslint-parser ラッパーテスト
+└── component-scanner.spec.ts   — コンポーネントスキャナーのテスト
 ```
 
 ## アーキテクチャ図
@@ -31,10 +33,12 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser ラッパー"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() 検出"]
+        compScanner["componentScanner\n(サブパス: ./component-scanner)"]
     end
 
     subgraph downstream ["下流"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(自動スキャン)"]
     end
 
     mlAst -->|"AST 型"| astroParser
@@ -44,6 +48,8 @@ flowchart TD
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
     astroParser -->|"MLASTDocument を生成"| mlCore
+    astroParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## AstroParser クラス
@@ -185,11 +191,12 @@ astro-eslint-parser → @astrojs/compiler → Astro 構文サポート
 
 ## 主要ソースファイル
 
-| ファイル          | 用途                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| `parser.ts`       | `AstroParser` クラス — 全オーバーライドメソッドと名前空間スコーピング                 |
-| `astro-parser.ts` | `astroParse()` ラッパー — `astro-eslint-parser` に委譲し、診断を `ParserError` に変換 |
-| `index.ts`        | 公開 API — シングルトン `parser` インスタンスを再エクスポート                         |
+| ファイル               | 用途                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `parser.ts`            | `AstroParser` クラス — 全オーバーライドメソッドと名前空間スコーピング                                         |
+| `astro-parser.ts`      | `astroParse()` ラッパー — `astro-eslint-parser` に委譲し、診断を `ParserError` に変換                         |
+| `index.ts`             | 公開 API — シングルトン `parser` インスタンスを再エクスポート                                                 |
+| `component-scanner.ts` | `@markuplint/pretenders` 自動スキャン用コンポーネントスキャナー（サブパスエクスポート `./component-scanner`） |
 
 ## ドキュメントマップ
 

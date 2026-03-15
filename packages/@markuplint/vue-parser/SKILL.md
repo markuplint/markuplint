@@ -20,6 +20,7 @@ detection, update vue-eslint-parser version support, and fix comment injection.
 | `modify-element-type-detection` | Update detectElementType() matchers                           |
 | `update-vue-version-support`    | Handle vue-eslint-parser API changes                          |
 | `fix-comment-injection`         | Fix template comment injection in flattenNodes()              |
+| `update-component-scanner`      | Update component-scanner for pretenders auto scan             |
 
 If omitted, defaults to `add-directive`.
 
@@ -126,6 +127,29 @@ Fix template comment injection in `flattenNodes()`. Follow recipe #4 in `docs/ma
 1. Build: `yarn build --scope @markuplint/vue-parser`
 2. Test with Vue templates containing HTML comments (`<!-- -->`), bogus comments (`<!...>`), and mixed content
 3. Test: `yarn test --scope @markuplint/vue-parser`
+
+## Task: update-component-scanner
+
+Update `src/component-scanner.ts` when Vue slot syntax or script block handling changes.
+
+### When to update
+
+- New slot-like syntax is added to Vue (e.g., a new built-in component that acts as a slot)
+- `<script setup>` extraction logic needs to change (e.g., new script attributes)
+- The `extractComponentInfo` shared logic needs a fix (also update svelte-parser and astro-parser)
+
+### Step 1: Make the change
+
+1. Read `src/component-scanner.ts`
+2. Modify `detectSlots()` for new slot patterns, or `extractVueScriptSetup()` for script changes
+3. If modifying `extractComponentInfo()`, apply the same change to all three parsers (vue, svelte, astro)
+
+### Step 2: Verify
+
+1. Update tests in `src/component-scanner.spec.ts`
+2. Build: `yarn build --scope @markuplint/vue-parser`
+3. Test: `npx vitest run packages/@markuplint/vue-parser/src/component-scanner.spec.ts`
+4. Run pretenders integration tests: `npx vitest run packages/@markuplint/pretenders`
 
 ## Rules
 

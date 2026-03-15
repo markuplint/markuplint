@@ -33,3 +33,11 @@ export type { ScanOptions } from './scan.js';
 export { analyzeImports, resolveComponentImport, resolveBarrelExport } from './import-resolver/index.js';
 export type { ImportBinding, ImportAnalysisResult } from './import-resolver/types.js';
 export type * from './types.js';
+
+// Companion Module pattern types
+export type {
+	ComponentScanner,
+	ComponentScanResult,
+	ComponentScanAttr,
+	ComponentScanScriptSource,
+} from './component-scanner.js';

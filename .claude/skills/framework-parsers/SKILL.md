@@ -53,8 +53,37 @@ Create a new full framework parser package.
    - `detectElementType()` — define the component naming pattern
 4. Configure constructor options: `endTagType`, `tagNameCaseSensitive`, etc.
 5. Write tests in `src/index.spec.ts`
-6. Build: `yarn build --scope @markuplint/<new-parser>`
-7. Test: `yarn test --scope @markuplint/<new-parser>`
+6. **Add a component-scanner** (see `add-component-scanner` task below) — required for `@markuplint/pretenders` auto scan support
+7. Add `"./component-scanner"` to `package.json` `exports`
+8. Build: `yarn build --scope @markuplint/<new-parser>`
+9. Test: `yarn test --scope @markuplint/<new-parser>`
+
+### add-component-scanner
+
+Add or update the `component-scanner` subpath export for pretenders auto scan support (Companion Module pattern).
+
+Each full framework parser exports a `component-scanner` subpath that the pretenders package dynamically imports at runtime. This keeps framework-specific scanning logic co-located with the parser.
+
+1. Create `src/component-scanner.ts` (use an existing one like `vue-parser/src/component-scanner.ts` as a template)
+2. Implement the `componentScanner` object with:
+   - `scanComponent(sourceCode)` — parse the source, extract root element at depth=0, detect slots, extract script source
+   - `extractScriptSource(sourceCode)` — extract the script/ESM block for import analysis
+3. Define local types (`ComponentScanResult`, `ComponentScanAttr`, `ComponentScanScriptSource`) structurally compatible with `@markuplint/pretenders`'s `ComponentScanner` interface (do **not** import from pretenders — use structural typing to avoid circular dependencies)
+4. Add `"./component-scanner"` to `package.json` `exports`:
+   ```json
+   "./component-scanner": {
+     "import": "./lib/component-scanner.js",
+     "types": "./lib/component-scanner.d.ts"
+   }
+   ```
+5. Write tests in `src/component-scanner.spec.ts` covering:
+   - Root element and attribute extraction
+   - Slot detection (framework-specific patterns)
+   - Script source extraction with correct offset
+   - Empty input and fragment-only input returning `null`
+   - SVG namespace detection
+6. Build: `yarn build --scope @markuplint/<parser>`
+7. Test: `npx vitest run packages/@markuplint/<parser>/src/component-scanner.spec.ts`
 
 ### create-spec
 
@@ -90,3 +119,5 @@ Add a new directive or special attribute to an existing framework parser.
 3. **Spec packages should only export an `ExtendedSpec` object** -- no parsing logic.
 4. **Use `potentialName` for attribute mapping** -- this tells markuplint which standard HTML attribute the framework attribute corresponds to.
 5. **Test with `nodeListToDebugMaps`** -- this is the standard assertion pattern across all parsers.
+6. **Full framework parsers must include a `component-scanner` subpath** -- this is required for pretenders auto scan. Without it, the framework's components will not be detected by `@markuplint/pretenders`.
+7. **Do not import from `@markuplint/pretenders` in component-scanner** -- use structural typing. Importing from pretenders creates a circular dependency in the lerna build graph.

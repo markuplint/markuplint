@@ -8,11 +8,13 @@
 
 ```
 src/
-├── index.ts                — parser を再エクスポート
-├── parser.ts               — Parser<ASTNode, State> を拡張する VueParser クラス
-├── index.spec.ts           — VueParser の統合テスト
+├── index.ts                    — parser を再エクスポート
+├── parser.ts                   — Parser<ASTNode, State> を拡張する VueParser クラス
+├── component-scanner.ts        — pretenders 自動スキャン用コンポーネントスキャナー（サブパスエクスポート）
+├── index.spec.ts               — VueParser の統合テスト
+├── component-scanner.spec.ts   — コンポーネントスキャナーのテスト
 └── vue-parser/
-    └── index.ts            — vue-eslint-parser ラッパー、ASTNode/ASTComment 型エクスポート
+    └── index.ts                — vue-eslint-parser ラッパー、ASTNode/ASTComment 型エクスポート
 ```
 
 ## アーキテクチャ図
@@ -28,10 +30,12 @@ flowchart TD
     subgraph pkg ["@markuplint/vue-parser"]
         vueParser["VueParser\nextends Parser‹ASTNode, State›"]
         vueParseFn["vueParse()\nvue-eslint-parser ラッパー"]
+        compScanner["componentScanner\n(サブパス: ./component-scanner)"]
     end
 
     subgraph downstream ["下流"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(自動スキャン)"]
     end
 
     mlAst -->|"AST 型"| vueParser
@@ -40,6 +44,8 @@ flowchart TD
     vueParseFn -->|"ESLintProgram AST"| vueParser
 
     vueParser -->|"MLASTDocument を生成"| mlCore
+    vueParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## VueParser クラス
@@ -249,12 +255,13 @@ Alpine.js では条件分岐とループに決まったパターン — `<templa
 
 ## 主要ソースファイル
 
-| ファイル                  | 用途                                                              |
-| ------------------------- | ----------------------------------------------------------------- |
-| `src/parser.ts`           | 全オーバーライドメソッドを持つ VueParser クラス                   |
-| `src/vue-parser/index.ts` | vue-eslint-parser ラッパーと型定義（ASTNode、ASTComment）         |
-| `src/index.ts`            | モジュールエントリーポイント、parser インスタンスを再エクスポート |
-| `src/index.spec.ts`       | パース、ディレクティブ、名前空間をカバーする統合テスト            |
+| ファイル                   | 用途                                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `src/parser.ts`            | 全オーバーライドメソッドを持つ VueParser クラス                                                               |
+| `src/vue-parser/index.ts`  | vue-eslint-parser ラッパーと型定義（ASTNode、ASTComment）                                                     |
+| `src/index.ts`             | モジュールエントリーポイント、parser インスタンスを再エクスポート                                             |
+| `src/index.spec.ts`        | パース、ディレクティブ、名前空間をカバーする統合テスト                                                        |
+| `src/component-scanner.ts` | `@markuplint/pretenders` 自動スキャン用コンポーネントスキャナー（サブパスエクスポート `./component-scanner`） |
 
 ## 外部依存
 
@@ -277,14 +284,18 @@ flowchart TD
 
     subgraph pkg ["@markuplint/vue-parser"]
         vueParser["VueParser"]
+        compScanner["componentScanner\n(./component-scanner)"]
     end
 
     subgraph downstream ["下流"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(自動スキャン)"]
     end
 
     upstream -->|"型、パース"| vueParser
     vueParser -->|"MLASTDocument を生成"| mlCore
+    vueParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ### 上流
@@ -296,6 +307,7 @@ flowchart TD
 ### 下流
 
 - **`@markuplint/ml-core`** -- `VueParser` が生成する `MLASTDocument` を消費し、ルール評価のための MLDOM を構築
+- **`@markuplint/pretenders`** -- `./component-scanner` を動的インポートし、ルート要素・属性・スロット情報を抽出して自動スキャンに利用
 
 ## ドキュメントマップ
 
