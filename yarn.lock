@@ -2857,7 +2857,7 @@ __metadata:
     ajv: "npm:8.18.0"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
-    fast-xml-parser: "npm:5.5.3"
+    fast-xml-parser: "npm:5.5.5"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.4.4"
@@ -9096,25 +9096,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-builder@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "fast-xml-builder@npm:1.1.2"
+"fast-xml-builder@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "fast-xml-builder@npm:1.1.3"
   dependencies:
     path-expression-matcher: "npm:^1.1.3"
-  checksum: 10c0/753926d213f75bf129970301ee5edd07d69edf47a7734b8d902333a34cbf079ce10f7bba28775aac7b15e7caf45e27ace1538f0322eb4d34505564bff039bfe9
+  checksum: 10c0/353a2b3695f66f2b0717fcb1a59d2c4108a3b29e7e4f125a51accaccade509dc6fb7e2777da62fb3b339487753ece01eaa270542b10a68dfd43f48d607a6b10e
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:5.5.3":
-  version: 5.5.3
-  resolution: "fast-xml-parser@npm:5.5.3"
+"fast-xml-parser@npm:5.5.5":
+  version: 5.5.5
+  resolution: "fast-xml-parser@npm:5.5.5"
   dependencies:
-    fast-xml-builder: "npm:^1.1.2"
+    fast-xml-builder: "npm:^1.1.3"
     path-expression-matcher: "npm:^1.1.3"
     strnum: "npm:^2.1.2"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/7e887378b3bdc43a9ae6e0977338aea656583bb21b6a081253150add8ac4c3239981cf2f281dc5a7fcf081f966df510d403387779fea99f8091db63e0ebcf583
+  checksum: 10c0/d159b331e7c3ea27e388ece304988f8dc57e8cbd9d91f4ab824c78c1ed7915f10b77032ec72ed4a9ddb872db4261b5ee0699d2b6a4a80e06dfc95174dde35e93
   languageName: node
   linkType: hard
 
