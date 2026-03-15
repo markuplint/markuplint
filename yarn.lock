@@ -2871,7 +2871,7 @@ __metadata:
     "@markuplint/html-parser": "npm:5.0.0-rc.0"
     "@markuplint/ml-ast": "npm:5.0.0-rc.0"
     "@markuplint/parser-utils": "npm:5.0.0-rc.0"
-    svelte: "npm:5.53.10"
+    svelte: "npm:5.53.12"
   languageName: unknown
   linkType: soft
 
@@ -7680,10 +7680,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devalue@npm:^5.6.3":
-  version: 5.6.3
-  resolution: "devalue@npm:5.6.3"
-  checksum: 10c0/701fbe57b9b8b71cf5f9e706a6c977cffadd5083298e442d460e82f04480b8c5656aa3c6eb36aed33b387f4266aed6abd2143cd91e94f96931302225d14789ba
+"devalue@npm:^5.6.4":
+  version: 5.6.4
+  resolution: "devalue@npm:5.6.4"
+  checksum: 10c0/0c1bbe036945e55c5f6d54f52bb1a99b19677dd48a8404517fbddb02e725803457bed6317d2c05292d68767914ba319a6a645dbfdf8ade65d687ab430bfc2ae1
   languageName: node
   linkType: hard
 
@@ -17242,9 +17242,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:5.53.10":
-  version: 5.53.10
-  resolution: "svelte@npm:5.53.10"
+"svelte@npm:5.53.12":
+  version: 5.53.12
+  resolution: "svelte@npm:5.53.12"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.4"
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
@@ -17255,14 +17255,14 @@ __metadata:
     aria-query: "npm:5.3.1"
     axobject-query: "npm:^4.1.0"
     clsx: "npm:^2.1.1"
-    devalue: "npm:^5.6.3"
+    devalue: "npm:^5.6.4"
     esm-env: "npm:^1.2.1"
     esrap: "npm:^2.2.2"
     is-reference: "npm:^3.0.3"
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10c0/dc2ae840c23c665f50d0f319e7cadf3f490103c4fd029dc414e692c4c1ed945b951ddc3c7b7bb0c5c44f35c802629630124f0937b8ca1bed3a122425c7eca278
+  checksum: 10c0/7f6f839b10de941866128a6db220b01c7600190c27db24e735b6eb1f2028c905b9a38bc9dcb3dc9deae6418e5a12d3ff9e6a3bdbcf30f0998aa3edfeb8dc39eb
   languageName: node
   linkType: hard
 
