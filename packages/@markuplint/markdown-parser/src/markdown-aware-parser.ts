@@ -149,7 +149,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			blockBehavior: null,
 			depth,
 			parentNode,
+			parentNodeUuid: parentNode?.uuid ?? null,
 			pairNode: null,
+			pairNodeUuid: null,
 			tagOpenChar: '',
 			tagCloseChar: '',
 			isGhost: false,
@@ -274,7 +276,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			blockBehavior: null,
 			depth,
 			parentNode,
+			parentNodeUuid: parentNode?.uuid ?? null,
 			pairNode: null,
+			pairNodeUuid: null,
 			tagOpenChar: '',
 			tagCloseChar: '',
 			isGhost: false,
@@ -300,6 +304,7 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			depth: depth + 1,
 			nodeName: '#text',
 			parentNode: startTag,
+			parentNodeUuid: startTag.uuid,
 		};
 
 		this.appendChild(startTag, textNode);
@@ -336,7 +341,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			blockBehavior: null,
 			depth,
 			parentNode,
+			parentNodeUuid: parentNode?.uuid ?? null,
 			pairNode: null,
+			pairNodeUuid: null,
 			tagOpenChar: '',
 			tagCloseChar: '',
 			isGhost: false,
@@ -361,7 +368,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			blockBehavior: null,
 			depth: depth + 1,
 			parentNode: preTag,
+			parentNodeUuid: preTag.uuid,
 			pairNode: null,
+			pairNodeUuid: null,
 			tagOpenChar: '',
 			tagCloseChar: '',
 			isGhost: false,
@@ -387,6 +396,7 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 						depth: depth + 2,
 						nodeName: '#text',
 						parentNode: codeTag,
+						parentNodeUuid: codeTag.uuid,
 					};
 
 					this.appendChild(codeTag, textNode);

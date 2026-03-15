@@ -98,6 +98,7 @@ export function restoreNode(
 				type: 'psblock',
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
+				parentNodeUuid: node.parentNode?.uuid ?? null,
 				parentNode: node.parentNode,
 				childNodes: [],
 				blockBehavior: null,
@@ -119,6 +120,7 @@ export function restoreNode(
 					...token,
 					nodeName: '#text',
 					type: 'text',
+					parentNodeUuid: node.parentNode?.uuid ?? null,
 					parentNode: node.parentNode,
 					depth: node.depth,
 				};
@@ -134,6 +136,7 @@ export function restoreNode(
 				type: 'psblock',
 				depth: node.depth,
 				nodeName: `#ps:${tag.type}`,
+				parentNodeUuid: node.parentNode?.uuid ?? null,
 				parentNode: node.parentNode,
 				childNodes: [],
 				blockBehavior: null,
@@ -155,6 +158,7 @@ export function restoreNode(
 					...token,
 					nodeName: '#text',
 					type: 'text',
+					parentNodeUuid: node.parentNode?.uuid ?? null,
 					parentNode: node.parentNode,
 					depth: node.depth,
 				};

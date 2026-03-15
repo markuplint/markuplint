@@ -5,7 +5,14 @@ import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
 import type { MLText } from './text.js';
 import type { ElementNodeType, PretenderContext, PretenderContextPretender } from './types.js';
-import type { ElementType, MLASTAttr, MLASTBlockBehavior, MLASTElement, NamespaceURI } from '@markuplint/ml-ast';
+import type {
+	ElementType,
+	MLASTAttr,
+	MLASTBlockBehavior,
+	MLASTElement,
+	MLASTElementCloseTag,
+	NamespaceURI,
+} from '@markuplint/ml-ast';
 import type {
 	PlainData,
 	Pretender,
@@ -195,7 +202,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	) {
 		super(astNode, document, astNode.isFragment);
 		this.#attributes = astNode.attributes.map(attr => new MLAttr(attr, this));
-		this.closeTag = astNode.pairNode ? new MLElementCloseTag(astNode.pairNode, document, this) : null;
+		const pairAstNode = astNode.pairNodeUuid
+			? (document.getAstNodeByUuid(astNode.pairNodeUuid) as MLASTElementCloseTag | undefined)
+			: null;
+		this.closeTag = pairAstNode ? new MLElementCloseTag(pairAstNode, document, this) : null;
 		const ns = resolveNamespace(astNode.nodeName, astNode.namespace);
 		this.namespaceURI = astNode.namespace;
 		this.elementType = astNode.elementType;

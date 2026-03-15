@@ -90,7 +90,8 @@ describe('Node list', () => {
 		]);
 
 		const el = doc.nodeList[3];
-		const el2 = doc.nodeList[3]?.parentNode?.childNodes?.[0];
+		const parent = doc.nodeList.find(n => n.uuid === doc.nodeList[3]?.parentNodeUuid);
+		const el2 = parent && 'childNodes' in parent ? parent.childNodes?.[0] : undefined;
 		expect(el?.nodeName).toBe(el2?.nodeName);
 		expect(el?.uuid).toBe(el2?.uuid);
 	});

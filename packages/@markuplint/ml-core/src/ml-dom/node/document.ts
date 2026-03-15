@@ -85,6 +85,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * The file path of the source document, if available.
 	 */
+	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
+
 	readonly #filename?: string;
 
 	/**
@@ -188,6 +190,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
 		this.ruleCommonSettings = ruleCommonSettings;
 
+		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)
+		this.#astNodeMap = new Map(ast.nodeList.map(n => [n.uuid, n]));
+
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList
@@ -212,6 +217,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			}
 			throw error;
 		}
+	}
+
+	/**
+	 * Looks up an AST node by its UUID from the parsed document's node list.
+	 *
+	 * @param uuid - The UUID of the AST node to find
+	 * @returns The AST node, or `undefined` if not found
+	 */
+	getAstNodeByUuid(uuid: string): MLASTNodeTreeItem | undefined {
+		return this.#astNodeMap.get(uuid);
 	}
 
 	/**

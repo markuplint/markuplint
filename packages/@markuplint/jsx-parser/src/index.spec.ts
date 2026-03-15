@@ -109,7 +109,7 @@ describe('parse', () => {
 		expect(ast.nodeList[1].nodeName).toBe('#ps:JSXExpressionContainer');
 		// @ts-ignore
 		expect(ast.nodeList[1].childNodes[0].uuid).toBe(ast.nodeList[2].uuid);
-		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[1].uuid);
+		expect(ast.nodeList[2].parentNodeUuid).toBe(ast.nodeList[1].uuid);
 	});
 
 	test('Code 2', () => {
@@ -176,8 +176,8 @@ describe('parse', () => {
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes[2].nodeName).toBe('#text');
 		// @ts-ignore
-		expect(ast.nodeList[2].parentNode?.uuid).toBe(ast.nodeList[0].uuid);
-		expect(ast.nodeList[3].parentNode?.uuid).toBe(ast.nodeList[2].uuid);
+		expect(ast.nodeList[2].parentNodeUuid).toBe(ast.nodeList[0].uuid);
+		expect(ast.nodeList[3].parentNodeUuid).toBe(ast.nodeList[2].uuid);
 	});
 
 	test('Code 4', () => {
@@ -193,7 +193,7 @@ describe('parse', () => {
 		const ast = parse('const Component = () => <Children prop={<PropElement />} />;');
 		// @ts-ignore
 		expect(ast.nodeList[0].childNodes.length).toBe(0);
-		expect(ast.nodeList[1].parentNode).toBeNull();
+		expect(ast.nodeList[1].parentNodeUuid).toBeNull();
 	});
 
 	test('Code 5', () => {
@@ -327,14 +327,16 @@ const Component3 = memo(() => <div>Component3</div>);`);
 
 		expect(ast.nodeList[3].raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.raw).toBe('</>');
+		const startNode = ast.nodeList[0].childNodes[0].childNodes[0];
+		const startNodePair = ast.nodeList.find(n => n.uuid === startNode.pairNodeUuid);
+		expect(startNodePair?.raw).toBe('</>');
 		// @ts-ignore
-		expect(ast.nodeList[0].childNodes[0].childNodes[0].pairNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(startNode.pairNodeUuid).toBe(ast.nodeList[3].uuid);
 
 		// @ts-ignore
-		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNode.uuid);
+		expect(ast.nodeList[2].uuid).toBe(ast.nodeList[3].pairNodeUuid);
 		// @ts-ignore
-		expect(ast.nodeList[2].pairNode.uuid).toBe(ast.nodeList[3].uuid);
+		expect(ast.nodeList[2].pairNodeUuid).toBe(ast.nodeList[3].uuid);
 	});
 
 	test('Attribute', () => {

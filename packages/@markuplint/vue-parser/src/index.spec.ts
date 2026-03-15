@@ -318,28 +318,28 @@ describe('parser', () => {
 		// console.log(map);
 		// console.log(doc.nodeList.map((n, i) => `${i}: ${n.uuid} ${n.raw.trim()}`));
 
-		expect(doc.nodeList[0].parentNode).toEqual(null);
-		expect(doc.nodeList[0].pairNode.uuid).toEqual(doc.nodeList[11].uuid);
+		expect(doc.nodeList[0].parentNodeUuid).toEqual(null);
+		expect(doc.nodeList[0].pairNodeUuid).toEqual(doc.nodeList[11].uuid);
 
 		// </x-wrap>
-		expect(doc.nodeList[11].parentNode).toEqual(null);
-		expect(doc.nodeList[11].pairNode.uuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[11].parentNodeUuid).toEqual(null);
+		expect(doc.nodeList[11].pairNodeUuid).toEqual(doc.nodeList[0].uuid);
 
 		// <x-before>
-		expect(doc.nodeList[1].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		expect(doc.nodeList[1].pairNode.uuid).toEqual(doc.nodeList[5].uuid);
+		expect(doc.nodeList[1].parentNodeUuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[1].pairNodeUuid).toEqual(doc.nodeList[5].uuid);
 
 		// </x-before>
-		expect(doc.nodeList[5].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		expect(doc.nodeList[5].pairNode.uuid).toEqual(doc.nodeList[1].uuid);
+		expect(doc.nodeList[5].parentNodeUuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[5].pairNodeUuid).toEqual(doc.nodeList[1].uuid);
 
 		// <x-after>
-		expect(doc.nodeList[6].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		expect(doc.nodeList[6].pairNode.uuid).toEqual(doc.nodeList[10].uuid);
+		expect(doc.nodeList[6].parentNodeUuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[6].pairNodeUuid).toEqual(doc.nodeList[10].uuid);
 
 		// </x-after>
-		expect(doc.nodeList[10].parentNode.uuid).toEqual(doc.nodeList[0].uuid);
-		expect(doc.nodeList[10].pairNode.uuid).toEqual(doc.nodeList[6].uuid);
+		expect(doc.nodeList[10].parentNodeUuid).toEqual(doc.nodeList[0].uuid);
+		expect(doc.nodeList[10].pairNodeUuid).toEqual(doc.nodeList[6].uuid);
 	});
 
 	test('attributes', () => {

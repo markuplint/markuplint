@@ -90,7 +90,7 @@ export function nodeTreeDebugView(nodeTree: readonly MLASTNode[], idFilter = fal
 					n.type === 'endtag' ? '/' : ''
 				}${n.nodeName}(${filter(n.uuid)})${n.type === 'starttag' && n.isGhost ? '[👻]' : ''}${
 					n.type === 'starttag'
-						? ` => ${n.pairNode ? `/${n.pairNode.nodeName}(${filter(n.pairNode.uuid)})` : '💀'}`
+						? ` => ${n.pairNodeUuid ? `/${nodeTree.find(p => p.uuid === n.pairNodeUuid)?.nodeName ?? '?'}(${filter(n.pairNodeUuid)})` : '💀'}`
 						: ''
 				}`,
 			);

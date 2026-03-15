@@ -260,6 +260,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				nodeList = [fmNode, ...newNodeList];
 			}
 
+			timer.push('removeCircularRefs');
+			// Remove circular object references (parentNodeUuid/pairNodeUuid are already set)
+			for (const node of nodeList) {
+				const n = node as any;
+				delete n.parentNode;
+				delete n.pairNode;
+			}
+
 			timer.log();
 			domLog(nodeList);
 
@@ -494,6 +502,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.createToken(token),
 			type: 'doctype',
 			nodeName: '#doctype',
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 		return [node];
 	}
@@ -520,6 +529,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			type: 'comment',
 			nodeName: '#comment',
 			isBogus,
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 		return [node];
 	}
@@ -545,6 +555,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			...this.createToken(token),
 			type: 'text',
 			nodeName: '#text',
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 
 		if (options?.researchTags) {
@@ -599,7 +610,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				childNodes: [],
 				blockBehavior: null,
 				parentNode: token.parentNode,
+				parentNodeUuid: token.parentNode?.uuid ?? null,
 				pairNode: null,
+				pairNodeUuid: null,
 				tagCloseChar: '',
 				tagOpenChar: '',
 				isGhost: true,
@@ -668,6 +681,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			nodeName: `#ps:${token.nodeName}`,
 			childNodes: [],
 			isBogus: false,
+			parentNodeUuid: token.parentNode?.uuid ?? null,
 		};
 
 		const siblings = this.visitChildren(childNodes, block);
@@ -889,6 +903,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					depth,
 					nodeName: '#text',
 					parentNode: null,
+					parentNodeUuid: null,
 				};
 				nodes.push(textNode);
 			}
@@ -1139,7 +1154,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		for (const appendingChild of childNodes) {
 			const currentIndex = parentNode.childNodes.findIndex(n => n.uuid === appendingChild.uuid);
 
-			Object.assign(appendingChild, { parentNode });
+			Object.assign(appendingChild, { parentNode, parentNodeUuid: parentNode.uuid });
 
 			if (currentIndex === -1) {
 				newChildNodes.push(appendingChild);
@@ -1227,10 +1242,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 
 		for (const node of nodes) {
-			this.#removeChild(node.parentNode, node);
+			this.#removeChild(node.parentNode ?? null, node);
 		}
 
-		this.appendChild(textNode.parentNode, textNode);
+		this.appendChild(textNode.parentNode ?? null, textNode);
 
 		return textNode;
 	}
@@ -1321,7 +1336,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					prevEndOffset,
 					node.offset,
 					node.depth,
-					node.parentNode,
+					node.parentNode ?? null,
 					invalidNode,
 					whitespace,
 				);
@@ -1343,7 +1358,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			lastNode.offset + lastNode.raw.length,
 			undefined,
 			lastNode.depth,
-			lastNode.parentNode,
+			lastNode.parentNode ?? null,
 			invalidNode,
 			whitespace,
 		);
@@ -1374,12 +1389,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * @returns `true` if `node` is a descendant of `potentialAncestor`.
 	 */
 	#isDescendantOf(node: MLASTNodeTreeItem, potentialAncestor: MLASTNodeTreeItem): boolean {
-		let current: MLASTParentNode | null = 'parentNode' in node ? node.parentNode : null;
+		let current: MLASTParentNode | null = 'parentNode' in node ? (node.parentNode ?? null) : null;
 		while (current) {
 			if (current === potentialAncestor) {
 				return true;
 			}
-			current = current.parentNode;
+			current = current.parentNode ?? null;
 		}
 		return false;
 	}
@@ -1390,7 +1405,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			if (node.type === 'endtag') {
 				const endTagUUID = node.uuid;
 				const openTag = newNodeList.findLast<MLASTElement>((n): n is MLASTElement =>
-					n.type === 'starttag' && !n.isGhost ? n.pairNode?.uuid === endTagUUID : false,
+					n.type === 'starttag' && !n.isGhost ? n.pairNodeUuid === endTagUUID : false,
 				);
 				if (!openTag) {
 					node = this.#convertIntoInvalidNode(node);
@@ -1402,9 +1417,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	#pairing(startTag: MLASTElement, endTag: MLASTElementCloseTag) {
-		Object.assign(startTag, { pairNode: endTag });
-		Object.assign(endTag, { pairNode: startTag });
-		this.appendChild(startTag.parentNode, endTag);
+		Object.assign(startTag, { pairNode: endTag, pairNodeUuid: endTag.uuid });
+		Object.assign(endTag, { pairNode: startTag, pairNodeUuid: startTag.uuid });
+		this.appendChild(startTag.parentNode ?? null, endTag);
 	}
 
 	#parseEndTag(token: ChildToken, namelessFragment: boolean): MLASTElementCloseTag {
@@ -1618,6 +1633,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			depth,
 			nodeName: isFragment ? '#jsx-fragment' : tagName,
 			parentNode: null,
+			parentNodeUuid: null,
 		};
 
 		const tag: MLASTTag = isOpenTag
@@ -1633,6 +1649,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					attributes: attrs,
 					childNodes: [],
 					pairNode: null,
+					pairNodeUuid: null,
 					tagOpenChar: '<',
 					tagCloseChar: selfClosingSolidusChar + '>',
 					blockBehavior: null,
@@ -1644,6 +1661,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					...commons,
 					type: 'endtag',
 					pairNode: {} as MLASTElement,
+					pairNodeUuid: null,
 					tagOpenChar: '</',
 					tagCloseChar: '>',
 				};

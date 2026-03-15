@@ -62,7 +62,7 @@ classDiagram
         <<interface>>
         +type: MLASTNodeType
         +nodeName: string
-        +parentNode: MLASTParentNode | null
+        +parentNodeUuid: string | null
     }
 
     class MLASTDoctype {
@@ -83,7 +83,7 @@ classDiagram
         +attributes: MLASTAttr[]
         +childNodes: MLASTChildNode[]
         +blockBehavior: MLASTBlockBehavior | null
-        +pairNode: MLASTElementCloseTag | null
+        +pairNodeUuid: string | null
         +isGhost: boolean
         +isFragment: boolean
     }
@@ -92,8 +92,7 @@ classDiagram
         <<interface>>
         +type: "endtag"
         +depth: number
-        +parentNode: null
-        +pairNode: MLASTElement
+        +pairNodeUuid: string | null
     }
 
     class MLASTComment {
@@ -216,7 +215,7 @@ Each AST node is ultimately converted into an **MLDOM** node by `@markuplint/ml-
 **Special nodes:**
 
 - **`MLBlock`** (`nodeType: 101`) is a markuplint-specific extension with no DOM Standard equivalent. It acts as a transparent container -- its children are treated as belonging to the parent for tree traversal.
-- **`MLElementCloseTag`** is not created by `createNode()`. Instead, `MLElement` internally creates it from its `pairNode` reference. It exists only as a satellite of its paired element and is not part of the DOM tree traversal.
+- **`MLElementCloseTag`** is not created by `createNode()`. Instead, `MLElement` internally resolves the `pairNodeUuid` to look up the closing tag's AST node and creates an `MLElementCloseTag` from it. It exists only as a satellite of its paired element and is not part of the DOM tree traversal.
 - **`MLASTInvalid`** is a recovery node -- it is never preserved as-is in MLDOM, but converted to either an `MLElement` (with tag name `x-invalid`) or an `MLText`, depending on its `kind` field.
 
 See [Node Reference -- AST to MLDOM Mapping](docs/node-reference.md#ast-to-mldom-mapping) for details.
