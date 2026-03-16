@@ -192,6 +192,91 @@ The caller is responsible for deciding whether a missing module is:
 All error output to the terminal must use `process.stderr.write()`.
 Never use `console.warn()`, `console.error()`, or `console.log()` for error reporting in the CLI layer.
 
+## Error Class Management
+
+All custom error classes and tier-guard utilities live in **`@markuplint/shared`**.
+Other packages import error classes from `@markuplint/shared` rather than defining
+their own.
+
+### Package layout
+
+```
+@markuplint/shared/src/
+├── errors/
+│   ├── index.ts                  -- Re-exports all error classes and guards
+│   ├── parser-error.ts           -- ParserError, TargetParserError
+│   ├── config-error.ts           -- ConfigParserError, ConfigLoadError
+│   ├── selector-error.ts         -- InvalidSelectorError
+│   ├── unexpected-call-error.ts  -- UnexpectedCallError
+│   └── guards.ts                 -- isFatalError(), isRecoverableError()
+├── functions.ts                  -- (existing)
+├── types.ts                      -- (existing)
+└── index.ts                      -- Re-exports errors/, functions, types
+```
+
+### Error class hierarchy
+
+```
+Error (built-in)
+├── ParserError                    -- Tier 3: User's source code is malformed
+│   ├── TargetParserError          -- Tier 3: Element-specific parse error
+│   └── ConfigParserError          -- Tier 3: Config file syntax error
+├── ConfigLoadError                -- Tier 2: Config file cannot be loaded
+├── InvalidSelectorError           -- Tier 3: CSS selector syntax error in config
+└── UnexpectedCallError            -- Tier 1: Internal API contract violation
+```
+
+### Guard functions
+
+```typescript
+// @markuplint/shared/src/errors/guards.ts
+
+/**
+ * Returns true if the error is a Tier 1 (Fatal) error that must
+ * never be caught or converted. These indicate implementation bugs
+ * or broken invariants.
+ */
+export function isFatalError(error: unknown): boolean {
+    return (
+        error instanceof TypeError ||
+        error instanceof ReferenceError ||
+        error instanceof UnexpectedCallError ||
+        !(error instanceof Error)
+    );
+}
+```
+
+### Migration from current locations
+
+Error classes currently defined in other packages will move to `@markuplint/shared`.
+The original packages re-export them for backward compatibility during the transition:
+
+| Class | Current location | After migration |
+|-------|-----------------|-----------------|
+| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/parser-utils` | Defined in `@markuplint/shared`, re-exported from `@markuplint/parser-utils` |
+| `ConfigLoadError` | `@markuplint/file-resolver` | Defined in `@markuplint/shared`, re-exported from `@markuplint/file-resolver` |
+| `InvalidSelectorError` | `@markuplint/selector` | Defined in `@markuplint/shared`, re-exported from `@markuplint/selector` |
+| `UnexpectedCallError` | `@markuplint/ml-core` | Defined in `@markuplint/shared`, re-exported from `@markuplint/ml-core` |
+
+Package-local error classes that are **not** part of the tier classification remain
+in their original package:
+
+| Class | Package | Reason |
+|-------|---------|--------|
+| `CircularReferenceError` | `@markuplint/file-resolver` (unexported) | Internal implementation detail |
+| `UnsupportedError` | `@markuplint/rules` (internal) | Domain-specific, no cross-package use |
+| `CreateRuleHelperError` | `@markuplint/create-rule` (internal) | CLI tool, no cross-package use |
+| `HelpRequested`, `UsageHintError` | `@markuplint/create-rule` (unexported) | CLI flow control, not real errors |
+
+### Why `@markuplint/shared`?
+
+- **Already widely depended on** — most packages already have `@markuplint/shared`
+  as a dependency, so no new dependency edges are introduced.
+- **No new package overhead** — avoids the cost of creating, publishing, and
+  maintaining a dedicated `@markuplint/errors` package.
+- **Natural location for cross-cutting utilities** — guard functions like
+  `isFatalError()` belong alongside other shared utilities.
+
 ## Checklist for New Code
 
 When writing a `catch` block anywhere in markuplint:

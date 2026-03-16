@@ -188,6 +188,86 @@ missing module の分類は呼び出し元が決定する:
 CLI 層のエラー出力はすべて `process.stderr.write()` を使用すること。
 エラー報告に `console.warn()`、`console.error()`、`console.log()` を使ってはならない。
 
+## エラークラス管理
+
+全カスタムエラークラスと階層判定ユーティリティは **`@markuplint/shared`** で管理する。
+他のパッケージは独自にエラークラスを定義せず、`@markuplint/shared` からインポートする。
+
+### パッケージレイアウト
+
+```
+@markuplint/shared/src/
+├── errors/
+│   ├── index.ts                  -- 全エラークラスとガード関数の re-export
+│   ├── parser-error.ts           -- ParserError, TargetParserError
+│   ├── config-error.ts           -- ConfigParserError, ConfigLoadError
+│   ├── selector-error.ts         -- InvalidSelectorError
+│   ├── unexpected-call-error.ts  -- UnexpectedCallError
+│   └── guards.ts                 -- isFatalError(), isRecoverableError()
+├── functions.ts                  -- （既存）
+├── types.ts                      -- （既存）
+└── index.ts                      -- errors/, functions, types を re-export
+```
+
+### エラークラス階層
+
+```
+Error (組み込み)
+├── ParserError                    -- Tier 3: ユーザーのソースコード構文エラー
+│   ├── TargetParserError          -- Tier 3: 要素レベルのパースエラー
+│   └── ConfigParserError          -- Tier 3: 設定ファイルの構文エラー
+├── ConfigLoadError                -- Tier 2: 設定ファイルを読み込めない
+├── InvalidSelectorError           -- Tier 3: 設定内の CSS セレクタ構文エラー
+└── UnexpectedCallError            -- Tier 1: 内部 API 契約違反
+```
+
+### ガード関数
+
+```typescript
+// @markuplint/shared/src/errors/guards.ts
+
+/**
+ * Tier 1（Fatal）エラーかどうかを判定する。
+ * true の場合、catch してはならず、変換やサイレント化も禁止。
+ * 実装バグまたは不変条件の破壊を示す。
+ */
+export function isFatalError(error: unknown): boolean {
+    return (
+        error instanceof TypeError ||
+        error instanceof ReferenceError ||
+        error instanceof UnexpectedCallError ||
+        !(error instanceof Error)
+    );
+}
+```
+
+### 現在の配置からの移行
+
+他パッケージで定義されているエラークラスを `@markuplint/shared` に移動する。
+元のパッケージは移行期間中の後方互換性のために re-export を提供する:
+
+| クラス | 現在の場所 | 移行後 |
+|--------|-----------|--------|
+| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/parser-utils` | `@markuplint/shared` で定義、`@markuplint/parser-utils` から re-export |
+| `ConfigLoadError` | `@markuplint/file-resolver` | `@markuplint/shared` で定義、`@markuplint/file-resolver` から re-export |
+| `InvalidSelectorError` | `@markuplint/selector` | `@markuplint/shared` で定義、`@markuplint/selector` から re-export |
+| `UnexpectedCallError` | `@markuplint/ml-core` | `@markuplint/shared` で定義、`@markuplint/ml-core` から re-export |
+
+パッケージ内部でのみ使われ、階層分類に関与**しない**エラークラスは元のパッケージに残す:
+
+| クラス | パッケージ | 理由 |
+|--------|-----------|------|
+| `CircularReferenceError` | `@markuplint/file-resolver`（非 export） | 内部実装の詳細 |
+| `UnsupportedError` | `@markuplint/rules`（内部） | ドメイン固有、パッケージ間利用なし |
+| `CreateRuleHelperError` | `@markuplint/create-rule`（内部） | CLI ツール、パッケージ間利用なし |
+| `HelpRequested`, `UsageHintError` | `@markuplint/create-rule`（非 export） | CLI フロー制御、本質的なエラーではない |
+
+### なぜ `@markuplint/shared` か？
+
+- **既に広く依存されている** — 多くのパッケージが既に `@markuplint/shared` に依存しており、新しい依存エッジが増えない。
+- **新パッケージのオーバーヘッドなし** — 専用の `@markuplint/errors` パッケージの作成・公開・メンテナンスコストを回避。
+- **横断ユーティリティの自然な置き場所** — `isFatalError()` のようなガード関数は、他の共有ユーティリティと並ぶべき。
+
 ## 新規コード向けチェックリスト
 
 markuplint のどこかで `catch` ブロックを書くとき:
