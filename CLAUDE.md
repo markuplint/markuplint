@@ -86,7 +86,7 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 
 The main working directory MUST stay on `dev` at all times. Any feature branch work — no matter how small (even a single-file docs change) — MUST be done in a worktree.
 
-Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). Worktrees are created under `../markuplint-wt/<branch-name>` (`wt.basedir` setting).
+Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). Worktrees are created under `.worktree/<branch-name>` (`wt.basedir` setting).
 
 ### Prerequisites
 
@@ -100,7 +100,7 @@ If `git wt` is not installed, install and configure it:
 
 ```bash
 brew install k1LoW/tap/git-wt
-git config wt.basedir "../{gitroot}-wt"
+git config wt.basedir ".worktree"
 git config --add wt.hook "yarn install"
 git config --add wt.hook "yarn build"
 ```
@@ -116,7 +116,7 @@ git config --add wt.hook "yarn build"
    `wt.hook` により `yarn install` → `yarn build` が自動実行される
 3. **Move into the worktree**:
    ```bash
-   cd ../markuplint-wt/<branch-name>
+   cd .worktree/<branch-name>
    ```
 4. **Do all edits, commits, and pushes** from within the worktree
 5. **Clean up** when done:
