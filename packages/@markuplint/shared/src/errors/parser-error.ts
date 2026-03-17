@@ -65,7 +65,7 @@ export class ConfigParserError extends ParserError {
 			readonly filePath: string;
 		},
 	) {
-		const pos = info.line != null && info.line != null ? `(${info.line}:${info.col})` : '';
+		const pos = info.line != null && info.col != null ? `(${info.line}:${info.col})` : '';
 		const file = ` in ${info.filePath}${pos}`;
 		const errMsg = `${message}${file}`;
 		super(errMsg, info);
