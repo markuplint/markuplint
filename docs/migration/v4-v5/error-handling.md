@@ -13,7 +13,6 @@ If you only use markuplint via the CLI or editor extensions, **no action is requ
 
 | Change | Impact | Action Required |
 |--------|--------|-----------------|
-| Error class definitions consolidated into `@markuplint/shared` | Internal — no user action | None |
 | New `isFatalError()` guard function | Custom rule/plugin authors with `catch` blocks | Adopt in catch blocks (recommended) |
 | `ConfigParserError` message format fix | Code that parses error messages | Update string matching if any |
 | New `@markuplint/shared` dependency for `@markuplint/selector` | Users pinning exact versions | Update lockfile |
