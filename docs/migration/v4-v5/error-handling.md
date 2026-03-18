@@ -13,59 +13,39 @@ If you only use markuplint via the CLI or editor extensions, **no action is requ
 
 | Change | Impact | Action Required |
 |--------|--------|-----------------|
-| Error classes consolidated into `@markuplint/shared` | All plugin/rule/parser authors | Update import paths (recommended) |
+| Error class definitions consolidated into `@markuplint/shared` | Internal — no user action | None |
 | New `isFatalError()` guard function | Custom rule/plugin authors with `catch` blocks | Adopt in catch blocks (recommended) |
 | `ConfigParserError` message format fix | Code that parses error messages | Update string matching if any |
 | New `@markuplint/shared` dependency for `@markuplint/selector` | Users pinning exact versions | Update lockfile |
 
-## Error Class Import Paths Changed
+## Error Class Import Paths — No Change Required
 
-All custom error classes have moved to `@markuplint/shared`. The old import paths still work via re-exports, but the recommended import path has changed.
+Error class definitions have been consolidated into `@markuplint/shared` internally, but **your import paths do not need to change**. Each package continues to export its error classes as the public API.
 
-### Before (v4)
+Import error classes from the package that matches your use case:
 
 ```typescript
+// ✅ Custom parser — import from parser-utils
 import { ParserError, TargetParserError, ConfigParserError } from '@markuplint/parser-utils';
 import type { ParserErrorInfo } from '@markuplint/parser-utils';
+
+// ✅ Selector usage — import from selector
+import { InvalidSelectorError } from '@markuplint/selector';
+
+// ✅ Cross-cutting utilities (e.g., guard functions) — import from shared
+import { isFatalError } from '@markuplint/shared';
 ```
 
-### After (v5)
+### Import Guidelines
 
-```typescript
-import { ParserError, TargetParserError, ConfigParserError } from '@markuplint/shared';
-import type { ParserErrorInfo } from '@markuplint/shared';
-```
+| Class | Recommended Import | Use Case |
+|-------|-------------------|----------|
+| `ParserError`, `TargetParserError`, `ConfigParserError`, `ParserErrorInfo` | `@markuplint/parser-utils` | Custom parsers, parser plugins |
+| `InvalidSelectorError` | `@markuplint/selector` | Selector-related code |
+| `isFatalError()` | `@markuplint/shared` | Any `catch` block that needs error classification |
+| `ConfigLoadError`, `UnexpectedCallError` | `@markuplint/shared` | Internal / cross-cutting code only |
 
-### Migration Table
-
-| Class | v4 Import | v5 Import (recommended) | v4 Import still works? |
-|-------|-----------|------------------------|----------------------|
-| `ParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | Yes (re-export) |
-| `TargetParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | Yes (re-export) |
-| `ConfigParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | Yes (re-export) |
-| `ParserErrorInfo` (type) | `@markuplint/parser-utils` | `@markuplint/shared` | Yes (re-export) |
-| `InvalidSelectorError` | `@markuplint/selector` | `@markuplint/shared` | Yes (re-export) |
-| `ConfigLoadError` | `@markuplint/file-resolver` (internal) | `@markuplint/shared` | Yes (re-export) |
-| `UnexpectedCallError` | `@markuplint/ml-core` (internal) | `@markuplint/shared` | Yes (re-export) |
-
-### Why Update?
-
-The old imports will continue to work indefinitely via re-exports. However, updating is recommended because:
-
-1. `@markuplint/shared` is the canonical source — future documentation and examples will use it
-2. It makes the dependency relationship explicit
-3. In a future major version, the re-exports *may* be removed
-
-### Search Keywords
-
-If your code imports error classes from markuplint, search for these patterns and update them:
-
-```
-from '@markuplint/parser-utils' → check for ParserError, TargetParserError, ConfigParserError
-from '@markuplint/selector'     → check for InvalidSelectorError
-from '@markuplint/file-resolver'→ check for ConfigLoadError
-from '@markuplint/ml-core'      → check for UnexpectedCallError
-```
+**Rule of thumb:** Import from the domain package you're working with. Use `@markuplint/shared` only for utilities like `isFatalError()` that don't belong to a specific domain, or for error classes that have no domain-specific package (e.g., `ConfigLoadError`).
 
 ## New: `isFatalError()` Guard Function
 
@@ -179,7 +159,5 @@ Error (built-in)
 ├── InvalidSelectorError           — Tier 3: CSS selector syntax error in config
 └── UnexpectedCallError            — Tier 1: Internal API contract violation
 ```
-
-All classes are exported from `@markuplint/shared`.
 
 For the full error handling policy including tier definitions and flow diagrams, see [Error Handling Policy](../architectures/ERROR-HANDLING.md).

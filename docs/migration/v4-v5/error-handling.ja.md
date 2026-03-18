@@ -13,59 +13,39 @@ CLI やエディタ拡張経由でのみ markuplint を使用している場合�
 
 | 変更内容 | 影響範囲 | 要対応 |
 |----------|---------|--------|
-| エラークラスを `@markuplint/shared` に集約 | 全プラグイン/ルール/パーサー作者 | import パスの更新（推奨） |
+| エラークラスの定義を `@markuplint/shared` に集約 | 内部変更 — ユーザー対応不要 | なし |
 | `isFatalError()` ガード関数の追加 | catch ブロックを持つカスタムルール/プラグイン作者 | catch ブロックでの採用（推奨） |
 | `ConfigParserError` メッセージフォーマットのバグ修正 | エラーメッセージを文字列解析しているコード | 文字列マッチングの更新（該当する場合） |
 | `@markuplint/selector` に `@markuplint/shared` 依存追加 | バージョンを厳密に固定しているユーザー | lockfile の更新 |
 
-## エラークラスの import パス変更
+## エラークラスの import パス — 変更不要
 
-全カスタムエラークラスが `@markuplint/shared` に移動しました。旧 import パスは re-export 経由で引き続き動作しますが、推奨 import パスが変わりました。
+エラークラスの定義は内部的に `@markuplint/shared` に集約されましたが、**import パスを変更する必要はありません**。各パッケージは引き続きエラークラスを公開 API としてエクスポートします。
 
-### Before（v4）
+用途に合ったパッケージからエラークラスを import してください:
 
 ```typescript
+// ✅ カスタムパーサー — parser-utils から import
 import { ParserError, TargetParserError, ConfigParserError } from '@markuplint/parser-utils';
 import type { ParserErrorInfo } from '@markuplint/parser-utils';
+
+// ✅ セレクタ関連 — selector から import
+import { InvalidSelectorError } from '@markuplint/selector';
+
+// ✅ 横断ユーティリティ（ガード関数など） — shared から import
+import { isFatalError } from '@markuplint/shared';
 ```
 
-### After（v5）
+### import ガイドライン
 
-```typescript
-import { ParserError, TargetParserError, ConfigParserError } from '@markuplint/shared';
-import type { ParserErrorInfo } from '@markuplint/shared';
-```
+| クラス | 推奨 import 元 | ユースケース |
+|--------|---------------|-------------|
+| `ParserError`, `TargetParserError`, `ConfigParserError`, `ParserErrorInfo` | `@markuplint/parser-utils` | カスタムパーサー、パーサープラグイン |
+| `InvalidSelectorError` | `@markuplint/selector` | セレクタ関連コード |
+| `isFatalError()` | `@markuplint/shared` | エラー分類が必要な全ての `catch` ブロック |
+| `ConfigLoadError`, `UnexpectedCallError` | `@markuplint/shared` | 内部・横断コード専用 |
 
-### 移行テーブル
-
-| クラス | v4 import 元 | v5 import 元（推奨） | v4 import は動作するか？ |
-|--------|-------------|---------------------|------------------------|
-| `ParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | はい（re-export） |
-| `TargetParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | はい（re-export） |
-| `ConfigParserError` | `@markuplint/parser-utils` | `@markuplint/shared` | はい（re-export） |
-| `ParserErrorInfo`（型） | `@markuplint/parser-utils` | `@markuplint/shared` | はい（re-export） |
-| `InvalidSelectorError` | `@markuplint/selector` | `@markuplint/shared` | はい（re-export） |
-| `ConfigLoadError` | `@markuplint/file-resolver`（内部） | `@markuplint/shared` | はい（re-export） |
-| `UnexpectedCallError` | `@markuplint/ml-core`（内部） | `@markuplint/shared` | はい（re-export） |
-
-### なぜ更新すべきか？
-
-旧 import は re-export により無期限に動作し続けます。しかし、以下の理由で更新を推奨します:
-
-1. `@markuplint/shared` が正規のソース — 今後のドキュメントとサンプルはこちらを使用
-2. 依存関係が明示的になる
-3. 将来のメジャーバージョンで re-export が削除される*可能性*がある
-
-### 検索キーワード
-
-コード内で markuplint のエラークラスを import している箇所を検索し、更新してください:
-
-```
-from '@markuplint/parser-utils' → ParserError, TargetParserError, ConfigParserError を確認
-from '@markuplint/selector'     → InvalidSelectorError を確認
-from '@markuplint/file-resolver'→ ConfigLoadError を確認
-from '@markuplint/ml-core'      → UnexpectedCallError を確認
-```
+**原則:** 作業中のドメインに対応するパッケージから import する。`@markuplint/shared` は `isFatalError()` のように特定ドメインに属さないユーティリティ、あるいは `ConfigLoadError` のようにドメイン固有パッケージを持たないエラークラスにのみ使用する。
 
 ## 新機能: `isFatalError()` ガード関数
 
@@ -179,7 +159,5 @@ Error (組み込み)
 ├── InvalidSelectorError           — Tier 3: 設定内の CSS セレクタ構文エラー
 └── UnexpectedCallError            — Tier 1: 内部 API 契約違反
 ```
-
-全クラスが `@markuplint/shared` からエクスポートされています。
 
 階層定義とフロー図を含む完全なエラーハンドリングポリシーは[エラーハンドリングポリシー](../architectures/ERROR-HANDLING.ja.md)を参照してください。

@@ -242,17 +242,20 @@ export function isFatalError(error: unknown): boolean {
 }
 ```
 
-### 現在の配置からの移行
+### 定義の場所と import 元の使い分け
 
-他パッケージで定義されているエラークラスを `@markuplint/shared` に移動する。
-元のパッケージは移行期間中の後方互換性のために re-export を提供する:
+エラークラスは `@markuplint/shared` で**定義**され、元のドメインパッケージから
+**re-export** される。外部ユーザーは用途に合ったドメインパッケージから import すべきであり、
+`isFatalError()` のような横断ユーティリティを除いて `@markuplint/shared` から直接
+import する必要はない。
 
-| クラス | 現在の場所 | 移行後 |
-|--------|-----------|--------|
-| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/parser-utils` | `@markuplint/shared` で定義、`@markuplint/parser-utils` から re-export |
-| `ConfigLoadError` | `@markuplint/file-resolver` | `@markuplint/shared` で定義、`@markuplint/file-resolver` から re-export |
-| `InvalidSelectorError` | `@markuplint/selector` | `@markuplint/shared` で定義、`@markuplint/selector` から re-export |
-| `UnexpectedCallError` | `@markuplint/ml-core` | `@markuplint/shared` で定義、`@markuplint/ml-core` から re-export |
+| クラス | 定義場所 | 公開 API（import 元） |
+|--------|---------|----------------------|
+| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/shared` | `@markuplint/parser-utils` |
+| `InvalidSelectorError` | `@markuplint/shared` | `@markuplint/selector` |
+| `ConfigLoadError` | `@markuplint/shared` | `@markuplint/shared`（ドメインパッケージなし） |
+| `UnexpectedCallError` | `@markuplint/shared` | `@markuplint/shared`（内部利用） |
+| `isFatalError()` | `@markuplint/shared` | `@markuplint/shared` |
 
 パッケージ内部でのみ使われ、階層分類に関与**しない**エラークラスは元のパッケージに残す:
 

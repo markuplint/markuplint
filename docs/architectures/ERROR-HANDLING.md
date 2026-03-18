@@ -247,17 +247,20 @@ export function isFatalError(error: unknown): boolean {
 }
 ```
 
-### Migration from current locations
+### Where definitions live vs. where to import from
 
-Error classes currently defined in other packages will move to `@markuplint/shared`.
-The original packages re-export them for backward compatibility during the transition:
+Error classes are **defined** in `@markuplint/shared` and **re-exported** from the
+domain-specific packages that originally owned them. External users should import
+from the domain package that matches their use case, not from `@markuplint/shared`
+directly (except for cross-cutting utilities like `isFatalError()`).
 
-| Class | Current location | After migration |
-|-------|-----------------|-----------------|
-| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/parser-utils` | Defined in `@markuplint/shared`, re-exported from `@markuplint/parser-utils` |
-| `ConfigLoadError` | `@markuplint/file-resolver` | Defined in `@markuplint/shared`, re-exported from `@markuplint/file-resolver` |
-| `InvalidSelectorError` | `@markuplint/selector` | Defined in `@markuplint/shared`, re-exported from `@markuplint/selector` |
-| `UnexpectedCallError` | `@markuplint/ml-core` | Defined in `@markuplint/shared`, re-exported from `@markuplint/ml-core` |
+| Class | Defined in | Public API (import from) |
+|-------|-----------|-------------------------|
+| `ParserError`, `TargetParserError`, `ConfigParserError` | `@markuplint/shared` | `@markuplint/parser-utils` |
+| `InvalidSelectorError` | `@markuplint/shared` | `@markuplint/selector` |
+| `ConfigLoadError` | `@markuplint/shared` | `@markuplint/shared` (no domain package) |
+| `UnexpectedCallError` | `@markuplint/shared` | `@markuplint/shared` (internal use) |
+| `isFatalError()` | `@markuplint/shared` | `@markuplint/shared` |
 
 Package-local error classes that are **not** part of the tier classification remain
 in their original package:
