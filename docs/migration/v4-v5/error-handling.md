@@ -14,7 +14,6 @@ If you only use markuplint via the CLI or editor extensions, **no action is requ
 | Change | Impact | Action Required |
 |--------|--------|-----------------|
 | New `isFatalError()` guard function | Custom rule/plugin authors with `catch` blocks | Adopt in catch blocks (recommended) |
-| `ConfigParserError` message format fix | Code that parses error messages | Update string matching if any |
 | New `@markuplint/shared` dependency for `@markuplint/selector` | Users pinning exact versions | Update lockfile |
 
 ## Error Class Import Paths — No Change Required
@@ -96,41 +95,6 @@ try {
 ### Migration
 
 This is **additive** — no existing code breaks. Adopting `isFatalError()` is recommended for any `catch` block in custom rules or plugins to ensure fatal errors are never swallowed.
-
-## `ConfigParserError` Message Format Fix
-
-A bug in `ConfigParserError` has been fixed. The constructor's position check was comparing `info.line` against itself instead of checking `info.col`.
-
-### Before (v4 — buggy)
-
-```typescript
-// Bug: info.line was checked twice, info.col was never checked
-const pos = info.line != null && info.line != null ? `(${info.line}:${info.col})` : '';
-// Result: position was ALWAYS included when line was set, even if col was undefined
-// e.g. "error in /config.json(2:undefined)"
-```
-
-### After (v5 — fixed)
-
-```typescript
-const pos = info.line != null && info.col != null ? `(${info.line}:${info.col})` : '';
-// Result: position is only included when BOTH line and col are set
-// e.g. "error in /config.json(2:5)" or "error in /config.json"
-```
-
-### Impact
-
-If your code parses `ConfigParserError.message` strings (e.g., via regex), the output may change when `col` is `undefined`:
-
-| `info` | v4 message | v5 message |
-|--------|-----------|-----------|
-| `{ line: 2, col: 5, filePath: '/a.json' }` | `"msg in /a.json(2:5)"` | `"msg in /a.json(2:5)"` (unchanged) |
-| `{ line: 2, filePath: '/a.json' }` | `"msg in /a.json(2:undefined)"` | `"msg in /a.json"` |
-| `{ filePath: '/a.json' }` | `"msg in /a.json"` | `"msg in /a.json"` (unchanged) |
-
-### Migration
-
-If you match error messages with regex patterns that expect `(line:col)` to always be present, update them to handle the case where position is omitted.
 
 ## New Dependency: `@markuplint/selector` → `@markuplint/shared`
 

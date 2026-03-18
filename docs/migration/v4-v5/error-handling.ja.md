@@ -14,7 +14,6 @@ CLI やエディタ拡張経由でのみ markuplint を使用している場合�
 | 変更内容 | 影響範囲 | 要対応 |
 |----------|---------|--------|
 | `isFatalError()` ガード関数の追加 | catch ブロックを持つカスタムルール/プラグイン作者 | catch ブロックでの採用（推奨） |
-| `ConfigParserError` メッセージフォーマットのバグ修正 | エラーメッセージを文字列解析しているコード | 文字列マッチングの更新（該当する場合） |
 | `@markuplint/selector` に `@markuplint/shared` 依存追加 | バージョンを厳密に固定しているユーザー | lockfile の更新 |
 
 ## エラークラスの import パス — 変更不要
@@ -96,41 +95,6 @@ try {
 ### 移行
 
 これは**追加的な変更**であり、既存のコードは壊れません。カスタムルールやプラグインの `catch` ブロックで `isFatalError()` を採用し、Fatal エラーが握りつぶされないようにすることを推奨します。
-
-## `ConfigParserError` メッセージフォーマットのバグ修正
-
-`ConfigParserError` のバグが修正されました。コンストラクタの位置チェックで `info.col` の代わりに `info.line` を二重に比較していました。
-
-### Before（v4 — バグあり）
-
-```typescript
-// バグ: info.line を2回チェックし、info.col は未チェック
-const pos = info.line != null && info.line != null ? `(${info.line}:${info.col})` : '';
-// 結果: line が設定されていれば col が undefined でも常に位置が含まれる
-// 例: "error in /config.json(2:undefined)"
-```
-
-### After（v5 — 修正済み）
-
-```typescript
-const pos = info.line != null && info.col != null ? `(${info.line}:${info.col})` : '';
-// 結果: line と col の両方が設定されている場合のみ位置が含まれる
-// 例: "error in /config.json(2:5)" または "error in /config.json"
-```
-
-### 影響
-
-`ConfigParserError.message` 文字列を解析している場合（正規表現など）、`col` が `undefined` のときに出力が変わります:
-
-| `info` | v4 メッセージ | v5 メッセージ |
-|--------|-------------|-------------|
-| `{ line: 2, col: 5, filePath: '/a.json' }` | `"msg in /a.json(2:5)"` | `"msg in /a.json(2:5)"`（変更なし） |
-| `{ line: 2, filePath: '/a.json' }` | `"msg in /a.json(2:undefined)"` | `"msg in /a.json"` |
-| `{ filePath: '/a.json' }` | `"msg in /a.json"` | `"msg in /a.json"`（変更なし） |
-
-### 移行
-
-`(line:col)` が常に存在することを前提とした正規表現パターンを使用している場合、位置が省略されるケースに対応してください。
 
 ## 新しい依存関係: `@markuplint/selector` → `@markuplint/shared`
 
