@@ -31,14 +31,16 @@ Tier 3: Violation ──── Converted to a Violation and included in lint res
 2. Exit with code `2` (distinct from lint-error exit code `1`)
 3. Never catch, convert, or silence these errors
 
-**Implementation rule:** Every `catch` block that handles `Error` must explicitly
-re-throw `TypeError`, `ReferenceError`, and `UnexpectedCallError` before any
-generic error handling.
+**Implementation rule:** Every `catch` block that handles `Error` must guard
+against Tier 1 errors before any generic error handling. Use `isFatalError()`
+from `@markuplint/shared`:
 
 ```typescript
+import { isFatalError } from '@markuplint/shared';
+
 // Pattern — guard against swallowing fatal errors
 catch (error) {
-    if (error instanceof TypeError || error instanceof ReferenceError) {
+    if (isFatalError(error)) {
         throw error;
     }
     // ... handle recoverable error
@@ -72,17 +74,14 @@ Fatal errors (Tier 1) must pass through uncaught.
 // MLEngine.exec()
 catch (error) {
     // Let fatal errors propagate
-    if (
-        error instanceof TypeError ||
-        error instanceof ReferenceError
-    ) {
+    if (isFatalError(error)) {
         throw error;
     }
     if (error instanceof Error) {
         this.emit('lint-error', filePath, sourceCode, error);
         return { violations: [{ severity: 'error', ruleId: 'system-error', ... }], ... };
     }
-    // Non-Error throw → treat as fatal
+    // Non-Error throw → treat as fatal (already handled by isFatalError above)
     throw error;
 }
 ```
@@ -204,11 +203,11 @@ their own.
 @markuplint/shared/src/
 ├── errors/
 │   ├── index.ts                  -- Re-exports all error classes and guards
-│   ├── parser-error.ts           -- ParserError, TargetParserError
-│   ├── config-error.ts           -- ConfigParserError, ConfigLoadError
+│   ├── parser-error.ts           -- ParserError, TargetParserError, ConfigParserError
+│   ├── config-error.ts           -- ConfigLoadError
 │   ├── selector-error.ts         -- InvalidSelectorError
 │   ├── unexpected-call-error.ts  -- UnexpectedCallError
-│   └── guards.ts                 -- isFatalError(), isRecoverableError()
+│   └── guards.ts                 -- isFatalError()
 ├── functions.ts                  -- (existing)
 ├── types.ts                      -- (existing)
 └── index.ts                      -- Re-exports errors/, functions, types
@@ -240,6 +239,8 @@ export function isFatalError(error: unknown): boolean {
     return (
         error instanceof TypeError ||
         error instanceof ReferenceError ||
+        error instanceof RangeError ||
+        error instanceof SyntaxError ||
         error instanceof UnexpectedCallError ||
         !(error instanceof Error)
     );
@@ -281,7 +282,7 @@ in their original package:
 
 When writing a `catch` block anywhere in markuplint:
 
-1. **Guard Tier 1 first.** Re-throw `TypeError`, `ReferenceError`, and non-`Error` values before doing anything else.
+1. **Guard Tier 1 first.** Use `isFatalError()` from `@markuplint/shared` to re-throw fatal errors before doing anything else.
 2. **Identify the tier.** Is this error caused by the user (Tier 3), by the environment/file (Tier 2), or by markuplint itself (Tier 1)?
 3. **Convert at the right boundary.** Tier 3 → `Violation` in `MLCore`. Tier 2 → `system-error` violation in `MLEngine`. Tier 1 → never catch.
 4. **Log for debugging.** Use the `debug` logger so errors are traceable when `DEBUG=*` is set.

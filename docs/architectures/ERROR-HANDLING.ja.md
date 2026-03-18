@@ -32,12 +32,14 @@ Tier 3: Violation ──── Violation に変換してリント結果に合流
 3. catch、変換、サイレント化は一切禁止
 
 **実装ルール:** `Error` を扱う全ての `catch` ブロックで、汎用的なエラー処理の前に
-`TypeError`、`ReferenceError`、`UnexpectedCallError` を明示的に再スローすること。
+Tier 1 エラーをガードすること。`@markuplint/shared` の `isFatalError()` を使用する:
 
 ```typescript
+import { isFatalError } from '@markuplint/shared';
+
 // パターン — Fatal エラーの握りつぶしを防ぐガード
 catch (error) {
-    if (error instanceof TypeError || error instanceof ReferenceError) {
+    if (isFatalError(error)) {
         throw error;
     }
     // ... リカバリ可能なエラーの処理
@@ -70,17 +72,14 @@ catch (error) {
 // MLEngine.exec()
 catch (error) {
     // Fatal エラーはそのまま伝搬
-    if (
-        error instanceof TypeError ||
-        error instanceof ReferenceError
-    ) {
+    if (isFatalError(error)) {
         throw error;
     }
     if (error instanceof Error) {
         this.emit('lint-error', filePath, sourceCode, error);
         return { violations: [{ severity: 'error', ruleId: 'system-error', ... }], ... };
     }
-    // 非 Error の throw → Fatal として扱う
+    // 非 Error の throw → Fatal として扱う（isFatalError で既に処理済み）
     throw error;
 }
 ```
@@ -199,11 +198,11 @@ CLI 層のエラー出力はすべて `process.stderr.write()` を使用する�
 @markuplint/shared/src/
 ├── errors/
 │   ├── index.ts                  -- 全エラークラスとガード関数の re-export
-│   ├── parser-error.ts           -- ParserError, TargetParserError
-│   ├── config-error.ts           -- ConfigParserError, ConfigLoadError
+│   ├── parser-error.ts           -- ParserError, TargetParserError, ConfigParserError
+│   ├── config-error.ts           -- ConfigLoadError
 │   ├── selector-error.ts         -- InvalidSelectorError
 │   ├── unexpected-call-error.ts  -- UnexpectedCallError
-│   └── guards.ts                 -- isFatalError(), isRecoverableError()
+│   └── guards.ts                 -- isFatalError()
 ├── functions.ts                  -- （既存）
 ├── types.ts                      -- （既存）
 └── index.ts                      -- errors/, functions, types を re-export
@@ -235,6 +234,8 @@ export function isFatalError(error: unknown): boolean {
     return (
         error instanceof TypeError ||
         error instanceof ReferenceError ||
+        error instanceof RangeError ||
+        error instanceof SyntaxError ||
         error instanceof UnexpectedCallError ||
         !(error instanceof Error)
     );
@@ -272,7 +273,7 @@ export function isFatalError(error: unknown): boolean {
 
 markuplint のどこかで `catch` ブロックを書くとき:
 
-1. **Tier 1 を最初にガード。** 何よりも先に `TypeError`、`ReferenceError`、非 `Error` 値を再スローする。
+1. **Tier 1 を最初にガード。** `@markuplint/shared` の `isFatalError()` を使い、何よりも先に Fatal エラーを再スローする。
 2. **階層を特定。** このエラーはユーザー起因（Tier 3）か、環境/ファイル起因（Tier 2）か、markuplint 自体のバグ（Tier 1）か？
 3. **正しい境界で変換。** Tier 3 → `MLCore` で `Violation` に。Tier 2 → `MLEngine` で `system-error` violation に。Tier 1 → 一切 catch しない。
 4. **デバッグ用にログ。** `debug` ロガーを使い、`DEBUG=*` 設定時にエラーを追跡可能にする。
