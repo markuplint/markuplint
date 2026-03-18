@@ -61,6 +61,36 @@ Find code that silently swallows exceptions via try/catch.
 - For unrecoverable errors, rethrow appropriately
 - When logging, include context (what was being attempted when it failed)
 
+#### markuplint-specific: Three-Tier Error Handling
+
+markuplint classifies errors into three tiers (see `docs/architectures/ERROR-HANDLING.md`). Every `catch` block **must** guard against Tier 1 (Fatal) errors using `isFatalError()` from `@markuplint/shared` before handling anything else.
+
+**Required pattern:**
+```typescript
+import { isFatalError } from '@markuplint/shared';
+
+catch (error) {
+    if (isFatalError(error)) {
+        throw error; // NEVER swallow Tier 1
+    }
+    // ... handle Tier 2/3
+}
+```
+
+**Tier 1 (Fatal — must rethrow):** `TypeError`, `ReferenceError`, `RangeError`, `SyntaxError`, `UnexpectedCallError`, non-`Error` throws.
+**Tier 2 (Per-file skip):** `ConfigLoadError`, file I/O errors — skip the file, continue others.
+**Tier 3 (Violation):** `ParserError`, `TargetParserError`, `ConfigParserError`, `InvalidSelectorError` — convert to lint violations.
+
+**Red flags in review:**
+- A `catch` block that handles `Error` without an `isFatalError()` guard
+- `catch (e) { return []; }` or similar that would silently hide a `TypeError`
+- `instanceof ParserError` checks that don't account for `TypeError` reaching the same `catch`
+
+**Error class locations:**
+- `ParserError`, `TargetParserError`, `ConfigParserError` — import from `@markuplint/parser-utils` (re-exported from `@markuplint/shared`)
+- `InvalidSelectorError` — import from `@markuplint/selector` (re-exported from `@markuplint/shared`)
+- `isFatalError`, `UnexpectedCallError`, `ConfigLoadError` — import from `@markuplint/shared` directly
+
 ### 3. Conditional Logic Inside Test Code
 
 When test code itself contains `if` / `switch` / ternary operators, it becomes unclear what the test is actually verifying.
