@@ -35,7 +35,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');

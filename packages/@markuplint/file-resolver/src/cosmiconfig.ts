@@ -6,7 +6,7 @@ import { ConfigParserError } from '@markuplint/parser-utils';
 import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
 import { jsonc } from 'jsonc';
 
-import { ConfigLoadError } from './config-load-error.js';
+import { ConfigLoadError } from '@markuplint/shared';
 import { log } from './debug.js';
 
 const searchLog = log.extend('search');

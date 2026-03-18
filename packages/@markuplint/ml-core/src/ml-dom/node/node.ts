@@ -8,14 +8,13 @@ import type { RuleInfo } from '../../index.js';
 import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { branchesToPatterns } from '@markuplint/shared';
+import { branchesToPatterns, UnexpectedCallError  } from '@markuplint/shared';
 
 import { MLToken } from '../token/token.js';
 
 import { isChildNode } from './child-node.js';
 import { toNodeList } from './node-list.js';
 import { nodeStore } from './node-store.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
 
 /**
  * Abstract base class for all markuplint DOM node wrappers.
