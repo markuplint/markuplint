@@ -37,7 +37,7 @@
 		"@markuplint/ml-spec": "5.0.0-rc.0",
 		"@markuplint/rules": "5.0.0-rc.0",
 		"@markuplint/shared": "5.0.0-rc.0",
-		"@types/debug": "4.1.12",
+		"@types/debug": "4.1.13",
 		"chokidar": "5.0.0",
 		"debug": "4.4.3",
 		"meow": "14.1.0",
