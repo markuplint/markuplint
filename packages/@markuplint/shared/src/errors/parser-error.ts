@@ -19,6 +19,10 @@ export class ParserError extends Error {
 	name = 'ParserError';
 	readonly raw: string;
 
+	/**
+	 * @param message - Human-readable description of the parse error
+	 * @param info - Source location and context where the error occurred
+	 */
 	constructor(message: string, info: ParserErrorInfo) {
 		super(message);
 		this.line = info.line ?? 1;
@@ -36,6 +40,10 @@ export class TargetParserError extends ParserError {
 	name = 'TargetParserError';
 	readonly nodeName: string | null;
 
+	/**
+	 * @param message - Human-readable description of the parse error
+	 * @param info - Source location, context, and the element's node name
+	 */
 	constructor(
 		message: string,
 		info: ParserErrorInfo & {
@@ -59,6 +67,10 @@ export class ConfigParserError extends ParserError {
 	readonly filePath: string;
 	name = 'ConfigParserError';
 
+	/**
+	 * @param message - Human-readable description of the parse error
+	 * @param info - Source location, context, and path to the config file
+	 */
 	constructor(
 		message: string,
 		info: ParserErrorInfo & {

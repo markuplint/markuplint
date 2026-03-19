@@ -8,7 +8,7 @@ import type { RuleInfo } from '../../index.js';
 import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { branchesToPatterns, UnexpectedCallError  } from '@markuplint/shared';
+import { branchesToPatterns, UnexpectedCallError } from '@markuplint/shared';
 
 import { MLToken } from '../token/token.js';
 

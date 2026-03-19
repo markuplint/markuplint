@@ -244,10 +244,9 @@ export function isFatalError(error: unknown): boolean {
 
 ### 定義の場所と import 元の使い分け
 
-エラークラスは `@markuplint/shared` で**定義**され、元のドメインパッケージから
-**re-export** される。外部ユーザーは用途に合ったドメインパッケージから import すべきであり、
-`isFatalError()` のような横断ユーティリティを除いて `@markuplint/shared` から直接
-import する必要はない。
+エラークラスは `@markuplint/shared` で**定義**される。一部はドメインパッケージから
+**re-export** される。ドメインパッケージがある場合はそちらから import し、
+横断ユーティリティは `@markuplint/shared` から直接 import する。
 
 | クラス | 定義場所 | 公開 API（import 元） |
 |--------|---------|----------------------|

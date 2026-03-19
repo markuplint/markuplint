@@ -6,6 +6,10 @@ import { UnexpectedCallError } from './unexpected-call-error.js';
  * or broken invariants.
  *
  * See docs/architectures/ERROR-HANDLING.md — Tier 1 for the full list.
+ *
+ * @param error - The caught value to classify
+ * @returns `true` for fatal errors (`TypeError`, `ReferenceError`, `RangeError`,
+ *   `SyntaxError`, `UnexpectedCallError`, or non-`Error` throws); `false` otherwise
  */
 export function isFatalError(error: unknown): boolean {
 	return (

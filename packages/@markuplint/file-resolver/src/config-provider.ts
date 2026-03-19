@@ -8,7 +8,7 @@ import path from 'node:path';
 import { mergeConfig } from '@markuplint/ml-config';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
-import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError  } from '@markuplint/shared';
+import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
 
 import { load as loadConfig, search } from './cosmiconfig.js';
 import { log } from './debug.js';

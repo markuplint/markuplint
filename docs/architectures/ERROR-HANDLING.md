@@ -249,10 +249,9 @@ export function isFatalError(error: unknown): boolean {
 
 ### Where definitions live vs. where to import from
 
-Error classes are **defined** in `@markuplint/shared` and **re-exported** from the
-domain-specific packages that originally owned them. External users should import
-from the domain package that matches their use case, not from `@markuplint/shared`
-directly (except for cross-cutting utilities like `isFatalError()`).
+Error classes are **defined** in `@markuplint/shared`. Some are **re-exported** from
+domain-specific packages for external consumers. Import from the domain package
+when one exists, or from `@markuplint/shared` for cross-cutting utilities.
 
 | Class | Defined in | Public API (import from) |
 |-------|-----------|-------------------------|
