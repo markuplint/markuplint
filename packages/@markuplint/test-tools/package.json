@@ -32,7 +32,7 @@
 		"glob": "13.0.6",
 		"jsdom": "29.0.0",
 		"textlint-rule-prh": "6.1.0",
-		"type-fest": "5.4.4",
+		"type-fest": "5.5.0",
 		"vitest": "4.0.18"
 	},
 	"optionalDependencies": {

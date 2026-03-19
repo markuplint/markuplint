@@ -2335,7 +2335,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:5.0.0-rc.0"
     "@markuplint/parser-utils": "npm:5.0.0-rc.0"
     parse5: "npm:8.0.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2433,7 +2433,7 @@ __metadata:
     "@types/mustache": "npm:4.2.6"
     is-plain-object: "npm:5.0.0"
     mustache: "npm:4.2.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2454,7 +2454,7 @@ __metadata:
     "@types/debug": "npm:4.1.13"
     debug: "npm:4.4.3"
     is-plain-object: "npm:5.0.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2467,7 +2467,7 @@ __metadata:
     "@markuplint/types": "npm:5.0.0-rc.0"
     is-plain-object: "npm:5.0.0"
     json-schema-to-typescript: "npm:15.0.4"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2500,7 +2500,7 @@ __metadata:
     "@typescript-eslint/typescript-estree": "npm:8.57.1"
     debug: "npm:4.4.3"
     espree: "npm:11.2.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2576,7 +2576,7 @@ __metadata:
     chrono-node: "npm:2.9.0"
     debug: "npm:4.4.3"
     image-size: "npm:^2.0.2"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2590,7 +2590,7 @@ __metadata:
     debug: "npm:4.4.3"
     jsdom: "npm:29.0.0"
     postcss-selector-parser: "npm:7.1.1"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2625,7 +2625,7 @@ __metadata:
     fast-xml-parser: "npm:5.5.6"
     glob: "npm:13.0.6"
     jsonc-parser: "npm:3.3.1"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   languageName: unknown
   linkType: soft
 
@@ -2674,7 +2674,7 @@ __metadata:
     glob: "npm:13.0.6"
     jsdom: "npm:29.0.0"
     textlint-rule-prh: "npm:6.1.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
     vitest: "npm:4.0.18"
   dependenciesMeta:
     "@esbuild/linux-x64":
@@ -2697,7 +2697,7 @@ __metadata:
     css-tree: "npm:3.2.1"
     debug: "npm:4.4.3"
     leven: "npm:4.1.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
     whatwg-mimetype: "npm:5.0.0"
   languageName: unknown
   linkType: soft
@@ -12086,7 +12086,7 @@ __metadata:
     os-locale: "npm:8.0.0"
     strict-event-emitter: "npm:0.5.1"
     strip-ansi: "npm:7.2.0"
-    type-fest: "npm:5.4.4"
+    type-fest: "npm:5.5.0"
   bin:
     markuplint: ./bin/markuplint.mjs
   languageName: unknown
@@ -17765,12 +17765,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:5.4.4":
-  version: 5.4.4
-  resolution: "type-fest@npm:5.4.4"
+"type-fest@npm:5.5.0":
+  version: 5.5.0
+  resolution: "type-fest@npm:5.5.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/bf9c6d7df5383fd720aac71da8ce8690ff1c554459d19cf3c72d61eac98255dba57abe20c628f91f4116f66211791462fdafa90b2be2d7405a5a4c295e4d849d
+  checksum: 10c0/60bf79a8df45abf99490e3204eceb5cf7f915413f8a69fb578c75cab37ddcb7d29ee21f185f0e1617323ac0b2a441e001b8dc691e220d0b087e9c29ea205538c
   languageName: node
   linkType: hard
 
