@@ -3,7 +3,7 @@ import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * Represents a DOM DocumentFragment node wrapper in the markuplint DOM tree.

@@ -31,8 +31,7 @@ src/
 │   │   ├── element-close-tag.ts      — MLElementCloseTag
 │   │   ├── rule-mapper.ts            — RuleMapper（ルールセット → ノードマッピング）
 │   │   ├── types.ts                  — ノード型定数、AccessibilityProperties
-│   │   ├── node-list.ts              — NodeList/HTMLCollection ユーティリティ
-│   │   └── unexpected-call-error.ts  — 未サポート DOM メソッドのエラー
+│   │   └── node-list.ts              — NodeList/HTMLCollection ユーティリティ
 │   ├── token/
 │   │   └── token.ts                  — MLToken（位置情報付き基底トークン）
 │   ├── helper/

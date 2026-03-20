@@ -10,7 +10,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.

@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "5.0.0-rc.0",
+		"@markuplint/shared": "5.0.0-rc.0",
 		"@types/debug": "4.1.13",
 		"debug": "4.4.3",
 		"postcss-selector-parser": "7.1.1",

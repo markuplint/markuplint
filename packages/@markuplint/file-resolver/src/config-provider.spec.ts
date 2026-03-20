@@ -1,4 +1,4 @@
-import type { ConfigLoadError } from './config-load-error.js';
+import type { ConfigLoadError } from '@markuplint/shared';
 
 import path from 'node:path';
 

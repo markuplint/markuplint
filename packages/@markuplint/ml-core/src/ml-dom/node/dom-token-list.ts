@@ -3,7 +3,7 @@ import type { RuleInfo } from '@markuplint/ml-config';
 
 import { getPosition } from '@markuplint/parser-utils/location';
 
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 type Scope = {
 	raw: string;
