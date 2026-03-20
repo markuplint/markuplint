@@ -175,8 +175,10 @@ or incomplete spec data. These are **not** converted to violations because:
 - A single element's accname failure should not create noise in unrelated rules
 - The accname result (empty string = "unnamed") still produces meaningful a11y rule violations downstream
 
-`TypeError` and `ReferenceError` are re-thrown as Tier 1.
-Other errors are logged via the `debug` logger and return an empty name.
+**All** errors (including `TypeError`) are caught, logged via the `debug` logger,
+and return an empty name. This is an intentional exception to the Tier 1 re-throw
+policy because accname failures can be caused by runtime environment differences
+(e.g., Deno lacking certain DOM APIs), not only by implementation bugs.
 
 ### generalImport() failures
 

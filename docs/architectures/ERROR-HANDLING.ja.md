@@ -171,8 +171,9 @@ catch (error) {
 - 単一要素の accname 失敗が無関係なルールにノイズを生むべきではない
 - accname の結果（空文字 = "unnamed"）は、下流の a11y ルールが意味のある violation を生成する
 
-`TypeError` と `ReferenceError` は Tier 1 として再スロー。
-その他のエラーは `debug` ロガーに記録し、空の名前を返す。
+`TypeError` を含む**全ての**エラーを catch し、`debug` ロガーに記録して空の名前を返す。
+これは Tier 1 再スローポリシーの意図的な例外である。accname の失敗は実装バグだけでなく、
+ランタイム環境差異（例: Deno で一部 DOM API が存在しない）によっても起こりうるため。
 
 ### generalImport() の失敗
 

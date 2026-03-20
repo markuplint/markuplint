@@ -28,19 +28,17 @@ export function getAccname(
 ): string {
 	// AccName computation involves DOM traversal, role resolution, and label
 	// lookup via querySelector. These may fail on unexpected DOM states (e.g.,
-	// detached nodes, malformed attributes) or incomplete spec data.
+	// detached nodes, malformed attributes), incomplete spec data, or runtime
+	// environment differences (e.g., Deno lacking certain DOM APIs).
 	// A single element's failure must not abort the entire linting process,
-	// so we catch operational errors and return an empty name (= "unnamed").
-	// Programmer errors (TypeError, ReferenceError) are rethrown to avoid
-	// masking implementation bugs.
+	// so we catch all errors and return an empty name (= "unnamed").
+	// This is an intentional exception to the Tier 1 re-throw policy — see
+	// docs/architectures/ERROR-HANDLING.md § "accname computation errors".
 	try {
 		const resolver = createMLCoreResolver(el, version);
 		const result = computeAccessibleName(el, resolver);
 		return result.name;
 	} catch (error) {
-		if (error instanceof TypeError || error instanceof ReferenceError) {
-			throw error;
-		}
 		accnameLog('Raw: %s', el.raw);
 		accnameLog('Error: %O', error);
 		return '';
