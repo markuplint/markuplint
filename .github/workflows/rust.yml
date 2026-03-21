@@ -89,4 +89,4 @@ jobs:
 
             - name: Smoke test
               working-directory: packages/@markuplint/core
-              run: node -e "const {NapiDom} = require('./index.js'); const dom = new NapiDom('{\"nodeList\":[],\"raw\":\"\",\"isFragment\":false}'); console.log('napi works, nodes:', dom.nodeCount)"
+              run: node -e "const {NapiDom} = require('./index.js'); const json = JSON.stringify({nodeList:[], raw:'', isFragment:false}); const dom = new NapiDom(json); console.log('napi works, nodes:', dom.nodeCount)"
