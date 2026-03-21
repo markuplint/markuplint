@@ -1,0 +1,131 @@
+{
+	"raw": "<div class=\"foo\">text</div>",
+	"nodeList": [
+		{
+			"uuid": "e3e13ee4",
+			"raw": "<div class=\"foo\">",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [
+				{
+					"uuid": "17074709",
+					"raw": "class=\"foo\"",
+					"offset": 5,
+					"line": 1,
+					"col": 6,
+					"type": "attr",
+					"nodeName": "class",
+					"spacesBeforeName": {
+						"uuid": "17d3cce1",
+						"raw": " ",
+						"offset": 4,
+						"line": 1,
+						"col": 5
+					},
+					"name": {
+						"uuid": "26b96ff3",
+						"raw": "class",
+						"offset": 5,
+						"line": 1,
+						"col": 6
+					},
+					"spacesBeforeEqual": {
+						"uuid": "403d3d8f",
+						"raw": "",
+						"offset": 10,
+						"line": 1,
+						"col": 11
+					},
+					"equal": {
+						"uuid": "3db699e3",
+						"raw": "=",
+						"offset": 10,
+						"line": 1,
+						"col": 11
+					},
+					"spacesAfterEqual": {
+						"uuid": "ee292af4",
+						"raw": "",
+						"offset": 11,
+						"line": 1,
+						"col": 12
+					},
+					"startQuote": {
+						"uuid": "7d2a5b36",
+						"raw": "\"",
+						"offset": 11,
+						"line": 1,
+						"col": 12
+					},
+					"value": {
+						"uuid": "89fbad90",
+						"raw": "foo",
+						"offset": 12,
+						"line": 1,
+						"col": 13
+					},
+					"endQuote": {
+						"uuid": "143d7810",
+						"raw": "\"",
+						"offset": 15,
+						"line": 1,
+						"col": 16
+					},
+					"isDuplicatable": false
+				}
+			],
+			"childNodes": [
+				{
+					"uuid": "2f29a7ed",
+					"raw": "text",
+					"offset": 17,
+					"line": 1,
+					"col": 18,
+					"type": "text",
+					"depth": 1,
+					"nodeName": "#text",
+					"parentNodeUuid": "e3e13ee4"
+				}
+			],
+			"pairNodeUuid": "5ff079ff",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "2f29a7ed",
+			"raw": "text",
+			"offset": 17,
+			"line": 1,
+			"col": 18,
+			"type": "text",
+			"depth": 1,
+			"nodeName": "#text",
+			"parentNodeUuid": "e3e13ee4"
+		},
+		{
+			"uuid": "5ff079ff",
+			"raw": "</div>",
+			"offset": 21,
+			"line": 1,
+			"col": 22,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "endtag",
+			"pairNodeUuid": "e3e13ee4",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		}
+	],
+	"isFragment": true
+}

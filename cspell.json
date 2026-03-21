@@ -7,7 +7,8 @@
 		".github/ISSUE_TEMPLATE/*",
 		"test/fixture/**",
 		"packages/@markuplint/html-spec/src/*.jsonc",
-		"packages/@markuplint/html-spec/index.json"
+		"packages/@markuplint/html-spec/index.json",
+		"crates/**"
 	],
 	"dictionaries": [
 		"css",
@@ -193,6 +194,18 @@
 		"khern",
 		"tref",
 		"vkern",
+
+		// Rust
+		"cdylib",
+		"rlib",
+		"napi",
+		"serde",
+		"bumpalo",
+		"clippy",
+		"rustc",
+		"rustfmt",
+		"camelcase",
+		"insta",
 
 		// Typo
 		"verifing"

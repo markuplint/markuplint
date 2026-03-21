@@ -479,6 +479,33 @@ Process packages in the following tier order. Within the same tier, order does n
 - **Single-package changes**: Skip ordering -- just commit the affected package
 - **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
 
+## Rust Native Layer (@markuplint/core)
+
+A Rust implementation of the MLDOM is available under `crates/` and exposed to Node.js as `@markuplint/core` via napi-rs.
+
+### Crate Structure
+
+```
+crates/
+├── markuplint-core/   MLAST serde types (JSON → Rust structs)
+├── markuplint-dom/    Arena-based DOM (builder + traversal)
+└── markuplint-napi/   napi-rs bridge → @markuplint/core
+```
+
+### Data Flow
+
+```
+TS html-parser → MLAST JSON → markuplint-core (serde) → markuplint-dom (arena) → markuplint-napi → JS
+```
+
+### Relationship to TypeScript Packages
+
+The Rust DOM is a parallel implementation of the MLDOM in `@markuplint/ml-core`. It currently operates independently (`private: true`, no consumers). The long-term plan is to replace the TypeScript MLDOM layer with this Rust implementation for improved performance.
+
+The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged. The Rust layer only replaces the DOM construction and traversal — rule evaluation and the linting pipeline stay in TypeScript.
+
+See `crates/README.md` for build instructions and detailed architecture.
+
 ## Conclusion
 
 The current architecture represents a mature, well-optimized design that effectively balances:

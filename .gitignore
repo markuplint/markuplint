@@ -91,5 +91,9 @@ packages/@markuplint/rules/src/__*
 .yarn/install-state.gz
 .yarn/build-state.yml
 
+# Rust
+crates/target/
+*.node
+
 # Worktrees
 .worktree/

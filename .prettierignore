@@ -3,3 +3,5 @@ packages/@markuplint/config-presets/preset.*.json
 packages/@markuplint/i18n/cjs
 packages/@markuplint/i18n/esm
 vscode/out/
+crates/
+*.node
