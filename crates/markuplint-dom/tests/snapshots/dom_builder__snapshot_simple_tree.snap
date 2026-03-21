@@ -1,0 +1,7 @@
+---
+source: markuplint-dom/tests/dom_builder.rs
+expression: output
+---
+Document
+  Element(div)
+    Text(text)
