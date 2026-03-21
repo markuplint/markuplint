@@ -1,0 +1,147 @@
+{
+	"raw": "<div><span>text</span></div>",
+	"nodeList": [
+		{
+			"uuid": "8482957c",
+			"raw": "<div>",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [],
+			"childNodes": [
+				{
+					"uuid": "c77995db",
+					"raw": "<span>",
+					"offset": 5,
+					"line": 1,
+					"col": 6,
+					"depth": 1,
+					"nodeName": "span",
+					"parentNodeUuid": "8482957c",
+					"type": "starttag",
+					"elementType": "html",
+					"namespace": "http://www.w3.org/1999/xhtml",
+					"attributes": [],
+					"childNodes": [
+						{
+							"uuid": "22d89dbe",
+							"raw": "text",
+							"offset": 11,
+							"line": 1,
+							"col": 12,
+							"type": "text",
+							"depth": 2,
+							"nodeName": "#text",
+							"parentNodeUuid": "c77995db"
+						}
+					],
+					"pairNodeUuid": "185a7cb4",
+					"tagOpenChar": "<",
+					"tagCloseChar": ">",
+					"blockBehavior": null,
+					"isGhost": false,
+					"isFragment": false
+				},
+				{
+					"uuid": "185a7cb4",
+					"raw": "</span>",
+					"offset": 15,
+					"line": 1,
+					"col": 16,
+					"depth": 1,
+					"nodeName": "span",
+					"parentNodeUuid": "8482957c",
+					"type": "endtag",
+					"pairNodeUuid": "c77995db",
+					"tagOpenChar": "</",
+					"tagCloseChar": ">"
+				}
+			],
+			"pairNodeUuid": "f99af1dc",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "c77995db",
+			"raw": "<span>",
+			"offset": 5,
+			"line": 1,
+			"col": 6,
+			"depth": 1,
+			"nodeName": "span",
+			"parentNodeUuid": "8482957c",
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [],
+			"childNodes": [
+				{
+					"uuid": "22d89dbe",
+					"raw": "text",
+					"offset": 11,
+					"line": 1,
+					"col": 12,
+					"type": "text",
+					"depth": 2,
+					"nodeName": "#text",
+					"parentNodeUuid": "c77995db"
+				}
+			],
+			"pairNodeUuid": "185a7cb4",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "22d89dbe",
+			"raw": "text",
+			"offset": 11,
+			"line": 1,
+			"col": 12,
+			"type": "text",
+			"depth": 2,
+			"nodeName": "#text",
+			"parentNodeUuid": "c77995db"
+		},
+		{
+			"uuid": "185a7cb4",
+			"raw": "</span>",
+			"offset": 15,
+			"line": 1,
+			"col": 16,
+			"depth": 1,
+			"nodeName": "span",
+			"parentNodeUuid": "8482957c",
+			"type": "endtag",
+			"pairNodeUuid": "c77995db",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		},
+		{
+			"uuid": "f99af1dc",
+			"raw": "</div>",
+			"offset": 22,
+			"line": 1,
+			"col": 23,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "endtag",
+			"pairNodeUuid": "8482957c",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		}
+	],
+	"isFragment": true
+}

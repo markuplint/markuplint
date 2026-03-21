@@ -1,0 +1,76 @@
+{
+	"raw": "<!-- comment --><div>text</div>",
+	"nodeList": [
+		{
+			"raw": "<!-- comment -->",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"uuid": "b7f15388",
+			"type": "comment",
+			"nodeName": "#comment",
+			"isBogus": false,
+			"parentNodeUuid": null
+		},
+		{
+			"uuid": "e6755a77",
+			"raw": "<div>",
+			"offset": 16,
+			"line": 1,
+			"col": 17,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [],
+			"childNodes": [
+				{
+					"uuid": "d0f6e2f4",
+					"raw": "text",
+					"offset": 21,
+					"line": 1,
+					"col": 22,
+					"type": "text",
+					"depth": 1,
+					"nodeName": "#text",
+					"parentNodeUuid": "e6755a77"
+				}
+			],
+			"pairNodeUuid": "f354dbc3",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "d0f6e2f4",
+			"raw": "text",
+			"offset": 21,
+			"line": 1,
+			"col": 22,
+			"type": "text",
+			"depth": 1,
+			"nodeName": "#text",
+			"parentNodeUuid": "e6755a77"
+		},
+		{
+			"uuid": "f354dbc3",
+			"raw": "</div>",
+			"offset": 25,
+			"line": 1,
+			"col": 26,
+			"depth": 0,
+			"nodeName": "div",
+			"parentNodeUuid": null,
+			"type": "endtag",
+			"pairNodeUuid": "e6755a77",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		}
+	],
+	"isFragment": true
+}

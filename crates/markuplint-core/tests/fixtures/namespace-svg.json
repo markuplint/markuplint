@@ -1,0 +1,482 @@
+{
+	"raw": "<svg><circle cx=\"50\" cy=\"50\" r=\"40\"/></svg>",
+	"nodeList": [
+		{
+			"uuid": "db24c3df",
+			"raw": "<svg>",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"nodeName": "svg",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/2000/svg",
+			"attributes": [],
+			"childNodes": [
+				{
+					"uuid": "1636c8d1",
+					"raw": "<circle cx=\"50\" cy=\"50\" r=\"40\"/>",
+					"offset": 5,
+					"line": 1,
+					"col": 6,
+					"depth": 1,
+					"nodeName": "circle",
+					"parentNodeUuid": "db24c3df",
+					"type": "starttag",
+					"elementType": "html",
+					"namespace": "http://www.w3.org/2000/svg",
+					"attributes": [
+						{
+							"uuid": "fa110f4d",
+							"raw": "cx=\"50\"",
+							"offset": 13,
+							"line": 1,
+							"col": 14,
+							"type": "attr",
+							"nodeName": "cx",
+							"spacesBeforeName": {
+								"uuid": "7dd7732e",
+								"raw": " ",
+								"offset": 12,
+								"line": 1,
+								"col": 13
+							},
+							"name": {
+								"uuid": "c79c5557",
+								"raw": "cx",
+								"offset": 13,
+								"line": 1,
+								"col": 14
+							},
+							"spacesBeforeEqual": {
+								"uuid": "471bf3c3",
+								"raw": "",
+								"offset": 15,
+								"line": 1,
+								"col": 16
+							},
+							"equal": {
+								"uuid": "417d0028",
+								"raw": "=",
+								"offset": 15,
+								"line": 1,
+								"col": 16
+							},
+							"spacesAfterEqual": {
+								"uuid": "3b7e84f9",
+								"raw": "",
+								"offset": 16,
+								"line": 1,
+								"col": 17
+							},
+							"startQuote": {
+								"uuid": "08f797f5",
+								"raw": "\"",
+								"offset": 16,
+								"line": 1,
+								"col": 17
+							},
+							"value": {
+								"uuid": "8c38fb96",
+								"raw": "50",
+								"offset": 17,
+								"line": 1,
+								"col": 18
+							},
+							"endQuote": {
+								"uuid": "3f97baac",
+								"raw": "\"",
+								"offset": 19,
+								"line": 1,
+								"col": 20
+							},
+							"isDuplicatable": false
+						},
+						{
+							"uuid": "3c90f5ad",
+							"raw": "cy=\"50\"",
+							"offset": 21,
+							"line": 1,
+							"col": 22,
+							"type": "attr",
+							"nodeName": "cy",
+							"spacesBeforeName": {
+								"uuid": "6accecae",
+								"raw": " ",
+								"offset": 20,
+								"line": 1,
+								"col": 21
+							},
+							"name": {
+								"uuid": "a5292021",
+								"raw": "cy",
+								"offset": 21,
+								"line": 1,
+								"col": 22
+							},
+							"spacesBeforeEqual": {
+								"uuid": "2e300779",
+								"raw": "",
+								"offset": 23,
+								"line": 1,
+								"col": 24
+							},
+							"equal": {
+								"uuid": "84aa86d0",
+								"raw": "=",
+								"offset": 23,
+								"line": 1,
+								"col": 24
+							},
+							"spacesAfterEqual": {
+								"uuid": "e43f1b0e",
+								"raw": "",
+								"offset": 24,
+								"line": 1,
+								"col": 25
+							},
+							"startQuote": {
+								"uuid": "230aa33f",
+								"raw": "\"",
+								"offset": 24,
+								"line": 1,
+								"col": 25
+							},
+							"value": {
+								"uuid": "d1df10ce",
+								"raw": "50",
+								"offset": 25,
+								"line": 1,
+								"col": 26
+							},
+							"endQuote": {
+								"uuid": "07ca59e0",
+								"raw": "\"",
+								"offset": 27,
+								"line": 1,
+								"col": 28
+							},
+							"isDuplicatable": false
+						},
+						{
+							"uuid": "0949077e",
+							"raw": "r=\"40\"",
+							"offset": 29,
+							"line": 1,
+							"col": 30,
+							"type": "attr",
+							"nodeName": "r",
+							"spacesBeforeName": {
+								"uuid": "e07ba614",
+								"raw": " ",
+								"offset": 28,
+								"line": 1,
+								"col": 29
+							},
+							"name": {
+								"uuid": "1b353065",
+								"raw": "r",
+								"offset": 29,
+								"line": 1,
+								"col": 30
+							},
+							"spacesBeforeEqual": {
+								"uuid": "0a3fc789",
+								"raw": "",
+								"offset": 30,
+								"line": 1,
+								"col": 31
+							},
+							"equal": {
+								"uuid": "4c14da25",
+								"raw": "=",
+								"offset": 30,
+								"line": 1,
+								"col": 31
+							},
+							"spacesAfterEqual": {
+								"uuid": "2cfe2948",
+								"raw": "",
+								"offset": 31,
+								"line": 1,
+								"col": 32
+							},
+							"startQuote": {
+								"uuid": "dae4d4dd",
+								"raw": "\"",
+								"offset": 31,
+								"line": 1,
+								"col": 32
+							},
+							"value": {
+								"uuid": "2bbeec3d",
+								"raw": "40",
+								"offset": 32,
+								"line": 1,
+								"col": 33
+							},
+							"endQuote": {
+								"uuid": "9c552e69",
+								"raw": "\"",
+								"offset": 34,
+								"line": 1,
+								"col": 35
+							},
+							"isDuplicatable": false
+						}
+					],
+					"childNodes": [],
+					"pairNodeUuid": null,
+					"tagOpenChar": "<",
+					"tagCloseChar": "/>",
+					"blockBehavior": null,
+					"isGhost": false,
+					"isFragment": false
+				}
+			],
+			"pairNodeUuid": "1c27917c",
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "1636c8d1",
+			"raw": "<circle cx=\"50\" cy=\"50\" r=\"40\"/>",
+			"offset": 5,
+			"line": 1,
+			"col": 6,
+			"depth": 1,
+			"nodeName": "circle",
+			"parentNodeUuid": "db24c3df",
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/2000/svg",
+			"attributes": [
+				{
+					"uuid": "fa110f4d",
+					"raw": "cx=\"50\"",
+					"offset": 13,
+					"line": 1,
+					"col": 14,
+					"type": "attr",
+					"nodeName": "cx",
+					"spacesBeforeName": {
+						"uuid": "7dd7732e",
+						"raw": " ",
+						"offset": 12,
+						"line": 1,
+						"col": 13
+					},
+					"name": {
+						"uuid": "c79c5557",
+						"raw": "cx",
+						"offset": 13,
+						"line": 1,
+						"col": 14
+					},
+					"spacesBeforeEqual": {
+						"uuid": "471bf3c3",
+						"raw": "",
+						"offset": 15,
+						"line": 1,
+						"col": 16
+					},
+					"equal": {
+						"uuid": "417d0028",
+						"raw": "=",
+						"offset": 15,
+						"line": 1,
+						"col": 16
+					},
+					"spacesAfterEqual": {
+						"uuid": "3b7e84f9",
+						"raw": "",
+						"offset": 16,
+						"line": 1,
+						"col": 17
+					},
+					"startQuote": {
+						"uuid": "08f797f5",
+						"raw": "\"",
+						"offset": 16,
+						"line": 1,
+						"col": 17
+					},
+					"value": {
+						"uuid": "8c38fb96",
+						"raw": "50",
+						"offset": 17,
+						"line": 1,
+						"col": 18
+					},
+					"endQuote": {
+						"uuid": "3f97baac",
+						"raw": "\"",
+						"offset": 19,
+						"line": 1,
+						"col": 20
+					},
+					"isDuplicatable": false
+				},
+				{
+					"uuid": "3c90f5ad",
+					"raw": "cy=\"50\"",
+					"offset": 21,
+					"line": 1,
+					"col": 22,
+					"type": "attr",
+					"nodeName": "cy",
+					"spacesBeforeName": {
+						"uuid": "6accecae",
+						"raw": " ",
+						"offset": 20,
+						"line": 1,
+						"col": 21
+					},
+					"name": {
+						"uuid": "a5292021",
+						"raw": "cy",
+						"offset": 21,
+						"line": 1,
+						"col": 22
+					},
+					"spacesBeforeEqual": {
+						"uuid": "2e300779",
+						"raw": "",
+						"offset": 23,
+						"line": 1,
+						"col": 24
+					},
+					"equal": {
+						"uuid": "84aa86d0",
+						"raw": "=",
+						"offset": 23,
+						"line": 1,
+						"col": 24
+					},
+					"spacesAfterEqual": {
+						"uuid": "e43f1b0e",
+						"raw": "",
+						"offset": 24,
+						"line": 1,
+						"col": 25
+					},
+					"startQuote": {
+						"uuid": "230aa33f",
+						"raw": "\"",
+						"offset": 24,
+						"line": 1,
+						"col": 25
+					},
+					"value": {
+						"uuid": "d1df10ce",
+						"raw": "50",
+						"offset": 25,
+						"line": 1,
+						"col": 26
+					},
+					"endQuote": {
+						"uuid": "07ca59e0",
+						"raw": "\"",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"isDuplicatable": false
+				},
+				{
+					"uuid": "0949077e",
+					"raw": "r=\"40\"",
+					"offset": 29,
+					"line": 1,
+					"col": 30,
+					"type": "attr",
+					"nodeName": "r",
+					"spacesBeforeName": {
+						"uuid": "e07ba614",
+						"raw": " ",
+						"offset": 28,
+						"line": 1,
+						"col": 29
+					},
+					"name": {
+						"uuid": "1b353065",
+						"raw": "r",
+						"offset": 29,
+						"line": 1,
+						"col": 30
+					},
+					"spacesBeforeEqual": {
+						"uuid": "0a3fc789",
+						"raw": "",
+						"offset": 30,
+						"line": 1,
+						"col": 31
+					},
+					"equal": {
+						"uuid": "4c14da25",
+						"raw": "=",
+						"offset": 30,
+						"line": 1,
+						"col": 31
+					},
+					"spacesAfterEqual": {
+						"uuid": "2cfe2948",
+						"raw": "",
+						"offset": 31,
+						"line": 1,
+						"col": 32
+					},
+					"startQuote": {
+						"uuid": "dae4d4dd",
+						"raw": "\"",
+						"offset": 31,
+						"line": 1,
+						"col": 32
+					},
+					"value": {
+						"uuid": "2bbeec3d",
+						"raw": "40",
+						"offset": 32,
+						"line": 1,
+						"col": 33
+					},
+					"endQuote": {
+						"uuid": "9c552e69",
+						"raw": "\"",
+						"offset": 34,
+						"line": 1,
+						"col": 35
+					},
+					"isDuplicatable": false
+				}
+			],
+			"childNodes": [],
+			"pairNodeUuid": null,
+			"tagOpenChar": "<",
+			"tagCloseChar": "/>",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		},
+		{
+			"uuid": "1c27917c",
+			"raw": "</svg>",
+			"offset": 37,
+			"line": 1,
+			"col": 38,
+			"depth": 0,
+			"nodeName": "svg",
+			"parentNodeUuid": null,
+			"type": "endtag",
+			"pairNodeUuid": "db24c3df",
+			"tagOpenChar": "</",
+			"tagCloseChar": ">"
+		}
+	],
+	"isFragment": true
+}
