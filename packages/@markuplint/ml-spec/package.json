@@ -22,9 +22,9 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.build.json",
-		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean tsconfig.build.json",
+		"build": "npx tsc --project tsconfig.build.json",
+		"dev": "npx tsc --watch --project tsconfig.build.json",
+		"clean": "npx tsc --build --clean tsconfig.build.json",
 		"schema": "run-s schema:json schema:content-models schema:attributes schema:aria schema:prettier schema:eslint schema:prettier",
 		"schema:json": "tsx ./gen/gen.ts",
 		"schema:content-models": "npx json2ts ./schemas/content-models.schema.json > ./src/types/permitted-structures.ts",

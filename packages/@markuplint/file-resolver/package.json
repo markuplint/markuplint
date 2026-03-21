@@ -22,9 +22,9 @@
 		"entryPoint": "./src/index.ts"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.build.json",
-		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean"
+		"build": "npx tsc --project tsconfig.build.json",
+		"dev": "npx tsc --watch --project tsconfig.build.json",
+		"clean": "npx tsc --build --clean"
 	},
 	"devDependencies": {
 		"@types/node": "24.5.1"

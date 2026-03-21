@@ -23,9 +23,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.build.json",
-		"dev": "tsc --watch --project tsconfig.build.json",
-		"clean": "tsc --build --clean tsconfig.build.json"
+		"build": "npx tsc --project tsconfig.build.json",
+		"dev": "npx tsc --watch --project tsconfig.build.json",
+		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
 		"@markuplint/html-parser": "5.0.0-rc.0",

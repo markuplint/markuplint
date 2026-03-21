@@ -1,0 +1,20 @@
+[package]
+name = "markuplint-napi"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+markuplint-core = { path = "../markuplint-core" }
+markuplint-dom = { path = "../markuplint-dom" }
+napi = { version = "3", features = ["serde-json"] }
+napi-derive = "3"
+
+[build-dependencies]
+napi-build = "2"
+
+[lints]
+workspace = true
