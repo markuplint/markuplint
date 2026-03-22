@@ -2,6 +2,12 @@
 description: Git manipulation rules
 ---
 
+# Git command execution rules
+
+- **ALWAYS `cd` to the worktree root first, then run git commands from there** — do NOT run git commands from the main working directory when operating on a worktree
+- **NEVER chain commands with `&&`** — each command must be executed separately so the AI agent can request user permission per command without blocking the workflow
+- **NEVER use `git -C <path>`** — same reason; permission prompts become disruptive when bundled with path options
+
 # Worktree Guard (MUST RUN FIRST)
 
 **Before doing ANYTHING else, check that you are in a worktree (NOT the main working directory):**
