@@ -113,6 +113,7 @@ fn icon_size() {
 // --- Number ---
 
 #[test]
+#[allow(clippy::similar_names)]
 fn number_range() {
     let int_gt0 = Type::Number(NumberType {
         number_type: NumericKind::Integer,
@@ -155,7 +156,7 @@ fn non_existent_types() {
     assert!(check("abc", &Type::Keyword("FooBar".into()), None).is_matched());
     assert!(check("abc", &Type::Keyword(" ".into()), None).is_matched());
     assert!(check("abc", &Type::Keyword("\n".into()), None).is_matched());
-    assert!(check("abc", &Type::Keyword("".into()), None).is_matched());
+    assert!(check("abc", &Type::Keyword(String::new()), None).is_matched());
 }
 
 // --- ItemProp ---
@@ -308,4 +309,165 @@ fn list_one_or_more() {
     });
     assert!(check("1", &t, None).is_matched());
     assert!(!check("", &t, None).is_matched());
+}
+
+#[test]
+fn list_comma_empty_tokens() {
+    let t = Type::List(ListType {
+        token: Box::new(Type::Keyword("Uint".into())),
+        separator: Separator::Comma,
+        allow_empty: false,
+        ..Default::default()
+    });
+    // Trailing comma produces an empty token
+    assert!(!check("1,2,", &t, None).is_matched());
+    // Leading comma
+    assert!(!check(",1,2", &t, None).is_matched());
+}
+
+// --- DateTime ---
+
+#[test]
+fn datetime() {
+    let kw = Type::Keyword("DateTime".into());
+    assert!(check("2024-01-01", &kw, None).is_matched());
+    assert!(check("2024-01-01T12:00", &kw, None).is_matched());
+    assert!(check("2024-01-01T12:00:00", &kw, None).is_matched());
+    assert!(check("12:00", &kw, None).is_matched());
+    assert!(!check("invalid", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- AutoComplete ---
+
+#[test]
+fn autocomplete() {
+    let kw = Type::Keyword("AutoComplete".into());
+    assert!(check("name", &kw, None).is_matched());
+    assert!(check("on", &kw, None).is_matched());
+    assert!(check("off", &kw, None).is_matched());
+    assert!(!check("xxx", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- Accept ---
+
+#[test]
+fn accept() {
+    let kw = Type::Keyword("Accept".into());
+    assert!(check("image/*", &kw, None).is_matched());
+    assert!(check("audio/*", &kw, None).is_matched());
+    assert!(check("video/*", &kw, None).is_matched());
+    assert!(check(".jpg", &kw, None).is_matched());
+    assert!(check(".pdf", &kw, None).is_matched());
+    assert!(check("text/html", &kw, None).is_matched());
+    assert!(!check("foo", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- BaseURL ---
+
+#[test]
+fn base_url() {
+    let kw = Type::Keyword("BaseURL".into());
+    assert!(check("https://example.com", &kw, None).is_matched());
+    assert!(check("/path/to/page", &kw, None).is_matched());
+    assert!(!check("data:text/html,<h1>Hello</h1>", &kw, None).is_matched());
+    assert!(!check("javascript:alert(1)", &kw, None).is_matched());
+}
+
+// --- NavigableTargetNameOrKeyword ---
+
+#[test]
+fn navigable_target_name_or_keyword() {
+    let kw = Type::Keyword("NavigableTargetNameOrKeyword".into());
+    assert!(check("_blank", &kw, None).is_matched());
+    assert!(check("_self", &kw, None).is_matched());
+    assert!(check("_parent", &kw, None).is_matched());
+    assert!(check("_top", &kw, None).is_matched());
+    assert!(check("myframe", &kw, None).is_matched());
+    // Typo keyword suggests candidate
+    assert!(!check("_blnak", &kw, None).is_matched());
+    // Unknown underscore-prefixed name
+    assert!(!check("_foo", &kw, None).is_matched());
+}
+
+// --- TabIndex ---
+
+#[test]
+fn tab_index() {
+    let kw = Type::Keyword("TabIndex".into());
+    assert!(check("-1", &kw, None).is_matched());
+    assert!(check("0", &kw, None).is_matched());
+    assert!(check("1", &kw, None).is_matched());
+    assert!(!check("abc", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- SerializedPermissionsPolicy ---
+
+#[test]
+fn serialized_permissions_policy() {
+    let kw = Type::Keyword("SerializedPermissionsPolicy".into());
+    assert!(check("autoplay", &kw, None).is_matched());
+    assert!(check("fullscreen", &kw, None).is_matched());
+    assert!(!check("", &kw, None).is_matched());
+}
+
+// --- Number edge cases ---
+
+#[test]
+fn number_empty() {
+    let int_type = Type::Number(NumberType {
+        number_type: NumericKind::Integer,
+        gt: None,
+        gte: None,
+        lt: None,
+        lte: None,
+        clampable: false,
+    });
+    assert!(!check("", &int_type, None).is_matched());
+}
+
+#[test]
+fn number_non_numeric() {
+    let int_type = Type::Number(NumberType {
+        number_type: NumericKind::Integer,
+        gt: None,
+        gte: None,
+        lt: None,
+        lte: None,
+        clampable: false,
+    });
+    assert!(!check("abc", &int_type, None).is_matched());
+    assert!(!check("12px", &int_type, None).is_matched());
+}
+
+#[test]
+fn number_float_as_integer() {
+    let int_type = Type::Number(NumberType {
+        number_type: NumericKind::Integer,
+        gt: None,
+        gte: None,
+        lt: None,
+        lte: None,
+        clampable: false,
+    });
+    assert!(!check("1.5", &int_type, None).is_matched());
+    assert!(check("10", &int_type, None).is_matched());
+}
+
+#[test]
+fn number_clampable() {
+    let clamped = Type::Number(NumberType {
+        number_type: NumericKind::Integer,
+        gt: None,
+        gte: Some(0.0),
+        lt: None,
+        lte: Some(100.0),
+        clampable: true,
+    });
+    assert!(check("50", &clamped, None).is_matched());
+    assert!(!check("-1", &clamped, None).is_matched());
+    assert!(!check("101", &clamped, None).is_matched());
 }
