@@ -1,6 +1,6 @@
-//! N-API bridge for markuplint Rust DOM.
+//! N-API bridge for markuplint Rust modules.
 //!
-//! Exposes the Rust MLDOM to Node.js via napi-rs.
+//! Exposes the Rust MLDOM and type validators to Node.js via napi-rs.
 
 #![allow(clippy::cast_possible_truncation)]
 
@@ -8,6 +8,7 @@ use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::builder;
 use markuplint_dom::node::{DomNode, ElementData};
+use markuplint_types::primitive;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
@@ -221,4 +222,73 @@ fn node_type_str(node: &DomNode) -> &'static str {
         DomNode::PSBlock(_) => "psblock",
         DomNode::Invalid(_) => "invalid",
     }
+}
+
+// --- Primitive type validators ---
+
+/// Checks whether a string is a valid signed integer.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn is_int(value: String) -> bool {
+    primitive::is_int(&value)
+}
+
+/// Checks whether a string is a valid non-negative integer.
+/// Optionally requires the value to be greater than `gt`.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn is_uint(value: String, gt: Option<i64>) -> bool {
+    primitive::is_uint(&value, gt)
+}
+
+/// Checks whether a string is a valid floating-point number.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn is_float(value: String) -> bool {
+    primitive::is_float(&value)
+}
+
+/// Checks whether a string is a valid non-zero unsigned integer.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn is_non_zero_uint(value: String) -> bool {
+    primitive::is_non_zero_uint(&value)
+}
+
+/// Splits a value string into its numeric and unit parts.
+#[napi(object)]
+pub struct SplitUnitResult {
+    pub num: String,
+    pub unit: String,
+}
+
+/// Splits a value string into its numeric and unit parts.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn split_unit(value: String) -> SplitUnitResult {
+    let result = primitive::split_unit(&value);
+    SplitUnitResult {
+        num: result.num,
+        unit: result.unit,
+    }
+}
+
+/// Checks whether a string is a valid number with one of the allowed unit suffixes.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn is_quantity(value: String, units: Vec<String>, number_type: Option<String>) -> bool {
+    let nt = match number_type.as_deref() {
+        Some("int") => primitive::NumberType::Int,
+        Some("uint") => primitive::NumberType::Uint,
+        _ => primitive::NumberType::Float,
+    };
+    let unit_refs: Vec<&str> = units.iter().map(String::as_str).collect();
+    primitive::is_quantity(&value, &unit_refs, nt)
+}
+
+/// Checks whether a numeric string value falls within an inclusive range.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn range(value: String, from: f64, to: f64) -> bool {
+    primitive::range(&value, from, to)
 }
