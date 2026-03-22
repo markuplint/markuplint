@@ -4,14 +4,14 @@ Use the following skills and commands for common tasks. **Always invoke the appr
 
 ## Commands (slash commands)
 
-| Command     | Description                                            | File                                        |
-| ----------- | ------------------------------------------------------ | ------------------------------------------- |
-| `/git`      | Commit rules, message format, and package commit order | [git.md](.claude/commands/git.md)           |
-| `/pr`       | Create and push a pull request via `gh pr create`      | [pr.md](.claude/commands/pr.md)             |
-| `/doc`      | Update documentation (README, ARCHITECTURE, JSDoc)     | [doc.md](.claude/commands/doc.md)           |
-| `/release`  | Create GitHub Release notes                            | [release.md](.claude/commands/release.md)   |
+| Command     | Description                                                  | File                                        |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------- |
+| `/git`      | Commit rules, message format, and package commit order       | [git.md](.claude/commands/git.md)           |
+| `/pr`       | Create and push a pull request via `gh pr create`            | [pr.md](.claude/commands/pr.md)             |
+| `/doc`      | Update documentation (README, ARCHITECTURE, JSDoc)           | [doc.md](.claude/commands/doc.md)           |
+| `/release`  | Create GitHub Release notes                                  | [release.md](.claude/commands/release.md)   |
 | `/issue`    | Analyze or create a GitHub Issue and build a resolution plan | [issue.md](.claude/commands/issue.md)       |
-| `/sponsors` | Check and update GitHub Sponsors listings              | [sponsors.md](.claude/commands/sponsors.md) |
+| `/sponsors` | Check and update GitHub Sponsors listings                    | [sponsors.md](.claude/commands/sponsors.md) |
 
 ## Skills
 
@@ -126,6 +126,7 @@ git config --add wt.hook "yarn build"
 
 ### Important Notes
 
+- **ALWAYS `cd` to the worktree root before running ANY commands** — do NOT run commands from the main working directory when operating on a worktree. Do NOT use `&&` to chain commands (each command must be separate so the AI agent can request permission per command). Do NOT use `git -C <path>` (same reason).
 - **Husky hooks do NOT run in worktrees** — run `yarn lint` manually before every commit
 - **NEVER run `git checkout <branch>` or `git switch` in the main working directory** — use worktrees instead
 - If you catch yourself about to create a branch in the main repo, STOP and use a worktree
