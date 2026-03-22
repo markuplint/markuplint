@@ -38,18 +38,15 @@ fn generate_multiplier(info: &MultiplierInfo) -> String {
 }
 
 fn generate_type_range(range: &TypeRange) -> String {
-    let min_str = range.min.map_or_else(|| "-\u{221E}".to_owned(), format_range_value);
-    let max_str = range.max.map_or_else(|| "\u{221E}".to_owned(), format_range_value);
+    let min_str = range
+        .min
+        .as_deref()
+        .unwrap_or("-\u{221E}");
+    let max_str = range
+        .max
+        .as_deref()
+        .unwrap_or("\u{221E}");
     format!(" [{min_str},{max_str}]")
-}
-
-fn format_range_value(v: f64) -> String {
-    #[allow(clippy::cast_possible_truncation)]
-    if v.fract() == 0.0 {
-        format!("{}", v as i64)
-    } else {
-        format!("{v}")
-    }
 }
 
 fn generate_sequence(terms: &[SyntaxNode], combinator: &Combinator, explicit: bool) -> String {

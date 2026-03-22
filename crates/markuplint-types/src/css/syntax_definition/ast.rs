@@ -82,11 +82,14 @@ pub struct MultiplierInfo {
     pub comma: bool,
 }
 
-/// Numeric range restriction for types (e.g., `<integer [0, 10]>`).
+/// Range restriction for types (e.g., `<integer [0,10]>`, `<time [0s,∞]>`).
+///
+/// Values are stored as raw strings to preserve unit suffixes (e.g., `"0s"`).
+/// `None` represents infinity (negative for min, positive for max).
 #[derive(Clone, Debug, PartialEq)]
 pub struct TypeRange {
     /// Minimum value. `None` means negative infinity.
-    pub min: Option<f64>,
+    pub min: Option<String>,
     /// Maximum value. `None` means positive infinity.
-    pub max: Option<f64>,
+    pub max: Option<String>,
 }

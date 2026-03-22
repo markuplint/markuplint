@@ -195,11 +195,11 @@ fn read_property(scanner: &mut Scanner) -> Result<SyntaxNode, String> {
     maybe_multiplied(scanner, SyntaxNode::Property { name })
 }
 
-fn read_range_value(scanner: &mut Scanner) -> Result<Option<f64>, String> {
-    let mut sign: i8 = 1;
+fn read_range_value(scanner: &mut Scanner) -> Result<Option<String>, String> {
+    let start = scanner.pos;
+
     if scanner.char_code() == Some(b'-') {
         scanner.pos += 1;
-        sign = -1;
     }
 
     let rest = &scanner.source()[scanner.pos..];
@@ -208,9 +208,17 @@ fn read_range_value(scanner: &mut Scanner) -> Result<Option<f64>, String> {
         return Ok(None); // ±∞
     }
 
-    let num_str = scanner.scan_number()?;
-    let val = f64::from(sign) * num_str.parse::<f64>().map_err(|e| e.to_string())?;
-    Ok(Some(val))
+    scanner.scan_number()?;
+
+    // Consume optional unit suffix (e.g., "s" in "0s", "px" in "0px")
+    while scanner
+        .char_code()
+        .is_some_and(|c| c.is_ascii_alphabetic() || c == b'%')
+    {
+        scanner.pos += 1;
+    }
+
+    Ok(Some(scanner.source()[start..scanner.pos].to_owned()))
 }
 
 fn read_type_range(scanner: &mut Scanner) -> Result<TypeRange, String> {
@@ -441,7 +449,10 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
 
             // Unwrap single-term group from function body
             let node = if let FlatToken::Node(SyntaxNode::Group {
-                terms: mut fn_terms, ..
+                terms: mut fn_terms,
+                combinator: fn_comb,
+                disallow_empty: fn_de,
+                explicit: fn_ex,
             }) = token
             {
                 if fn_terms.len() == 1 {
@@ -449,9 +460,9 @@ fn read_implicit_group(scanner: &mut Scanner, stop_char: Option<u8>) -> Result<S
                 } else {
                     FlatToken::Node(SyntaxNode::Group {
                         terms: fn_terms,
-                        combinator: Combinator::Juxtaposition,
-                        disallow_empty: false,
-                        explicit: false,
+                        combinator: fn_comb,
+                        disallow_empty: fn_de,
+                        explicit: fn_ex,
                     })
                 }
             } else {

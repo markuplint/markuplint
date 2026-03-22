@@ -57,8 +57,8 @@ fn type_with_range() {
             SyntaxNode::Type {
                 name: "integer".into(),
                 opts: Some(TypeRange {
-                    min: Some(0.0),
-                    max: Some(10.0),
+                    min: Some("0".into()),
+                    max: Some("10".into()),
                 }),
             }
         );
@@ -572,8 +572,8 @@ fn type_range_negative() {
             SyntaxNode::Type {
                 name: "number".into(),
                 opts: Some(TypeRange {
-                    min: Some(-1.0),
-                    max: Some(1.0),
+                    min: Some("-1".into()),
+                    max: Some("1".into()),
                 }),
             }
         );
@@ -592,7 +592,7 @@ fn type_range_negative_infinity() {
                 name: "number".into(),
                 opts: Some(TypeRange {
                     min: None,
-                    max: Some(0.0),
+                    max: Some("0".into()),
                 }),
             }
         );
