@@ -5,7 +5,10 @@ edition = "2024"
 publish = false
 
 [dependencies]
+language-tags = "0.3"
+mime = "0.3"
 regex = "1"
+url = "2"
 
 [lints]
 workspace = true
