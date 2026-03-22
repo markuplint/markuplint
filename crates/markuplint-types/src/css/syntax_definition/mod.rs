@@ -4,7 +4,12 @@
 //! (the meta-grammar used by CSS specs to define property value syntax) into an AST,
 //! and can generate the syntax string back from the AST.
 //!
-//! This is a Rust reimplementation of css-tree's `definition-syntax/parse.js`.
+//! The parsing algorithm and AST structure are based on the W3C CSS Values and Units
+//! specification and informed by [css-tree](https://github.com/csstree/csstree)'s
+//! `definition-syntax/parse.js` for compatibility.
+//!
+//! css-tree copyright: Copyright (C) 2016-2026 by Roman Dvornov, MIT License.
+//! <https://github.com/csstree/csstree/blob/master/LICENSE>
 
 pub mod ast;
 pub mod generate;
