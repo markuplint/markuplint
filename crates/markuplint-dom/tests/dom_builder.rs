@@ -211,12 +211,91 @@ fn comment_node_in_dom() {
 
 // --- Deep nesting ---
 
+/// Generate a minimal MLAST JSON document with `depth` levels of nested `<div>` elements.
+/// The innermost element contains a text node "leaf".
+/// This produces deeply nested `childNodes` that exercise serde's recursion limit.
+fn generate_deep_nested_json(depth: u32) -> String {
+    use std::fmt::Write;
+
+    let mut json = String::with_capacity(depth as usize * 512);
+
+    let raw_html = format!(
+        "{}leaf{}",
+        "<div>".repeat(depth as usize),
+        "</div>".repeat(depth as usize)
+    );
+
+    write!(json, r#"{{"raw":"{}","nodeList":["#, raw_html).unwrap();
+
+    for i in 0..depth {
+        if i > 0 {
+            json.push(',');
+        }
+        let parent = if i == 0 {
+            "null".to_owned()
+        } else {
+            format!(r#""el-{}""#, i - 1)
+        };
+        write!(
+            json,
+            r#"{{"type":"starttag","uuid":"el-{i}","raw":"<div>","offset":{offset},"line":1,"col":{col},"nodeName":"div","depth":{i},"namespace":"http://www.w3.org/1999/xhtml","elementType":"html","isFragment":false,"attributes":[],"childNodes":[],"blockBehavior":null,"pairNodeUuid":"end-{i}","tagOpenChar":"<","tagCloseChar":">","isGhost":false,"parentNodeUuid":{parent}}}"#,
+            offset = i * 5,
+            col = i * 5 + 1,
+        )
+        .unwrap();
+    }
+
+    let text_offset = depth * 5;
+    write!(
+        json,
+        r##",{{"type":"text","uuid":"txt","raw":"leaf","offset":{text_offset},"line":1,"col":{col},"nodeName":"#text","depth":{depth},"parentNodeUuid":"el-{parent}"}}"##,
+        col = text_offset + 1,
+        parent = depth - 1,
+    )
+    .unwrap();
+
+    for i in (0..depth).rev() {
+        let end_offset = text_offset + 4 + (depth - 1 - i) * 6;
+        let parent = if i == 0 {
+            "null".to_owned()
+        } else {
+            format!(r#""el-{}""#, i - 1)
+        };
+        write!(
+            json,
+            r#",{{"type":"endtag","uuid":"end-{i}","raw":"</div>","offset":{end_offset},"line":1,"col":{col},"nodeName":"div","depth":{i},"pairNodeUuid":"el-{i}","tagOpenChar":"</","tagCloseChar":">","parentNodeUuid":{parent}}}"#,
+            col = end_offset + 1,
+        )
+        .unwrap();
+    }
+
+    json.push_str(r#"],"isFragment":true}"#);
+
+    let mut doc: serde_json::Value = serde_json::from_str(&json).unwrap();
+    let node_list = doc["nodeList"].as_array().unwrap().clone();
+
+    let mut starttags: Vec<serde_json::Value> = node_list.iter().filter(|n| n["type"] == "starttag").cloned().collect();
+    let text_node: serde_json::Value = node_list.iter().find(|n| n["type"] == "text").cloned().unwrap();
+
+    let mut inner_child = text_node;
+    for i in (0..starttags.len()).rev() {
+        starttags[i]["childNodes"] = serde_json::json!([inner_child]);
+        inner_child = starttags[i].clone();
+    }
+
+    let node_list_mut = doc["nodeList"].as_array_mut().unwrap();
+    node_list_mut[0] = inner_child;
+
+    serde_json::to_string(&doc).unwrap()
+}
+
 #[test]
 fn deep_nesting_builds_successfully() {
-    let json = load_fixture("nested-deep");
-    let doc = markuplint_core::mlast::parse_mlast_deep(&json).expect("Failed to parse deep fixture");
+    let json = generate_deep_nested_json(130);
+    let doc = markuplint_core::mlast::parse_mlast_deep(&json).expect("Failed to parse deep JSON");
     let arena = builder::build(&doc);
-    assert!(arena.len() > 200, "Expected many nodes for deep nesting");
+    // 130 elements + 1 text + 1 document root = 132 nodes
+    assert!(arena.len() > 130, "Expected many nodes for deep nesting");
 }
 
 // --- OmittedTag (ghost element) ---
