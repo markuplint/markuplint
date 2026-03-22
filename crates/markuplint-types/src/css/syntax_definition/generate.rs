@@ -38,14 +38,8 @@ fn generate_multiplier(info: &MultiplierInfo) -> String {
 }
 
 fn generate_type_range(range: &TypeRange) -> String {
-    let min_str = range
-        .min
-        .as_deref()
-        .unwrap_or("-\u{221E}");
-    let max_str = range
-        .max
-        .as_deref()
-        .unwrap_or("\u{221E}");
+    let min_str = range.min.as_deref().unwrap_or("-\u{221E}");
+    let max_str = range.max.as_deref().unwrap_or("\u{221E}");
     format!(" [{min_str},{max_str}]")
 }
 

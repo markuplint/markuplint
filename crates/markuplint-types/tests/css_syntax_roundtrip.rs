@@ -184,10 +184,7 @@ fn compat_margin() {
 
 #[test]
 fn compat_background_layers() {
-    assert_css_tree_compat(
-        "<bg-layer># , <final-bg-layer>",
-        "<bg-layer># , <final-bg-layer>",
-    );
+    assert_css_tree_compat("<bg-layer># , <final-bg-layer>", "<bg-layer># , <final-bg-layer>");
 }
 
 #[test]
@@ -230,10 +227,7 @@ fn compat_translate_function() {
 
 #[test]
 fn compat_animation() {
-    assert_css_tree_compat(
-        "none | <single-animation>#",
-        "none | <single-animation>#",
-    );
+    assert_css_tree_compat("none | <single-animation>#", "none | <single-animation>#");
 }
 
 #[test]
@@ -278,10 +272,7 @@ fn compat_comma_separated() {
 
 #[test]
 fn compat_boolean_expr() {
-    assert_css_tree_compat(
-        "<boolean-expr[<media-feature>]>",
-        "<boolean-expr[<media-feature>]>",
-    );
+    assert_css_tree_compat("<boolean-expr[<media-feature>]>", "<boolean-expr[<media-feature>]>");
 }
 
 // --- Negative ranges ---

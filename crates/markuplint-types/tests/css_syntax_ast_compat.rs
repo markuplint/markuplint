@@ -169,11 +169,20 @@ fn ast_rgb_function() {
         SyntaxNode::Group {
             terms: vec![
                 SyntaxNode::Function { name: "rgb".into() },
-                SyntaxNode::Type { name: "number".into(), opts: None },
+                SyntaxNode::Type {
+                    name: "number".into(),
+                    opts: None
+                },
                 SyntaxNode::Comma,
-                SyntaxNode::Type { name: "number".into(), opts: None },
+                SyntaxNode::Type {
+                    name: "number".into(),
+                    opts: None
+                },
                 SyntaxNode::Comma,
-                SyntaxNode::Type { name: "number".into(), opts: None },
+                SyntaxNode::Type {
+                    name: "number".into(),
+                    opts: None
+                },
                 SyntaxNode::Token { value: ")".into() },
             ],
             combinator: Combinator::Juxtaposition,
@@ -249,16 +258,34 @@ fn ast_box_shadow() {
         SyntaxNode::Group {
             terms: vec![
                 SyntaxNode::Multiplier {
-                    info: MultiplierInfo { min: 0, max: 1, comma: false },
+                    info: MultiplierInfo {
+                        min: 0,
+                        max: 1,
+                        comma: false
+                    },
                     term: Box::new(SyntaxNode::Keyword { name: "inset".into() }),
                 },
                 SyntaxNode::Multiplier {
-                    info: MultiplierInfo { min: 2, max: 4, comma: false },
-                    term: Box::new(SyntaxNode::Type { name: "length".into(), opts: None }),
+                    info: MultiplierInfo {
+                        min: 2,
+                        max: 4,
+                        comma: false
+                    },
+                    term: Box::new(SyntaxNode::Type {
+                        name: "length".into(),
+                        opts: None
+                    }),
                 },
                 SyntaxNode::Multiplier {
-                    info: MultiplierInfo { min: 0, max: 1, comma: false },
-                    term: Box::new(SyntaxNode::Type { name: "color".into(), opts: None }),
+                    info: MultiplierInfo {
+                        min: 0,
+                        max: 1,
+                        comma: false
+                    },
+                    term: Box::new(SyntaxNode::Type {
+                        name: "color".into(),
+                        opts: None
+                    }),
                 },
             ],
             combinator: Combinator::DoubleAmpersand,
@@ -284,24 +311,44 @@ fn ast_content_property() {
                     terms: vec![
                         SyntaxNode::Group {
                             terms: vec![
-                                SyntaxNode::Type { name: "content-replacement".into(), opts: None },
-                                SyntaxNode::Type { name: "content-list".into(), opts: None },
+                                SyntaxNode::Type {
+                                    name: "content-replacement".into(),
+                                    opts: None
+                                },
+                                SyntaxNode::Type {
+                                    name: "content-list".into(),
+                                    opts: None
+                                },
                             ],
                             combinator: Combinator::Bar,
                             disallow_empty: false,
                             explicit: true,
                         },
                         SyntaxNode::Multiplier {
-                            info: MultiplierInfo { min: 0, max: 1, comma: false },
+                            info: MultiplierInfo {
+                                min: 0,
+                                max: 1,
+                                comma: false
+                            },
                             term: Box::new(SyntaxNode::Group {
                                 terms: vec![
                                     SyntaxNode::Token { value: "/".into() },
                                     SyntaxNode::Multiplier {
-                                        info: MultiplierInfo { min: 1, max: 0, comma: false },
+                                        info: MultiplierInfo {
+                                            min: 1,
+                                            max: 0,
+                                            comma: false
+                                        },
                                         term: Box::new(SyntaxNode::Group {
                                             terms: vec![
-                                                SyntaxNode::Type { name: "string".into(), opts: None },
-                                                SyntaxNode::Type { name: "counter".into(), opts: None },
+                                                SyntaxNode::Type {
+                                                    name: "string".into(),
+                                                    opts: None
+                                                },
+                                                SyntaxNode::Type {
+                                                    name: "counter".into(),
+                                                    opts: None
+                                                },
                                             ],
                                             combinator: Combinator::Bar,
                                             disallow_empty: false,

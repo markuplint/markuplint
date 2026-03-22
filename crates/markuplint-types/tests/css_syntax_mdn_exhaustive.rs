@@ -6,37 +6,94 @@ use markuplint_types::css::syntax_definition::parse;
 fn assert_mdn_compat(input: &str, expected: &str) {
     let node = parse(input).unwrap_or_else(|e| panic!("Failed to parse: {e}\nInput: {input}"));
     let output = generate(&node);
-    assert_eq!(output, expected, "Mismatch\n  Input:    {input}\n  Expected: {expected}\n  Got:      {output}");
+    assert_eq!(
+        output, expected,
+        "Mismatch\n  Input:    {input}\n  Expected: {expected}\n  Got:      {output}"
+    );
 }
 
 #[test]
 fn all_mdn_syntaxes() {
     assert_mdn_compat("'.' <ident-token>", "'.' <ident-token>");
-    assert_mdn_compat("':' <ident-token> | ':' <function-token> <any-value> ')'", "':' <ident-token> | ':' <function-token> <any-value> ')'");
+    assert_mdn_compat(
+        "':' <ident-token> | ':' <function-token> <any-value> ')'",
+        "':' <ident-token> | ':' <function-token> <any-value> ')'",
+    );
     assert_mdn_compat("':' <pseudo-class-selector>", "':' <pseudo-class-selector>");
     assert_mdn_compat("'>' | '+' | '~' | [ '||' ]", "'>' | '+' | '~' | [ '||' ]");
     assert_mdn_compat("'[' <custom-ident>* ']'", "'[' <custom-ident>* ']'");
-    assert_mdn_compat("'[' <wq-name> ']' | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'", "'[' <wq-name> ']' | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'");
-    assert_mdn_compat("( <container-query> ) | ( <size-feature> ) | style( <style-query> ) | scroll-state( <scroll-state-query> ) | <general-enclosed>", "( <container-query> ) | ( <size-feature> ) | style( <style-query> ) | scroll-state( <scroll-state-query> ) | <general-enclosed>");
+    assert_mdn_compat(
+        "'[' <wq-name> ']' | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'",
+        "'[' <wq-name> ']' | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'",
+    );
+    assert_mdn_compat(
+        "( <container-query> ) | ( <size-feature> ) | style( <style-query> ) | scroll-state( <scroll-state-query> ) | <general-enclosed>",
+        "( <container-query> ) | ( <size-feature> ) | style( <style-query> ) | scroll-state( <scroll-state-query> ) | <general-enclosed>",
+    );
     assert_mdn_compat("( <declaration> )", "( <declaration> )");
-    assert_mdn_compat("( <media-condition> ) | <media-feature> | <general-enclosed>", "( <media-condition> ) | <media-feature> | <general-enclosed>");
-    assert_mdn_compat("( <scroll-state-query> ) | ( <scroll-state-feature> ) | <general-enclosed>", "( <scroll-state-query> ) | ( <scroll-state-feature> ) | <general-enclosed>");
-    assert_mdn_compat("( <style-query> ) | ( <style-feature> ) | <general-enclosed>", "( <style-query> ) | ( <style-feature> ) | <general-enclosed>");
-    assert_mdn_compat("( <supports-condition> ) | <supports-feature> | <general-enclosed>", "( <supports-condition> ) | <supports-feature> | <general-enclosed>");
-    assert_mdn_compat("( [ <mf-plain> | <mf-boolean> | <mf-range> ] )", "( [ <mf-plain> | <mf-boolean> | <mf-range> ] )");
+    assert_mdn_compat(
+        "( <media-condition> ) | <media-feature> | <general-enclosed>",
+        "( <media-condition> ) | <media-feature> | <general-enclosed>",
+    );
+    assert_mdn_compat(
+        "( <scroll-state-query> ) | ( <scroll-state-feature> ) | <general-enclosed>",
+        "( <scroll-state-query> ) | ( <scroll-state-feature> ) | <general-enclosed>",
+    );
+    assert_mdn_compat(
+        "( <style-query> ) | ( <style-feature> ) | <general-enclosed>",
+        "( <style-query> ) | ( <style-feature> ) | <general-enclosed>",
+    );
+    assert_mdn_compat(
+        "( <supports-condition> ) | <supports-feature> | <general-enclosed>",
+        "( <supports-condition> ) | <supports-feature> | <general-enclosed>",
+    );
+    assert_mdn_compat(
+        "( [ <mf-plain> | <mf-boolean> | <mf-range> ] )",
+        "( [ <mf-plain> | <mf-boolean> | <mf-range> ] )",
+    );
     assert_mdn_compat("0 | 1", "0 | 1");
-    assert_mdn_compat(": [ left | right | first | blank ]", ": [ left | right | first | blank ]");
-    assert_mdn_compat("<'-ms-content-zoom-limit-min'> <'-ms-content-zoom-limit-max'>", "<'-ms-content-zoom-limit-min'> <'-ms-content-zoom-limit-max'>");
-    assert_mdn_compat("<'-ms-content-zoom-snap-type'> || <'-ms-content-zoom-snap-points'>", "<'-ms-content-zoom-snap-type'> || <'-ms-content-zoom-snap-points'>");
-    assert_mdn_compat("<'-ms-scroll-limit-x-min'> <'-ms-scroll-limit-y-min'> <'-ms-scroll-limit-x-max'> <'-ms-scroll-limit-y-max'>", "<'-ms-scroll-limit-x-min'> <'-ms-scroll-limit-y-min'> <'-ms-scroll-limit-x-max'> <'-ms-scroll-limit-y-max'>");
-    assert_mdn_compat("<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-x'>", "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-x'>");
-    assert_mdn_compat("<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-y'>", "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-y'>");
-    assert_mdn_compat("<'align-content'> <'justify-content'>?", "<'align-content'> <'justify-content'>?");
-    assert_mdn_compat("<'align-items'> <'justify-items'>?", "<'align-items'> <'justify-items'>?");
+    assert_mdn_compat(
+        ": [ left | right | first | blank ]",
+        ": [ left | right | first | blank ]",
+    );
+    assert_mdn_compat(
+        "<'-ms-content-zoom-limit-min'> <'-ms-content-zoom-limit-max'>",
+        "<'-ms-content-zoom-limit-min'> <'-ms-content-zoom-limit-max'>",
+    );
+    assert_mdn_compat(
+        "<'-ms-content-zoom-snap-type'> || <'-ms-content-zoom-snap-points'>",
+        "<'-ms-content-zoom-snap-type'> || <'-ms-content-zoom-snap-points'>",
+    );
+    assert_mdn_compat(
+        "<'-ms-scroll-limit-x-min'> <'-ms-scroll-limit-y-min'> <'-ms-scroll-limit-x-max'> <'-ms-scroll-limit-y-max'>",
+        "<'-ms-scroll-limit-x-min'> <'-ms-scroll-limit-y-min'> <'-ms-scroll-limit-x-max'> <'-ms-scroll-limit-y-max'>",
+    );
+    assert_mdn_compat(
+        "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-x'>",
+        "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-x'>",
+    );
+    assert_mdn_compat(
+        "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-y'>",
+        "<'-ms-scroll-snap-type'> <'-ms-scroll-snap-points-y'>",
+    );
+    assert_mdn_compat(
+        "<'align-content'> <'justify-content'>?",
+        "<'align-content'> <'justify-content'>?",
+    );
+    assert_mdn_compat(
+        "<'align-items'> <'justify-items'>?",
+        "<'align-items'> <'justify-items'>?",
+    );
     assert_mdn_compat("<'align-self'> <'justify-self'>?", "<'align-self'> <'justify-self'>?");
-    assert_mdn_compat("<'animation-duration'> || <easing-function> || <'animation-delay'> || <single-animation-iteration-count> || <single-animation-direction> || <single-animation-fill-mode> || <single-animation-play-state> || [ none | <keyframes-name> ] || <single-animation-timeline>", "<'animation-duration'> || <easing-function> || <'animation-delay'> || <single-animation-iteration-count> || <single-animation-direction> || <single-animation-fill-mode> || <single-animation-play-state> || [ none | <keyframes-name> ] || <single-animation-timeline>");
+    assert_mdn_compat(
+        "<'animation-duration'> || <easing-function> || <'animation-delay'> || <single-animation-iteration-count> || <single-animation-direction> || <single-animation-fill-mode> || <single-animation-play-state> || [ none | <keyframes-name> ] || <single-animation-timeline>",
+        "<'animation-duration'> || <easing-function> || <'animation-delay'> || <single-animation-iteration-count> || <single-animation-direction> || <single-animation-fill-mode> || <single-animation-play-state> || [ none | <keyframes-name> ] || <single-animation-timeline>",
+    );
     assert_mdn_compat("<'border-block-start'>", "<'border-block-start'>");
-    assert_mdn_compat("<'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>", "<'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>");
+    assert_mdn_compat(
+        "<'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>",
+        "<'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>",
+    );
     assert_mdn_compat("<'border-style'>", "<'border-style'>");
     assert_mdn_compat("<'border-top-color'>", "<'border-top-color'>");
     assert_mdn_compat("<'border-top-color'>{1,2}", "<'border-top-color'>{1,2}");
@@ -44,59 +101,137 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<'border-top-style'>", "<'border-top-style'>");
     assert_mdn_compat("<'border-top-style'>{1,2}", "<'border-top-style'>{1,2}");
     assert_mdn_compat("<'border-top-width'>", "<'border-top-width'>");
-    assert_mdn_compat("<'border-top-width'> || <'border-top-style'> || <color>", "<'border-top-width'> || <'border-top-style'> || <color>");
+    assert_mdn_compat(
+        "<'border-top-width'> || <'border-top-style'> || <color>",
+        "<'border-top-width'> || <'border-top-style'> || <color>",
+    );
     assert_mdn_compat("<'border-top-width'>{1,2}", "<'border-top-width'>{1,2}");
     assert_mdn_compat("<'border-width'>", "<'border-width'>");
-    assert_mdn_compat("<'border-width'> || <'border-style'> || <color>", "<'border-width'> || <'border-style'> || <color>");
-    assert_mdn_compat("<'caret-color'> || <'caret-animation'> || <'caret-shape'>", "<'caret-color'> || <'caret-animation'> || <'caret-shape'>");
+    assert_mdn_compat(
+        "<'border-width'> || <'border-style'> || <color>",
+        "<'border-width'> || <'border-style'> || <color>",
+    );
+    assert_mdn_compat(
+        "<'caret-color'> || <'caret-animation'> || <'caret-shape'>",
+        "<'caret-color'> || <'caret-animation'> || <'caret-shape'>",
+    );
     assert_mdn_compat("<'color'>", "<'color'>");
-    assert_mdn_compat("<'column-rule-width'> || <'column-rule-style'> || <'column-rule-color'>", "<'column-rule-width'> || <'column-rule-style'> || <'column-rule-color'>");
-    assert_mdn_compat("<'container-name'> [ / <'container-type'> ]?", "<'container-name'> [ / <'container-type'> ]?");
-    assert_mdn_compat("<'flex-direction'> || <'flex-wrap'>", "<'flex-direction'> || <'flex-wrap'>");
-    assert_mdn_compat("<'grid-row-gap'> <'grid-column-gap'>?", "<'grid-row-gap'> <'grid-column-gap'>?");
-    assert_mdn_compat("<'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>", "<'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>");
+    assert_mdn_compat(
+        "<'column-rule-width'> || <'column-rule-style'> || <'column-rule-color'>",
+        "<'column-rule-width'> || <'column-rule-style'> || <'column-rule-color'>",
+    );
+    assert_mdn_compat(
+        "<'container-name'> [ / <'container-type'> ]?",
+        "<'container-name'> [ / <'container-type'> ]?",
+    );
+    assert_mdn_compat(
+        "<'flex-direction'> || <'flex-wrap'>",
+        "<'flex-direction'> || <'flex-wrap'>",
+    );
+    assert_mdn_compat(
+        "<'grid-row-gap'> <'grid-column-gap'>?",
+        "<'grid-row-gap'> <'grid-column-gap'>?",
+    );
+    assert_mdn_compat(
+        "<'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>",
+        "<'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>",
+    );
     assert_mdn_compat("<'interest-delay-start'>{1,2}", "<'interest-delay-start'>{1,2}");
-    assert_mdn_compat("<'list-style-type'> || <'list-style-position'> || <'list-style-image'>", "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>");
+    assert_mdn_compat(
+        "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>",
+        "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>",
+    );
     assert_mdn_compat("<'margin-top'>", "<'margin-top'>");
     assert_mdn_compat("<'margin-top'>{1,2}", "<'margin-top'>{1,2}");
     assert_mdn_compat("<'margin-top'>{1,4}", "<'margin-top'>{1,4}");
-    assert_mdn_compat("<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>", "<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>");
+    assert_mdn_compat(
+        "<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>",
+        "<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>",
+    );
     assert_mdn_compat("<'max-width'>", "<'max-width'>");
     assert_mdn_compat("<'min-width'>", "<'min-width'>");
     assert_mdn_compat("<'opacity'>", "<'opacity'>");
-    assert_mdn_compat("<'outline-width'> || <'outline-style'> || <'outline-color'>", "<'outline-width'> || <'outline-style'> || <'outline-color'>");
+    assert_mdn_compat(
+        "<'outline-width'> || <'outline-style'> || <'outline-color'>",
+        "<'outline-width'> || <'outline-style'> || <'outline-color'>",
+    );
     assert_mdn_compat("<'padding-top'>", "<'padding-top'>");
     assert_mdn_compat("<'padding-top'>{1,2}", "<'padding-top'>{1,2}");
     assert_mdn_compat("<'padding-top'>{1,4}", "<'padding-top'>{1,4}");
-    assert_mdn_compat("<'position-try-order'>? <'position-try-fallbacks'>", "<'position-try-order'>? <'position-try-fallbacks'>");
+    assert_mdn_compat(
+        "<'position-try-order'>? <'position-try-fallbacks'>",
+        "<'position-try-order'>? <'position-try-fallbacks'>",
+    );
     assert_mdn_compat("<'row-gap'> <'column-gap'>?", "<'row-gap'> <'column-gap'>?");
-    assert_mdn_compat("<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>", "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>");
-    assert_mdn_compat("<'text-emphasis-style'> || <'text-emphasis-color'>", "<'text-emphasis-style'> || <'text-emphasis-color'>");
-    assert_mdn_compat("<'text-wrap-mode'> || <'text-wrap-style'>", "<'text-wrap-mode'> || <'text-wrap-style'>");
+    assert_mdn_compat(
+        "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>",
+        "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>",
+    );
+    assert_mdn_compat(
+        "<'text-emphasis-style'> || <'text-emphasis-color'>",
+        "<'text-emphasis-style'> || <'text-emphasis-color'>",
+    );
+    assert_mdn_compat(
+        "<'text-wrap-mode'> || <'text-wrap-style'>",
+        "<'text-wrap-mode'> || <'text-wrap-style'>",
+    );
     assert_mdn_compat("<'top'>", "<'top'>");
     assert_mdn_compat("<'top'>{1,2}", "<'top'>{1,2}");
     assert_mdn_compat("<'top'>{1,4}", "<'top'>{1,4}");
     assert_mdn_compat("<'width'>", "<'width'>");
-    assert_mdn_compat("<absolute-size> | <relative-size> | <length-percentage [0,∞]> | math", "<absolute-size> | <relative-size> | <length-percentage [0,∞]> | math");
+    assert_mdn_compat(
+        "<absolute-size> | <relative-size> | <length-percentage [0,∞]> | math",
+        "<absolute-size> | <relative-size> | <length-percentage [0,∞]> | math",
+    );
     assert_mdn_compat("<angle-percentage> | <zero>", "<angle-percentage> | <zero>");
     assert_mdn_compat("<angle> | <percentage>", "<angle> | <percentage>");
-    assert_mdn_compat("<angular-color-stop> , [ <angular-color-hint>? , <angular-color-stop> ]#?", "<angular-color-stop> , [ <angular-color-hint>? , <angular-color-stop> ]#?");
+    assert_mdn_compat(
+        "<angular-color-stop> , [ <angular-color-hint>? , <angular-color-stop> ]#?",
+        "<angular-color-stop> , [ <angular-color-hint>? , <angular-color-stop> ]#?",
+    );
     assert_mdn_compat("<attachment>#", "<attachment>#");
     assert_mdn_compat("<bg-clip>#", "<bg-clip>#");
-    assert_mdn_compat("<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box>", "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box>");
-    assert_mdn_compat("<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box> || <'background-color'>", "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box> || <'background-color'>");
+    assert_mdn_compat(
+        "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box>",
+        "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box>",
+    );
+    assert_mdn_compat(
+        "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box> || <'background-color'>",
+        "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <visual-box> || <visual-box> || <'background-color'>",
+    );
     assert_mdn_compat("<bg-image>#", "<bg-image>#");
     assert_mdn_compat("<bg-layer>#? , <final-bg-layer>", "<bg-layer>#? , <final-bg-layer>");
     assert_mdn_compat("<bg-position>#", "<bg-position>#");
     assert_mdn_compat("<bg-size>#", "<bg-size>#");
-    assert_mdn_compat("<blend-mode> | plus-darker | plus-lighter", "<blend-mode> | plus-darker | plus-lighter");
+    assert_mdn_compat(
+        "<blend-mode> | plus-darker | plus-lighter",
+        "<blend-mode> | plus-darker | plus-lighter",
+    );
     assert_mdn_compat("<blend-mode>#", "<blend-mode>#");
-    assert_mdn_compat("<blur()> | <brightness()> | <contrast()> | <drop-shadow()> | <grayscale()> | <hue-rotate()> | <invert()> | <opacity()> | <saturate()> | <sepia()>", "<blur()> | <brightness()> | <contrast()> | <drop-shadow()> | <grayscale()> | <hue-rotate()> | <invert()> | <opacity()> | <saturate()> | <sepia()>");
-    assert_mdn_compat("<calc-product> [ [ '+' | '-' ] <calc-product> ]*", "<calc-product> [ [ '+' | '-' ] <calc-product> ]*");
-    assert_mdn_compat("<calc-value> [ '*' <calc-value> | '/' <number> ]*", "<calc-value> [ '*' <calc-value> | '/' <number> ]*");
-    assert_mdn_compat("<clip-source> | [ <basic-shape> || <geometry-box> ] | none", "<clip-source> | [ <basic-shape> || <geometry-box> ] | none");
-    assert_mdn_compat("<color-base> | currentColor | <system-color> | <light-dark()> | <deprecated-system-color>", "<color-base> | currentColor | <system-color> | <light-dark()> | <deprecated-system-color>");
-    assert_mdn_compat("<color-stop-length> | <color-stop-angle>", "<color-stop-length> | <color-stop-angle>");
+    assert_mdn_compat(
+        "<blur()> | <brightness()> | <contrast()> | <drop-shadow()> | <grayscale()> | <hue-rotate()> | <invert()> | <opacity()> | <saturate()> | <sepia()>",
+        "<blur()> | <brightness()> | <contrast()> | <drop-shadow()> | <grayscale()> | <hue-rotate()> | <invert()> | <opacity()> | <saturate()> | <sepia()>",
+    );
+    assert_mdn_compat(
+        "<calc-product> [ [ '+' | '-' ] <calc-product> ]*",
+        "<calc-product> [ [ '+' | '-' ] <calc-product> ]*",
+    );
+    assert_mdn_compat(
+        "<calc-value> [ '*' <calc-value> | '/' <number> ]*",
+        "<calc-value> [ '*' <calc-value> | '/' <number> ]*",
+    );
+    assert_mdn_compat(
+        "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
+        "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
+    );
+    assert_mdn_compat(
+        "<color-base> | currentColor | <system-color> | <light-dark()> | <deprecated-system-color>",
+        "<color-base> | currentColor | <system-color> | <light-dark()> | <deprecated-system-color>",
+    );
+    assert_mdn_compat(
+        "<color-stop-length> | <color-stop-angle>",
+        "<color-stop-length> | <color-stop-angle>",
+    );
     assert_mdn_compat("<color>", "<color>");
     assert_mdn_compat("<color> <color-stop-angle>?", "<color> <color-stop-angle>?");
     assert_mdn_compat("<color> <color-stop-length>?", "<color> <color-stop-length>?");
@@ -107,7 +242,10 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<complex-selector>#", "<complex-selector>#");
     assert_mdn_compat("<composite-style>#", "<composite-style>#");
     assert_mdn_compat("<compositing-operator>#", "<compositing-operator>#");
-    assert_mdn_compat("<compound-selector> [ <combinator>? <compound-selector> ]*", "<compound-selector> [ <combinator>? <compound-selector> ]*");
+    assert_mdn_compat(
+        "<compound-selector> [ <combinator>? <compound-selector> ]*",
+        "<compound-selector> [ <combinator>? <compound-selector> ]*",
+    );
     assert_mdn_compat("<compound-selector>#", "<compound-selector>#");
     assert_mdn_compat("<coord-box>#", "<coord-box>#");
     assert_mdn_compat("<corner-shape-value>", "<corner-shape-value>");
@@ -120,27 +258,57 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<custom-ident> | <string>", "<custom-ident> | <string>");
     assert_mdn_compat("<custom-ident>: <integer>+;", "<custom-ident> : <integer>+ ;");
     assert_mdn_compat("<dashed-ident>", "<dashed-ident>");
-    assert_mdn_compat("<dashed-ident> [ <number> | <percentage> | none ]+", "<dashed-ident> [ <number> | <percentage> | none ]+");
+    assert_mdn_compat(
+        "<dashed-ident> [ <number> | <percentage> | none ]+",
+        "<dashed-ident> [ <number> | <percentage> | none ]+",
+    );
     assert_mdn_compat("<declaration-value>", "<declaration-value>");
     assert_mdn_compat("<declaration>", "<declaration>");
-    assert_mdn_compat("<declaration>? [ ; <page-body> ]? | <page-margin-box> <page-body>", "<declaration>? [ ; <page-body> ]? | <page-margin-box> <page-body>");
+    assert_mdn_compat(
+        "<declaration>? [ ; <page-body> ]? | <page-margin-box> <page-body>",
+        "<declaration>? [ ; <page-body> ]? | <page-margin-box> <page-body>",
+    );
     assert_mdn_compat("<dimension-token>", "<dimension-token>");
-    assert_mdn_compat("<display-outside>? && [ flow | flow-root ]? && list-item", "<display-outside>? && [ flow | flow-root ]? && list-item");
+    assert_mdn_compat(
+        "<display-outside>? && [ flow | flow-root ]? && list-item",
+        "<display-outside>? && [ flow | flow-root ]? && list-item",
+    );
     assert_mdn_compat("<easing-function>#", "<easing-function>#");
-    assert_mdn_compat("<feature-type> '{' <feature-value-declaration-list> '}'", "<feature-type> '{' <feature-value-declaration-list> '}'");
+    assert_mdn_compat(
+        "<feature-type> '{' <feature-value-declaration-list> '}'",
+        "<feature-type> '{' <feature-value-declaration-list> '}'",
+    );
     assert_mdn_compat("<feature-value-block>+", "<feature-value-block>+");
     assert_mdn_compat("<feature-value-declaration>", "<feature-value-declaration>");
-    assert_mdn_compat("<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )", "<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )");
+    assert_mdn_compat(
+        "<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )",
+        "<fixed-breadth> | minmax( <fixed-breadth> , <track-breadth> ) | minmax( <inflexible-breadth> , <fixed-breadth> )",
+    );
     assert_mdn_compat("<font-stretch-absolute>", "<font-stretch-absolute>");
-    assert_mdn_compat("<font-weight-absolute> | bolder | lighter", "<font-weight-absolute> | bolder | lighter");
+    assert_mdn_compat(
+        "<font-weight-absolute> | bolder | lighter",
+        "<font-weight-absolute> | bolder | lighter",
+    );
     assert_mdn_compat("<frequency> | <percentage>", "<frequency> | <percentage>");
-    assert_mdn_compat("<generic-complete> | <generic-incomplete> | emoji | fangsong", "<generic-complete> | <generic-incomplete> | emoji | fangsong");
+    assert_mdn_compat(
+        "<generic-complete> | <generic-incomplete> | emoji | fangsong",
+        "<generic-complete> | <generic-incomplete> | emoji | fangsong",
+    );
     assert_mdn_compat("<grid-line>", "<grid-line>");
     assert_mdn_compat("<grid-line> [ / <grid-line> ]?", "<grid-line> [ / <grid-line> ]?");
-    assert_mdn_compat("<grid-line> [ / <grid-line> ]{0,3}", "<grid-line> [ / <grid-line> ]{0,3}");
+    assert_mdn_compat(
+        "<grid-line> [ / <grid-line> ]{0,3}",
+        "<grid-line> [ / <grid-line> ]{0,3}",
+    );
     assert_mdn_compat("<hash-token>", "<hash-token>");
-    assert_mdn_compat("<hex-color> | <color-function> | <named-color> | <color-mix()> | transparent", "<hex-color> | <color-function> | <named-color> | <color-mix()> | transparent");
-    assert_mdn_compat("<id-selector> | <class-selector> | <attribute-selector> | <pseudo-class-selector>", "<id-selector> | <class-selector> | <attribute-selector> | <pseudo-class-selector>");
+    assert_mdn_compat(
+        "<hex-color> | <color-function> | <named-color> | <color-mix()> | transparent",
+        "<hex-color> | <color-function> | <named-color> | <color-mix()> | transparent",
+    );
+    assert_mdn_compat(
+        "<id-selector> | <class-selector> | <attribute-selector> | <pseudo-class-selector>",
+        "<id-selector> | <class-selector> | <attribute-selector> | <pseudo-class-selector>",
+    );
     assert_mdn_compat("<ident-token>", "<ident-token>");
     assert_mdn_compat("<ident>", "<ident>");
     assert_mdn_compat("<ident> [ '.' <ident> ]*", "<ident> [ '.' <ident> ]*");
@@ -148,24 +316,51 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<image> | <color>", "<image> | <color>");
     assert_mdn_compat("<image> | none", "<image> | none");
     assert_mdn_compat("<inset()> | <rect()> | <xywh()>", "<inset()> | <rect()> | <xywh()>");
-    assert_mdn_compat("<inset()> | <xywh()> | <rect()> | <circle()> | <ellipse()> | <polygon()> | <path()>", "<inset()> | <xywh()> | <rect()> | <circle()> | <ellipse()> | <polygon()> | <path()>");
+    assert_mdn_compat(
+        "<inset()> | <xywh()> | <rect()> | <circle()> | <ellipse()> | <polygon()> | <path()>",
+        "<inset()> | <xywh()> | <rect()> | <circle()> | <ellipse()> | <polygon()> | <path()>",
+    );
     assert_mdn_compat("<integer>", "<integer>");
     assert_mdn_compat("<integer> | <length>", "<integer> | <length>");
     assert_mdn_compat("<integer> | auto", "<integer> | auto");
-    assert_mdn_compat("<intrinsic-size-keyword> | <calc-size()> | any | <calc-sum>", "<intrinsic-size-keyword> | <calc-size()> | any | <calc-sum>");
-    assert_mdn_compat("<keyframe-selector># {
+    assert_mdn_compat(
+        "<intrinsic-size-keyword> | <calc-size()> | any | <calc-sum>",
+        "<intrinsic-size-keyword> | <calc-size()> | any | <calc-sum>",
+    );
+    assert_mdn_compat(
+        "<keyframe-selector># {
   <declaration-list>
-}", "<keyframe-selector># { <declaration-list> }");
+}",
+        "<keyframe-selector># { <declaration-list> }",
+    );
     assert_mdn_compat("<length-percentage [0,∞]>", "<length-percentage [0,∞]>");
     assert_mdn_compat("<length-percentage [0,∞]>{1,2}", "<length-percentage [0,∞]>{1,2}");
-    assert_mdn_compat("<length-percentage [0,∞]>{1,4} [ / <length-percentage [0,∞]>{1,4} ]?", "<length-percentage [0,∞]>{1,4} [ / <length-percentage [0,∞]>{1,4} ]?");
+    assert_mdn_compat(
+        "<length-percentage [0,∞]>{1,4} [ / <length-percentage [0,∞]>{1,4} ]?",
+        "<length-percentage [0,∞]>{1,4} [ / <length-percentage [0,∞]>{1,4} ]?",
+    );
     assert_mdn_compat("<length-percentage>", "<length-percentage>");
-    assert_mdn_compat("<length-percentage> && hanging? && each-line?", "<length-percentage> && hanging? && each-line?");
-    assert_mdn_compat("<length-percentage> | <flex> | min-content | max-content | auto", "<length-percentage> | <flex> | min-content | max-content | auto");
+    assert_mdn_compat(
+        "<length-percentage> && hanging? && each-line?",
+        "<length-percentage> && hanging? && each-line?",
+    );
+    assert_mdn_compat(
+        "<length-percentage> | <flex> | min-content | max-content | auto",
+        "<length-percentage> | <flex> | min-content | max-content | auto",
+    );
     assert_mdn_compat("<length-percentage> | <number>", "<length-percentage> | <number>");
-    assert_mdn_compat("<length-percentage> | auto | <anchor-size()>", "<length-percentage> | auto | <anchor-size()>");
-    assert_mdn_compat("<length-percentage> | min-content | max-content | auto", "<length-percentage> | min-content | max-content | auto");
-    assert_mdn_compat("<length-percentage> | sub | super | baseline", "<length-percentage> | sub | super | baseline");
+    assert_mdn_compat(
+        "<length-percentage> | auto | <anchor-size()>",
+        "<length-percentage> | auto | <anchor-size()>",
+    );
+    assert_mdn_compat(
+        "<length-percentage> | min-content | max-content | auto",
+        "<length-percentage> | min-content | max-content | auto",
+    );
+    assert_mdn_compat(
+        "<length-percentage> | sub | super | baseline",
+        "<length-percentage> | sub | super | baseline",
+    );
     assert_mdn_compat("<length-percentage>{1,2}", "<length-percentage>{1,2}");
     assert_mdn_compat("<length>", "<length>");
     assert_mdn_compat("<length> | <percentage>", "<length> | <percentage>");
@@ -177,42 +372,93 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<line-style>", "<line-style>");
     assert_mdn_compat("<line-style>{1,4}", "<line-style>{1,4}");
     assert_mdn_compat("<line-width>", "<line-width>");
-    assert_mdn_compat("<line-width> || <line-style> || <color>", "<line-width> || <line-style> || <color>");
+    assert_mdn_compat(
+        "<line-width> || <line-style> || <color>",
+        "<line-width> || <line-style> || <color>",
+    );
     assert_mdn_compat("<line-width>{1,4}", "<line-width>{1,4}");
-    assert_mdn_compat("<linear-color-stop> , [ <linear-color-hint>? , <linear-color-stop> ]#?", "<linear-color-stop> , [ <linear-color-hint>? , <linear-color-stop> ]#?");
-    assert_mdn_compat("<linear-easing-function> | <cubic-bezier-easing-function> | <step-easing-function>", "<linear-easing-function> | <cubic-bezier-easing-function> | <step-easing-function>");
-    assert_mdn_compat("<linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()> | <conic-gradient()> | <repeating-conic-gradient()>", "<linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()> | <conic-gradient()> | <repeating-conic-gradient()>");
+    assert_mdn_compat(
+        "<linear-color-stop> , [ <linear-color-hint>? , <linear-color-stop> ]#?",
+        "<linear-color-stop> , [ <linear-color-hint>? , <linear-color-stop> ]#?",
+    );
+    assert_mdn_compat(
+        "<linear-easing-function> | <cubic-bezier-easing-function> | <step-easing-function>",
+        "<linear-easing-function> | <cubic-bezier-easing-function> | <step-easing-function>",
+    );
+    assert_mdn_compat(
+        "<linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()> | <conic-gradient()> | <repeating-conic-gradient()>",
+        "<linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()> | <conic-gradient()> | <repeating-conic-gradient()>",
+    );
     assert_mdn_compat("<mask-layer>#", "<mask-layer>#");
-    assert_mdn_compat("<mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || <geometry-box> || [ <geometry-box> | no-clip ] || <compositing-operator> || <masking-mode>", "<mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || <geometry-box> || [ <geometry-box> | no-clip ] || <compositing-operator> || <masking-mode>");
+    assert_mdn_compat(
+        "<mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || <geometry-box> || [ <geometry-box> | no-clip ] || <compositing-operator> || <masking-mode>",
+        "<mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || <geometry-box> || [ <geometry-box> | no-clip ] || <compositing-operator> || <masking-mode>",
+    );
     assert_mdn_compat("<mask-reference>#", "<mask-reference>#");
     assert_mdn_compat("<masking-mode>#", "<masking-mode>#");
-    assert_mdn_compat("<matrix()> | <translate()> | <translateX()> | <translateY()> | <scale()> | <scaleX()> | <scaleY()> | <rotate()> | <skew()> | <skewX()> | <skewY()> | <matrix3d()> | <translate3d()> | <translateZ()> | <scale3d()> | <scaleZ()> | <rotate3d()> | <rotateX()> | <rotateY()> | <rotateZ()> | <perspective()>", "<matrix()> | <translate()> | <translateX()> | <translateY()> | <scale()> | <scaleX()> | <scaleY()> | <rotate()> | <skew()> | <skewX()> | <skewY()> | <matrix3d()> | <translate3d()> | <translateZ()> | <scale3d()> | <scaleZ()> | <rotate3d()> | <rotateX()> | <rotateY()> | <rotateZ()> | <perspective()>");
-    assert_mdn_compat("<media-condition> | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?", "<media-condition> | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?");
-    assert_mdn_compat("<media-in-parens> [ and <media-in-parens> ]+", "<media-in-parens> [ and <media-in-parens> ]+");
-    assert_mdn_compat("<media-in-parens> [ or <media-in-parens> ]+", "<media-in-parens> [ or <media-in-parens> ]+");
-    assert_mdn_compat("<media-not> | <media-and> | <media-in-parens>", "<media-not> | <media-and> | <media-in-parens>");
-    assert_mdn_compat("<media-not> | <media-and> | <media-or> | <media-in-parens>", "<media-not> | <media-and> | <media-or> | <media-in-parens>");
+    assert_mdn_compat(
+        "<matrix()> | <translate()> | <translateX()> | <translateY()> | <scale()> | <scaleX()> | <scaleY()> | <rotate()> | <skew()> | <skewX()> | <skewY()> | <matrix3d()> | <translate3d()> | <translateZ()> | <scale3d()> | <scaleZ()> | <rotate3d()> | <rotateX()> | <rotateY()> | <rotateZ()> | <perspective()>",
+        "<matrix()> | <translate()> | <translateX()> | <translateY()> | <scale()> | <scaleX()> | <scaleY()> | <rotate()> | <skew()> | <skewX()> | <skewY()> | <matrix3d()> | <translate3d()> | <translateZ()> | <scale3d()> | <scaleZ()> | <rotate3d()> | <rotateX()> | <rotateY()> | <rotateZ()> | <perspective()>",
+    );
+    assert_mdn_compat(
+        "<media-condition> | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?",
+        "<media-condition> | [ not | only ]? <media-type> [ and <media-condition-without-or> ]?",
+    );
+    assert_mdn_compat(
+        "<media-in-parens> [ and <media-in-parens> ]+",
+        "<media-in-parens> [ and <media-in-parens> ]+",
+    );
+    assert_mdn_compat(
+        "<media-in-parens> [ or <media-in-parens> ]+",
+        "<media-in-parens> [ or <media-in-parens> ]+",
+    );
+    assert_mdn_compat(
+        "<media-not> | <media-and> | <media-in-parens>",
+        "<media-not> | <media-and> | <media-in-parens>",
+    );
+    assert_mdn_compat(
+        "<media-not> | <media-and> | <media-or> | <media-in-parens>",
+        "<media-not> | <media-and> | <media-or> | <media-in-parens>",
+    );
     assert_mdn_compat("<media-query-list>", "<media-query-list>");
     assert_mdn_compat("<media-query>#", "<media-query>#");
     assert_mdn_compat("<mf-name>", "<mf-name>");
     assert_mdn_compat("<mf-name> : <mf-value>", "<mf-name> : <mf-value>");
-    assert_mdn_compat("<mf-name> [ '<' | '>' ]? '='? <mf-value>
+    assert_mdn_compat(
+        "<mf-name> [ '<' | '>' ]? '='? <mf-value>
 | <mf-value> [ '<' | '>' ]? '='? <mf-name>
 | <mf-value> '<' '='? <mf-name> '<' '='? <mf-value>
-| <mf-value> '>' '='? <mf-name> '>' '='? <mf-value>", "<mf-name> [ '<' | '>' ]? '='? <mf-value> | <mf-value> [ '<' | '>' ]? '='? <mf-name> | <mf-value> '<' '='? <mf-name> '<' '='? <mf-value> | <mf-value> '>' '='? <mf-name> '>' '='? <mf-value>");
+| <mf-value> '>' '='? <mf-name> '>' '='? <mf-value>",
+        "<mf-name> [ '<' | '>' ]? '='? <mf-value> | <mf-value> [ '<' | '>' ]? '='? <mf-name> | <mf-value> '<' '='? <mf-name> '<' '='? <mf-value> | <mf-value> '>' '='? <mf-name> '>' '='? <mf-value>",
+    );
     assert_mdn_compat("<ns-prefix>? <ident-token>", "<ns-prefix>? <ident-token>");
-    assert_mdn_compat("<number [0,∞]> [ / <number [0,∞]> ]?", "<number [0,∞]> [ / <number [0,∞]> ]?");
+    assert_mdn_compat(
+        "<number [0,∞]> [ / <number [0,∞]> ]?",
+        "<number [0,∞]> [ / <number [0,∞]> ]?",
+    );
     assert_mdn_compat("<number-percentage>{1,4} fill?", "<number-percentage>{1,4} fill?");
     assert_mdn_compat("<number-token>", "<number-token>");
     assert_mdn_compat("<number>", "<number>");
     assert_mdn_compat("<number> | <angle>", "<number> | <angle>");
-    assert_mdn_compat("<number> | <dimension> | <ident> | <ratio>", "<number> | <dimension> | <ident> | <ratio>");
-    assert_mdn_compat("<number> | <dimension> | <percentage> | <calc-constant> | ( <calc-sum> )", "<number> | <dimension> | <percentage> | <calc-constant> | ( <calc-sum> )");
+    assert_mdn_compat(
+        "<number> | <dimension> | <ident> | <ratio>",
+        "<number> | <dimension> | <ident> | <ratio>",
+    );
+    assert_mdn_compat(
+        "<number> | <dimension> | <percentage> | <calc-constant> | ( <calc-sum> )",
+        "<number> | <dimension> | <percentage> | <calc-constant> | ( <calc-sum> )",
+    );
     assert_mdn_compat("<number> | <percentage>", "<number> | <percentage>");
     assert_mdn_compat("<opacity-value>", "<opacity-value>");
     assert_mdn_compat("<outline-radius>", "<outline-radius>");
-    assert_mdn_compat("<outline-radius>{1,4} [ / <outline-radius>{1,4} ]?", "<outline-radius>{1,4} [ / <outline-radius>{1,4} ]?");
-    assert_mdn_compat("<page-margin-box-type> '{' <declaration-list> '}'", "<page-margin-box-type> '{' <declaration-list> '}'");
+    assert_mdn_compat(
+        "<outline-radius>{1,4} [ / <outline-radius>{1,4} ]?",
+        "<outline-radius>{1,4} [ / <outline-radius>{1,4} ]?",
+    );
+    assert_mdn_compat(
+        "<page-margin-box-type> '{' <declaration-list> '}'",
+        "<page-margin-box-type> '{' <declaration-list> '}'",
+    );
     assert_mdn_compat("<paint-box> | view-box", "<paint-box> | view-box");
     assert_mdn_compat("<paint>", "<paint>");
     assert_mdn_compat("<percentage>", "<percentage>");
@@ -220,322 +466,889 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("<percentage>? && <image>", "<percentage>? && <image>");
     assert_mdn_compat("<position>", "<position>");
     assert_mdn_compat("<position>#", "<position>#");
-    assert_mdn_compat("<predefined-rgb> [ <number> | <percentage> | none ]{3}", "<predefined-rgb> [ <number> | <percentage> | none ]{3}");
-    assert_mdn_compat("<pseudo-page>+ | <ident> <pseudo-page>*", "<pseudo-page>+ | <ident> <pseudo-page>*");
-    assert_mdn_compat("<radial-extent> | <length [0,∞]> | <length-percentage [0,∞]>{2}", "<radial-extent> | <length [0,∞]> | <length-percentage [0,∞]>{2}");
+    assert_mdn_compat(
+        "<predefined-rgb> [ <number> | <percentage> | none ]{3}",
+        "<predefined-rgb> [ <number> | <percentage> | none ]{3}",
+    );
+    assert_mdn_compat(
+        "<pseudo-page>+ | <ident> <pseudo-page>*",
+        "<pseudo-page>+ | <ident> <pseudo-page>*",
+    );
+    assert_mdn_compat(
+        "<radial-extent> | <length [0,∞]> | <length-percentage [0,∞]>{2}",
+        "<radial-extent> | <length [0,∞]> | <length-percentage [0,∞]>{2}",
+    );
     assert_mdn_compat("<ray()> | <url> | <basic-shape>", "<ray()> | <url> | <basic-shape>");
     assert_mdn_compat("<relative-selector>#", "<relative-selector>#");
     assert_mdn_compat("<repeat-style>#", "<repeat-style>#");
-    assert_mdn_compat("<rgb()> | <rgba()> | <hsl()> | <hsla()> | <hwb()> | <lab()> | <lch()> | <oklab()> | <oklch()> | <color()>", "<rgb()> | <rgba()> | <hsl()> | <hsla()> | <hwb()> | <lab()> | <lch()> | <oklab()> | <oklch()> | <color()>");
+    assert_mdn_compat(
+        "<rgb()> | <rgba()> | <hsl()> | <hsla()> | <hwb()> | <lab()> | <lch()> | <oklab()> | <oklch()> | <color()>",
+        "<rgb()> | <rgba()> | <hsl()> | <hsla()> | <hwb()> | <lab()> | <lch()> | <oklab()> | <oklch()> | <color()>",
+    );
     assert_mdn_compat("<selector-list>", "<selector-list>");
-    assert_mdn_compat("<shape-box> | fill-box | stroke-box | view-box", "<shape-box> | fill-box | stroke-box | view-box");
+    assert_mdn_compat(
+        "<shape-box> | fill-box | stroke-box | view-box",
+        "<shape-box> | fill-box | stroke-box | view-box",
+    );
     assert_mdn_compat("<shape> | auto", "<shape> | auto");
     assert_mdn_compat("<single-animation-composition>#", "<single-animation-composition>#");
     assert_mdn_compat("<single-animation-direction>#", "<single-animation-direction>#");
     assert_mdn_compat("<single-animation-fill-mode>#", "<single-animation-fill-mode>#");
-    assert_mdn_compat("<single-animation-iteration-count>#", "<single-animation-iteration-count>#");
+    assert_mdn_compat(
+        "<single-animation-iteration-count>#",
+        "<single-animation-iteration-count>#",
+    );
     assert_mdn_compat("<single-animation-play-state>#", "<single-animation-play-state>#");
     assert_mdn_compat("<single-animation-timeline>#", "<single-animation-timeline>#");
     assert_mdn_compat("<single-animation>#", "<single-animation>#");
     assert_mdn_compat("<single-transition>#", "<single-transition>#");
     assert_mdn_compat("<string>", "<string>");
-    assert_mdn_compat("<string> [ <integer> | on | off ]?", "<string> [ <integer> | on | off ]?");
+    assert_mdn_compat(
+        "<string> [ <integer> | on | off ]?",
+        "<string> [ <integer> | on | off ]?",
+    );
     assert_mdn_compat("<string> | <custom-ident>+", "<string> | <custom-ident>+");
-    assert_mdn_compat("<string> | <image> | <custom-ident>", "<string> | <image> | <custom-ident>");
-    assert_mdn_compat("<supports-decl> | <supports-selector-fn>", "<supports-decl> | <supports-selector-fn>");
-    assert_mdn_compat("<target-counter()> | <target-counters()> | <target-text()>", "<target-counter()> | <target-counters()> | <target-text()>");
+    assert_mdn_compat(
+        "<string> | <image> | <custom-ident>",
+        "<string> | <image> | <custom-ident>",
+    );
+    assert_mdn_compat(
+        "<supports-decl> | <supports-selector-fn>",
+        "<supports-decl> | <supports-selector-fn>",
+    );
+    assert_mdn_compat(
+        "<target-counter()> | <target-counters()> | <target-text()>",
+        "<target-counter()> | <target-counters()> | <target-text()>",
+    );
     assert_mdn_compat("<time> | <percentage>", "<time> | <percentage>");
     assert_mdn_compat("<time>#", "<time>#");
-    assert_mdn_compat("<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | fit-content( <length-percentage> )", "<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | fit-content( <length-percentage> )");
+    assert_mdn_compat(
+        "<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | fit-content( <length-percentage> )",
+        "<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | fit-content( <length-percentage> )",
+    );
     assert_mdn_compat("<track-size>+", "<track-size>+");
     assert_mdn_compat("<transform-function>+", "<transform-function>+");
     assert_mdn_compat("<transition-behavior-value>#", "<transition-behavior-value>#");
     assert_mdn_compat("<url>", "<url>");
-    assert_mdn_compat("<url> | <image()> | <image-set()> | <element()> | <paint()> | <cross-fade()> | <gradient>", "<url> | <image()> | <image-set()> | <element()> | <paint()> | <cross-fade()> | <gradient>");
+    assert_mdn_compat(
+        "<url> | <image()> | <image-set()> | <element()> | <paint()> | <cross-fade()> | <gradient>",
+        "<url> | <image()> | <image-set()> | <element()> | <paint()> | <cross-fade()> | <gradient>",
+    );
     assert_mdn_compat("<url> | <string>", "<url> | <string>");
     assert_mdn_compat("<url> | none", "<url> | none");
     assert_mdn_compat("<visual-box> | border-area | text", "<visual-box> | border-area | text");
-    assert_mdn_compat("<visual-box> | fill-box | stroke-box", "<visual-box> | fill-box | stroke-box");
+    assert_mdn_compat(
+        "<visual-box> | fill-box | stroke-box",
+        "<visual-box> | fill-box | stroke-box",
+    );
     assert_mdn_compat("<visual-box> | margin-box", "<visual-box> | margin-box");
     assert_mdn_compat("<visual-box> || <length [0,∞]>", "<visual-box> || <length [0,∞]>");
     assert_mdn_compat("<visual-box>#", "<visual-box>#");
     assert_mdn_compat("<wq-name> | <ns-prefix>? '*'", "<wq-name> | <ns-prefix>? '*'");
-    assert_mdn_compat("<xyz> [ <number> | <percentage> | none ]{3}", "<xyz> [ <number> | <percentage> | none ]{3}");
-    assert_mdn_compat("@stylistic | @historical-forms | @styleset | @character-variant | @swash | @ornaments | @annotation", "@stylistic | @historical-forms | @styleset | @character-variant | @swash | @ornaments | @annotation");
-    assert_mdn_compat("@top-left-corner | @top-left | @top-center | @top-right | @top-right-corner | @bottom-left-corner | @bottom-left | @bottom-center | @bottom-right | @bottom-right-corner | @left-top | @left-middle | @left-bottom | @right-top | @right-middle | @right-bottom", "@top-left-corner | @top-left | @top-center | @top-right | @top-right-corner | @bottom-left-corner | @bottom-left | @bottom-center | @bottom-right | @bottom-right-corner | @left-top | @left-middle | @left-bottom | @right-top | @right-middle | @right-bottom");
-    assert_mdn_compat("A5 | A4 | A3 | B5 | B4 | JIS-B5 | JIS-B4 | letter | legal | ledger", "A5 | A4 | A3 | B5 | B4 | JIS-B5 | JIS-B4 | letter | legal | ledger");
-    assert_mdn_compat("AccentColor | AccentColorText | ActiveText | ButtonBorder | ButtonFace | ButtonText | Canvas | CanvasText | Field | FieldText | GrayText | Highlight | HighlightText | LinkText | Mark | MarkText | SelectedItem | SelectedItemText | VisitedText", "AccentColor | AccentColorText | ActiveText | ButtonBorder | ButtonFace | ButtonText | Canvas | CanvasText | Field | FieldText | GrayText | Highlight | HighlightText | LinkText | Mark | MarkText | SelectedItem | SelectedItemText | VisitedText");
-    assert_mdn_compat("ActiveBorder | ActiveCaption | AppWorkspace | Background | ButtonHighlight | ButtonShadow | CaptionText | InactiveBorder | InactiveCaption | InactiveCaptionText | InfoBackground | InfoText | Menu | MenuText | Scrollbar | ThreeDDarkShadow | ThreeDFace | ThreeDHighlight | ThreeDLightShadow | ThreeDShadow | Window | WindowFrame | WindowText", "ActiveBorder | ActiveCaption | AppWorkspace | Background | ButtonHighlight | ButtonShadow | CaptionText | InactiveBorder | InactiveCaption | InactiveCaptionText | InfoBackground | InfoText | Menu | MenuText | Scrollbar | ThreeDDarkShadow | ThreeDFace | ThreeDHighlight | ThreeDLightShadow | ThreeDShadow | Window | WindowFrame | WindowText");
-    assert_mdn_compat("[ '~' | '|' | '^' | '$' | '*' ]? '='", "[ '~' | '|' | '^' | '$' | '*' ]? '='");
-    assert_mdn_compat("[ <'animation-range-start'> <'animation-range-end'>? ]#", "[ <'animation-range-start'> <'animation-range-end'>? ]#");
-    assert_mdn_compat("[ <'column-width'> || <'column-count'> ] [ / <'column-height'> ]?", "[ <'column-width'> || <'column-count'> ] [ / <'column-height'> ]?");
-    assert_mdn_compat("[ <'offset-position'>? [ <'offset-path'> [ <'offset-distance'> || <'offset-rotate'> ]? ]? ]! [ / <'offset-anchor'> ]?", "[ <'offset-position'>? [ <'offset-path'> [ <'offset-distance'> || <'offset-rotate'> ]? ]? ]! [ / <'offset-anchor'> ]?");
-    assert_mdn_compat("[ <'scroll-timeline-name'> <'scroll-timeline-axis'>? ]#", "[ <'scroll-timeline-name'> <'scroll-timeline-axis'>? ]#");
-    assert_mdn_compat("[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#", "[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#");
-    assert_mdn_compat("[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#", "[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#");
-    assert_mdn_compat("[ <'view-timeline-name'> [ <'view-timeline-axis'> || <'view-timeline-inset'> ]? ]#", "[ <'view-timeline-name'> [ <'view-timeline-axis'> || <'view-timeline-inset'> ]? ]#");
-    assert_mdn_compat("[ <angle-percentage> | <zero> ]{1,2}", "[ <angle-percentage> | <zero> ]{1,2}");
-    assert_mdn_compat("[ <container-name>? <container-query>? ]!", "[ <container-name>? <container-query>? ]!");
-    assert_mdn_compat("[ <coord-box> | border | padding | content ]#", "[ <coord-box> | border | padding | content ]#");
+    assert_mdn_compat(
+        "<xyz> [ <number> | <percentage> | none ]{3}",
+        "<xyz> [ <number> | <percentage> | none ]{3}",
+    );
+    assert_mdn_compat(
+        "@stylistic | @historical-forms | @styleset | @character-variant | @swash | @ornaments | @annotation",
+        "@stylistic | @historical-forms | @styleset | @character-variant | @swash | @ornaments | @annotation",
+    );
+    assert_mdn_compat(
+        "@top-left-corner | @top-left | @top-center | @top-right | @top-right-corner | @bottom-left-corner | @bottom-left | @bottom-center | @bottom-right | @bottom-right-corner | @left-top | @left-middle | @left-bottom | @right-top | @right-middle | @right-bottom",
+        "@top-left-corner | @top-left | @top-center | @top-right | @top-right-corner | @bottom-left-corner | @bottom-left | @bottom-center | @bottom-right | @bottom-right-corner | @left-top | @left-middle | @left-bottom | @right-top | @right-middle | @right-bottom",
+    );
+    assert_mdn_compat(
+        "A5 | A4 | A3 | B5 | B4 | JIS-B5 | JIS-B4 | letter | legal | ledger",
+        "A5 | A4 | A3 | B5 | B4 | JIS-B5 | JIS-B4 | letter | legal | ledger",
+    );
+    assert_mdn_compat(
+        "AccentColor | AccentColorText | ActiveText | ButtonBorder | ButtonFace | ButtonText | Canvas | CanvasText | Field | FieldText | GrayText | Highlight | HighlightText | LinkText | Mark | MarkText | SelectedItem | SelectedItemText | VisitedText",
+        "AccentColor | AccentColorText | ActiveText | ButtonBorder | ButtonFace | ButtonText | Canvas | CanvasText | Field | FieldText | GrayText | Highlight | HighlightText | LinkText | Mark | MarkText | SelectedItem | SelectedItemText | VisitedText",
+    );
+    assert_mdn_compat(
+        "ActiveBorder | ActiveCaption | AppWorkspace | Background | ButtonHighlight | ButtonShadow | CaptionText | InactiveBorder | InactiveCaption | InactiveCaptionText | InfoBackground | InfoText | Menu | MenuText | Scrollbar | ThreeDDarkShadow | ThreeDFace | ThreeDHighlight | ThreeDLightShadow | ThreeDShadow | Window | WindowFrame | WindowText",
+        "ActiveBorder | ActiveCaption | AppWorkspace | Background | ButtonHighlight | ButtonShadow | CaptionText | InactiveBorder | InactiveCaption | InactiveCaptionText | InfoBackground | InfoText | Menu | MenuText | Scrollbar | ThreeDDarkShadow | ThreeDFace | ThreeDHighlight | ThreeDLightShadow | ThreeDShadow | Window | WindowFrame | WindowText",
+    );
+    assert_mdn_compat(
+        "[ '~' | '|' | '^' | '$' | '*' ]? '='",
+        "[ '~' | '|' | '^' | '$' | '*' ]? '='",
+    );
+    assert_mdn_compat(
+        "[ <'animation-range-start'> <'animation-range-end'>? ]#",
+        "[ <'animation-range-start'> <'animation-range-end'>? ]#",
+    );
+    assert_mdn_compat(
+        "[ <'column-width'> || <'column-count'> ] [ / <'column-height'> ]?",
+        "[ <'column-width'> || <'column-count'> ] [ / <'column-height'> ]?",
+    );
+    assert_mdn_compat(
+        "[ <'offset-position'>? [ <'offset-path'> [ <'offset-distance'> || <'offset-rotate'> ]? ]? ]! [ / <'offset-anchor'> ]?",
+        "[ <'offset-position'>? [ <'offset-path'> [ <'offset-distance'> || <'offset-rotate'> ]? ]? ]! [ / <'offset-anchor'> ]?",
+    );
+    assert_mdn_compat(
+        "[ <'scroll-timeline-name'> <'scroll-timeline-axis'>? ]#",
+        "[ <'scroll-timeline-name'> <'scroll-timeline-axis'>? ]#",
+    );
+    assert_mdn_compat(
+        "[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#",
+        "[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#",
+    );
+    assert_mdn_compat(
+        "[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#",
+        "[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#",
+    );
+    assert_mdn_compat(
+        "[ <'view-timeline-name'> [ <'view-timeline-axis'> || <'view-timeline-inset'> ]? ]#",
+        "[ <'view-timeline-name'> [ <'view-timeline-axis'> || <'view-timeline-inset'> ]? ]#",
+    );
+    assert_mdn_compat(
+        "[ <angle-percentage> | <zero> ]{1,2}",
+        "[ <angle-percentage> | <zero> ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ <container-name>? <container-query>? ]!",
+        "[ <container-name>? <container-query>? ]!",
+    );
+    assert_mdn_compat(
+        "[ <coord-box> | border | padding | content ]#",
+        "[ <coord-box> | border | padding | content ]#",
+    );
     assert_mdn_compat("[ <coord-box> | no-clip ]#", "[ <coord-box> | no-clip ]#");
-    assert_mdn_compat("[ <coord-box> | no-clip | border | padding | content | text ]#", "[ <coord-box> | no-clip | border | padding | content | text ]#");
-    assert_mdn_compat("[ <counter-name> <integer>? ]+ | none", "[ <counter-name> <integer>? ]+ | none");
-    assert_mdn_compat("[ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none", "[ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none");
-    assert_mdn_compat("[ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>", "[ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>");
-    assert_mdn_compat("[ <family-name> | <generic-family> ]#", "[ <family-name> | <generic-family> ]#");
+    assert_mdn_compat(
+        "[ <coord-box> | no-clip | border | padding | content | text ]#",
+        "[ <coord-box> | no-clip | border | padding | content | text ]#",
+    );
+    assert_mdn_compat(
+        "[ <counter-name> <integer>? ]+ | none",
+        "[ <counter-name> <integer>? ]+ | none",
+    );
+    assert_mdn_compat(
+        "[ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none",
+        "[ <counter-name> <integer>? | <reversed-counter-name> <integer>? ]+ | none",
+    );
+    assert_mdn_compat(
+        "[ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>",
+        "[ <display-outside> || <display-inside> ] | <display-listitem> | <display-internal> | <display-box> | <display-legacy>",
+    );
+    assert_mdn_compat(
+        "[ <family-name> | <generic-family> ]#",
+        "[ <family-name> | <generic-family> ]#",
+    );
     assert_mdn_compat("[ <filter-function> | <url> ]+", "[ <filter-function> | <url> ]+");
-    assert_mdn_compat("[ <function-token> <any-value> ) ] | ( <ident> <any-value> )", "[ <function-token> <any-value> ) ] | ( <ident> <any-value> )");
+    assert_mdn_compat(
+        "[ <function-token> <any-value> ) ] | ( <ident> <any-value> )",
+        "[ <function-token> <any-value> ) ] | ( <ident> <any-value> )",
+    );
     assert_mdn_compat("[ <ident-token> | '*' ]? '|'", "[ <ident-token> | '*' ]? '|'");
-    assert_mdn_compat("[ <image> | <string> ] [ <resolution> || type(<string>) ]", "[ <image> | <string> ] [ <resolution> || type( <string> ) ]");
-    assert_mdn_compat("[ <length [0,∞]> | <number [0,∞]> ]{1,4}", "[ <length [0,∞]> | <number [0,∞]> ]{1,4}");
-    assert_mdn_compat("[ <length-percentage [0,∞]> | <number [0,∞]> | auto ]{1,4}", "[ <length-percentage [0,∞]> | <number [0,∞]> | auto ]{1,4}");
-    assert_mdn_compat("[ <length-percentage [0,∞]> | auto ]{1,2} | cover | contain", "[ <length-percentage [0,∞]> | auto ]{1,2} | cover | contain");
-    assert_mdn_compat("[ <length-percentage> | <number> | auto ]{1,4}", "[ <length-percentage> | <number> | auto ]{1,4}");
-    assert_mdn_compat("[ <length-percentage> | left | center | right ] [ <length-percentage> | top | center | bottom ]?", "[ <length-percentage> | left | center | right ] [ <length-percentage> | top | center | bottom ]?");
-    assert_mdn_compat("[ <length-percentage> | left | center | right ]#", "[ <length-percentage> | left | center | right ]#");
-    assert_mdn_compat("[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?", "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?");
-    assert_mdn_compat("[ <length-percentage> | top | center | bottom ]#", "[ <length-percentage> | top | center | bottom ]#");
+    assert_mdn_compat(
+        "[ <image> | <string> ] [ <resolution> || type(<string>) ]",
+        "[ <image> | <string> ] [ <resolution> || type( <string> ) ]",
+    );
+    assert_mdn_compat(
+        "[ <length [0,∞]> | <number [0,∞]> ]{1,4}",
+        "[ <length [0,∞]> | <number [0,∞]> ]{1,4}",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage [0,∞]> | <number [0,∞]> | auto ]{1,4}",
+        "[ <length-percentage [0,∞]> | <number [0,∞]> | auto ]{1,4}",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage [0,∞]> | auto ]{1,2} | cover | contain",
+        "[ <length-percentage [0,∞]> | auto ]{1,2} | cover | contain",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage> | <number> | auto ]{1,4}",
+        "[ <length-percentage> | <number> | auto ]{1,4}",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage> | left | center | right ] [ <length-percentage> | top | center | bottom ]?",
+        "[ <length-percentage> | left | center | right ] [ <length-percentage> | top | center | bottom ]?",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage> | left | center | right ]#",
+        "[ <length-percentage> | left | center | right ]#",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?",
+        "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?",
+    );
+    assert_mdn_compat(
+        "[ <length-percentage> | top | center | bottom ]#",
+        "[ <length-percentage> | top | center | bottom ]#",
+    );
     assert_mdn_compat("[ <length> | <number> ]{1,4}", "[ <length> | <number> ]{1,4}");
     assert_mdn_compat("[ <length>{2,3} && <color>? ]", "[ <length>{2,3} && <color>? ]");
     assert_mdn_compat("[ <line-names> | <name-repeat> ]+", "[ <line-names> | <name-repeat> ]+");
-    assert_mdn_compat("[ <line-names>? <track-size> ]+ <line-names>?", "[ <line-names>? <track-size> ]+ <line-names>?");
-    assert_mdn_compat("[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat>
-[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?", "[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> [ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?");
-    assert_mdn_compat("[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?", "[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?");
-    assert_mdn_compat("[ <mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || [ <visual-box> | border | padding | content | text ] || [ <visual-box> | border | padding | content ] ]#", "[ <mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || [ <visual-box> | border | padding | content | text ] || [ <visual-box> | border | padding | content ] ]#");
-    assert_mdn_compat("[ <number [0,∞]> | <percentage [0,∞]> ]{1,4} && fill?", "[ <number [0,∞]> | <percentage [0,∞]> ]{1,4} && fill?");
+    assert_mdn_compat(
+        "[ <line-names>? <track-size> ]+ <line-names>?",
+        "[ <line-names>? <track-size> ]+ <line-names>?",
+    );
+    assert_mdn_compat(
+        "[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat>
+[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?",
+        "[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> [ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?",
+    );
+    assert_mdn_compat(
+        "[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?",
+        "[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?",
+    );
+    assert_mdn_compat(
+        "[ <mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || [ <visual-box> | border | padding | content | text ] || [ <visual-box> | border | padding | content ] ]#",
+        "[ <mask-reference> || <position> [ / <bg-size> ]? || <repeat-style> || [ <visual-box> | border | padding | content | text ] || [ <visual-box> | border | padding | content ] ]#",
+    );
+    assert_mdn_compat(
+        "[ <number [0,∞]> | <percentage [0,∞]> ]{1,4} && fill?",
+        "[ <number [0,∞]> | <percentage [0,∞]> ]{1,4} && fill?",
+    );
     assert_mdn_compat("[ <page-selector># ]?", "[ <page-selector># ]?");
-    assert_mdn_compat("[ <string> | <image> | <attr()> | <quote> | <counter> ]+", "[ <string> | <image> | <attr()> | <quote> | <counter> ]+");
-    assert_mdn_compat("[ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!", "[ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!");
-    assert_mdn_compat("[ [ <'font-style'> || <font-variant-css2> || <'font-weight'> || <font-width-css3> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'># ] | <system-family-name>", "[ [ <'font-style'> || <font-variant-css2> || <'font-weight'> || <font-width-css3> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'># ] | <system-family-name>");
-    assert_mdn_compat("[ [ <angle> | <zero> | to <side-or-corner> ] || <color-interpolation-method> ]? , <color-stop-list>", "[ [ <angle> | <zero> | to <side-or-corner> ] || <color-interpolation-method> ]? , <color-stop-list>");
-    assert_mdn_compat("[ [ <length-percentage> | <number> ]+ ]#", "[ [ <length-percentage> | <number> ]+ ]#");
-    assert_mdn_compat("[ [ <url> [ <x> <y> ]? , ]* <cursor-predefined> ]", "[ [ <url> [ <x> <y> ]? , ]* <cursor-predefined> ]");
-    assert_mdn_compat("[ [ [ <radial-shape> || <radial-size> ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <color-stop-list>", "[ [ [ <radial-shape> || <radial-size> ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <color-stop-list>");
-    assert_mdn_compat("[ [ [ from [ <angle> | <zero> ] ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <angular-color-stop-list>", "[ [ [ from [ <angle> | <zero> ] ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <angular-color-stop-list>");
-    assert_mdn_compat("[ [ auto | <length-percentage> ]{1,2} ]#", "[ [ auto | <length-percentage> ]{1,2} ]#");
-    assert_mdn_compat("[ [ left | center | right ] || [ top | center | bottom ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]? | [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ] ]", "[ [ left | center | right ] || [ top | center | bottom ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]? | [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ] ]");
-    assert_mdn_compat("[ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]", "[ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]");
-    assert_mdn_compat("[ above | below | right | left ]? <length>? <image>?", "[ above | below | right | left ]? <length>? <image>?");
-    assert_mdn_compat("[ alternate || [ over | under ] ] | inter-character", "[ alternate || [ over | under ] ] | inter-character");
+    assert_mdn_compat(
+        "[ <string> | <image> | <attr()> | <quote> | <counter> ]+",
+        "[ <string> | <image> | <attr()> | <quote> | <counter> ]+",
+    );
+    assert_mdn_compat(
+        "[ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!",
+        "[ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!",
+    );
+    assert_mdn_compat(
+        "[ [ <'font-style'> || <font-variant-css2> || <'font-weight'> || <font-width-css3> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'># ] | <system-family-name>",
+        "[ [ <'font-style'> || <font-variant-css2> || <'font-weight'> || <font-width-css3> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'># ] | <system-family-name>",
+    );
+    assert_mdn_compat(
+        "[ [ <angle> | <zero> | to <side-or-corner> ] || <color-interpolation-method> ]? , <color-stop-list>",
+        "[ [ <angle> | <zero> | to <side-or-corner> ] || <color-interpolation-method> ]? , <color-stop-list>",
+    );
+    assert_mdn_compat(
+        "[ [ <length-percentage> | <number> ]+ ]#",
+        "[ [ <length-percentage> | <number> ]+ ]#",
+    );
+    assert_mdn_compat(
+        "[ [ <url> [ <x> <y> ]? , ]* <cursor-predefined> ]",
+        "[ [ <url> [ <x> <y> ]? , ]* <cursor-predefined> ]",
+    );
+    assert_mdn_compat(
+        "[ [ [ <radial-shape> || <radial-size> ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <color-stop-list>",
+        "[ [ [ <radial-shape> || <radial-size> ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <color-stop-list>",
+    );
+    assert_mdn_compat(
+        "[ [ [ from [ <angle> | <zero> ] ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <angular-color-stop-list>",
+        "[ [ [ from [ <angle> | <zero> ] ]? [ at <position> ]? ] || <color-interpolation-method> ]? , <angular-color-stop-list>",
+    );
+    assert_mdn_compat(
+        "[ [ auto | <length-percentage> ]{1,2} ]#",
+        "[ [ auto | <length-percentage> ]{1,2} ]#",
+    );
+    assert_mdn_compat(
+        "[ [ left | center | right ] || [ top | center | bottom ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]? | [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ] ]",
+        "[ [ left | center | right ] || [ top | center | bottom ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]? | [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ] ]",
+    );
+    assert_mdn_compat(
+        "[ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]",
+        "[ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]",
+    );
+    assert_mdn_compat(
+        "[ above | below | right | left ]? <length>? <image>?",
+        "[ above | below | right | left ]? <length>? <image>?",
+    );
+    assert_mdn_compat(
+        "[ alternate || [ over | under ] ] | inter-character",
+        "[ alternate || [ over | under ] ] | inter-character",
+    );
     assert_mdn_compat("[ auto | <integer> ]{1,3}", "[ auto | <integer> ]{1,3}");
-    assert_mdn_compat("[ auto | <length-percentage> ]{1,2}", "[ auto | <length-percentage> ]{1,2}");
-    assert_mdn_compat("[ auto | <length-percentage> ]{1,4}", "[ auto | <length-percentage> ]{1,4}");
+    assert_mdn_compat(
+        "[ auto | <length-percentage> ]{1,2}",
+        "[ auto | <length-percentage> ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ auto | <length-percentage> ]{1,4}",
+        "[ auto | <length-percentage> ]{1,4}",
+    );
     assert_mdn_compat("[ auto | <time [0s,∞]> ]#", "[ auto | <time [0s,∞]> ]#");
-    assert_mdn_compat("[ auto | alphabetic | hanging | ideographic ]", "[ auto | alphabetic | hanging | ideographic ]");
-    assert_mdn_compat("[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#", "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#");
+    assert_mdn_compat(
+        "[ auto | alphabetic | hanging | ideographic ]",
+        "[ auto | alphabetic | hanging | ideographic ]",
+    );
+    assert_mdn_compat(
+        "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
+        "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
+    );
     assert_mdn_compat("[ auto | reverse ] || <angle>", "[ auto | reverse ] || <angle>");
-    assert_mdn_compat("[ auto? [ none | <length> ] ]{1,2}", "[ auto? [ none | <length> ] ]{1,2}");
+    assert_mdn_compat(
+        "[ auto? [ none | <length> ] ]{1,2}",
+        "[ auto? [ none | <length> ] ]{1,2}",
+    );
     assert_mdn_compat("[ block | inline | x | y ]#", "[ block | inline | x | y ]#");
-    assert_mdn_compat("[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#", "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#");
-    assert_mdn_compat("[ center | [ [ top | bottom | y-start | y-end ]? <length-percentage>? ]! ]#", "[ center | [ [ top | bottom | y-start | y-end ]? <length-percentage>? ]! ]#");
-    assert_mdn_compat("[ clip | ellipsis | <string> ]{1,2}", "[ clip | ellipsis | <string> ]{1,2}");
-    assert_mdn_compat("[ common-ligatures | no-common-ligatures ]", "[ common-ligatures | no-common-ligatures ]");
+    assert_mdn_compat(
+        "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#",
+        "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#",
+    );
+    assert_mdn_compat(
+        "[ center | [ [ top | bottom | y-start | y-end ]? <length-percentage>? ]! ]#",
+        "[ center | [ [ top | bottom | y-start | y-end ]? <length-percentage>? ]! ]#",
+    );
+    assert_mdn_compat(
+        "[ clip | ellipsis | <string> ]{1,2}",
+        "[ clip | ellipsis | <string> ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ common-ligatures | no-common-ligatures ]",
+        "[ common-ligatures | no-common-ligatures ]",
+    );
     assert_mdn_compat("[ contain | none | auto ]{1,2}", "[ contain | none | auto ]{1,2}");
     assert_mdn_compat("[ contextual | no-contextual ]", "[ contextual | no-contextual ]");
-    assert_mdn_compat("[ diagonal-fractions | stacked-fractions ]", "[ diagonal-fractions | stacked-fractions ]");
-    assert_mdn_compat("[ discretionary-ligatures | no-discretionary-ligatures ]", "[ discretionary-ligatures | no-discretionary-ligatures ]");
+    assert_mdn_compat(
+        "[ diagonal-fractions | stacked-fractions ]",
+        "[ diagonal-fractions | stacked-fractions ]",
+    );
+    assert_mdn_compat(
+        "[ discretionary-ligatures | no-discretionary-ligatures ]",
+        "[ discretionary-ligatures | no-discretionary-ligatures ]",
+    );
     assert_mdn_compat("[ first | last ]? baseline", "[ first | last ]? baseline");
-    assert_mdn_compat("[ from-image || <resolution> ] && snap?", "[ from-image || <resolution> ] && snap?");
-    assert_mdn_compat("[ full-width | proportional-width ]", "[ full-width | proportional-width ]");
-    assert_mdn_compat("[ historical-ligatures | no-historical-ligatures ]", "[ historical-ligatures | no-historical-ligatures ]");
-    assert_mdn_compat("[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ]", "[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ]");
-    assert_mdn_compat("[ left | center | right | span-left | span-right | x-start | x-end | span-x-start | span-x-end | x-self-start | x-self-end | span-x-self-start | span-x-self-end | span-all ] || [ top | center | bottom | span-top | span-bottom | y-start | y-end | span-y-start | span-y-end | y-self-start | y-self-end | span-y-self-start | span-y-self-end | span-all ] | [ block-start | center | block-end | span-block-start | span-block-end | span-all ] || [ inline-start | center | inline-end | span-inline-start | span-inline-end | span-all ] | [ self-block-start | center | self-block-end | span-self-block-start | span-self-block-end | span-all ] || [ self-inline-start | center | self-inline-end | span-self-inline-start | span-self-inline-end | span-all ] | [ start | center | end | span-start | span-end | span-all ]{1,2} | [ self-start | center | self-end | span-self-start | span-self-end | span-all ]{1,2}", "[ left | center | right | span-left | span-right | x-start | x-end | span-x-start | span-x-end | x-self-start | x-self-end | span-x-self-start | span-x-self-end | span-all ] || [ top | center | bottom | span-top | span-bottom | y-start | y-end | span-y-start | span-y-end | y-self-start | y-self-end | span-y-self-start | span-y-self-end | span-all ] | [ block-start | center | block-end | span-block-start | span-block-end | span-all ] || [ inline-start | center | inline-end | span-inline-start | span-inline-end | span-all ] | [ self-block-start | center | self-block-end | span-self-block-start | span-self-block-end | span-all ] || [ self-inline-start | center | self-inline-end | span-self-inline-start | span-self-inline-end | span-all ] | [ start | center | end | span-start | span-end | span-all ]{1,2} | [ self-start | center | self-end | span-self-start | span-self-end | span-all ]{1,2}");
-    assert_mdn_compat("[ left | right ] || [ top | bottom ]", "[ left | right ] || [ top | bottom ]");
+    assert_mdn_compat(
+        "[ from-image || <resolution> ] && snap?",
+        "[ from-image || <resolution> ] && snap?",
+    );
+    assert_mdn_compat(
+        "[ full-width | proportional-width ]",
+        "[ full-width | proportional-width ]",
+    );
+    assert_mdn_compat(
+        "[ historical-ligatures | no-historical-ligatures ]",
+        "[ historical-ligatures | no-historical-ligatures ]",
+    );
+    assert_mdn_compat(
+        "[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ]",
+        "[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ]",
+    );
+    assert_mdn_compat(
+        "[ left | center | right | span-left | span-right | x-start | x-end | span-x-start | span-x-end | x-self-start | x-self-end | span-x-self-start | span-x-self-end | span-all ] || [ top | center | bottom | span-top | span-bottom | y-start | y-end | span-y-start | span-y-end | y-self-start | y-self-end | span-y-self-start | span-y-self-end | span-all ] | [ block-start | center | block-end | span-block-start | span-block-end | span-all ] || [ inline-start | center | inline-end | span-inline-start | span-inline-end | span-all ] | [ self-block-start | center | self-block-end | span-self-block-start | span-self-block-end | span-all ] || [ self-inline-start | center | self-inline-end | span-self-inline-start | span-self-inline-end | span-all ] | [ start | center | end | span-start | span-end | span-all ]{1,2} | [ self-start | center | self-end | span-self-start | span-self-end | span-all ]{1,2}",
+        "[ left | center | right | span-left | span-right | x-start | x-end | span-x-start | span-x-end | x-self-start | x-self-end | span-x-self-start | span-x-self-end | span-all ] || [ top | center | bottom | span-top | span-bottom | y-start | y-end | span-y-start | span-y-end | y-self-start | y-self-end | span-y-self-start | span-y-self-end | span-all ] | [ block-start | center | block-end | span-block-start | span-block-end | span-all ] || [ inline-start | center | inline-end | span-inline-start | span-inline-end | span-all ] | [ self-block-start | center | self-block-end | span-self-block-start | span-self-block-end | span-all ] || [ self-inline-start | center | self-inline-end | span-self-inline-start | span-self-inline-end | span-all ] | [ start | center | end | span-start | span-end | span-all ]{1,2} | [ self-start | center | self-end | span-self-start | span-self-end | span-all ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ left | right ] || [ top | bottom ]",
+        "[ left | right ] || [ top | bottom ]",
+    );
     assert_mdn_compat("[ lining-nums | oldstyle-nums ]", "[ lining-nums | oldstyle-nums ]");
     assert_mdn_compat("[ none | <custom-ident> ]#", "[ none | <custom-ident> ]#");
     assert_mdn_compat("[ none | <dashed-ident> ]#", "[ none | <dashed-ident> ]#");
     assert_mdn_compat("[ none | <keyframes-name> ]#", "[ none | <keyframes-name> ]#");
-    assert_mdn_compat("[ none | <single-transition-property> ] || <time> || <easing-function> || <time> || <transition-behavior-value>", "[ none | <single-transition-property> ] || <time> || <easing-function> || <time> || <transition-behavior-value>");
-    assert_mdn_compat("[ none | [ <dashed-ident> <animation-action>+ ]+ ]#", "[ none | [ <dashed-ident> <animation-action>+ ]+ ]#");
-    assert_mdn_compat("[ none | start | end | center ]{1,2}", "[ none | start | end | center ]{1,2}");
-    assert_mdn_compat("[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#", "[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#");
-    assert_mdn_compat("[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#", "[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#");
-    assert_mdn_compat("[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#", "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#");
-    assert_mdn_compat("[ pack | next ] || [ definite-first | ordered ]", "[ pack | next ] || [ definite-first | ordered ]");
-    assert_mdn_compat("[ proportional-nums | tabular-nums ]", "[ proportional-nums | tabular-nums ]");
+    assert_mdn_compat(
+        "[ none | <single-transition-property> ] || <time> || <easing-function> || <time> || <transition-behavior-value>",
+        "[ none | <single-transition-property> ] || <time> || <easing-function> || <time> || <transition-behavior-value>",
+    );
+    assert_mdn_compat(
+        "[ none | [ <dashed-ident> <animation-action>+ ]+ ]#",
+        "[ none | [ <dashed-ident> <animation-action>+ ]+ ]#",
+    );
+    assert_mdn_compat(
+        "[ none | start | end | center ]{1,2}",
+        "[ none | start | end | center ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#",
+        "[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#",
+    );
+    assert_mdn_compat(
+        "[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#",
+        "[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#",
+    );
+    assert_mdn_compat(
+        "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
+        "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
+    );
+    assert_mdn_compat(
+        "[ pack | next ] || [ definite-first | ordered ]",
+        "[ pack | next ] || [ definite-first | ordered ]",
+    );
+    assert_mdn_compat(
+        "[ proportional-nums | tabular-nums ]",
+        "[ proportional-nums | tabular-nums ]",
+    );
     assert_mdn_compat("[ row | column ] || dense", "[ row | column ] || dense");
-    assert_mdn_compat("[ shorter | longer | increasing | decreasing ] hue", "[ shorter | longer | increasing | decreasing ] hue");
-    assert_mdn_compat("[ stretch | repeat | round | space ]{1,2}", "[ stretch | repeat | round | space ]{1,2}");
-    assert_mdn_compat("[ text | cap | ex | ideographic | ideographic-ink ] [ text | alphabetic | ideographic | ideographic-ink ]?", "[ text | cap | ex | ideographic | ideographic-ink ] [ text | alphabetic | ideographic | ideographic-ink ]?");
-    assert_mdn_compat("[ visible | hidden | clip | scroll | auto ]{1,2}", "[ visible | hidden | clip | scroll | auto ]{1,2}");
-    assert_mdn_compat("[<custom-params> | <predefined-rgb-params> | <xyz-params>]", "[ <custom-params> | <predefined-rgb-params> | <xyz-params> ]");
+    assert_mdn_compat(
+        "[ shorter | longer | increasing | decreasing ] hue",
+        "[ shorter | longer | increasing | decreasing ] hue",
+    );
+    assert_mdn_compat(
+        "[ stretch | repeat | round | space ]{1,2}",
+        "[ stretch | repeat | round | space ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[ text | cap | ex | ideographic | ideographic-ink ] [ text | alphabetic | ideographic | ideographic-ink ]?",
+        "[ text | cap | ex | ideographic | ideographic-ink ] [ text | alphabetic | ideographic | ideographic-ink ]?",
+    );
+    assert_mdn_compat(
+        "[ visible | hidden | clip | scroll | auto ]{1,2}",
+        "[ visible | hidden | clip | scroll | auto ]{1,2}",
+    );
+    assert_mdn_compat(
+        "[<custom-params> | <predefined-rgb-params> | <xyz-params>]",
+        "[ <custom-params> | <predefined-rgb-params> | <xyz-params> ]",
+    );
     assert_mdn_compat("abs( <calc-sum> )", "abs( <calc-sum> )");
     assert_mdn_compat("acos( <calc-sum> )", "acos( <calc-sum> )");
-    assert_mdn_compat("add | subtract | intersect | exclude", "add | subtract | intersect | exclude");
-    assert_mdn_compat("aliceblue | antiquewhite | aqua | aquamarine | azure | beige | bisque | black | blanchedalmond | blue | blueviolet | brown | burlywood | cadetblue | chartreuse | chocolate | coral | cornflowerblue | cornsilk | crimson | cyan | darkblue | darkcyan | darkgoldenrod | darkgray | darkgreen | darkgrey | darkkhaki | darkmagenta | darkolivegreen | darkorange | darkorchid | darkred | darksalmon | darkseagreen | darkslateblue | darkslategray | darkslategrey | darkturquoise | darkviolet | deeppink | deepskyblue | dimgray | dimgrey | dodgerblue | firebrick | floralwhite | forestgreen | fuchsia | gainsboro | ghostwhite | gold | goldenrod | gray | green | greenyellow | grey | honeydew | hotpink | indianred | indigo | ivory | khaki | lavender | lavenderblush | lawngreen | lemonchiffon | lightblue | lightcoral | lightcyan | lightgoldenrodyellow | lightgray | lightgreen | lightgrey | lightpink | lightsalmon | lightseagreen | lightskyblue | lightslategray | lightslategrey | lightsteelblue | lightyellow | lime | limegreen | linen | magenta | maroon | mediumaquamarine | mediumblue | mediumorchid | mediumpurple | mediumseagreen | mediumslateblue | mediumspringgreen | mediumturquoise | mediumvioletred | midnightblue | mintcream | mistyrose | moccasin | navajowhite | navy | oldlace | olive | olivedrab | orange | orangered | orchid | palegoldenrod | palegreen | paleturquoise | palevioletred | papayawhip | peachpuff | peru | pink | plum | powderblue | purple | rebeccapurple | red | rosybrown | royalblue | saddlebrown | salmon | sandybrown | seagreen | seashell | sienna | silver | skyblue | slateblue | slategray | slategrey | snow | springgreen | steelblue | tan | teal | thistle | tomato | turquoise | violet | wheat | white | whitesmoke | yellow | yellowgreen", "aliceblue | antiquewhite | aqua | aquamarine | azure | beige | bisque | black | blanchedalmond | blue | blueviolet | brown | burlywood | cadetblue | chartreuse | chocolate | coral | cornflowerblue | cornsilk | crimson | cyan | darkblue | darkcyan | darkgoldenrod | darkgray | darkgreen | darkgrey | darkkhaki | darkmagenta | darkolivegreen | darkorange | darkorchid | darkred | darksalmon | darkseagreen | darkslateblue | darkslategray | darkslategrey | darkturquoise | darkviolet | deeppink | deepskyblue | dimgray | dimgrey | dodgerblue | firebrick | floralwhite | forestgreen | fuchsia | gainsboro | ghostwhite | gold | goldenrod | gray | green | greenyellow | grey | honeydew | hotpink | indianred | indigo | ivory | khaki | lavender | lavenderblush | lawngreen | lemonchiffon | lightblue | lightcoral | lightcyan | lightgoldenrodyellow | lightgray | lightgreen | lightgrey | lightpink | lightsalmon | lightseagreen | lightskyblue | lightslategray | lightslategrey | lightsteelblue | lightyellow | lime | limegreen | linen | magenta | maroon | mediumaquamarine | mediumblue | mediumorchid | mediumpurple | mediumseagreen | mediumslateblue | mediumspringgreen | mediumturquoise | mediumvioletred | midnightblue | mintcream | mistyrose | moccasin | navajowhite | navy | oldlace | olive | olivedrab | orange | orangered | orchid | palegoldenrod | palegreen | paleturquoise | palevioletred | papayawhip | peachpuff | peru | pink | plum | powderblue | purple | rebeccapurple | red | rosybrown | royalblue | saddlebrown | salmon | sandybrown | seagreen | seashell | sienna | silver | skyblue | slateblue | slategray | slategrey | snow | springgreen | steelblue | tan | teal | thistle | tomato | turquoise | violet | wheat | white | whitesmoke | yellow | yellowgreen");
+    assert_mdn_compat(
+        "add | subtract | intersect | exclude",
+        "add | subtract | intersect | exclude",
+    );
+    assert_mdn_compat(
+        "aliceblue | antiquewhite | aqua | aquamarine | azure | beige | bisque | black | blanchedalmond | blue | blueviolet | brown | burlywood | cadetblue | chartreuse | chocolate | coral | cornflowerblue | cornsilk | crimson | cyan | darkblue | darkcyan | darkgoldenrod | darkgray | darkgreen | darkgrey | darkkhaki | darkmagenta | darkolivegreen | darkorange | darkorchid | darkred | darksalmon | darkseagreen | darkslateblue | darkslategray | darkslategrey | darkturquoise | darkviolet | deeppink | deepskyblue | dimgray | dimgrey | dodgerblue | firebrick | floralwhite | forestgreen | fuchsia | gainsboro | ghostwhite | gold | goldenrod | gray | green | greenyellow | grey | honeydew | hotpink | indianred | indigo | ivory | khaki | lavender | lavenderblush | lawngreen | lemonchiffon | lightblue | lightcoral | lightcyan | lightgoldenrodyellow | lightgray | lightgreen | lightgrey | lightpink | lightsalmon | lightseagreen | lightskyblue | lightslategray | lightslategrey | lightsteelblue | lightyellow | lime | limegreen | linen | magenta | maroon | mediumaquamarine | mediumblue | mediumorchid | mediumpurple | mediumseagreen | mediumslateblue | mediumspringgreen | mediumturquoise | mediumvioletred | midnightblue | mintcream | mistyrose | moccasin | navajowhite | navy | oldlace | olive | olivedrab | orange | orangered | orchid | palegoldenrod | palegreen | paleturquoise | palevioletred | papayawhip | peachpuff | peru | pink | plum | powderblue | purple | rebeccapurple | red | rosybrown | royalblue | saddlebrown | salmon | sandybrown | seagreen | seashell | sienna | silver | skyblue | slateblue | slategray | slategrey | snow | springgreen | steelblue | tan | teal | thistle | tomato | turquoise | violet | wheat | white | whitesmoke | yellow | yellowgreen",
+        "aliceblue | antiquewhite | aqua | aquamarine | azure | beige | bisque | black | blanchedalmond | blue | blueviolet | brown | burlywood | cadetblue | chartreuse | chocolate | coral | cornflowerblue | cornsilk | crimson | cyan | darkblue | darkcyan | darkgoldenrod | darkgray | darkgreen | darkgrey | darkkhaki | darkmagenta | darkolivegreen | darkorange | darkorchid | darkred | darksalmon | darkseagreen | darkslateblue | darkslategray | darkslategrey | darkturquoise | darkviolet | deeppink | deepskyblue | dimgray | dimgrey | dodgerblue | firebrick | floralwhite | forestgreen | fuchsia | gainsboro | ghostwhite | gold | goldenrod | gray | green | greenyellow | grey | honeydew | hotpink | indianred | indigo | ivory | khaki | lavender | lavenderblush | lawngreen | lemonchiffon | lightblue | lightcoral | lightcyan | lightgoldenrodyellow | lightgray | lightgreen | lightgrey | lightpink | lightsalmon | lightseagreen | lightskyblue | lightslategray | lightslategrey | lightsteelblue | lightyellow | lime | limegreen | linen | magenta | maroon | mediumaquamarine | mediumblue | mediumorchid | mediumpurple | mediumseagreen | mediumslateblue | mediumspringgreen | mediumturquoise | mediumvioletred | midnightblue | mintcream | mistyrose | moccasin | navajowhite | navy | oldlace | olive | olivedrab | orange | orangered | orchid | palegoldenrod | palegreen | paleturquoise | palevioletred | papayawhip | peachpuff | peru | pink | plum | powderblue | purple | rebeccapurple | red | rosybrown | royalblue | saddlebrown | salmon | sandybrown | seagreen | seashell | sienna | silver | skyblue | slateblue | slategray | slategrey | snow | springgreen | steelblue | tan | teal | thistle | tomato | turquoise | violet | wheat | white | whitesmoke | yellow | yellowgreen",
+    );
     assert_mdn_compat("all | <custom-ident>", "all | <custom-ident>");
     assert_mdn_compat("alpha | luminance | match-source", "alpha | luminance | match-source");
-    assert_mdn_compat("always | [ anchors-valid || anchors-visible || no-overflow ]", "always | [ anchors-valid || anchors-visible || no-overflow ]");
-    assert_mdn_compat("anchor( <anchor-name>? && <anchor-side>, <length-percentage>? )", "anchor( <anchor-name>? && <anchor-side> , <length-percentage>? )");
-    assert_mdn_compat("anchor-size( [ <anchor-name> || <anchor-size> ]? , <length-percentage>? )", "anchor-size( [ <anchor-name> || <anchor-size> ]? , <length-percentage>? )");
+    assert_mdn_compat(
+        "always | [ anchors-valid || anchors-visible || no-overflow ]",
+        "always | [ anchors-valid || anchors-visible || no-overflow ]",
+    );
+    assert_mdn_compat(
+        "anchor( <anchor-name>? && <anchor-side>, <length-percentage>? )",
+        "anchor( <anchor-name>? && <anchor-side> , <length-percentage>? )",
+    );
+    assert_mdn_compat(
+        "anchor-size( [ <anchor-name> || <anchor-size> ]? , <length-percentage>? )",
+        "anchor-size( [ <anchor-name> || <anchor-size> ]? , <length-percentage>? )",
+    );
     assert_mdn_compat("asin( <calc-sum> )", "asin( <calc-sum> )");
     assert_mdn_compat("atan( <calc-sum> )", "atan( <calc-sum> )");
     assert_mdn_compat("atan2( <calc-sum>, <calc-sum> )", "atan2( <calc-sum> , <calc-sum> )");
-    assert_mdn_compat("attr( <attr-name> <attr-type>? , <declaration-value>? )", "attr( <attr-name> <attr-type>? , <declaration-value>? )");
+    assert_mdn_compat(
+        "attr( <attr-name> <attr-type>? , <declaration-value>? )",
+        "attr( <attr-name> <attr-type>? , <declaration-value>? )",
+    );
     assert_mdn_compat("auto | <animateable-feature>#", "auto | <animateable-feature>#");
     assert_mdn_compat("auto | <color>", "auto | <color>");
     assert_mdn_compat("auto | <color>{2}", "auto | <color>{2}");
     assert_mdn_compat("auto | <custom-ident>", "auto | <custom-ident>");
-    assert_mdn_compat("auto | <custom-ident> | [ <integer> && <custom-ident>? ] | [ span && [ <integer> || <custom-ident> ] ]", "auto | <custom-ident> | [ <integer> && <custom-ident>? ] | [ span && [ <integer> || <custom-ident> ] ]");
+    assert_mdn_compat(
+        "auto | <custom-ident> | [ <integer> && <custom-ident>? ] | [ span && [ <integer> || <custom-ident> ] ]",
+        "auto | <custom-ident> | [ <integer> && <custom-ident>? ] | [ span && [ <integer> || <custom-ident> ] ]",
+    );
     assert_mdn_compat("auto | <integer>", "auto | <integer>");
     assert_mdn_compat("auto | <integer>{1,3}", "auto | <integer>{1,3}");
     assert_mdn_compat("auto | <length [0,∞]>", "auto | <length [0,∞]>");
-    assert_mdn_compat("auto | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,∞]>) | <calc-size()> | <anchor-size()>", "auto | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content( <length-percentage [0,∞]> ) | <calc-size()> | <anchor-size()>");
+    assert_mdn_compat(
+        "auto | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,∞]>) | <calc-size()> | <anchor-size()>",
+        "auto | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content( <length-percentage [0,∞]> ) | <calc-size()> | <anchor-size()>",
+    );
     assert_mdn_compat("auto | <length-percentage>", "auto | <length-percentage>");
-    assert_mdn_compat("auto | <length-percentage> | <anchor()> | <anchor-size()>", "auto | <length-percentage> | <anchor()> | <anchor-size()>");
+    assert_mdn_compat(
+        "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+        "auto | <length-percentage> | <anchor()> | <anchor-size()>",
+    );
     assert_mdn_compat("auto | <length>", "auto | <length>");
     assert_mdn_compat("auto | <length> | <percentage>", "auto | <length> | <percentage>");
     assert_mdn_compat("auto | <outline-line-style>", "auto | <outline-line-style>");
     assert_mdn_compat("auto | <position>", "auto | <position>");
     assert_mdn_compat("auto | <string>", "auto | <string>");
     assert_mdn_compat("auto | <text-edge>", "auto | <text-edge>");
-    assert_mdn_compat("auto | [ over | under ] && [ right | left ]?", "auto | [ over | under ] && [ right | left ]?");
+    assert_mdn_compat(
+        "auto | [ over | under ] && [ right | left ]?",
+        "auto | [ over | under ] && [ right | left ]?",
+    );
     assert_mdn_compat("auto | after", "auto | after");
     assert_mdn_compat("auto | all | none", "auto | all | none");
-    assert_mdn_compat("auto | always | avoid | left | right | recto | verso", "auto | always | avoid | left | right | recto | verso");
+    assert_mdn_compat(
+        "auto | always | avoid | left | right | recto | verso",
+        "auto | always | avoid | left | right | recto | verso",
+    );
     assert_mdn_compat("auto | avoid", "auto | avoid");
-    assert_mdn_compat("auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region", "auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region");
-    assert_mdn_compat("auto | avoid | avoid-page | avoid-column | avoid-region", "auto | avoid | avoid-page | avoid-column | avoid-region");
+    assert_mdn_compat(
+        "auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region",
+        "auto | avoid | always | all | avoid-page | page | left | right | recto | verso | avoid-column | column | avoid-region | region",
+    );
+    assert_mdn_compat(
+        "auto | avoid | avoid-page | avoid-column | avoid-region",
+        "auto | avoid | avoid-page | avoid-column | avoid-region",
+    );
     assert_mdn_compat("auto | balance", "auto | balance");
     assert_mdn_compat("auto | balance | stable | pretty", "auto | balance | stable | pretty");
     assert_mdn_compat("auto | bar | block | underscore", "auto | bar | block | underscore");
-    assert_mdn_compat("auto | both | start | end | maximum | clear", "auto | both | start | end | maximum | clear");
-    assert_mdn_compat("auto | crisp-edges | pixelated | smooth", "auto | crisp-edges | pixelated | smooth");
-    assert_mdn_compat("auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing", "auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing");
+    assert_mdn_compat(
+        "auto | both | start | end | maximum | clear",
+        "auto | both | start | end | maximum | clear",
+    );
+    assert_mdn_compat(
+        "auto | crisp-edges | pixelated | smooth",
+        "auto | crisp-edges | pixelated | smooth",
+    );
+    assert_mdn_compat(
+        "auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing",
+        "auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing",
+    );
     assert_mdn_compat("auto | first | last", "auto | first | last");
     assert_mdn_compat("auto | fixed", "auto | fixed");
-    assert_mdn_compat("auto | from-font | <length> | <percentage>", "auto | from-font | <length> | <percentage>");
-    assert_mdn_compat("auto | from-font | [ under || [ left | right ] ]", "auto | from-font | [ under || [ left | right ] ]");
+    assert_mdn_compat(
+        "auto | from-font | <length> | <percentage>",
+        "auto | from-font | <length> | <percentage>",
+    );
+    assert_mdn_compat(
+        "auto | from-font | [ under || [ left | right ] ]",
+        "auto | from-font | [ under || [ left | right ] ]",
+    );
     assert_mdn_compat("auto | inert", "auto | inert");
-    assert_mdn_compat("auto | inter-character | inter-word | none", "auto | inter-character | inter-word | none");
+    assert_mdn_compat(
+        "auto | inter-character | inter-word | none",
+        "auto | inter-character | inter-word | none",
+    );
     assert_mdn_compat("auto | isolate", "auto | isolate");
-    assert_mdn_compat("auto | loose | normal | strict | anywhere", "auto | loose | normal | strict | anywhere");
+    assert_mdn_compat(
+        "auto | loose | normal | strict | anywhere",
+        "auto | loose | normal | strict | anywhere",
+    );
     assert_mdn_compat("auto | manual", "auto | manual");
-    assert_mdn_compat("auto | never | always | <absolute-size> | <length>", "auto | never | always | <absolute-size> | <length>");
+    assert_mdn_compat(
+        "auto | never | always | <absolute-size> | <length>",
+        "auto | never | always | <absolute-size> | <length>",
+    );
     assert_mdn_compat("auto | none", "auto | none");
     assert_mdn_compat("auto | none | <anchor-name>", "auto | none | <anchor-name>");
-    assert_mdn_compat("auto | none | <dashed-ident> | <scroll()> | <view()>", "auto | none | <dashed-ident> | <scroll()> | <view()>");
-    assert_mdn_compat("auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation", "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation");
+    assert_mdn_compat(
+        "auto | none | <dashed-ident> | <scroll()> | <view()>",
+        "auto | none | <dashed-ident> | <scroll()> | <view()>",
+    );
+    assert_mdn_compat(
+        "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation",
+        "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation",
+    );
     assert_mdn_compat("auto | none | enabled | disabled", "auto | none | enabled | disabled");
-    assert_mdn_compat("auto | none | preserve-parent-color", "auto | none | preserve-parent-color");
-    assert_mdn_compat("auto | none | scrollbar | -ms-autohiding-scrollbar", "auto | none | scrollbar | -ms-autohiding-scrollbar");
-    assert_mdn_compat("auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit", "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit");
-    assert_mdn_compat("auto | normal | active | inactive | disabled", "auto | normal | active | inactive | disabled");
+    assert_mdn_compat(
+        "auto | none | preserve-parent-color",
+        "auto | none | preserve-parent-color",
+    );
+    assert_mdn_compat(
+        "auto | none | scrollbar | -ms-autohiding-scrollbar",
+        "auto | none | scrollbar | -ms-autohiding-scrollbar",
+    );
+    assert_mdn_compat(
+        "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
+        "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
+    );
+    assert_mdn_compat(
+        "auto | normal | active | inactive | disabled",
+        "auto | normal | active | inactive | disabled",
+    );
     assert_mdn_compat("auto | normal | none", "auto | normal | none");
-    assert_mdn_compat("auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position> | anchor-center", "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position> | anchor-center");
-    assert_mdn_compat("auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | anchor-center", "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | anchor-center");
+    assert_mdn_compat(
+        "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position> | anchor-center",
+        "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position> | anchor-center",
+    );
+    assert_mdn_compat(
+        "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | anchor-center",
+        "auto | normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | anchor-center",
+    );
     assert_mdn_compat("auto | nowrap | wrap", "auto | nowrap | wrap");
-    assert_mdn_compat("auto | optimizeSpeed | crispEdges | geometricPrecision", "auto | optimizeSpeed | crispEdges | geometricPrecision");
-    assert_mdn_compat("auto | optimizeSpeed | optimizeLegibility | geometricPrecision", "auto | optimizeSpeed | optimizeLegibility | geometricPrecision");
+    assert_mdn_compat(
+        "auto | optimizeSpeed | crispEdges | geometricPrecision",
+        "auto | optimizeSpeed | crispEdges | geometricPrecision",
+    );
+    assert_mdn_compat(
+        "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
+        "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
+    );
     assert_mdn_compat("auto | sRGB | linearRGB", "auto | sRGB | linearRGB");
     assert_mdn_compat("auto | smooth", "auto | smooth");
     assert_mdn_compat("auto | stable && both-edges?", "auto | stable && both-edges?");
-    assert_mdn_compat("auto | start | end | left | right | center | justify", "auto | start | end | left | right | center | justify");
+    assert_mdn_compat(
+        "auto | start | end | left | right | center | justify",
+        "auto | start | end | left | right | center | justify",
+    );
     assert_mdn_compat("auto | text | none | all", "auto | text | none | all");
-    assert_mdn_compat("auto | text-bottom | alphabetic | ideographic | middle | central | mathematical | hanging | text-top", "auto | text-bottom | alphabetic | ideographic | middle | central | mathematical | hanging | text-top");
+    assert_mdn_compat(
+        "auto | text-bottom | alphabetic | ideographic | middle | central | mathematical | hanging | text-top",
+        "auto | text-bottom | alphabetic | ideographic | middle | central | mathematical | hanging | text-top",
+    );
     assert_mdn_compat("auto | thin | none", "auto | thin | none");
     assert_mdn_compat("auto | touch", "auto | touch");
     assert_mdn_compat("auto || <ratio>", "auto || <ratio>");
-    assert_mdn_compat("auto-add | add(<integer>) | <integer>", "auto-add | add( <integer> ) | <integer>");
+    assert_mdn_compat(
+        "auto-add | add(<integer>) | <integer>",
+        "auto-add | add( <integer> ) | <integer>",
+    );
     assert_mdn_compat("auto? [ none | <length> ]", "auto? [ none | <length> ]");
-    assert_mdn_compat("baseline | alphabetic | ideographic | middle | central | mathematical | text-before-edge | text-after-edge", "baseline | alphabetic | ideographic | middle | central | mathematical | text-before-edge | text-after-edge");
-    assert_mdn_compat("baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>", "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>");
+    assert_mdn_compat(
+        "baseline | alphabetic | ideographic | middle | central | mathematical | text-before-edge | text-after-edge",
+        "baseline | alphabetic | ideographic | middle | central | mathematical | text-before-edge | text-after-edge",
+    );
+    assert_mdn_compat(
+        "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>",
+        "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>",
+    );
     assert_mdn_compat("block | inline | run-in", "block | inline | run-in");
     assert_mdn_compat("block | inline | x | y", "block | inline | x | y");
     assert_mdn_compat("blur( <length>? )", "blur( <length>? )");
-    assert_mdn_compat("border-box | content-box | margin-box | padding-box", "border-box | content-box | margin-box | padding-box");
-    assert_mdn_compat("brightness( [ <number> | <percentage> ]? )", "brightness( [ <number> | <percentage> ]? )");
+    assert_mdn_compat(
+        "border-box | content-box | margin-box | padding-box",
+        "border-box | content-box | margin-box | padding-box",
+    );
+    assert_mdn_compat(
+        "brightness( [ <number> | <percentage> ]? )",
+        "brightness( [ <number> | <percentage> ]? )",
+    );
     assert_mdn_compat("butt | round | square", "butt | round | square");
     assert_mdn_compat("calc( <calc-sum> )", "calc( <calc-sum> )");
-    assert_mdn_compat("calc-size( <calc-size-basis>, <calc-sum> )", "calc-size( <calc-size-basis> , <calc-sum> )");
-    assert_mdn_compat("caption | icon | menu | message-box | small-caption | status-bar", "caption | icon | menu | message-box | small-caption | status-bar");
-    assert_mdn_compat("center | start | end | flex-start | flex-end", "center | start | end | flex-start | flex-end");
-    assert_mdn_compat("center | start | end | self-start | self-end | flex-start | flex-end", "center | start | end | self-start | self-end | flex-start | flex-end");
+    assert_mdn_compat(
+        "calc-size( <calc-size-basis>, <calc-sum> )",
+        "calc-size( <calc-size-basis> , <calc-sum> )",
+    );
+    assert_mdn_compat(
+        "caption | icon | menu | message-box | small-caption | status-bar",
+        "caption | icon | menu | message-box | small-caption | status-bar",
+    );
+    assert_mdn_compat(
+        "center | start | end | flex-start | flex-end",
+        "center | start | end | flex-start | flex-end",
+    );
+    assert_mdn_compat(
+        "center | start | end | self-start | self-end | flex-start | flex-end",
+        "center | start | end | self-start | self-end | flex-start | flex-end",
+    );
     assert_mdn_compat("chained | none", "chained | none");
     assert_mdn_compat("circle | ellipse", "circle | ellipse");
-    assert_mdn_compat("circle( <radial-size>? [ at <position> ]? )", "circle( <radial-size>? [ at <position> ]? )");
+    assert_mdn_compat(
+        "circle( <radial-size>? [ at <position> ]? )",
+        "circle( <radial-size>? [ at <position> ]? )",
+    );
     assert_mdn_compat("clamp( <calc-sum>#{3} )", "clamp( <calc-sum>#{3} )");
-    assert_mdn_compat("clear | copy | source-over | source-in | source-out | source-atop | destination-over | destination-in | destination-out | destination-atop | xor", "clear | copy | source-over | source-in | source-out | source-atop | destination-over | destination-in | destination-out | destination-atop | xor");
-    assert_mdn_compat("closest-corner | closest-side | farthest-corner | farthest-side", "closest-corner | closest-side | farthest-corner | farthest-side");
-    assert_mdn_compat("closest-side | closest-corner | farthest-side | farthest-corner | sides", "closest-side | closest-corner | farthest-side | farthest-corner | sides");
-    assert_mdn_compat("closest-side | farthest-side | closest-corner | farthest-corner | <length> | <length-percentage>{2}", "closest-side | farthest-side | closest-corner | farthest-corner | <length> | <length-percentage>{2}");
-    assert_mdn_compat("collapse | preserve | preserve-breaks | preserve-spaces | break-spaces", "collapse | preserve | preserve-breaks | preserve-spaces | break-spaces");
-    assert_mdn_compat("color( [ from <color> ]? <colorspace-params> [ / [ <alpha-value> | none ] ]? )", "color( [ from <color> ]? <colorspace-params> [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("color-mix( <color-interpolation-method> , [ <color> && <percentage [0,100]>? ]#{2})", "color-mix( <color-interpolation-method> , [ <color> && <percentage [0,100]>? ]#{2} )");
-    assert_mdn_compat("conic-gradient( [ <conic-gradient-syntax> ] )", "conic-gradient( [ <conic-gradient-syntax> ] )");
+    assert_mdn_compat(
+        "clear | copy | source-over | source-in | source-out | source-atop | destination-over | destination-in | destination-out | destination-atop | xor",
+        "clear | copy | source-over | source-in | source-out | source-atop | destination-over | destination-in | destination-out | destination-atop | xor",
+    );
+    assert_mdn_compat(
+        "closest-corner | closest-side | farthest-corner | farthest-side",
+        "closest-corner | closest-side | farthest-corner | farthest-side",
+    );
+    assert_mdn_compat(
+        "closest-side | closest-corner | farthest-side | farthest-corner | sides",
+        "closest-side | closest-corner | farthest-side | farthest-corner | sides",
+    );
+    assert_mdn_compat(
+        "closest-side | farthest-side | closest-corner | farthest-corner | <length> | <length-percentage>{2}",
+        "closest-side | farthest-side | closest-corner | farthest-corner | <length> | <length-percentage>{2}",
+    );
+    assert_mdn_compat(
+        "collapse | preserve | preserve-breaks | preserve-spaces | break-spaces",
+        "collapse | preserve | preserve-breaks | preserve-spaces | break-spaces",
+    );
+    assert_mdn_compat(
+        "color( [ from <color> ]? <colorspace-params> [ / [ <alpha-value> | none ] ]? )",
+        "color( [ from <color> ]? <colorspace-params> [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "color-mix( <color-interpolation-method> , [ <color> && <percentage [0,100]>? ]#{2})",
+        "color-mix( <color-interpolation-method> , [ <color> && <percentage [0,100]>? ]#{2} )",
+    );
+    assert_mdn_compat(
+        "conic-gradient( [ <conic-gradient-syntax> ] )",
+        "conic-gradient( [ <conic-gradient-syntax> ] )",
+    );
     assert_mdn_compat("contain | none | auto", "contain | none | auto");
     assert_mdn_compat("content | <'width'>", "content | <'width'>");
     assert_mdn_compat("content | fixed", "content | fixed");
     assert_mdn_compat("content-box | border-box", "content-box | border-box");
-    assert_mdn_compat("content-box | border-box | fill-box | stroke-box | view-box", "content-box | border-box | fill-box | stroke-box | view-box");
-    assert_mdn_compat("content-box | padding-box | border-box", "content-box | padding-box | border-box");
+    assert_mdn_compat(
+        "content-box | border-box | fill-box | stroke-box | view-box",
+        "content-box | border-box | fill-box | stroke-box | view-box",
+    );
+    assert_mdn_compat(
+        "content-box | padding-box | border-box",
+        "content-box | padding-box | border-box",
+    );
     assert_mdn_compat("contents | none", "contents | none");
-    assert_mdn_compat("contrast( [ <number> | <percentage> ]? )", "contrast( [ <number> | <percentage> ]? )");
+    assert_mdn_compat(
+        "contrast( [ <number> | <percentage> ]? )",
+        "contrast( [ <number> | <percentage> ]? )",
+    );
     assert_mdn_compat("cos( <calc-sum> )", "cos( <calc-sum> )");
-    assert_mdn_compat("counter( <counter-name>, <counter-style>? )", "counter( <counter-name> , <counter-style>? )");
-    assert_mdn_compat("counters( <counter-name>, <string>, <counter-style>? )", "counters( <counter-name> , <string> , <counter-style>? )");
-    assert_mdn_compat("cover | contain | entry | exit | entry-crossing | exit-crossing", "cover | contain | entry | exit | entry-crossing | exit-crossing");
-    assert_mdn_compat("cross-fade( <cf-mixing-image> , <cf-final-image>? )", "cross-fade( <cf-mixing-image> , <cf-final-image>? )");
-    assert_mdn_compat("cubic-bezier( [ <number [0,1]>, <number> ]#{2} )", "cubic-bezier( [ <number [0,1]> , <number> ]#{2} )");
-    assert_mdn_compat("cyclic | numeric | alphabetic | symbolic | fixed", "cyclic | numeric | alphabetic | symbolic | fixed");
-    assert_mdn_compat("default | menu | tooltip | sheet | none", "default | menu | tooltip | sheet | none");
+    assert_mdn_compat(
+        "counter( <counter-name>, <counter-style>? )",
+        "counter( <counter-name> , <counter-style>? )",
+    );
+    assert_mdn_compat(
+        "counters( <counter-name>, <string>, <counter-style>? )",
+        "counters( <counter-name> , <string> , <counter-style>? )",
+    );
+    assert_mdn_compat(
+        "cover | contain | entry | exit | entry-crossing | exit-crossing",
+        "cover | contain | entry | exit | entry-crossing | exit-crossing",
+    );
+    assert_mdn_compat(
+        "cross-fade( <cf-mixing-image> , <cf-final-image>? )",
+        "cross-fade( <cf-mixing-image> , <cf-final-image>? )",
+    );
+    assert_mdn_compat(
+        "cubic-bezier( [ <number [0,1]>, <number> ]#{2} )",
+        "cubic-bezier( [ <number [0,1]> , <number> ]#{2} )",
+    );
+    assert_mdn_compat(
+        "cyclic | numeric | alphabetic | symbolic | fixed",
+        "cyclic | numeric | alphabetic | symbolic | fixed",
+    );
+    assert_mdn_compat(
+        "default | menu | tooltip | sheet | none",
+        "default | menu | tooltip | sheet | none",
+    );
     assert_mdn_compat("default | none", "default | none");
     assert_mdn_compat("dotted | solid | space | <string>", "dotted | solid | space | <string>");
     assert_mdn_compat("drag | no-drag", "drag | no-drag");
-    assert_mdn_compat("drop-shadow( [ <color>? && <length>{2,3} ] )", "drop-shadow( [ <color>? && <length>{2,3} ] )");
-    assert_mdn_compat("dynamic-range-limit-mix( [ <'dynamic-range-limit'> && <percentage [0,100]> ]#{2,} )", "dynamic-range-limit-mix( [ <'dynamic-range-limit'> && <percentage [0,100]> ]#{2,} )");
-    assert_mdn_compat("e | pi | infinity | -infinity | NaN", "e | pi | infinity | -infinity | NaN");
-    assert_mdn_compat("ease | ease-in | ease-out | ease-in-out | <cubic-bezier()>", "ease | ease-in | ease-out | ease-in-out | <cubic-bezier()>");
+    assert_mdn_compat(
+        "drop-shadow( [ <color>? && <length>{2,3} ] )",
+        "drop-shadow( [ <color>? && <length>{2,3} ] )",
+    );
+    assert_mdn_compat(
+        "dynamic-range-limit-mix( [ <'dynamic-range-limit'> && <percentage [0,100]> ]#{2,} )",
+        "dynamic-range-limit-mix( [ <'dynamic-range-limit'> && <percentage [0,100]> ]#{2,} )",
+    );
+    assert_mdn_compat(
+        "e | pi | infinity | -infinity | NaN",
+        "e | pi | infinity | -infinity | NaN",
+    );
+    assert_mdn_compat(
+        "ease | ease-in | ease-out | ease-in-out | <cubic-bezier()>",
+        "ease | ease-in | ease-out | ease-in-out | <cubic-bezier()>",
+    );
     assert_mdn_compat("economy | exact", "economy | exact");
     assert_mdn_compat("element( <id-selector> )", "element( <id-selector> )");
-    assert_mdn_compat("ellipse( <radial-size>? [ at <position> ]? )", "ellipse( <radial-size>? [ at <position> ]? )");
-    assert_mdn_compat("env( <custom-ident> , <declaration-value>? )", "env( <custom-ident> , <declaration-value>? )");
+    assert_mdn_compat(
+        "ellipse( <radial-size>? [ at <position> ]? )",
+        "ellipse( <radial-size>? [ at <position> ]? )",
+    );
+    assert_mdn_compat(
+        "env( <custom-ident> , <declaration-value>? )",
+        "env( <custom-ident> , <declaration-value>? )",
+    );
     assert_mdn_compat("exp( <calc-sum> )", "exp( <calc-sum> )");
     assert_mdn_compat("false | true", "false | true");
-    assert_mdn_compat("fill | contain | cover | none | scale-down", "fill | contain | cover | none | scale-down");
-    assert_mdn_compat("fit-content( <length-percentage [0,∞]> )", "fit-content( <length-percentage [0,∞]> )");
+    assert_mdn_compat(
+        "fill | contain | cover | none | scale-down",
+        "fill | contain | cover | none | scale-down",
+    );
+    assert_mdn_compat(
+        "fit-content( <length-percentage [0,∞]> )",
+        "fit-content( <length-percentage [0,∞]> )",
+    );
     assert_mdn_compat("flat | preserve-3d", "flat | preserve-3d");
-    assert_mdn_compat("flip-block || flip-inline || flip-start", "flip-block || flip-inline || flip-start");
-    assert_mdn_compat("flow | flow-root | table | flex | grid | ruby", "flow | flow-root | table | flex | grid | ruby");
-    assert_mdn_compat("from | to | <percentage [0,100]> | <timeline-range-name> <percentage>", "from | to | <percentage [0,100]> | <timeline-range-name> <percentage>");
-    assert_mdn_compat("from-image | <angle> | [ <angle>? flip ]", "from-image | <angle> | [ <angle>? flip ]");
-    assert_mdn_compat("grayscale( [ <number> | <percentage> ]? )", "grayscale( [ <number> | <percentage> ]? )");
+    assert_mdn_compat(
+        "flip-block || flip-inline || flip-start",
+        "flip-block || flip-inline || flip-start",
+    );
+    assert_mdn_compat(
+        "flow | flow-root | table | flex | grid | ruby",
+        "flow | flow-root | table | flex | grid | ruby",
+    );
+    assert_mdn_compat(
+        "from | to | <percentage [0,100]> | <timeline-range-name> <percentage>",
+        "from | to | <percentage [0,100]> | <timeline-range-name> <percentage>",
+    );
+    assert_mdn_compat(
+        "from-image | <angle> | [ <angle>? flip ]",
+        "from-image | <angle> | [ <angle>? flip ]",
+    );
+    assert_mdn_compat(
+        "grayscale( [ <number> | <percentage> ]? )",
+        "grayscale( [ <number> | <percentage> ]? )",
+    );
     assert_mdn_compat("grippers | none", "grippers | none");
-    assert_mdn_compat("horizontal | vertical | inline-axis | block-axis | inherit", "horizontal | vertical | inline-axis | block-axis | inherit");
-    assert_mdn_compat("horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr", "horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr");
+    assert_mdn_compat(
+        "horizontal | vertical | inline-axis | block-axis | inherit",
+        "horizontal | vertical | inline-axis | block-axis | inherit",
+    );
+    assert_mdn_compat(
+        "horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr",
+        "horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr",
+    );
     assert_mdn_compat("hsl | hwb | lch | oklch", "hsl | hwb | lch | oklch");
-    assert_mdn_compat("hsl( <hue>, <percentage>, <percentage>, <alpha-value>? ) | hsl( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )", "hsl( <hue> , <percentage> , <percentage> , <alpha-value>? ) | hsl( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("hsla( <hue>, <percentage>, <percentage>, <alpha-value>? ) | hsla( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )", "hsla( <hue> , <percentage> , <percentage> , <alpha-value>? ) | hsla( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("hue-rotate( [ <angle> | <zero> ]? )", "hue-rotate( [ <angle> | <zero> ]? )");
-    assert_mdn_compat("hwb( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )", "hwb( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )");
+    assert_mdn_compat(
+        "hsl( <hue>, <percentage>, <percentage>, <alpha-value>? ) | hsl( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+        "hsl( <hue> , <percentage> , <percentage> , <alpha-value>? ) | hsl( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "hsla( <hue>, <percentage>, <percentage>, <alpha-value>? ) | hsla( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+        "hsla( <hue> , <percentage> , <percentage> , <alpha-value>? ) | hsla( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "hue-rotate( [ <angle> | <zero> ]? )",
+        "hue-rotate( [ <angle> | <zero> ]? )",
+    );
+    assert_mdn_compat(
+        "hwb( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+        "hwb( [ <hue> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
     assert_mdn_compat("hypot( <calc-sum># )", "hypot( <calc-sum># )");
     assert_mdn_compat("i | s", "i | s");
-    assert_mdn_compat("ignore | normal | select-after | select-before | select-menu | select-same | select-all | none", "ignore | normal | select-after | select-before | select-menu | select-same | select-all | none");
+    assert_mdn_compat(
+        "ignore | normal | select-after | select-before | select-menu | select-same | select-all | none",
+        "ignore | normal | select-after | select-before | select-menu | select-same | select-all | none",
+    );
     assert_mdn_compat("ignore | stretch-to-fit", "ignore | stretch-to-fit");
-    assert_mdn_compat("image( <image-tags>? [ <image-src>? , <color>? ]! )", "image( <image-tags>? [ <image-src>? , <color>? ]! )");
+    assert_mdn_compat(
+        "image( <image-tags>? [ <image-src>? , <color>? ]! )",
+        "image( <image-tags>? [ <image-src>? , <color>? ]! )",
+    );
     assert_mdn_compat("image-set( <image-set-option># )", "image-set( <image-set-option># )");
-    assert_mdn_compat("in [ <rectangular-color-space> | <polar-color-space> <hue-interpolation-method>? | <custom-color-space> ]", "in [ <rectangular-color-space> | <polar-color-space> <hue-interpolation-method>? | <custom-color-space> ]");
+    assert_mdn_compat(
+        "in [ <rectangular-color-space> | <polar-color-space> <hue-interpolation-method>? | <custom-color-space> ]",
+        "in [ <rectangular-color-space> | <polar-color-space> <hue-interpolation-method>? | <custom-color-space> ]",
+    );
     assert_mdn_compat("infinite | <number>", "infinite | <number>");
-    assert_mdn_compat("initial | inherit | unset | revert | revert-layer", "initial | inherit | unset | revert | revert-layer");
-    assert_mdn_compat("inline | block | horizontal | vertical", "inline | block | horizontal | vertical");
-    assert_mdn_compat("inline-block | inline-list-item | inline-table | inline-flex | inline-grid", "inline-block | inline-list-item | inline-table | inline-flex | inline-grid");
-    assert_mdn_compat("inset( <length-percentage>{1,4} [ round <'border-radius'> ]? )", "inset( <length-percentage>{1,4} [ round <'border-radius'> ]? )");
-    assert_mdn_compat("inset? && <length>{2,4} && <color>?", "inset? && <length>{2,4} && <color>?");
+    assert_mdn_compat(
+        "initial | inherit | unset | revert | revert-layer",
+        "initial | inherit | unset | revert | revert-layer",
+    );
+    assert_mdn_compat(
+        "inline | block | horizontal | vertical",
+        "inline | block | horizontal | vertical",
+    );
+    assert_mdn_compat(
+        "inline-block | inline-list-item | inline-table | inline-flex | inline-grid",
+        "inline-block | inline-list-item | inline-table | inline-flex | inline-grid",
+    );
+    assert_mdn_compat(
+        "inset( <length-percentage>{1,4} [ round <'border-radius'> ]? )",
+        "inset( <length-percentage>{1,4} [ round <'border-radius'> ]? )",
+    );
+    assert_mdn_compat(
+        "inset? && <length>{2,4} && <color>?",
+        "inset? && <length>{2,4} && <color>?",
+    );
     assert_mdn_compat("inside | outside", "inside | outside");
-    assert_mdn_compat("inside | outside | top | left | right | bottom | start | end | self-start | self-end | <percentage> | center", "inside | outside | top | left | right | bottom | start | end | self-start | self-end | <percentage> | center");
-    assert_mdn_compat("invert( [ <number> | <percentage> ]? )", "invert( [ <number> | <percentage> ]? )");
-    assert_mdn_compat("jump-start | jump-end | jump-none | jump-both | start | end", "jump-start | jump-end | jump-none | jump-both | start | end");
-    assert_mdn_compat("lab( [<percentage> | <number> | none] [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ / [<alpha-value> | none] ]? )", "lab( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )");
+    assert_mdn_compat(
+        "inside | outside | top | left | right | bottom | start | end | self-start | self-end | <percentage> | center",
+        "inside | outside | top | left | right | bottom | start | end | self-start | self-end | <percentage> | center",
+    );
+    assert_mdn_compat(
+        "invert( [ <number> | <percentage> ]? )",
+        "invert( [ <number> | <percentage> ]? )",
+    );
+    assert_mdn_compat(
+        "jump-start | jump-end | jump-none | jump-both | start | end",
+        "jump-start | jump-end | jump-none | jump-both | start | end",
+    );
+    assert_mdn_compat(
+        "lab( [<percentage> | <number> | none] [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ / [<alpha-value> | none] ]? )",
+        "lab( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
     assert_mdn_compat("larger | smaller", "larger | smaller");
     assert_mdn_compat("layer( <layer-name> )", "layer( <layer-name> )");
-    assert_mdn_compat("lch( [<percentage> | <number> | none] [ <percentage> | <number> | none] [ <hue> | none] [ / [<alpha-value> | none] ]? )", "lch( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <hue> | none ] [ / [ <alpha-value> | none ] ]? )");
+    assert_mdn_compat(
+        "lch( [<percentage> | <number> | none] [ <percentage> | <number> | none] [ <hue> | none] [ / [<alpha-value> | none] ]? )",
+        "lch( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <hue> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
     assert_mdn_compat("leader( <leader-type> )", "leader( <leader-type> )");
-    assert_mdn_compat("left | right | none | inline-start | inline-end", "left | right | none | inline-start | inline-end");
+    assert_mdn_compat(
+        "left | right | none | inline-start | inline-end",
+        "left | right | none | inline-start | inline-end",
+    );
     assert_mdn_compat("light-dark( <color>, <color> )", "light-dark( <color> , <color> )");
     assert_mdn_compat("linear | <linear()>", "linear | <linear()>");
-    assert_mdn_compat("linear( [ <number> && <percentage>{0,2} ]# )", "linear( [ <number> && <percentage>{0,2} ]# )");
-    assert_mdn_compat("linear-gradient( [ <linear-gradient-syntax> ] )", "linear-gradient( [ <linear-gradient-syntax> ] )");
+    assert_mdn_compat(
+        "linear( [ <number> && <percentage>{0,2} ]# )",
+        "linear( [ <number> && <percentage>{0,2} ]# )",
+    );
+    assert_mdn_compat(
+        "linear-gradient( [ <linear-gradient-syntax> ] )",
+        "linear-gradient( [ <linear-gradient-syntax> ] )",
+    );
     assert_mdn_compat("log( <calc-sum>, <calc-sum>? )", "log( <calc-sum> , <calc-sum>? )");
     assert_mdn_compat("ltr | rtl", "ltr | rtl");
     assert_mdn_compat("luminance | alpha", "luminance | alpha");
@@ -543,17 +1356,35 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("matrix3d( <number>#{16} )", "matrix3d( <number>#{16} )");
     assert_mdn_compat("max( <calc-sum># )", "max( <calc-sum># )");
     assert_mdn_compat("min( <calc-sum># )", "min( <calc-sum># )");
-    assert_mdn_compat("minmax( [ <length-percentage> | min-content | max-content | auto ] , [ <length-percentage> | <flex> | min-content | max-content | auto ] )", "minmax( [ <length-percentage> | min-content | max-content | auto ] , [ <length-percentage> | <flex> | min-content | max-content | auto ] )");
-    assert_mdn_compat("miter | miter-clip | round | bevel | arcs", "miter | miter-clip | round | bevel | arcs");
+    assert_mdn_compat(
+        "minmax( [ <length-percentage> | min-content | max-content | auto ] , [ <length-percentage> | <flex> | min-content | max-content | auto ] )",
+        "minmax( [ <length-percentage> | min-content | max-content | auto ] , [ <length-percentage> | <flex> | min-content | max-content | auto ] )",
+    );
+    assert_mdn_compat(
+        "miter | miter-clip | round | bevel | arcs",
+        "miter | miter-clip | round | bevel | arcs",
+    );
     assert_mdn_compat("mixed | upright | sideways", "mixed | upright | sideways");
     assert_mdn_compat("mod( <calc-sum>, <calc-sum> )", "mod( <calc-sum> , <calc-sum> )");
-    assert_mdn_compat("most-width | most-height | most-block-size | most-inline-size", "most-width | most-height | most-block-size | most-inline-size");
+    assert_mdn_compat(
+        "most-width | most-height | most-block-size | most-inline-size",
+        "most-width | most-height | most-block-size | most-inline-size",
+    );
     assert_mdn_compat("nearest | up | down | to-zero", "nearest | up | down | to-zero");
     assert_mdn_compat("no-limit | <integer>", "no-limit | <integer>");
-    assert_mdn_compat("none | <angle> | [ x | y | z | <number>{3} ] && <angle>", "none | <angle> | [ x | y | z | <number>{3} ] && <angle>");
+    assert_mdn_compat(
+        "none | <angle> | [ x | y | z | <number>{3} ] && <angle>",
+        "none | <angle> | [ x | y | z | <number>{3} ] && <angle>",
+    );
     assert_mdn_compat("none | <basic-shape-rect>", "none | <basic-shape-rect>");
-    assert_mdn_compat("none | <color> | <url> [none | <color>]? | context-fill | context-stroke", "none | <color> | <url> [ none | <color> ]? | context-fill | context-stroke");
-    assert_mdn_compat("none | <custom-ident> | match-element", "none | <custom-ident> | match-element");
+    assert_mdn_compat(
+        "none | <color> | <url> [none | <color>]? | context-fill | context-stroke",
+        "none | <color> | <url> [ none | <color> ]? | context-fill | context-stroke",
+    );
+    assert_mdn_compat(
+        "none | <custom-ident> | match-element",
+        "none | <custom-ident> | match-element",
+    );
     assert_mdn_compat("none | <custom-ident>+", "none | <custom-ident>+");
     assert_mdn_compat("none | <dasharray>", "none | <dasharray>");
     assert_mdn_compat("none | <dashed-ident>#", "none | <dashed-ident>#");
@@ -561,237 +1392,663 @@ fn all_mdn_syntaxes() {
     assert_mdn_compat("none | <image>", "none | <image>");
     assert_mdn_compat("none | <image> | <mask-source>", "none | <image> | <mask-source>");
     assert_mdn_compat("none | <integer>", "none | <integer>");
-    assert_mdn_compat("none | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,∞]>) | <calc-size()> | <anchor-size()>", "none | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content( <length-percentage [0,∞]> ) | <calc-size()> | <anchor-size()>");
-    assert_mdn_compat("none | <length-percentage> [ <length-percentage> <length>? ]?", "none | <length-percentage> [ <length-percentage> <length>? ]?");
+    assert_mdn_compat(
+        "none | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content(<length-percentage [0,∞]>) | <calc-size()> | <anchor-size()>",
+        "none | <length-percentage [0,∞]> | min-content | max-content | fit-content | fit-content( <length-percentage [0,∞]> ) | <calc-size()> | <anchor-size()>",
+    );
+    assert_mdn_compat(
+        "none | <length-percentage> [ <length-percentage> <length>? ]?",
+        "none | <length-percentage> [ <length-percentage> <length>? ]?",
+    );
     assert_mdn_compat("none | <length>", "none | <length>");
-    assert_mdn_compat("none | <offset-path> || <coord-box>", "none | <offset-path> || <coord-box>");
+    assert_mdn_compat(
+        "none | <offset-path> || <coord-box>",
+        "none | <offset-path> || <coord-box>",
+    );
     assert_mdn_compat("none | <position-area>", "none | <position-area>");
     assert_mdn_compat("none | <position>#", "none | <position>#");
     assert_mdn_compat("none | <shadow-t>#", "none | <shadow-t>#");
     assert_mdn_compat("none | <shadow>#", "none | <shadow>#");
-    assert_mdn_compat("none | <single-transition-property>#", "none | <single-transition-property>#");
+    assert_mdn_compat(
+        "none | <single-transition-property>#",
+        "none | <single-transition-property>#",
+    );
     assert_mdn_compat("none | <string>+", "none | <string>+");
-    assert_mdn_compat("none | <track-list> | <auto-track-list>", "none | <track-list> | <auto-track-list>");
-    assert_mdn_compat("none | <track-list> | <auto-track-list> | subgrid <line-name-list>?", "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?");
+    assert_mdn_compat(
+        "none | <track-list> | <auto-track-list>",
+        "none | <track-list> | <auto-track-list>",
+    );
+    assert_mdn_compat(
+        "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?",
+        "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?",
+    );
     assert_mdn_compat("none | <transform-list>", "none | <transform-list>");
     assert_mdn_compat("none | <url>", "none | <url>");
-    assert_mdn_compat("none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]", "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]");
-    assert_mdn_compat("none | [ <'grid-template-rows'> / <'grid-template-columns'> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?", "none | [ <'grid-template-rows'> / <'grid-template-columns'> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?");
-    assert_mdn_compat("none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#", "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#");
-    assert_mdn_compat("none | [ <number> | <percentage> ]{1,3}", "none | [ <number> | <percentage> ]{1,3}");
-    assert_mdn_compat("none | [ <shape-box> || <basic-shape> ] | <image>", "none | [ <shape-box> || <basic-shape> ] | <image>");
-    assert_mdn_compat("none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>", "none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>");
-    assert_mdn_compat("none | [ [<dashed-ident> || <try-tactic>] | <'position-area'> ]#", "none | [ [ <dashed-ident> || <try-tactic> ] | <'position-area'> ]#");
-    assert_mdn_compat("none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto", "none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto");
-    assert_mdn_compat("none | [ ex-height | cap-height | ch-width | ic-width | ic-height ]? [ from-font | <number> ]", "none | [ ex-height | cap-height | ch-width | ic-width | ic-height ]? [ from-font | <number> ]");
-    assert_mdn_compat("none | [ fill | fill-opacity | stroke | stroke-opacity ]#", "none | [ fill | fill-opacity | stroke | stroke-opacity ]#");
-    assert_mdn_compat("none | [ first || [ force-end | allow-end ] || last ]", "none | [ first || [ force-end | allow-end ] || last ]");
-    assert_mdn_compat("none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]", "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]");
-    assert_mdn_compat("none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error", "none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error");
-    assert_mdn_compat("none | [ weight || style || small-caps || position]", "none | [ weight || style || small-caps || position ]");
-    assert_mdn_compat("none | [ x | y | block | inline | both ] [ mandatory | proximity ]?", "none | [ x | y | block | inline | both ] [ mandatory | proximity ]?");
+    assert_mdn_compat(
+        "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]",
+        "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]",
+    );
+    assert_mdn_compat(
+        "none | [ <'grid-template-rows'> / <'grid-template-columns'> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?",
+        "none | [ <'grid-template-rows'> / <'grid-template-columns'> ] | [ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?",
+    );
+    assert_mdn_compat(
+        "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#",
+        "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#",
+    );
+    assert_mdn_compat(
+        "none | [ <number> | <percentage> ]{1,3}",
+        "none | [ <number> | <percentage> ]{1,3}",
+    );
+    assert_mdn_compat(
+        "none | [ <shape-box> || <basic-shape> ] | <image>",
+        "none | [ <shape-box> || <basic-shape> ] | <image>",
+    );
+    assert_mdn_compat(
+        "none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>",
+        "none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>",
+    );
+    assert_mdn_compat(
+        "none | [ [<dashed-ident> || <try-tactic>] | <'position-area'> ]#",
+        "none | [ [ <dashed-ident> || <try-tactic> ] | <'position-area'> ]#",
+    );
+    assert_mdn_compat(
+        "none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto",
+        "none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto",
+    );
+    assert_mdn_compat(
+        "none | [ ex-height | cap-height | ch-width | ic-width | ic-height ]? [ from-font | <number> ]",
+        "none | [ ex-height | cap-height | ch-width | ic-width | ic-height ]? [ from-font | <number> ]",
+    );
+    assert_mdn_compat(
+        "none | [ fill | fill-opacity | stroke | stroke-opacity ]#",
+        "none | [ fill | fill-opacity | stroke | stroke-opacity ]#",
+    );
+    assert_mdn_compat(
+        "none | [ first || [ force-end | allow-end ] || last ]",
+        "none | [ first || [ force-end | allow-end ] || last ]",
+    );
+    assert_mdn_compat(
+        "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]",
+        "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]",
+    );
+    assert_mdn_compat(
+        "none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error",
+        "none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error",
+    );
+    assert_mdn_compat(
+        "none | [ weight || style || small-caps || position]",
+        "none | [ weight || style || small-caps || position ]",
+    );
+    assert_mdn_compat(
+        "none | [ x | y | block | inline | both ] [ mandatory | proximity ]?",
+        "none | [ x | y | block | inline | both ] [ mandatory | proximity ]?",
+    );
     assert_mdn_compat("none | all", "none | all");
     assert_mdn_compat("none | all | <dashed-ident>#", "none | all | <dashed-ident>#");
-    assert_mdn_compat("none | all | [ digits <integer>? ]", "none | all | [ digits <integer>? ]");
+    assert_mdn_compat(
+        "none | all | [ digits <integer>? ]",
+        "none | all | [ digits <integer>? ]",
+    );
     assert_mdn_compat("none | auto", "none | auto");
-    assert_mdn_compat("none | auto | <compat-auto> | <compat-special>", "none | auto | <compat-auto> | <compat-special>");
+    assert_mdn_compat(
+        "none | auto | <compat-auto> | <compat-special>",
+        "none | auto | <compat-auto> | <compat-special>",
+    );
     assert_mdn_compat("none | auto | <percentage>", "none | auto | <percentage>");
-    assert_mdn_compat("none | auto | [ <string> <string> ]+", "none | auto | [ <string> <string> ]+");
+    assert_mdn_compat(
+        "none | auto | [ <string> <string> ]+",
+        "none | auto | [ <string> <string> ]+",
+    );
     assert_mdn_compat("none | before | after", "none | before | after");
     assert_mdn_compat("none | blink", "none | blink");
-    assert_mdn_compat("none | both | horizontal | vertical | block | inline", "none | both | horizontal | vertical | block | inline");
-    assert_mdn_compat("none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized", "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized");
-    assert_mdn_compat("none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button", "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button");
+    assert_mdn_compat(
+        "none | both | horizontal | vertical | block | inline",
+        "none | both | horizontal | vertical | block | inline",
+    );
+    assert_mdn_compat(
+        "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
+        "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
+    );
+    assert_mdn_compat(
+        "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button",
+        "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button",
+    );
     assert_mdn_compat("none | chained", "none | chained");
-    assert_mdn_compat("none | dotted | dashed | solid | double | groove | ridge | inset | outset", "none | dotted | dashed | solid | double | groove | ridge | inset | outset");
+    assert_mdn_compat(
+        "none | dotted | dashed | solid | double | groove | ridge | inset | outset",
+        "none | dotted | dashed | solid | double | groove | ridge | inset | outset",
+    );
     assert_mdn_compat("none | element | text", "none | element | text");
-    assert_mdn_compat("none | forwards | backwards | both", "none | forwards | backwards | both");
-    assert_mdn_compat("none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset", "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
-    assert_mdn_compat("none | ideograph-alpha | ideograph-numeric | ideograph-parenthesis | ideograph-space", "none | ideograph-alpha | ideograph-numeric | ideograph-parenthesis | ideograph-space");
+    assert_mdn_compat(
+        "none | forwards | backwards | both",
+        "none | forwards | backwards | both",
+    );
+    assert_mdn_compat(
+        "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset",
+        "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset",
+    );
+    assert_mdn_compat(
+        "none | ideograph-alpha | ideograph-numeric | ideograph-parenthesis | ideograph-space",
+        "none | ideograph-alpha | ideograph-numeric | ideograph-parenthesis | ideograph-space",
+    );
     assert_mdn_compat("none | in-flow | all", "none | in-flow | all");
-    assert_mdn_compat("none | left | right | both | inline-start | inline-end", "none | left | right | both | inline-start | inline-end");
+    assert_mdn_compat(
+        "none | left | right | both | inline-start | inline-end",
+        "none | left | right | both | inline-start | inline-end",
+    );
     assert_mdn_compat("none | mandatory | proximity", "none | mandatory | proximity");
     assert_mdn_compat("none | manual | auto", "none | manual | auto");
     assert_mdn_compat("none | nearest", "none | nearest");
-    assert_mdn_compat("none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position", "none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position");
+    assert_mdn_compat(
+        "none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position",
+        "none | non-scaling-stroke | non-scaling-size | non-rotation | fixed-position",
+    );
     assert_mdn_compat("none | path(<string>)", "none | path( <string> )");
-    assert_mdn_compat("none | play | play-once | play-forwards | play-backwards | pause | reset | replay", "none | play | play-once | play-forwards | play-backwards | pause | reset | replay");
+    assert_mdn_compat(
+        "none | play | play-once | play-forwards | play-backwards | pause | reset | replay",
+        "none | play | play-once | play-forwards | play-backwards | pause | reset | replay",
+    );
     assert_mdn_compat("none | proximity | mandatory", "none | proximity | mandatory");
     assert_mdn_compat("none | railed", "none | railed");
-    assert_mdn_compat("none | repeat( <length-percentage> )", "none | repeat( <length-percentage> )");
-    assert_mdn_compat("none | strict | content | [ [ size || inline-size ] || layout || style || paint ]", "none | strict | content | [ [ size || inline-size ] || layout || style || paint ]");
-    assert_mdn_compat("none | trim-start | trim-end | trim-both", "none | trim-start | trim-end | trim-both");
+    assert_mdn_compat(
+        "none | repeat( <length-percentage> )",
+        "none | repeat( <length-percentage> )",
+    );
+    assert_mdn_compat(
+        "none | strict | content | [ [ size || inline-size ] || layout || style || paint ]",
+        "none | strict | content | [ [ size || inline-size ] || layout || style || paint ]",
+    );
+    assert_mdn_compat(
+        "none | trim-start | trim-end | trim-both",
+        "none | trim-start | trim-end | trim-both",
+    );
     assert_mdn_compat("none | vertical-to-horizontal", "none | vertical-to-horizontal");
     assert_mdn_compat("none | zoom", "none | zoom");
     assert_mdn_compat("nonzero | evenodd", "nonzero | evenodd");
-    assert_mdn_compat("normal | <'text-box-trim'> || <'text-box-edge'>", "normal | <'text-box-trim'> || <'text-box-edge'>");
+    assert_mdn_compat(
+        "normal | <'text-box-trim'> || <'text-box-edge'>",
+        "normal | <'text-box-trim'> || <'text-box-edge'>",
+    );
     assert_mdn_compat("normal | <autospace> | auto", "normal | <autospace> | auto");
-    assert_mdn_compat("normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>", "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>");
-    assert_mdn_compat("normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]", "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]");
+    assert_mdn_compat(
+        "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+        "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
+    );
+    assert_mdn_compat(
+        "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+        "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
+    );
     assert_mdn_compat("normal | <feature-tag-value>#", "normal | <feature-tag-value>#");
     assert_mdn_compat("normal | <length-percentage>", "normal | <length-percentage>");
     assert_mdn_compat("normal | <length>", "normal | <length>");
-    assert_mdn_compat("normal | <number> | <length> | <percentage>", "normal | <number> | <length> | <percentage>");
-    assert_mdn_compat("normal | <percentage [0,∞]> | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded", "normal | <percentage [0,∞]> | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded");
+    assert_mdn_compat(
+        "normal | <number> | <length> | <percentage>",
+        "normal | <number> | <length> | <percentage>",
+    );
+    assert_mdn_compat(
+        "normal | <percentage [0,∞]> | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded",
+        "normal | <percentage [0,∞]> | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded",
+    );
     assert_mdn_compat("normal | <string>", "normal | <string>");
     assert_mdn_compat("normal | <time>", "normal | <time>");
     assert_mdn_compat("normal | <try-size>", "normal | <try-size>");
-    assert_mdn_compat("normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]", "normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]");
+    assert_mdn_compat(
+        "normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+        "normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+    );
     assert_mdn_compat("normal | [ <number> <integer>? ]", "normal | [ <number> <integer>? ]");
-    assert_mdn_compat("normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]", "normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]");
+    assert_mdn_compat(
+        "normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]",
+        "normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]",
+    );
     assert_mdn_compat("normal | [ <string> <number> ]#", "normal | [ <string> <number> ]#");
-    assert_mdn_compat("normal | [ [ size | inline-size ] || scroll-state ]", "normal | [ [ size | inline-size ] || scroll-state ]");
-    assert_mdn_compat("normal | [ fill || stroke || markers ]", "normal | [ fill || stroke || markers ]");
-    assert_mdn_compat("normal | [ light | dark | <custom-ident> ]+ && only?", "normal | [ light | dark | <custom-ident> ]+ && only?");
-    assert_mdn_compat("normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ]", "normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ]");
+    assert_mdn_compat(
+        "normal | [ [ size | inline-size ] || scroll-state ]",
+        "normal | [ [ size | inline-size ] || scroll-state ]",
+    );
+    assert_mdn_compat(
+        "normal | [ fill || stroke || markers ]",
+        "normal | [ fill || stroke || markers ]",
+    );
+    assert_mdn_compat(
+        "normal | [ light | dark | <custom-ident> ]+ && only?",
+        "normal | [ light | dark | <custom-ident> ]+ && only?",
+    );
+    assert_mdn_compat(
+        "normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ]",
+        "normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ]",
+    );
     assert_mdn_compat("normal | allow-discrete", "normal | allow-discrete");
     assert_mdn_compat("normal | always", "normal | always");
     assert_mdn_compat("normal | auto | <position>", "normal | auto | <position>");
     assert_mdn_compat("normal | bold | <number [1,1000]>", "normal | bold | <number [1,1000]>");
-    assert_mdn_compat("normal | break-all | keep-all | break-word | auto-phrase", "normal | break-all | keep-all | break-word | auto-phrase");
+    assert_mdn_compat(
+        "normal | break-all | keep-all | break-word | auto-phrase",
+        "normal | break-all | keep-all | break-word | auto-phrase",
+    );
     assert_mdn_compat("normal | break-word", "normal | break-word");
     assert_mdn_compat("normal | break-word | anywhere", "normal | break-word | anywhere");
     assert_mdn_compat("normal | compact", "normal | compact");
-    assert_mdn_compat("normal | embed | isolate | bidi-override | isolate-override | plaintext", "normal | embed | isolate | bidi-override | isolate-override | plaintext");
-    assert_mdn_compat("normal | italic | oblique <angle>?", "normal | italic | oblique <angle>?");
-    assert_mdn_compat("normal | light | dark | <palette-identifier> | <palette-mix()>", "normal | light | dark | <palette-identifier> | <palette-mix()>");
-    assert_mdn_compat("normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity", "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity");
-    assert_mdn_compat("normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]", "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]");
-    assert_mdn_compat("normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]", "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]");
-    assert_mdn_compat("normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> | <attr()> ]+ ]?", "normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> | <attr()> ]+ ]?");
-    assert_mdn_compat("normal | pre | pre-wrap | pre-line | <'white-space-collapse'> || <'text-wrap-mode'>", "normal | pre | pre-wrap | pre-line | <'white-space-collapse'> || <'text-wrap-mode'>");
-    assert_mdn_compat("normal | reset | <number [0,∞]> || <percentage [0,∞]>", "normal | reset | <number [0,∞]> || <percentage [0,∞]>");
-    assert_mdn_compat("normal | reverse | alternate | alternate-reverse", "normal | reverse | alternate | alternate-reverse");
+    assert_mdn_compat(
+        "normal | embed | isolate | bidi-override | isolate-override | plaintext",
+        "normal | embed | isolate | bidi-override | isolate-override | plaintext",
+    );
+    assert_mdn_compat(
+        "normal | italic | oblique <angle>?",
+        "normal | italic | oblique <angle>?",
+    );
+    assert_mdn_compat(
+        "normal | light | dark | <palette-identifier> | <palette-mix()>",
+        "normal | light | dark | <palette-identifier> | <palette-mix()>",
+    );
+    assert_mdn_compat(
+        "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
+        "normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity",
+    );
+    assert_mdn_compat(
+        "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]",
+        "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]",
+    );
+    assert_mdn_compat(
+        "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+        "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
+    );
+    assert_mdn_compat(
+        "normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> | <attr()> ]+ ]?",
+        "normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> | <attr()> ]+ ]?",
+    );
+    assert_mdn_compat(
+        "normal | pre | pre-wrap | pre-line | <'white-space-collapse'> || <'text-wrap-mode'>",
+        "normal | pre | pre-wrap | pre-line | <'white-space-collapse'> || <'text-wrap-mode'>",
+    );
+    assert_mdn_compat(
+        "normal | reset | <number [0,∞]> || <percentage [0,∞]>",
+        "normal | reset | <number [0,∞]> || <percentage [0,∞]>",
+    );
+    assert_mdn_compat(
+        "normal | reverse | alternate | alternate-reverse",
+        "normal | reverse | alternate | alternate-reverse",
+    );
     assert_mdn_compat("normal | reverse | inherit", "normal | reverse | inherit");
     assert_mdn_compat("normal | small-caps", "normal | small-caps");
-    assert_mdn_compat("normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps", "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps");
-    assert_mdn_compat("normal | source-order | flex-visual | flex-flow | grid-rows | grid-columns | grid-order", "normal | source-order | flex-visual | flex-flow | grid-rows | grid-columns | grid-order");
-    assert_mdn_compat("normal | spell-out || digits || [ literal-punctuation | no-punctuation ]", "normal | spell-out || digits || [ literal-punctuation | no-punctuation ]");
-    assert_mdn_compat("normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ] | anchor-center", "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ] | anchor-center");
-    assert_mdn_compat("normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | anchor-center", "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | anchor-center");
+    assert_mdn_compat(
+        "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps",
+        "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps",
+    );
+    assert_mdn_compat(
+        "normal | source-order | flex-visual | flex-flow | grid-rows | grid-columns | grid-order",
+        "normal | source-order | flex-visual | flex-flow | grid-rows | grid-columns | grid-order",
+    );
+    assert_mdn_compat(
+        "normal | spell-out || digits || [ literal-punctuation | no-punctuation ]",
+        "normal | spell-out || digits || [ literal-punctuation | no-punctuation ]",
+    );
+    assert_mdn_compat(
+        "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ] | anchor-center",
+        "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ] | anchor-center",
+    );
+    assert_mdn_compat(
+        "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | anchor-center",
+        "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ] | anchor-center",
+    );
     assert_mdn_compat("normal | sub | super", "normal | sub | super");
     assert_mdn_compat("normal | text | emoji | unicode", "normal | text | emoji | unicode");
-    assert_mdn_compat("normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded", "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded");
-    assert_mdn_compat("normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | <percentage>", "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | <percentage>");
+    assert_mdn_compat(
+        "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded",
+        "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded",
+    );
+    assert_mdn_compat(
+        "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | <percentage>",
+        "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | <percentage>",
+    );
     assert_mdn_compat("not <media-in-parens>", "not <media-in-parens>");
-    assert_mdn_compat("not <query-in-parens> | <query-in-parens> [ [ and <query-in-parens> ]* | [ or <query-in-parens> ]* ]", "not <query-in-parens> | <query-in-parens> [ [ and <query-in-parens> ]* | [ or <query-in-parens> ]* ]");
-    assert_mdn_compat("not <scroll-state-in-parens> | <scroll-state-in-parens> [ [ and <scroll-state-in-parens> ]* | [ or <scroll-state-in-parens> ]* ] | <scroll-state-feature>", "not <scroll-state-in-parens> | <scroll-state-in-parens> [ [ and <scroll-state-in-parens> ]* | [ or <scroll-state-in-parens> ]* ] | <scroll-state-feature>");
-    assert_mdn_compat("not <style-in-parens> | <style-in-parens> [ [ and <style-in-parens> ]* | [ or <style-in-parens> ]* ] | <style-feature>", "not <style-in-parens> | <style-in-parens> [ [ and <style-in-parens> ]* | [ or <style-in-parens> ]* ] | <style-feature>");
-    assert_mdn_compat("not <supports-in-parens> | <supports-in-parens> [ and <supports-in-parens> ]* | <supports-in-parens> [ or <supports-in-parens> ]*", "not <supports-in-parens> | <supports-in-parens> [ and <supports-in-parens> ]* | <supports-in-parens> [ or <supports-in-parens> ]*");
+    assert_mdn_compat(
+        "not <query-in-parens> | <query-in-parens> [ [ and <query-in-parens> ]* | [ or <query-in-parens> ]* ]",
+        "not <query-in-parens> | <query-in-parens> [ [ and <query-in-parens> ]* | [ or <query-in-parens> ]* ]",
+    );
+    assert_mdn_compat(
+        "not <scroll-state-in-parens> | <scroll-state-in-parens> [ [ and <scroll-state-in-parens> ]* | [ or <scroll-state-in-parens> ]* ] | <scroll-state-feature>",
+        "not <scroll-state-in-parens> | <scroll-state-in-parens> [ [ and <scroll-state-in-parens> ]* | [ or <scroll-state-in-parens> ]* ] | <scroll-state-feature>",
+    );
+    assert_mdn_compat(
+        "not <style-in-parens> | <style-in-parens> [ [ and <style-in-parens> ]* | [ or <style-in-parens> ]* ] | <style-feature>",
+        "not <style-in-parens> | <style-in-parens> [ [ and <style-in-parens> ]* | [ or <style-in-parens> ]* ] | <style-feature>",
+    );
+    assert_mdn_compat(
+        "not <supports-in-parens> | <supports-in-parens> [ and <supports-in-parens> ]* | <supports-in-parens> [ or <supports-in-parens> ]*",
+        "not <supports-in-parens> | <supports-in-parens> [ and <supports-in-parens> ]* | <supports-in-parens> [ or <supports-in-parens> ]*",
+    );
     assert_mdn_compat("nowrap | wrap | wrap-reverse", "nowrap | wrap | wrap-reverse");
     assert_mdn_compat("numeric-only | allow-keywords", "numeric-only | allow-keywords");
-    assert_mdn_compat("odd | even | <integer> | <n-dimension> | '+'?† n | -n | <ndashdigit-dimension> | '+'?† <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'?† n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'?† n- <signless-integer> | -n- <signless-integer> | <n-dimension> ['+' | '-'] <signless-integer> | '+'?† n ['+' | '-'] <signless-integer> | -n ['+' | '-'] <signless-integer>", "odd | even | <integer> | <n-dimension> | '+'? † n | -n | <ndashdigit-dimension> | '+'? † <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'? † n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'? † n- <signless-integer> | -n- <signless-integer> | <n-dimension> [ '+' | '-' ] <signless-integer> | '+'? † n [ '+' | '-' ] <signless-integer> | -n [ '+' | '-' ] <signless-integer>");
-    assert_mdn_compat("oklab( [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ / [<alpha-value> | none] ]? )", "oklab( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("oklch( [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ <hue> | none] [ / [<alpha-value> | none] ]? )", "oklch( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <hue> | none ] [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("opacity( [ <number> | <percentage> ]? )", "opacity( [ <number> | <percentage> ]? )");
-    assert_mdn_compat("open-quote | close-quote | no-open-quote | no-close-quote", "open-quote | close-quote | no-open-quote | no-close-quote");
+    assert_mdn_compat(
+        "odd | even | <integer> | <n-dimension> | '+'?† n | -n | <ndashdigit-dimension> | '+'?† <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'?† n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'?† n- <signless-integer> | -n- <signless-integer> | <n-dimension> ['+' | '-'] <signless-integer> | '+'?† n ['+' | '-'] <signless-integer> | -n ['+' | '-'] <signless-integer>",
+        "odd | even | <integer> | <n-dimension> | '+'? † n | -n | <ndashdigit-dimension> | '+'? † <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'? † n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'? † n- <signless-integer> | -n- <signless-integer> | <n-dimension> [ '+' | '-' ] <signless-integer> | '+'? † n [ '+' | '-' ] <signless-integer> | -n [ '+' | '-' ] <signless-integer>",
+    );
+    assert_mdn_compat(
+        "oklab( [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ / [<alpha-value> | none] ]? )",
+        "oklab( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "oklch( [ <percentage> | <number> | none] [ <percentage> | <number> | none] [ <hue> | none] [ / [<alpha-value> | none] ]? )",
+        "oklch( [ <percentage> | <number> | none ] [ <percentage> | <number> | none ] [ <hue> | none ] [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "opacity( [ <number> | <percentage> ]? )",
+        "opacity( [ <number> | <percentage> ]? )",
+    );
+    assert_mdn_compat(
+        "open-quote | close-quote | no-open-quote | no-close-quote",
+        "open-quote | close-quote | no-open-quote | no-close-quote",
+    );
     assert_mdn_compat("padding-box | content-box", "padding-box | content-box");
-    assert_mdn_compat("paint( <ident>, <declaration-value>? )", "paint( <ident> , <declaration-value>? )");
-    assert_mdn_compat("palette-mix(<color-interpolation-method> , [ [normal | light | dark | <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>? ]#{2})", "palette-mix( <color-interpolation-method> , [ [ normal | light | dark | <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>? ]#{2} )");
+    assert_mdn_compat(
+        "paint( <ident>, <declaration-value>? )",
+        "paint( <ident> , <declaration-value>? )",
+    );
+    assert_mdn_compat(
+        "palette-mix(<color-interpolation-method> , [ [normal | light | dark | <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>? ]#{2})",
+        "palette-mix( <color-interpolation-method> , [ [ normal | light | dark | <palette-identifier> | <palette-mix()> ] && <percentage [0,100]>? ]#{2} )",
+    );
     assert_mdn_compat("path( <'fill-rule'>? , <string> )", "path( <'fill-rule'>? , <string> )");
-    assert_mdn_compat("perspective( [ <length [0,∞]> | none ] )", "perspective( [ <length [0,∞]> | none ] )");
-    assert_mdn_compat("polygon( <'fill-rule'>? , [ <length-percentage> <length-percentage> ]# )", "polygon( <'fill-rule'>? , [ <length-percentage> <length-percentage> ]# )");
+    assert_mdn_compat(
+        "perspective( [ <length [0,∞]> | none ] )",
+        "perspective( [ <length [0,∞]> | none ] )",
+    );
+    assert_mdn_compat(
+        "polygon( <'fill-rule'>? , [ <length-percentage> <length-percentage> ]# )",
+        "polygon( <'fill-rule'>? , [ <length-percentage> <length-percentage> ]# )",
+    );
     assert_mdn_compat("pow( <calc-sum>, <calc-sum> )", "pow( <calc-sum> , <calc-sum> )");
-    assert_mdn_compat("radial-gradient( [ <radial-gradient-syntax> ] )", "radial-gradient( [ <radial-gradient-syntax> ] )");
-    assert_mdn_compat("ray( <angle> && <ray-size>? && contain? && [at <position>]? )", "ray( <angle> && <ray-size>? && contain? && [ at <position> ]? )");
-    assert_mdn_compat("read-only | read-write | read-write-plaintext-only", "read-only | read-write | read-write-plaintext-only");
-    assert_mdn_compat("read-only | read-write | write-only", "read-only | read-write | write-only");
-    assert_mdn_compat("rect( [ <length-percentage> | auto ]{4} [ round <'border-radius'> ]? )", "rect( [ <length-percentage> | auto ]{4} [ round <'border-radius'> ]? )");
-    assert_mdn_compat("rect(<top>, <right>, <bottom>, <left>)", "rect( <top> , <right> , <bottom> , <left> )");
+    assert_mdn_compat(
+        "radial-gradient( [ <radial-gradient-syntax> ] )",
+        "radial-gradient( [ <radial-gradient-syntax> ] )",
+    );
+    assert_mdn_compat(
+        "ray( <angle> && <ray-size>? && contain? && [at <position>]? )",
+        "ray( <angle> && <ray-size>? && contain? && [ at <position> ]? )",
+    );
+    assert_mdn_compat(
+        "read-only | read-write | read-write-plaintext-only",
+        "read-only | read-write | read-write-plaintext-only",
+    );
+    assert_mdn_compat(
+        "read-only | read-write | write-only",
+        "read-only | read-write | write-only",
+    );
+    assert_mdn_compat(
+        "rect( [ <length-percentage> | auto ]{4} [ round <'border-radius'> ]? )",
+        "rect( [ <length-percentage> | auto ]{4} [ round <'border-radius'> ]? )",
+    );
+    assert_mdn_compat(
+        "rect(<top>, <right>, <bottom>, <left>)",
+        "rect( <top> , <right> , <bottom> , <left> )",
+    );
     assert_mdn_compat("rem( <calc-sum>, <calc-sum> )", "rem( <calc-sum> , <calc-sum> )");
-    assert_mdn_compat("repeat | no-repeat | space | round", "repeat | no-repeat | space | round");
-    assert_mdn_compat("repeat( [ <integer [1,∞]> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )", "repeat( [ <integer [1,∞]> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )");
-    assert_mdn_compat("repeat( [ <integer [1,∞]> ] , [ <line-names>? <track-size> ]+ <line-names>? )", "repeat( [ <integer [1,∞]> ] , [ <line-names>? <track-size> ]+ <line-names>? )");
-    assert_mdn_compat("repeat( [ <integer [1,∞]> | auto-fill ], <line-names>+ )", "repeat( [ <integer [1,∞]> | auto-fill ] , <line-names>+ )");
-    assert_mdn_compat("repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )", "repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )");
-    assert_mdn_compat("repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}", "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}");
-    assert_mdn_compat("repeating-conic-gradient( [ <conic-gradient-syntax> ] )", "repeating-conic-gradient( [ <conic-gradient-syntax> ] )");
-    assert_mdn_compat("repeating-linear-gradient( [ <linear-gradient-syntax> ] )", "repeating-linear-gradient( [ <linear-gradient-syntax> ] )");
-    assert_mdn_compat("repeating-radial-gradient( [ <radial-gradient-syntax> ] )", "repeating-radial-gradient( [ <radial-gradient-syntax> ] )");
+    assert_mdn_compat(
+        "repeat | no-repeat | space | round",
+        "repeat | no-repeat | space | round",
+    );
+    assert_mdn_compat(
+        "repeat( [ <integer [1,∞]> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+        "repeat( [ <integer [1,∞]> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+    );
+    assert_mdn_compat(
+        "repeat( [ <integer [1,∞]> ] , [ <line-names>? <track-size> ]+ <line-names>? )",
+        "repeat( [ <integer [1,∞]> ] , [ <line-names>? <track-size> ]+ <line-names>? )",
+    );
+    assert_mdn_compat(
+        "repeat( [ <integer [1,∞]> | auto-fill ], <line-names>+ )",
+        "repeat( [ <integer [1,∞]> | auto-fill ] , <line-names>+ )",
+    );
+    assert_mdn_compat(
+        "repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+        "repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )",
+    );
+    assert_mdn_compat(
+        "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}",
+        "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}",
+    );
+    assert_mdn_compat(
+        "repeating-conic-gradient( [ <conic-gradient-syntax> ] )",
+        "repeating-conic-gradient( [ <conic-gradient-syntax> ] )",
+    );
+    assert_mdn_compat(
+        "repeating-linear-gradient( [ <linear-gradient-syntax> ] )",
+        "repeating-linear-gradient( [ <linear-gradient-syntax> ] )",
+    );
+    assert_mdn_compat(
+        "repeating-radial-gradient( [ <radial-gradient-syntax> ] )",
+        "repeating-radial-gradient( [ <radial-gradient-syntax> ] )",
+    );
     assert_mdn_compat("replace | add | accumulate", "replace | add | accumulate");
     assert_mdn_compat("reversed( <counter-name> )", "reversed( <counter-name> )");
-    assert_mdn_compat("rgb( <percentage>#{3} , <alpha-value>? ) | rgb( <number>#{3} , <alpha-value>? ) | rgb( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )", "rgb( <percentage>#{3} , <alpha-value>? ) | rgb( <number>#{3} , <alpha-value>? ) | rgb( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )");
-    assert_mdn_compat("rgba( <percentage>#{3} , <alpha-value>? ) | rgba( <number>#{3} , <alpha-value>? ) | rgba( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )", "rgba( <percentage>#{3} , <alpha-value>? ) | rgba( <number>#{3} , <alpha-value>? ) | rgba( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )");
+    assert_mdn_compat(
+        "rgb( <percentage>#{3} , <alpha-value>? ) | rgb( <number>#{3} , <alpha-value>? ) | rgb( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )",
+        "rgb( <percentage>#{3} , <alpha-value>? ) | rgb( <number>#{3} , <alpha-value>? ) | rgb( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )",
+    );
+    assert_mdn_compat(
+        "rgba( <percentage>#{3} , <alpha-value>? ) | rgba( <number>#{3} , <alpha-value>? ) | rgba( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )",
+        "rgba( <percentage>#{3} , <alpha-value>? ) | rgba( <number>#{3} , <alpha-value>? ) | rgba( [ <number> | <percentage> | none ]{3} [ / [ <alpha-value> | none ] ]? )",
+    );
     assert_mdn_compat("root | nearest | self", "root | nearest | self");
     assert_mdn_compat("rotate( [ <angle> | <zero> ] )", "rotate( [ <angle> | <zero> ] )");
-    assert_mdn_compat("rotate3d( <number> , <number> , <number> , [ <angle> | <zero> ] )", "rotate3d( <number> , <number> , <number> , [ <angle> | <zero> ] )");
+    assert_mdn_compat(
+        "rotate3d( <number> , <number> , <number> , [ <angle> | <zero> ] )",
+        "rotate3d( <number> , <number> , <number> , [ <angle> | <zero> ] )",
+    );
     assert_mdn_compat("rotateX( [ <angle> | <zero> ] )", "rotateX( [ <angle> | <zero> ] )");
     assert_mdn_compat("rotateY( [ <angle> | <zero> ] )", "rotateY( [ <angle> | <zero> ] )");
     assert_mdn_compat("rotateZ( [ <angle> | <zero> ] )", "rotateZ( [ <angle> | <zero> ] )");
-    assert_mdn_compat("round | scoop | bevel | notch | square | squircle | <superellipse()>", "round | scoop | bevel | notch | square | squircle | <superellipse()>");
-    assert_mdn_compat("round( <rounding-strategy>?, <calc-sum>, <calc-sum> )", "round( <rounding-strategy>? , <calc-sum> , <calc-sum> )");
-    assert_mdn_compat("row | row-reverse | column | column-reverse", "row | row-reverse | column | column-reverse");
+    assert_mdn_compat(
+        "round | scoop | bevel | notch | square | squircle | <superellipse()>",
+        "round | scoop | bevel | notch | square | squircle | <superellipse()>",
+    );
+    assert_mdn_compat(
+        "round( <rounding-strategy>?, <calc-sum>, <calc-sum> )",
+        "round( <rounding-strategy>? , <calc-sum> , <calc-sum> )",
+    );
+    assert_mdn_compat(
+        "row | row-reverse | column | column-reverse",
+        "row | row-reverse | column | column-reverse",
+    );
     assert_mdn_compat("running | paused", "running | paused");
-    assert_mdn_compat("saturate( [ <number> | <percentage> ]? )", "saturate( [ <number> | <percentage> ]? )");
-    assert_mdn_compat("scale( [ <number> | <percentage> ]#{1,2} )", "scale( [ <number> | <percentage> ]#{1,2} )");
-    assert_mdn_compat("scale3d( [ <number> | <percentage> ]#{3} )", "scale3d( [ <number> | <percentage> ]#{3} )");
-    assert_mdn_compat("scaleX( [ <number> | <percentage> ] )", "scaleX( [ <number> | <percentage> ] )");
-    assert_mdn_compat("scaleY( [ <number> | <percentage> ] )", "scaleY( [ <number> | <percentage> ] )");
-    assert_mdn_compat("scaleZ( [ <number> | <percentage> ] )", "scaleZ( [ <number> | <percentage> ] )");
+    assert_mdn_compat(
+        "saturate( [ <number> | <percentage> ]? )",
+        "saturate( [ <number> | <percentage> ]? )",
+    );
+    assert_mdn_compat(
+        "scale( [ <number> | <percentage> ]#{1,2} )",
+        "scale( [ <number> | <percentage> ]#{1,2} )",
+    );
+    assert_mdn_compat(
+        "scale3d( [ <number> | <percentage> ]#{3} )",
+        "scale3d( [ <number> | <percentage> ]#{3} )",
+    );
+    assert_mdn_compat(
+        "scaleX( [ <number> | <percentage> ] )",
+        "scaleX( [ <number> | <percentage> ] )",
+    );
+    assert_mdn_compat(
+        "scaleY( [ <number> | <percentage> ] )",
+        "scaleY( [ <number> | <percentage> ] )",
+    );
+    assert_mdn_compat(
+        "scaleZ( [ <number> | <percentage> ] )",
+        "scaleZ( [ <number> | <percentage> ] )",
+    );
     assert_mdn_compat("scroll | fixed | local", "scroll | fixed | local");
-    assert_mdn_compat("scroll( [ <scroller> || <axis> ]? )", "scroll( [ <scroller> || <axis> ]? )");
-    assert_mdn_compat("scroll-position | contents | <custom-ident>", "scroll-position | contents | <custom-ident>");
-    assert_mdn_compat("searchfield | textarea | checkbox | radio | menulist | listbox | meter | progress-bar | button", "searchfield | textarea | checkbox | radio | menulist | listbox | meter | progress-bar | button");
+    assert_mdn_compat(
+        "scroll( [ <scroller> || <axis> ]? )",
+        "scroll( [ <scroller> || <axis> ]? )",
+    );
+    assert_mdn_compat(
+        "scroll-position | contents | <custom-ident>",
+        "scroll-position | contents | <custom-ident>",
+    );
+    assert_mdn_compat(
+        "searchfield | textarea | checkbox | radio | menulist | listbox | meter | progress-bar | button",
+        "searchfield | textarea | checkbox | radio | menulist | listbox | meter | progress-bar | button",
+    );
     assert_mdn_compat("select", "select");
     assert_mdn_compat("selector( <complex-selector> )", "selector( <complex-selector> )");
     assert_mdn_compat("separate | collapse", "separate | collapse");
     assert_mdn_compat("separate | collapse | auto", "separate | collapse | auto");
-    assert_mdn_compat("sepia( [ <number> | <percentage> ]? )", "sepia( [ <number> | <percentage> ]? )");
-    assert_mdn_compat("serif | sans-serif | system-ui | cursive | fantasy | math | monospace", "serif | sans-serif | system-ui | cursive | fantasy | math | monospace");
+    assert_mdn_compat(
+        "sepia( [ <number> | <percentage> ]? )",
+        "sepia( [ <number> | <percentage> ]? )",
+    );
+    assert_mdn_compat(
+        "serif | sans-serif | system-ui | cursive | fantasy | math | monospace",
+        "serif | sans-serif | system-ui | cursive | fantasy | math | monospace",
+    );
     assert_mdn_compat("show | hide", "show | hide");
     assert_mdn_compat("sign( <calc-sum> )", "sign( <calc-sum> )");
     assert_mdn_compat("sin( <calc-sum> )", "sin( <calc-sum> )");
     assert_mdn_compat("single | multiple", "single | multiple");
-    assert_mdn_compat("skew( [ <angle> | <zero> ] , [ <angle> | <zero> ]? )", "skew( [ <angle> | <zero> ] , [ <angle> | <zero> ]? )");
+    assert_mdn_compat(
+        "skew( [ <angle> | <zero> ] , [ <angle> | <zero> ]? )",
+        "skew( [ <angle> | <zero> ] , [ <angle> | <zero> ]? )",
+    );
     assert_mdn_compat("skewX( [ <angle> | <zero> ] )", "skewX( [ <angle> | <zero> ] )");
     assert_mdn_compat("skewY( [ <angle> | <zero> ] )", "skewY( [ <angle> | <zero> ] )");
     assert_mdn_compat("slice | clone", "slice | clone");
-    assert_mdn_compat("snapInterval( <length-percentage>, <length-percentage> ) | snapList( <length-percentage># )", "snapInterval( <length-percentage> , <length-percentage> ) | snapList( <length-percentage># )");
-    assert_mdn_compat("snapInterval( <percentage>, <percentage> ) | snapList( <percentage># )", "snapInterval( <percentage> , <percentage> ) | snapList( <percentage># )");
-    assert_mdn_compat("solid | double | dotted | dashed | wavy", "solid | double | dotted | dashed | wavy");
-    assert_mdn_compat("space-all | normal | space-first | trim-start", "space-all | normal | space-first | trim-start");
-    assert_mdn_compat("space-between | space-around | space-evenly | stretch", "space-between | space-around | space-evenly | stretch");
+    assert_mdn_compat(
+        "snapInterval( <length-percentage>, <length-percentage> ) | snapList( <length-percentage># )",
+        "snapInterval( <length-percentage> , <length-percentage> ) | snapList( <length-percentage># )",
+    );
+    assert_mdn_compat(
+        "snapInterval( <percentage>, <percentage> ) | snapList( <percentage># )",
+        "snapInterval( <percentage> , <percentage> ) | snapList( <percentage># )",
+    );
+    assert_mdn_compat(
+        "solid | double | dotted | dashed | wavy",
+        "solid | double | dotted | dashed | wavy",
+    );
+    assert_mdn_compat(
+        "space-all | normal | space-first | trim-start",
+        "space-all | normal | space-first | trim-start",
+    );
+    assert_mdn_compat(
+        "space-between | space-around | space-evenly | stretch",
+        "space-between | space-around | space-evenly | stretch",
+    );
     assert_mdn_compat("sqrt( <calc-sum> )", "sqrt( <calc-sum> )");
-    assert_mdn_compat("srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020", "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020");
-    assert_mdn_compat("srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020 | lab | oklab | xyz | xyz-d50 | xyz-d65", "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020 | lab | oklab | xyz | xyz-d50 | xyz-d65");
-    assert_mdn_compat("standard | no-limit | constrained | <dynamic-range-limit-mix()>", "standard | no-limit | constrained | <dynamic-range-limit-mix()>");
-    assert_mdn_compat("start | center | end | baseline | stretch", "start | center | end | baseline | stretch");
+    assert_mdn_compat(
+        "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020",
+        "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020",
+    );
+    assert_mdn_compat(
+        "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020 | lab | oklab | xyz | xyz-d50 | xyz-d65",
+        "srgb | srgb-linear | display-p3 | display-p3-linear | a98-rgb | prophoto-rgb | rec2020 | lab | oklab | xyz | xyz-d50 | xyz-d65",
+    );
+    assert_mdn_compat(
+        "standard | no-limit | constrained | <dynamic-range-limit-mix()>",
+        "standard | no-limit | constrained | <dynamic-range-limit-mix()>",
+    );
+    assert_mdn_compat(
+        "start | center | end | baseline | stretch",
+        "start | center | end | baseline | stretch",
+    );
     assert_mdn_compat("start | center | end | justify", "start | center | end | justify");
-    assert_mdn_compat("start | center | space-between | space-around", "start | center | space-between | space-around");
-    assert_mdn_compat("start | end | left | right | center | justify | match-parent", "start | end | left | right | center | justify | match-parent");
+    assert_mdn_compat(
+        "start | center | space-between | space-around",
+        "start | center | space-between | space-around",
+    );
+    assert_mdn_compat(
+        "start | end | left | right | center | justify | match-parent",
+        "start | end | left | right | center | justify | match-parent",
+    );
     assert_mdn_compat("start | middle | end", "start | middle | end");
-    assert_mdn_compat("static | relative | absolute | sticky | fixed", "static | relative | absolute | sticky | fixed");
+    assert_mdn_compat(
+        "static | relative | absolute | sticky | fixed",
+        "static | relative | absolute | sticky | fixed",
+    );
     assert_mdn_compat("step-start | step-end | <steps()>", "step-start | step-end | <steps()>");
-    assert_mdn_compat("steps( <integer>, <step-position>? )", "steps( <integer> , <step-position>? )");
-    assert_mdn_compat("string | color | url | integer | number | length | angle | time | frequency | cap | ch | em | ex | ic | lh | rlh | rem | vb | vi | vw | vh | vmin | vmax | mm | Q | cm | in | pt | pc | px | deg | grad | rad | turn | ms | s | Hz | kHz | %", "string | color | url | integer | number | length | angle | time | frequency | cap | ch | em | ex | ic | lh | rlh | rem | vb | vi | vw | vh | vmin | vmax | mm | Q | cm | in | pt | pc | px | deg | grad | rad | turn | ms | s | Hz | kHz | %");
-    assert_mdn_compat("superellipse( [ <number> | infinity | -infinity ] )", "superellipse( [ <number> | infinity | -infinity ] )");
-    assert_mdn_compat("symbols( <symbols-type>? [ <string> | <image> ]+ )", "symbols( <symbols-type>? [ <string> | <image> ]+ )");
-    assert_mdn_compat("table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-base | ruby-text | ruby-base-container | ruby-text-container", "table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-base | ruby-text | ruby-base-container | ruby-text-container");
+    assert_mdn_compat(
+        "steps( <integer>, <step-position>? )",
+        "steps( <integer> , <step-position>? )",
+    );
+    assert_mdn_compat(
+        "string | color | url | integer | number | length | angle | time | frequency | cap | ch | em | ex | ic | lh | rlh | rem | vb | vi | vw | vh | vmin | vmax | mm | Q | cm | in | pt | pc | px | deg | grad | rad | turn | ms | s | Hz | kHz | %",
+        "string | color | url | integer | number | length | angle | time | frequency | cap | ch | em | ex | ic | lh | rlh | rem | vb | vi | vw | vh | vmin | vmax | mm | Q | cm | in | pt | pc | px | deg | grad | rad | turn | ms | s | Hz | kHz | %",
+    );
+    assert_mdn_compat(
+        "superellipse( [ <number> | infinity | -infinity ] )",
+        "superellipse( [ <number> | infinity | -infinity ] )",
+    );
+    assert_mdn_compat(
+        "symbols( <symbols-type>? [ <string> | <image> ]+ )",
+        "symbols( <symbols-type>? [ <string> | <image> ]+ )",
+    );
+    assert_mdn_compat(
+        "table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-base | ruby-text | ruby-base-container | ruby-text-container",
+        "table-row-group | table-header-group | table-footer-group | table-row | table-cell | table-column-group | table-column | table-caption | ruby-base | ruby-text | ruby-base-container | ruby-text-container",
+    );
     assert_mdn_compat("tan( <calc-sum> )", "tan( <calc-sum> )");
-    assert_mdn_compat("target-counter( [ <string> | <url> ] , <custom-ident> , <counter-style>? )", "target-counter( [ <string> | <url> ] , <custom-ident> , <counter-style>? )");
-    assert_mdn_compat("target-counters( [ <string> | <url> ] , <custom-ident> , <string> , <counter-style>? )", "target-counters( [ <string> | <url> ] , <custom-ident> , <string> , <counter-style>? )");
-    assert_mdn_compat("target-text( [ <string> | <url> ] , [ content | before | after | first-letter ]? )", "target-text( [ <string> | <url> ] , [ content | before | after | first-letter ]? )");
+    assert_mdn_compat(
+        "target-counter( [ <string> | <url> ] , <custom-ident> , <counter-style>? )",
+        "target-counter( [ <string> | <url> ] , <custom-ident> , <counter-style>? )",
+    );
+    assert_mdn_compat(
+        "target-counters( [ <string> | <url> ] , <custom-ident> , <string> , <counter-style>? )",
+        "target-counters( [ <string> | <url> ] , <custom-ident> , <string> , <counter-style>? )",
+    );
+    assert_mdn_compat(
+        "target-text( [ <string> | <url> ] , [ content | before | after | first-letter ]? )",
+        "target-text( [ <string> | <url> ] , [ content | before | after | first-letter ]? )",
+    );
     assert_mdn_compat("tb | rl | bt | lr", "tb | rl | bt | lr");
     assert_mdn_compat("textfield | menulist-button", "textfield | menulist-button");
     assert_mdn_compat("top | bottom", "top | bottom");
-    assert_mdn_compat("translate( <length-percentage> , <length-percentage>? )", "translate( <length-percentage> , <length-percentage>? )");
-    assert_mdn_compat("translate3d( <length-percentage> , <length-percentage> , <length> )", "translate3d( <length-percentage> , <length-percentage> , <length> )");
+    assert_mdn_compat(
+        "translate( <length-percentage> , <length-percentage>? )",
+        "translate( <length-percentage> , <length-percentage>? )",
+    );
+    assert_mdn_compat(
+        "translate3d( <length-percentage> , <length-percentage> , <length> )",
+        "translate3d( <length-percentage> , <length-percentage> , <length> )",
+    );
     assert_mdn_compat("translateX( <length-percentage> )", "translateX( <length-percentage> )");
     assert_mdn_compat("translateY( <length-percentage> )", "translateY( <length-percentage> )");
     assert_mdn_compat("translateZ( <length> )", "translateZ( <length> )");
-    assert_mdn_compat("type( <syntax> ) | raw-string | number | <attr-unit>", "type( <syntax> ) | raw-string | number | <attr-unit>");
-    assert_mdn_compat("ui-serif | ui-sans-serif | ui-monospace | ui-rounded", "ui-serif | ui-sans-serif | ui-monospace | ui-rounded");
+    assert_mdn_compat(
+        "type( <syntax> ) | raw-string | number | <attr-unit>",
+        "type( <syntax> ) | raw-string | number | <attr-unit>",
+    );
+    assert_mdn_compat(
+        "ui-serif | ui-sans-serif | ui-monospace | ui-rounded",
+        "ui-serif | ui-sans-serif | ui-monospace | ui-rounded",
+    );
     assert_mdn_compat("unsafe | safe", "unsafe | safe");
-    assert_mdn_compat("var( <custom-property-name> , <declaration-value>? )", "var( <custom-property-name> , <declaration-value>? )");
-    assert_mdn_compat("view([<axis> || <'view-timeline-inset'>]?)", "view( [ <axis> || <'view-timeline-inset'> ]? )");
+    assert_mdn_compat(
+        "var( <custom-property-name> , <declaration-value>? )",
+        "var( <custom-property-name> , <declaration-value>? )",
+    );
+    assert_mdn_compat(
+        "view([<axis> || <'view-timeline-inset'>]?)",
+        "view( [ <axis> || <'view-timeline-inset'> ]? )",
+    );
     assert_mdn_compat("visible | auto | hidden", "visible | auto | hidden");
     assert_mdn_compat("visible | hidden", "visible | hidden");
-    assert_mdn_compat("visible | hidden | clip | scroll | auto", "visible | hidden | clip | scroll | auto");
+    assert_mdn_compat(
+        "visible | hidden | clip | scroll | auto",
+        "visible | hidden | clip | scroll | auto",
+    );
     assert_mdn_compat("visible | hidden | collapse", "visible | hidden | collapse");
-    assert_mdn_compat("width | height | block | inline | self-block | self-inline", "width | height | block | inline | self-block | self-inline");
+    assert_mdn_compat(
+        "width | height | block | inline | self-block | self-inline",
+        "width | height | block | inline | self-block | self-inline",
+    );
     assert_mdn_compat("wrap | none", "wrap | none");
     assert_mdn_compat("wrap | nowrap", "wrap | nowrap");
-    assert_mdn_compat("xx-small | x-small | small | medium | large | x-large | xx-large | xxx-large", "xx-small | x-small | small | medium | large | x-large | xx-large | xxx-large");
-    assert_mdn_compat("xywh( <length-percentage>{2} <length-percentage [0,∞]>{2} [ round <'border-radius'> ]? )", "xywh( <length-percentage>{2} <length-percentage [0,∞]>{2} [ round <'border-radius'> ]? )");
+    assert_mdn_compat(
+        "xx-small | x-small | small | medium | large | x-large | xx-large | xxx-large",
+        "xx-small | x-small | small | medium | large | x-large | xx-large | xxx-large",
+    );
+    assert_mdn_compat(
+        "xywh( <length-percentage>{2} <length-percentage [0,∞]>{2} [ round <'border-radius'> ]? )",
+        "xywh( <length-percentage>{2} <length-percentage [0,∞]>{2} [ round <'border-radius'> ]? )",
+    );
     assert_mdn_compat("xyz | xyz-d50 | xyz-d65", "xyz | xyz-d50 | xyz-d65");
 }

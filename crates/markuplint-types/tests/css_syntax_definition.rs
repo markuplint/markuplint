@@ -641,10 +641,20 @@ fn deeply_nested_groups() {
     if let SyntaxNode::Group { explicit, terms, .. } = &node {
         assert!(explicit);
         assert_eq!(terms.len(), 1);
-        if let SyntaxNode::Group { explicit: e2, terms: t2, .. } = &terms[0] {
+        if let SyntaxNode::Group {
+            explicit: e2,
+            terms: t2,
+            ..
+        } = &terms[0]
+        {
             assert!(e2);
             assert_eq!(t2.len(), 1);
-            if let SyntaxNode::Group { explicit: e3, terms: t3, .. } = &t2[0] {
+            if let SyntaxNode::Group {
+                explicit: e3,
+                terms: t3,
+                ..
+            } = &t2[0]
+            {
                 assert!(e3);
                 assert_eq!(t3.len(), 1);
                 assert_eq!(t3[0], SyntaxNode::Keyword { name: "a".into() });
