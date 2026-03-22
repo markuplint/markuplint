@@ -1,5 +1,5 @@
 [workspace]
-members = ["markuplint-core", "markuplint-dom", "markuplint-napi"]
+members = ["markuplint-core", "markuplint-dom", "markuplint-napi", "markuplint-types"]
 resolver = "3"
 
 [workspace.dependencies]
