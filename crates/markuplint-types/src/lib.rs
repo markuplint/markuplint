@@ -3,3 +3,4 @@
 //! Rust implementation of `@markuplint/types` validators.
 
 pub mod primitive;
+pub mod simple_patterns;
