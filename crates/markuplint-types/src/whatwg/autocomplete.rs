@@ -83,12 +83,8 @@ enum FieldCategory {
     Credential,
 }
 
-fn eq_ignore_ascii_case(a: &str, b: &str) -> bool {
-    a.eq_ignore_ascii_case(b)
-}
-
 fn matches_any(value: &str, list: &[&str]) -> bool {
-    list.iter().any(|item| eq_ignore_ascii_case(value, item))
+    list.iter().any(|item| value.eq_ignore_ascii_case(item))
 }
 
 fn determine_field_category(token: &str) -> Option<FieldCategory> {
@@ -96,7 +92,7 @@ fn determine_field_category(token: &str) -> Option<FieldCategory> {
         Some(FieldCategory::Normal)
     } else if matches_any(token, CONTACTABLE_FIELD_NAMES) {
         Some(FieldCategory::Contact)
-    } else if eq_ignore_ascii_case(token, "webauthn") {
+    } else if token.eq_ignore_ascii_case("webauthn") {
         Some(FieldCategory::Credential)
     } else {
         None
@@ -114,7 +110,7 @@ fn is_section_prefix(token: &str) -> bool {
 fn has_duplicates(tokens: &[&str]) -> bool {
     for i in 0..tokens.len() {
         for j in (i + 1)..tokens.len() {
-            if eq_ignore_ascii_case(tokens[i], tokens[j]) {
+            if tokens[i].eq_ignore_ascii_case(tokens[j]) {
                 return true;
             }
         }
@@ -149,14 +145,14 @@ pub fn is_autocomplete(value: &str) -> bool {
     }
 
     // "on" or "off" must be standalone
-    if eq_ignore_ascii_case(tokens[0], "on") || eq_ignore_ascii_case(tokens[0], "off") {
+    if tokens[0].eq_ignore_ascii_case("on") || tokens[0].eq_ignore_ascii_case("off") {
         return tokens.len() == 1;
     }
 
     // Check if last token is "on" or "off" (invalid in multi-token context)
     if tokens
         .last()
-        .is_some_and(|last| eq_ignore_ascii_case(last, "on") || eq_ignore_ascii_case(last, "off"))
+        .is_some_and(|last| last.eq_ignore_ascii_case("on") || last.eq_ignore_ascii_case("off"))
     {
         return false;
     }
@@ -205,7 +201,7 @@ pub fn is_autocomplete(value: &str) -> bool {
     }
 
     // Step 5: Optionally consume shipping/billing
-    if eq_ignore_ascii_case(tokens[index], "shipping") || eq_ignore_ascii_case(tokens[index], "billing") {
+    if tokens[index].eq_ignore_ascii_case("shipping") || tokens[index].eq_ignore_ascii_case("billing") {
         if index == 0 {
             return true;
         }

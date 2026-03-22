@@ -145,6 +145,8 @@ fn time_string_invalid() {
 #[test]
 fn local_date_and_time_string_valid() {
     assert!(is_local_date_and_time_string("2020-12-31T00:00:00.000"));
+    // Space separator
+    assert!(is_local_date_and_time_string("2020-12-31 00:00:00.000"));
 }
 
 #[test]
@@ -223,6 +225,8 @@ fn global_date_and_time_string_valid() {
     assert!(is_global_date_and_time_string("2000-01-01T00:00-23:59"));
     assert!(is_global_date_and_time_string("2000-01-01T00:00:00+0000"));
     assert!(is_global_date_and_time_string("2000-01-01T00:00:00.000+0000"));
+    // Space separator
+    assert!(is_global_date_and_time_string("2000-01-01 00:00Z"));
 }
 
 #[test]

@@ -113,6 +113,9 @@ fn prefix_only_invalid() {
 fn contacting_with_normal_field_invalid() {
     assert!(!is_autocomplete("home name"));
     assert!(!is_autocomplete("work street-address"));
+    // With section and shipping/billing prefix
+    assert!(!is_autocomplete("section-foo billing home"));
+    assert!(!is_autocomplete("section-foo billing work"));
 }
 
 #[test]

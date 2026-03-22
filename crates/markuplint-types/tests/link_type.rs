@@ -43,6 +43,8 @@ fn microformats_keywords() {
     assert!(is_link_type("sitemap"));
     assert!(is_link_type("webmention"));
     assert!(is_link_type("schema.DC"));
+    // Case-sensitive Microformats keyword (matched case-insensitively)
+    assert!(is_link_type("DCTERMS.conformsTo"));
 }
 
 // --- Valid: Multiple tokens ---
@@ -80,10 +82,20 @@ fn excluded_dropped() {
     assert!(!is_link_type("begin"));
     assert!(!is_link_type("editor"));
     assert!(!is_link_type("top"));
+    // Keywords that overlap with Microformats allowed lists
+    assert!(!is_link_type("bibliography"));
+    assert!(!is_link_type("child"));
+    assert!(!is_link_type("footnote"));
+    assert!(!is_link_type("parent"));
+    assert!(!is_link_type("publisher"));
+    assert!(!is_link_type("sibling"));
 }
 
 #[test]
 fn excluded_dropped_without_prejudice() {
+    assert!(!is_link_type("first"));
+    assert!(!is_link_type("index"));
+    assert!(!is_link_type("last"));
     assert!(!is_link_type("up"));
 }
 

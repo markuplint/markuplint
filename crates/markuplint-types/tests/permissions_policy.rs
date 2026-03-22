@@ -77,6 +77,21 @@ fn origin_idn_rejected() {
 }
 
 #[test]
+fn origin_with_query_rejected() {
+    assert!(!is_serialized_permissions_policy("a https://example.com?q=1"));
+}
+
+#[test]
+fn origin_with_fragment_rejected() {
+    assert!(!is_serialized_permissions_policy("a https://example.com#hash"));
+}
+
+#[test]
+fn origin_with_credentials_rejected() {
+    assert!(!is_serialized_permissions_policy("a https://user:pass@example.com"));
+}
+
+#[test]
 fn multiple_allow_list_values() {
     assert!(is_serialized_permissions_policy("a * https://markuplint.dev"));
     assert!(is_serialized_permissions_policy("a * https://markuplint.dev 'none'"));
