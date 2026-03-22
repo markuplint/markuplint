@@ -33,11 +33,6 @@ impl Scanner {
         self.char_code_at(self.pos)
     }
 
-    /// Check if the current position has a name character.
-    pub fn is_name_char_code(&self) -> bool {
-        self.char_code().is_some_and(Self::is_name_char)
-    }
-
     /// Get the byte at the next position.
     pub fn next_char_code(&self) -> Option<u8> {
         self.char_code_at(self.pos + 1)

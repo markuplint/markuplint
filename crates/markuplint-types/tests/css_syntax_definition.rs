@@ -405,9 +405,11 @@ fn comma_in_sequence() {
 #[test]
 fn function_notation() {
     let node = parse("rgb( <number> )").unwrap();
-    // Function should appear in the terms
     if let SyntaxNode::Group { terms, .. } = &node {
-        assert!(!terms.is_empty());
+        assert_eq!(terms.len(), 3);
+        assert!(matches!(&terms[0], SyntaxNode::Function { name } if name == "rgb"));
+        assert!(matches!(&terms[1], SyntaxNode::Type { name, .. } if name == "number"));
+        assert_eq!(terms[2], SyntaxNode::Token { value: ")".into() });
     } else {
         panic!("Expected Group");
     }
@@ -509,6 +511,166 @@ fn real_world_border() {
     assert_eq!(output, input);
 }
 
+// --- StringNode ---
+
+#[test]
+fn string_node() {
+    let node = parse("'hello'").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert_eq!(terms.len(), 1);
+        assert_eq!(
+            terms[0],
+            SyntaxNode::StringNode {
+                value: "'hello'".into(),
+            }
+        );
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+// --- AtKeyword ---
+
+#[test]
+fn at_keyword() {
+    let node = parse("@supports").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert_eq!(terms.len(), 1);
+        assert_eq!(
+            terms[0],
+            SyntaxNode::AtKeyword {
+                name: "supports".into(),
+            }
+        );
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+// --- Token ---
+
+#[test]
+fn token_slash() {
+    let node = parse("/ <number>").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert_eq!(terms.len(), 2);
+        assert_eq!(terms[0], SyntaxNode::Token { value: "/".into() });
+        assert!(matches!(&terms[1], SyntaxNode::Type { name, .. } if name == "number"));
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+// --- Type range edge cases ---
+
+#[test]
+fn type_range_negative() {
+    let node = parse("<number [-1,1]>").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert_eq!(
+            terms[0],
+            SyntaxNode::Type {
+                name: "number".into(),
+                opts: Some(TypeRange {
+                    min: Some(-1.0),
+                    max: Some(1.0),
+                }),
+            }
+        );
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+#[test]
+fn type_range_negative_infinity() {
+    let node = parse("<number [-\u{221E},0]>").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert_eq!(
+            terms[0],
+            SyntaxNode::Type {
+                name: "number".into(),
+                opts: Some(TypeRange {
+                    min: None,
+                    max: Some(0.0),
+                }),
+            }
+        );
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+#[test]
+fn roundtrip_negative_range() {
+    assert_roundtrip("<number [-1,1]>");
+}
+
+#[test]
+fn roundtrip_negative_infinity() {
+    assert_roundtrip("<number [-\u{221E},0]>");
+}
+
+// --- Multiplier edge cases ---
+
+#[test]
+fn multiplier_exact_one() {
+    let node = parse("<color>{1}").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert!(matches!(
+            &terms[0],
+            SyntaxNode::Multiplier {
+                info: MultiplierInfo {
+                    min: 1,
+                    max: 1,
+                    comma: false
+                },
+                ..
+            }
+        ));
+    } else {
+        panic!("Expected Group");
+    }
+}
+
+// --- Deeply nested groups ---
+
+#[test]
+fn deeply_nested_groups() {
+    let node = parse("[ [ [ a ] ] ]").unwrap();
+    if let SyntaxNode::Group { explicit, terms, .. } = &node {
+        assert!(explicit);
+        assert_eq!(terms.len(), 1);
+        if let SyntaxNode::Group { explicit: e2, terms: t2, .. } = &terms[0] {
+            assert!(e2);
+            assert_eq!(t2.len(), 1);
+            if let SyntaxNode::Group { explicit: e3, terms: t3, .. } = &t2[0] {
+                assert!(e3);
+                assert_eq!(t3.len(), 1);
+                assert_eq!(t3[0], SyntaxNode::Keyword { name: "a".into() });
+            } else {
+                panic!("Expected innermost Group");
+            }
+        } else {
+            panic!("Expected middle Group");
+        }
+    } else {
+        panic!("Expected outer Group");
+    }
+}
+
+// --- Empty input ---
+
+#[test]
+fn empty_input() {
+    let node = parse("").unwrap();
+    if let SyntaxNode::Group { terms, .. } = &node {
+        assert!(terms.is_empty());
+    } else {
+        panic!("Expected Group");
+    }
+}
+
 // --- Error cases ---
 
 #[test]
@@ -524,6 +686,21 @@ fn error_leading_combinator() {
 #[test]
 fn error_trailing_combinator() {
     assert!(parse("a |").is_err());
+}
+
+#[test]
+fn error_unclosed_angle_bracket() {
+    assert!(parse("<color").is_err());
+}
+
+#[test]
+fn error_unclosed_bracket_group() {
+    assert!(parse("[ a | b").is_err());
+}
+
+#[test]
+fn error_bare_angle_bracket() {
+    assert!(parse("<").is_err());
 }
 
 // --- Helper ---

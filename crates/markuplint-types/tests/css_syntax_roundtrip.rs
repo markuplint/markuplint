@@ -283,3 +283,15 @@ fn compat_boolean_expr() {
         "<boolean-expr[<media-feature>]>",
     );
 }
+
+// --- Negative ranges ---
+
+#[test]
+fn compat_negative_range() {
+    assert_css_tree_compat("<number [-1,1]>", "<number [-1,1]>");
+}
+
+#[test]
+fn compat_negative_infinity_range() {
+    assert_css_tree_compat("<number [-\u{221E},0]>", "<number [-\u{221E},0]>");
+}

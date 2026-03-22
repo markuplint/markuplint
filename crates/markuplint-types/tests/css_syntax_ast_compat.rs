@@ -274,46 +274,55 @@ fn ast_box_shadow() {
 fn ast_content_property() {
     // "normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> ]+ ]?"
     let node = p("normal | none | [ <content-replacement> | <content-list> ] [ / [ <string> | <counter> ]+ ]?");
-    if let SyntaxNode::Group { terms, combinator, .. } = &node {
-        assert_eq!(*combinator, Combinator::Bar);
-        assert_eq!(terms.len(), 3);
-        assert_eq!(terms[0], SyntaxNode::Keyword { name: "normal".into() });
-        assert_eq!(terms[1], SyntaxNode::Keyword { name: "none".into() });
-
-        // Third term: Group(' ', [explicit_group, multiplied_group])
-        if let SyntaxNode::Group { terms: inner, combinator: inner_comb, .. } = &terms[2] {
-            assert_eq!(*inner_comb, Combinator::Juxtaposition);
-            assert_eq!(inner.len(), 2);
-
-            // First: [ <content-replacement> | <content-list> ]
-            if let SyntaxNode::Group { combinator: c, explicit, .. } = &inner[0] {
-                assert_eq!(*c, Combinator::Bar);
-                assert!(explicit);
-            } else {
-                panic!("Expected explicit group");
-            }
-
-            // Second: [ / [ <string> | <counter> ]+ ]?
-            if let SyntaxNode::Multiplier { info, term } = &inner[1] {
-                assert_eq!(*info, MultiplierInfo { min: 0, max: 1, comma: false });
-                if let SyntaxNode::Group { combinator: c, explicit, terms: bracket_terms, .. } = term.as_ref() {
-                    assert_eq!(*c, Combinator::Juxtaposition);
-                    assert!(explicit);
-                    assert_eq!(bracket_terms.len(), 2);
-                    // "/" token
-                    assert_eq!(bracket_terms[0], SyntaxNode::Token { value: "/".into() });
-                    // [ <string> | <counter> ]+
-                    assert!(matches!(&bracket_terms[1], SyntaxNode::Multiplier { info: MultiplierInfo { min: 1, max: 0, comma: false }, .. }));
-                } else {
-                    panic!("Expected group inside multiplier");
-                }
-            } else {
-                panic!("Expected multiplier");
-            }
-        } else {
-            panic!("Expected juxtaposition group");
+    assert_eq!(
+        node,
+        SyntaxNode::Group {
+            terms: vec![
+                SyntaxNode::Keyword { name: "normal".into() },
+                SyntaxNode::Keyword { name: "none".into() },
+                SyntaxNode::Group {
+                    terms: vec![
+                        SyntaxNode::Group {
+                            terms: vec![
+                                SyntaxNode::Type { name: "content-replacement".into(), opts: None },
+                                SyntaxNode::Type { name: "content-list".into(), opts: None },
+                            ],
+                            combinator: Combinator::Bar,
+                            disallow_empty: false,
+                            explicit: true,
+                        },
+                        SyntaxNode::Multiplier {
+                            info: MultiplierInfo { min: 0, max: 1, comma: false },
+                            term: Box::new(SyntaxNode::Group {
+                                terms: vec![
+                                    SyntaxNode::Token { value: "/".into() },
+                                    SyntaxNode::Multiplier {
+                                        info: MultiplierInfo { min: 1, max: 0, comma: false },
+                                        term: Box::new(SyntaxNode::Group {
+                                            terms: vec![
+                                                SyntaxNode::Type { name: "string".into(), opts: None },
+                                                SyntaxNode::Type { name: "counter".into(), opts: None },
+                                            ],
+                                            combinator: Combinator::Bar,
+                                            disallow_empty: false,
+                                            explicit: true,
+                                        }),
+                                    },
+                                ],
+                                combinator: Combinator::Juxtaposition,
+                                disallow_empty: false,
+                                explicit: true,
+                            }),
+                        },
+                    ],
+                    combinator: Combinator::Juxtaposition,
+                    disallow_empty: false,
+                    explicit: false,
+                },
+            ],
+            combinator: Combinator::Bar,
+            disallow_empty: false,
+            explicit: false,
         }
-    } else {
-        panic!("Expected top-level group");
-    }
+    );
 }

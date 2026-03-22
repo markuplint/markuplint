@@ -195,74 +195,32 @@ fn read_property(scanner: &mut Scanner) -> Result<SyntaxNode, String> {
     maybe_multiplied(scanner, SyntaxNode::Property { name })
 }
 
-fn read_type_range(scanner: &mut Scanner) -> Result<TypeRange, String> {
-    let mut min: Option<f64> = None;
-    let mut max: Option<f64> = None;
-
-    scanner.eat(b'[')?;
-
-    // Read min
+fn read_range_value(scanner: &mut Scanner) -> Result<Option<f64>, String> {
     let mut sign: i8 = 1;
     if scanner.char_code() == Some(b'-') {
         scanner.pos += 1;
         sign = -1;
     }
 
-    if sign == -1 && scanner.char_code() == Some(0xe2) {
-        // ∞ is a multi-byte UTF-8 char, skip it
-        // Actually, let's handle it properly
-        let rest = &scanner.source()[scanner.pos..];
-        if rest.starts_with('\u{221E}') {
-            scanner.pos += '\u{221E}'.len_utf8();
-        }
-    } else if scanner.char_code().is_some_and(|c| c == 0xe2) {
-        // ∞ multi-byte
-        let rest = &scanner.source()[scanner.pos..];
-        if rest.starts_with('\u{221E}') {
-            scanner.pos += '\u{221E}'.len_utf8();
-        }
-    } else {
-        let num_str = scanner.scan_number()?;
-        let mut val = f64::from(sign) * num_str.parse::<f64>().map_err(|e| e.to_string())?;
-
-        // Optional suffix (e.g., in css-tree, this handles things like "0px")
-        if scanner.is_name_char_code() {
-            let suffix = scanner.scan_word()?;
-            // Concat as string and store as-is
-            let combined = format!("{val}{suffix}");
-            val = combined.parse::<f64>().unwrap_or(val);
-        }
-
-        min = Some(val);
-    }
-
-    scanner.skip_ws();
-    scanner.eat(b',')?;
-    scanner.skip_ws();
-
-    // Read max
     let rest = &scanner.source()[scanner.pos..];
     if rest.starts_with('\u{221E}') {
         scanner.pos += '\u{221E}'.len_utf8();
-        // max stays None (infinity)
-    } else {
-        sign = 1;
-        if scanner.char_code() == Some(b'-') {
-            scanner.pos += 1;
-            sign = -1;
-        }
-
-        let num_str = scanner.scan_number()?;
-        let mut val = f64::from(sign) * num_str.parse::<f64>().map_err(|e| e.to_string())?;
-
-        if scanner.is_name_char_code() {
-            let suffix = scanner.scan_word()?;
-            let combined = format!("{val}{suffix}");
-            val = combined.parse::<f64>().unwrap_or(val);
-        }
-
-        max = Some(val);
+        return Ok(None); // ±∞
     }
+
+    let num_str = scanner.scan_number()?;
+    let val = f64::from(sign) * num_str.parse::<f64>().map_err(|e| e.to_string())?;
+    Ok(Some(val))
+}
+
+fn read_type_range(scanner: &mut Scanner) -> Result<TypeRange, String> {
+    scanner.eat(b'[')?;
+
+    let min = read_range_value(scanner)?;
+    scanner.skip_ws();
+    scanner.eat(b',')?;
+    scanner.skip_ws();
+    let max = read_range_value(scanner)?;
 
     scanner.eat(b']')?;
 
