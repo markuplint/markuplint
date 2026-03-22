@@ -46,9 +46,12 @@ pub fn is_hash_name(value: &str) -> bool {
     value.starts_with('#')
 }
 
-/// Checks whether the value is exactly one character.
+/// Checks whether the value is exactly one Unicode scalar value.
+///
+/// Matches JS `string.length === 1` for BMP characters (the practical
+/// input domain for `accesskey` attributes).
 pub fn is_one_code_point_char(value: &str) -> bool {
-    value.len() == 1
+    value.chars().count() == 1
 }
 
 /// Checks whether the value is a valid custom command (starts with "--" followed by at least one char).

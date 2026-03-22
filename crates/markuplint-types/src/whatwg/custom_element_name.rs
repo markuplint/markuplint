@@ -8,7 +8,7 @@ use std::sync::LazyLock;
 /// `PCENChar` character class.
 static RE_PCEN_CHAR: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
-        r"(?i)^[\x2D\x2E0-9_a-z\u{00B7}\u{00C0}-\u{00D6}\u{00D8}-\u{00F6}\u{00F8}-\u{037D}\u{037F}-\u{1FFF}\u{200C}\u{200D}\u{203F}\u{2040}\u{2070}-\u{218F}\u{2C00}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}]*$",
+        r"^[\x2D\x2E0-9_a-z\u{00B7}\u{00C0}-\u{00D6}\u{00D8}-\u{00F6}\u{00F8}-\u{037D}\u{037F}-\u{1FFF}\u{200C}\u{200D}\u{203F}\u{2040}\u{2070}-\u{218F}\u{2C00}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}]*$",
     )
     .unwrap()
 });

@@ -28,6 +28,14 @@ fn must_start_with_lowercase() {
 }
 
 #[test]
+fn uppercase_ascii_in_name_rejected() {
+    // Regression: PCENChar must NOT allow uppercase ASCII (case-sensitive per WHATWG spec)
+    assert!(!is_custom_element_name("my-Element"));
+    assert!(!is_custom_element_name("x-FOO"));
+    assert!(!is_custom_element_name("a-B"));
+}
+
+#[test]
 fn must_contain_hyphen() {
     assert!(!is_custom_element_name("myelement"));
     assert!(!is_custom_element_name("div"));

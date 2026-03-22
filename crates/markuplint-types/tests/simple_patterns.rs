@@ -61,6 +61,10 @@ fn one_code_point_char() {
     assert!(!is_one_code_point_char(""));
     assert!(!is_one_code_point_char("ab"));
     assert!(!is_one_code_point_char("abc"));
+    // Non-ASCII single code points (regression: must use char count, not byte length)
+    assert!(is_one_code_point_char("あ"));
+    assert!(is_one_code_point_char("\u{00E9}")); // é (2 bytes UTF-8)
+    assert!(is_one_code_point_char("\u{1F600}")); // 😀 (4 bytes UTF-8)
 }
 
 #[test]
