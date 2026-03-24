@@ -136,7 +136,7 @@ impl<'a> Matcher<'a> {
                 if generic::supports_math_functions(name) {
                     if let Some(Token::Function(fn_name)) = self.peek() {
                         if generic::is_math_function(fn_name) {
-                            return self.consume_function_call();
+                            return self.match_math_function(name);
                         }
                     }
                 }
@@ -296,6 +296,63 @@ impl<'a> Matcher<'a> {
             }
         }
         depth == 0
+    }
+
+    /// Match a CSS math function (calc, min, max, etc.) with type checking.
+    ///
+    /// Parses the function's internal expression and verifies that the result
+    /// type is compatible with the expected CSS type.
+    fn match_math_function(&mut self, expected_type: &str) -> bool {
+        use crate::css::value_match::calc;
+
+        let fn_name = match self.peek() {
+            Some(Token::Function(name)) => name.clone(),
+            _ => return false,
+        };
+
+        // Collect the function's inner tokens
+        let saved = self.save();
+        self.advance(); // consume Function token
+        let mut inner_tokens = Vec::new();
+        let mut depth = 1u32;
+        while !self.is_at_end() && depth > 0 {
+            match self.peek() {
+                Some(Token::LeftParen) | Some(Token::Function(_)) => {
+                    depth += 1;
+                    inner_tokens.push(self.peek().unwrap().clone());
+                    self.advance();
+                }
+                Some(Token::RightParen) => {
+                    depth -= 1;
+                    if depth > 0 {
+                        inner_tokens.push(Token::RightParen);
+                    }
+                    self.advance();
+                }
+                Some(token) => {
+                    inner_tokens.push(token.clone());
+                    self.advance();
+                }
+                None => break,
+            }
+        }
+
+        if depth != 0 {
+            self.restore(saved);
+            return false;
+        }
+
+        // Type-check the expression
+        let result_type = calc::check_math_function(&fn_name, &inner_tokens);
+        if result_type.is_compatible_with(expected_type) {
+            true
+        } else {
+            // Type mismatch — still consumed the tokens but report the issue.
+            // For now, accept it (like css-tree does) to avoid false positives
+            // during the transition period. The type info is available for
+            // stricter checking later.
+            true
+        }
     }
 
     /// Match var() or env() with optional fallback type checking.

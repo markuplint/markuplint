@@ -199,3 +199,62 @@ fn transition_like() {
     let syntax = "<custom-ident> <time> <custom-ident> <time>";
     assert!(match_syntax(syntax, "opacity 0.3s ease 0s").is_ok());
 }
+
+// ============================================================
+// calc() type checking (Step 7b)
+// ============================================================
+
+#[test]
+fn calc_length_plus_length() {
+    assert!(match_syntax("<length>", "calc(10px + 20px)").is_ok());
+}
+
+#[test]
+fn calc_length_minus_percentage() {
+    assert!(match_syntax("<length>", "calc(100% - 20px)").is_ok());
+}
+
+#[test]
+fn calc_number_times_length() {
+    assert!(match_syntax("<length>", "calc(2 * 10px)").is_ok());
+}
+
+#[test]
+fn calc_length_div_number() {
+    assert!(match_syntax("<length>", "calc(100px / 2)").is_ok());
+}
+
+#[test]
+fn calc_nested() {
+    assert!(match_syntax("<length>", "calc(min(10px, 20px) + 5px)").is_ok());
+}
+
+#[test]
+fn min_in_length_context() {
+    assert!(match_syntax("<length>", "min(10px, 20px)").is_ok());
+}
+
+#[test]
+fn max_in_length_context() {
+    assert!(match_syntax("<length>", "max(10px, 100%)").is_ok());
+}
+
+#[test]
+fn clamp_in_length_context() {
+    assert!(match_syntax("<length>", "clamp(0px, 50%, 100px)").is_ok());
+}
+
+#[test]
+fn sin_returns_number() {
+    assert!(match_syntax("<number>", "sin(45deg)").is_ok());
+}
+
+#[test]
+fn calc_in_angle() {
+    assert!(match_syntax("<angle>", "calc(90deg + 45deg)").is_ok());
+}
+
+#[test]
+fn calc_in_time() {
+    assert!(match_syntax("<time>", "calc(1s + 500ms)").is_ok());
+}

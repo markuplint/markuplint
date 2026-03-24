@@ -6,6 +6,7 @@
 //! - `var()` fallback value type checking
 //! - `calc()` expression syntax validation and type checking
 
+pub mod calc;
 pub mod error;
 pub mod generic;
 pub mod matcher;
