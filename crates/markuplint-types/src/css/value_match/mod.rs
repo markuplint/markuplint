@@ -9,6 +9,7 @@
 pub mod error;
 pub mod generic;
 pub mod matcher;
+pub mod registry;
 pub mod token;
 pub mod tokenizer;
 pub mod units;
@@ -17,6 +18,9 @@ use crate::css::syntax_definition;
 use error::MatchResult;
 use matcher::{Matcher, prepare_tokens};
 use tokenizer::tokenize;
+
+/// CSS-wide keywords accepted by all properties.
+const CSS_WIDE_KEYWORDS: &[&str] = &["inherit", "initial", "unset", "revert", "revert-layer"];
 
 /// Match a CSS value string against a CSS Value Definition Syntax string.
 ///
@@ -40,6 +44,20 @@ pub fn match_syntax(syntax: &str, value: &str) -> MatchResult {
     })?;
 
     match_syntax_node(&ast, value)
+}
+
+/// Match a CSS property value, including CSS-wide keywords.
+///
+/// Checks CSS-wide keywords (`inherit`, `initial`, `unset`, `revert`,
+/// `revert-layer`) before attempting to match the syntax definition.
+pub fn match_property(syntax: &str, value: &str) -> MatchResult {
+    // Check CSS-wide keywords first
+    let trimmed = value.trim();
+    if CSS_WIDE_KEYWORDS.iter().any(|kw| kw.eq_ignore_ascii_case(trimmed)) {
+        return Ok(());
+    }
+
+    match_syntax(syntax, value)
 }
 
 /// Match a CSS value string against a pre-parsed syntax AST node.

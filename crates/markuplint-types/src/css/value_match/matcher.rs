@@ -3,6 +3,8 @@
 //! Matches a token stream against a CSS Value Definition Syntax AST using
 //! recursive descent with backtracking.
 
+use std::collections::HashSet;
+
 use crate::css::syntax_definition::ast::{Combinator, MultiplierInfo, SyntaxNode};
 use crate::css::value_match::error::MismatchInfo;
 use crate::css::value_match::token::Token;
@@ -21,6 +23,8 @@ pub struct Matcher<'a> {
     input: &'a str,
     /// Byte offsets for each token in the original input.
     token_offsets: &'a [usize],
+    /// Type/property names currently being resolved (for cycle detection).
+    visiting: HashSet<String>,
 }
 
 impl<'a> Matcher<'a> {
@@ -32,6 +36,7 @@ impl<'a> Matcher<'a> {
             expected_at_longest: Vec::new(),
             input,
             token_offsets,
+            visiting: HashSet::new(),
         }
     }
 
@@ -125,12 +130,12 @@ impl<'a> Matcher<'a> {
             SyntaxNode::Multiplier { term, info } => self.match_multiplier(term, info),
             SyntaxNode::Type { name, opts } => {
                 use crate::css::value_match::generic;
+                use crate::css::value_match::registry;
 
                 // Check for math functions (calc, min, max, etc.)
                 if generic::supports_math_functions(name) {
                     if let Some(Token::Function(fn_name)) = self.peek() {
                         if generic::is_math_function(fn_name) {
-                            // Accept math function — consume fn( ... )
                             return self.consume_function_call();
                         }
                     }
@@ -140,19 +145,55 @@ impl<'a> Matcher<'a> {
                 if let Some(Token::Function(fn_name)) = self.peek() {
                     let lower = fn_name.to_ascii_lowercase();
                     if lower == "var" || lower == "env" {
-                        return self.consume_function_call();
+                        return self.match_var_or_env();
                     }
                 }
 
-                if generic::match_type(self, name, opts.as_ref()) {
-                    return true;
+                // Try built-in type matcher first
+                if generic::is_builtin_type(name) {
+                    if generic::match_type(self, name, opts.as_ref()) {
+                        return true;
+                    }
+                    // Built-in type didn't match — don't fall through to registry
+                    self.record_expected(&format!("<{name}>"));
+                    return false;
+                }
+
+                // Try registry lookup for non-built-in types (e.g., <color>, <position>)
+                let key = format!("type:{name}");
+                if !self.visiting.contains(&key) {
+                    if let Some(syntax_str) = registry::lookup_syntax(name) {
+                        if let Ok(ast) = crate::css::syntax_definition::parse(syntax_str) {
+                            self.visiting.insert(key.clone());
+                            let result = self.match_node(&ast);
+                            self.visiting.remove(&key);
+                            if result {
+                                return true;
+                            }
+                        }
+                    }
                 }
 
                 self.record_expected(&format!("<{name}>"));
                 false
             }
             SyntaxNode::Property { name } => {
-                // Property reference resolution will be implemented in Step 6.
+                use crate::css::value_match::registry;
+
+                let key = format!("prop:{name}");
+                if !self.visiting.contains(&key) {
+                    if let Some(syntax_str) = registry::lookup_property(name) {
+                        if let Ok(ast) = crate::css::syntax_definition::parse(syntax_str) {
+                            self.visiting.insert(key.clone());
+                            let result = self.match_node(&ast);
+                            self.visiting.remove(&key);
+                            if result {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
                 self.record_expected(&format!("<'{name}'>"));
                 false
             }
@@ -255,6 +296,83 @@ impl<'a> Matcher<'a> {
             }
         }
         depth == 0
+    }
+
+    /// Match var() or env() with optional fallback type checking.
+    ///
+    /// For var(): `var( <custom-property-name> [, <declaration-value>]? )`
+    /// For env(): `env( <custom-ident> [, <declaration-value>]? )`
+    ///
+    /// Unlike css-tree (which rejects var() entirely), this validates the
+    /// function structure and accepts it as matching the expected type.
+    fn match_var_or_env(&mut self) -> bool {
+        // Current token is Function("var") or Function("env")
+        let is_var = matches!(self.peek(), Some(Token::Function(n)) if n.eq_ignore_ascii_case("var"));
+        self.advance(); // consume function token
+
+        if is_var {
+            // First arg must be a custom property name (starts with --, length > 2)
+            match self.peek() {
+                Some(Token::Ident(name)) if name.starts_with("--") && name.len() > 2 => {
+                    self.advance();
+                }
+                _ => {
+                    // Invalid var() — consume rest and fail
+                    self.record_expected("<custom-property-name>");
+                    self.skip_to_matching_paren(1);
+                    return false;
+                }
+            }
+        } else {
+            // env(): first arg is a custom-ident
+            match self.peek() {
+                Some(Token::Ident(_)) => {
+                    self.advance();
+                }
+                _ => {
+                    self.record_expected("<custom-ident>");
+                    self.skip_to_matching_paren(1);
+                    return false;
+                }
+            }
+        }
+
+        // Optional: comma + fallback
+        // We don't type-check the fallback here because we don't know the
+        // expected type at this level. The fallback is <declaration-value>.
+        // For now, accept any remaining tokens until ).
+        if matches!(self.peek(), Some(Token::Comma)) {
+            self.advance(); // consume comma
+            // Consume everything until matching )
+            self.skip_to_matching_paren(1);
+        } else if matches!(self.peek(), Some(Token::RightParen)) {
+            self.advance();
+        } else {
+            // Unexpected tokens
+            self.skip_to_matching_paren(1);
+        }
+
+        true
+    }
+
+    /// Skip tokens until the matching `)` is found, respecting nesting.
+    fn skip_to_matching_paren(&mut self, initial_depth: u32) {
+        let mut depth = initial_depth;
+        while !self.is_at_end() && depth > 0 {
+            match self.peek() {
+                Some(Token::LeftParen) | Some(Token::Function(_)) => {
+                    depth += 1;
+                    self.advance();
+                }
+                Some(Token::RightParen) => {
+                    depth -= 1;
+                    self.advance();
+                }
+                _ => {
+                    self.advance();
+                }
+            }
+        }
     }
 
     fn match_function(&mut self, name: &str) -> bool {

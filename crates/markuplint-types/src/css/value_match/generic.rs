@@ -14,6 +14,41 @@ const CSS_WIDE_KEYWORDS: &[&str] = &["inherit", "initial", "unset", "revert", "r
 /// Default keyword values excluded from `<custom-ident>`.
 const DEFAULT_KEYWORDS: &[&str] = &["default"];
 
+/// Check if a type name is handled by the built-in matcher.
+pub fn is_builtin_type(name: &str) -> bool {
+    matches!(
+        name,
+        "number"
+            | "integer"
+            | "zero"
+            | "percentage"
+            | "length"
+            | "angle"
+            | "time"
+            | "frequency"
+            | "resolution"
+            | "flex"
+            | "length-percentage"
+            | "frequency-percentage"
+            | "angle-percentage"
+            | "time-percentage"
+            | "hex-color"
+            | "string"
+            | "url"
+            | "ident"
+            | "ident-token"
+            | "custom-ident"
+            | "dashed-ident"
+            | "custom-property-name"
+            | "declaration-value"
+            | "any-value"
+            | "id-selector"
+            | "number-token"
+            | "dimension-token"
+            | "percentage-token"
+    )
+}
+
 /// Try to match a built-in data type by name.
 ///
 /// Returns `true` if the type was matched and tokens consumed.
