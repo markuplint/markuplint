@@ -1,0 +1,729 @@
+//! CSS value tokenizer.
+//!
+//! Tokenizes CSS value strings into a sequence of [`Token`]s following the
+//! [CSS Syntax Module Level 3](https://drafts.csswg.org/css-syntax/#tokenization) algorithm,
+//! simplified for value-level tokenization (no stylesheet-level constructs).
+
+use super::token::Token;
+
+/// Tokenize a CSS value string into a list of tokens.
+///
+/// Whitespace tokens are preserved so that the matcher can handle them
+/// (e.g., distinguishing `10 px` from `10px`).
+pub fn tokenize(input: &str) -> Vec<Token> {
+    let mut tokenizer = Tokenizer::new(input);
+    let mut tokens = Vec::new();
+    while let Some(token) = tokenizer.next_token() {
+        tokens.push(token);
+    }
+    tokens
+}
+
+struct Tokenizer<'a> {
+    input: &'a [u8],
+    pos: usize,
+}
+
+impl<'a> Tokenizer<'a> {
+    fn new(input: &'a str) -> Self {
+        Self {
+            input: input.as_bytes(),
+            pos: 0,
+        }
+    }
+
+    fn peek(&self) -> Option<u8> {
+        self.input.get(self.pos).copied()
+    }
+
+    fn peek_at(&self, offset: usize) -> Option<u8> {
+        self.input.get(self.pos + offset).copied()
+    }
+
+    fn advance(&mut self) -> Option<u8> {
+        let b = self.input.get(self.pos).copied()?;
+        self.pos += 1;
+        Some(b)
+    }
+
+    fn slice(&self, start: usize, end: usize) -> &str {
+        // SAFETY: We only slice at ASCII boundaries or validated UTF-8 boundaries.
+        std::str::from_utf8(&self.input[start..end]).unwrap_or("")
+    }
+
+    fn next_token(&mut self) -> Option<Token> {
+        self.skip_comments();
+        let b = self.peek()?;
+
+        match b {
+            // Whitespace
+            b' ' | b'\t' | b'\n' | b'\r' | 0x0C => {
+                self.consume_whitespace();
+                Some(Token::Whitespace)
+            }
+
+            // String
+            b'"' | b'\'' => Some(self.consume_string(b)),
+
+            // Hash
+            b'#' => {
+                self.advance();
+                if self.peek().is_some_and(|b| is_name_code_point(b) || b == b'\\') {
+                    let name = format!("#{}", self.consume_name());
+                    Some(Token::Hash(name))
+                } else {
+                    Some(Token::Delim('#'))
+                }
+            }
+
+            // Parentheses and brackets
+            b'(' => {
+                self.advance();
+                Some(Token::LeftParen)
+            }
+            b')' => {
+                self.advance();
+                Some(Token::RightParen)
+            }
+            b'[' => {
+                self.advance();
+                Some(Token::LeftBracket)
+            }
+            b']' => {
+                self.advance();
+                Some(Token::RightBracket)
+            }
+            b'{' => {
+                self.advance();
+                Some(Token::LeftBrace)
+            }
+            b'}' => {
+                self.advance();
+                Some(Token::RightBrace)
+            }
+
+            // Comma, colon, semicolon
+            b',' => {
+                self.advance();
+                Some(Token::Comma)
+            }
+            b':' => {
+                self.advance();
+                Some(Token::Colon)
+            }
+            b';' => {
+                self.advance();
+                Some(Token::Semicolon)
+            }
+
+            // Number starting with +/-
+            b'+' | b'-' if self.starts_number() => Some(self.consume_numeric()),
+
+            // Plus/minus as delimiters
+            b'+' => {
+                self.advance();
+                Some(Token::Delim('+'))
+            }
+            b'-' if self.starts_identifier() => Some(self.consume_ident_like()),
+            b'-' => {
+                self.advance();
+                Some(Token::Delim('-'))
+            }
+
+            // Number starting with dot
+            b'.' if self.starts_number() => Some(self.consume_numeric()),
+            b'.' => {
+                self.advance();
+                Some(Token::Delim('.'))
+            }
+
+            // At-keyword
+            b'@' => {
+                self.advance();
+                if self.starts_identifier_at_current() {
+                    let name = self.consume_name();
+                    Some(Token::AtKeyword(name))
+                } else {
+                    Some(Token::Delim('@'))
+                }
+            }
+
+            // Backslash (escape)
+            b'\\' if self.is_valid_escape() => Some(self.consume_ident_like()),
+
+            // Digit
+            b'0'..=b'9' => Some(self.consume_numeric()),
+
+            // Ident-start
+            b'a'..=b'z' | b'A'..=b'Z' | b'_' => Some(self.consume_ident_like()),
+
+            // Non-ASCII (UTF-8 multibyte start)
+            0x80.. => Some(self.consume_ident_like()),
+
+            // Anything else is a delimiter
+            _ => {
+                self.advance();
+                Some(Token::Delim(b as char))
+            }
+        }
+    }
+
+    fn skip_comments(&mut self) {
+        while self.pos + 1 < self.input.len() && self.input[self.pos] == b'/' && self.input[self.pos + 1] == b'*' {
+            self.pos += 2;
+            while self.pos + 1 < self.input.len() {
+                if self.input[self.pos] == b'*' && self.input[self.pos + 1] == b'/' {
+                    self.pos += 2;
+                    break;
+                }
+                self.pos += 1;
+            }
+        }
+    }
+
+    fn consume_whitespace(&mut self) {
+        while let Some(b) = self.peek() {
+            if matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0C) {
+                self.pos += 1;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn consume_string(&mut self, quote: u8) -> Token {
+        self.advance(); // skip opening quote
+        let mut value = std::string::String::new();
+        loop {
+            match self.advance() {
+                None | Some(b'\n') | Some(b'\r') => break, // bad string → treat as string
+                Some(b) if b == quote => break,
+                Some(b'\\') => {
+                    match self.peek() {
+                        None => {} // EOF after backslash
+                        Some(b'\n') | Some(b'\r') => {
+                            self.advance(); // line continuation
+                        }
+                        _ => {
+                            let ch = self.consume_escape();
+                            value.push(ch);
+                        }
+                    }
+                }
+                Some(b) => {
+                    // Handle UTF-8 multibyte
+                    if b < 0x80 {
+                        value.push(b as char);
+                    } else {
+                        // Re-read as UTF-8 char
+                        self.pos -= 1;
+                        let ch = self.consume_utf8_char();
+                        value.push(ch);
+                    }
+                }
+            }
+        }
+        Token::String(value)
+    }
+
+    fn consume_escape(&mut self) -> char {
+        match self.advance() {
+            None => char::REPLACEMENT_CHARACTER,
+            Some(b) if b.is_ascii_hexdigit() => {
+                let mut hex = std::string::String::new();
+                hex.push(b as char);
+                for _ in 0..5 {
+                    if let Some(h) = self.peek() {
+                        if h.is_ascii_hexdigit() {
+                            hex.push(h as char);
+                            self.advance();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                // Optional whitespace after hex escape
+                if let Some(ws) = self.peek() {
+                    if matches!(ws, b' ' | b'\t' | b'\n' | b'\r' | 0x0C) {
+                        self.advance();
+                    }
+                }
+                let code_point = u32::from_str_radix(&hex, 16).unwrap_or(0);
+                char::from_u32(code_point)
+                    .filter(|c| *c != '\0')
+                    .unwrap_or(char::REPLACEMENT_CHARACTER)
+            }
+            Some(b) => {
+                if b < 0x80 {
+                    b as char
+                } else {
+                    self.pos -= 1;
+                    self.consume_utf8_char()
+                }
+            }
+        }
+    }
+
+    fn consume_utf8_char(&mut self) -> char {
+        let start = self.pos;
+        let remaining = &self.input[start..];
+        let s = std::str::from_utf8(remaining).unwrap_or("");
+        if let Some(ch) = s.chars().next() {
+            self.pos += ch.len_utf8();
+            ch
+        } else {
+            self.pos += 1;
+            char::REPLACEMENT_CHARACTER
+        }
+    }
+
+    fn consume_name(&mut self) -> String {
+        let mut name = std::string::String::new();
+        loop {
+            match self.peek() {
+                Some(b) if is_name_code_point(b) => {
+                    if b < 0x80 {
+                        name.push(b as char);
+                        self.advance();
+                    } else {
+                        let ch = self.consume_utf8_char();
+                        name.push(ch);
+                    }
+                }
+                Some(b'\\') if self.is_valid_escape() => {
+                    self.advance(); // skip backslash
+                    let ch = self.consume_escape();
+                    name.push(ch);
+                }
+                _ => break,
+            }
+        }
+        name
+    }
+
+    fn consume_numeric(&mut self) -> Token {
+        let value = self.consume_number();
+
+        if self.starts_identifier_at_current() {
+            let unit = self.consume_name();
+            Token::Dimension {
+                value,
+                unit: unit.to_ascii_lowercase(),
+            }
+        } else if self.peek() == Some(b'%') {
+            self.advance();
+            Token::Percentage(value)
+        } else {
+            Token::Number(value)
+        }
+    }
+
+    fn consume_number(&mut self) -> f64 {
+        let start = self.pos;
+
+        // Optional sign
+        if matches!(self.peek(), Some(b'+') | Some(b'-')) {
+            self.advance();
+        }
+
+        // Digits before decimal point
+        while matches!(self.peek(), Some(b'0'..=b'9')) {
+            self.advance();
+        }
+
+        // Decimal point + digits
+        if self.peek() == Some(b'.') && matches!(self.peek_at(1), Some(b'0'..=b'9')) {
+            self.advance(); // skip '.'
+            while matches!(self.peek(), Some(b'0'..=b'9')) {
+                self.advance();
+            }
+        }
+
+        // Scientific notation
+        if matches!(self.peek(), Some(b'e') | Some(b'E')) {
+            let next = self.peek_at(1);
+            if matches!(next, Some(b'0'..=b'9'))
+                || (matches!(next, Some(b'+') | Some(b'-')) && matches!(self.peek_at(2), Some(b'0'..=b'9')))
+            {
+                self.advance(); // skip 'e'/'E'
+                if matches!(self.peek(), Some(b'+') | Some(b'-')) {
+                    self.advance();
+                }
+                while matches!(self.peek(), Some(b'0'..=b'9')) {
+                    self.advance();
+                }
+            }
+        }
+
+        let s = self.slice(start, self.pos);
+        s.parse::<f64>().unwrap_or(0.0)
+    }
+
+    fn consume_ident_like(&mut self) -> Token {
+        let name = self.consume_name();
+
+        if self.peek() == Some(b'(') {
+            self.advance(); // skip '('
+            Token::Function(name)
+        } else {
+            Token::Ident(name)
+        }
+    }
+
+    /// Check if the current position starts a number (CSS spec § 4.3.10).
+    fn starts_number(&self) -> bool {
+        match self.peek() {
+            Some(b'+') | Some(b'-') => {
+                matches!(self.peek_at(1), Some(b'0'..=b'9'))
+                    || (self.peek_at(1) == Some(b'.') && matches!(self.peek_at(2), Some(b'0'..=b'9')))
+            }
+            Some(b'.') => matches!(self.peek_at(1), Some(b'0'..=b'9')),
+            Some(b'0'..=b'9') => true,
+            _ => false,
+        }
+    }
+
+    /// Check if current position starts an identifier (including `-` prefix).
+    fn starts_identifier(&self) -> bool {
+        match self.peek() {
+            Some(b'-') => match self.peek_at(1) {
+                Some(b) if is_name_start_code_point(b) => true,
+                Some(b'-') => true,
+                Some(b'\\') => self.pos + 2 < self.input.len() && self.input[self.pos + 2] != b'\n',
+                _ => false,
+            },
+            Some(b) if is_name_start_code_point(b) => true,
+            Some(b'\\') => self.is_valid_escape(),
+            _ => false,
+        }
+    }
+
+    /// Check if the next characters form the start of an identifier.
+    fn starts_identifier_at_current(&self) -> bool {
+        self.starts_identifier()
+    }
+
+    /// Check if current + next form a valid escape sequence.
+    fn is_valid_escape(&self) -> bool {
+        self.peek() == Some(b'\\') && self.peek_at(1).is_some_and(|b| b != b'\n' && b != b'\r')
+    }
+}
+
+/// CSS name-start code point: letter, non-ASCII, or underscore.
+fn is_name_start_code_point(b: u8) -> bool {
+    b.is_ascii_alphabetic() || b == b'_' || b >= 0x80
+}
+
+/// CSS name code point: name-start, digit, or hyphen.
+fn is_name_code_point(b: u8) -> bool {
+    is_name_start_code_point(b) || b.is_ascii_digit() || b == b'-'
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic_ident() {
+        assert_eq!(tokenize("red"), vec![Token::Ident("red".into())]);
+        assert_eq!(tokenize("auto"), vec![Token::Ident("auto".into())]);
+    }
+
+    #[test]
+    fn basic_number() {
+        assert_eq!(tokenize("42"), vec![Token::Number(42.0)]);
+        assert_eq!(tokenize("3.14"), vec![Token::Number(3.14)]);
+        assert_eq!(tokenize("0"), vec![Token::Number(0.0)]);
+    }
+
+    #[test]
+    fn dimension() {
+        assert_eq!(
+            tokenize("10px"),
+            vec![Token::Dimension {
+                value: 10.0,
+                unit: "px".into()
+            }]
+        );
+        assert_eq!(
+            tokenize("2em"),
+            vec![Token::Dimension {
+                value: 2.0,
+                unit: "em".into()
+            }]
+        );
+        assert_eq!(
+            tokenize("1.5rem"),
+            vec![Token::Dimension {
+                value: 1.5,
+                unit: "rem".into()
+            }]
+        );
+    }
+
+    #[test]
+    fn percentage() {
+        assert_eq!(tokenize("50%"), vec![Token::Percentage(50.0)]);
+        assert_eq!(tokenize("100%"), vec![Token::Percentage(100.0)]);
+    }
+
+    #[test]
+    fn hash() {
+        assert_eq!(tokenize("#ff0000"), vec![Token::Hash("#ff0000".into())]);
+        assert_eq!(tokenize("#abc"), vec![Token::Hash("#abc".into())]);
+    }
+
+    #[test]
+    fn string_tokens() {
+        assert_eq!(tokenize("\"hello\""), vec![Token::String("hello".into())]);
+        assert_eq!(tokenize("'world'"), vec![Token::String("world".into())]);
+    }
+
+    #[test]
+    fn function_token() {
+        assert_eq!(tokenize("rgb("), vec![Token::Function("rgb".into())]);
+        assert_eq!(tokenize("calc("), vec![Token::Function("calc".into())]);
+    }
+
+    #[test]
+    fn function_with_args() {
+        assert_eq!(
+            tokenize("rgb(255, 0, 0)"),
+            vec![
+                Token::Function("rgb".into()),
+                Token::Number(255.0),
+                Token::Comma,
+                Token::Whitespace,
+                Token::Number(0.0),
+                Token::Comma,
+                Token::Whitespace,
+                Token::Number(0.0),
+                Token::RightParen,
+            ]
+        );
+    }
+
+    #[test]
+    fn signed_numbers() {
+        assert_eq!(tokenize("+123"), vec![Token::Number(123.0)]);
+        assert_eq!(tokenize("-1.5"), vec![Token::Number(-1.5)]);
+        assert_eq!(tokenize("+0"), vec![Token::Number(0.0)]);
+    }
+
+    #[test]
+    fn decimal_without_leading_zero() {
+        assert_eq!(tokenize(".5"), vec![Token::Number(0.5)]);
+        assert_eq!(
+            tokenize(".25em"),
+            vec![Token::Dimension {
+                value: 0.25,
+                unit: "em".into()
+            }]
+        );
+    }
+
+    #[test]
+    fn scientific_notation() {
+        assert_eq!(tokenize("1e2"), vec![Token::Number(100.0)]);
+        assert_eq!(tokenize("1.5e3"), vec![Token::Number(1500.0)]);
+        assert_eq!(tokenize("1e-2"), vec![Token::Number(0.01)]);
+    }
+
+    #[test]
+    fn dashed_ident() {
+        assert_eq!(tokenize("--custom-prop"), vec![Token::Ident("--custom-prop".into())]);
+        assert_eq!(tokenize("--"), vec![Token::Ident("--".into())]);
+    }
+
+    #[test]
+    fn whitespace_handling() {
+        assert_eq!(
+            tokenize("10px 20px"),
+            vec![
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+                Token::Whitespace,
+                Token::Dimension {
+                    value: 20.0,
+                    unit: "px".into()
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn comments_are_skipped() {
+        assert_eq!(tokenize("/* comment */red"), vec![Token::Ident("red".into())]);
+        assert_eq!(
+            tokenize("10px/* x */20px"),
+            vec![
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+                Token::Dimension {
+                    value: 20.0,
+                    unit: "px".into()
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn comma_separated() {
+        assert_eq!(
+            tokenize("red, blue"),
+            vec![
+                Token::Ident("red".into()),
+                Token::Comma,
+                Token::Whitespace,
+                Token::Ident("blue".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn delimiters() {
+        assert_eq!(tokenize("/"), vec![Token::Delim('/')]);
+        assert_eq!(tokenize("*"), vec![Token::Delim('*')]);
+    }
+
+    #[test]
+    fn at_keyword() {
+        assert_eq!(tokenize("@media"), vec![Token::AtKeyword("media".into())]);
+    }
+
+    #[test]
+    fn empty_input() {
+        assert_eq!(tokenize(""), Vec::<Token>::new());
+    }
+
+    #[test]
+    fn complex_value() {
+        // e.g., `1px solid #000`
+        assert_eq!(
+            tokenize("1px solid #000"),
+            vec![
+                Token::Dimension {
+                    value: 1.0,
+                    unit: "px".into()
+                },
+                Token::Whitespace,
+                Token::Ident("solid".into()),
+                Token::Whitespace,
+                Token::Hash("#000".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn unicode_escape() {
+        // \41 → 'A'
+        assert_eq!(tokenize("\\41 bc"), vec![Token::Ident("Abc".into())]);
+    }
+
+    #[test]
+    fn var_function() {
+        assert_eq!(
+            tokenize("var(--x)"),
+            vec![
+                Token::Function("var".into()),
+                Token::Ident("--x".into()),
+                Token::RightParen,
+            ]
+        );
+    }
+
+    #[test]
+    fn var_with_fallback() {
+        assert_eq!(
+            tokenize("var(--x, 10px)"),
+            vec![
+                Token::Function("var".into()),
+                Token::Ident("--x".into()),
+                Token::Comma,
+                Token::Whitespace,
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+                Token::RightParen,
+            ]
+        );
+    }
+
+    #[test]
+    fn calc_expression() {
+        assert_eq!(
+            tokenize("calc(100% - 20px)"),
+            vec![
+                Token::Function("calc".into()),
+                Token::Percentage(100.0),
+                Token::Whitespace,
+                Token::Delim('-'),
+                Token::Whitespace,
+                Token::Dimension {
+                    value: 20.0,
+                    unit: "px".into()
+                },
+                Token::RightParen,
+            ]
+        );
+    }
+
+    #[test]
+    fn negative_dimension() {
+        assert_eq!(
+            tokenize("-10px"),
+            vec![Token::Dimension {
+                value: -10.0,
+                unit: "px".into()
+            }]
+        );
+    }
+
+    #[test]
+    fn case_insensitive_units() {
+        // Units are lowercased
+        assert_eq!(
+            tokenize("10PX"),
+            vec![Token::Dimension {
+                value: 10.0,
+                unit: "px".into()
+            }]
+        );
+    }
+
+    #[test]
+    fn minus_as_delim_before_non_number() {
+        // `-` followed by something that doesn't start a number or identifier
+        assert_eq!(
+            tokenize("- 10px"),
+            vec![
+                Token::Delim('-'),
+                Token::Whitespace,
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn plus_as_delim() {
+        assert_eq!(
+            tokenize("+ 10px"),
+            vec![
+                Token::Delim('+'),
+                Token::Whitespace,
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+            ]
+        );
+    }
+}
