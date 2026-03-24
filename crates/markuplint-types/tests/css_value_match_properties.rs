@@ -258,3 +258,61 @@ fn calc_in_angle() {
 fn calc_in_time() {
     assert!(match_syntax("<time>", "calc(1s + 500ms)").is_ok());
 }
+
+// calc() type mismatch — currently accepted (css-tree compatible behavior).
+// The type checker computes the result type but does not reject mismatches
+// to avoid false positives during the transition period.
+#[test]
+fn calc_type_mismatch_accepted_for_now() {
+    // length + angle → Invalid type, but accepted at match level
+    assert!(match_syntax("<length>", "calc(10px + 5deg)").is_ok());
+}
+
+#[test]
+fn calc_dimension_times_dimension_accepted_for_now() {
+    // length * length → Invalid type, but accepted at match level
+    assert!(match_syntax("<length>", "calc(10px * 10px)").is_ok());
+}
+
+#[test]
+fn calc_length_percentage_in_length_percentage_context() {
+    assert!(match_syntax("<length-percentage>", "calc(100% - 20px)").is_ok());
+}
+
+// ============================================================
+// var() fallback edge cases
+// ============================================================
+
+#[test]
+fn var_fallback_any_type_accepted() {
+    // Fallback is consumed as <declaration-value>, not type-checked
+    // against the expected type. This is intentional — the custom
+    // property value is unknown at lint time.
+    assert!(match_syntax("<length>", "var(--x, solid)").is_ok());
+}
+
+#[test]
+fn var_nested_in_calc() {
+    assert!(match_syntax("<length>", "calc(var(--x) + 10px)").is_ok());
+}
+
+// ============================================================
+// declaration-value edge cases
+// ============================================================
+
+#[test]
+fn declaration_value_unmatched_closing_paren() {
+    // Unmatched ) at top level stops <declaration-value>
+    assert!(match_syntax("<declaration-value>", ")").is_err());
+}
+
+#[test]
+fn declaration_value_with_balanced_parens() {
+    assert!(match_syntax("<declaration-value>", "rgb(255, 0, 0)").is_ok());
+}
+
+#[test]
+fn declaration_value_with_semicolon() {
+    // Semicolon at top level stops <declaration-value>
+    assert!(match_syntax("<declaration-value>", "a ; b").is_err());
+}

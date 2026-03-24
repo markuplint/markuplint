@@ -171,7 +171,12 @@ impl<'a> Tokenizer<'a> {
     fn skip_comments(&mut self) {
         while self.pos + 1 < self.input.len() && self.input[self.pos] == b'/' && self.input[self.pos + 1] == b'*' {
             self.pos += 2;
-            while self.pos + 1 < self.input.len() {
+            loop {
+                if self.pos + 1 >= self.input.len() {
+                    // Unclosed comment — consume rest of input
+                    self.pos = self.input.len();
+                    break;
+                }
                 if self.input[self.pos] == b'*' && self.input[self.pos + 1] == b'/' {
                     self.pos += 2;
                     break;
@@ -725,5 +730,69 @@ mod tests {
                 },
             ]
         );
+    }
+
+    // Edge cases (QA review)
+
+    #[test]
+    fn unclosed_comment() {
+        // Unclosed comment consumes rest of input; whitespace before /* is preserved
+        assert_eq!(
+            tokenize("10px /* unclosed"),
+            vec![
+                Token::Dimension {
+                    value: 10.0,
+                    unit: "px".into()
+                },
+                Token::Whitespace,
+            ]
+        );
+    }
+
+    #[test]
+    fn unclosed_string_double() {
+        // Unclosed string is treated as a string token
+        let tokens = tokenize("\"unclosed");
+        assert_eq!(tokens, vec![Token::String("unclosed".into())]);
+    }
+
+    #[test]
+    fn unclosed_string_single() {
+        let tokens = tokenize("'unclosed");
+        assert_eq!(tokens, vec![Token::String("unclosed".into())]);
+    }
+
+    #[test]
+    fn multiple_comments() {
+        assert_eq!(
+            tokenize("/* c1 */ red /* c2 */ blue"),
+            vec![
+                Token::Whitespace,
+                Token::Ident("red".into()),
+                Token::Whitespace,
+                Token::Whitespace,
+                Token::Ident("blue".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn function_without_closing_paren() {
+        let tokens = tokenize("rgb(255, 0, 0");
+        assert_eq!(tokens[0], Token::Function("rgb".into()));
+        assert_eq!(tokens.last(), Some(&Token::Number(0.0)));
+    }
+
+    #[test]
+    fn hash_bare_pound() {
+        // # followed by non-name-code-point
+        assert_eq!(tokenize("# "), vec![Token::Delim('#'), Token::Whitespace]);
+    }
+
+    #[test]
+    fn multibyte_ident() {
+        // Japanese ident
+        let tokens = tokenize("色");
+        assert_eq!(tokens, vec![Token::Ident("色".into())]);
     }
 }
