@@ -148,12 +148,31 @@ fn real_property_border_style() {
 // ============================================================
 
 #[test]
-fn cycle_detection_does_not_hang() {
-    // Even if we somehow have a cycle, the matcher should not infinite loop.
-    // We test with a type that references itself — the visiting set prevents infinite recursion.
-    // Since we can't inject a cycle into mdn-data, we just verify the matcher terminates.
+fn cycle_detection_nonexistent_type() {
     let result = match_syntax("<nonexistent-type>", "test");
     assert!(result.is_err());
+}
+
+#[test]
+fn cycle_detection_deep_type_resolution_terminates() {
+    // <color> resolves through multiple levels in mdn-data (color → named-color,
+    // hex-color, color-function, etc.). This verifies the visiting set correctly
+    // prevents infinite recursion through deep type reference chains.
+    let result = match_syntax("<color>", "#ff0000");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn cycle_detection_self_referencing_syntax() {
+    // Construct a scenario where a type refers back to itself indirectly.
+    // In mdn-data, some syntaxes reference themselves (e.g., <calc-sum> → <calc-product> → <calc-value> → <calc-sum>).
+    // The visiting set must prevent infinite recursion.
+    // We test by matching against a type that triggers deep recursion.
+    use std::time::{Duration, Instant};
+    let start = Instant::now();
+    let _ = match_syntax("<calc-sum>", "1 + 2");
+    // Must terminate within a reasonable time (not hang)
+    assert!(start.elapsed() < Duration::from_secs(5));
 }
 
 // ============================================================

@@ -253,6 +253,34 @@ fn disallow_empty_with_content() {
     assert!(match_syntax("[auto? none?]!", "auto none").is_ok());
 }
 
+// --- zero-width match protection ---
+
+#[test]
+fn multiplier_star_with_empty_input() {
+    // `auto*` on empty input → 0 matches, which is valid for *
+    assert!(match_syntax("auto*", "").is_ok());
+}
+
+#[test]
+fn multiplier_optional_star_does_not_infinite_loop() {
+    // `[a?]*` — the optional group can match zero tokens.
+    // The multiplier must not loop infinitely; it should detect
+    // zero-width match and break.
+    use std::time::{Duration, Instant};
+    let start = Instant::now();
+    let _ = match_syntax("[auto?]*", "");
+    assert!(start.elapsed() < Duration::from_secs(1));
+}
+
+#[test]
+fn multiplier_plus_with_optional_content() {
+    // `[a?]+` — at least one iteration, but each iteration can consume 0 tokens.
+    // Should terminate and succeed (one zero-width match).
+    let result = match_syntax("[auto?]+", "");
+    // The group matches once (consuming nothing), then breaks on zero-width
+    assert!(result.is_ok());
+}
+
 // ============================================================
 // Mixed combinators
 // ============================================================

@@ -301,7 +301,12 @@ impl<'a> Matcher<'a> {
     /// Match a CSS math function (calc, min, max, etc.) with type checking.
     ///
     /// Parses the function's internal expression and verifies that the result
-    /// type is compatible with the expected CSS type.
+    /// type is compatible with the expected CSS type per CSS Values Level 4.
+    ///
+    /// **Note:** Currently, type mismatches are still accepted (returns `true`)
+    /// to maintain css-tree compatibility and avoid false positives during the
+    /// transition period. The type information is computed and available for
+    /// stricter checking in a future release.
     fn match_math_function(&mut self, expected_type: &str) -> bool {
         use crate::css::value_match::calc;
 
@@ -487,13 +492,16 @@ impl<'a> Matcher<'a> {
     }
 
     /// `&&` combinator: all terms must match, in any order.
+    ///
+    /// Uses a bitmask to track which terms have been matched. Supports up to 64
+    /// terms, which is more than sufficient for CSS properties (typically 3-5 terms).
     fn match_double_ampersand(&mut self, terms: &[SyntaxNode]) -> bool {
         let n = terms.len();
         if n == 0 {
             return true;
         }
+        debug_assert!(n <= 64, "DoubleAmpersand with more than 64 terms is not supported");
 
-        // Use bitmask approach for all sizes (simple and efficient for typical N)
         let all_matched = (1u64 << n) - 1;
         self.match_permutation(terms, 0u64, all_matched)
     }
@@ -520,11 +528,15 @@ impl<'a> Matcher<'a> {
     }
 
     /// `||` combinator: one or more terms must match, in any order.
+    ///
+    /// Uses a bitmask to track which terms have been matched. Supports up to 64
+    /// terms (same as `&&`).
     fn match_double_bar(&mut self, terms: &[SyntaxNode]) -> bool {
         let n = terms.len();
         if n == 0 {
             return false;
         }
+        debug_assert!(n <= 64, "DoubleBar with more than 64 terms is not supported");
 
         self.match_double_bar_rec(terms, 0u64, false)
     }
