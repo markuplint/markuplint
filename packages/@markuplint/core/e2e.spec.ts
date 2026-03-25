@@ -292,11 +292,27 @@ describe('CSS value matching via napi', () => {
 	});
 
 	// Error reporting
-	it('reports mismatch position', () => {
+	it('reports mismatch position with offset 0 for first-token mismatch', () => {
 		const result = matchCssSyntax('auto', 'none');
 		expect(result.matched).toBe(false);
+		// Mismatch at the very first token → byte offset 0
 		expect(result.offset).toBe(0);
 		expect(result.length).toBeGreaterThan(0);
+	});
+
+	it('reports expected values on mismatch', () => {
+		const result = matchCssSyntax('auto | none', 'invalid');
+		expect(result.matched).toBe(false);
+		expect(result.expected).toBeDefined();
+		// Should contain the expected alternatives
+		expect(result.expected).toContain('auto');
+		expect(result.expected).toContain('none');
+	});
+
+	it('handles invalid syntax string gracefully', () => {
+		// Unclosed angle bracket is a parse error
+		const result = matchCssSyntax('<', 'auto');
+		expect(result.matched).toBe(false);
 	});
 
 	// Combinators
