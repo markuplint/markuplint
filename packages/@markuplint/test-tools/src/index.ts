@@ -45,7 +45,6 @@ export function createJSDOMElement(
 		globalThis.Element = dom.window.Element;
 		globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 		if (matches) {
-			 
 			dom.window.Element.prototype.matches = function (this: Element, selector: string) {
 				return matches.call(this, selector);
 			} as any;
@@ -58,7 +57,6 @@ export function createJSDOMElement(
 	globalThis.Element = dom.window.Element;
 	globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 	if (matches) {
-		 
 		dom.window.Element.prototype.matches = function (this: Element, selector: string) {
 			return matches.call(this, selector);
 		} as any;
