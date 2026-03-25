@@ -52,6 +52,7 @@ pub fn is_builtin_type(name: &str) -> bool {
             | "number-token"
             | "dimension-token"
             | "percentage-token"
+            | "bcp-47"
     )
 }
 
@@ -102,6 +103,9 @@ pub fn match_type(matcher: &mut Matcher, name: &str, range: Option<&TypeRange>) 
         "number-token" => match_number_token(matcher),
         "dimension-token" => match_dimension_token(matcher),
         "percentage-token" => match_percentage_token(matcher),
+
+        // Markuplint custom built-in types
+        "bcp-47" => match_bcp47(matcher),
 
         _ => false,
     }
@@ -442,6 +446,21 @@ fn match_percentage_token(matcher: &mut Matcher) -> bool {
         return true;
     }
     matcher.record_expected("<percentage-token>");
+    false
+}
+
+// ============================================================
+// Markuplint custom built-in types
+// ============================================================
+
+fn match_bcp47(matcher: &mut Matcher) -> bool {
+    if let Some(Token::Ident(value)) = matcher.peek()
+        && crate::rfc::bcp47::is_bcp47(value)
+    {
+        matcher.advance();
+        return true;
+    }
+    matcher.record_expected("<bcp-47>");
     false
 }
 
