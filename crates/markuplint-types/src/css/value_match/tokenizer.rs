@@ -117,6 +117,7 @@ impl<'a> Tokenizer<'a> {
             }
 
             // Number starting with +/-
+            #[allow(clippy::match_same_arms)] // Cannot merge: intermediate arms for +/- as delimiters
             b'+' | b'-' if self.starts_number() => Some(self.consume_numeric()),
 
             // Plus/minus as delimiters
@@ -131,6 +132,7 @@ impl<'a> Tokenizer<'a> {
             }
 
             // Number starting with dot
+            #[allow(clippy::match_same_arms)] // Cannot merge with +/- arm above due to intermediate arms
             b'.' if self.starts_number() => Some(self.consume_numeric()),
             b'.' => {
                 self.advance();
@@ -154,11 +156,8 @@ impl<'a> Tokenizer<'a> {
             // Digit
             b'0'..=b'9' => Some(self.consume_numeric()),
 
-            // Ident-start
-            b'a'..=b'z' | b'A'..=b'Z' | b'_' => Some(self.consume_ident_like()),
-
-            // Non-ASCII (UTF-8 multibyte start)
-            0x80.. => Some(self.consume_ident_like()),
+            // Ident-start (ASCII letters, underscore, or non-ASCII/UTF-8 multibyte)
+            b'a'..=b'z' | b'A'..=b'Z' | b'_' | 0x80.. => Some(self.consume_ident_like()),
 
             // Anything else is a delimiter
             _ => {

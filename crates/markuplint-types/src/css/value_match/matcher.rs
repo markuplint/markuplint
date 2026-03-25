@@ -641,8 +641,8 @@ fn token_byte_length(token: &Token, input: &str, offset: usize) -> usize {
         | Token::LeftBracket
         | Token::RightBracket
         | Token::LeftBrace
-        | Token::RightBrace => 1,
-        Token::Delim(_) => 1,
+        | Token::RightBrace
+        | Token::Delim(_) => 1,
     }
 }
 

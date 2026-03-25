@@ -19,20 +19,11 @@ pub enum DimensionType {
 /// The unit must be lowercase.
 pub fn unit_type(unit: &str) -> Option<DimensionType> {
     match unit {
-        // Length units
-        // Absolute
-        "cm" | "mm" | "q" | "in" | "pt" | "pc" | "px" => Some(DimensionType::Length),
-        // Font-relative
-        "em" | "rem" | "ex" | "rex" | "cap" | "rcap" | "ch" | "rch" | "ic" | "ric" | "lh" | "rlh" => {
-            Some(DimensionType::Length)
-        }
-        // Viewport-relative
-        "vw" | "svw" | "lvw" | "dvw" | "vh" | "svh" | "lvh" | "dvh" | "vi" | "svi" | "lvi" | "dvi" | "vb" | "svb"
-        | "lvb" | "dvb" | "vmin" | "svmin" | "lvmin" | "dvmin" | "vmax" | "svmax" | "lvmax" | "dvmax" => {
-            Some(DimensionType::Length)
-        }
-        // Container query
-        "cqw" | "cqh" | "cqi" | "cqb" | "cqmin" | "cqmax" => Some(DimensionType::Length),
+        // Length units (absolute, font-relative, viewport-relative, container query)
+        "cm" | "mm" | "q" | "in" | "pt" | "pc" | "px" | "em" | "rem" | "ex" | "rex" | "cap" | "rcap" | "ch" | "rch"
+        | "ic" | "ric" | "lh" | "rlh" | "vw" | "svw" | "lvw" | "dvw" | "vh" | "svh" | "lvh" | "dvh" | "vi" | "svi"
+        | "lvi" | "dvi" | "vb" | "svb" | "lvb" | "dvb" | "vmin" | "svmin" | "lvmin" | "dvmin" | "vmax" | "svmax"
+        | "lvmax" | "dvmax" | "cqw" | "cqh" | "cqi" | "cqb" | "cqmin" | "cqmax" => Some(DimensionType::Length),
 
         // Angle units
         "deg" | "grad" | "rad" | "turn" => Some(DimensionType::Angle),

@@ -349,8 +349,7 @@ fn match_declaration_value(matcher: &mut Matcher) -> bool {
 
     while let Some(token) = matcher.peek() {
         match token {
-            Token::Semicolon if depth == 0 => break,
-            Token::Delim('!') if depth == 0 => break,
+            Token::Semicolon | Token::Delim('!') if depth == 0 => break,
             Token::RightParen | Token::RightBracket | Token::RightBrace if depth <= 0 => break,
             Token::LeftParen | Token::Function(_) | Token::LeftBracket | Token::LeftBrace => {
                 depth += 1;
@@ -510,14 +509,11 @@ pub fn is_math_function(name: &str) -> bool {
 pub fn math_function_result_type(name: &str) -> Option<&'static str> {
     let lower = name.to_ascii_lowercase();
     match lower.as_str() {
-        // Trig functions returning <number>
-        "sin" | "cos" | "tan" => Some("number"),
+        // Trig and number-only functions returning <number>
+        "sin" | "cos" | "tan" | "pow" | "sqrt" | "hypot" | "log" | "exp" => Some("number"),
         // Inverse trig returning <angle>
         "asin" | "acos" | "atan" => Some("angle"),
-        // Number-only functions
-        "pow" | "sqrt" | "hypot" | "log" | "exp" => Some("number"),
-        // These preserve the input type
-        "calc" | "min" | "max" | "clamp" | "round" | "mod" | "rem" | "abs" | "sign" => None,
+        // These preserve the input type (or unknown function)
         _ => None,
     }
 }

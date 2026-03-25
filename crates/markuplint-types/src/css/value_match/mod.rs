@@ -28,6 +28,11 @@ const CSS_WIDE_KEYWORDS: &[&str] = &["inherit", "initial", "unset", "revert", "r
 /// Returns `Ok(())` if the value matches the syntax, or `Err(MismatchInfo)` with
 /// details about where the mismatch occurred.
 ///
+/// # Errors
+///
+/// Returns [`MismatchInfo`](error::MismatchInfo) if the syntax string cannot be
+/// parsed or if the value does not match the syntax definition.
+///
 /// # Examples
 ///
 /// ```
@@ -51,6 +56,11 @@ pub fn match_syntax(syntax: &str, value: &str) -> MatchResult {
 ///
 /// Checks CSS-wide keywords (`inherit`, `initial`, `unset`, `revert`,
 /// `revert-layer`) before attempting to match the syntax definition.
+///
+/// # Errors
+///
+/// Returns [`MismatchInfo`](error::MismatchInfo) if the value does not match
+/// the syntax definition and is not a CSS-wide keyword.
 pub fn match_property(syntax: &str, value: &str) -> MatchResult {
     // Check CSS-wide keywords first
     let trimmed = value.trim();
@@ -62,6 +72,11 @@ pub fn match_property(syntax: &str, value: &str) -> MatchResult {
 }
 
 /// Match a CSS value string against a pre-parsed syntax AST node.
+///
+/// # Errors
+///
+/// Returns [`MismatchInfo`](error::MismatchInfo) if the value does not match
+/// the syntax node.
 pub fn match_syntax_node(node: &syntax_definition::ast::SyntaxNode, value: &str) -> MatchResult {
     let all_tokens = tokenize(value);
     let (tokens, offsets) = prepare_tokens(&all_tokens, value);
