@@ -45,9 +45,9 @@ export function createJSDOMElement(
 		globalThis.Element = dom.window.Element;
 		globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 		if (matches) {
-			dom.window.Element.prototype.matches = function (selector: string) {
+			dom.window.Element.prototype.matches = function (this: Element, selector: string) {
 				return matches.call(this, selector);
-			};
+			} as any;
 		}
 		return dom.window.document.querySelector('html') as Element;
 	}
@@ -57,9 +57,9 @@ export function createJSDOMElement(
 	globalThis.Element = dom.window.Element;
 	globalThis.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
 	if (matches) {
-		dom.window.Element.prototype.matches = function (selector: string) {
+		dom.window.Element.prototype.matches = function (this: Element, selector: string) {
 			return matches.call(this, selector);
-		};
+		} as any;
 	}
 
 	const containerTag = html.indexOf('<td') === 0 ? 'tr' : 'div';
