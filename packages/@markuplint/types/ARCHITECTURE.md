@@ -248,6 +248,17 @@ flowchart LR
 
 `@markuplint/rules` also calls `getCandidate()` to suggest similar attribute names when a non-existent attribute is detected. The same Levenshtein-based similarity threshold (≥50%) used for attribute value suggestions applies to attribute name suggestions.
 
+## Rust Implementation
+
+A Rust counterpart of this package exists at `crates/markuplint-types/` as part of the [Rust rewrite initiative](https://github.com/markuplint/markuplint/issues/3178). It reimplements the CSS value validation pipeline (currently handled by `css-syntax.ts` + `css-tree`) with additional capabilities:
+
+- CSS Value Definition Syntax parser (Phase 1B-1)
+- CSS value matching engine with `calc()` type checking and `var()` validation (Phase 1B-2)
+
+The Rust implementation will be exposed via napi-rs (Phase 1B-4) to replace the `cssSyntaxMatch()` path in this TypeScript package. Other parts of the package (keyword resolution, list/enum/number checkers, WHATWG/RFC/W3C validators) remain in TypeScript.
+
+See `crates/markuplint-types/README.md` for architecture details and design decisions.
+
 ## Documentation Map
 
 - [Type System](docs/type-system.md) -- Type unions, Result types, Defs registry, schema generation
