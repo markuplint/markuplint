@@ -201,12 +201,12 @@ impl<'a> Tokenizer<'a> {
         let mut value = std::string::String::new();
         loop {
             match self.advance() {
-                None | Some(b'\n') | Some(b'\r') => break, // bad string → treat as string
+                None | Some(b'\n' | b'\r') => break, // bad string → treat as string
                 Some(b) if b == quote => break,
                 Some(b'\\') => {
                     match self.peek() {
                         None => {} // EOF after backslash
-                        Some(b'\n') | Some(b'\r') => {
+                        Some(b'\n' | b'\r') => {
                             self.advance(); // line continuation
                         }
                         _ => {
@@ -248,10 +248,10 @@ impl<'a> Tokenizer<'a> {
                     }
                 }
                 // Optional whitespace after hex escape
-                if let Some(ws) = self.peek() {
-                    if matches!(ws, b' ' | b'\t' | b'\n' | b'\r' | 0x0C) {
-                        self.advance();
-                    }
+                if let Some(ws) = self.peek()
+                    && matches!(ws, b' ' | b'\t' | b'\n' | b'\r' | 0x0C)
+                {
+                    self.advance();
                 }
                 let code_point = u32::from_str_radix(&hex, 16).unwrap_or(0);
                 char::from_u32(code_point)
@@ -327,7 +327,7 @@ impl<'a> Tokenizer<'a> {
         let start = self.pos;
 
         // Optional sign
-        if matches!(self.peek(), Some(b'+') | Some(b'-')) {
+        if matches!(self.peek(), Some(b'+' | b'-')) {
             self.advance();
         }
 
@@ -345,13 +345,13 @@ impl<'a> Tokenizer<'a> {
         }
 
         // Scientific notation
-        if matches!(self.peek(), Some(b'e') | Some(b'E')) {
+        if matches!(self.peek(), Some(b'e' | b'E')) {
             let next = self.peek_at(1);
             if matches!(next, Some(b'0'..=b'9'))
-                || (matches!(next, Some(b'+') | Some(b'-')) && matches!(self.peek_at(2), Some(b'0'..=b'9')))
+                || (matches!(next, Some(b'+' | b'-')) && matches!(self.peek_at(2), Some(b'0'..=b'9')))
             {
                 self.advance(); // skip 'e'/'E'
-                if matches!(self.peek(), Some(b'+') | Some(b'-')) {
+                if matches!(self.peek(), Some(b'+' | b'-')) {
                     self.advance();
                 }
                 while matches!(self.peek(), Some(b'0'..=b'9')) {
@@ -378,7 +378,7 @@ impl<'a> Tokenizer<'a> {
     /// Check if the current position starts a number (CSS spec § 4.3.10).
     fn starts_number(&self) -> bool {
         match self.peek() {
-            Some(b'+') | Some(b'-') => {
+            Some(b'+' | b'-') => {
                 matches!(self.peek_at(1), Some(b'0'..=b'9'))
                     || (self.peek_at(1) == Some(b'.') && matches!(self.peek_at(2), Some(b'0'..=b'9')))
             }

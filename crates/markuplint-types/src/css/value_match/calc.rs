@@ -273,7 +273,7 @@ impl<'a> CalcParser<'a> {
 
         loop {
             match self.peek() {
-                Some(Token::Delim('+')) | Some(Token::Delim('-')) => {
+                Some(Token::Delim('+' | '-')) => {
                     self.advance();
                     let right = self.parse_product();
                     result = add_types(&result, &right);

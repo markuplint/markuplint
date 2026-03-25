@@ -17,12 +17,12 @@ static PROPERTIES: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 
 /// Look up a syntax definition by type name (e.g., `"color"`, `"absolute-size"`).
 pub fn lookup_syntax(name: &str) -> Option<&str> {
-    SYNTAXES.get(name).map(|s| s.as_str())
+    SYNTAXES.get(name).map(std::string::String::as_str)
 }
 
 /// Look up a property syntax definition (e.g., `"margin-top"`).
 pub fn lookup_property(name: &str) -> Option<&str> {
-    PROPERTIES.get(name).map(|s| s.as_str())
+    PROPERTIES.get(name).map(std::string::String::as_str)
 }
 
 #[cfg(test)]

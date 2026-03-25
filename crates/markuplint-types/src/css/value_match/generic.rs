@@ -137,11 +137,11 @@ fn match_integer(matcher: &mut Matcher, range: Option<&TypeRange>) -> bool {
 }
 
 fn match_zero(matcher: &mut Matcher) -> bool {
-    if let Some(Token::Number(value)) = matcher.peek() {
-        if *value == 0.0 {
-            matcher.advance();
-            return true;
-        }
+    if let Some(Token::Number(value)) = matcher.peek()
+        && *value == 0.0
+    {
+        matcher.advance();
+        return true;
     }
     matcher.record_expected("0");
     false
@@ -250,32 +250,32 @@ fn match_string(matcher: &mut Matcher) -> bool {
 
 fn match_url(matcher: &mut Matcher) -> bool {
     // url( <string> ) or url( <url-token> )
-    if let Some(Token::Function(name)) = matcher.peek() {
-        if name.eq_ignore_ascii_case("url") {
-            let saved = matcher.save();
-            matcher.advance(); // consume url(
-            // Accept any content until )
-            let mut depth = 1u32;
-            while !matcher.is_at_end() && depth > 0 {
-                match matcher.peek() {
-                    Some(Token::LeftParen) | Some(Token::Function(_)) => {
-                        depth += 1;
-                        matcher.advance();
-                    }
-                    Some(Token::RightParen) => {
-                        depth -= 1;
-                        matcher.advance();
-                    }
-                    _ => {
-                        matcher.advance();
-                    }
+    if let Some(Token::Function(name)) = matcher.peek()
+        && name.eq_ignore_ascii_case("url")
+    {
+        let saved = matcher.save();
+        matcher.advance(); // consume url(
+        // Accept any content until )
+        let mut depth = 1u32;
+        while !matcher.is_at_end() && depth > 0 {
+            match matcher.peek() {
+                Some(Token::LeftParen | Token::Function(_)) => {
+                    depth += 1;
+                    matcher.advance();
+                }
+                Some(Token::RightParen) => {
+                    depth -= 1;
+                    matcher.advance();
+                }
+                _ => {
+                    matcher.advance();
                 }
             }
-            if depth == 0 {
-                return true;
-            }
-            matcher.restore(saved);
         }
+        if depth == 0 {
+            return true;
+        }
+        matcher.restore(saved);
     }
     matcher.record_expected("<url>");
     false
@@ -308,11 +308,11 @@ fn match_custom_ident(matcher: &mut Matcher) -> bool {
 }
 
 fn match_dashed_ident(matcher: &mut Matcher) -> bool {
-    if let Some(Token::Ident(name)) = matcher.peek() {
-        if name.starts_with("--") {
-            matcher.advance();
-            return true;
-        }
+    if let Some(Token::Ident(name)) = matcher.peek()
+        && name.starts_with("--")
+    {
+        matcher.advance();
+        return true;
     }
     matcher.record_expected("<dashed-ident>");
     false
@@ -404,11 +404,11 @@ fn match_id_selector(matcher: &mut Matcher) -> bool {
     if let Some(Token::Hash(value)) = matcher.peek() {
         // Must start with # followed by a valid identifier start
         let rest = &value[1..];
-        if let Some(first) = rest.bytes().next() {
-            if first.is_ascii_alphabetic() || first == b'_' || first >= 0x80 {
-                matcher.advance();
-                return true;
-            }
+        if let Some(first) = rest.bytes().next()
+            && (first.is_ascii_alphabetic() || first == b'_' || first >= 0x80)
+        {
+            matcher.advance();
+            return true;
         }
     }
     matcher.record_expected("<id-selector>");
@@ -450,28 +450,26 @@ fn match_percentage_token(matcher: &mut Matcher) -> bool {
 // Range checking
 // ============================================================
 
-/// Check if a numeric value falls within a TypeRange.
+/// Check if a numeric value falls within a `TypeRange`.
 fn check_range(value: f64, range: Option<&TypeRange>) -> bool {
     let Some(range) = range else {
         return true;
     };
 
     // Parse min/max. None means infinity.
-    if let Some(min_str) = &range.min {
-        if let Some(min_val) = parse_range_number(min_str) {
-            if value < min_val {
-                return false;
-            }
-        }
-        // If we can't parse (different units), skip the check
+    if let Some(min_str) = &range.min
+        && let Some(min_val) = parse_range_number(min_str)
+        && value < min_val
+    {
+        return false;
     }
+    // If we can't parse (different units), skip the check
 
-    if let Some(max_str) = &range.max {
-        if let Some(max_val) = parse_range_number(max_str) {
-            if value > max_val {
-                return false;
-            }
-        }
+    if let Some(max_str) = &range.max
+        && let Some(max_val) = parse_range_number(max_str)
+        && value > max_val
+    {
+        return false;
     }
 
     true

@@ -89,7 +89,7 @@ impl<'a> Matcher<'a> {
         }
     }
 
-    /// Build a MismatchInfo from the current state.
+    /// Build a `MismatchInfo` from the current state.
     pub fn mismatch(&self) -> MismatchInfo {
         let offset = if self.longest_match < self.token_offsets.len() {
             self.token_offsets[self.longest_match]
@@ -133,12 +133,11 @@ impl<'a> Matcher<'a> {
                 use crate::css::value_match::registry;
 
                 // Check for math functions (calc, min, max, etc.)
-                if generic::supports_math_functions(name) {
-                    if let Some(Token::Function(fn_name)) = self.peek() {
-                        if generic::is_math_function(fn_name) {
-                            return self.match_math_function(name);
-                        }
-                    }
+                if generic::supports_math_functions(name)
+                    && let Some(Token::Function(fn_name)) = self.peek()
+                    && generic::is_math_function(fn_name)
+                {
+                    return self.match_math_function(name);
                 }
 
                 // Check for var() / env()
@@ -161,16 +160,15 @@ impl<'a> Matcher<'a> {
 
                 // Try registry lookup for non-built-in types (e.g., <color>, <position>)
                 let key = format!("type:{name}");
-                if !self.visiting.contains(&key) {
-                    if let Some(syntax_str) = registry::lookup_syntax(name) {
-                        if let Ok(ast) = crate::css::syntax_definition::parse(syntax_str) {
-                            self.visiting.insert(key.clone());
-                            let result = self.match_node(&ast);
-                            self.visiting.remove(&key);
-                            if result {
-                                return true;
-                            }
-                        }
+                if !self.visiting.contains(&key)
+                    && let Some(syntax_str) = registry::lookup_syntax(name)
+                    && let Ok(ast) = crate::css::syntax_definition::parse(syntax_str)
+                {
+                    self.visiting.insert(key.clone());
+                    let result = self.match_node(&ast);
+                    self.visiting.remove(&key);
+                    if result {
+                        return true;
                     }
                 }
 
@@ -181,16 +179,15 @@ impl<'a> Matcher<'a> {
                 use crate::css::value_match::registry;
 
                 let key = format!("prop:{name}");
-                if !self.visiting.contains(&key) {
-                    if let Some(syntax_str) = registry::lookup_property(name) {
-                        if let Ok(ast) = crate::css::syntax_definition::parse(syntax_str) {
-                            self.visiting.insert(key.clone());
-                            let result = self.match_node(&ast);
-                            self.visiting.remove(&key);
-                            if result {
-                                return true;
-                            }
-                        }
+                if !self.visiting.contains(&key)
+                    && let Some(syntax_str) = registry::lookup_property(name)
+                    && let Ok(ast) = crate::css::syntax_definition::parse(syntax_str)
+                {
+                    self.visiting.insert(key.clone());
+                    let result = self.match_node(&ast);
+                    self.visiting.remove(&key);
+                    if result {
+                        return true;
                     }
                 }
 
@@ -208,11 +205,11 @@ impl<'a> Matcher<'a> {
     }
 
     fn match_keyword(&mut self, name: &str) -> bool {
-        if let Some(Token::Ident(ident)) = self.peek() {
-            if ident.eq_ignore_ascii_case(name) {
-                self.advance();
-                return true;
-            }
+        if let Some(Token::Ident(ident)) = self.peek()
+            && ident.eq_ignore_ascii_case(name)
+        {
+            self.advance();
+            return true;
         }
         self.record_expected(name);
         false
@@ -252,22 +249,22 @@ impl<'a> Matcher<'a> {
     }
 
     fn match_string(&mut self, value: &str) -> bool {
-        if let Some(Token::String(s)) = self.peek() {
-            if s == value {
-                self.advance();
-                return true;
-            }
+        if let Some(Token::String(s)) = self.peek()
+            && s == value
+        {
+            self.advance();
+            return true;
         }
         self.record_expected(&format!("\"{value}\""));
         false
     }
 
     fn match_at_keyword(&mut self, name: &str) -> bool {
-        if let Some(Token::AtKeyword(kw)) = self.peek() {
-            if kw.eq_ignore_ascii_case(name) {
-                self.advance();
-                return true;
-            }
+        if let Some(Token::AtKeyword(kw)) = self.peek()
+            && kw.eq_ignore_ascii_case(name)
+        {
+            self.advance();
+            return true;
         }
         self.record_expected(&format!("@{name}"));
         false
@@ -282,7 +279,7 @@ impl<'a> Matcher<'a> {
         let mut depth = 1u32;
         while !self.is_at_end() && depth > 0 {
             match self.peek() {
-                Some(Token::LeftParen) | Some(Token::Function(_)) => {
+                Some(Token::LeftParen | Token::Function(_)) => {
                     depth += 1;
                     self.advance();
                 }
@@ -322,7 +319,7 @@ impl<'a> Matcher<'a> {
         let mut depth = 1u32;
         while !self.is_at_end() && depth > 0 {
             match self.peek() {
-                Some(Token::LeftParen) | Some(Token::Function(_)) => {
+                Some(Token::LeftParen | Token::Function(_)) => {
                     depth += 1;
                     inner_tokens.push(self.peek().unwrap().clone());
                     self.advance();
@@ -360,12 +357,12 @@ impl<'a> Matcher<'a> {
         }
     }
 
-    /// Match var() or env() with optional fallback type checking.
+    /// Match `var()` or `env()` with optional fallback type checking.
     ///
-    /// For var(): `var( <custom-property-name> [, <declaration-value>]? )`
-    /// For env(): `env( <custom-ident> [, <declaration-value>]? )`
+    /// For `var()`: `var( <custom-property-name> [, <declaration-value>]? )`
+    /// For `env()`: `env( <custom-ident> [, <declaration-value>]? )`
     ///
-    /// Unlike css-tree (which rejects var() entirely), this validates the
+    /// Unlike css-tree (which rejects `var()` entirely), this validates the
     /// function structure and accepts it as matching the expected type.
     fn match_var_or_env(&mut self) -> bool {
         // Current token is Function("var") or Function("env")
@@ -387,15 +384,12 @@ impl<'a> Matcher<'a> {
             }
         } else {
             // env(): first arg is a custom-ident
-            match self.peek() {
-                Some(Token::Ident(_)) => {
-                    self.advance();
-                }
-                _ => {
-                    self.record_expected("<custom-ident>");
-                    self.skip_to_matching_paren(1);
-                    return false;
-                }
+            if let Some(Token::Ident(_)) = self.peek() {
+                self.advance();
+            } else {
+                self.record_expected("<custom-ident>");
+                self.skip_to_matching_paren(1);
+                return false;
             }
         }
 
@@ -422,7 +416,7 @@ impl<'a> Matcher<'a> {
         let mut depth = initial_depth;
         while !self.is_at_end() && depth > 0 {
             match self.peek() {
-                Some(Token::LeftParen) | Some(Token::Function(_)) => {
+                Some(Token::LeftParen | Token::Function(_)) => {
                     depth += 1;
                     self.advance();
                 }
@@ -438,10 +432,10 @@ impl<'a> Matcher<'a> {
     }
 
     fn match_function(&mut self, name: &str) -> bool {
-        if let Some(Token::Function(fn_name)) = self.peek() {
-            if fn_name.eq_ignore_ascii_case(name) {
-                return self.consume_function_call();
-            }
+        if let Some(Token::Function(fn_name)) = self.peek()
+            && fn_name.eq_ignore_ascii_case(name)
+        {
+            return self.consume_function_call();
         }
         self.record_expected(&format!("{name}()"));
         false
@@ -517,10 +511,8 @@ impl<'a> Matcher<'a> {
             if matched & (1u64 << i) != 0 {
                 continue; // already matched
             }
-            if self.match_node(&terms[i]) {
-                if self.match_permutation(terms, matched | (1u64 << i), all_matched) {
-                    return true;
-                }
+            if self.match_node(&terms[i]) && self.match_permutation(terms, matched | (1u64 << i), all_matched) {
+                return true;
             }
             self.restore(saved);
         }
@@ -548,10 +540,8 @@ impl<'a> Matcher<'a> {
             if matched & (1u64 << i) != 0 {
                 continue;
             }
-            if self.match_node(&terms[i]) {
-                if self.match_double_bar_rec(terms, matched | (1u64 << i), true) {
-                    return true;
-                }
+            if self.match_node(&terms[i]) && self.match_double_bar_rec(terms, matched | (1u64 << i), true) {
+                return true;
             }
             self.restore(saved);
         }
@@ -628,7 +618,7 @@ fn token_byte_length(token: &Token, input: &str, offset: usize) -> usize {
             .max(1),
         Token::Ident(_) | Token::AtKeyword(_) => {
             // Scan forward to find how many bytes this ident/at-keyword consumes
-            let prefix = if matches!(token, Token::AtKeyword(_)) { 1 } else { 0 };
+            let prefix = usize::from(matches!(token, Token::AtKeyword(_)));
             // Approximate: find the name in the remaining input
             scan_name_length(remaining, prefix)
         }
