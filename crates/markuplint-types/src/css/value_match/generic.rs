@@ -2,6 +2,12 @@
 //!
 //! Each function attempts to consume one or more tokens from the matcher
 //! and returns `true` if the type matches.
+//!
+//! Type definitions follow [CSS Values Level 4 § Component Value Types](https://drafts.csswg.org/css-values/#component-types)
+//! and [CSS Syntax Level 3 § Token Types](https://drafts.csswg.org/css-syntax/#tokenization).
+//!
+//! Built-in types take priority over mdn-data registry definitions to enforce
+//! stricter CSS spec semantics (see crate README for rationale).
 
 use crate::css::syntax_definition::ast::TypeRange;
 use crate::css::value_match::matcher::Matcher;
