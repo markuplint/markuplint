@@ -19,10 +19,10 @@ markuplint-types/
 │   │       ├── tokenizer.rs     CSS value tokenizer (CSS Syntax Level 3)
 │   │       ├── token.rs         Token types
 │   │       ├── matcher.rs       Core matching engine (recursive descent + backtracking)
-│   │       ├── generic.rs       Built-in type matchers (<number>, <length>, <color>, etc.)
+│   │       ├── generic.rs       Built-in type matchers (<number>, <length>, <bcp-47>, etc.)
 │   │       ├── units.rs         CSS unit table (50+ units)
 │   │       ├── calc.rs          calc() expression parser + type checker (CSS Values Level 4)
-│   │       ├── registry.rs      Syntax registry (mdn-data)
+│   │       ├── registry.rs      Syntax registry (mdn-data + markuplint custom types)
 │   │       └── error.rs         MatchResult, MismatchInfo
 │   │
 │   ├── check/                   Type check dispatcher
@@ -55,7 +55,8 @@ CSS syntax string               CSS value string
      │  ├─ Combinator (|, &&, ||)     │
      │  ├─ Multiplier (?, +, *, #)    │
      │  ├─ generic.rs (built-in types)│
-     │  ├─ registry.rs (mdn-data)     │
+     │  ├─ registry.rs (mdn-data     │
+     │  │   + custom SVG/animation)   │
      │  ├─ calc.rs (type checking)    │
      │  └─ var()/env() validation     │
      └────────────┬────────────────────┘
@@ -107,6 +108,17 @@ The math function list in `generic.rs` covers all functions defined in CSS Value
 - Sign-related: `abs`, `sign`
 
 When CSS adds new math functions, both `MATH_FUNCTIONS` in `generic.rs` and the match arms in `calc.rs` must be updated.
+
+### Why hardcoded custom types instead of css-tree's fork()?
+
+css-tree provides a `fork()` API for 3rd-party consumers to inject custom syntax definitions. Since markuplint owns the Rust implementation, a generic extension API is unnecessary. Instead, custom type definitions are hardcoded in `registry.rs::custom_syntaxes()`:
+
+- **SVG transform overrides** (`translate()`, `scale()`, `rotate()`, `skew()`) — from `css-overrides.ts`
+- **SVG/animation attribute types** (`<view-box>`, `<preserve-aspect-ratio>`, `<dasharray>`, etc.) — from `css-defs.ts`
+- **Always-pass stub types** (`<svg-font-size>`, `<animatable-value>`, etc.) — TS also has no validation for these
+- **`<bcp-47>`** — built-in type in `generic.rs`, delegates to the existing Rust BCP-47 validator
+
+To add a new custom type, add an entry to `custom_syntaxes()` in `registry.rs`. Keep it in sync with the TS source files listed in the function's doc comment.
 
 ## CSS Spec References
 
