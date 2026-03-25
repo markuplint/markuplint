@@ -479,32 +479,42 @@ Process packages in the following tier order. Within the same tier, order does n
 - **Single-package changes**: Skip ordering -- just commit the affected package
 - **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
 
-## Rust Native Layer (@markuplint/core)
+## Rust Native Layer
 
-A Rust implementation of the MLDOM is available under `crates/` and exposed to Node.js as `@markuplint/core` via napi-rs.
+Rust implementations of performance-critical components are available under `crates/`. These are part of the [Rust rewrite initiative](https://github.com/markuplint/markuplint/issues/3178).
 
 ### Crate Structure
 
 ```
 crates/
-├── markuplint-core/   MLAST serde types (JSON → Rust structs)
-├── markuplint-dom/    Arena-based DOM (builder + traversal)
-└── markuplint-napi/   napi-rs bridge → @markuplint/core
+├── markuplint-core/    MLAST serde types (JSON → Rust structs)
+├── markuplint-dom/     Arena-based DOM (builder + traversal)
+├── markuplint-napi/    napi-rs bridge → @markuplint/core
+└── markuplint-types/   CSS type validation (syntax parser + value matching)
 ```
 
-### Data Flow
+### DOM Layer Data Flow
 
 ```
 TS html-parser → MLAST JSON → markuplint-core (serde) → markuplint-dom (arena) → markuplint-napi → JS
 ```
 
+### Type Validation Layer Data Flow
+
+```
+CSS syntax string → markuplint-types (parse → AST) + CSS value string (tokenize → Token[]) → matcher → MatchResult
+```
+
+`markuplint-types` is the Rust counterpart of `@markuplint/types` for CSS value validation. It includes a `calc()` type checker and `var()` validator that go beyond the capabilities of the current `css-tree`-based TypeScript implementation.
+
 ### Relationship to TypeScript Packages
 
-The Rust DOM is a parallel implementation of the MLDOM in `@markuplint/ml-core`. It currently operates independently (`private: true`, no consumers). The long-term plan is to replace the TypeScript MLDOM layer with this Rust implementation for improved performance.
+The Rust crates are parallel implementations of TypeScript modules. They currently operate independently and will be exposed via napi-rs to replace the TypeScript implementations incrementally:
 
-The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged. The Rust layer only replaces the DOM construction and traversal — rule evaluation and the linting pipeline stay in TypeScript.
+- `markuplint-core` / `markuplint-dom` → replaces MLDOM in `@markuplint/ml-core`
+- `markuplint-types` → replaces CSS validation in `@markuplint/types`
 
-See `crates/README.md` for build instructions and detailed architecture.
+The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged during migration. See `crates/README.md` for build instructions and detailed architecture.
 
 ## Conclusion
 
