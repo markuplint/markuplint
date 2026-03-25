@@ -162,3 +162,66 @@ fn text_coordinate() {
     assert!(match_syntax("<text-coordinate>", "10 20 30").is_ok());
     assert!(match_syntax("<text-coordinate>", "10px, 20px").is_ok());
 }
+
+// ============================================================
+// SVG transform functions (css-overrides.ts)
+// ============================================================
+
+// SVG transform function value matching requires Function-body matching
+// (matching syntax nodes inside function arguments), which is not yet
+// implemented in the matcher. The syntaxes are registered in the registry
+// and verified via lookup tests. Value matching tests will be added in
+// Phase 1B-4 when Function-body matching is implemented.
+#[test]
+fn svg_transform_syntaxes_registered() {
+    use markuplint_types::css::value_match::registry;
+    assert!(registry::lookup_syntax("translate()").is_some());
+    assert!(registry::lookup_syntax("scale()").is_some());
+    assert!(registry::lookup_syntax("rotate()").is_some());
+    assert!(registry::lookup_syntax("skew()").is_some());
+}
+
+// ============================================================
+// Remaining always-pass types
+// ============================================================
+
+#[test]
+fn always_pass_end_value_list() {
+    assert!(match_syntax("<end-value-list>", "0s;click").is_ok());
+}
+
+#[test]
+fn always_pass_list_of_value() {
+    assert!(match_syntax("<list-of-value>", "0; 1; 2").is_ok());
+}
+
+#[test]
+fn always_pass_clock_value() {
+    assert!(match_syntax("<clock-value>", "02:30:00").is_ok());
+}
+
+#[test]
+fn always_pass_svg_path() {
+    assert!(match_syntax("<svg-path>", "M0,0 L100,100").is_ok());
+}
+
+#[test]
+fn always_pass_svg_font_size_adjust() {
+    assert!(match_syntax("<svg-font-size-adjust>", "0.5").is_ok());
+}
+
+#[test]
+fn always_pass_list_of_svg_feature_string() {
+    assert!(
+        match_syntax(
+            "<list-of-svg-feature-string>",
+            "http://www.w3.org/TR/SVG11/feature#Shape"
+        )
+        .is_ok()
+    );
+}
+
+#[test]
+fn always_pass_enable_background() {
+    assert!(match_syntax("<enable-background>", "new 0 0 100 100").is_ok());
+}
