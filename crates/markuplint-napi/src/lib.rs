@@ -8,6 +8,7 @@ use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::builder;
 use markuplint_dom::node::{DomNode, ElementData};
+use markuplint_types::css::value_match;
 use markuplint_types::primitive;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -291,4 +292,72 @@ pub fn is_quantity(value: String, units: Vec<String>, number_type: Option<String
 #[allow(clippy::needless_pass_by_value)]
 pub fn range(value: String, from: f64, to: f64) -> bool {
     primitive::range(&value, from, to)
+}
+
+// --- CSS value matching ---
+
+/// Result of a CSS value match attempt.
+#[napi(object)]
+pub struct CssMatchResult {
+    /// Whether the value matched the syntax.
+    pub matched: bool,
+    /// Byte offset of the mismatch (only present when matched is false).
+    pub offset: Option<u32>,
+    /// Length of the mismatched segment (only present when matched is false).
+    pub length: Option<u32>,
+    /// Expected values at the mismatch point.
+    pub expected: Option<Vec<String>>,
+}
+
+/// Match a CSS value against a CSS Value Definition Syntax string.
+///
+/// This is the Rust replacement for css-tree's `lexer.match()`.
+///
+/// # Errors
+///
+/// Returns a napi error if the syntax string is invalid.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn match_css_syntax(syntax: String, value: String) -> CssMatchResult {
+    match value_match::match_syntax(&syntax, &value) {
+        Ok(()) => CssMatchResult {
+            matched: true,
+            offset: None,
+            length: None,
+            expected: None,
+        },
+        Err(info) => CssMatchResult {
+            matched: false,
+            offset: Some(info.offset as u32),
+            length: Some(info.length as u32),
+            expected: Some(info.expected),
+        },
+    }
+}
+
+/// Match a CSS property value, including CSS-wide keywords.
+///
+/// Checks CSS-wide keywords (inherit, initial, unset, revert, revert-layer)
+/// before matching against the syntax definition.
+///
+/// # Errors
+///
+/// Returns a napi error if the syntax string is invalid.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn match_css_property(syntax: String, value: String) -> CssMatchResult {
+    match value_match::match_property(&syntax, &value) {
+        Ok(()) => CssMatchResult {
+            matched: true,
+            offset: None,
+            length: None,
+            expected: None,
+        },
+        Err(info) => CssMatchResult {
+            matched: false,
+            offset: Some(info.offset as u32),
+            length: Some(info.length as u32),
+            expected: Some(info.expected),
+        },
+    }
 }
