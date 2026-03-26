@@ -208,7 +208,7 @@ pub struct ElementARIA {
 }
 
 /// An ARIA role as defined in schema data.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct ARIARoleInSchema {
     /// Role name.
     pub name: String,
@@ -260,7 +260,7 @@ pub struct ARIARoleInSchema {
 }
 
 /// A property owned by an ARIA role.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct ARIARoleOwnedProperty {
     /// Property name.
     pub name: String,
