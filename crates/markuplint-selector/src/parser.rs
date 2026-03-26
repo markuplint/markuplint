@@ -339,6 +339,12 @@ impl<'a> Parser<'a> {
                     Ok(PseudoClassSelector::Where(list))
                 }
                 // markuplint extensions
+                "closest" => {
+                    let list = self.parse_selector_list()?;
+                    self.skip_whitespace();
+                    self.expect(')')?;
+                    Ok(PseudoClassSelector::Closest(list))
+                }
                 "model" => {
                     let content = self.parse_paren_content()?;
                     Ok(PseudoClassSelector::Model(content))
