@@ -593,14 +593,64 @@ mod tests {
     }
 
     #[test]
-    fn parse_has_child() {
-        // `:has(> div)` — leading combinator in :has() needs special handling
-        // For now, parsed as content string via parse_paren_content fallback
-        // TODO: Support relative selectors in :has()
+    fn parse_has_with_descendant() {
         let list = parse(":has(div span)").unwrap();
         assert!(matches!(
             &list.selectors[0].subject.parts[0],
             SimpleSelector::PseudoClass(PseudoClassSelector::Has(_))
         ));
+    }
+
+    // --- Error cases ---
+
+    #[test]
+    fn error_empty_string() {
+        assert!(parse("").is_err());
+    }
+
+    #[test]
+    fn error_bare_combinator() {
+        assert!(parse(">").is_err());
+        assert!(parse("+").is_err());
+        assert!(parse("~").is_err());
+    }
+
+    #[test]
+    fn error_unclosed_bracket() {
+        assert!(parse("[href").is_err());
+    }
+
+    #[test]
+    fn error_unclosed_paren() {
+        assert!(parse(":not(div").is_err());
+    }
+
+    #[test]
+    fn error_pseudo_element_rejected() {
+        assert!(parse("::before").is_err());
+        assert!(parse("::after").is_err());
+    }
+
+    #[test]
+    fn error_unsupported_pseudo() {
+        assert!(parse(":hover").is_err());
+        assert!(parse(":focus").is_err());
+    }
+
+    #[test]
+    fn error_trailing_combinator() {
+        // "div >" with nothing after — parsed as compound `div` then
+        // child combinator expects another compound but finds EOF
+        assert!(parse("div >").is_err());
+    }
+
+    #[test]
+    fn error_double_comma() {
+        assert!(parse("div,,p").is_err());
+    }
+
+    #[test]
+    fn error_invalid_attribute_operator() {
+        assert!(parse("[href!=val]").is_err());
     }
 }
