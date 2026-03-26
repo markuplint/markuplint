@@ -89,6 +89,12 @@ Options
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
+	--progressive-output                   Output results immediately after processing each file. Default: false.
+
+	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
+	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
+	--prune-suppressions                   [Experimental] Remove stale entries from the suppressions file.
+	--suppressions-location PATH           [Experimental] Custom path for the suppressions file. Default: "markuplint-suppressions.json".
 
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
@@ -101,6 +107,34 @@ Examples
 	$ markuplint "**/*.html" --max-count=10
 	$ cat verifyee.html | markuplint
 ```
+
+### Bulk Suppressions (Experimental)
+
+> **This feature is experimental and may change in future releases.**
+
+When introducing new rules to an existing project, you can suppress current violations and enforce rules only on new code.
+
+**Typical workflow:**
+
+```bash
+# 1. Enable new rules in your config, then suppress all current errors
+$ markuplint --suppress "src/**/*.html"
+
+# 2. Commit the generated suppressions file to your repository
+$ git add markuplint-suppressions.json
+
+# 3. From now on, only new violations are reported
+$ markuplint "src/**/*.html"
+
+# 4. As you fix existing violations, clean up stale entries
+$ markuplint --prune-suppressions "src/**/*.html"
+```
+
+- Only `error`-severity violations are suppressed; `warning` and `info` always pass through.
+- If the number of violations for a file+rule pair **exceeds** the suppressed count, **all** violations for that pair are reported.
+- `--suppress` always exits with code 0 (success).
+
+See [ESLint's Bulk Suppressions](https://eslint.org/docs/latest/use/suppressions) for the reference design. Tracking issue: [#3503](https://github.com/markuplint/markuplint/issues/3503).
 
 ## Documentation
 
