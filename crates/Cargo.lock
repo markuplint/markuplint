@@ -471,12 +471,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "markuplint-selector"
+version = "0.0.0"
+dependencies = [
+ "markuplint-dom",
+ "markuplint-types",
+]
+
+[[package]]
 name = "markuplint-types"
 version = "0.0.0"
 dependencies = [
  "language-tags",
  "mime",
  "regex",
+ "serde",
  "serde_json",
  "strsim",
  "url",
