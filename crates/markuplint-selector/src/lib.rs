@@ -3,9 +3,8 @@
 //! Provides CSS selector parsing and matching with markuplint-specific
 //! extensions (`:role()`, `:aria()`, `:model()`).
 //!
-//! The parser and matcher are self-contained (no external selector crate).
-//! Only `postcss-selector-parser` equivalent: parse CSS selector strings
-//! into an AST, then match against DOM elements.
+//! Self-contained implementation — no external selector crate dependency.
+//! Same approach as the css-tree replacement in Phase 1B.
 
 pub mod ast;
 pub mod parser;
