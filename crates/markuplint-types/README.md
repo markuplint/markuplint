@@ -25,6 +25,10 @@ markuplint-types/
 │   │       ├── registry.rs      Syntax registry (mdn-data + markuplint custom types)
 │   │       └── error.rs         MatchResult, MismatchInfo
 │   │
+│   ├── spec/                     Phase 2: Spec data types and loader
+│   │   ├── mod.rs               load_spec() — JSON → MLMLSpec
+│   │   └── types.rs             Serde types (MLMLSpec, ElementSpec, Attribute, ARIA, etc.)
+│   │
 │   ├── check/                   Type check dispatcher
 │   ├── whatwg/                   WHATWG type validators (datetime, autocomplete, etc.)
 │   ├── w3c/                     W3C type validators (permissions policy)
