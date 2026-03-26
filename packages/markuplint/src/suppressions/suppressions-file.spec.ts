@@ -100,8 +100,9 @@ describe('suppressions-file', () => {
 
 	describe('toRelativePath / toAbsolutePath', () => {
 		it('round-trips correctly', () => {
-			const suppressionsPath = '/project/markuplint-suppressions.json';
-			const absFilePath = '/project/src/index.html';
+			// Use path.resolve to get platform-native absolute paths
+			const suppressionsPath = path.resolve('/project', 'markuplint-suppressions.json');
+			const absFilePath = path.resolve('/project', 'src', 'index.html');
 
 			const rel = toRelativePath(absFilePath, suppressionsPath);
 			expect(rel).toBe('src/index.html');
@@ -111,8 +112,8 @@ describe('suppressions-file', () => {
 		});
 
 		it('uses forward slashes (POSIX)', () => {
-			const suppressionsPath = '/project/markuplint-suppressions.json';
-			const absFilePath = '/project/src/deep/nested/file.html';
+			const suppressionsPath = path.resolve('/project', 'markuplint-suppressions.json');
+			const absFilePath = path.resolve('/project', 'src', 'deep', 'nested', 'file.html');
 
 			const rel = toRelativePath(absFilePath, suppressionsPath);
 			expect(rel).not.toContain('\\');
