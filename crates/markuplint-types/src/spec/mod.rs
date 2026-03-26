@@ -1,8 +1,10 @@
-//! markuplint spec data types and loader.
+//! markuplint spec data types, loader, and lookup functions.
 //!
-//! Corresponds to the TypeScript types in `@markuplint/ml-spec/src/types/`.
+//! Corresponds to the TypeScript types in `@markuplint/ml-spec/src/types/`
+//! and utilities in `@markuplint/ml-spec/src/utils/`.
 //! Deserializes the compiled spec JSON (e.g., `@markuplint/html-spec/index.json`).
 
+pub mod lookup;
 pub mod types;
 
 use types::MLMLSpec;
