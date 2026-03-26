@@ -25,10 +25,11 @@ markuplint-types/
 │   │       ├── registry.rs      Syntax registry (mdn-data + markuplint custom types)
 │   │       └── error.rs         MatchResult, MismatchInfo
 │   │
-│   ├── spec/                     Phase 2: Spec data types, loader, and lookup
+│   ├── spec/                     Phase 2: Spec data types, loader, lookup, and ARIA
 │   │   ├── mod.rs               load_spec() — JSON → MLMLSpec
 │   │   ├── types.rs             Serde types (MLMLSpec, ElementSpec, Attribute, ARIA, etc.)
-│   │   └── lookup.rs            Spec queries (get_spec, is_void_element, get_attr_specs, etc.)
+│   │   ├── lookup.rs            Spec queries (get_spec, is_void_element, get_attr_specs, etc.)
+│   │   └── aria.rs              ARIA role resolution (implicit/explicit role, permitted roles)
 │   │
 │   ├── check/                   Type check dispatcher
 │   ├── whatwg/                   WHATWG type validators (datetime, autocomplete, etc.)

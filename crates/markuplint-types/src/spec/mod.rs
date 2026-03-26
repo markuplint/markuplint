@@ -4,6 +4,7 @@
 //! and utilities in `@markuplint/ml-spec/src/utils/`.
 //! Deserializes the compiled spec JSON (e.g., `@markuplint/html-spec/index.json`).
 
+pub mod aria;
 pub mod lookup;
 pub mod types;
 
