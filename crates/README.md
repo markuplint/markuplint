@@ -26,7 +26,11 @@ Provides traversal: parent, children, siblings, ancestors (bottom-up), descendan
 
 ### markuplint-napi
 
-Exposes the DOM to Node.js via napi-rs. The `NapiDom` class accepts MLAST JSON, builds the arena, and provides query methods. This crate compiles to a platform-specific `.node` binary.
+Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-specific `.node` binary. Provides:
+
+- **NapiDom**: DOM tree from MLAST JSON with traversal queries
+- **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
+- **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
 
 ### markuplint-types
 
