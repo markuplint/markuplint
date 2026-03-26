@@ -6,10 +6,11 @@ Rust implementation of markuplint's core components: DOM layer and type validati
 
 ```
 crates/
-├── markuplint-core/    MLAST serde types (deserialization from JSON)
-├── markuplint-dom/     Arena-based DOM tree (builder + traversal)
-├── markuplint-napi/    Node.js bridge via napi-rs v3
-└── markuplint-types/   CSS type validation (syntax parser + value matching engine)
+├── markuplint-core/      MLAST serde types (deserialization from JSON)
+├── markuplint-dom/       Arena-based DOM tree (builder + traversal)
+├── markuplint-napi/      Node.js bridge via napi-rs v3
+├── markuplint-selector/  CSS selector parser + matcher (self-contained, with :model/:role/:aria)
+└── markuplint-types/     CSS type validation (syntax parser + value matching engine)
 ```
 
 ### markuplint-core
