@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- add isFatalError guard to MLEngine.exec and fix accname Deno crash ([c4b20de](https://github.com/markuplint/markuplint/commit/c4b20de128b2cfee582b3588e5004cb90065825b))
+- **markuplint:** use platform-native paths in suppressions round-trip test ([df4b6a5](https://github.com/markuplint/markuplint/commit/df4b6a5f83b0fed3f74afba72cccd7bc2dbf8606))
+
+### Features
+
+- **markuplint:** add experimental bulk suppressions ([bd3ab72](https://github.com/markuplint/markuplint/commit/bd3ab7204870dd6061e8e4ccbeaacd751d069a73)), closes [#3503](https://github.com/markuplint/markuplint/issues/3503)
+- **markuplint:** add selector scope (LCA) to bulk suppressions ([84cf73d](https://github.com/markuplint/markuplint/commit/84cf73dd92db49f1f93ff6a5c9b71c7807ce31e9)), closes [#3509](https://github.com/markuplint/markuplint/issues/3509)
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 ### Bug Fixes
