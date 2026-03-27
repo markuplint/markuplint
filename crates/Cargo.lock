@@ -459,6 +459,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "markuplint-html-parser"
+version = "0.0.0"
+dependencies = [
+ "markuplint-core",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "markuplint-napi"
 version = "0.0.0"
 dependencies = [
