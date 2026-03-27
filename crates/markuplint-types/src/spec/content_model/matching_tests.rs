@@ -205,6 +205,7 @@ mod tests {
             assert_eq!(run(r##"{"require": "c", "min": 2}"##, &["c"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(r##"{"require": "c", "min": 2}"##, &["c", "c"]).result_type, ResultType::Matched);
             assert_eq!(run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).hint.max, Some(1));
         }
 
         #[test]
@@ -228,9 +229,81 @@ mod tests {
         fn ruby_part3_one_or_more_rt_rp() {
             let p = r##"{"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}"##;
             assert_eq!(run(p, &["rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt"]).query, "rp");
             assert_eq!(run(p, &["rt", "rp"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["rt", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).query, "rp");
             assert_eq!(run(p, &["rt", "rp", "rt", "rp"]).result_type, ResultType::Matched);
+        }
+
+        // --- ruby element part #1 (TS: oneOrMore with model array selectors) ---
+        #[test]
+        fn ruby_part1_phrasing_model_array() {
+            let p = r##"{"oneOrMore": [
+                ":model(phrasing):not(ruby, :has(ruby))",
+                "ruby:not(:has(ruby))"
+            ]}"##;
+            assert_eq!(run(p, &["span"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["ruby"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["ruby", "span"]).result_type, ResultType::Matched);
+            // NOTE: <span><ruby></ruby></span> and <ruby><ruby></ruby></ruby> tests
+            // require :has() selector support (deferred to #3515).
+            // Without :has(), these incorrectly match instead of returning MISSING_NODE_ONE_OR_MORE.
+        }
+
+        // --- ruby element part #2 (TS: complex nested with choice) ---
+        #[test]
+        fn ruby_part2_complex_nested() {
+            let p = r##"{"oneOrMore": [
+                {"oneOrMore": [
+                    ":model(phrasing):not(ruby, :has(ruby))",
+                    "ruby:not(:has(rt, rp))"
+                ]},
+                {"choice": [
+                    [{"oneOrMore": "rt"}],
+                    [{"require": "rp"}, {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}]
+                ]}
+            ]}"##;
+            assert_eq!(run(p, &["span"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["span"]).query, "rt");
+            assert_eq!(run(p, &["span", "rp", "rt", "rp"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["span", "rt"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rt", "span", "rt"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["#text", "rt", "#text", "rt"]).result_type, ResultType::Matched);
+        }
+
+        // --- Issue #1146 1/2 (TS: oneOrMore with single-branch choice) ---
+        #[test]
+        fn issue_1146_one_or_more_choice() {
+            let p = r##"{"oneOrMore": [{"choice": [[{"require": "b"}]]}]}"##;
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b", "b"]).result_type, ResultType::Matched);
+        }
+
+        // --- Issue #1146 2/2 (TS: oneOrMore with optional + choice) ---
+        #[test]
+        fn issue_1146_one_or_more_optional_choice() {
+            let p = r##"{"oneOrMore": [
+                {"optional": "a"},
+                {"choice": [
+                    [{"optional": "b"}],
+                    [{"require": "c"}]
+                ]}
+            ]}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "a", "a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b", "b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b", "c"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c", "c"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "c"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c", "c"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c", "b", "a"]).result_type, ResultType::Matched);
         }
     }
 
@@ -585,6 +658,7 @@ mod tests {
         fn text_selector() {
             assert_eq!(run("#text", "a").result_type, ResultType::UnmatchedSelectorButMayEmpty);
             assert_eq!(run("#text", "b").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run("#text", "c").result_type, ResultType::UnmatchedSelectorButMayEmpty);
             assert_eq!(run("#text", "#text").result_type, ResultType::Matched);
             assert_eq!(run_empty("#text").result_type, ResultType::MatchedZero);
         }
