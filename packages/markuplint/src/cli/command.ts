@@ -1,16 +1,27 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
+import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { Target } from '@markuplint/file-resolver';
-import type { Severity, SeverityOptions } from '@markuplint/ml-config';
+import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 import { resolveFiles } from '@markuplint/file-resolver';
 import { ViolationCollector } from '@markuplint/ml-core';
+import { isFatalError } from '@markuplint/shared';
 
 import { MLEngine } from '../api/index.js';
 import { log } from '../debug.js';
+import {
+	applySuppressions,
+	generateSuppressions,
+	mergeSuppressions,
+	pruneSuppressions,
+	readSuppressionsFile,
+	resolveSuppressionsPath,
+	writeSuppressionsFile,
+} from '../suppressions/index.js';
 
 import { outputDryRunDiff } from './dry-run-output.js';
 import { output } from './output.js';
@@ -34,6 +45,22 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		process.stderr.write('Warning: --fix-dry-run takes precedence over --fix. Files will not be modified.\n');
 	}
 	const fix = options.fix || fixDryRun;
+
+	// Mutual exclusion checks for suppressions flags
+	const isSuppressMode = options.suppress || options.suppressRule != null;
+	const isPruneMode = options.pruneSuppressions;
+
+	if (isSuppressMode && fix) {
+		process.stderr.write(
+			'Warning: --suppress counts violations from the original code, not from the fixed result. Consider running --fix first, then --suppress.\n',
+		);
+	}
+
+	if (isSuppressMode && isPruneMode) {
+		process.stderr.write('Error: --suppress/--suppress-rule and --prune-suppressions cannot be used together.\n');
+		return true;
+	}
+
 	const configFile =
 		options.config &&
 		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
@@ -70,6 +97,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
+	const engines = new Map<string, MLEngine>();
 	const severityParseError = options.severityParseError.toLowerCase();
 	const severity: SeverityOptions = {
 		parseError: ['error', 'warning', 'off'].includes(severityParseError)
@@ -125,6 +153,9 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			continue;
 		}
 
+		// Store engine for scope computation in suppressions
+		engines.set(result.filePath, engine);
+
 		// Progressive出力が有効でJSON形式でない場合
 		if (options.progressiveOutput && format !== 'json') {
 			// 即座に出力
@@ -168,21 +199,131 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		}
 	}
 
+	// --- Suppressions handling ---
+	const suppressionsFilePath = resolveSuppressionsPath(options.suppressionsLocation);
+	const collectedViolationsByFile = collector.groupByFile();
+
+	// Build nodeLists map from engines for scope computation
+	const nodeLists = new Map<string, readonly PositionedNode[]>();
+	for (const [filePath, engine] of engines) {
+		const doc = engine.document;
+		if (doc) {
+			// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
+			// id, classList, parentElement, children are all present). The double cast is
+			// needed because TypeScript can't verify structural compatibility between the
+			// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
+			nodeLists.set(filePath, doc.nodeList as unknown as PositionedNode[]);
+		}
+	}
+
+	if (isSuppressMode) {
+		// Suppress mode: generate/update suppressions file
+		const existing = await readSuppressionsFile(suppressionsFilePath);
+		const generated = generateSuppressions(collectedViolationsByFile, suppressionsFilePath, {
+			filterRule: options.suppressRule,
+			nodeLists,
+		});
+		const merged = mergeSuppressions(existing, generated);
+		await writeSuppressionsFile(suppressionsFilePath, merged);
+
+		let totalSuppressed = 0;
+		let totalRules = 0;
+		for (const rules of Object.values(generated)) {
+			for (const entry of Object.values(rules)) {
+				totalSuppressed += entry.count;
+				totalRules++;
+			}
+		}
+		process.stderr.write(
+			`[Experimental] ${totalSuppressed} violation(s) for ${totalRules} rule(s) suppressed in ${path.relative(process.cwd(), suppressionsFilePath)}\n`,
+		);
+		return false;
+	}
+
+	if (isPruneMode) {
+		// Prune mode: remove stale entries
+		const existing = await readSuppressionsFile(suppressionsFilePath);
+		if (Object.keys(existing).length === 0) {
+			process.stderr.write('No suppressions file found. Nothing to prune.\n');
+			return false;
+		}
+		const pruned = pruneSuppressions(collectedViolationsByFile, existing, suppressionsFilePath);
+		await writeSuppressionsFile(suppressionsFilePath, pruned);
+
+		const existingCount = Object.values(existing).reduce((sum, rules) => sum + Object.keys(rules).length, 0);
+		const prunedCount = Object.values(pruned).reduce((sum, rules) => sum + Object.keys(rules).length, 0);
+		const removedCount = existingCount - prunedCount;
+		process.stderr.write(
+			`[Experimental] Suppressions pruned: ${removedCount} entry/entries removed, ${prunedCount} remaining.\n`,
+		);
+		return false;
+	}
+
+	// Normal lint mode: apply suppressions if file exists
+	let outputViolationsByFile = collectedViolationsByFile;
+	let suppressionsApplied = false;
+
+	try {
+		await fs.access(suppressionsFilePath);
+		const suppressionsData = await readSuppressionsFile(suppressionsFilePath);
+		if (Object.keys(suppressionsData).length > 0) {
+			const { filtered, unusedEntries } = applySuppressions(
+				collectedViolationsByFile,
+				suppressionsData,
+				suppressionsFilePath,
+				{ nodeLists },
+			);
+			outputViolationsByFile = filtered;
+			suppressionsApplied = true;
+
+			if (unusedEntries.length > 0) {
+				process.stderr.write(
+					`[Experimental] ${unusedEntries.length} unused suppression entry/entries found. Run with --prune-suppressions to clean up.\n`,
+				);
+			}
+
+			// Recalculate hasError and totalWarningCount from filtered violations
+			hasError = false;
+			totalWarningCount = 0;
+			for (const violations of filtered.values()) {
+				const errorCount = violations.filter(v => v.severity === 'error').length;
+				const warningCount = violations.filter(v => v.severity === 'warning').length;
+				totalWarningCount += warningCount;
+				if (errorCount > 0 || (warningCount > 0 && !options.allowWarnings)) {
+					hasError = true;
+				}
+			}
+		}
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		// Suppressions file does not exist or is unreadable, proceed normally
+	}
+
 	// Output results
 	if (format === 'json') {
-		const jsonOutput = collector.toArray();
-		process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		if (suppressionsApplied) {
+			// Build filtered array with filePath
+			const jsonOutput: (Violation & { filePath: string })[] = [];
+			for (const [filePath, violations] of outputViolationsByFile) {
+				for (const violation of violations) {
+					jsonOutput.push({ ...violation, filePath });
+				}
+			}
+			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		} else {
+			const jsonOutput = collector.toArray();
+			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		}
 		return false;
 	}
 
 	// Progressive出力が無効の場合のみループ後に出力
 	if (!options.progressiveOutput) {
-		// For standard/simple/github output, group violations by file
-		const violationsByFile = collector.groupByFile();
-
 		// Output per file - include processed files without violations
 		for (const filePath of processedFiles) {
-			const violations = violationsByFile.get(filePath) || [];
+			const violations = outputViolationsByFile.get(filePath) || [];
 			const content = filesContent.get(filePath) || { sourceCode: '', fixedCode: '' };
 
 			if (violations.length === 0 && !options.problemOnly) {
