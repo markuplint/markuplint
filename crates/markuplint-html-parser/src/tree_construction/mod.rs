@@ -40,6 +40,8 @@ pub struct TreeBuilder<'a> {
     #[allow(dead_code)]
     pending_table_chars: Vec<(char, Position)>,
     template_insertion_modes: Vec<InsertionMode>,
+    /// Guard against infinite reprocessing of the same token.
+    reprocess_depth: u32,
 }
 
 impl<'a> TreeBuilder<'a> {
@@ -59,6 +61,7 @@ impl<'a> TreeBuilder<'a> {
             is_fragment,
             pending_table_chars: Vec::new(),
             template_insertion_modes: Vec::new(),
+            reprocess_depth: 0,
         }
     }
 
@@ -68,11 +71,15 @@ impl<'a> TreeBuilder<'a> {
             self.setup_fragment_parsing();
         }
 
+        let mut token_count = 0;
+        let max_tokens = 1_000_000; // safety limit
         loop {
             let token = self.tokenizer.next_token();
             let is_eof = token == Token::Eof;
+            self.reprocess_depth = 0;
             self.process_token(token);
-            if is_eof {
+            token_count += 1;
+            if is_eof || token_count >= max_tokens {
                 break;
             }
         }
@@ -89,6 +96,13 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn process_token(&mut self, token: Token) {
+        // Guard against infinite reprocessing (e.g. mode switches that
+        // reprocess the same token endlessly).
+        self.reprocess_depth += 1;
+        if self.reprocess_depth > 20 {
+            return;
+        }
+
         // §13.2.6.5: If the adjusted current node is in SVG/MathML namespace,
         // process as foreign content (with some exceptions).
         if self.should_process_as_foreign() && !matches!(token, Token::Eof) {
