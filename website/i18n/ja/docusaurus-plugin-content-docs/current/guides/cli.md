@@ -14,27 +14,31 @@ CLIはターゲットとなるHTMLファイルを可変長引数として受け�
 
 ## オプション
 
-| 正規形オプション           | 省略形オプション | 引数                                         | デフォルト値 | 解説                                                          |
-| -------------------------- | ---------------- | -------------------------------------------- | ------------ | ------------------------------------------------------------- |
-| `--config`                 | `-c`             | ファイルパス                                 | なし         | 設定ファイルのパス                                            |
-| `--fix`                    | なし             | なし                                         | false        | ルールが対応していれば対象ファイルを修正します                |
-| `--fix-dry-run`            | なし             | なし                                         | false        | `--fix` の変更内容をファイルを変更せずにプレビューします      |
-| `--format`                 | `-f`             | `JSON`、`Simple`、`GitHub`もしくは`Standard` | `Standard`   | 出力形式                                                      |
-| `--no-search-config`       | なし             | なし                                         | false        | 設定ファイルを自動で検索しません                              |
-| `--ignore-ext`             | なし             | なし                                         | false        | 拡張子の種類に関わらず受け取ったファイルを評価します          |
-| `--no-import-preset-rules` | なし             | なし                                         | false        | 組み込みルールを利用しません                                  |
-| `--locale`                 | なし             | 言語コード（例：`ja`）                       | OS設定による | メッセージの言語                                              |
-| `--no-color`               | なし             | なし                                         | false        | 出力をカラーリングしません                                    |
-| `--problem-only`           | `-p`             | なし                                         | false        | 違反結果のみ出力します                                        |
-| `--allow-warnings`         | なし             | なし                                         | true         | `warning`ではステータスコード`0`を返します                    |
-| `--no-allow-empty-input`   | なし             | なし                                         | false        | ファイルが見つからなかった場合にステータスコード`1`を返します |
-| `--show-config`            | none             | 値なし, `details`                            | 値なし       | 対象ファイルの適用された設定を出力します                      |
-| `--verbose`                | なし             | なし                                         | false        | 詳細な情報も同時に出力します                                  |
-| `--include-node-modules`   | なし             | なし                                         | false        | `node_module`ディレクトリ内のファイルを含めて評価します       |
-| `--severity-parse-error`   | なし             | `error`、`warning`もしくは`off`              | `error`      | パースエラーの深刻度レベルを指定します                        |
-| `--max-count`              | なし             | 数値                                         | `0`          | 表示する違反数を制限します。`0`は制限なしを意味します         |
-| `--max-warnings`           | なし             | 数値                                         | `-1`         | 警告数の上限を設定します。`-1`は制限なしを意味します          |
-| `--progressive-output`     | なし             | なし                                         | false        | 各ファイルの処理完了後に即座に結果を出力します                |
+| 正規形オプション           | 省略形オプション | 引数                                         | デフォルト値                   | 解説                                                              |
+| -------------------------- | ---------------- | -------------------------------------------- | ------------------------------ | ----------------------------------------------------------------- |
+| `--config`                 | `-c`             | ファイルパス                                 | なし                           | 設定ファイルのパス                                                |
+| `--fix`                    | なし             | なし                                         | false                          | ルールが対応していれば対象ファイルを修正します                    |
+| `--fix-dry-run`            | なし             | なし                                         | false                          | `--fix` の変更内容をファイルを変更せずにプレビューします          |
+| `--format`                 | `-f`             | `JSON`、`Simple`、`GitHub`もしくは`Standard` | `Standard`                     | 出力形式                                                          |
+| `--no-search-config`       | なし             | なし                                         | false                          | 設定ファイルを自動で検索しません                                  |
+| `--ignore-ext`             | なし             | なし                                         | false                          | 拡張子の種類に関わらず受け取ったファイルを評価します              |
+| `--no-import-preset-rules` | なし             | なし                                         | false                          | 組み込みルールを利用しません                                      |
+| `--locale`                 | なし             | 言語コード（例：`ja`）                       | OS設定による                   | メッセージの言語                                                  |
+| `--no-color`               | なし             | なし                                         | false                          | 出力をカラーリングしません                                        |
+| `--problem-only`           | `-p`             | なし                                         | false                          | 違反結果のみ出力します                                            |
+| `--allow-warnings`         | なし             | なし                                         | true                           | `warning`ではステータスコード`0`を返します                        |
+| `--no-allow-empty-input`   | なし             | なし                                         | false                          | ファイルが見つからなかった場合にステータスコード`1`を返します     |
+| `--show-config`            | none             | 値なし, `details`                            | 値なし                         | 対象ファイルの適用された設定を出力します                          |
+| `--verbose`                | なし             | なし                                         | false                          | 詳細な情報も同時に出力します                                      |
+| `--include-node-modules`   | なし             | なし                                         | false                          | `node_module`ディレクトリ内のファイルを含めて評価します           |
+| `--severity-parse-error`   | なし             | `error`、`warning`もしくは`off`              | `error`                        | パースエラーの深刻度レベルを指定します                            |
+| `--max-count`              | なし             | 数値                                         | `0`                            | 表示する違反数を制限します。`0`は制限なしを意味します             |
+| `--max-warnings`           | なし             | 数値                                         | `-1`                           | 警告数の上限を設定します。`-1`は制限なしを意味します              |
+| `--progressive-output`     | なし             | なし                                         | false                          | 各ファイルの処理完了後に即座に結果を出力します                    |
+| `--suppress`               | なし             | なし                                         | false                          | **[実験的]** 現在の全エラー違反をsuppressionsファイルに記録します |
+| `--suppress-rule`          | なし             | ルールID                                     | なし                           | **[実験的]** 指定ルールの違反のみ記録します                       |
+| `--prune-suppressions`     | なし             | なし                                         | false                          | **[実験的]** suppressionsファイルから不要なエントリを削除します   |
+| `--suppressions-location`  | なし             | ファイルパス                                 | `markuplint-suppressions.json` | **[実験的]** suppressionsファイルのカスタムパス                   |
 
 ## Particular run
 
@@ -145,3 +149,34 @@ $ markuplint "**/*.html"
 - 大規模プロジェクトでの特定ファイルの問題デバッグ
 
 **注意:** このオプションはMarkuplintの次回メジャーバージョンでデフォルトが`true`に変更されます。
+
+### `--suppress` / `--suppress-rule` {#suppress}
+
+:::caution 実験的機能
+この機能は実験的であり、今後のリリースで変更される可能性があります。
+:::
+
+既存の違反をsuppressionsファイルに記録し、新規コードに対してのみルールを適用します。詳しくは[一括抑制](./ignoring-code.md#bulk-suppressions)を参照してください。
+
+```shell
+# 現在の全エラー違反を抑制
+$ markuplint "**/*.html" --suppress
+
+# 特定のルールのみ抑制
+$ markuplint "**/*.html" --suppress-rule attr-duplication
+
+# カスタムパスでsuppressionsファイルを指定
+$ markuplint "**/*.html" --suppress --suppressions-location .config/suppressions.json
+```
+
+### `--prune-suppressions` {#prune-suppressions}
+
+:::caution 実験的機能
+この機能は実験的であり、今後のリリースで変更される可能性があります。
+:::
+
+修正済みの違反に対応する不要なエントリをsuppressionsファイルから削除します。
+
+```shell
+$ markuplint "**/*.html" --prune-suppressions
+```
