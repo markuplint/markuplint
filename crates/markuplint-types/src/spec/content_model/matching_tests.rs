@@ -57,7 +57,10 @@ mod tests {
         fn flow_category() {
             assert_eq!(run(r##""#flow""##, &["a"]).result_type, ResultType::Matched);
             assert_eq!(run(r##""#flow""##, &["b"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##""#flow""##, &["c"]).result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(
+                run(r##""#flow""##, &["c"]).result_type,
+                ResultType::UnmatchedSelectorButMayEmpty
+            );
             assert_eq!(run(r##""#flow""##, &["#text"]).result_type, ResultType::Matched);
             assert_eq!(run(r##""#flow""##, &[]).result_type, ResultType::MatchedZero);
         }
@@ -66,7 +69,10 @@ mod tests {
         fn array_a_flow() {
             assert_eq!(run(r##"["a", "#flow"]"##, &["a"]).result_type, ResultType::Matched);
             assert_eq!(run(r##"["a", "#flow"]"##, &["b"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"["a", "#flow"]"##, &["c"]).result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(
+                run(r##"["a", "#flow"]"##, &["c"]).result_type,
+                ResultType::UnmatchedSelectorButMayEmpty
+            );
             assert_eq!(run(r##"["a", "#flow"]"##, &["#text"]).result_type, ResultType::Matched);
             assert_eq!(run(r##"["a", "#flow"]"##, &[]).result_type, ResultType::MatchedZero);
         }
@@ -96,10 +102,22 @@ mod tests {
         #[test]
         fn require_a() {
             assert_eq!(run(r##"{"require": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"require": "a"}"##, &["b"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(r##"{"require": "a"}"##, &["c"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(r##"{"require": "a"}"##, &["#text"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(r##"{"require": "a"}"##, &[]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(r##"{"require": "a"}"##, &["b"]).result_type,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "a"}"##, &["c"]).result_type,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "a"}"##, &["#text"]).result_type,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "a"}"##, &[]).result_type,
+                ResultType::MissingNodeRequired
+            );
 
             assert_eq!(run(r##"{"require": "a"}"##, &["a"]).matched.len(), 1);
             assert_eq!(run(r##"{"require": "a"}"##, &["b"]).matched.len(), 0);
@@ -109,10 +127,22 @@ mod tests {
         #[test]
         fn optional_a() {
             assert_eq!(run(r##"{"optional": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["a", "a"]).result_type, ResultType::UnexpectedExtraNode);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["b"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["c"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["#text"]).result_type, ResultType::MatchedZero);
+            assert_eq!(
+                run(r##"{"optional": "a"}"##, &["a", "a"]).result_type,
+                ResultType::UnexpectedExtraNode
+            );
+            assert_eq!(
+                run(r##"{"optional": "a"}"##, &["b"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"optional": "a"}"##, &["c"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"optional": "a"}"##, &["#text"]).result_type,
+                ResultType::MatchedZero
+            );
             assert_eq!(run(r##"{"optional": "a"}"##, &[]).result_type, ResultType::MatchedZero);
 
             assert_eq!(run(r##"{"optional": "a"}"##, &["a"]).matched.len(), 1);
@@ -123,10 +153,22 @@ mod tests {
         #[test]
         fn one_or_more_a() {
             assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["b"]).result_type, ResultType::MissingNodeOneOrMore);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["c"]).result_type, ResultType::MissingNodeOneOrMore);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["#text"]).result_type, ResultType::MissingNodeOneOrMore);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &[]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(r##"{"oneOrMore": "a"}"##, &["b"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "a"}"##, &["c"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "a"}"##, &["#text"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "a"}"##, &[]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
 
             assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a"]).matched.len(), 1);
             assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a", "a", "a"]).matched.len(), 3);
@@ -137,10 +179,22 @@ mod tests {
         #[test]
         fn zero_or_more_a() {
             assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["b"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["c"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["#text"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &[]).result_type, ResultType::MatchedZero);
+            assert_eq!(
+                run(r##"{"zeroOrMore": "a"}"##, &["b"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"zeroOrMore": "a"}"##, &["c"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"zeroOrMore": "a"}"##, &["#text"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"zeroOrMore": "a"}"##, &[]).result_type,
+                ResultType::MatchedZero
+            );
 
             assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a"]).matched.len(), 1);
             assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a", "a", "a"]).matched.len(), 3);
@@ -150,11 +204,26 @@ mod tests {
 
         #[test]
         fn require_flow() {
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["b"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["c"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["#text"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &[]).result_type, ResultType::MatchedZero);
+            assert_eq!(
+                run(r##"{"require": "#flow"}"##, &["a"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"require": "#flow"}"##, &["b"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"require": "#flow"}"##, &["c"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"require": "#flow"}"##, &["#text"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"require": "#flow"}"##, &[]).result_type,
+                ResultType::MatchedZero
+            );
 
             assert_eq!(run(r##"{"require": "#flow"}"##, &["a"]).matched.len(), 1);
             assert_eq!(run(r##"{"require": "#flow"}"##, &["c"]).matched.len(), 0);
@@ -163,11 +232,26 @@ mod tests {
 
         #[test]
         fn one_or_more_flow() {
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["b"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["c"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["#text"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &[]).result_type, ResultType::MatchedZero);
+            assert_eq!(
+                run(r##"{"oneOrMore": "#flow"}"##, &["a"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "#flow"}"##, &["b"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "#flow"}"##, &["c"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "#flow"}"##, &["#text"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"oneOrMore": "#flow"}"##, &[]).result_type,
+                ResultType::MatchedZero
+            );
 
             assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a", "a", "a"]).matched.len(), 3);
             assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a", "a", "b"]).matched.len(), 3);
@@ -176,9 +260,18 @@ mod tests {
 
         #[test]
         fn zero_or_more_flow() {
-            assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["c"]).result_type, ResultType::MatchedZero);
-            assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &[]).result_type, ResultType::MatchedZero);
+            assert_eq!(
+                run(r##"{"zeroOrMore": "#flow"}"##, &["a"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"zeroOrMore": "#flow"}"##, &["c"]).result_type,
+                ResultType::MatchedZero
+            );
+            assert_eq!(
+                run(r##"{"zeroOrMore": "#flow"}"##, &[]).result_type,
+                ResultType::MatchedZero
+            );
             assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["a", "a", "a"]).matched.len(), 3);
             assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["a", "c", "c"]).matched.len(), 1);
         }
@@ -201,10 +294,22 @@ mod tests {
 
         #[test]
         fn min_max() {
-            assert_eq!(run(r##"{"require": "c", "min": 2}"##, &[]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(r##"{"require": "c", "min": 2}"##, &["c"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(r##"{"require": "c", "min": 2}"##, &["c", "c"]).result_type, ResultType::Matched);
-            assert_eq!(run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &[]).result_type,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &["c"]).result_type,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &["c", "c"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).result_type,
+                ResultType::UnexpectedExtraNode
+            );
             assert_eq!(run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).hint.max, Some(1));
         }
 
@@ -222,7 +327,10 @@ mod tests {
             assert_eq!(run(p, &["dt", "dd"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["dt", "dt", "dd"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["dt", "dd", "dd"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
         }
 
         #[test]
@@ -268,7 +376,10 @@ mod tests {
             assert_eq!(run(p, &["span"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["span"]).query, "rt");
             assert_eq!(run(p, &["span", "rp", "rt", "rp"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["span", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(p, &["span", "rp", "rt"]).result_type,
+                ResultType::MissingNodeRequired
+            );
             assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
             assert_eq!(run(p, &["span", "rt"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["span", "rt", "span", "rt"]).result_type, ResultType::Matched);
@@ -374,7 +485,10 @@ mod tests {
             assert_eq!(run(p, &["dt"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["div"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["div", "div"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
         }
 
         #[test]
@@ -422,7 +536,10 @@ mod tests {
             assert_eq!(run(p, &["a"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["a", "b"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["a", "b", "c"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["a", "b", "c", "d"]).result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(
+                run(p, &["a", "b", "c", "d"]).result_type,
+                ResultType::UnexpectedExtraNode
+            );
         }
 
         #[test]
@@ -438,7 +555,10 @@ mod tests {
         fn ordered_requires_and_optionals() {
             let p = r##"[{"require": "a"}, {"optional": "b"}, {"require": "c"}]"##;
             assert_eq!(run(p, &["a", "b", "c"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["a", "b", "b", "c"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(p, &["a", "b", "b", "c"]).result_type,
+                ResultType::MissingNodeRequired
+            );
             assert_eq!(run(p, &["a"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["b", "a"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["a", "c"]).result_type, ResultType::Matched);
@@ -449,7 +569,10 @@ mod tests {
         fn ordered_requires_and_optionals_with_flow() {
             let p = r##"[{"require": "a"}, {"optional": "b"}, {"optional": "c"}, {"require": "#flow"}]"##;
             assert_eq!(run(p, &["a", "b", "c"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["a", "b", "b", "c"]).result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(
+                run(p, &["a", "b", "b", "c"]).result_type,
+                ResultType::UnexpectedExtraNode
+            );
             assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["b", "a"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["a", "c"]).result_type, ResultType::Matched);
@@ -494,9 +617,15 @@ mod tests {
             assert_eq!(run(p, &["dt", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["dt", "dd"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["dt", "dd", "dd"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
             assert_eq!(run(p, &["dt", "dd", "dt", "dd"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
         }
 
         #[test]
@@ -520,9 +649,15 @@ mod tests {
             assert_eq!(run(p, &["dt", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["dt", "dd"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["dt", "dd", "dd"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
             assert_eq!(run(p, &["dt", "dd", "dt", "dd"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).result_type,
+                ResultType::MissingNodeOneOrMore
+            );
             assert_eq!(run(p, &["div"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["div", "div"]).result_type, ResultType::Matched);
         }
@@ -542,7 +677,10 @@ mod tests {
             assert_eq!(run(p, &["span"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["span"]).query, "rt");
             assert_eq!(run(p, &["span", "rt"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["span", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(p, &["span", "rp", "rt"]).result_type,
+                ResultType::MissingNodeRequired
+            );
             assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
         }
 
@@ -558,7 +696,10 @@ mod tests {
             assert_eq!(run(p, &["span"]).result_type, ResultType::MissingNodeOneOrMore);
             assert_eq!(run(p, &["span"]).query, "rt");
             assert_eq!(run(p, &["span", "rt"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["span", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(p, &["span", "rp", "rt"]).result_type,
+                ResultType::MissingNodeRequired
+            );
             assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
         }
 
@@ -573,7 +714,10 @@ mod tests {
             assert_eq!(run(p, &["rp"]).result_type, ResultType::MissingNodeRequired);
             assert_eq!(run(p, &["rp"]).query, "rt");
             assert_eq!(run(p, &["rp", "rt", "rp"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["rp", "rt", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(
+                run(p, &["rp", "rt", "rp", "rt"]).result_type,
+                ResultType::MissingNodeRequired
+            );
             assert_eq!(run(p, &["rp", "rt", "rp", "rt"]).query, "rp");
             assert_eq!(run(p, &["rp", "rt", "rp", "rt", "rp"]).result_type, ResultType::Matched);
         }
@@ -649,7 +793,10 @@ mod tests {
         fn model_flow() {
             assert_eq!(run(":model(flow)", "a").result_type, ResultType::Matched);
             assert_eq!(run(":model(flow)", "b").result_type, ResultType::Matched);
-            assert_eq!(run(":model(flow)", "c").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(
+                run(":model(flow)", "c").result_type,
+                ResultType::UnmatchedSelectorButMayEmpty
+            );
             assert_eq!(run(":model(flow)", "#text").result_type, ResultType::Matched);
             assert_eq!(run_empty(":model(flow)").result_type, ResultType::MatchedZero);
         }
@@ -739,7 +886,12 @@ mod tests {
             let spec = html_spec();
             // ":model(metadata):not(title)" should extract #metadata
             // "meta" is in #metadata → should match
-            let r = matches_selector_fn(":model(metadata):not(title)", Some(&ChildNodeInfo::element("meta")), 1, &spec);
+            let r = matches_selector_fn(
+                ":model(metadata):not(title)",
+                Some(&ChildNodeInfo::element("meta")),
+                1,
+                &spec,
+            );
             assert_eq!(r.result_type, ResultType::Matched);
         }
     }
@@ -753,9 +905,8 @@ mod tests {
         #[test]
         fn transparent_matches_all_children() {
             let spec = html_spec();
-            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
-                r##"[{"transparent": "test"}]"##
-            ).unwrap();
+            let patterns: Vec<PermittedContentPattern> =
+                serde_json::from_str(r##"[{"transparent": "test"}]"##).unwrap();
             let r = validate_content_model(&spec, &patterns, &nodes(&["a", "b", "c"]));
             assert_eq!(r.result_type, ResultType::Matched);
             assert_eq!(r.matched.len(), 3);
@@ -765,9 +916,8 @@ mod tests {
         #[test]
         fn transparent_empty_children() {
             let spec = html_spec();
-            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
-                r##"[{"transparent": "test"}]"##
-            ).unwrap();
+            let patterns: Vec<PermittedContentPattern> =
+                serde_json::from_str(r##"[{"transparent": "test"}]"##).unwrap();
             let r = validate_content_model(&spec, &patterns, &[]);
             assert_eq!(r.result_type, ResultType::MatchedZero);
         }
@@ -782,9 +932,8 @@ mod tests {
         #[test]
         fn order_matched_indices_correct() {
             let spec = html_spec();
-            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
-                r##"[{"require": "a"}, {"require": "b"}]"##
-            ).unwrap();
+            let patterns: Vec<PermittedContentPattern> =
+                serde_json::from_str(r##"[{"require": "a"}, {"require": "b"}]"##).unwrap();
             let child_nodes = nodes(&["a", "b"]);
             let r = validate_content_model(&spec, &patterns, &child_nodes);
             assert_eq!(r.result_type, ResultType::Matched);
@@ -795,9 +944,7 @@ mod tests {
         #[test]
         fn count_pattern_matched_first_node() {
             let spec = html_spec();
-            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
-                r##"[{"require": "#flow"}]"##
-            ).unwrap();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(r##"[{"require": "#flow"}]"##).unwrap();
             let r = validate_content_model(&spec, &patterns, &nodes(&["a", "b"]));
             // require matches first node only
             assert_eq!(r.matched, vec![0]);
@@ -806,9 +953,7 @@ mod tests {
         #[test]
         fn one_or_more_multiple_matched() {
             let spec = html_spec();
-            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
-                r##"[{"oneOrMore": "a"}]"##
-            ).unwrap();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(r##"[{"oneOrMore": "a"}]"##).unwrap();
             let r = validate_content_model(&spec, &patterns, &nodes(&["a", "a", "b"]));
             assert_eq!(r.matched, vec![0, 1]);
             assert_eq!(r.unmatched, vec![2]);
@@ -817,9 +962,7 @@ mod tests {
         #[test]
         fn zero_or_more_no_match() {
             let spec = html_spec();
-            let pattern: PermittedContentPattern = serde_json::from_str(
-                r##"{"zeroOrMore": "a"}"##
-            ).unwrap();
+            let pattern: PermittedContentPattern = serde_json::from_str(r##"{"zeroOrMore": "a"}"##).unwrap();
             // Call count_pattern directly (order wraps with UNEXPECTED_EXTRA_NODE for unmatched)
             let r = count_pattern_fn(&pattern, &nodes(&["b", "c"]), &spec, 0);
             assert_eq!(r.result_type, ResultType::MatchedZero);
@@ -833,7 +976,7 @@ mod tests {
     // ================================================================
     mod integration {
         use super::*;
-        use crate::spec::content_model::{get_content_model, ContentModelContents};
+        use crate::spec::content_model::{ContentModelContents, get_content_model};
 
         fn run_element(element: &str, tags: &[&str]) -> ResultType {
             let spec = html_spec();

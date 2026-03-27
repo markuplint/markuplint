@@ -76,9 +76,7 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
 pub fn matches_model(spec: &MLMLSpec, child_name: &str, model: &ModelOrPatterns) -> bool {
     match model {
         ModelOrPatterns::Single(s) => matches_model_ref(spec, child_name, s),
-        ModelOrPatterns::MultipleStrings(arr) => {
-            arr.iter().any(|s| matches_model_ref(spec, child_name, s))
-        }
+        ModelOrPatterns::MultipleStrings(arr) => arr.iter().any(|s| matches_model_ref(spec, child_name, s)),
         ModelOrPatterns::Patterns(_) => false,
     }
 }
@@ -205,10 +203,7 @@ mod tests {
     #[test]
     fn model_or_patterns_multiple() {
         let spec = html_spec();
-        let m = ModelOrPatterns::MultipleStrings(vec![
-            "option".to_string(),
-            "optgroup".to_string(),
-        ]);
+        let m = ModelOrPatterns::MultipleStrings(vec!["option".to_string(), "optgroup".to_string()]);
         assert!(matches_model(&spec, "option", &m));
         assert!(matches_model(&spec, "optgroup", &m));
         assert!(!matches_model(&spec, "div", &m));

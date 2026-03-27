@@ -11,9 +11,7 @@
 
 use super::child_node::{ChildNodeInfo, ChildNodeKind};
 use super::result::{Collection, Hints, MatchResult, MissingHint, ResultType, merge_hints};
-use super::serde_types::{
-    ChoicePattern, ModelOrPatterns, PermittedContentPattern,
-};
+use super::serde_types::{ChoicePattern, ModelOrPatterns, PermittedContentPattern};
 use crate::spec::lookup;
 use crate::spec::types::MLMLSpec;
 
@@ -86,10 +84,7 @@ pub(crate) fn order(
                 continue;
             }
 
-            let barely = unmatched_results
-                .iter()
-                .max_by_key(|r| r.matched.len())
-                .unwrap();
+            let barely = unmatched_results.iter().max_by_key(|r| r.matched.len()).unwrap();
 
             return MatchResult {
                 result_type: barely.result_type.clone(),
@@ -182,8 +177,18 @@ pub(crate) fn choice(
         if by_matched != std::cmp::Ordering::Equal {
             return by_matched;
         }
-        let a_barely = a.hint.missing.as_ref().and_then(|m| m.barely_matched_elements).unwrap_or(0);
-        let b_barely = b.hint.missing.as_ref().and_then(|m| m.barely_matched_elements).unwrap_or(0);
+        let a_barely = a
+            .hint
+            .missing
+            .as_ref()
+            .and_then(|m| m.barely_matched_elements)
+            .unwrap_or(0);
+        let b_barely = b
+            .hint
+            .missing
+            .as_ref()
+            .and_then(|m| m.barely_matched_elements)
+            .unwrap_or(0);
         b_barely.cmp(&a_barely)
     });
 
@@ -240,7 +245,13 @@ pub(crate) fn count_pattern(
                     unmatched: collection.unmatched_indices(),
                     zero_match: r.zero_match,
                     query: r.query,
-                    hint: merge_hints(&r.hint, &Hints { max: Some(norm.max), ..Default::default() }),
+                    hint: merge_hints(
+                        &r.hint,
+                        &Hints {
+                            max: Some(norm.max),
+                            ..Default::default()
+                        },
+                    ),
                 },
                 barely_result,
             );
@@ -280,9 +291,7 @@ pub(crate) fn count_pattern(
 
         // Continue if we added nodes and there are more unmatched
         if added && !collection.unmatched_indices().is_empty() {
-            if r.result_type != ResultType::MissingNode
-                && r.result_type != ResultType::UnmatchedSelectors
-            {
+            if r.result_type != ResultType::MissingNode && r.result_type != ResultType::UnmatchedSelectors {
                 barely_result = Some(MatchResult {
                     result_type: r.result_type.clone(),
                     matched: collection.matched_indices(),
@@ -314,13 +323,16 @@ pub(crate) fn count_pattern(
                     unmatched: collection.unmatched_indices(),
                     zero_match: r.zero_match,
                     query: r.query.clone(),
-                    hint: merge_hints(&r.hint, &Hints {
-                        missing: Some(MissingHint {
-                            barely_matched_elements: Some(collection.matched_count()),
-                            need: Some(r.query),
-                        }),
-                        ..Default::default()
-                    }),
+                    hint: merge_hints(
+                        &r.hint,
+                        &Hints {
+                            missing: Some(MissingHint {
+                                barely_matched_elements: Some(collection.matched_count()),
+                                need: Some(r.query),
+                            }),
+                            ..Default::default()
+                        },
+                    ),
                 },
                 barely_result,
             );
@@ -340,13 +352,16 @@ pub(crate) fn count_pattern(
             unmatched: collection.unmatched_indices(),
             zero_match,
             query: r.query.clone(),
-            hint: merge_hints(&r.hint, &Hints {
-                missing: Some(MissingHint {
-                    barely_matched_elements: Some(collection.matched_count()),
-                    need: Some(r.query.clone()),
-                }),
-                ..Default::default()
-            }),
+            hint: merge_hints(
+                &r.hint,
+                &Hints {
+                    missing: Some(MissingHint {
+                        barely_matched_elements: Some(collection.matched_count()),
+                        need: Some(r.query.clone()),
+                    }),
+                    ..Default::default()
+                },
+            ),
         };
 
         if !collection.unmatched_indices().is_empty() {
@@ -386,8 +401,18 @@ fn compare_result(a: MatchResult, b: Option<MatchResult>) -> MatchResult {
         return a;
     }
 
-    let a_barely = a.hint.missing.as_ref().and_then(|m| m.barely_matched_elements).unwrap_or(0);
-    let b_barely = b.hint.missing.as_ref().and_then(|m| m.barely_matched_elements).unwrap_or(0);
+    let a_barely = a
+        .hint
+        .missing
+        .as_ref()
+        .and_then(|m| m.barely_matched_elements)
+        .unwrap_or(0);
+    let b_barely = b
+        .hint
+        .missing
+        .as_ref()
+        .and_then(|m| m.barely_matched_elements)
+        .unwrap_or(0);
     if b_barely > a_barely { b } else { a }
 }
 
@@ -400,9 +425,7 @@ pub(crate) fn recursive_branch(
 ) -> MatchResult {
     match model {
         ModelOrPatterns::Patterns(patterns) => order(patterns, child_nodes, spec, depth + 1),
-        ModelOrPatterns::Single(query) => {
-            matches_selector(query, child_nodes.first(), child_nodes.len(), spec)
-        }
+        ModelOrPatterns::Single(query) => matches_selector(query, child_nodes.first(), child_nodes.len(), spec),
         ModelOrPatterns::MultipleStrings(queries) => {
             let mut last_unmatched: Option<MatchResult> = None;
             for query in queries {
@@ -491,9 +514,7 @@ pub(crate) fn matches_selector(
                 hint: Hints::default(),
             }
         }
-        ChildNodeKind::PreprocessorBlock => {
-            MatchResult::matched_single(0, total_count, query, cond.has_text)
-        }
+        ChildNodeKind::PreprocessorBlock => MatchResult::matched_single(0, total_count, query, cond.has_text),
         ChildNodeKind::CustomElement => {
             if cond.has_custom {
                 MatchResult::matched_single(0, total_count, query, cond.has_text)
@@ -501,9 +522,7 @@ pub(crate) fn matches_selector(
                 match_element_tag(&node.tag_name, query, total_count, spec, &cond)
             }
         }
-        ChildNodeKind::Element => {
-            match_element_tag(&node.tag_name, query, total_count, spec, &cond)
-        }
+        ChildNodeKind::Element => match_element_tag(&node.tag_name, query, total_count, spec, &cond),
     }
 }
 
@@ -561,10 +580,18 @@ struct Condition {
 
 fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
     if query == "#custom" {
-        return Condition { resolved_selector: "#custom".to_string(), has_custom: true, has_text: false };
+        return Condition {
+            resolved_selector: "#custom".to_string(),
+            has_custom: true,
+            has_text: false,
+        };
     }
     if query == "#text" {
-        return Condition { resolved_selector: "#text".to_string(), has_custom: false, has_text: true };
+        return Condition {
+            resolved_selector: "#text".to_string(),
+            has_custom: false,
+            has_text: true,
+        };
     }
 
     // `:model(phrasing):not(ruby)` → find first `)` to extract "phrasing"
@@ -577,7 +604,11 @@ fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
     };
 
     let Some(cat) = category else {
-        return Condition { resolved_selector: query.to_string(), has_custom: false, has_text: false };
+        return Condition {
+            resolved_selector: query.to_string(),
+            has_custom: false,
+            has_text: false,
+        };
     };
 
     let tags = lookup::get_content_model_tags(spec, &cat);
@@ -586,12 +617,19 @@ fn opt_condition(query: &str, spec: &MLMLSpec) -> Condition {
 
     if let Some(tags) = tags {
         for tag in tags {
-            if tag == "#custom" { has_custom = true; }
-            else if tag == "#text" { has_text = true; }
+            if tag == "#custom" {
+                has_custom = true;
+            } else if tag == "#text" {
+                has_text = true;
+            }
         }
     }
 
-    Condition { resolved_selector: query.to_string(), has_custom, has_text }
+    Condition {
+        resolved_selector: query.to_string(),
+        has_custom,
+        has_text,
+    }
 }
 
 struct NormalizedModel {
@@ -606,19 +644,39 @@ fn normalize_model(pattern: &PermittedContentPattern) -> NormalizedModel {
         PermittedContentPattern::Require(p) => {
             let min = p.min.unwrap_or(1) as usize;
             let max = (p.max.unwrap_or(1) as usize).max(min);
-            NormalizedModel { model: p.require.clone(), min, max, missing_type: Some(ResultType::MissingNodeRequired) }
+            NormalizedModel {
+                model: p.require.clone(),
+                min,
+                max,
+                missing_type: Some(ResultType::MissingNodeRequired),
+            }
         }
         PermittedContentPattern::Optional(p) => {
             let max = (p.max.unwrap_or(1) as usize).max(1);
-            NormalizedModel { model: p.optional.clone(), min: 0, max, missing_type: None }
+            NormalizedModel {
+                model: p.optional.clone(),
+                min: 0,
+                max,
+                missing_type: None,
+            }
         }
         PermittedContentPattern::OneOrMore(p) => {
             let max = (p.max.unwrap_or(u32::MAX) as usize).max(1);
-            NormalizedModel { model: p.one_or_more.clone(), min: 1, max, missing_type: Some(ResultType::MissingNodeOneOrMore) }
+            NormalizedModel {
+                model: p.one_or_more.clone(),
+                min: 1,
+                max,
+                missing_type: Some(ResultType::MissingNodeOneOrMore),
+            }
         }
         PermittedContentPattern::ZeroOrMore(p) => {
             let max = (p.max.unwrap_or(u32::MAX) as usize).max(1);
-            NormalizedModel { model: p.zero_or_more.clone(), min: 0, max, missing_type: None }
+            NormalizedModel {
+                model: p.zero_or_more.clone(),
+                min: 0,
+                max,
+                missing_type: None,
+            }
         }
         // SAFETY: complex_branch dispatches Choice and Transparent patterns to their
         // own handlers before reaching count_pattern. Only quantified variants arrive here.

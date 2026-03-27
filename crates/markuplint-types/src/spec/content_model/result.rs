@@ -207,17 +207,12 @@ impl<'a> Collection<'a> {
 
     /// Returns the indices of unmatched nodes in order.
     pub fn unmatched_indices(&self) -> Vec<usize> {
-        (0..self.nodes.len())
-            .filter(|i| !self.matched.contains(i))
-            .collect()
+        (0..self.nodes.len()).filter(|i| !self.matched.contains(i)).collect()
     }
 
     /// Returns references to unmatched child node infos.
     pub fn unmatched_nodes(&self) -> Vec<&ChildNodeInfo> {
-        self.unmatched_indices()
-            .iter()
-            .map(|&i| &self.nodes[i])
-            .collect()
+        self.unmatched_indices().iter().map(|&i| &self.nodes[i]).collect()
     }
 
     /// Add indices to the matched set. Returns true if new indices were added.
