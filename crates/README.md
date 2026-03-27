@@ -7,9 +7,9 @@ Rust implementation of markuplint's core components: DOM layer and type validati
 ```
 crates/
 ├── markuplint-core/      MLAST serde types (deserialization from JSON)
-├── markuplint-dom/       Arena-based DOM tree (builder + traversal)
+├── markuplint-dom/       Arena-based DOM tree (builder + traversal + attr helpers)
 ├── markuplint-napi/      Node.js bridge via napi-rs v3
-├── markuplint-rules/     Content model matching with full CSS selector support
+├── markuplint-rules/     Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
 ├── markuplint-selector/  CSS selector parser + matcher (with :model/:role/:aria)
 └── markuplint-types/     Type validation and spec data (serde types, lookup)
 ```
@@ -41,6 +41,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **Content model matching engine**: order, choice, quantifiers, backtracking (ported from `@markuplint/rules/permitted-contents/`)
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
+- **ARIA algorithms** (Phase 2-3d): `is_exposed()` (WAI-ARIA §6.4 accessibility tree exposure), `may_be_focusable()` (interactive content heuristic)
 
 ### markuplint-types
 
