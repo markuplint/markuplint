@@ -137,8 +137,9 @@ packages/markuplint/src/suppressions/
 |---|---|---|
 | `#id` | `#main-nav` | ノードに `id` 属性がある |
 | `tag.classA.classB` | `nav.global-nav.sticky` | ノードにクラスがある（全クラスを含む） |
-| nth-of-type 付き祖先パス | `main > section:nth-of-type(2)` | id もクラスもない場合、同名兄弟に `:nth-of-type()` を付加 |
-| id で停止する祖先パス | `#main > ul` | 祖先に id がある |
+| `tag[attr="value"]` | `section[role="navigation"]`、`input[type="checkbox"]` | 識別属性がある（任意要素の `role`、`<input>` の `type`） |
+| nth-of-type 付き祖先パス | `main > section:nth-of-type(2)` | id・クラス・識別属性がない場合、同名兄弟に `:nth-of-type()` を付加 |
+| id/class/attr で停止する祖先パス | `#main > ul` | 祖先に id・クラス・識別属性がある |
 
 ### Scope マッチング（Apply 側）
 

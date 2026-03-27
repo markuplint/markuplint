@@ -1,5 +1,6 @@
 import type { CLIOptions } from './bootstrap.js';
 import type { APIOptions } from '../api/types.js';
+import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { Target } from '@markuplint/file-resolver';
 import type { Severity, SeverityOptions, Violation } from '@markuplint/ml-config';
 
@@ -96,6 +97,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const processedFiles: string[] = [];
 	const skippedFiles: string[] = [];
 	const filesContent = new Map<string, { sourceCode: string; fixedCode: string }>();
+	const engines = new Map<string, MLEngine>();
 	const severityParseError = options.severityParseError.toLowerCase();
 	const severity: SeverityOptions = {
 		parseError: ['error', 'warning', 'off'].includes(severityParseError)
@@ -151,6 +153,9 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			continue;
 		}
 
+		// Store engine for scope computation in suppressions
+		engines.set(result.filePath, engine);
+
 		// Progressive出力が有効でJSON形式でない場合
 		if (options.progressiveOutput && format !== 'json') {
 			// 即座に出力
@@ -198,10 +203,26 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 	const suppressionsFilePath = resolveSuppressionsPath(options.suppressionsLocation);
 	const collectedViolationsByFile = collector.groupByFile();
 
+	// Build nodeLists map from engines for scope computation
+	const nodeLists = new Map<string, readonly PositionedNode[]>();
+	for (const [filePath, engine] of engines) {
+		const doc = engine.document;
+		if (doc) {
+			// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
+			// id, classList, parentElement, children are all present). The double cast is
+			// needed because TypeScript can't verify structural compatibility between the
+			// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
+			nodeLists.set(filePath, doc.nodeList as unknown as PositionedNode[]);
+		}
+	}
+
 	if (isSuppressMode) {
 		// Suppress mode: generate/update suppressions file
 		const existing = await readSuppressionsFile(suppressionsFilePath);
-		const generated = generateSuppressions(collectedViolationsByFile, suppressionsFilePath, options.suppressRule);
+		const generated = generateSuppressions(collectedViolationsByFile, suppressionsFilePath, {
+			filterRule: options.suppressRule,
+			nodeLists,
+		});
 		const merged = mergeSuppressions(existing, generated);
 		await writeSuppressionsFile(suppressionsFilePath, merged);
 
@@ -250,6 +271,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 				collectedViolationsByFile,
 				suppressionsData,
 				suppressionsFilePath,
+				{ nodeLists },
 			);
 			outputViolationsByFile = filtered;
 			suppressionsApplied = true;

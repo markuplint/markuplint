@@ -13,6 +13,11 @@ import { toRelativePath } from './suppressions-file.js';
  * - Entries with current count >= suppressed count are kept as-is.
  * - Empty file entries (all rules removed) are removed from the top-level.
  *
+ * **Note:** Pruning counts all file-level violations, not scope-filtered ones.
+ * This is because `pruneSuppressions` does not receive document node lists
+ * (required for scope-based violation filtering). For scope-accurate counts,
+ * re-run `--suppress` which recomputes both scope and count from the DOM tree.
+ *
  * @param currentViolations - Map of absolute file paths to current violations.
  * @param existing - The current suppressions data.
  * @param suppressionsFilePath - Absolute path to the suppressions file.
@@ -42,7 +47,7 @@ export function pruneSuppressions(
 
 	for (const [filePath, rules] of Object.entries(existing)) {
 		const fileCounts = currentCounts.get(filePath);
-		const prunedRules: Record<string, { count: number }> = {};
+		const prunedRules: Record<string, { count: number; scope?: string }> = {};
 
 		for (const [ruleId, entry] of Object.entries(rules)) {
 			const currentCount = fileCounts?.get(ruleId) ?? 0;
@@ -53,10 +58,12 @@ export function pruneSuppressions(
 			}
 
 			if (currentCount < entry.count) {
-				// Reduced violations, update count
-				prunedRules[ruleId] = { count: currentCount };
+				// Reduced violations, update count; preserve scope if present
+				prunedRules[ruleId] = entry.scope
+					? { count: currentCount, scope: entry.scope }
+					: { count: currentCount };
 			} else {
-				// Same or more violations, keep as-is
+				// Same or more violations, keep as-is (including scope)
 				prunedRules[ruleId] = entry;
 			}
 		}

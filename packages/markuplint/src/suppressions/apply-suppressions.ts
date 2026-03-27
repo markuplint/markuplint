@@ -1,7 +1,9 @@
 import type { Violation } from '@markuplint/ml-config';
 
-import type { SuppressionsData } from './types.js';
+import type { PositionedNode, ScopedNode } from './compute-scope.js';
+import type { SuppressionEntry, SuppressionsData } from './types.js';
 
+import { findNodeAtPosition } from './compute-scope.js';
 import { toRelativePath } from './suppressions-file.js';
 
 /**
@@ -17,17 +19,166 @@ export type ApplySuppressionsResult = {
 
 /**
  * @experimental
+ * Options for applying suppressions.
+ */
+export type ApplySuppressionsOptions = {
+	/**
+	 * Map of absolute file paths to their document node lists.
+	 * When provided, scope-aware filtering is used.
+	 * When absent, scope is ignored (Phase 1 compatible).
+	 */
+
+	readonly nodeLists?: ReadonlyMap<string, readonly PositionedNode[]>;
+};
+
+/**
+ * Checks whether a violation at (line, col) is within the subtree of a node
+ * that matches the scope selector. Walks the violation node's ancestors
+ * to find a match.
+ */
+function isViolationInScope(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeList: readonly PositionedNode[],
+
+	violation: Violation,
+	scope: string,
+): boolean {
+	const violationNode = findNodeAtPosition(nodeList, violation.line, violation.col);
+	if (!violationNode) {
+		return false;
+	}
+
+	// Check the node itself and walk up ancestors
+	if (matchesScopeSelector(violationNode, scope)) {
+		return true;
+	}
+	let current = violationNode.parentElement;
+	while (current) {
+		if (matchesScopeSelector(current, scope)) {
+			return true;
+		}
+		current = current.parentElement;
+	}
+
+	return false;
+}
+
+/**
+ * Simple scope selector matching. Checks if a node matches a scope selector
+ * by matching segments right-to-left against the node and its ancestors.
+ *
+ * Supports: `#id`, `tag.class`, `tag`, and ancestor paths like `#id > tag`.
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function matchesScopeSelector(node: ScopedNode, scope: string): boolean {
+	const segments = scope.split(' > ');
+	let current: ScopedNode | null = node;
+
+	// Match segments from right (most specific) to left (ancestors)
+	for (let i = segments.length - 1; i >= 0; i--) {
+		if (!current) {
+			return false;
+		}
+		if (!matchesSegment(current, segments[i]!)) {
+			return false;
+		}
+		current = current.parentElement;
+	}
+
+	return true;
+}
+
+/**
+ * Matches a single selector segment against a node.
+ * Supports: `#id`, `tag[attr="value"]`, `tag.classA.classB`,
+ * `tag:nth-of-type(n)`, `tag`
+ */
+// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+function matchesSegment(node: ScopedNode, segment: string): boolean {
+	if (segment.length === 0) {
+		return false;
+	}
+
+	// #id
+	if (segment.startsWith('#')) {
+		const id = segment.slice(1);
+		return id.length > 0 && node.id === id;
+	}
+
+	// tag[attr="value"]
+	const attrMatch = /^([a-z-]+)\[([a-z-]+)="([^"]+)"\]$/.exec(segment);
+	if (attrMatch) {
+		const [, tag, attrName, attrValue] = attrMatch;
+		if (node.localName !== tag) {
+			return false;
+		}
+		for (const attr of node.attributes) {
+			if (attr.name === attrName && attr.value === attrValue) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Extract :nth-of-type(n) if present
+	const nthMatch = /:nth-of-type\((\d+)\)$/.exec(segment);
+	const baseSegment = nthMatch ? segment.slice(0, nthMatch.index) : segment;
+
+	// tag.classA.classB
+	const dotIndex = baseSegment.indexOf('.');
+	let tagMatches: boolean;
+	if (dotIndex === -1) {
+		// tag only
+		tagMatches = node.localName === baseSegment;
+	} else {
+		const tag = baseSegment.slice(0, dotIndex);
+		const classes = baseSegment.slice(dotIndex + 1).split('.');
+		tagMatches = node.localName === tag && classes.every(cls => node.classList.contains(cls));
+	}
+
+	if (!tagMatches) {
+		return false;
+	}
+
+	// Check nth-of-type position
+	if (nthMatch) {
+		const expectedPosition = Number.parseInt(nthMatch[1]!, 10);
+		const parent = node.parentElement;
+		if (!parent) {
+			return false;
+		}
+		let position = 0;
+		for (const sibling of parent.children) {
+			if (sibling.localName === node.localName) {
+				position++;
+				if (sibling === node) {
+					return position === expectedPosition;
+				}
+			}
+		}
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * @experimental
  * Applies suppressions to collected violations.
  *
  * For each file+ruleId pair:
- * - If current error count <= suppressed count: all error violations for that rule are removed.
- * - If current error count > suppressed count: ALL violations are kept (reported).
+ * - If the entry has a `scope`, only violations within that scope subtree are
+ *   counted AND filtered. Violations outside the scope are always passed through.
+ * - If current scoped error count <= suppressed count: scoped error violations are removed.
+ * - If current scoped error count > suppressed count: ALL scoped violations are kept.
  *
  * Warning and info violations always pass through unmodified.
+ * When `options.nodeLists` is not provided, scope is ignored (Phase 1 compatible).
  *
  * @param violationsByFile - Map of absolute file paths to violations.
  * @param suppressions - The loaded suppressions data.
  * @param suppressionsFilePath - Absolute path to the suppressions file.
+ * @param options - Optional options including document node lists for scope-aware filtering.
  * @returns Filtered violations and a list of unused suppression entries.
  */
 
@@ -37,51 +188,51 @@ export function applySuppressions(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	suppressions: SuppressionsData,
 	suppressionsFilePath: string,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	options?: ApplySuppressionsOptions,
 ): ApplySuppressionsResult {
 	const filtered = new Map<string, Violation[]>();
 	const usedEntries = new Set<string>();
+	const nodeLists = options?.nodeLists;
 
 	for (const [absolutePath, violations] of violationsByFile) {
 		const relPath = toRelativePath(absolutePath, suppressionsFilePath);
 		const fileSuppressions = suppressions[relPath];
 
 		if (!fileSuppressions) {
-			// No suppressions for this file, pass all through
 			filtered.set(absolutePath, [...violations]);
 			continue;
 		}
 
-		// Count error violations per ruleId
-		const errorCounts = new Map<string, number>();
-		for (const v of violations) {
-			if (v.severity === 'error') {
-				errorCounts.set(v.ruleId, (errorCounts.get(v.ruleId) ?? 0) + 1);
-			}
-		}
+		const nodeList = nodeLists?.get(absolutePath);
 
-		// Determine which rules are suppressed.
-		// ESLint-compatible behavior: if current count exceeds the suppressed count,
-		// ALL violations are reported (not just the delta). This conservative approach
-		// avoids hiding regressions — if violations grew, the user sees the full picture.
-		const suppressedRules = new Set<string>();
+		// Build a set of suppressed rules and their scoped violation indices.
+		// For scope-aware entries, we track WHICH specific violations are in scope
+		// so we can suppress only those, not all violations of the same ruleId.
+		const suppressedViolationIndices = new Set<number>();
+
 		for (const [ruleId, entry] of Object.entries(fileSuppressions)) {
-			const currentCount = errorCounts.get(ruleId) ?? 0;
-			if (currentCount > 0 && currentCount <= entry.count) {
-				suppressedRules.add(ruleId);
+			const { count: scopedCount, indices } = getScopedErrorInfo(violations, ruleId, entry, nodeList);
+
+			if (scopedCount > 0 && scopedCount <= entry.count) {
+				// Scoped count within threshold — suppress these specific violations
+				for (const idx of indices) {
+					suppressedViolationIndices.add(idx);
+				}
 			}
-			if (currentCount > 0) {
+
+			if (scopedCount > 0) {
 				usedEntries.add(`${relPath}:${ruleId}`);
 			}
 		}
 
-		// Filter violations
+		// Filter violations — only remove specifically identified violations
 		const fileFiltered: Violation[] = [];
-		for (const v of violations) {
-			if (v.severity === 'error' && suppressedRules.has(v.ruleId)) {
-				// Suppressed, skip
+		for (const [i, violation] of violations.entries()) {
+			if (suppressedViolationIndices.has(i)) {
 				continue;
 			}
-			fileFiltered.push(v);
+			fileFiltered.push(violation);
 		}
 
 		filtered.set(absolutePath, fileFiltered);
@@ -99,4 +250,41 @@ export function applySuppressions(
 	}
 
 	return { filtered, unusedEntries };
+}
+
+/**
+ * Gets the scoped error count and indices for a rule.
+ * When scope is present and nodeList is available, only counts/tracks violations
+ * within the scope subtree. Otherwise counts all error violations for the rule.
+ *
+ * @returns The count and array indices of matching violations.
+ */
+function getScopedErrorInfo(
+	violations: readonly Violation[],
+	ruleId: string,
+
+	entry: SuppressionEntry,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodeList: readonly PositionedNode[] | undefined,
+): { count: number; indices: number[] } {
+	let count = 0;
+	const indices: number[] = [];
+
+	for (const [i, violation] of violations.entries()) {
+		const v = violation;
+		if (v.severity !== 'error' || v.ruleId !== ruleId) {
+			continue;
+		}
+		if (entry.scope && nodeList) {
+			if (isViolationInScope(nodeList, v, entry.scope)) {
+				count++;
+				indices.push(i);
+			}
+		} else {
+			count++;
+			indices.push(i);
+		}
+	}
+
+	return { count, indices };
 }

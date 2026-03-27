@@ -91,4 +91,30 @@ describe('pruneSuppressions', () => {
 		// 0 error violations → entry removed
 		expect(result).toStrictEqual({});
 	});
+
+	it('preserves scope when updating count', () => {
+		const violations = new Map<string, Violation[]>([['/project/src/a.html', [v('rule-a'), v('rule-a')]]]);
+		const existing = {
+			'src/a.html': { 'rule-a': { count: 5, scope: '#main > ul' } },
+		};
+
+		const result = pruneSuppressions(violations, existing, suppressionsPath);
+		expect(result).toStrictEqual({
+			'src/a.html': { 'rule-a': { count: 2, scope: '#main > ul' } },
+		});
+	});
+
+	it('preserves scope when keeping entry as-is', () => {
+		const violations = new Map<string, Violation[]>([
+			['/project/src/a.html', [v('rule-a'), v('rule-a'), v('rule-a')]],
+		]);
+		const existing = {
+			'src/a.html': { 'rule-a': { count: 2, scope: 'nav.sidebar' } },
+		};
+
+		const result = pruneSuppressions(violations, existing, suppressionsPath);
+		expect(result).toStrictEqual({
+			'src/a.html': { 'rule-a': { count: 2, scope: 'nav.sidebar' } },
+		});
+	});
 });

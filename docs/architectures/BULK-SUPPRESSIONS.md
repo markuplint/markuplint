@@ -137,8 +137,9 @@ Priority order (most unique first):
 |---|---|---|
 | `#id` | `#main-nav` | Node has an `id` attribute |
 | `tag.classA.classB` | `nav.global-nav.sticky` | Node has classes (all included) |
-| Ancestor path with nth-of-type | `main > section:nth-of-type(2)` | No id or class; uses `:nth-of-type()` for same-tag siblings |
-| Ancestor path stopping at id | `#main > ul` | Ancestor has id |
+| `tag[attr="value"]` | `section[role="navigation"]`, `input[type="checkbox"]` | Node has a distinguishing attribute (`role` for any element, `type` for `<input>`) |
+| Ancestor path with nth-of-type | `main > section:nth-of-type(2)` | No id, class, or distinguishing attribute; uses `:nth-of-type()` for same-tag siblings |
+| Ancestor path stopping at id/class/attr | `#main > ul` | Ancestor has id, class, or distinguishing attribute |
 
 ### Scope Matching (Apply Side)
 
