@@ -194,7 +194,7 @@ fn has_display_none_or_visibility_hidden(arena: &DomArena, node_id: NodeId) -> b
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::aria::may_be_focusable::tests::make_arena;
     use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
@@ -207,7 +207,7 @@ mod tests {
     }
 
     /// Build a simple parent > child arena for testing ancestor checks.
-    fn make_nested(
+    pub(crate) fn make_nested(
         parent_tag: &str,
         parent_attrs: &[(&str, &str)],
         child_tag: &str,
