@@ -27,6 +27,9 @@ pub struct ChildNodeInfo {
     pub is_whitespace: bool,
     /// Raw source text (for debug/display purposes).
     pub raw: String,
+    /// Child nodes for `:has()` selector support.
+    /// Empty when descendant info is not available (graceful degradation).
+    pub children: Vec<ChildNodeInfo>,
 }
 
 impl ChildNodeInfo {
@@ -37,6 +40,18 @@ impl ChildNodeInfo {
             tag_name: tag_name.to_ascii_lowercase(),
             is_whitespace: false,
             raw: format!("<{tag_name}>"),
+            children: Vec::new(),
+        }
+    }
+
+    /// Create an element node with children (for `:has()` support).
+    pub fn element_with_children(tag_name: &str, children: Vec<ChildNodeInfo>) -> Self {
+        Self {
+            kind: ChildNodeKind::Element,
+            tag_name: tag_name.to_ascii_lowercase(),
+            is_whitespace: false,
+            raw: format!("<{tag_name}>"),
+            children,
         }
     }
 
@@ -47,6 +62,7 @@ impl ChildNodeInfo {
             tag_name: String::new(),
             is_whitespace: raw.chars().all(|c| c.is_ascii_whitespace()),
             raw: raw.to_string(),
+            children: Vec::new(),
         }
     }
 
@@ -57,6 +73,7 @@ impl ChildNodeInfo {
             tag_name: tag_name.to_ascii_lowercase(),
             is_whitespace: false,
             raw: format!("<{tag_name}>"),
+            children: Vec::new(),
         }
     }
 
@@ -67,6 +84,7 @@ impl ChildNodeInfo {
             tag_name: String::new(),
             is_whitespace: false,
             raw: raw.to_string(),
+            children: Vec::new(),
         }
     }
 }

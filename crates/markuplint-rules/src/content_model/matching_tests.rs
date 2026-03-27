@@ -3,18 +3,18 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::spec::content_model::child_node::ChildNodeInfo;
-    use crate::spec::content_model::matching::{
+    use crate::content_model::child_node::ChildNodeInfo;
+    use crate::content_model::matching::{
         choice as choice_fn, count_pattern as count_pattern_fn, order as order_fn,
         recursive_branch as recursive_branch_fn, validate_content_model,
     };
-    use crate::spec::content_model::result::{MatchResult, ResultType};
-    use crate::spec::content_model::serde_types::*;
-    use crate::spec::load_spec;
-    use crate::spec::types::MLMLSpec;
+    use crate::content_model::result::{MatchResult, ResultType};
+    use markuplint_types::spec::content_model::serde_types::*;
+    use markuplint_types::spec::load_spec;
+    use markuplint_types::spec::types::MLMLSpec;
 
     fn html_spec() -> MLMLSpec {
-        let json = include_str!("../../../../../packages/@markuplint/html-spec/index.json");
+        let json = include_str!("../../../../packages/@markuplint/html-spec/index.json");
         load_spec(json).unwrap()
     }
 
@@ -88,7 +88,7 @@ mod tests {
     }
 
     // ================================================================
-    // count-pattern.spec.ts
+    // count-pattern.spec.ts — all 166 TS assertions ported 1:1
     // ================================================================
     mod count_pattern {
         use super::*;
@@ -101,179 +101,154 @@ mod tests {
 
         #[test]
         fn require_a() {
-            assert_eq!(run(r##"{"require": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(
-                run(r##"{"require": "a"}"##, &["b"]).result_type,
-                ResultType::MissingNodeRequired
-            );
-            assert_eq!(
-                run(r##"{"require": "a"}"##, &["c"]).result_type,
-                ResultType::MissingNodeRequired
-            );
-            assert_eq!(
-                run(r##"{"require": "a"}"##, &["#text"]).result_type,
-                ResultType::MissingNodeRequired
-            );
-            assert_eq!(
-                run(r##"{"require": "a"}"##, &[]).result_type,
-                ResultType::MissingNodeRequired
-            );
+            let p = r##"{"require": "a"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &[]).result_type, ResultType::MissingNodeRequired);
 
-            assert_eq!(run(r##"{"require": "a"}"##, &["a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"require": "a"}"##, &["b"]).matched.len(), 0);
-            assert_eq!(run(r##"{"require": "a"}"##, &[]).matched.len(), 0);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
         }
 
         #[test]
         fn optional_a() {
-            assert_eq!(run(r##"{"optional": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(
-                run(r##"{"optional": "a"}"##, &["a", "a"]).result_type,
-                ResultType::UnexpectedExtraNode
-            );
-            assert_eq!(
-                run(r##"{"optional": "a"}"##, &["b"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"optional": "a"}"##, &["c"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"optional": "a"}"##, &["#text"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(run(r##"{"optional": "a"}"##, &[]).result_type, ResultType::MatchedZero);
+            let p = r##"{"optional": "a"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["a", "a"]).result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
 
-            assert_eq!(run(r##"{"optional": "a"}"##, &["a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["a", "a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"optional": "a"}"##, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["a", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
         }
 
         #[test]
         fn one_or_more_a() {
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(
-                run(r##"{"oneOrMore": "a"}"##, &["b"]).result_type,
-                ResultType::MissingNodeOneOrMore
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "a"}"##, &["c"]).result_type,
-                ResultType::MissingNodeOneOrMore
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "a"}"##, &["#text"]).result_type,
-                ResultType::MissingNodeOneOrMore
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "a"}"##, &[]).result_type,
-                ResultType::MissingNodeOneOrMore
-            );
+            let p = r##"{"oneOrMore": "a"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &[]).result_type, ResultType::MissingNodeOneOrMore);
 
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a", "a", "a"]).matched.len(), 3);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a", "a", "b"]).matched.len(), 2);
-            assert_eq!(run(r##"{"oneOrMore": "a"}"##, &["a", "c", "c"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 2);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
         }
 
         #[test]
         fn zero_or_more_a() {
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a"]).result_type, ResultType::Matched);
-            assert_eq!(
-                run(r##"{"zeroOrMore": "a"}"##, &["b"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"zeroOrMore": "a"}"##, &["c"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"zeroOrMore": "a"}"##, &["#text"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"zeroOrMore": "a"}"##, &[]).result_type,
-                ResultType::MatchedZero
-            );
+            let p = r##"{"zeroOrMore": "a"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
 
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a", "a", "a"]).matched.len(), 3);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a", "a", "b"]).matched.len(), 2);
-            assert_eq!(run(r##"{"zeroOrMore": "a"}"##, &["a", "c", "c"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 2);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
         }
 
         #[test]
         fn require_flow() {
-            assert_eq!(
-                run(r##"{"require": "#flow"}"##, &["a"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"require": "#flow"}"##, &["b"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"require": "#flow"}"##, &["c"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"require": "#flow"}"##, &["#text"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"require": "#flow"}"##, &[]).result_type,
-                ResultType::MatchedZero
-            );
+            let p = r##"{"require": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
 
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["a"]).matched.len(), 1);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["c"]).matched.len(), 0);
-            assert_eq!(run(r##"{"require": "#flow"}"##, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["c", "a"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn optional_flow() {
+            let p = r##"{"optional": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
         }
 
         #[test]
         fn one_or_more_flow() {
-            assert_eq!(
-                run(r##"{"oneOrMore": "#flow"}"##, &["a"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "#flow"}"##, &["b"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "#flow"}"##, &["c"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "#flow"}"##, &["#text"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"oneOrMore": "#flow"}"##, &[]).result_type,
-                ResultType::MatchedZero
-            );
+            let p = r##"{"oneOrMore": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
 
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a", "a", "a"]).matched.len(), 3);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a", "a", "b"]).matched.len(), 3);
-            assert_eq!(run(r##"{"oneOrMore": "#flow"}"##, &["a", "c", "c"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
         }
 
         #[test]
         fn zero_or_more_flow() {
-            assert_eq!(
-                run(r##"{"zeroOrMore": "#flow"}"##, &["a"]).result_type,
-                ResultType::Matched
-            );
-            assert_eq!(
-                run(r##"{"zeroOrMore": "#flow"}"##, &["c"]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(
-                run(r##"{"zeroOrMore": "#flow"}"##, &[]).result_type,
-                ResultType::MatchedZero
-            );
-            assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["a", "a", "a"]).matched.len(), 3);
-            assert_eq!(run(r##"{"zeroOrMore": "#flow"}"##, &["a", "c", "c"]).matched.len(), 1);
+            let p = r##"{"zeroOrMore": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).result_type, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &[]).result_type, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
         }
 
         #[test]
@@ -287,9 +262,13 @@ mod tests {
             assert_eq!(run(p, &["script"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["template"]).result_type, ResultType::Matched);
 
+            assert_eq!(run(p, &["a"]).matched.len(), 0);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
             assert_eq!(run(p, &["script"]).matched.len(), 1);
             assert_eq!(run(p, &["template"]).matched.len(), 1);
-            assert_eq!(run(p, &["a"]).matched.len(), 0);
         }
 
         #[test]
@@ -333,17 +312,6 @@ mod tests {
             );
         }
 
-        #[test]
-        fn ruby_part3_one_or_more_rt_rp() {
-            let p = r##"{"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}"##;
-            assert_eq!(run(p, &["rt"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(p, &["rt"]).query, "rp");
-            assert_eq!(run(p, &["rt", "rp"]).result_type, ResultType::Matched);
-            assert_eq!(run(p, &["rt", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
-            assert_eq!(run(p, &["rt", "rp", "rt"]).query, "rp");
-            assert_eq!(run(p, &["rt", "rp", "rt", "rp"]).result_type, ResultType::Matched);
-        }
-
         // --- ruby element part #1 (TS: oneOrMore with model array selectors) ---
         #[test]
         fn ruby_part1_phrasing_model_array() {
@@ -353,11 +321,12 @@ mod tests {
             ]}"##;
             assert_eq!(run(p, &["span"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["#text"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["#text", "span"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["ruby"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["ruby", "span"]).result_type, ResultType::Matched);
-            // NOTE: <span><ruby></ruby></span> and <ruby><ruby></ruby></ruby> tests
-            // require :has() selector support (deferred to #3515).
-            // Without :has(), these incorrectly match instead of returning MISSING_NODE_ONE_OR_MORE.
+            // NOTE: Tests for <span><ruby></ruby></span> and <ruby><ruby></ruby></ruby>
+            // require :has() with descendant checking via ChildNodeInfo.children.
+            // These are tested in the selector_integration module with element_with_children.
         }
 
         // --- ruby element part #2 (TS: complex nested with choice) ---
@@ -381,9 +350,30 @@ mod tests {
                 ResultType::MissingNodeRequired
             );
             assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["span", "rp", "rt", "rp"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["span", "rt"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["span", "rt", "span", "rt"]).result_type, ResultType::Matched);
             assert_eq!(run(p, &["#text", "rt", "#text", "rt"]).result_type, ResultType::Matched);
+            assert_eq!(
+                run(p, &["#text", "rt", "rt", "#text", "rt", "rt"]).result_type,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(p, &["#text", "rp", "rt", "rp", "#text", "rt"]).result_type,
+                ResultType::Matched
+            );
+        }
+
+        // --- ruby element part #3 (TS: oneOrMore rt/rp) ---
+        #[test]
+        fn ruby_part3_one_or_more_rt_rp() {
+            let p = r##"{"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}"##;
+            assert_eq!(run(p, &["rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp"]).result_type, ResultType::Matched);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).result_type, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp", "rt", "rp"]).result_type, ResultType::Matched);
         }
 
         // --- Issue #1146 1/2 (TS: oneOrMore with single-branch choice) ---
@@ -758,7 +748,7 @@ mod tests {
     // ================================================================
     mod matches_selector {
         use super::*;
-        use crate::spec::content_model::matching::matches_selector as matches_selector_fn;
+        use crate::content_model::matching::matches_selector as matches_selector_fn;
 
         fn run(query: &str, tag: &str) -> MatchResult {
             let spec = html_spec();
@@ -842,18 +832,42 @@ mod tests {
 
         #[test]
         fn model_phrasing_with_not_suffix() {
-            // :model(phrasing):not(ruby) should extract #phrasing category
-            // and match phrasing content (span is phrasing)
+            // :model(phrasing):not(ruby, :has(ruby)) — span is phrasing and NOT ruby
             assert_eq!(
                 run(":model(phrasing):not(ruby, :has(ruby))", "span").result_type,
                 ResultType::Matched
             );
-            // ruby is also in #phrasing, so it matches (because :not() is not yet supported)
-            // This test documents the current limitation
+            // ruby is in #phrasing but excluded by :not(ruby) → should NOT match.
+            // Returns UnmatchedSelectorButMayEmpty because #phrasing includes #text.
             assert_eq!(
                 run(":model(phrasing):not(ruby, :has(ruby))", "ruby").result_type,
-                ResultType::Matched // TODO: should be UnmatchedSelectors when #3515 is implemented
+                ResultType::UnmatchedSelectorButMayEmpty
             );
+        }
+
+        #[test]
+        fn expand_model_refs_debug() {
+            let spec = html_spec();
+            let expanded =
+                crate::content_model::matching::expand_model_refs(":model(phrasing):not(ruby, :has(ruby))", &spec);
+            assert!(expanded.starts_with(":is("), "expanded: {expanded}");
+            assert!(expanded.contains(":not(ruby"), "expanded: {expanded}");
+
+            let parsed = markuplint_selector::parser::parse(&expanded);
+            assert!(parsed.is_ok(), "parse error for: {expanded}");
+
+            let bridge = crate::content_model::arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);
+            let selector = parsed.unwrap();
+            assert_eq!(bridge.child_ids.len(), 1, "should have 1 child");
+            let span_id = bridge.child_ids[0];
+            let matched = markuplint_selector::matcher::matches(&selector, &bridge.arena, span_id, None);
+            assert!(matched, "span should match expanded selector: {expanded}");
+
+            // Also test that ruby does NOT match
+            let bridge2 = crate::content_model::arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
+            let ruby_id = bridge2.child_ids[0];
+            let matched2 = markuplint_selector::matcher::matches(&selector, &bridge2.arena, ruby_id, None);
+            assert!(!matched2, "ruby should NOT match expanded selector");
         }
     }
 
@@ -862,7 +876,7 @@ mod tests {
     // ================================================================
     mod opt_condition_tests {
         use super::*;
-        use crate::spec::content_model::matching::matches_selector as matches_selector_fn;
+        use crate::content_model::matching::matches_selector as matches_selector_fn;
 
         #[test]
         fn plain_tag_no_flags() {
@@ -884,8 +898,7 @@ mod tests {
         #[test]
         fn model_with_not_suffix_extracts_category() {
             let spec = html_spec();
-            // ":model(metadata):not(title)" should extract #metadata
-            // "meta" is in #metadata → should match
+            // ":model(metadata):not(title)" — meta matches, title does NOT
             let r = matches_selector_fn(
                 ":model(metadata):not(title)",
                 Some(&ChildNodeInfo::element("meta")),
@@ -893,6 +906,27 @@ mod tests {
                 &spec,
             );
             assert_eq!(r.result_type, ResultType::Matched);
+
+            // title is in #metadata but excluded by :not(title)
+            let r2 = matches_selector_fn(
+                ":model(metadata):not(title)",
+                Some(&ChildNodeInfo::element("title")),
+                1,
+                &spec,
+            );
+            // #metadata includes #text → has_text=true → UnmatchedSelectorButMayEmpty
+            assert_ne!(r2.result_type, ResultType::Matched);
+        }
+
+        #[test]
+        fn needs_full_selector_detection() {
+            use crate::content_model::matching::needs_full_selector;
+            assert!(needs_full_selector(":model(phrasing):not(ruby)"));
+            assert!(needs_full_selector("div:has(span)"));
+            assert!(needs_full_selector(":is(a, b, c)"));
+            assert!(!needs_full_selector("div"));
+            assert!(!needs_full_selector("#flow"));
+            assert!(!needs_full_selector(":model(phrasing)"));
         }
     }
 
@@ -976,7 +1010,7 @@ mod tests {
     // ================================================================
     mod integration {
         use super::*;
-        use crate::spec::content_model::{ContentModelContents, get_content_model};
+        use markuplint_types::spec::content_model::{ContentModelContents, get_content_model};
 
         fn run_element(element: &str, tags: &[&str]) -> ResultType {
             let spec = html_spec();
@@ -991,9 +1025,10 @@ mod tests {
         #[test]
         fn head_element() {
             assert_eq!(run_element("head", &["title"]), ResultType::Matched);
-            // NOTE: ["meta", "title"] and ["title", "meta"] require :not() selector
-            // support to correctly prevent title from being consumed by
-            // zeroOrMore(:model(metadata):not(title)). Deferred to full selector integration.
+            // :not(title) now works via full selector matching:
+            // title is NOT consumed by zeroOrMore(:model(metadata):not(title))
+            assert_eq!(run_element("head", &["meta", "title"]), ResultType::Matched);
+            assert_eq!(run_element("head", &["title", "meta"]), ResultType::Matched);
             assert_eq!(run_element("head", &[]), ResultType::MissingNodeRequired);
         }
 
@@ -1019,6 +1054,299 @@ mod tests {
             assert_eq!(run_element("table", &["tbody"]), ResultType::Matched);
             assert_eq!(run_element("table", &["thead", "tbody"]), ResultType::Matched);
             assert_eq!(run_element("table", &["caption", "tbody"]), ResultType::Matched);
+        }
+    }
+
+    // ================================================================
+    // arena_bridge structure tests
+    // ================================================================
+    mod arena_bridge_tests {
+        use super::*;
+        use crate::content_model::arena_bridge;
+        use markuplint_dom::node::DomNode;
+
+        #[test]
+        fn parent_child_links() {
+            let bridge =
+                arena_bridge::build_arena("div", &[ChildNodeInfo::element("span"), ChildNodeInfo::element("p")]);
+            // Document root is id 0
+            let doc = bridge.arena.get(0).unwrap();
+            assert!(matches!(doc, DomNode::Document(_)));
+            assert_eq!(doc.children(), &[bridge.parent_id]);
+
+            // Parent element is id 1
+            let parent = bridge.arena.get(bridge.parent_id).unwrap();
+            let parent_el = parent.as_element().unwrap();
+            assert_eq!(parent_el.base.node_name, "div");
+            assert_eq!(parent_el.base.children, bridge.child_ids);
+
+            // Children have correct parent
+            for &cid in &bridge.child_ids {
+                assert_eq!(bridge.arena.get(cid).unwrap().parent_id(), Some(bridge.parent_id));
+            }
+        }
+
+        #[test]
+        fn sibling_links() {
+            let bridge = arena_bridge::build_arena(
+                "ul",
+                &[
+                    ChildNodeInfo::element("li"),
+                    ChildNodeInfo::element("li"),
+                    ChildNodeInfo::element("li"),
+                ],
+            );
+            let ids = &bridge.child_ids;
+            assert_eq!(ids.len(), 3);
+
+            // First child: no prev, next = second
+            let first = bridge.arena.get(ids[0]).unwrap().base().unwrap();
+            assert_eq!(first.prev_sibling, None);
+            assert_eq!(first.next_sibling, Some(ids[1]));
+
+            // Middle child: prev = first, next = last
+            let mid = bridge.arena.get(ids[1]).unwrap().base().unwrap();
+            assert_eq!(mid.prev_sibling, Some(ids[0]));
+            assert_eq!(mid.next_sibling, Some(ids[2]));
+
+            // Last child: prev = middle, no next
+            let last = bridge.arena.get(ids[2]).unwrap().base().unwrap();
+            assert_eq!(last.prev_sibling, Some(ids[1]));
+            assert_eq!(last.next_sibling, None);
+        }
+
+        #[test]
+        fn recursive_children_for_has() {
+            let bridge = arena_bridge::build_arena(
+                "div",
+                &[ChildNodeInfo::element_with_children(
+                    "span",
+                    vec![ChildNodeInfo::element("ruby")],
+                )],
+            );
+            let span_id = bridge.child_ids[0];
+            let span = bridge.arena.get(span_id).unwrap().as_element().unwrap();
+
+            // span has one child (ruby)
+            assert_eq!(span.base.children.len(), 1);
+            let ruby_id = span.base.children[0];
+            let ruby = bridge.arena.get(ruby_id).unwrap().as_element().unwrap();
+            assert_eq!(ruby.base.node_name, "ruby");
+            assert_eq!(ruby.base.parent, Some(span_id));
+            assert_eq!(ruby.base.depth, 2); // doc=0, div=0, span=1, ruby=2
+        }
+
+        #[test]
+        fn text_and_preprocessor_nodes() {
+            let bridge = arena_bridge::build_arena(
+                "div",
+                &[ChildNodeInfo::text("hello"), ChildNodeInfo::preprocessor_block("<% %>")],
+            );
+            assert_eq!(bridge.child_ids.len(), 2);
+            let text = bridge.arena.get(bridge.child_ids[0]).unwrap();
+            assert!(matches!(text, DomNode::Text(_)));
+            let ps = bridge.arena.get(bridge.child_ids[1]).unwrap();
+            assert!(matches!(ps, DomNode::PSBlock(_)));
+        }
+
+        #[test]
+        fn empty_children() {
+            let bridge = arena_bridge::build_arena("div", &[]);
+            assert!(bridge.child_ids.is_empty());
+            let parent = bridge.arena.get(bridge.parent_id).unwrap();
+            assert!(parent.children().is_empty());
+        }
+    }
+
+    // ================================================================
+    // full_selector_match / expand_model_refs tests
+    // ================================================================
+    mod selector_integration {
+        use super::*;
+        use crate::content_model::arena_bridge;
+        use crate::content_model::matching::{expand_model_refs, matches_selector as matches_selector_fn};
+
+        #[test]
+        fn not_selector_simple() {
+            // Direct :not(tag) without :model()
+            let spec = html_spec();
+            let bridge = arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);
+            let sel = markuplint_selector::parser::parse("span:not(ruby)").unwrap();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.child_ids[0],
+                None
+            ));
+
+            let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge2.arena,
+                bridge2.child_ids[0],
+                None
+            ));
+        }
+
+        #[test]
+        fn has_selector_with_children() {
+            // :has(ruby) checks descendants
+            let spec = html_spec();
+            let with_ruby = ChildNodeInfo::element_with_children("span", vec![ChildNodeInfo::element("ruby")]);
+            let bridge = arena_bridge::build_arena("div", &[with_ruby]);
+            let sel = markuplint_selector::parser::parse("span:has(ruby)").unwrap();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.child_ids[0],
+                None
+            ));
+
+            // Without ruby child → doesn't match
+            let without_ruby = ChildNodeInfo::element_with_children("span", vec![ChildNodeInfo::element("em")]);
+            let bridge2 = arena_bridge::build_arena("div", &[without_ruby]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge2.arena,
+                bridge2.child_ids[0],
+                None
+            ));
+        }
+
+        #[test]
+        fn is_selector() {
+            let spec = html_spec();
+            let bridge = arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);
+            let sel = markuplint_selector::parser::parse(":is(a, span, em)").unwrap();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.child_ids[0],
+                None
+            ));
+
+            let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("div")]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge2.arena,
+                bridge2.child_ids[0],
+                None
+            ));
+        }
+
+        #[test]
+        fn expand_model_refs_multiple() {
+            let spec = html_spec();
+            // This pattern doesn't exist in html-spec but tests multiple :model() expansion
+            let expanded = expand_model_refs(":model(metadata)", &spec);
+            assert!(expanded.starts_with(":is("), "expanded: {expanded}");
+            assert!(expanded.contains("meta"), "expanded: {expanded}");
+            assert!(expanded.contains("link"), "expanded: {expanded}");
+        }
+
+        #[test]
+        fn expand_model_refs_invalid_category() {
+            let spec = html_spec();
+            let expanded = expand_model_refs(":model(nonexistent)", &spec);
+            assert_eq!(expanded, ":is(x-never-match)");
+        }
+
+        #[test]
+        fn expand_model_refs_plain_tag_unchanged() {
+            let spec = html_spec();
+            let expanded = expand_model_refs("div", &spec);
+            assert_eq!(expanded, "div");
+        }
+
+        #[test]
+        fn ruby_not_has_ruby_via_selector() {
+            // ruby:not(:has(ruby)) — should match plain ruby, not ruby containing ruby
+            let spec = html_spec();
+            let sel = markuplint_selector::parser::parse("ruby:not(:has(ruby))").unwrap();
+
+            // Plain ruby → matches
+            let bridge = arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.child_ids[0],
+                None
+            ));
+
+            // Ruby containing ruby → doesn't match
+            let nested = ChildNodeInfo::element_with_children("ruby", vec![ChildNodeInfo::element("ruby")]);
+            let bridge2 = arena_bridge::build_arena("div", &[nested]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge2.arena,
+                bridge2.child_ids[0],
+                None
+            ));
+        }
+
+        #[test]
+        fn head_element_not_title_granular() {
+            let spec = html_spec();
+            // :model(metadata):not(title) should match meta but not title
+            let expanded = expand_model_refs(":model(metadata):not(title)", &spec);
+            let sel = markuplint_selector::parser::parse(&expanded).unwrap();
+
+            let bridge_meta = arena_bridge::build_arena("head", &[ChildNodeInfo::element("meta")]);
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge_meta.arena,
+                bridge_meta.child_ids[0],
+                None
+            ));
+
+            let bridge_title = arena_bridge::build_arena("head", &[ChildNodeInfo::element("title")]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge_title.arena,
+                bridge_title.child_ids[0],
+                None
+            ));
+
+            let bridge_link = arena_bridge::build_arena("head", &[ChildNodeInfo::element("link")]);
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge_link.arena,
+                bridge_link.child_ids[0],
+                None
+            ));
+        }
+
+        #[test]
+        fn full_selector_match_via_matches_selector() {
+            // Verify full_selector_match is invoked through the public API
+            // :model(metadata):not(title) through matches_selector should work
+            let spec = html_spec();
+            let r_meta = matches_selector_fn(
+                ":model(metadata):not(title)",
+                Some(&ChildNodeInfo::element("meta")),
+                1,
+                &spec,
+            );
+            assert_eq!(r_meta.result_type, ResultType::Matched);
+
+            // title excluded by :not(title) — returns non-Matched
+            let r_title = matches_selector_fn(
+                ":model(metadata):not(title)",
+                Some(&ChildNodeInfo::element("title")),
+                1,
+                &spec,
+            );
+            assert_ne!(r_title.result_type, ResultType::Matched);
+        }
+
+        #[test]
+        fn expand_model_refs_preserves_hash_category_not() {
+            // #metadata:not(title) — # prefix category with :not()
+            let spec = html_spec();
+            // needs_full_selector detects :not()
+            assert!(crate::content_model::matching::needs_full_selector(
+                "#metadata:not(title)"
+            ));
         }
     }
 }

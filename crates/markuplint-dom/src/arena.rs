@@ -78,3 +78,41 @@ impl Default for DomArena {
         Self::new()
     }
 }
+
+/// Builder for constructing a `DomArena` programmatically from external crates.
+///
+/// The arena's `push` and `get_mut` methods are `pub(crate)`, so external crates
+/// must use this builder to construct arenas (e.g., for content model matching).
+pub struct DomArenaBuilder {
+    arena: DomArena,
+}
+
+impl DomArenaBuilder {
+    /// Create a new empty builder.
+    #[must_use]
+    pub fn new() -> Self {
+        Self { arena: DomArena::new() }
+    }
+
+    /// Push a node into the arena, returning its `NodeId`.
+    pub fn push(&mut self, node: DomNode) -> NodeId {
+        self.arena.push(node)
+    }
+
+    /// Get a mutable reference to a node for wiring parent/child/sibling links.
+    pub fn get_mut(&mut self, id: NodeId) -> Option<&mut DomNode> {
+        self.arena.get_mut(id)
+    }
+
+    /// Consume the builder and return the finished arena.
+    #[must_use]
+    pub fn finish(self) -> DomArena {
+        self.arena
+    }
+}
+
+impl Default for DomArenaBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}

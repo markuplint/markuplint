@@ -30,12 +30,10 @@ markuplint-types/
 │   │   ├── types.rs             Serde types (MLMLSpec, ElementSpec, Attribute, ARIA, etc.)
 │   │   ├── lookup.rs            Spec queries (get_spec, is_void_element, get_attr_specs, etc.)
 │   │   ├── aria.rs              ARIA role resolution (implicit/explicit role, permitted roles)
-│   │   └── content_model/       Phase 2-4: Content model pattern matching engine
+│   │   └── content_model/       Content model serde types and lookup
 │   │       ├── mod.rs           get_content_model(), matches_model_ref()
-│   │       ├── serde_types.rs   Serde types (ContentModel, PermittedContentPattern, etc.)
-│   │       ├── matching.rs      Core engine: order, choice, count_pattern, recursive_branch
-│   │       ├── result.rs        MatchResult, ResultType, Hints, Collection
-│   │       └── child_node.rs    ChildNodeInfo — lightweight node representation
+│   │       └── serde_types.rs   ContentModel, PermittedContentPattern, etc.
+│   │       NOTE: Matching engine moved to markuplint-rules (#3515)
 │   │
 │   ├── check/                   Type check dispatcher
 │   ├── whatwg/                   WHATWG type validators (datetime, autocomplete, etc.)

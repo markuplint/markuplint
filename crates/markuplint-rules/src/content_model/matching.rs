@@ -3,17 +3,16 @@
 //! Ports the TypeScript implementation from
 //! `packages/@markuplint/rules/src/permitted-contents/`.
 //!
-//! **Known Limitation:** CSS pseudo-class selectors (`:not()`, `:has()`) are not yet
-//! supported. Category references like `:model(phrasing):not(ruby)` extract the base
-//! category but ignore the selector suffix. This affects validation of elements such as
-//! `<ruby>` with conditional content patterns. Full selector integration via the
-//! `markuplint-selector` crate is tracked in [#3515](https://github.com/markuplint/markuplint/issues/3515).
+//! Supports full CSS pseudo-class selectors (`:not()`, `:has()`, `:is()`) by
+//! expanding `:model(category)` to `:is(tag1, tag2, ...)` and delegating to
+//! `markuplint-selector` via a minimal DOM arena (see [`super::arena_bridge`]).
+//! Simple queries without pseudo-classes use fast tag-name matching as a fast path.
 
 use super::child_node::{ChildNodeInfo, ChildNodeKind};
 use super::result::{Collection, Hints, MatchResult, MissingHint, ResultType, merge_hints};
-use super::serde_types::{ChoicePattern, ModelOrPatterns, PermittedContentPattern};
-use crate::spec::lookup;
-use crate::spec::types::MLMLSpec;
+use markuplint_types::spec::content_model::{ChoicePattern, ModelOrPatterns, PermittedContentPattern};
+use markuplint_types::spec::lookup;
+use markuplint_types::spec::types::MLMLSpec;
 
 // ============================================================
 // Public API
@@ -482,6 +481,10 @@ fn transparent(child_nodes: &[ChildNodeInfo]) -> MatchResult {
 // ============================================================
 
 /// Test whether a single child node matches a content model query.
+///
+/// `child_node` is `None` when no node is available (e.g., empty child list).
+/// `total_count` is the number of nodes in the parent context, used for
+/// building `MatchResult.unmatched` index lists.
 pub(crate) fn matches_selector(
     query: &str,
     child_node: Option<&ChildNodeInfo>,
@@ -519,16 +522,19 @@ pub(crate) fn matches_selector(
             if cond.has_custom {
                 MatchResult::matched_single(0, total_count, query, cond.has_text)
             } else {
-                match_element_tag(&node.tag_name, query, total_count, spec, &cond)
+                match_element_tag(node, query, total_count, spec, &cond)
             }
         }
-        ChildNodeKind::Element => match_element_tag(&node.tag_name, query, total_count, spec, &cond),
+        ChildNodeKind::Element => match_element_tag(node, query, total_count, spec, &cond),
     }
 }
 
 /// Match an element by tag name against a resolved query.
+///
+/// For simple queries (no `:not()` / `:has()`), uses fast tag-name matching.
+/// For complex queries, builds a minimal DOM arena and uses the full CSS selector engine.
 fn match_element_tag(
-    tag_name: &str,
+    node: &ChildNodeInfo,
     query: &str,
     total_count: usize,
     spec: &MLMLSpec,
@@ -536,8 +542,10 @@ fn match_element_tag(
 ) -> MatchResult {
     let matched = if cond.resolved_selector.is_empty() {
         false
+    } else if needs_full_selector(query) {
+        full_selector_match(node, query, spec, cond)
     } else {
-        super::matches_model_ref(spec, tag_name, &cond.resolved_selector)
+        markuplint_types::spec::content_model::matches_model_ref(spec, &node.tag_name, &cond.resolved_selector)
     };
 
     if matched {
@@ -561,6 +569,94 @@ fn match_element_tag(
             hint: Hints::default(),
         }
     }
+}
+
+/// Check if a query requires the full CSS selector engine (`:not()`, `:has()`, `:is()`).
+///
+/// Returns `false` for simple tag names and category references, which use
+/// the fast `matches_model_ref()` path instead.
+pub(crate) fn needs_full_selector(query: &str) -> bool {
+    // Only engage the full engine for queries containing pseudo-class modifiers
+    // that can't be handled by simple tag matching.
+    query.contains(":not(") || query.contains(":has(") || query.contains(":is(")
+}
+
+/// Perform full CSS selector matching by building a minimal arena.
+///
+/// Expands `:model(category)` to `:is(tag1, tag2, ...)` so the standard
+/// CSS selector engine can process it, then matches against a temporary DOM.
+fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond: &Condition) -> bool {
+    // 1. Expand :model(category) references to :is(tag1, tag2, ...)
+    let expanded = expand_model_refs(query, spec);
+
+    // 2. Parse the expanded selector
+    let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
+        // Parse failure: fall back to simple tag matching
+        return markuplint_types::spec::content_model::matches_model_ref(spec, &node.tag_name, &cond.resolved_selector);
+    };
+
+    // 3. Build a minimal arena with just the node and its children
+    let bridge = super::arena_bridge::build_arena("div", std::slice::from_ref(node));
+
+    // 4. The node is the first (and only) child.
+    // This should always succeed since we pass exactly one node to build_arena.
+    // The else branch is a defensive guard against internal errors.
+    let Some(&node_id) = bridge.child_ids.first() else {
+        return false;
+    };
+
+    // 5. Match using the full selector engine
+    markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None)
+}
+
+/// Expand `:model(category)` references to `:is(tag1, tag2, ...)`.
+///
+/// Handles patterns like `:model(phrasing):not(ruby, :has(ruby))` by
+/// replacing the `:model(phrasing)` part with the concrete tag list while
+/// preserving the rest of the selector. Unknown categories are replaced with
+/// `:is(x-never-match)` to ensure they never match instead of panicking.
+pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
+    let mut result = query.to_string();
+
+    // Find and replace all :model(category) occurrences.
+    // ":model(" is 7 chars; we find the first ")" to extract the category name.
+    // Example: ":model(phrasing):not(ruby)" → category="phrasing", rest=":not(ruby)"
+    while let Some(start) = result.find(":model(") {
+        let after = &result[start + 7..]; // skip ":model("
+        let Some(end) = after.find(')') else { break };
+        let category = &after[..end];
+        let category_key = format!("#{category}");
+
+        let replacement =
+            if let Some(tags) = markuplint_types::spec::lookup::get_content_model_tags(spec, &category_key) {
+                let tag_list: Vec<&str> = tags
+                    .iter()
+                    // Category lists include "#text" and "#custom" pseudo-entries;
+                    // these are handled separately by opt_condition's has_text/has_custom flags.
+                    .filter(|t| !t.starts_with('#'))
+                    // Category entries may include attribute selectors (e.g., "meta[itemprop]");
+                    // strip these since :is() expansion only needs tag names.
+                    .map(|t| t.split('[').next().unwrap_or(t))
+                    .collect();
+                if tag_list.is_empty() {
+                    // Category resolved but contained only #text/#custom — no concrete tags.
+                    // Use a tag name that can never match any real element.
+                    ":is(x-never-match)".to_string()
+                } else {
+                    format!(":is({})", tag_list.join(","))
+                }
+            } else {
+                // Unknown category — ensure it never matches.
+                ":is(x-never-match)".to_string()
+            };
+
+        // Replace ":model(category)" (7 + category.len() + 1 = start+8+end chars) with :is(...)
+        let before = &result[..start];
+        let after_close = &result[start + 8 + end..];
+        result = format!("{before}{replacement}{after_close}");
+    }
+
+    result
 }
 
 // ============================================================

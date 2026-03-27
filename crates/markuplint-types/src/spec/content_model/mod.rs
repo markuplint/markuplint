@@ -6,11 +6,6 @@
 //! Corresponds to `@markuplint/ml-spec/src/types/permitted-structures.ts`
 //! and `@markuplint/rules/src/permitted-contents/`.
 
-pub mod child_node;
-pub mod matching;
-#[cfg(test)]
-mod matching_tests;
-pub mod result;
 pub mod serde_types;
 
 use super::lookup;
