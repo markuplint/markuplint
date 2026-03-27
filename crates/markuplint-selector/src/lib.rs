@@ -7,5 +7,6 @@
 //! Same approach as the css-tree replacement in Phase 1B.
 
 pub mod ast;
+pub mod extended;
 pub mod matcher;
 pub mod parser;
