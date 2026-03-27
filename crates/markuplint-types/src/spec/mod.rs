@@ -125,7 +125,10 @@ mod tests {
         let spec = load_spec(html_spec_json()).unwrap();
         let a = spec.specs.iter().find(|s| s.name == "a").unwrap();
         let role = a.aria.implicit_role.as_ref().unwrap();
-        assert_eq!(role.as_str(), Some("link"), "<a> implicit role should be 'link'");
+        assert!(
+            matches!(role, types::ImplicitRole::Role(r) if r == "link"),
+            "<a> implicit role should be 'link'"
+        );
     }
 
     #[test]
