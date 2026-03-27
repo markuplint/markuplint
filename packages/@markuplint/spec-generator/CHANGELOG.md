@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- **spec-generator:** add fetch retry, status check, and output validation ([ca047b2](https://github.com/markuplint/markuplint/commit/ca047b212dcb5acf7b5d370c9713983306d50e2d)), closes [#3456](https://github.com/markuplint/markuplint/issues/3456)
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 **Note:** Version bump only for package @markuplint/spec-generator

@@ -6,11 +6,13 @@
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::ElementData;
+use markuplint_types::spec::types::MLMLSpec;
 
 use crate::ast::{
     AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
     SimpleSelector, Specificity,
 };
+use crate::extended;
 
 /// Result of matching a selector against an element.
 #[derive(Debug, Clone)]
@@ -38,26 +40,36 @@ impl MatchResult {
 /// Match a selector list against an element.
 ///
 /// Returns `true` if any selector in the comma-separated list matches.
-/// `scope` is the element for `:scope` pseudo-class resolution (typically the element itself).
-pub fn matches(selector: &SelectorList, arena: &DomArena, node_id: NodeId, scope: Option<NodeId>) -> bool {
+/// `scope` is the element for `:scope` pseudo-class resolution.
+/// `spec` provides spec data for extended pseudo-classes: `:model()` resolves
+/// content model categories, `:role()` and `:aria()` are stubs (Phase 2-3).
+pub fn matches(
+    selector: &SelectorList,
+    arena: &DomArena,
+    node_id: NodeId,
+    scope: Option<NodeId>,
+    spec: Option<&MLMLSpec>,
+) -> bool {
     let scope = scope.unwrap_or(node_id);
     selector
         .selectors
         .iter()
-        .any(|sel| match_complex(sel, arena, node_id, scope).matched)
+        .any(|sel| match_complex(sel, arena, node_id, scope, spec).matched)
 }
 
-/// Match a selector list and return the highest specificity, or None if no match.
+/// Match a selector list and return the highest specificity, or `None` if no match.
+/// See [`matches`] for parameter descriptions.
 pub fn match_specificity(
     selector: &SelectorList,
     arena: &DomArena,
     node_id: NodeId,
     scope: Option<NodeId>,
+    spec: Option<&MLMLSpec>,
 ) -> Option<Specificity> {
     let scope = scope.unwrap_or(node_id);
     let mut best: Option<Specificity> = None;
     for sel in &selector.selectors {
-        let result = match_complex(sel, arena, node_id, scope);
+        let result = match_complex(sel, arena, node_id, scope, spec);
         if result.matched {
             match &best {
                 None => best = Some(result.specificity),
@@ -73,9 +85,14 @@ pub fn match_specificity(
 }
 
 /// Match a complex selector (compound + combinator chain) against an element.
-fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, scope: NodeId) -> MatchResult {
-    // First, match the subject (rightmost compound)
-    let result = match_compound(&selector.subject, arena, node_id, scope);
+fn match_complex(
+    selector: &ComplexSelector,
+    arena: &DomArena,
+    node_id: NodeId,
+    scope: NodeId,
+    spec: Option<&MLMLSpec>,
+) -> MatchResult {
+    let result = match_compound(&selector.subject, arena, node_id, scope, spec);
     if !result.matched {
         return result;
     }
@@ -90,7 +107,7 @@ fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, 
                 let mut found = false;
                 let mut ancestor_id = element_parent(arena, current_id);
                 while let Some(aid) = ancestor_id {
-                    let r = match_compound(compound, arena, aid, scope);
+                    let r = match_compound(compound, arena, aid, scope, spec);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = aid;
@@ -107,7 +124,7 @@ fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, 
                 let Some(parent_id) = element_parent(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, parent_id, scope);
+                let r = match_compound(compound, arena, parent_id, scope, spec);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -118,7 +135,7 @@ fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, 
                 let Some(prev_id) = prev_element_sibling(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, prev_id, scope);
+                let r = match_compound(compound, arena, prev_id, scope, spec);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -129,7 +146,7 @@ fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, 
                 let mut found = false;
                 let mut prev_id = prev_element_sibling(arena, current_id);
                 while let Some(pid) = prev_id {
-                    let r = match_compound(compound, arena, pid, scope);
+                    let r = match_compound(compound, arena, pid, scope, spec);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = pid;
@@ -149,7 +166,13 @@ fn match_complex(selector: &ComplexSelector, arena: &DomArena, node_id: NodeId, 
 }
 
 /// Match a compound selector (all parts must match).
-fn match_compound(compound: &CompoundSelector, arena: &DomArena, node_id: NodeId, scope: NodeId) -> MatchResult {
+fn match_compound(
+    compound: &CompoundSelector,
+    arena: &DomArena,
+    node_id: NodeId,
+    scope: NodeId,
+    spec: Option<&MLMLSpec>,
+) -> MatchResult {
     let Some(node) = arena.get(node_id) else {
         return MatchResult::unmatched();
     };
@@ -189,7 +212,7 @@ fn match_compound(compound: &CompoundSelector, arena: &DomArena, node_id: NodeId
                 specificity[1] += 1;
             }
             SimpleSelector::PseudoClass(pseudo) => {
-                let r = match_pseudo_class(pseudo, arena, node_id, scope);
+                let r = match_pseudo_class(pseudo, arena, node_id, scope, spec);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -214,10 +237,16 @@ fn match_compound(compound: &CompoundSelector, arena: &DomArena, node_id: NodeId
 }
 
 /// Match a pseudo-class.
-fn match_pseudo_class(pseudo: &PseudoClassSelector, arena: &DomArena, node_id: NodeId, scope: NodeId) -> MatchResult {
+fn match_pseudo_class(
+    pseudo: &PseudoClassSelector,
+    arena: &DomArena,
+    node_id: NodeId,
+    scope: NodeId,
+    spec: Option<&MLMLSpec>,
+) -> MatchResult {
     match pseudo {
         PseudoClassSelector::Not(inner) => {
-            if matches(inner, arena, node_id, Some(scope)) {
+            if matches(inner, arena, node_id, Some(scope), spec) {
                 MatchResult::unmatched()
             } else {
                 // :not() specificity = most specific selector in the list
@@ -225,7 +254,7 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, arena: &DomArena, node_id: N
             }
         }
         PseudoClassSelector::Is(inner) => {
-            if let Some(spec) = match_specificity(inner, arena, node_id, Some(scope)) {
+            if let Some(spec) = match_specificity(inner, arena, node_id, Some(scope), spec) {
                 MatchResult::matched(spec)
             } else {
                 MatchResult::unmatched()
@@ -238,7 +267,7 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, arena: &DomArena, node_id: N
             let mut found = false;
             for desc in arena.descendants(node_id) {
                 if let Some(desc_el_id) = desc.as_element().map(|e| e.base.id)
-                    && matches(inner, arena, desc_el_id, Some(scope))
+                    && matches(inner, arena, desc_el_id, Some(scope), spec)
                 {
                     found = true;
                     break;
@@ -252,7 +281,7 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, arena: &DomArena, node_id: N
         }
         PseudoClassSelector::Where(inner) => {
             // :where() = same as :is() but zero specificity
-            if matches(inner, arena, node_id, Some(scope)) {
+            if matches(inner, arena, node_id, Some(scope), spec) {
                 MatchResult::matched([0, 0, 0])
             } else {
                 MatchResult::unmatched()
@@ -278,16 +307,27 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, arena: &DomArena, node_id: N
             // :closest() — markuplint-specific: matches if any ancestor matches
             let mut ancestor_id = element_parent(arena, node_id);
             while let Some(aid) = ancestor_id {
-                if matches(inner, arena, aid, Some(scope)) {
+                if matches(inner, arena, aid, Some(scope), spec) {
                     return MatchResult::matched([0, 1, 0]);
                 }
                 ancestor_id = element_parent(arena, aid);
             }
             MatchResult::unmatched()
         }
-        PseudoClassSelector::Model(_) | PseudoClassSelector::Role(_) | PseudoClassSelector::Aria(_) => {
-            // Extended pseudo-classes require spec data — stub for now.
-            // Will be implemented when spec data is passed to the matcher.
+        PseudoClassSelector::Model(category) => {
+            if let Some(spec) = spec {
+                if extended::matches_model(spec, arena, node_id, category) {
+                    MatchResult::matched([0, 1, 0])
+                } else {
+                    MatchResult::unmatched()
+                }
+            } else {
+                MatchResult::unmatched()
+            }
+        }
+        PseudoClassSelector::Role(_) | PseudoClassSelector::Aria(_) => {
+            // :role() requires getComputedRole (Phase 2-3b)
+            // :aria() requires accessible name computation (Phase 2-3c)
             MatchResult::unmatched()
         }
     }

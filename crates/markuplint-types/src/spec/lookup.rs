@@ -76,11 +76,11 @@ pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a
         result.insert(name.as_str(), attr);
     }
 
-    // TODO(Phase 2-3+): Merge global attributes from enabled categories.
-    // Global attrs in SpecDefs are stored as HashMap<String, Value> (not typed
-    // Attribute), so they cannot be included in this result yet. When ARIA or
-    // rule implementations need global attrs, the SpecDefs global_attrs should
-    // be typed as HashMap<String, Attribute> and merged here.
+    // TODO: Merge global attributes from enabled categories.
+    // Blocked: `SpecDefs.global_attrs` inner values are `serde_json::Value`, not `Attribute`.
+    // The JSON structure for global attrs differs from element-specific attrs (uses partial
+    // attribute definitions), so typing requires a `PartialAttribute` or flexible deserializer.
+    // Tracked in #3521. Needed when ARIA rules or `invalid-attr` access global attrs.
 
     result
 }

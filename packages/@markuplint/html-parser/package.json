@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/html-parser",
-	"version": "5.0.0-rc.0",
+	"version": "5.0.0-rc.1",
 	"description": "HTML parser for markuplint",
 	"repository": "git@github.com:markuplint/markuplint.git",
 	"author": "Yusuke Hirao <yusukehirao@me.com>",
@@ -27,8 +27,8 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.0.0-rc.0",
-		"@markuplint/parser-utils": "5.0.0-rc.0",
+		"@markuplint/ml-ast": "5.0.0-rc.1",
+		"@markuplint/parser-utils": "5.0.0-rc.1",
 		"parse5": "8.0.0",
 		"type-fest": "5.5.0"
 	}

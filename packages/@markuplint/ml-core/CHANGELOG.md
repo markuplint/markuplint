@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- add isFatalError guard to MLEngine.exec and fix accname Deno crash ([c4b20de](https://github.com/markuplint/markuplint/commit/c4b20de128b2cfee582b3588e5004cb90065825b))
+- **ml-core:** add DOM stubs for TS 6 lib.dom.d.ts updates ([837a2ba](https://github.com/markuplint/markuplint/commit/837a2bad5afe967d4d309b91d056b46fc91c7512))
+
+- feat(ml-core)!: resolve node references via UUID instead of object refs ([e9b6f4e](https://github.com/markuplint/markuplint/commit/e9b6f4e68bda2f60c9fa69699bf251b51874a4ac))
+
+### BREAKING CHANGES
+
+- MLDOM now resolves parent and pair nodes via UUID
+  strings from the AST instead of direct object references.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 ### Bug Fixes
