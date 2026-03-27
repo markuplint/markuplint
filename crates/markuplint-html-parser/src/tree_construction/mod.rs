@@ -244,6 +244,91 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
+    /// Reconstruct the active formatting elements per WHATWG §13.2.4.3.
+    pub(super) fn reconstruct_active_formatting_elements(&mut self) {
+        use active_formatting::FormatEntry;
+
+        // Step 1: If empty, return.
+        if self.active_formatting.is_empty() {
+            return;
+        }
+
+        // Step 2: If last entry is a marker or in open elements, return.
+        let entries = self.active_formatting.entries();
+        let last = entries.last();
+        match last {
+            None | Some(FormatEntry::Marker) => return,
+            Some(FormatEntry::Element(id)) => {
+                if self.open_elements.contains(*id) {
+                    return;
+                }
+            }
+        }
+
+        // Step 3-7: Walk backwards to find the first entry that's a marker
+        // or is in open elements, then walk forward creating elements.
+        let mut i = entries.len() - 1;
+
+        // Step 4: Rewind.
+        loop {
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+            match &entries[i] {
+                FormatEntry::Marker => {
+                    i += 1;
+                    break;
+                }
+                FormatEntry::Element(id) => {
+                    if self.open_elements.contains(*id) {
+                        i += 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Step 7: Advance — create elements for entries[i..].
+        let entries_to_reconstruct: Vec<NodeId> = entries[i..]
+            .iter()
+            .filter_map(|e| match e {
+                FormatEntry::Element(id) => Some(*id),
+                FormatEntry::Marker => None,
+            })
+            .collect();
+
+        for &old_id in &entries_to_reconstruct {
+            let new_id = self.clone_formatting_element(old_id);
+            let target = self.appropriate_insert_position();
+            self.arena.append_child(target, new_id);
+            self.open_elements.push(new_id);
+            self.active_formatting.replace(old_id, new_id);
+        }
+    }
+
+    /// Clone a formatting element for reconstruction.
+    fn clone_formatting_element(&mut self, node_id: NodeId) -> NodeId {
+        let node = self.arena.get(node_id);
+        let span = node.span;
+        match &node.kind {
+            crate::tree::node::NodeKind::Element {
+                tag_name,
+                namespace,
+                attributes,
+                self_closing,
+            } => self.arena.create_element(
+                tag_name.clone(),
+                *namespace,
+                attributes.clone(),
+                *self_closing,
+                span,
+                false,
+            ),
+            _ => node_id,
+        }
+    }
+
     pub(super) fn current_node_is(&self, name: &str) -> bool {
         self.current_node()
             .is_some_and(|id| self.arena.get(id).is_html_element(name))
@@ -706,6 +791,7 @@ impl<'a> TreeBuilder<'a> {
                 if *ch == '\0' {
                     // Parse error. Ignore.
                 } else {
+                    self.reconstruct_active_formatting_elements();
                     if !ch.is_ascii_whitespace() {
                         self.frameset_ok = false;
                     }
@@ -895,6 +981,12 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
                 self.frameset_ok = false;
                 self.mode = InsertionMode::InTable;
+            }
+            // WHATWG: <image> is a parse error — treat as <img>.
+            "image" => {
+                self.insert_html_element("img", attributes, span);
+                self.open_elements.pop();
+                self.frameset_ok = false;
             }
             "area" | "br" | "embed" | "img" | "keygen" | "wbr" => {
                 self.insert_html_element(tag_name, attributes, span);

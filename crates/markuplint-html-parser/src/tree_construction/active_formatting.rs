@@ -77,6 +77,22 @@ impl ActiveFormattingElements {
             .position(|e| matches!(e, FormatEntry::Element(eid) if *eid == id))
     }
 
+    /// Replace an element entry (`old_id` → `new_id`).
+    pub fn replace(&mut self, old_id: NodeId, new_id: NodeId) {
+        for entry in &mut self.entries {
+            if matches!(entry, FormatEntry::Element(eid) if *eid == old_id) {
+                *entry = FormatEntry::Element(new_id);
+                return;
+            }
+        }
+    }
+
+    /// Insert an entry at a specific position.
+    pub fn insert_at(&mut self, index: usize, entry: FormatEntry) {
+        let idx = index.min(self.entries.len());
+        self.entries.insert(idx, entry);
+    }
+
     /// Iterate entries from newest to oldest.
     pub fn iter_rev(&self) -> impl Iterator<Item = &FormatEntry> {
         self.entries.iter().rev()

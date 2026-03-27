@@ -77,6 +77,13 @@ impl OpenElementsStack {
         }
     }
 
+    /// Replace an element by its old ID with a new ID.
+    pub fn replace_id(&mut self, old_id: NodeId, new_id: NodeId) {
+        if let Some(pos) = self.position(old_id) {
+            self.elements[pos] = new_id;
+        }
+    }
+
     /// Insert an element at `index`.
     pub fn insert(&mut self, index: usize, id: NodeId) {
         self.elements.insert(index, id);

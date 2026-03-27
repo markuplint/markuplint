@@ -185,7 +185,9 @@ fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
             passed += 1;
         } else {
             failed += 1;
-            // Don't collect failure details — saves memory for large suites.
+            if failure_samples.len() < 50 {
+                failure_samples.push(format!("  FAIL: {:?}", &test.data[..test.data.len().min(60)]));
+            }
         }
     }
 
