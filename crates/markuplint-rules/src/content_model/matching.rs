@@ -3,11 +3,10 @@
 //! Ports the TypeScript implementation from
 //! `packages/@markuplint/rules/src/permitted-contents/`.
 //!
-//! **Known Limitation:** CSS pseudo-class selectors (`:not()`, `:has()`) are not yet
-//! supported. Category references like `:model(phrasing):not(ruby)` extract the base
-//! category but ignore the selector suffix. This affects validation of elements such as
-//! `<ruby>` with conditional content patterns. Full selector integration via the
-//! `markuplint-selector` crate is tracked in [#3515](https://github.com/markuplint/markuplint/issues/3515).
+//! Supports full CSS pseudo-class selectors (`:not()`, `:has()`, `:is()`) by
+//! expanding `:model(category)` to `:is(tag1, tag2, ...)` and delegating to
+//! `markuplint-selector` via a minimal DOM arena (see [`super::arena_bridge`]).
+//! Simple queries without pseudo-classes use fast tag-name matching as a fast path.
 
 use super::child_node::{ChildNodeInfo, ChildNodeKind};
 use super::result::{Collection, Hints, MatchResult, MissingHint, ResultType, merge_hints};
@@ -482,6 +481,10 @@ fn transparent(child_nodes: &[ChildNodeInfo]) -> MatchResult {
 // ============================================================
 
 /// Test whether a single child node matches a content model query.
+///
+/// `child_node` is `None` when no node is available (e.g., empty child list).
+/// `total_count` is the number of nodes in the parent context, used for
+/// building `MatchResult.unmatched` index lists.
 pub(crate) fn matches_selector(
     query: &str,
     child_node: Option<&ChildNodeInfo>,
@@ -568,7 +571,10 @@ fn match_element_tag(
     }
 }
 
-/// Check if a query requires the full CSS selector engine.
+/// Check if a query requires the full CSS selector engine (`:not()`, `:has()`, `:is()`).
+///
+/// Returns `false` for simple tag names and category references, which use
+/// the fast `matches_model_ref()` path instead.
 pub(crate) fn needs_full_selector(query: &str) -> bool {
     // Only engage the full engine for queries containing pseudo-class modifiers
     // that can't be handled by simple tag matching.
@@ -607,7 +613,8 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
 ///
 /// Handles patterns like `:model(phrasing):not(ruby, :has(ruby))` by
 /// replacing the `:model(phrasing)` part with the concrete tag list while
-/// preserving the rest of the selector.
+/// preserving the rest of the selector. Unknown categories are replaced with
+/// `:is(x-never-match)` to ensure they never match instead of panicking.
 pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
     let mut result = query.to_string();
 

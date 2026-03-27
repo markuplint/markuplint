@@ -518,7 +518,8 @@ CSS syntax string → markuplint-types (parse → AST) + CSS value string (token
 The Rust crates are parallel implementations of TypeScript modules. They currently operate independently and will be exposed via napi-rs to replace the TypeScript implementations incrementally:
 
 - `markuplint-core` / `markuplint-dom` → replaces MLDOM in `@markuplint/ml-core`
-- `markuplint-types` → replaces `@markuplint/types` (CSS validation) and `@markuplint/rules/permitted-contents` (content model matching)
+- `markuplint-types` → replaces `@markuplint/types` (CSS validation, spec data)
+- `markuplint-rules` → replaces `@markuplint/rules/permitted-contents` (content model matching)
 
 The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged during migration. See `crates/README.md` for build instructions and detailed architecture.
 
