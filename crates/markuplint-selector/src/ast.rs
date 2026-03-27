@@ -95,6 +95,8 @@ pub enum PseudoClassSelector {
     Scope,
     /// `:root`
     Root,
+    /// `:closest(selector_list)` — markuplint-specific: matches if any ancestor matches.
+    Closest(SelectorList),
     /// Extended: `:model(category)`
     Model(String),
     /// Extended: `:role(roleName)`

@@ -474,6 +474,7 @@ dependencies = [
 name = "markuplint-selector"
 version = "0.0.0"
 dependencies = [
+ "markuplint-core",
  "markuplint-dom",
  "markuplint-types",
 ]

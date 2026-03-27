@@ -5,6 +5,7 @@ edition = "2024"
 publish = false
 
 [dependencies]
+markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
 markuplint-types = { path = "../markuplint-types" }
 
