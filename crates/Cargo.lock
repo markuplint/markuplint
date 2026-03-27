@@ -471,6 +471,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "markuplint-rules"
+version = "0.0.0"
+dependencies = [
+ "markuplint-core",
+ "markuplint-dom",
+ "markuplint-selector",
+ "markuplint-types",
+ "serde_json",
+]
+
+[[package]]
 name = "markuplint-selector"
 version = "0.0.0"
 dependencies = [
