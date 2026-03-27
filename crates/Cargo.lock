@@ -455,6 +455,7 @@ version = "0.0.0"
 dependencies = [
  "insta",
  "markuplint-core",
+ "markuplint-html-parser",
  "serde_json",
 ]
 
