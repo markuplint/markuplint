@@ -53,7 +53,7 @@ mod tests {
     use markuplint_types::spec;
 
     fn html_spec() -> MLMLSpec {
-        let json = include_str!("../../../../../../packages/@markuplint/html-spec/index.json");
+        let json = include_str!("../../../packages/@markuplint/html-spec/index.json");
         spec::load_spec(json).unwrap()
     }
 
