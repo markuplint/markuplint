@@ -490,7 +490,7 @@ crates/
 ├── markuplint-core/    MLAST serde types (JSON → Rust structs)
 ├── markuplint-dom/     Arena-based DOM (builder + traversal)
 ├── markuplint-napi/    napi-rs bridge → @markuplint/core
-└── markuplint-types/   CSS type validation (syntax parser + value matching)
+└── markuplint-types/   Type validation, spec data, and content model matching
 ```
 
 ### DOM Layer Data Flow
@@ -505,14 +505,14 @@ TS html-parser → MLAST JSON → markuplint-core (serde) → markuplint-dom (ar
 CSS syntax string → markuplint-types (parse → AST) + CSS value string (tokenize → Token[]) → matcher → MatchResult
 ```
 
-`markuplint-types` is the Rust counterpart of `@markuplint/types` for CSS value validation. It includes a `calc()` type checker and `var()` validator that go beyond the capabilities of the current `css-tree`-based TypeScript implementation.
+`markuplint-types` is the Rust counterpart of `@markuplint/types`. It includes CSS value validation (`calc()` type checking, `var()` validation), spec data loading/lookup, ARIA role resolution, and content model pattern matching.
 
 ### Relationship to TypeScript Packages
 
 The Rust crates are parallel implementations of TypeScript modules. They currently operate independently and will be exposed via napi-rs to replace the TypeScript implementations incrementally:
 
 - `markuplint-core` / `markuplint-dom` → replaces MLDOM in `@markuplint/ml-core`
-- `markuplint-types` → replaces CSS validation in `@markuplint/types`
+- `markuplint-types` → replaces `@markuplint/types` (CSS validation) and `@markuplint/rules/permitted-contents` (content model matching)
 
 The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged during migration. See `crates/README.md` for build instructions and detailed architecture.
 
