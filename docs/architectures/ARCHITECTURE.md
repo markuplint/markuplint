@@ -487,10 +487,16 @@ Rust implementations of performance-critical components are available under `cra
 
 ```
 crates/
-├── markuplint-core/    MLAST serde types (JSON → Rust structs)
-├── markuplint-dom/     Arena-based DOM (builder + traversal)
-├── markuplint-napi/    napi-rs bridge → @markuplint/core
-└── markuplint-types/   Type validation, spec data, and content model matching
+├── markuplint-core/      MLAST serde types (JSON → Rust structs)
+├── markuplint-dom/       Arena-based DOM (builder + traversal)
+├── markuplint-napi/      napi-rs bridge → @markuplint/core
+├── markuplint-rules/     Content model matching (depends on types + selector)
+├── markuplint-selector/  CSS selector parser + matcher
+└── markuplint-types/     Type validation and spec data
+
+Dependency graph (→ = depends on):
+  markuplint-rules → markuplint-selector → markuplint-types
+                   → markuplint-dom      → markuplint-core
 ```
 
 ### DOM Layer Data Flow

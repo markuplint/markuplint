@@ -9,8 +9,9 @@ crates/
 ├── markuplint-core/      MLAST serde types (deserialization from JSON)
 ├── markuplint-dom/       Arena-based DOM tree (builder + traversal)
 ├── markuplint-napi/      Node.js bridge via napi-rs v3
-├── markuplint-selector/  CSS selector parser + matcher (self-contained, with :model/:role/:aria)
-└── markuplint-types/     Type validation, spec data, and content model matching
+├── markuplint-rules/     Content model matching with full CSS selector support
+├── markuplint-selector/  CSS selector parser + matcher (with :model/:role/:aria)
+└── markuplint-types/     Type validation and spec data (serde types, lookup)
 ```
 
 ### markuplint-core
@@ -33,6 +34,14 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
 
+### markuplint-rules
+
+Content model validation rules. Bridges `markuplint-types` (spec data) and `markuplint-selector` (CSS selector matching) — exists as a separate crate to avoid a circular dependency between those two.
+
+- **Content model matching engine**: order, choice, quantifiers, backtracking (ported from `@markuplint/rules/permitted-contents/`)
+- **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
+- **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
+
 ### markuplint-types
 
 Rust implementation of `@markuplint/types` and spec-related modules. Contains:
@@ -40,7 +49,7 @@ Rust implementation of `@markuplint/types` and spec-related modules. Contains:
 - **CSS Value Definition Syntax parser** (Phase 1B-1): Parses syntax strings like `<length> | auto` into AST
 - **CSS value matching engine** (Phase 1B-2): Matches CSS values against syntax definitions, with `calc()` type checking and `var()` validation
 - **Spec data types and loader** (Phase 2): Deserializes HTML spec JSON, provides lookup functions, ARIA role resolution
-- **Content model matching engine** (Phase 2-4): Validates child node sequences against HTML content model patterns (order, choice, quantifiers, backtracking)
+- **Content model serde types** (Phase 2-4): `ContentModel`, `PermittedContentPattern`, `matches_model_ref()` — matching engine is in `markuplint-rules`
 
 See `crates/markuplint-types/README.md` for detailed architecture and design decisions.
 

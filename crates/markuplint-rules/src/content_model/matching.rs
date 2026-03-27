@@ -611,9 +611,11 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
 pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
     let mut result = query.to_string();
 
-    // Find and replace all :model(category) occurrences
+    // Find and replace all :model(category) occurrences.
+    // ":model(" is 7 chars; we find the first ")" to extract the category name.
+    // Example: ":model(phrasing):not(ruby)" → category="phrasing", rest=":not(ruby)"
     while let Some(start) = result.find(":model(") {
-        let after = &result[start + 7..];
+        let after = &result[start + 7..]; // skip ":model("
         let Some(end) = after.find(')') else { break };
         let category = &after[..end];
         let category_key = format!("#{category}");
@@ -622,19 +624,26 @@ pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
             if let Some(tags) = markuplint_types::spec::lookup::get_content_model_tags(spec, &category_key) {
                 let tag_list: Vec<&str> = tags
                     .iter()
-                    .filter(|t| !t.starts_with('#')) // skip #text, #custom
-                    .map(|t| t.split('[').next().unwrap_or(t)) // strip [attr] suffixes
+                    // Category lists include "#text" and "#custom" pseudo-entries;
+                    // these are handled separately by opt_condition's has_text/has_custom flags.
+                    .filter(|t| !t.starts_with('#'))
+                    // Category entries may include attribute selectors (e.g., "meta[itemprop]");
+                    // strip these since :is() expansion only needs tag names.
+                    .map(|t| t.split('[').next().unwrap_or(t))
                     .collect();
                 if tag_list.is_empty() {
+                    // Category resolved but contained only #text/#custom — no concrete tags.
+                    // Use a tag name that can never match any real element.
                     ":is(x-never-match)".to_string()
                 } else {
                     format!(":is({})", tag_list.join(","))
                 }
             } else {
+                // Unknown category — ensure it never matches.
                 ":is(x-never-match)".to_string()
             };
 
-        // Replace :model(category) with the expanded :is(...)
+        // Replace ":model(category)" (7 + category.len() + 1 = start+8+end chars) with :is(...)
         let before = &result[..start];
         let after_close = &result[start + 8 + end..];
         result = format!("{before}{replacement}{after_close}");
