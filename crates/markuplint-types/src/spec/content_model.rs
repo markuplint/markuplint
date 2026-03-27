@@ -150,14 +150,15 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
     };
 
     if let Some(cat) = category
-        && let Some(tags) = lookup::get_content_model_tags(spec, &cat) {
-            return tags.iter().any(|t| {
-                t.eq_ignore_ascii_case(child_name)
-                    || t.split('[')
-                        .next()
-                        .is_some_and(|prefix| prefix.eq_ignore_ascii_case(child_name))
-            });
-        }
+        && let Some(tags) = lookup::get_content_model_tags(spec, &cat)
+    {
+        return tags.iter().any(|t| {
+            t.eq_ignore_ascii_case(child_name)
+                || t.split('[')
+                    .next()
+                    .is_some_and(|prefix| prefix.eq_ignore_ascii_case(child_name))
+        });
+    }
 
     false
 }
