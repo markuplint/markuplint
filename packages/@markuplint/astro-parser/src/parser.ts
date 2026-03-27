@@ -203,7 +203,7 @@ class AstroParser extends Parser<Node> {
 			throw new ParserError('Not found start tag', startTagNode ?? token);
 		}
 
-		return super.visitElement(startTagNode, childNodes, {
+		return super.visitElement({ ...startTagNode, parentNode: startTagNode.parentNode ?? null }, childNodes, {
 			// https://docs.astro.build/en/basics/astro-syntax/#fragments
 			namelessFragment: true,
 			createEndTagToken: () => {
@@ -217,7 +217,7 @@ class AstroParser extends Parser<Node> {
 					return null;
 				}
 
-				return endTagNode ?? null;
+				return { ...endTagNode, parentNode: endTagNode.parentNode ?? null };
 			},
 		});
 	}

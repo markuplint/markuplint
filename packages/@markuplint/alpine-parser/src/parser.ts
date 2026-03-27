@@ -37,7 +37,7 @@ class AlpineParser extends HtmlParser {
 				return node;
 			}
 
-			const attrs = node.type === 'starttag' ? node.attributes : node.pairNode.attributes;
+			const attrs = node.type === 'starttag' ? node.attributes : (node.pairNode?.attributes ?? []);
 
 			if (!attrs.some(attr => attr.nodeName.toLowerCase() === 'x-for')) {
 				return node;

@@ -216,7 +216,7 @@ class MDXParser extends MarkdownAwareParser {
 				});
 			}
 
-			return super.visitElement(startTag, [], {
+			return super.visitElement({ ...startTag, parentNode: startTag.parentNode ?? null }, [], {
 				namelessFragment: true,
 				createEndTagToken: () => null,
 			});
@@ -251,23 +251,27 @@ class MDXParser extends MarkdownAwareParser {
 			});
 		}
 
-		return super.visitElement(startTag, [...children] as MdastNode[], {
-			namelessFragment: true,
-			createEndTagToken: () => {
-				if (lastChildEndOffset >= elementEndOffset) {
-					return null;
-				}
-				const endTagToken = this.sliceFragment(lastChildEndOffset, elementEndOffset);
-				if (!endTagToken.raw.trim()) {
-					return null;
-				}
-				return {
-					...endTagToken,
-					depth,
-					parentNode,
-				};
+		return super.visitElement(
+			{ ...startTag, parentNode: startTag.parentNode ?? null },
+			[...children] as MdastNode[],
+			{
+				namelessFragment: true,
+				createEndTagToken: () => {
+					if (lastChildEndOffset >= elementEndOffset) {
+						return null;
+					}
+					const endTagToken = this.sliceFragment(lastChildEndOffset, elementEndOffset);
+					if (!endTagToken.raw.trim()) {
+						return null;
+					}
+					return {
+						...endTagToken,
+						depth,
+						parentNode,
+					};
+				},
 			},
-		});
+		);
 	}
 }
 

@@ -2,6 +2,12 @@
 description: Git manipulation rules
 ---
 
+# Git command execution rules
+
+- **ALWAYS `cd` to the worktree root first, then run git commands from there** — do NOT run git commands from the main working directory when operating on a worktree
+- **NEVER chain commands with `&&`** — each command must be executed separately so the AI agent can request user permission per command without blocking the workflow
+- **NEVER use `git -C <path>`** — same reason; permission prompts become disruptive when bundled with path options
+
 # Worktree Guard (MUST RUN FIRST)
 
 **Before doing ANYTHING else, check that you are in a worktree (NOT the main working directory):**
@@ -10,10 +16,11 @@ description: Git manipulation rules
 git rev-parse --show-toplevel
 ```
 
-- If the result is the main repository path (e.g., ends with `/markuplint`), **STOP immediately**
+- Compare the result against the **main repository root** (the directory containing `CLAUDE.md`, `.claude/`, etc.)
+- If they match, you are in the main working directory — **STOP immediately**
 - Warn the user: "You are in the main working directory. Commits must be made in a worktree."
 - Do NOT proceed with any git operations — use `git wt <branch-name> dev` to create a worktree first
-- Only continue if you are confirmed to be inside a worktree
+- If the result is a different path (e.g., inside `.worktree/`), you are in a worktree — proceed
 
 # Commit creation
 

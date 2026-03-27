@@ -35,5 +35,5 @@ function getParentNamespace(parentNode: MLASTParentNode | null): NamespaceURI {
 					? 'http://www.w3.org/1998/Math/MathML'
 					: 'http://www.w3.org/1999/xhtml';
 	}
-	return getParentNamespace(parentNode.parentNode);
+	return getParentNamespace(parentNode.parentNode ?? null);
 }

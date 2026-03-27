@@ -12,8 +12,10 @@ src/
 ├── parser.ts                   — AstroParser class extending Parser<Node>
 ├── astro-parser.ts             — astro-eslint-parser wrapper and type re-exports
 ├── detect-block-behavior.ts    — Detects .map()/.filter() for block behavior
+├── component-scanner.ts        — Component scanner for pretenders auto scan (subpath export)
 ├── parser.spec.ts              — AstroParser integration tests
-└── astro-parser.spec.ts        — astro-eslint-parser wrapper tests
+├── astro-parser.spec.ts        — astro-eslint-parser wrapper tests
+└── component-scanner.spec.ts   — Tests for component scanner
 ```
 
 ## Architecture Diagram
@@ -31,10 +33,12 @@ flowchart TD
         astroParser["AstroParser\nextends Parser‹Node›"]
         astroParseFn["astroParse()\nastro-eslint-parser wrapper"]
         detectBlock["detectBlockBehavior()\n.map()/.filter() detection"]
+        compScanner["componentScanner\n(subpath: ./component-scanner)"]
     end
 
     subgraph downstream ["Downstream"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(auto scan)"]
     end
 
     mlAst -->|"AST types"| astroParser
@@ -44,6 +48,8 @@ flowchart TD
     astroParseFn -->|"RootNode.children"| astroParser
     detectBlock -->|"blockBehavior"| astroParser
     astroParser -->|"produces MLASTDocument"| mlCore
+    astroParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## AstroParser Class
@@ -185,11 +191,12 @@ astro-eslint-parser → @astrojs/compiler → Astro syntax support
 
 ## Key Source Files
 
-| File              | Purpose                                                                                            |
-| ----------------- | -------------------------------------------------------------------------------------------------- |
-| `parser.ts`       | `AstroParser` class — all override methods and namespace scoping                                   |
-| `astro-parser.ts` | `astroParse()` wrapper — delegates to `astro-eslint-parser`, converts diagnostics to `ParserError` |
-| `index.ts`        | Public API — re-exports the singleton `parser` instance                                            |
+| File                   | Purpose                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `parser.ts`            | `AstroParser` class — all override methods and namespace scoping                                   |
+| `astro-parser.ts`      | `astroParse()` wrapper — delegates to `astro-eslint-parser`, converts diagnostics to `ParserError` |
+| `index.ts`             | Public API — re-exports the singleton `parser` instance                                            |
+| `component-scanner.ts` | Component scanner for `@markuplint/pretenders` auto scan (subpath export `./component-scanner`)    |
 
 ## Documentation Map
 

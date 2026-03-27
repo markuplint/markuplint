@@ -292,6 +292,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			if (node.nodeName === '#text' && /^<script[\s>]/i.test(node.raw)) {
 				return this.visitPsBlock({
 					...node,
+					parentNode: node.parentNode ?? null,
 					nodeName: 'Script',
 					isFragment: false,
 				});

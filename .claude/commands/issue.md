@@ -85,11 +85,11 @@ Use the repository's existing Issue templates (`.github/ISSUE_TEMPLATE/`) as the
    - The Issue number is always available at this point (either from the URL or from Step 1b)
 2. Check for existing worktrees: `git wt`
    - If a worktree for this branch already exists, use it
-3. Worktree path: `../markuplint-wt/<branch-name>` (automatically determined by `wt.basedir`)
+3. Worktree path: `.worktree/<branch-name>` (automatically determined by `wt.basedir`)
 4. Execute:
    ```bash
    git wt <branch-name> dev
-   cd ../markuplint-wt/<branch-name>
+   cd .worktree/<branch-name>
    ```
    `wt.hook` により `yarn install` → `yarn build` が自動実行される
 5. **All subsequent work (analysis, edits, commits) MUST happen in the worktree**

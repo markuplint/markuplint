@@ -17,7 +17,7 @@ export interface ScanOptions {
  * runs both scanners in parallel, and merges + sorts the results.
  *
  * - `.js`, `.jsx`, `.ts`, `.tsx` → {@link jsxScanner}
- * - `.vue`, `.svelte`, `.astro` → {@link templateScanner}
+ * - `.vue`, `.svelte`, `.astro` → {@link templateScanner} (delegates to parser component-scanners)
  *
  * @param files - Absolute file paths to scan
  * @param options - Optional scan configuration

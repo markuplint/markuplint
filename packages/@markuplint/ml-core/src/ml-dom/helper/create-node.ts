@@ -43,7 +43,7 @@ export function createNode<N extends MLASTNode, T extends RuleConfigValue, O ext
 							attributes: [],
 							childNodes: [],
 							blockBehavior: null,
-							pairNode: null,
+							pairNodeUuid: null,
 							tagOpenChar: '',
 							tagCloseChar: '',
 							isGhost: false,

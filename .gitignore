@@ -90,3 +90,6 @@ packages/@markuplint/rules/src/__*
 # Yarn v4 (node_modules mode)
 .yarn/install-state.gz
 .yarn/build-state.yml
+
+# Worktrees
+.worktree/

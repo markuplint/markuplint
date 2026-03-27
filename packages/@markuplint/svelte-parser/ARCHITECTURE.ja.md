@@ -8,15 +8,17 @@
 
 ```
 src/
-├── index.ts                  — parser.ts から parser を再エクスポート
-├── parser.ts                 — Parser<SvelteNode> を拡張する SvelteParser クラス
-├── parse-block.ts            — ユーティリティ: ブロック構文から open/close トークンを抽出
+├── index.ts                    — parser.ts から parser を再エクスポート
+├── parser.ts                   — Parser<SvelteNode> を拡張する SvelteParser クラス
+├── parse-block.ts              — ユーティリティ: ブロック構文から open/close トークンを抽出
+├── component-scanner.ts        — pretenders 自動スキャン用コンポーネントスキャナー（サブパスエクスポート）
 ├── svelte-parser/
-│   ├── index.ts              — svelteParse(): svelte/compiler のラッパー、型エクスポート
-│   └── index.spec.ts         — svelte/compiler 統合テスト
-├── sveltekit-parser.ts       — HtmlParser を拡張する SvelteKitTemplateParser
-├── sveltekit-parser.spec.ts  — SvelteKit テンプレートパースのテスト
-└── index.spec.ts             — メインの SvelteParser 統合テスト
+│   ├── index.ts                — svelteParse(): svelte/compiler のラッパー、型エクスポート
+│   └── index.spec.ts           — svelte/compiler 統合テスト
+├── sveltekit-parser.ts         — HtmlParser を拡張する SvelteKitTemplateParser
+├── sveltekit-parser.spec.ts    — SvelteKit テンプレートパースのテスト
+├── index.spec.ts               — メインの SvelteParser 統合テスト
+└── component-scanner.spec.ts   — コンポーネントスキャナーのテスト
 ```
 
 ## アーキテクチャ図
@@ -35,10 +37,12 @@ flowchart TD
         svelteParse["svelteParse()\nsvelte/compiler ラッパー"]
         parseBlock["parseBlock()\nブロックトークン抽出"]
         sveltekitParser["SvelteKitTemplateParser\nextends HtmlParser"]
+        compScanner["componentScanner\n(サブパス: ./component-scanner)"]
     end
 
     subgraph downstream ["下流"]
         mlCore["@markuplint/ml-core\n(MLASTDocument → MLDOM)"]
+        pretenders["@markuplint/pretenders\n(自動スキャン)"]
     end
 
     mlAst -->|"AST 型"| svelteParser
@@ -52,6 +56,8 @@ flowchart TD
 
     svelteParser -->|"MLASTDocument を生成"| mlCore
     sveltekitParser -->|"MLASTDocument を生成"| mlCore
+    svelteParser -->|"parse()"| compScanner
+    compScanner -->|"ComponentScanResult"| pretenders
 ```
 
 ## SvelteParser クラス
@@ -418,13 +424,14 @@ class SvelteKitTemplateParser extends HtmlParser {
 
 ## 主要ソースファイル
 
-| ファイル                     | 用途                                                                                     |
-| ---------------------------- | ---------------------------------------------------------------------------------------- |
-| `src/parser.ts`              | `SvelteParser` クラス — 全オーバーライドメソッドと制御フローロジックを含むメインパーサー |
-| `src/parse-block.ts`         | `parseBlock()` — ブロックから open/close トークンを抽出する共有ユーティリティ            |
-| `src/svelte-parser/index.ts` | `svelteParse()` — `svelte/compiler` ラッパーと Svelte AST 型エクスポート                 |
-| `src/sveltekit-parser.ts`    | `SvelteKitTemplateParser` — SvelteKit `app.html` 用の HtmlParser 拡張                    |
-| `src/index.ts`               | パッケージエントリポイント — `parser` を再エクスポート                                   |
+| ファイル                     | 用途                                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `src/parser.ts`              | `SvelteParser` クラス — 全オーバーライドメソッドと制御フローロジックを含むメインパーサー                      |
+| `src/parse-block.ts`         | `parseBlock()` — ブロックから open/close トークンを抽出する共有ユーティリティ                                 |
+| `src/svelte-parser/index.ts` | `svelteParse()` — `svelte/compiler` ラッパーと Svelte AST 型エクスポート                                      |
+| `src/sveltekit-parser.ts`    | `SvelteKitTemplateParser` — SvelteKit `app.html` 用の HtmlParser 拡張                                         |
+| `src/index.ts`               | パッケージエントリポイント — `parser` を再エクスポート                                                        |
+| `src/component-scanner.ts`   | `@markuplint/pretenders` 自動スキャン用コンポーネントスキャナー（サブパスエクスポート `./component-scanner`） |
 
 ## 外部依存
 

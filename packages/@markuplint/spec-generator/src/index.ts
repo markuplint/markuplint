@@ -6,12 +6,12 @@
  * and content model definitions into a single output file consumed by the markuplint linter.
  */
 
-import type { ExtendedSpec } from '@markuplint/ml-spec';
+import type { ExtendedElementSpec, ExtendedSpec } from '@markuplint/ml-spec';
 
 import { writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.js';
-import { getReferences } from './fetch.js';
+import { getFailedUrls, getReferences } from './fetch.js';
 import { getGlobalAttrs } from './global-attrs.js';
 import { getElements } from './html-elements.js';
 import { readJson } from './read-json.js';
@@ -46,6 +46,18 @@ export async function main({ outputFilePath, htmlFilePattern, commonAttrsFilePat
 	]);
 
 	const cites = getReferences();
+	const failedUrls = getFailedUrls();
+
+	if (failedUrls.length > 0) {
+		// eslint-disable-next-line no-console
+		console.error(`\n❌ ${failedUrls.length} URL(s) failed to fetch:`);
+		for (const url of failedUrls) {
+			// eslint-disable-next-line no-console
+			console.error(`   - ${url}`);
+		}
+	}
+
+	validateSpecs(specs);
 
 	const json: ExtendedSpec = {
 		cites,
@@ -63,4 +75,24 @@ export async function main({ outputFilePath, htmlFilePattern, commonAttrsFilePat
 
 	// eslint-disable-next-line no-console
 	console.log(`🎁 Output: ${outputFilePath}`);
+}
+
+/**
+ * Validates the generated specs to detect data loss from failed scraping.
+ * Throws an error if the ratio of empty descriptions exceeds the threshold,
+ * preventing broken data from being written.
+ */
+function validateSpecs(specs: readonly ExtendedElementSpec[]) {
+	const threshold = 0.5;
+	const htmlSpecs = specs.filter(s => !s.name.includes(':'));
+	const emptyDescriptions = htmlSpecs.filter(s => !s.description);
+	const emptyRatio = emptyDescriptions.length / htmlSpecs.length;
+
+	if (emptyRatio > threshold) {
+		throw new Error(
+			`Spec validation failed: ${emptyDescriptions.length}/${htmlSpecs.length} HTML elements ` +
+				`(${Math.round(emptyRatio * 100)}%) have empty descriptions. ` +
+				'This likely indicates MDN fetch failures. Aborting to prevent data loss.',
+		);
+	}
 }

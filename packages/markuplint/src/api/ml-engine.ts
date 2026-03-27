@@ -14,6 +14,7 @@ import {
 } from '@markuplint/file-resolver';
 import { mergeConfig } from '@markuplint/ml-config';
 import { MLCore, convertRuleset } from '@markuplint/ml-core';
+import { isFatalError } from '@markuplint/shared';
 import { FSWatcher } from 'chokidar';
 import { Emitter } from 'strict-event-emitter';
 
@@ -142,6 +143,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const verifyResult = await core.verify({ fix: this.#options?.fix ?? false }).catch(error => {
+			if (isFatalError(error)) {
+				throw error;
+			}
 			if (error instanceof Error) {
 				return error;
 			}

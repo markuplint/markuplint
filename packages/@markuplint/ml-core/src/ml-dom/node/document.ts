@@ -35,7 +35,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
+import { UnexpectedCallError } from '@markuplint/shared';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -85,6 +85,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * The file path of the source document, if available.
 	 */
+	readonly #astNodeMap: ReadonlyMap<string, MLASTNodeTreeItem>;
+
 	readonly #filename?: string;
 
 	/**
@@ -188,6 +190,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
 		this.ruleCommonSettings = ruleCommonSettings;
 
+		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)
+		this.#astNodeMap = new Map(ast.nodeList.map(n => [n.uuid, n]));
+
 		// console.log(ast.nodeList.map((n, i) => `${i}: ${n.uuid} "${n.raw.trim()}"(${n.type})`));
 		this.nodeList = Object.freeze(
 			ast.nodeList
@@ -215,6 +220,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Looks up an AST node by its UUID from the parsed document's node list.
+	 *
+	 * @param uuid - The UUID of the AST node to find
+	 * @returns The AST node, or `undefined` if not found
+	 */
+	getAstNodeByUuid(uuid: string): MLASTNodeTreeItem | undefined {
+		return this.#astNodeMap.get(uuid);
+	}
+
+	/**
 	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
 	 *
 	 * @unsupported
@@ -232,6 +247,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get activeElement(): Element | null {
 		throw new UnexpectedCallError('Not supported "activeElement" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get activeViewTransition(): ViewTransition | null {
+		throw new UnexpectedCallError('Not supported "activeViewTransition" property');
 	}
 
 	/**
@@ -368,6 +394,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 */
 	get currentScript(): HTMLOrSVGScriptElement | null {
 		throw new UnexpectedCallError('Not supported "currentScript" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get customElementRegistry(): CustomElementRegistry | null {
+		throw new UnexpectedCallError('Not supported "customElementRegistry" property');
 	}
 
 	/**
@@ -940,6 +977,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		  ) => any)
 		| null {
 		throw new UnexpectedCallError('Not supported "onclose" property');
+	}
+
+	/**
+	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 *
+	 * @deprecated
+	 * @unsupported
+	 * @implements DOM API: `Document`
+	 */
+	get oncommand():
+		| ((
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				this: GlobalEventHandlers,
+				// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+				ev: Event,
+		  ) => any)
+		| null {
+		throw new UnexpectedCallError('Not supported "oncommand" property');
 	}
 
 	/**

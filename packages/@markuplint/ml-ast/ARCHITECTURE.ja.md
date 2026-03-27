@@ -62,7 +62,7 @@ classDiagram
         <<interface>>
         +type: MLASTNodeType
         +nodeName: string
-        +parentNode: MLASTParentNode | null
+        +parentNodeUuid: string | null
     }
 
     class MLASTDoctype {
@@ -83,7 +83,7 @@ classDiagram
         +attributes: MLASTAttr[]
         +childNodes: MLASTChildNode[]
         +blockBehavior: MLASTBlockBehavior | null
-        +pairNode: MLASTElementCloseTag | null
+        +pairNodeUuid: string | null
         +isGhost: boolean
         +isFragment: boolean
     }
@@ -92,8 +92,7 @@ classDiagram
         <<interface>>
         +type: "endtag"
         +depth: number
-        +parentNode: null
-        +pairNode: MLASTElement
+        +pairNodeUuid: string | null
     }
 
     class MLASTComment {
@@ -216,7 +215,7 @@ flowchart TD
 **特殊なノード：**
 
 - **`MLBlock`**（`nodeType: 101`）は DOM Standard に相当するものがない markuplint 独自の拡張です。透過的なコンテナとして機能し、子ノードはツリー走査時に親に属するものとして扱われます。
-- **`MLElementCloseTag`** は `createNode()` で生成されません。代わりに `MLElement` が内部で `pairNode` 参照から生成します。ペアとなる要素の付属物としてのみ存在し、DOM ツリー走査の対象ではありません。
+- **`MLElementCloseTag`** は `createNode()` で生成されません。代わりに `MLElement` が `pairNodeUuid` を解決して閉じタグの AST ノードを検索し、`MLElementCloseTag` を生成します。ペアとなる要素の付属物としてのみ存在し、DOM ツリー走査の対象ではありません。
 - **`MLASTInvalid`** はリカバリノードです。MLDOM にそのまま保持されることはなく、`kind` フィールドに応じて `MLElement`（タグ名 `x-invalid`）または `MLText` に変換されます。
 
 詳細は[ノードリファレンス -- AST から MLDOM へのマッピング](docs/node-reference.ja.md#ast-から-mldom-へのマッピング)を参照してください。
