@@ -79,21 +79,12 @@ impl<'a> TreeBuilder<'a> {
     }
 
     fn setup_fragment_parsing(&mut self) {
-        // Create a virtual <body> context element for fragment parsing.
-        let body_id = self.arena.create_element(
-            "body".to_owned(),
-            Namespace::Html,
-            Vec::new(),
-            false,
-            Span::empty(Position {
-                offset: 0,
-                line: 1,
-                col: 1,
-            }),
-            true,
-        );
-        self.arena.append_child(self.arena.document_id(), body_id);
-        self.open_elements.push(body_id);
+        // Fragment parsing per WHATWG §13.2.6.4 (parseFragment).
+        // parse5 uses a context element (default: body) but does NOT
+        // insert it into the tree — only its children appear in output.
+        // We push the document root onto the open elements stack so that
+        // nodes are appended directly under the document.
+        self.open_elements.push(self.arena.document_id());
         self.mode = InsertionMode::InBody;
     }
 
@@ -757,8 +748,14 @@ impl<'a> TreeBuilder<'a> {
                 self.process_in_head(token);
             }
             "body" => {
-                // Parse error. Ignore if only one body, else merge attributes.
-                self.frameset_ok = false;
+                if self.is_fragment && !self.has_element_in_scope("body") {
+                    // Fragment: explicit <body> tag — insert as normal element.
+                    self.insert_html_element(tag_name, attributes, span);
+                    self.frameset_ok = false;
+                } else {
+                    // Document mode: parse error. Ignore duplicate body.
+                    self.frameset_ok = false;
+                }
             }
             "frameset" | "caption" | "col" | "colgroup" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" => {
                 // Parse error. Ignore.
@@ -1487,12 +1484,8 @@ mod tests {
     fn simple_element() {
         let arena = parse_tree("<div>hello</div>");
         let doc = arena.get(arena.document_id());
-        // Fragment parsing: body → div → "hello"
-        let body_id = doc.children[0];
-        let body = arena.get(body_id);
-        assert_eq!(body.tag_name(), Some("body"));
-
-        let div_id = body.children[0];
+        // Fragment: doc → div → "hello" (no ghost body)
+        let div_id = doc.children[0];
         let div = arena.get(div_id);
         assert_eq!(div.tag_name(), Some("div"));
         assert!(!div.is_implicit);
@@ -1537,17 +1530,17 @@ mod tests {
     fn void_elements() {
         let arena = parse_tree("<br><hr><img>");
         let doc = arena.get(arena.document_id());
-        let body_id = doc.children[0]; // fragment: body
-        let children = child_tag_names(&arena, body_id);
+        // Fragment: directly under document root
+        let children = child_tag_names(&arena, arena.document_id());
         assert_eq!(children, vec!["br", "hr", "img"]);
+        let _ = doc;
     }
 
     #[test]
     fn nested_elements() {
         let arena = parse_tree("<div><span><em>text</em></span></div>");
         let doc = arena.get(arena.document_id());
-        let body_id = doc.children[0];
-        let div_id = arena.get(body_id).children[0];
+        let div_id = doc.children[0];
         let span_id = arena.get(div_id).children[0];
         let em_id = arena.get(span_id).children[0];
         assert_eq!(arena.get(em_id).tag_name(), Some("em"));
@@ -1557,18 +1550,18 @@ mod tests {
     fn heading_closes_previous() {
         let arena = parse_tree("<h1>one<h2>two</h2>");
         let doc = arena.get(arena.document_id());
-        let body_id = doc.children[0];
-        let children = child_tag_names(&arena, body_id);
-        // h1 should be closed by h2
-        assert_eq!(children, vec!["h1", "h2"]);
+        let children = child_tag_names(&arena, doc.children[0].min(arena.document_id()));
+        // Fragment: h1 and h2 directly under document
+        let top_children = child_tag_names(&arena, arena.document_id());
+        assert_eq!(top_children, vec!["h1", "h2"]);
+        let _ = children;
     }
 
     #[test]
     fn comment_node() {
         let arena = parse_tree("<!-- hello --><p>text</p>");
         let doc = arena.get(arena.document_id());
-        let body_id = doc.children[0];
-        let first_child = arena.get(body_id).children[0];
+        let first_child = doc.children[0];
         assert!(matches!(
             arena.get(first_child).kind,
             crate::tree::node::NodeKind::Comment { .. }

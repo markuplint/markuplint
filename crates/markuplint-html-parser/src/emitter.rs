@@ -186,22 +186,23 @@ impl<'a> Emitter<'a> {
 
                 // Add end tag if present.
                 if let Some(end_span) = node.end_tag_span
-                    && let Some(ref pair_id) = pair_uuid {
-                        let end_tag = MLASTElementCloseTag {
-                            uuid: pair_id.clone(),
-                            raw: self.slice_span(end_span),
-                            offset: end_span.start.offset,
-                            line: end_span.start.line,
-                            col: end_span.start.col,
-                            node_name: tag_name.clone(),
-                            depth,
-                            pair_node_uuid: Some(uuid),
-                            tag_open_char: "</".to_owned(),
-                            tag_close_char: ">".to_owned(),
-                            parent_node_uuid: parent_uuid.map(str::to_owned),
-                        };
-                        flat_list.push(MLASTNode::EndTag(end_tag));
-                    }
+                    && let Some(ref pair_id) = pair_uuid
+                {
+                    let end_tag = MLASTElementCloseTag {
+                        uuid: pair_id.clone(),
+                        raw: self.slice_span(end_span),
+                        offset: end_span.start.offset,
+                        line: end_span.start.line,
+                        col: end_span.start.col,
+                        node_name: tag_name.clone(),
+                        depth,
+                        pair_node_uuid: Some(uuid),
+                        tag_open_char: "</".to_owned(),
+                        tag_close_char: ">".to_owned(),
+                        parent_node_uuid: parent_uuid.map(str::to_owned),
+                    };
+                    flat_list.push(MLASTNode::EndTag(end_tag));
+                }
             }
             NodeKind::Text { .. } => {
                 let uuid = self.next_id();
@@ -295,23 +296,24 @@ impl<'a> Emitter<'a> {
 
                 // End tag.
                 if let Some(end_span) = node.end_tag_span
-                    && let Some(ref pair_id) = pair_uuid {
-                        let end_tag = MLASTElementCloseTag {
-                            uuid: pair_id.clone(),
-                            raw: self.slice_span(end_span),
-                            offset: end_span.start.offset,
-                            line: end_span.start.line,
-                            col: end_span.start.col,
-                            node_name: tag_name.clone(),
-                            depth,
-                            pair_node_uuid: Some(uuid),
-                            tag_open_char: "</".to_owned(),
-                            tag_close_char: ">".to_owned(),
-                            parent_node_uuid: parent_uuid.map(str::to_owned),
-                        };
-                        child_nodes.push(MLASTChildNode::EndTag(end_tag.clone()));
-                        flat_list.push(MLASTNode::EndTag(end_tag));
-                    }
+                    && let Some(ref pair_id) = pair_uuid
+                {
+                    let end_tag = MLASTElementCloseTag {
+                        uuid: pair_id.clone(),
+                        raw: self.slice_span(end_span),
+                        offset: end_span.start.offset,
+                        line: end_span.start.line,
+                        col: end_span.start.col,
+                        node_name: tag_name.clone(),
+                        depth,
+                        pair_node_uuid: Some(uuid),
+                        tag_open_char: "</".to_owned(),
+                        tag_close_char: ">".to_owned(),
+                        parent_node_uuid: parent_uuid.map(str::to_owned),
+                    };
+                    child_nodes.push(MLASTChildNode::EndTag(end_tag.clone()));
+                    flat_list.push(MLASTNode::EndTag(end_tag));
+                }
             }
             NodeKind::Text { .. } => {
                 let uuid = self.next_id();

@@ -175,6 +175,92 @@ impl Arena {
     pub fn iter(&self) -> impl Iterator<Item = (NodeId, &TreeNode)> {
         self.nodes.iter().enumerate()
     }
+
+    /// Generate debug maps matching the TS `nodeListToDebugMaps` format.
+    ///
+    /// Format: `[startLine:startCol]>[endLine:endCol](startOffset,endOffset)nodeName: raw`
+    ///
+    /// Special characters in `raw` are escaped:
+    /// - `\n` → `⏎`
+    /// - `\t` → `→`
+    /// - ` ` (space in certain contexts) → `␣`
+    ///
+    /// Ghost nodes are suffixed with `(👻)`.
+    #[must_use]
+    pub fn node_list_to_debug_maps(&self, source: &str) -> Vec<String> {
+        let mut result = Vec::new();
+        let doc = &self.nodes[0]; // document root
+        self.collect_debug_maps(source, &doc.children, &mut result);
+        result
+    }
+
+    fn collect_debug_maps(&self, source: &str, children: &[NodeId], result: &mut Vec<String>) {
+        for &child_id in children {
+            let node = &self.nodes[child_id];
+            let start = node.span.start;
+            let end = node.span.end;
+
+            let node_name = match &node.kind {
+                NodeKind::Document => continue,
+                NodeKind::Doctype { .. } => "#doctype".to_owned(),
+                NodeKind::Element { tag_name, .. } => tag_name.clone(),
+                NodeKind::Text { .. } => "#text".to_owned(),
+                NodeKind::Comment { .. } => "#comment".to_owned(),
+            };
+
+            let ghost_suffix = if node.is_implicit { "(👻)" } else { "" };
+
+            let raw = slice_source(source, start.offset, end.offset);
+            let escaped_raw = escape_debug_raw(&raw);
+
+            result.push(format!(
+                "[{}:{}]>[{}:{}]({},{}){}{}: {}",
+                start.line,
+                start.col,
+                end.line,
+                end.col,
+                start.offset,
+                end.offset,
+                node_name,
+                ghost_suffix,
+                escaped_raw,
+            ));
+
+            // Recurse into element/comment children.
+            if !node.children.is_empty() {
+                self.collect_debug_maps(source, &node.children, result);
+            }
+
+            // Emit end tag if present.
+            if let Some(end_span) = node.end_tag_span
+                && let NodeKind::Element { tag_name, .. } = &node.kind
+            {
+                let end_raw = slice_source(source, end_span.start.offset, end_span.end.offset);
+                let escaped = escape_debug_raw(&end_raw);
+                result.push(format!(
+                    "[{}:{}]>[{}:{}]({},{}){}: {}",
+                    end_span.start.line,
+                    end_span.start.col,
+                    end_span.end.line,
+                    end_span.end.col,
+                    end_span.start.offset,
+                    end_span.end.offset,
+                    tag_name,
+                    escaped,
+                ));
+            }
+        }
+    }
+}
+
+fn slice_source(source: &str, start: usize, end: usize) -> String {
+    let end = end.min(source.len());
+    let start = start.min(end);
+    source[start..end].to_owned()
+}
+
+fn escape_debug_raw(raw: &str) -> String {
+    raw.replace('\n', "⏎").replace('\t', "→").replace(' ', "␣")
 }
 
 impl Default for Arena {
