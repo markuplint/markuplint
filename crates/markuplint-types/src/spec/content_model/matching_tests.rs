@@ -537,6 +537,224 @@ mod tests {
     }
 
     // ================================================================
+    // matches-selector.spec.ts
+    // ================================================================
+    mod matches_selector {
+        use super::*;
+        use crate::spec::content_model::matching::matches_selector as matches_selector_fn;
+
+        fn run(query: &str, tag: &str) -> MatchResult {
+            let spec = html_spec();
+            let child_nodes = nodes(&[tag]);
+            matches_selector_fn(query, child_nodes.first(), child_nodes.len(), &spec)
+        }
+
+        fn run_empty(query: &str) -> MatchResult {
+            let spec = html_spec();
+            matches_selector_fn(query, None, 0, &spec)
+        }
+
+        #[test]
+        fn tag_a() {
+            assert_eq!(run("a", "a").result_type, ResultType::Matched);
+            assert_eq!(run("a", "b").result_type, ResultType::UnmatchedSelectors);
+            assert_eq!(run("a", "c").result_type, ResultType::UnmatchedSelectors);
+            assert_eq!(run("a", "#text").result_type, ResultType::UnexpectedExtraNode);
+            assert_eq!(run_empty("a").result_type, ResultType::MissingNode);
+        }
+
+        #[test]
+        fn flow_category() {
+            assert_eq!(run("#flow", "a").result_type, ResultType::Matched);
+            assert_eq!(run("#flow", "b").result_type, ResultType::Matched);
+            assert_eq!(run("#flow", "c").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run("#flow", "#text").result_type, ResultType::Matched);
+            assert_eq!(run_empty("#flow").result_type, ResultType::MatchedZero);
+        }
+
+        #[test]
+        fn model_flow() {
+            assert_eq!(run(":model(flow)", "a").result_type, ResultType::Matched);
+            assert_eq!(run(":model(flow)", "b").result_type, ResultType::Matched);
+            assert_eq!(run(":model(flow)", "c").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run(":model(flow)", "#text").result_type, ResultType::Matched);
+            assert_eq!(run_empty(":model(flow)").result_type, ResultType::MatchedZero);
+        }
+
+        #[test]
+        fn text_selector() {
+            assert_eq!(run("#text", "a").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run("#text", "b").result_type, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run("#text", "#text").result_type, ResultType::Matched);
+            assert_eq!(run_empty("#text").result_type, ResultType::MatchedZero);
+        }
+
+        #[test]
+        fn whitespace_text_node() {
+            let spec = html_spec();
+            let ws = ChildNodeInfo::text("   ");
+            let r = matches_selector_fn("a", Some(&ws), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert!(r.zero_match); // whitespace is zero-width match
+
+            let text = ChildNodeInfo::text("hello");
+            let r2 = matches_selector_fn("a", Some(&text), 1, &spec);
+            assert_eq!(r2.result_type, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn preprocessor_block() {
+            let spec = html_spec();
+            let pp = ChildNodeInfo::preprocessor_block("<% code %>");
+            let r = matches_selector_fn("a", Some(&pp), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+        }
+
+        #[test]
+        fn custom_element_with_flow() {
+            let spec = html_spec();
+            let ce = ChildNodeInfo::custom_element("my-component");
+            // #flow includes #custom
+            let r = matches_selector_fn("#flow", Some(&ce), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+        }
+
+        #[test]
+        fn model_phrasing_with_not_suffix() {
+            // :model(phrasing):not(ruby) should extract #phrasing category
+            // and match phrasing content (span is phrasing)
+            assert_eq!(
+                run(":model(phrasing):not(ruby, :has(ruby))", "span").result_type,
+                ResultType::Matched
+            );
+            // ruby is also in #phrasing, so it matches (because :not() is not yet supported)
+            // This test documents the current limitation
+            assert_eq!(
+                run(":model(phrasing):not(ruby, :has(ruby))", "ruby").result_type,
+                ResultType::Matched // TODO: should be UnmatchedSelectors when #3515 is implemented
+            );
+        }
+    }
+
+    // ================================================================
+    // opt_condition edge cases
+    // ================================================================
+    mod opt_condition_tests {
+        use super::*;
+        use crate::spec::content_model::matching::matches_selector as matches_selector_fn;
+
+        #[test]
+        fn plain_tag_no_flags() {
+            let spec = html_spec();
+            // Plain tag "div" should not have has_text or has_custom
+            let r = matches_selector_fn("div", Some(&ChildNodeInfo::text("hello")), 1, &spec);
+            // text node against plain tag "div" → UNEXPECTED_EXTRA_NODE (not has_text)
+            assert_eq!(r.result_type, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn hash_category_with_selector_suffix() {
+            let spec = html_spec();
+            // #script-supporting should resolve correctly
+            let r = matches_selector_fn("#script-supporting", Some(&ChildNodeInfo::element("script")), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+        }
+
+        #[test]
+        fn model_with_not_suffix_extracts_category() {
+            let spec = html_spec();
+            // ":model(metadata):not(title)" should extract #metadata
+            // "meta" is in #metadata → should match
+            let r = matches_selector_fn(":model(metadata):not(title)", Some(&ChildNodeInfo::element("meta")), 1, &spec);
+            assert_eq!(r.result_type, ResultType::Matched);
+        }
+    }
+
+    // ================================================================
+    // transparent pattern
+    // ================================================================
+    mod transparent_tests {
+        use super::*;
+
+        #[test]
+        fn transparent_matches_all_children() {
+            let spec = html_spec();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
+                r##"[{"transparent": "test"}]"##
+            ).unwrap();
+            let r = validate_content_model(&spec, &patterns, &nodes(&["a", "b", "c"]));
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert_eq!(r.matched.len(), 3);
+            assert_eq!(r.unmatched.len(), 0);
+        }
+
+        #[test]
+        fn transparent_empty_children() {
+            let spec = html_spec();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
+                r##"[{"transparent": "test"}]"##
+            ).unwrap();
+            let r = validate_content_model(&spec, &patterns, &[]);
+            assert_eq!(r.result_type, ResultType::MatchedZero);
+        }
+    }
+
+    // ================================================================
+    // matched index verification
+    // ================================================================
+    mod matched_indices {
+        use super::*;
+
+        #[test]
+        fn order_matched_indices_correct() {
+            let spec = html_spec();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
+                r##"[{"require": "a"}, {"require": "b"}]"##
+            ).unwrap();
+            let child_nodes = nodes(&["a", "b"]);
+            let r = validate_content_model(&spec, &patterns, &child_nodes);
+            assert_eq!(r.result_type, ResultType::Matched);
+            assert_eq!(r.matched, vec![0, 1]);
+            assert!(r.unmatched.is_empty());
+        }
+
+        #[test]
+        fn count_pattern_matched_first_node() {
+            let spec = html_spec();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
+                r##"[{"require": "#flow"}]"##
+            ).unwrap();
+            let r = validate_content_model(&spec, &patterns, &nodes(&["a", "b"]));
+            // require matches first node only
+            assert_eq!(r.matched, vec![0]);
+        }
+
+        #[test]
+        fn one_or_more_multiple_matched() {
+            let spec = html_spec();
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(
+                r##"[{"oneOrMore": "a"}]"##
+            ).unwrap();
+            let r = validate_content_model(&spec, &patterns, &nodes(&["a", "a", "b"]));
+            assert_eq!(r.matched, vec![0, 1]);
+            assert_eq!(r.unmatched, vec![2]);
+        }
+
+        #[test]
+        fn zero_or_more_no_match() {
+            let spec = html_spec();
+            let pattern: PermittedContentPattern = serde_json::from_str(
+                r##"{"zeroOrMore": "a"}"##
+            ).unwrap();
+            // Call count_pattern directly (order wraps with UNEXPECTED_EXTRA_NODE for unmatched)
+            let r = count_pattern_fn(&pattern, &nodes(&["b", "c"]), &spec, 0);
+            assert_eq!(r.result_type, ResultType::MatchedZero);
+            assert!(r.matched.is_empty());
+            assert_eq!(r.unmatched, vec![0, 1]);
+        }
+    }
+
+    // ================================================================
     // Integration tests with real html-spec content models
     // ================================================================
     mod integration {

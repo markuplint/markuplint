@@ -35,7 +35,6 @@ pub(crate) fn order(
     spec: &MLMLSpec,
     depth: usize,
 ) -> MatchResult {
-    let patterns: Vec<PermittedContentPattern> = contents.to_vec();
     let mut collection = Collection::new(child_nodes);
 
     let mut result: Option<MatchResult> = None;
@@ -44,10 +43,10 @@ pub(crate) fn order(
     let mut unmatched_results: Vec<MatchResult> = Vec::new();
     let mut pattern_idx = 0;
 
-    while pattern_idx < patterns.len() {
+    while pattern_idx < contents.len() {
         let unmatched = collect_unmatched(&collection);
         let unmatched_indices = collection.unmatched_indices();
-        let r = complex_branch(&patterns[pattern_idx], &unmatched, spec, depth);
+        let r = complex_branch(&contents[pattern_idx], &unmatched, spec, depth);
 
         // Remap indices from sub-slice back to original
         let original_matched: Vec<usize> = r
@@ -444,7 +443,7 @@ fn transparent(child_nodes: &[ChildNodeInfo]) -> MatchResult {
 // ============================================================
 
 /// Test whether a single child node matches a content model query.
-fn matches_selector(
+pub(crate) fn matches_selector(
     query: &str,
     child_node: Option<&ChildNodeInfo>,
     total_count: usize,
@@ -605,6 +604,6 @@ fn normalize_model(pattern: &PermittedContentPattern) -> NormalizedModel {
             let max = (p.max.unwrap_or(u32::MAX) as usize).max(1);
             NormalizedModel { model: p.zero_or_more.clone(), min: 0, max, missing_type: None }
         }
-        _ => panic!("normalize_model called with non-quantified pattern"),
+        _ => unreachable!("complex_branch dispatches Choice/Transparent before reaching count_pattern"),
     }
 }
