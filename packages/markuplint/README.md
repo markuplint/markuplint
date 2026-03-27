@@ -133,8 +133,17 @@ $ markuplint --prune-suppressions "src/**/*.html"
 - Only `error`-severity violations are suppressed; `warning` and `info` always pass through.
 - If the number of violations for a file+rule pair **exceeds** the suppressed count, **all** violations for that pair are reported.
 - `--suppress` always exits with code 0 (success).
+- When a DOM tree is available, each suppression entry includes a **scope selector** (computed via LCA) to narrow suppression to a specific subtree. Entries without `scope` apply to the entire file.
 
-See [ESLint's Bulk Suppressions](https://eslint.org/docs/latest/use/suppressions) for the reference design. Tracking issue: [#3503](https://github.com/markuplint/markuplint/issues/3503).
+```json
+{
+  "src/index.html": {
+    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+  }
+}
+```
+
+See [ESLint's Bulk Suppressions](https://eslint.org/docs/latest/use/suppressions) for the reference design. Tracking issues: [#3503](https://github.com/markuplint/markuplint/issues/3503), [#3509](https://github.com/markuplint/markuplint/issues/3509).
 
 ## Documentation
 

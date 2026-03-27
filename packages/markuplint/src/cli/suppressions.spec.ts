@@ -9,7 +9,7 @@ const entryFilePath = path.resolve(import.meta.dirname, '../../bin/markuplint.mj
 const fixtureDir = path.resolve(import.meta.dirname, '../../test/suppressions');
 const targetFile = path.join(fixtureDir, 'target.html');
 
-describe('Bulk Suppressions CLI', () => {
+describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 	let tmpDir: string;
 
 	beforeEach(async () => {

@@ -5,6 +5,13 @@
  */
 export type SuppressionEntry = {
 	readonly count: number;
+	/**
+	 * @experimental
+	 * CSS selector identifying the LCA (Lowest Common Ancestor) subtree
+	 * that contains all violations for this rule. Uses id/class/attr for
+	 * precise matching. When absent, suppression applies to the entire file.
+	 */
+	readonly scope?: string;
 };
 
 /**
@@ -12,9 +19,9 @@ export type SuppressionEntry = {
  * The full suppressions data structure.
  * Top-level keys are relative file paths, values are maps of ruleId to suppression entry.
  *
- * **Format note (Phase 1):** The current flat structure `{ filePath: { ruleId: { count } } }`
- * has no version envelope. If Phase 2 adds a `scope` field to entries, existing files
- * remain compatible (new fields are additive). Should a breaking format change ever be
- * needed, introduce a `{ version: N, suppressions: { ... } }` wrapper and migrate.
+ * **Format note:** The flat structure `{ filePath: { ruleId: { count, scope? } } }`
+ * has no version envelope. The `scope` field is additive (Phase 2) — existing files
+ * without `scope` remain compatible as file-level suppressions. Should a breaking
+ * format change ever be needed, introduce a `{ version: N, ... }` wrapper and migrate.
  */
 export type SuppressionsData = Record<string, Record<string, SuppressionEntry>>;
