@@ -10,7 +10,7 @@ crates/
 ├── markuplint-dom/       Arena-based DOM tree (builder + traversal)
 ├── markuplint-napi/      Node.js bridge via napi-rs v3
 ├── markuplint-selector/  CSS selector parser + matcher (self-contained, with :model/:role/:aria)
-└── markuplint-types/     CSS type validation (syntax parser + value matching engine)
+└── markuplint-types/     Type validation, spec data, and content model matching
 ```
 
 ### markuplint-core
@@ -35,10 +35,12 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
 
 ### markuplint-types
 
-Rust implementation of `@markuplint/types` — CSS type validation for attribute value checking. Contains:
+Rust implementation of `@markuplint/types` and spec-related modules. Contains:
 
 - **CSS Value Definition Syntax parser** (Phase 1B-1): Parses syntax strings like `<length> | auto` into AST
 - **CSS value matching engine** (Phase 1B-2): Matches CSS values against syntax definitions, with `calc()` type checking and `var()` validation
+- **Spec data types and loader** (Phase 2): Deserializes HTML spec JSON, provides lookup functions, ARIA role resolution
+- **Content model matching engine** (Phase 2-4): Validates child node sequences against HTML content model patterns (order, choice, quantifiers, backtracking)
 
 See `crates/markuplint-types/README.md` for detailed architecture and design decisions.
 
@@ -54,7 +56,7 @@ See `crates/markuplint-types/README.md` for detailed architecture and design dec
 # From the crates/ directory:
 cargo fmt --check       # Check formatting
 cargo clippy -- -D warnings  # Lint
-cargo test              # Run all tests (36 tests)
+cargo test              # Run all tests
 ```
 
 ## Building the napi binary

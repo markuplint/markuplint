@@ -6,110 +6,17 @@
 //! Corresponds to `@markuplint/ml-spec/src/types/permitted-structures.ts`
 //! and `@markuplint/rules/src/permitted-contents/`.
 
+pub mod child_node;
+pub mod matching;
+#[cfg(test)]
+mod matching_tests;
+pub mod result;
+pub mod serde_types;
+
 use super::lookup;
 use super::types::MLMLSpec;
-use serde::Deserialize;
-use serde_json::Value;
 
-// ============================================================
-// Serde types for content model patterns
-// ============================================================
-
-/// Content model for an element.
-#[derive(Debug, Deserialize)]
-pub struct ContentModel {
-    /// Permitted content patterns, or `false` for void elements.
-    pub contents: ContentModelContents,
-    /// Required ancestor element.
-    #[serde(default, rename = "descendantOf")]
-    pub descendant_of: Option<String>,
-    /// Conditional content models (selector → alternative contents).
-    #[serde(default)]
-    pub conditional: Option<Vec<ConditionalContentModel>>,
-}
-
-/// The `contents` field: either `false` (void) or a list of patterns.
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-pub enum ContentModelContents {
-    /// Void element — no content permitted (`false`), or any content (`true`).
-    Boolean(bool),
-    /// Permitted content patterns.
-    Patterns(Vec<PermittedContentPattern>),
-}
-
-/// A conditional content model override.
-#[derive(Debug, Deserialize)]
-pub struct ConditionalContentModel {
-    /// CSS selector condition.
-    pub condition: String,
-    /// Content patterns when condition matches.
-    pub contents: ContentModelContents,
-}
-
-/// A single permitted content pattern (discriminated by key).
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-pub enum PermittedContentPattern {
-    Require(RequirePattern),
-    Optional(OptionalPattern),
-    OneOrMore(OneOrMorePattern),
-    ZeroOrMore(ZeroOrMorePattern),
-    Choice(ChoicePattern),
-    Transparent(TransparentPattern),
-}
-
-#[derive(Debug, Deserialize)]
-pub struct RequirePattern {
-    pub require: ModelOrPatterns,
-    #[serde(default)]
-    pub max: Option<u32>,
-    #[serde(default)]
-    pub min: Option<u32>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct OptionalPattern {
-    pub optional: ModelOrPatterns,
-    #[serde(default)]
-    pub max: Option<u32>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct OneOrMorePattern {
-    #[serde(rename = "oneOrMore")]
-    pub one_or_more: ModelOrPatterns,
-    #[serde(default)]
-    pub max: Option<u32>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ZeroOrMorePattern {
-    #[serde(rename = "zeroOrMore")]
-    pub zero_or_more: ModelOrPatterns,
-    #[serde(default)]
-    pub max: Option<u32>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ChoicePattern {
-    pub choice: Vec<Vec<PermittedContentPattern>>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct TransparentPattern {
-    pub transparent: String,
-}
-
-/// Model reference: string, array of strings/patterns, or nested patterns.
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-pub enum ModelOrPatterns {
-    /// Single tag name or `:model(category)` reference.
-    Single(String),
-    /// Multiple tag names or category references.
-    Multiple(Vec<Value>),
-}
+pub use serde_types::*;
 
 // ============================================================
 // Content model access
@@ -133,6 +40,7 @@ pub fn is_void(cm: &ContentModel) -> bool {
 /// - Category: `:model(flow)` → look up in content models
 /// - Category shorthand: `"#script-supporting"`
 /// - Selector suffix: `":not(title)"` is stripped for category lookup
+///   (full CSS pseudo-class selectors are not yet supported; see [#3515])
 pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> bool {
     // Exact tag name match
     if model_ref.eq_ignore_ascii_case(child_name) {
@@ -140,8 +48,9 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
     }
 
     // Category reference: `:model(category)` or `#category`
-    let category = if let Some(cat) = model_ref.strip_prefix(":model(") {
-        cat.strip_suffix(')').map(|c| format!("#{c}"))
+    // `:model(phrasing):not(ruby)` → find first `)` to extract "phrasing"
+    let category = if let Some(rest) = model_ref.strip_prefix(":model(") {
+        rest.find(')').map(|pos| format!("#{}", &rest[..pos]))
     } else if model_ref.starts_with('#') {
         // Strip selector suffixes like `:not(title)`
         Some(model_ref.split(':').next().unwrap_or(model_ref).to_string())
@@ -167,10 +76,8 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
 pub fn matches_model(spec: &MLMLSpec, child_name: &str, model: &ModelOrPatterns) -> bool {
     match model {
         ModelOrPatterns::Single(s) => matches_model_ref(spec, child_name, s),
-        ModelOrPatterns::Multiple(arr) => arr
-            .iter()
-            .filter_map(|v| v.as_str())
-            .any(|s| matches_model_ref(spec, child_name, s)),
+        ModelOrPatterns::MultipleStrings(arr) => arr.iter().any(|s| matches_model_ref(spec, child_name, s)),
+        ModelOrPatterns::Patterns(_) => false,
     }
 }
 
@@ -180,7 +87,7 @@ mod tests {
     use crate::spec::load_spec;
 
     fn html_spec() -> MLMLSpec {
-        let json = include_str!("../../../../packages/@markuplint/html-spec/index.json");
+        let json = include_str!("../../../../../packages/@markuplint/html-spec/index.json");
         load_spec(json).unwrap()
     }
 
@@ -296,10 +203,7 @@ mod tests {
     #[test]
     fn model_or_patterns_multiple() {
         let spec = html_spec();
-        let m = ModelOrPatterns::Multiple(vec![
-            Value::String("option".to_string()),
-            Value::String("optgroup".to_string()),
-        ]);
+        let m = ModelOrPatterns::MultipleStrings(vec!["option".to_string(), "optgroup".to_string()]);
         assert!(matches_model(&spec, "option", &m));
         assert!(matches_model(&spec, "optgroup", &m));
         assert!(!matches_model(&spec, "div", &m));

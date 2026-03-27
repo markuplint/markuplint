@@ -32,6 +32,11 @@ Options
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
 
+	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
+	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
+	--prune-suppressions                   [Experimental] Remove stale entries from the suppressions file.
+	--suppressions-location PATH           [Experimental] Custom path for the suppressions file. Default: "markuplint-suppressions.json".
+
 	--init                                 Initialize settings interactively.
 	--search                               Search lines of codes that include the target element by selectors.
 
@@ -136,6 +141,20 @@ export const cli = meow(help, {
 			type: 'boolean',
 			// TODO: It will be changed to `true` in the next major version.
 			default: false,
+		},
+		suppress: {
+			type: 'boolean',
+			default: false,
+		},
+		suppressRule: {
+			type: 'string',
+		},
+		pruneSuppressions: {
+			type: 'boolean',
+			default: false,
+		},
+		suppressionsLocation: {
+			type: 'string',
 		},
 	},
 });
