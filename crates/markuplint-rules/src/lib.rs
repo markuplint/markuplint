@@ -15,4 +15,5 @@
 //! markuplint-rules   (content model matching, depends on both)
 //! ```
 
+pub mod aria;
 pub mod content_model;

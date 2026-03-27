@@ -1,0 +1,7 @@
+//! ARIA computation algorithms.
+//!
+//! Ports the TypeScript implementation from
+//! `packages/@markuplint/ml-spec/src/algorithm/aria/`.
+
+pub mod is_exposed;
+pub mod may_be_focusable;
