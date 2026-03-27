@@ -58,6 +58,38 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 			}
 		}
 
+		// When a package has an "exports" map that does not include the requested subpath,
+		// Node.js throws ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve the package directory from
+		// the error message and construct an absolute path to the target file.
+		if (
+			error instanceof Error &&
+			// @ts-ignore
+			'code' in error &&
+			// @ts-ignore
+			error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+		) {
+			// Node.js error message format (may change across versions):
+			// Package subpath './foo' is not defined by "exports" in /path/to/package.json
+			const pkgJsonMatch = /in (\S[^\n]*[/\\]package\.json)/.exec(error.message)?.[1];
+			if (pkgJsonMatch) {
+				const pkgDir = path.dirname(pkgJsonMatch);
+				const packageName = name.startsWith('@') ? name.split('/').slice(0, 2).join('/') : name.split('/')[0];
+				const subpath = packageName ? name.slice(packageName.length + 1) : '';
+				if (subpath) {
+					const candidate = path.join(pkgDir, subpath);
+					gLog('ERR_PACKAGE_PATH_NOT_EXPORTED fallback: try "%s"', candidate);
+					const result = await generalImport<T>(candidate);
+					cache.set(name, result);
+					return result;
+				}
+			} else {
+				gLogError(
+					'ERR_PACKAGE_PATH_NOT_EXPORTED but could not parse package.json path from: %s',
+					error.message,
+				);
+			}
+		}
+
 		if (error instanceof Error) {
 			const { filePath, packageName } =
 				/Missing\s"(?<filePath>[^"]+)"\sspecifier\sin\s"(?<packageName>[^"]+)"\spackage/.exec(error.message)
@@ -75,11 +107,15 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 		}
 
 		if (path.isAbsolute(name) && name.endsWith('.json')) {
-			const file = await fs.readFile(name, 'utf8');
-			const json = JSON.parse(file);
-			gLogSuccess('Success by readFile("%s") and JSON.parse: %O', name, json);
-			cache.set(name, json);
-			return json;
+			try {
+				const file = await fs.readFile(name, 'utf8');
+				const json = JSON.parse(file);
+				gLogSuccess('Success by readFile("%s") and JSON.parse: %O', name, json);
+				cache.set(name, json);
+				return json;
+			} catch (readError) {
+				gLogError('Error in readFile("%s"): %O', name, readError);
+			}
 		}
 
 		gLogError('Error in `import()`: %O', error);
