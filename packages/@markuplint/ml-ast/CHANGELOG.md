@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+- feat(ml-ast)!: replace parentNode/pairNode with UUID string references ([9d56f45](https://github.com/markuplint/markuplint/commit/9d56f4545e7e6b2378043c3c578130bb4ddd72cd))
+
+### BREAKING CHANGES
+
+- `parentNode` and `pairNode` properties on AST nodes
+  are replaced by `parentNodeUuid` and `pairNodeUuid` (UUID strings).
+  The old object reference properties are removed from the parse output
+  by post-processing.
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 **Note:** Version bump only for package @markuplint/ml-ast

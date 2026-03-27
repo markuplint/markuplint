@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- add isFatalError guard to MLEngine.exec and fix accname Deno crash ([c4b20de](https://github.com/markuplint/markuplint/commit/c4b20de128b2cfee582b3588e5004cb90065825b))
+- address QA review findings for error consolidation ([ac994ee](https://github.com/markuplint/markuplint/commit/ac994ee4b4150dbcb18b30d412853df086627f87))
+- **file-resolver:** handle ERR_PACKAGE_PATH_NOT_EXPORTED in generalImport ([d563d60](https://github.com/markuplint/markuplint/commit/d563d6000c4c38be54c17ea015b0f26c80c5229c)), closes [#3516](https://github.com/markuplint/markuplint/issues/3516)
+- **file-resolver:** resolve package subpaths before import to avoid runtime-specific errors ([cb2b641](https://github.com/markuplint/markuplint/commit/cb2b641e25cd9de487d395b6f219dd8b60ecd306))
+- fix CI failures for TS 6 compat ([8da30bf](https://github.com/markuplint/markuplint/commit/8da30bf4de34838eef895563f0e0e64006bfc8f8))
+- **markuplint:** use platform-native paths in suppressions round-trip test ([df4b6a5](https://github.com/markuplint/markuplint/commit/df4b6a5f83b0fed3f74afba72cccd7bc2dbf8606))
+- **ml-core:** add DOM stubs for TS 6 lib.dom.d.ts updates ([837a2ba](https://github.com/markuplint/markuplint/commit/837a2bad5afe967d4d309b91d056b46fc91c7512))
+- **spec-generator:** add fetch retry, status check, and output validation ([ca047b2](https://github.com/markuplint/markuplint/commit/ca047b212dcb5acf7b5d370c9713983306d50e2d)), closes [#3456](https://github.com/markuplint/markuplint/issues/3456)
+- **test-tools:** adapt matches() stub to TS 6 overloaded signature ([8338282](https://github.com/markuplint/markuplint/commit/83382824f71d2759a00592f56b74f492b743f767))
+
+- feat(ml-core)!: resolve node references via UUID instead of object refs ([e9b6f4e](https://github.com/markuplint/markuplint/commit/e9b6f4e68bda2f60c9fa69699bf251b51874a4ac))
+- feat!: adapt framework parsers to UUID-based node references ([6d543b8](https://github.com/markuplint/markuplint/commit/6d543b8c11506fe113d0ceeae3526f552f4ee26d))
+- feat(ml-ast)!: replace parentNode/pairNode with UUID string references ([9d56f45](https://github.com/markuplint/markuplint/commit/9d56f4545e7e6b2378043c3c578130bb4ddd72cd))
+
+### Features
+
+- **astro-parser:** add component-scanner subpath export for pretenders auto scan ([3d85bc5](https://github.com/markuplint/markuplint/commit/3d85bc5f5904c0157415de175227eedf89539cda))
+- **markuplint:** add experimental bulk suppressions ([bd3ab72](https://github.com/markuplint/markuplint/commit/bd3ab7204870dd6061e8e4ccbeaacd751d069a73)), closes [#3503](https://github.com/markuplint/markuplint/issues/3503)
+- **markuplint:** add selector scope (LCA) to bulk suppressions ([84cf73d](https://github.com/markuplint/markuplint/commit/84cf73dd92db49f1f93ff6a5c9b71c7807ce31e9)), closes [#3509](https://github.com/markuplint/markuplint/issues/3509)
+- **svelte-parser:** add component-scanner subpath export for pretenders auto scan ([fc8db17](https://github.com/markuplint/markuplint/commit/fc8db17ec40af73911d52ec9b03ca9143b115315))
+- **vue-parser:** add component-scanner subpath export for pretenders auto scan ([ac8e0f5](https://github.com/markuplint/markuplint/commit/ac8e0f52be19cc0714593e26066f2f8cef9c96cd))
+
+### BREAKING CHANGES
+
+- MLDOM now resolves parent and pair nodes via UUID
+  strings from the AST instead of direct object references.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- Parser output no longer contains parentNode/pairNode
+  object references. Use parentNodeUuid/pairNodeUuid string fields instead.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
+- `parentNode` and `pairNode` properties on AST nodes
+  are replaced by `parentNodeUuid` and `pairNodeUuid` (UUID strings).
+  The old object reference properties are removed from the parse output
+  by post-processing.
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 ### Bug Fixes
