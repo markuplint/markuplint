@@ -8,7 +8,7 @@
 //! `markuplint-selector` via a minimal DOM arena (see [`super::arena_bridge`]).
 //! Simple queries without pseudo-classes use fast tag-name matching as a fast path.
 
-use super::child_node::{ChildNodeInfo, ChildNodeKind};
+use super::child_node::ChildNodeInfo;
 use super::result::{Collection, Hints, MatchResult, MissingHint, ResultType, merge_hints};
 use markuplint_types::spec::content_model::{ChoicePattern, ModelOrPatterns, PermittedContentPattern};
 use markuplint_types::spec::lookup;
@@ -500,33 +500,36 @@ pub(crate) fn matches_selector(
         return MatchResult::missing(query);
     };
 
-    match node.kind {
-        ChildNodeKind::Text => {
-            if cond.has_text {
-                return MatchResult::matched_single(0, total_count, query, true);
-            }
-            if node.is_whitespace {
-                return MatchResult::matched_single(0, total_count, query, true);
-            }
-            MatchResult {
-                result_type: ResultType::UnexpectedExtraNode,
-                matched: vec![],
-                unmatched: (0..total_count).collect(),
-                zero_match: false,
-                query: query.to_string(),
-                hint: Hints::default(),
-            }
+    if node.is_text() {
+        if cond.has_text {
+            return MatchResult::matched_single(0, total_count, query, true);
         }
-        ChildNodeKind::PreprocessorBlock => MatchResult::matched_single(0, total_count, query, cond.has_text),
-        ChildNodeKind::CustomElement => {
-            if cond.has_custom {
-                MatchResult::matched_single(0, total_count, query, cond.has_text)
-            } else {
-                match_element_tag(node, query, total_count, spec, &cond)
-            }
+        if node.is_whitespace() {
+            return MatchResult::matched_single(0, total_count, query, true);
         }
-        ChildNodeKind::Element => match_element_tag(node, query, total_count, spec, &cond),
+        return MatchResult {
+            result_type: ResultType::UnexpectedExtraNode,
+            matched: vec![],
+            unmatched: (0..total_count).collect(),
+            zero_match: false,
+            query: query.to_string(),
+            hint: Hints::default(),
+        };
     }
+
+    if matches!(node.kind, super::child_node::ChildNodeKind::PreprocessorBlock) {
+        return MatchResult::matched_single(0, total_count, query, cond.has_text);
+    }
+
+    if node.is_custom() {
+        if cond.has_custom {
+            return MatchResult::matched_single(0, total_count, query, cond.has_text);
+        }
+        return match_element_tag(node, query, total_count, spec, &cond);
+    }
+
+    // HtmlElement
+    match_element_tag(node, query, total_count, spec, &cond)
 }
 
 /// Match an element by tag name against a resolved query.
@@ -545,7 +548,7 @@ fn match_element_tag(
     } else if needs_full_selector(query) {
         full_selector_match(node, query, spec, cond)
     } else {
-        markuplint_types::spec::content_model::matches_model_ref(spec, &node.tag_name, &cond.resolved_selector)
+        markuplint_types::spec::content_model::matches_model_ref(spec, &node.node_name, &cond.resolved_selector)
     };
 
     if matched {
@@ -592,7 +595,11 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
     // 2. Parse the expanded selector
     let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
         // Parse failure: fall back to simple tag matching
-        return markuplint_types::spec::content_model::matches_model_ref(spec, &node.tag_name, &cond.resolved_selector);
+        return markuplint_types::spec::content_model::matches_model_ref(
+            spec,
+            &node.node_name,
+            &cond.resolved_selector,
+        );
     };
 
     // 3. Build a minimal arena with just the node and its children
@@ -606,7 +613,7 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
     };
 
     // 5. Match using the full selector engine
-    markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None)
+    markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None)
 }
 
 /// Expand `:model(category)` references to `:is(tag1, tag2, ...)`.
