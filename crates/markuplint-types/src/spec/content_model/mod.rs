@@ -40,6 +40,7 @@ pub fn is_void(cm: &ContentModel) -> bool {
 /// - Category: `:model(flow)` → look up in content models
 /// - Category shorthand: `"#script-supporting"`
 /// - Selector suffix: `":not(title)"` is stripped for category lookup
+///   (full CSS pseudo-class selectors are not yet supported; see [#3515])
 pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> bool {
     // Exact tag name match
     if model_ref.eq_ignore_ascii_case(child_name) {

@@ -2,6 +2,12 @@
 //!
 //! Ports the TypeScript implementation from
 //! `packages/@markuplint/rules/src/permitted-contents/`.
+//!
+//! **Known Limitation:** CSS pseudo-class selectors (`:not()`, `:has()`) are not yet
+//! supported. Category references like `:model(phrasing):not(ruby)` extract the base
+//! category but ignore the selector suffix. This affects validation of elements such as
+//! `<ruby>` with conditional content patterns. Full selector integration via the
+//! `markuplint-selector` crate is tracked in [#3515](https://github.com/markuplint/markuplint/issues/3515).
 
 use super::child_node::{ChildNodeInfo, ChildNodeKind};
 use super::result::{Collection, Hints, MatchResult, MissingHint, ResultType, merge_hints};
@@ -29,6 +35,14 @@ pub fn validate_content_model(
 // ============================================================
 
 /// Sequential pattern matching with backtracking.
+///
+/// Matches each pattern in `contents` against the remaining unmatched child nodes.
+/// When a pattern matches zero nodes (`zero_match`), `backtrack_mode` is activated.
+/// If the next pattern fails while in backtrack mode, the collection reverts to the
+/// last checkpoint (`back()`), and the failing pattern is retried. After a successful
+/// recovery, the state is locked (`lock()`) as a new checkpoint. This allows optional
+/// patterns (e.g., `zeroOrMore`) to "give back" their zero-width match so subsequent
+/// required patterns can attempt to match.
 pub(crate) fn order(
     contents: &[PermittedContentPattern],
     child_nodes: &[ChildNodeInfo],
@@ -48,7 +62,9 @@ pub(crate) fn order(
         let unmatched_indices = collection.unmatched_indices();
         let r = complex_branch(&contents[pattern_idx], &unmatched, spec, depth);
 
-        // Remap indices from sub-slice back to original
+        // Remap: complex_branch receives a sub-slice of unmatched nodes, so its
+        // returned indices are local to that sub-slice. Map them back to indices
+        // in the original child_nodes array via unmatched_indices lookup.
         let original_matched: Vec<usize> = r
             .matched
             .iter()
@@ -201,7 +217,7 @@ pub(crate) fn count_pattern(
 
         // UNMATCHED_SELECTOR_BUT_MAY_EMPTY → MATCHED_ZERO
         if r.result_type == ResultType::UnmatchedSelectorButMayEmpty {
-            return compere_result(
+            return compare_result(
                 MatchResult {
                     result_type: ResultType::MatchedZero,
                     matched: collection.matched_indices(),
@@ -217,7 +233,7 @@ pub(crate) fn count_pattern(
         // Max exceeded
         if collection.matched_count() > norm.max {
             collection.cap(norm.max);
-            return compere_result(
+            return compare_result(
                 MatchResult {
                     result_type: ResultType::UnexpectedExtraNode,
                     matched: collection.matched_indices(),
@@ -236,7 +252,7 @@ pub(crate) fn count_pattern(
                 || r.result_type == ResultType::MissingNodeRequired
                 || r.result_type == ResultType::TransparentModelDisallows
             {
-                return compere_result(
+                return compare_result(
                     MatchResult {
                         result_type: r.result_type,
                         matched: collection.matched_indices(),
@@ -249,7 +265,7 @@ pub(crate) fn count_pattern(
                 );
             }
 
-            return compere_result(
+            return compare_result(
                 MatchResult {
                     result_type: prev.result_type.clone(),
                     matched: collection.matched_indices(),
@@ -291,7 +307,7 @@ pub(crate) fn count_pattern(
                 norm.missing_type.clone().unwrap_or(ResultType::MissingNodeRequired)
             };
 
-            return compere_result(
+            return compare_result(
                 MatchResult {
                     result_type,
                     matched: collection.matched_indices(),
@@ -342,7 +358,7 @@ pub(crate) fn count_pattern(
             || r.result_type == ResultType::MissingNodeOneOrMore
             || r.result_type == ResultType::TransparentModelDisallows
         {
-            return compere_result(
+            return compare_result(
                 MatchResult {
                     result_type: r.result_type,
                     matched: collection.matched_indices(),
@@ -355,12 +371,12 @@ pub(crate) fn count_pattern(
             );
         }
 
-        return compere_result(matched_result, barely_result);
+        return compare_result(matched_result, barely_result);
     }
 }
 
 /// Compare two results and return the best diagnostic outcome.
-fn compere_result(a: MatchResult, b: Option<MatchResult>) -> MatchResult {
+fn compare_result(a: MatchResult, b: Option<MatchResult>) -> MatchResult {
     let Some(b) = b else { return a };
 
     if a.result_type == ResultType::Matched
@@ -604,6 +620,9 @@ fn normalize_model(pattern: &PermittedContentPattern) -> NormalizedModel {
             let max = (p.max.unwrap_or(u32::MAX) as usize).max(1);
             NormalizedModel { model: p.zero_or_more.clone(), min: 0, max, missing_type: None }
         }
-        _ => unreachable!("complex_branch dispatches Choice/Transparent before reaching count_pattern"),
+        // SAFETY: complex_branch dispatches Choice and Transparent patterns to their
+        // own handlers before reaching count_pattern. Only quantified variants arrive here.
+        // If a new PermittedContentPattern variant is added, complex_branch must be updated.
+        _ => unreachable!("non-quantified pattern reached count_pattern"),
     }
 }
