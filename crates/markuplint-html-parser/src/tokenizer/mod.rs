@@ -2293,7 +2293,6 @@ impl<'a> Tokenizer<'a> {
 
     // ========================================================================
     // §13.2.5.72–80 Character reference states
-    // (Stub: emit '&' as character for now — Phase 4 will implement fully)
     // ========================================================================
     fn state_character_reference(&mut self) {
         self.temp_buffer.clear();
@@ -2316,33 +2315,57 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn state_named_character_reference(&mut self) {
-        // Phase 4 will implement full named character reference lookup.
-        // For now, consume alphanumeric chars and semicolon, then flush as chars.
-        loop {
-            match self.input.peek() {
-                Some(c) if c.is_ascii_alphanumeric() => {
-                    self.input.next_char();
-                    self.temp_buffer.push(c);
-                }
-                Some(';') => {
-                    self.input.next_char();
-                    self.temp_buffer.push(';');
-                    break;
-                }
-                _ => {
-                    break;
-                }
-            }
-        }
+        // Per WHATWG §13.2.5.73: use the remaining input (starting from after '&')
+        // to find the longest match in the entity table.
+        //
+        // Strategy: peek at the remaining source, find longest match, then
+        // advance the input by exactly the matched length (minus the '&').
+        let amp_offset = self.input.position().offset - 1; // '&' was already consumed
+        let remaining = self.input.slice(amp_offset, self.input.source().len());
 
-        // Try to look up the named reference.
-        if let Some(chars) = char_ref::lookup_named(&self.temp_buffer) {
+        if let Some((chars, match_len)) = char_ref::find_longest_match(remaining) {
+            let matched_text = &remaining[..match_len];
+            let ends_with_semicolon = matched_text.ends_with(';');
+
+            // Advance input past the matched entity (minus the '&' already consumed).
+            let chars_to_advance = match_len - 1; // subtract the '&'
+            self.input.advance(chars_to_advance);
+
+            // In attribute context: if no trailing ';' and next char is '=' or alnum,
+            // treat as non-reference per spec.
+            let next_is_eq_or_alnum = self.input.peek().is_some_and(|c| c == '=' || c.is_ascii_alphanumeric());
+            if self.is_return_state_attribute() && !ends_with_semicolon && next_is_eq_or_alnum {
+                // Don't consume as a reference. Put the matched text in temp_buffer.
+                self.temp_buffer.clear();
+                self.temp_buffer.push_str(matched_text);
+                self.flush_code_points_consumed_as_char_ref();
+                self.state = self.return_state;
+                return;
+            }
+
+            // Replace temp_buffer with the resolved characters.
             self.temp_buffer.clear();
             for &ch in chars {
                 self.temp_buffer.push(ch);
             }
             self.flush_code_points_consumed_as_char_ref();
         } else {
+            // No match found. Consume alphanumeric chars into temp_buffer
+            // (they were not consumed yet since we used peek/slice).
+            loop {
+                match self.input.peek() {
+                    Some(c) if c.is_ascii_alphanumeric() => {
+                        self.input.next_char();
+                        self.temp_buffer.push(c);
+                    }
+                    Some(';') => {
+                        self.input.next_char();
+                        self.temp_buffer.push(';');
+                        break;
+                    }
+                    _ => break,
+                }
+            }
             self.flush_code_points_consumed_as_char_ref();
         }
         self.state = self.return_state;

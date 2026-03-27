@@ -6,12 +6,13 @@ Rust implementation of markuplint's core components: DOM layer and type validati
 
 ```
 crates/
-├── markuplint-core/      MLAST serde types (deserialization from JSON)
-├── markuplint-dom/       Arena-based DOM tree (builder + traversal)
-├── markuplint-napi/      Node.js bridge via napi-rs v3
-├── markuplint-rules/     Content model matching with full CSS selector support
-├── markuplint-selector/  CSS selector parser + matcher (with :model/:role/:aria)
-└── markuplint-types/     Type validation and spec data (serde types, lookup)
+├── markuplint-core/         MLAST serde types (deserialization from JSON)
+├── markuplint-dom/          Arena-based DOM tree (builder + traversal)
+├── markuplint-html-parser/  WHATWG-conformant HTML parser (tokenizer + tree construction)
+├── markuplint-napi/         Node.js bridge via napi-rs v3
+├── markuplint-rules/        Content model matching with full CSS selector support
+├── markuplint-selector/     CSS selector parser + matcher (with :model/:role/:aria)
+└── markuplint-types/        Type validation and spec data (serde types, lookup)
 ```
 
 ### markuplint-core
@@ -52,6 +53,23 @@ Rust implementation of `@markuplint/types` and spec-related modules. Contains:
 - **Content model serde types** (Phase 2-4): `ContentModel`, `PermittedContentPattern`, `matches_model_ref()` — matching engine is in `markuplint-rules`
 
 See `crates/markuplint-types/README.md` for detailed architecture and design decisions.
+
+### markuplint-html-parser
+
+WHATWG-conformant HTML parser implementing §13.2.5 (tokenization) and §13.2.6 (tree construction). Replaces parse5 with a pure Rust implementation.
+
+- **Tokenizer**: Full 80-state state machine with position tracking on all tokens
+- **Named character references**: Complete WHATWG entity table (2231 entries), generated at build time from `entities.json`
+- **Conformance testing**: Uses [html5lib-tests](https://github.com/html5lib/html5lib-tests) as a git submodule (98.3% tokenizer pass rate)
+- **Tree construction**: Arena-based internal tree (in progress)
+
+#### Submodule setup
+
+The html5lib-tests conformance suite is included as a git submodule. After cloning, run:
+
+```bash
+git submodule update --init --recursive
+```
 
 ## Prerequisites
 
