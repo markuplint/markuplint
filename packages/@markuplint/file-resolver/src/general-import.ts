@@ -58,6 +58,31 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 			}
 		}
 
+		// When a package has an "exports" map that does not include the requested subpath,
+		// Node.js throws ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve the package directory from
+		// the error message and construct an absolute path to the target file.
+		if (
+			error instanceof Error &&
+			// @ts-ignore
+			'code' in error &&
+			// @ts-ignore
+			error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+		) {
+			const pkgJsonMatch = /in (\S[^\n]*[/\\]package\.json)/.exec(error.message)?.[1];
+			if (pkgJsonMatch) {
+				const pkgDir = path.dirname(pkgJsonMatch);
+				const packageName = name.startsWith('@') ? name.split('/').slice(0, 2).join('/') : name.split('/')[0];
+				const subpath = packageName ? name.slice(packageName.length + 1) : '';
+				if (subpath) {
+					const candidate = path.join(pkgDir, subpath);
+					gLog('ERR_PACKAGE_PATH_NOT_EXPORTED fallback: try "%s"', candidate);
+					const result = await generalImport<T>(candidate);
+					cache.set(name, result);
+					return result;
+				}
+			}
+		}
+
 		if (error instanceof Error) {
 			const { filePath, packageName } =
 				/Missing\s"(?<filePath>[^"]+)"\sspecifier\sin\s"(?<packageName>[^"]+)"\spackage/.exec(error.message)
