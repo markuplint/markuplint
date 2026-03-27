@@ -72,3 +72,72 @@
 ```
 
 `[[target-rule-id]]`の部分は無効化したい[ルールID](/docs/rules/)に適宜変えてください。
+
+## 一括抑制（Bulk Suppressions） {#bulk-suppressions}
+
+:::caution 実験的機能
+この機能は実験的であり、今後のリリースで変更される可能性があります。
+:::
+
+既存プロジェクトに新しいルールを導入する際、現在の違反をすべて抑制し、新規コードに対してのみルールを適用できます。既存の違反を一度に修正するのが現実的でない場合に有用です。
+
+### ワークフロー
+
+```shell
+# 1. 設定ファイルで新しいルールを有効化した後、現在のエラーをすべて抑制
+$ markuplint --suppress "src/**/*.html"
+
+# 2. 生成されたsuppressionsファイルをリポジトリにコミット
+$ git add markuplint-suppressions.json
+
+# 3. 以降は新規の違反のみが報告される
+$ markuplint "src/**/*.html"
+
+# 4. 既存の違反を修正したら、不要なエントリを削除
+$ markuplint --prune-suppressions "src/**/*.html"
+```
+
+### 仕組み
+
+`--suppress`コマンドは、現在の`error`レベルの違反を`markuplint-suppressions.json`ファイルに記録します。以降の実行時にこのファイルを読み込み、記録された違反を抑制します。ファイル＋ルールの組み合わせで違反数が抑制カウントを**超えた**場合、その組み合わせの**すべての**違反が報告されます。これにより新しいリグレッションが隠されることを防ぎます。
+
+各エントリには、抑制を特定のDOMサブツリーに絞り込むオプションの**スコープセレクタ**が含まれます。スコープは、すべての違反ノードの[最小共通祖先（LCA: Lowest Common Ancestor）](https://en.wikipedia.org/wiki/Lowest_common_ancestor)を使用して自動的に計算されます。
+
+```json title="markuplint-suppressions.json"
+{
+  "src/index.html": {
+    "attr-duplication": { "count": 3, "scope": "#main-nav > ul" }
+  }
+}
+```
+
+### 主な動作
+
+- `error`レベルの違反のみが抑制対象です。`warning`と`info`は常にパススルーされます
+- `--suppress`は常に終了コード0（成功）を返します
+- `--suppress`と`--prune-suppressions`は同時に使用できません
+- suppressionsファイルはリポジトリにコミットすることを推奨します
+
+### CLIオプション
+
+| オプション                       | 説明                                                                             |
+| -------------------------------- | -------------------------------------------------------------------------------- |
+| `--suppress`                     | 現在の全エラー違反を記録                                                         |
+| `--suppress-rule <rule>`         | 指定ルールの違反のみ記録                                                         |
+| `--prune-suppressions`           | 修正済みの違反のエントリを削除                                                   |
+| `--suppressions-location <path>` | suppressionsファイルのカスタムパス（デフォルト: `markuplint-suppressions.json`） |
+
+### スコープセレクタ
+
+スコープセレクタはドキュメントの特定の部分に抑制を絞り込みます。自動的に生成され、以下の戦略が優先順位順に使用されます:
+
+1. **`#id`** — 祖先に`id`属性がある場合
+2. **`tag.class`** — 祖先にCSSクラスがある場合
+3. **`tag[role="..."]`** — 祖先に`role`属性がある場合（`<input>`の場合は`type`も対象）
+4. **`tag:nth-of-type(n)`** — 同名の兄弟要素を区別するため
+
+スコープを絞れない場合（例: 違反がドキュメント全体に分散している場合）、抑制はファイル全体に適用されます。
+
+スコープセレクタが要素にマッチしなくなった場合（例: リファクタリング後）、抑制は維持され`--prune-suppressions`がクリーンアップを推奨します。**壊れたスコープが新しい違反を隠すことはありません。**
+
+詳しい設計理念については、[Bulk Suppressions設計ドキュメント](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md)を参照してください。

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-rc.1](https://github.com/markuplint/markuplint/compare/v5.0.0-rc.0...v5.0.0-rc.1) (2026-03-27)
+
+### Bug Fixes
+
+- **file-resolver:** handle ERR_PACKAGE_PATH_NOT_EXPORTED in generalImport ([d563d60](https://github.com/markuplint/markuplint/commit/d563d6000c4c38be54c17ea015b0f26c80c5229c)), closes [#3516](https://github.com/markuplint/markuplint/issues/3516)
+- **file-resolver:** resolve package subpaths before import to avoid runtime-specific errors ([cb2b641](https://github.com/markuplint/markuplint/commit/cb2b641e25cd9de487d395b6f219dd8b60ecd306))
+
 # [5.0.0-rc.0](https://github.com/markuplint/markuplint/compare/v5.0.0-alpha.3...v5.0.0-rc.0) (2026-03-12)
 
 ### Bug Fixes
