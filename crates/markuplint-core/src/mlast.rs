@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// Root document node returned by a parser.
 /// Corresponds to `MLASTDocument` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTDocument {
     /// The full original source code.
@@ -24,7 +24,7 @@ pub struct MLASTDocument {
 
 /// Discriminated union of all AST node types.
 /// Uses `type` field as the serde tag.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type")]
 pub enum MLASTNode {
     #[serde(rename = "starttag")]
@@ -47,7 +47,7 @@ pub enum MLASTNode {
 
 /// An opening element tag (e.g. `<div class="foo">`).
 /// Corresponds to `MLASTElement` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTElement {
     pub uuid: String,
@@ -74,7 +74,7 @@ pub struct MLASTElement {
 
 /// A closing element tag (e.g. `</div>`).
 /// Corresponds to `MLASTElementCloseTag` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTElementCloseTag {
     pub uuid: String,
@@ -92,7 +92,7 @@ pub struct MLASTElementCloseTag {
 
 /// A preprocessor-specific block node (e.g. `{#if}` in Svelte).
 /// Corresponds to `MLASTPreprocessorSpecificBlock` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTPSBlock {
     pub uuid: String,
@@ -110,7 +110,7 @@ pub struct MLASTPSBlock {
 }
 
 /// An omitted tag node (e.g. implicit `<tbody>`).
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTOmittedTag {
     pub uuid: String,
@@ -125,7 +125,7 @@ pub struct MLASTOmittedTag {
 
 /// An HTML comment node (e.g. `<!-- ... -->`).
 /// Corresponds to `MLASTComment` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTComment {
     pub uuid: String,
@@ -141,7 +141,7 @@ pub struct MLASTComment {
 
 /// A text node containing character data between elements.
 /// Corresponds to `MLASTText` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTText {
     pub uuid: String,
@@ -156,7 +156,7 @@ pub struct MLASTText {
 
 /// A DOCTYPE declaration node (e.g. `<!DOCTYPE html>`).
 /// Corresponds to `MLASTDoctype` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTDoctype {
     pub uuid: String,
@@ -174,7 +174,7 @@ pub struct MLASTDoctype {
 
 /// A node representing markup that could not be parsed correctly.
 /// Corresponds to `MLASTInvalid` in TS.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MLASTInvalid {
     pub uuid: String,
@@ -192,7 +192,7 @@ pub struct MLASTInvalid {
 }
 
 /// Child node types (nodes that can appear inside an element or psblock).
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type")]
 pub enum MLASTChildNode {
     #[serde(rename = "starttag")]
