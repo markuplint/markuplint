@@ -84,8 +84,18 @@ impl<'a> Input<'a> {
         self.prev_line = self.line;
         self.prev_col = self.col;
 
-        let ch = self.current_char_at(self.pos);
+        let mut ch = self.current_char_at(self.pos);
         self.pos += ch.len_utf8();
+
+        // WHATWG §13.2.3.5: Preprocessing the input stream.
+        // CR (\r) and CRLF (\r\n) are normalized to LF (\n).
+        if ch == '\r' {
+            ch = '\n';
+            // Skip the following \n if present (CRLF → single LF).
+            if self.pos < self.bytes.len() && self.bytes[self.pos] == b'\n' {
+                self.pos += 1;
+            }
+        }
 
         // Update line/col tracking.
         if ch == '\n' {
@@ -104,7 +114,9 @@ impl<'a> Input<'a> {
         if self.pos >= self.bytes.len() {
             None
         } else {
-            Some(self.current_char_at(self.pos))
+            let ch = self.current_char_at(self.pos);
+            // Normalize CR to LF for peek too.
+            if ch == '\r' { Some('\n') } else { Some(ch) }
         }
     }
 

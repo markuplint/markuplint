@@ -34,7 +34,10 @@ fn token_to_html5lib(token: &Token) -> Value {
         } => {
             let mut attrs = serde_json::Map::new();
             for attr in attributes {
-                attrs.insert(attr.raw_name.clone(), Value::String(attr.raw_value.clone()));
+                // html5lib uses first-wins for duplicate attributes.
+                attrs
+                    .entry(attr.raw_name.clone())
+                    .or_insert_with(|| Value::String(attr.raw_value.clone()));
             }
             let mut arr = vec![
                 Value::String("StartTag".to_owned()),
@@ -133,12 +136,13 @@ fn run_test(input: &str, expected: &[Value], initial_states: &[&str], last_start
     true
 }
 
-fn run_test_file(path: &Path) -> (usize, usize) {
+fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
     let content = fs::read_to_string(path).expect("Failed to read test file");
     let data: Value = serde_json::from_str(&content).expect("Failed to parse test JSON");
     let tests = data["tests"].as_array().expect("No tests array");
     let mut passed = 0;
     let mut failed = 0;
+    let mut failure_details = Vec::new();
 
     for test in tests {
         let input = test["input"].as_str().unwrap_or("");
@@ -160,10 +164,14 @@ fn run_test_file(path: &Path) -> (usize, usize) {
             passed += 1;
         } else {
             failed += 1;
+            let desc = test["description"].as_str().unwrap_or("<unknown>");
+            if failure_details.len() < 3 {
+                failure_details.push(format!("  {desc}: input={input:?}"));
+            }
         }
     }
 
-    (passed, failed)
+    (passed, failed, failure_details)
 }
 
 #[test]
@@ -180,14 +188,31 @@ fn html5lib_tokenizer_test_suite() {
 
     // Skip test3.test (1590 tests) and unicodeChars*.test for now — they contain
     // edge cases (null bytes, control chars) that cause excessive runtime.
-    // These will be enabled as the tokenizer matures.
-    // Skip files with edge cases that need more work or cause excessive runtime.
+    // TODO: These files are skipped and MUST be enabled before release.
+    // Each has a specific reason for being skipped; fix the underlying
+    // issue and remove the entry.
     let skip_files = [
-        "test3.test",                   // 1590 tests, null bytes
-        "test4.test",                   // large, causes SIGKILL
-        "unicodeChars.test",            // control characters
-        "unicodeCharsProblematic.test", // problematic unicode
-        "xmlViolation.test",            // XML-specific
+        // 1590 tests. Many contain null bytes (\x00) in input which
+        // cause `catch_unwind` overhead to make the test suite run
+        // for minutes. Need to optimize the harness or split into
+        // smaller batches.
+        "test3.test",
+        // ~300 tests. Causes SIGKILL (OOM) in debug builds because
+        // the test harness holds all panic backtraces in memory.
+        // Same optimization as test3 needed.
+        "test4.test",
+        // 323 tests for control characters (U+0001–U+001F).
+        // Our tokenizer replaces \0 with U+FFFD per WHATWG spec,
+        // but html5lib expects the raw \0 in output. Need to
+        // decide: emit \0 or \uFFFD and reconcile with the test.
+        "unicodeChars.test",
+        // Edge-case Unicode codepoints (surrogates, noncharacters).
+        // Likely needs the same \0/\uFFFD reconciliation.
+        "unicodeCharsProblematic.test",
+        // XML-specific violation tests. Not relevant for HTML-only
+        // parser, but should be reviewed to confirm they can be
+        // permanently excluded.
+        "xmlViolation.test",
     ];
 
     let mut files: Vec<_> = fs::read_dir(&test_dir)
@@ -201,13 +226,17 @@ fn html5lib_tokenizer_test_suite() {
         .collect();
     files.sort_by_key(|e| e.file_name());
 
+    let mut all_failure_samples = Vec::new();
     for entry in &files {
         let path = entry.path();
-        let (passed, failed) = run_test_file(&path);
+        let (passed, failed, details) = run_test_file(&path);
         let filename = path.file_name().unwrap().to_string_lossy();
         eprintln!("  {filename}: {passed} passed, {failed} failed");
         total_passed += passed;
         total_failed += failed;
+        for d in details {
+            all_failure_samples.push(format!("[{filename}] {d}"));
+        }
     }
 
     let total = total_passed + total_failed;
@@ -217,6 +246,12 @@ fn html5lib_tokenizer_test_suite() {
         0.0
     };
     eprintln!("\nhtml5lib tokenizer: {total_passed}/{total} passed ({pass_rate:.1}%)");
+    if !all_failure_samples.is_empty() {
+        eprintln!("\nSample failures (first 3 per file):");
+        for s in &all_failure_samples {
+            eprintln!("{s}");
+        }
+    }
 
     assert!(pass_rate >= 80.0, "Pass rate {pass_rate:.1}% is below 80% threshold");
 }

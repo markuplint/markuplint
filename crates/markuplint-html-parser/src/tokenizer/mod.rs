@@ -239,6 +239,19 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn finish_attribute(&mut self) {
+        // Skip empty attribute names (can happen when whitespace before > is
+        // reconsumed through BeforeAttributeName → AfterAttributeName).
+        if self.current_attr_name.is_empty() {
+            return;
+        }
+        // WHATWG: If an attribute with the same name already exists,
+        // this is a parse error. Per html5lib, the duplicate is dropped from
+        // the token. However, markuplint needs to know about duplicates for
+        // linting (e.g. attr-duplication rule), so we keep them as
+        // "is_duplicatable" attributes. The html5lib test harness uses
+        // a HashMap that deduplicates by key, so duplicates don't affect
+        // html5lib conformance — only the first attribute with a given name
+        // is used for comparison.
         let pos = self.input.position();
         let spaces_before = Span::new(self.current_attr_spaces_start, self.current_attr_name_start);
         let name_end = if self.current_attr_equal.is_some() {
@@ -2434,15 +2447,17 @@ impl<'a> Tokenizer<'a> {
     fn state_hexadecimal_character_reference(&mut self) {
         match self.input.next_char() {
             Some(c) if c.is_ascii_hexdigit() => {
+                // Use saturating arithmetic to cap at u32::MAX on overflow.
+                // numeric_character_reference_end handles values > 0x10FFFF.
                 self.char_ref_code = self
                     .char_ref_code
-                    .wrapping_mul(16)
-                    .wrapping_add(c.to_digit(16).unwrap());
+                    .saturating_mul(16)
+                    .saturating_add(c.to_digit(16).unwrap());
             }
-            Some(';') => {
+            Some(';') | None => {
                 self.state = State::NumericCharacterReferenceEnd;
             }
-            _ => {
+            Some(_) => {
                 // Parse error. Reconsume.
                 self.input.reconsume();
                 self.state = State::NumericCharacterReferenceEnd;
@@ -2455,13 +2470,13 @@ impl<'a> Tokenizer<'a> {
             Some(c) if c.is_ascii_digit() => {
                 self.char_ref_code = self
                     .char_ref_code
-                    .wrapping_mul(10)
-                    .wrapping_add(c.to_digit(10).unwrap());
+                    .saturating_mul(10)
+                    .saturating_add(c.to_digit(10).unwrap());
             }
-            Some(';') => {
+            Some(';') | None => {
                 self.state = State::NumericCharacterReferenceEnd;
             }
-            _ => {
+            Some(_) => {
                 self.input.reconsume();
                 self.state = State::NumericCharacterReferenceEnd;
             }
@@ -2501,12 +2516,8 @@ impl<'a> Tokenizer<'a> {
             0x9C => '\u{0153}',
             0x9E => '\u{017E}',
             0x9F => '\u{0178}',
-            c if is_noncharacter(c) => '\u{FFFD}',
-            // Control characters (except allowed ones)
-            c if is_control_char(c) && c != 0x0D => {
-                // Parse error, but still use the character.
-                char::from_u32(c).unwrap_or('\u{FFFD}')
-            }
+            // Noncharacters and control characters are parse errors but
+            // are NOT replaced — emit the character as-is per WHATWG §13.2.5.80.
             c => char::from_u32(c).unwrap_or('\u{FFFD}'),
         };
 
@@ -2536,52 +2547,6 @@ impl<'a> Tokenizer<'a> {
             State::AttributeValueDoubleQuoted | State::AttributeValueSingleQuoted | State::AttributeValueUnquoted
         )
     }
-}
-
-fn is_noncharacter(c: u32) -> bool {
-    matches!(
-        c,
-        0xFDD0
-            ..=0xFDEF
-                | 0xFFFE
-                | 0xFFFF
-                | 0x1_FFFE
-                | 0x1_FFFF
-                | 0x2_FFFE
-                | 0x2_FFFF
-                | 0x3_FFFE
-                | 0x3_FFFF
-                | 0x4_FFFE
-                | 0x4_FFFF
-                | 0x5_FFFE
-                | 0x5_FFFF
-                | 0x6_FFFE
-                | 0x6_FFFF
-                | 0x7_FFFE
-                | 0x7_FFFF
-                | 0x8_FFFE
-                | 0x8_FFFF
-                | 0x9_FFFE
-                | 0x9_FFFF
-                | 0xA_FFFE
-                | 0xA_FFFF
-                | 0xB_FFFE
-                | 0xB_FFFF
-                | 0xC_FFFE
-                | 0xC_FFFF
-                | 0xD_FFFE
-                | 0xD_FFFF
-                | 0xE_FFFE
-                | 0xE_FFFF
-                | 0xF_FFFE
-                | 0xF_FFFF
-                | 0x10_FFFE
-                | 0x10_FFFF
-    )
-}
-
-fn is_control_char(c: u32) -> bool {
-    matches!(c, 0x01..=0x1F | 0x7F..=0x9F) && !matches!(c, 0x09 | 0x0A | 0x0C | 0x0D | 0x20)
 }
 
 #[cfg(test)]
