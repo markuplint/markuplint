@@ -6,8 +6,10 @@
 //! and the adoption agency algorithm.
 
 pub mod active_formatting;
+pub mod adoption_agency;
 pub mod insertion_mode;
 pub mod open_elements;
+pub mod table_modes;
 
 use crate::input::{Position, Span};
 use crate::tables;
@@ -16,7 +18,7 @@ use crate::tokenizer::state::State as TokenizerState;
 use crate::tokenizer::token::{RawAttribute, Token};
 use crate::tree::Arena;
 use crate::tree::node::{Attribute, Namespace, NodeId};
-use active_formatting::ActiveFormattingElements;
+use active_formatting::{ActiveFormattingElements, FormatEntry};
 use insertion_mode::InsertionMode;
 use open_elements::OpenElementsStack;
 
@@ -94,7 +96,7 @@ impl<'a> TreeBuilder<'a> {
         self.mode = InsertionMode::InBody;
     }
 
-    fn process_token(&mut self, token: Token) {
+    pub(super) fn process_token(&mut self, token: Token) {
         // Dispatch to the current insertion mode.
         match self.mode {
             InsertionMode::Initial => self.process_initial(token),
@@ -127,7 +129,7 @@ impl<'a> TreeBuilder<'a> {
     // Helper methods
     // ========================================================================
 
-    fn current_node(&self) -> Option<NodeId> {
+    pub(super) fn current_node(&self) -> Option<NodeId> {
         self.open_elements.current_node()
     }
 
@@ -153,11 +155,11 @@ impl<'a> TreeBuilder<'a> {
         node_id
     }
 
-    fn insert_html_element(&mut self, tag_name: &str, attributes: &[RawAttribute], span: Span) -> NodeId {
+    pub(super) fn insert_html_element(&mut self, tag_name: &str, attributes: &[RawAttribute], span: Span) -> NodeId {
         self.insert_element_for_token(tag_name, attributes, span, Namespace::Html)
     }
 
-    fn insert_implicit_element(&mut self, tag_name: &str, pos: Position) -> NodeId {
+    pub(super) fn insert_implicit_element(&mut self, tag_name: &str, pos: Position) -> NodeId {
         let span = Span::empty(pos);
         let node_id = self.arena.create_element(
             tag_name.to_owned(),
@@ -173,7 +175,7 @@ impl<'a> TreeBuilder<'a> {
         node_id
     }
 
-    fn insert_character(&mut self, ch: char, pos: Position) {
+    pub(super) fn insert_character(&mut self, ch: char, pos: Position) {
         let target = self.appropriate_insert_position();
 
         // Merge with existing text node if possible.
@@ -203,7 +205,7 @@ impl<'a> TreeBuilder<'a> {
         self.arena.append_child(target, text_id);
     }
 
-    fn insert_comment(&mut self, data: &str, span: Span) {
+    pub(super) fn insert_comment(&mut self, data: &str, span: Span) {
         let target = self.appropriate_insert_position();
         let comment_id = self.arena.create_comment(data.to_owned(), span);
         self.arena.append_child(target, comment_id);
@@ -215,7 +217,7 @@ impl<'a> TreeBuilder<'a> {
         self.arena.append_child(doc_id, comment_id);
     }
 
-    fn generate_implied_end_tags(&mut self, exclude: Option<&str>) {
+    pub(super) fn generate_implied_end_tags(&mut self, exclude: Option<&str>) {
         loop {
             if let Some(id) = self.current_node()
                 && let Some(name) = self.arena.get(id).tag_name()
@@ -229,12 +231,12 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn current_node_is(&self, name: &str) -> bool {
+    pub(super) fn current_node_is(&self, name: &str) -> bool {
         self.current_node()
             .is_some_and(|id| self.arena.get(id).is_html_element(name))
     }
 
-    fn has_element_in_scope(&self, target: &str) -> bool {
+    pub(super) fn has_element_in_scope(&self, target: &str) -> bool {
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if node.is_html_element(target) {
@@ -250,7 +252,7 @@ impl<'a> TreeBuilder<'a> {
         false
     }
 
-    fn has_element_in_button_scope(&self, target: &str) -> bool {
+    pub(super) fn has_element_in_button_scope(&self, target: &str) -> bool {
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if node.is_html_element(target) {
@@ -266,8 +268,7 @@ impl<'a> TreeBuilder<'a> {
         false
     }
 
-    #[allow(dead_code)]
-    fn has_element_in_table_scope(&self, target: &str) -> bool {
+    pub(super) fn has_element_in_table_scope(&self, target: &str) -> bool {
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if node.is_html_element(target) {
@@ -283,7 +284,7 @@ impl<'a> TreeBuilder<'a> {
         false
     }
 
-    fn pop_until(&mut self, tag_name: &str) {
+    pub(super) fn pop_until(&mut self, tag_name: &str) {
         while let Some(id) = self.open_elements.pop() {
             if self.arena.get(id).is_html_element(tag_name) {
                 break;
@@ -291,12 +292,12 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn close_p_element(&mut self) {
+    pub(super) fn close_p_element(&mut self) {
         self.generate_implied_end_tags(Some("p"));
         self.pop_until("p");
     }
 
-    fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
+    pub(super) fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
         // Find the matching open element and set its end_tag_span.
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
@@ -307,7 +308,7 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn token_position(token: &Token) -> Position {
+    pub(super) fn token_position(token: &Token) -> Position {
         match token {
             Token::StartTag { span, .. }
             | Token::EndTag { span, .. }
@@ -444,7 +445,7 @@ impl<'a> TreeBuilder<'a> {
     // ========================================================================
     // §13.2.6.4.4 In head
     // ========================================================================
-    fn process_in_head(&mut self, token: Token) {
+    pub(super) fn process_in_head(&mut self, token: Token) {
         match &token {
             Token::Character { ch, .. } if ch.is_ascii_whitespace() => {
                 self.insert_character(
@@ -549,7 +550,7 @@ impl<'a> TreeBuilder<'a> {
     // ========================================================================
     // §13.2.6.4.5 In head noscript
     // ========================================================================
-    fn process_in_head_noscript(&mut self, token: Token) {
+    pub(super) fn process_in_head_noscript(&mut self, token: Token) {
         match &token {
             Token::Doctype { .. } => {}
             Token::StartTag { tag_name, .. } if tag_name == "html" => {
@@ -686,7 +687,7 @@ impl<'a> TreeBuilder<'a> {
     // §13.2.6.4.7 In body (simplified — core elements only)
     // ========================================================================
     #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
-    fn process_in_body(&mut self, token: Token) {
+    pub(super) fn process_in_body(&mut self, token: Token) {
         match &token {
             Token::Character { ch, offset, line, col } => {
                 if *ch == '\0' {
@@ -731,7 +732,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     #[allow(clippy::too_many_lines)]
-    fn process_in_body_start_tag(&mut self, tag_name: &str, attributes: &[RawAttribute], span: Span) {
+    pub(super) fn process_in_body_start_tag(&mut self, tag_name: &str, attributes: &[RawAttribute], span: Span) {
         match tag_name {
             "html" => {
                 self.process_in_body_start_tag_html(attributes, span);
@@ -851,17 +852,22 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
             }
             "a" => {
-                // Adoption agency for existing <a>.
-                // TODO: Full adoption agency algorithm.
+                // Check for existing <a> in active formatting.
+                if let Some(existing_a) = self.active_formatting.find_last_element("a", &self.arena) {
+                    self.run_adoption_agency("a");
+                    // Remove if still present.
+                    self.active_formatting.remove(existing_a);
+                    self.open_elements.remove(existing_a);
+                }
                 if self.has_element_in_button_scope("p") {
                     self.close_p_element();
                 }
-                self.insert_html_element(tag_name, attributes, span);
+                let el_id = self.insert_html_element(tag_name, attributes, span);
+                self.active_formatting.push(FormatEntry::Element(el_id));
             }
             "b" | "big" | "code" | "em" | "font" | "i" | "s" | "small" | "strike" | "strong" | "tt" | "u" => {
-                // Reconstruct active formatting elements.
-                // TODO: reconstruct.
-                self.insert_html_element(tag_name, attributes, span);
+                let el_id = self.insert_html_element(tag_name, attributes, span);
+                self.active_formatting.push(FormatEntry::Element(el_id));
             }
             "table" => {
                 if self.has_element_in_button_scope("p") {
@@ -966,7 +972,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     #[allow(clippy::too_many_lines)]
-    fn process_in_body_end_tag(&mut self, tag_name: &str, span: Span) {
+    pub(super) fn process_in_body_end_tag(&mut self, tag_name: &str, span: Span) {
         match tag_name {
             "template" => {
                 self.process_in_head(Token::EndTag {
@@ -1072,11 +1078,9 @@ impl<'a> TreeBuilder<'a> {
             }
             "a" | "b" | "big" | "code" | "em" | "font" | "i" | "nobr" | "s" | "small" | "strike" | "strong" | "tt"
             | "u" => {
-                // TODO: Adoption agency algorithm.
-                // Simplified: just pop until we find the tag.
-                if self.has_element_in_scope(tag_name) {
-                    self.set_end_tag_span(tag_name, span);
-                    self.pop_until(tag_name);
+                self.set_end_tag_span(tag_name, span);
+                if !self.run_adoption_agency(tag_name) {
+                    self.process_any_other_end_tag(tag_name, span);
                 }
             }
             "br" => {
@@ -1117,7 +1121,7 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn process_in_body_start_tag_html(&mut self, _attributes: &[RawAttribute], _span: Span) {
+    pub(super) fn process_in_body_start_tag_html(&mut self, _attributes: &[RawAttribute], _span: Span) {
         // TODO: Merge attributes into the existing <html> element.
         let _ = self;
     }
@@ -1154,37 +1158,10 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    // ========================================================================
-    // Table modes (stubs — process tokens using InBody as fallback)
-    // ========================================================================
-    fn process_in_table(&mut self, token: Token) {
-        // Simplified: fall through to InBody for most tokens.
-        self.process_in_body(token);
-    }
-
-    fn process_in_table_text(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
-
-    fn process_in_caption(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
-
-    fn process_in_column_group(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
-
-    fn process_in_table_body(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
-
-    fn process_in_row(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
-
-    fn process_in_cell(&mut self, token: Token) {
-        self.process_in_body(token);
-    }
+    // Table modes and adoption agency are in separate files:
+    // - table_modes.rs: InTable, InTableText, InCaption, InColumnGroup,
+    //                    InTableBody, InRow, InCell
+    // - adoption_agency.rs: run_adoption_agency()
 
     fn process_in_select(&mut self, token: Token) {
         match &token {
@@ -1385,7 +1362,7 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn reset_insertion_mode(&mut self) {
+    pub(super) fn reset_insertion_mode(&mut self) {
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if let Some(name) = node.tag_name() {

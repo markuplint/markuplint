@@ -1,7 +1,6 @@
 //! Active formatting elements list per WHATWG §13.2.4.3.
-//!
-//! Stub — will be implemented in Phase 6.
 
+use crate::tree::Arena;
 use crate::tree::node::NodeId;
 
 /// An entry in the active formatting elements list.
@@ -47,6 +46,35 @@ impl ActiveFormattingElements {
     pub fn remove(&mut self, id: NodeId) {
         self.entries
             .retain(|e| !matches!(e, FormatEntry::Element(eid) if *eid == id));
+    }
+
+    /// Check if a node ID is in the list.
+    #[must_use]
+    pub fn contains(&self, id: NodeId) -> bool {
+        self.entries
+            .iter()
+            .any(|e| matches!(e, FormatEntry::Element(eid) if *eid == id))
+    }
+
+    /// Find the last element with the given tag name.
+    #[must_use]
+    pub fn find_last_element(&self, tag_name: &str, arena: &Arena) -> Option<NodeId> {
+        for entry in self.entries.iter().rev() {
+            if let FormatEntry::Element(id) = entry
+                && arena.get(*id).is_html_element(tag_name)
+            {
+                return Some(*id);
+            }
+        }
+        None
+    }
+
+    /// Get the position of a node in the list.
+    #[must_use]
+    pub fn position(&self, id: NodeId) -> Option<usize> {
+        self.entries
+            .iter()
+            .position(|e| matches!(e, FormatEntry::Element(eid) if *eid == id))
     }
 
     /// Iterate entries from newest to oldest.
