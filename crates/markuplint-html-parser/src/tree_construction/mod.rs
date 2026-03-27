@@ -7,6 +7,7 @@
 
 pub mod active_formatting;
 pub mod adoption_agency;
+pub mod foreign_content;
 pub mod insertion_mode;
 pub mod open_elements;
 pub mod table_modes;
@@ -97,6 +98,13 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn process_token(&mut self, token: Token) {
+        // §13.2.6.5: If the adjusted current node is in SVG/MathML namespace,
+        // process as foreign content (with some exceptions).
+        if self.should_process_as_foreign() && !matches!(token, Token::Eof) {
+            self.process_foreign_content(token);
+            return;
+        }
+
         // Dispatch to the current insertion mode.
         match self.mode {
             InsertionMode::Initial => self.process_initial(token),
@@ -963,6 +971,12 @@ impl<'a> TreeBuilder<'a> {
                     self.generate_implied_end_tags(Some("rtc"));
                 }
                 self.insert_html_element(tag_name, attributes, span);
+            }
+            "svg" => {
+                self.process_svg_start_tag(attributes, span);
+            }
+            "math" => {
+                self.process_math_start_tag(attributes, span);
             }
             _ => {
                 // Any other start tag.
