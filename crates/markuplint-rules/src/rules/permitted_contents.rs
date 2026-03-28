@@ -72,9 +72,9 @@ impl Rule for PermittedContents {
                                         child_name(child),
                                         tag_name,
                                     ),
-                                    line: el.base.line,
-                                    col: el.base.col,
-                                    raw: el.base.raw.clone(),
+                                    line: if child.line > 0 { child.line } else { el.base.line },
+                                    col: if child.col > 0 { child.col } else { el.base.col },
+                                    raw: child.raw.clone(),
                                 });
                             }
                         }
@@ -95,13 +95,29 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 severity: config.severity.clone(),
-                                message: format!("The \"{tag_name}\" element must not have contents",),
+                                message: format!("The \"{tag_name}\" element must not have contents"),
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
                             });
                         }
-                        // Internal types — not reported as violations
+                        ResultType::TransparentModelDisallows => {
+                            if let Some(&idx) = result.unmatched.first() {
+                                let child = &children[idx];
+                                violations.push(Violation {
+                                    rule_id: self.id().to_string(),
+                                    severity: config.severity.clone(),
+                                    message: format!(
+                                        "The \"{tag_name}\" element has a transparent content model but disallows \"{}\" in this context",
+                                        child_name(child),
+                                    ),
+                                    line: if child.line > 0 { child.line } else { el.base.line },
+                                    col: if child.col > 0 { child.col } else { el.base.col },
+                                    raw: child.raw.clone(),
+                                });
+                            }
+                        }
+                        // Matched/MatchedZero and internal intermediate types
                         _ => {}
                     }
                 }
@@ -138,7 +154,9 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
                     kind,
                     node_name: el.base.node_name.to_ascii_lowercase(),
                     raw: el.base.raw.clone(),
-                    child_nodes: vec![], // No :has() needed for content model
+                    line: el.base.line,
+                    col: el.base.col,
+                    child_nodes: vec![],
                 });
             }
             DomNode::Text(t) => {
@@ -153,7 +171,10 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
                     continue;
                 }
                 if !raw.is_empty() {
-                    result.push(ChildNodeInfo::text(raw));
+                    let mut info = ChildNodeInfo::text(raw);
+                    info.line = t.base.line;
+                    info.col = t.base.col;
+                    result.push(info);
                 }
             }
             DomNode::PSBlock(_) => {
@@ -300,9 +321,12 @@ mod tests {
         let (arena, _) = make_parent_children("ul", &[("div", &[])]);
         let rule = PermittedContents;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        let ul_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
-        assert!(!ul_violations.is_empty(), "ul > div should be invalid");
-        assert_eq!(ul_violations[0].rule_id, "permitted-contents");
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("ul"))
+            .collect();
+        assert!(!v.is_empty(), "ul > div should be invalid");
+        assert!(v[0].raw.contains("<div>"), "raw should point to the invalid child");
     }
 
     #[test]
@@ -371,7 +395,10 @@ mod tests {
         let (arena, _) = make_parent_children("ul", &[("li", &[]), ("div", &[])]);
         let rule = PermittedContents;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("ul"))
+            .collect();
         assert!(!v.is_empty(), "ul > li + div should report div as invalid");
     }
 
@@ -393,5 +420,99 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<details>")).collect();
         assert!(!v.is_empty(), "details without summary should report missing");
+    }
+
+    // --- Boolean(true) path ---
+
+    #[test]
+    fn div_allows_any_content() {
+        let s = spec();
+        let (arena, _) = make_parent_children("div", &[("p", &[]), ("span", &[]), ("a", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<div>")).collect();
+        assert!(v.is_empty(), "div allows any flow content");
+    }
+
+    // --- Violation message content ---
+
+    #[test]
+    fn violation_message_contains_element_names() {
+        let s = spec();
+        let (arena, _) = make_parent_children("ul", &[("div", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<div>")).collect();
+        assert!(!v.is_empty(), "should have violation");
+        assert!(
+            v[0].message.contains("div"),
+            "message should mention the invalid child: {}",
+            v[0].message
+        );
+        assert!(
+            v[0].message.contains("ul"),
+            "message should mention the parent: {}",
+            v[0].message
+        );
+    }
+
+    #[test]
+    fn missing_required_message_contains_query() {
+        let s = spec();
+        let (arena, _) = make_parent_children("head", &[("meta", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<head>")).collect();
+        assert!(!v.is_empty(), "should have violation");
+        assert!(
+            v[0].message.contains("head"),
+            "message should mention parent: {}",
+            v[0].message
+        );
+        assert!(
+            v[0].message.contains("requires"),
+            "message should indicate requirement: {}",
+            v[0].message
+        );
+    }
+
+    // --- Violation location accuracy ---
+
+    #[test]
+    fn unexpected_child_violation_points_to_child() {
+        let s = spec();
+        let (arena, _) = make_parent_children("ul", &[("div", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("not permitted"))
+            .collect();
+        assert!(!v.is_empty(), "should have violation");
+        // raw should point to the child element, not the parent
+        assert!(
+            v[0].raw.contains("<div>"),
+            "raw should be the invalid child, got: {}",
+            v[0].raw
+        );
+    }
+
+    #[test]
+    fn missing_required_violation_points_to_parent() {
+        let s = spec();
+        let (arena, _) = make_parent_children("head", &[("meta", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("requires"))
+            .collect();
+        assert!(!v.is_empty(), "should have violation");
+        // raw should point to the parent (where content is missing)
+        assert!(
+            v[0].raw.contains("<head>"),
+            "raw should be the parent, got: {}",
+            v[0].raw
+        );
     }
 }

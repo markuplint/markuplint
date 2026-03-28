@@ -36,6 +36,10 @@ pub struct ChildNodeInfo {
     pub node_name: String,
     /// Raw source text (for debug/display purposes).
     pub raw: String,
+    /// 1-based line number (0 = unknown).
+    pub line: u32,
+    /// 1-based column number (0 = unknown).
+    pub col: u32,
     /// Child nodes for `:has()` selector support.
     /// Aligns with TS `childNodes`.
     pub child_nodes: Vec<ChildNodeInfo>,
@@ -48,6 +52,8 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::HtmlElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
         }
     }
@@ -58,6 +64,8 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::HtmlElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes,
         }
     }
@@ -68,6 +76,8 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::WebComponent,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
         }
     }
@@ -78,6 +88,8 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::AuthoredElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
         }
     }
@@ -96,6 +108,8 @@ impl ChildNodeInfo {
             },
             node_name: String::new(),
             raw: raw.to_string(),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
         }
     }
@@ -106,6 +120,8 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::PreprocessorBlock,
             node_name: String::new(),
             raw: raw.to_string(),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
         }
     }
