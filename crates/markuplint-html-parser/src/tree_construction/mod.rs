@@ -1173,6 +1173,7 @@ impl<'a> TreeBuilder<'a> {
                 if self.current_node_is("option") {
                     self.open_elements.pop();
                 }
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element(tag_name, attributes, span);
             }
             "rb" | "rtc" => {
@@ -1466,7 +1467,12 @@ impl<'a> TreeBuilder<'a> {
             } => {
                 // Parse error. Insert the element anyway (matches browser behavior
                 // and html5lib test expectations for formatting in <select>).
-                self.insert_html_element(tag_name, attributes, *span);
+                let el_id = self.insert_html_element(tag_name, attributes, *span);
+                // Push formatting elements to AF so they reconstruct after
+                // select is closed.
+                if crate::tables::is_formatting_element(tag_name) {
+                    self.active_formatting.push(FormatEntry::Element(el_id));
+                }
             }
             _ => {
                 // Ignore other tokens (end tags, etc.)

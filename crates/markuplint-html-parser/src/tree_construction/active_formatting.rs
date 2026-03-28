@@ -56,14 +56,18 @@ impl ActiveFormattingElements {
             .any(|e| matches!(e, FormatEntry::Element(eid) if *eid == id))
     }
 
-    /// Find the last element with the given tag name.
+    /// Find the last element with the given tag name, searching
+    /// between the end of the list and the last marker (or start).
     #[must_use]
     pub fn find_last_element(&self, tag_name: &str, arena: &Arena) -> Option<NodeId> {
         for entry in self.entries.iter().rev() {
-            if let FormatEntry::Element(id) = entry
-                && arena.get(*id).is_html_element(tag_name)
-            {
-                return Some(*id);
+            match entry {
+                FormatEntry::Marker => return None, // Stop at marker.
+                FormatEntry::Element(id) => {
+                    if arena.get(*id).is_html_element(tag_name) {
+                        return Some(*id);
+                    }
+                }
             }
         }
         None
