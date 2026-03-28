@@ -31,11 +31,11 @@ if (v1[0].col <= 1) throw new Error('Test 1 FAIL: col should be > 1');
 
 // Test 2: Clean HTML
 const v2 = lintHtml('<div class="a" id="b"></div>', { 'attr-duplication': true });
-if (v2.length !== 0) throw new Error('Test 2 FAIL: expected 0, got ' + v2.length);
+if (v2.length > 0) throw new Error('Test 2 FAIL: expected 0, got ' + v2.length);
 
 // Test 3: Disabled rule
 const v3 = lintHtml('<div class="a" class="b"></div>', { 'attr-duplication': false });
-if (v3.length !== 0) throw new Error('Test 3 FAIL: expected 0 (disabled), got ' + v3.length);
+if (v3.length > 0) throw new Error('Test 3 FAIL: expected 0 (disabled), got ' + v3.length);
 
 // Test 4: Severity override
 const v4 = lintHtml('<div id="x" id="y"></div>', { 'attr-duplication': 'warning' });
@@ -46,5 +46,7 @@ if (v4[0].severity !== 'warning') throw new Error('Test 4 FAIL: severity should 
 const v5 = lintHtml('<div class="a" class="b"></div><span id="x" id="y"></span>', { 'attr-duplication': true });
 if (v5.length !== 2) throw new Error('Test 5 FAIL: expected 2, got ' + v5.length);
 
+// eslint-disable-next-line no-console -- smoke test output
 console.log('Rust lint pipeline smoke test: all 5 tests passed');
+// eslint-disable-next-line no-console -- smoke test output
 console.log('Sample violation:', JSON.stringify(v1[0]));
