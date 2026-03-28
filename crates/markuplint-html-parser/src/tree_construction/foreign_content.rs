@@ -264,9 +264,14 @@ impl TreeBuilder<'_> {
                 if BREAKOUT_ELEMENTS.contains(&tag)
                     || (tag == "font" && has_font_attrs(attributes))
                 {
-                    // Pop until we're back in HTML namespace.
+                    // Pop until MathML text integration point, HTML integration
+                    // point, or HTML namespace element per WHATWG §13.2.6.5.
                     while let Some(id) = self.current_node() {
-                        if self.arena.get(id).namespace() == Some(Namespace::Html) {
+                        let node = self.arena.get(id);
+                        if node.namespace() == Some(Namespace::Html)
+                            || node.is_mathml_text_integration_point()
+                            || node.is_html_integration_point()
+                        {
                             break;
                         }
                         self.open_elements.pop();
@@ -308,9 +313,13 @@ impl TreeBuilder<'_> {
                 // WHATWG §13.2.6.5: Certain end tags (like </br>, </p>) cause
                 // a breakout from foreign content, same as start tag breakout.
                 if BREAKOUT_ELEMENTS.contains(&tag_name.as_str()) {
-                    // Pop until HTML namespace, then reprocess.
+                    // Pop until integration point or HTML namespace.
                     while let Some(id) = self.current_node() {
-                        if self.arena.get(id).namespace() == Some(Namespace::Html) {
+                        let node = self.arena.get(id);
+                        if node.namespace() == Some(Namespace::Html)
+                            || node.is_mathml_text_integration_point()
+                            || node.is_html_integration_point()
+                        {
                             break;
                         }
                         self.open_elements.pop();
