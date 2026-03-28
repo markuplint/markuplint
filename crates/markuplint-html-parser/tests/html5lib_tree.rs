@@ -311,12 +311,11 @@ fn html5lib_tree_construction_test_suite() {
 
     // Skipped files: features not yet implemented (each documented).
     let skip_files = [
-        "template.dat",                               // InTemplate not fully implemented
+        "template.dat",                               // InTemplate needs full mode push/pop (52/111 pass)
         "domjs-unsafe.dat",                           // null bytes in unsafe contexts
         "plain-text-unsafe.dat",                      // null bytes in PLAINTEXT
         "pending-spec-changes-plain-text-unsafe.dat", // same
-        "tests_innerHTML_1.dat",                      // innerHTML fragment parsing (76/80 pass, needs fragment setup rework)
-        "foreign-fragment.dat",                       // SVG/MathML fragment context (44/65 pass, needs fragment setup rework)
+        "foreign-fragment.dat",                       // SVG/MathML fragment context (45/65 pass, needs mglyph/malignmark handling)
     ];
 
     let mut total_passed = 0;

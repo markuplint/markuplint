@@ -63,6 +63,8 @@ pub struct TreeBuilder<'a> {
     skip_next_newline: bool,
     /// Whether the document is in quirks mode (affects p/table nesting).
     quirks_mode: bool,
+    /// The fragment context tag name (for distinguishing "html" from "head" etc.).
+    fragment_context: Option<String>,
 }
 
 impl<'a> TreeBuilder<'a> {
@@ -98,9 +100,12 @@ impl<'a> TreeBuilder<'a> {
             reprocess_depth: 0,
             skip_next_newline: false,
             quirks_mode: false,
+            fragment_context: None,
         };
         if is_fragment {
-            builder.setup_fragment_parsing(context.unwrap_or("body"), context_ns);
+            let ctx = context.unwrap_or("body");
+            builder.fragment_context = Some(ctx.to_owned());
+            builder.setup_fragment_parsing(ctx, context_ns);
         }
         builder
     }
@@ -974,8 +979,9 @@ impl<'a> TreeBuilder<'a> {
             Token::StartTag { tag_name, .. } if tag_name == "head" => {
                 // Parse error. Ignore.
             }
-            Token::Eof if self.is_fragment => {
-                // Fragment mode: don't create implicit body on EOF.
+            Token::Eof if self.is_fragment && !matches!(self.fragment_context.as_deref(), Some("html") | None) => {
+                // Fragment mode (non-html context): don't create implicit body on EOF.
+                // For "html" context, body IS needed.
             }
             _ => {
                 let pos = Self::token_position(&token);
@@ -1097,8 +1103,8 @@ impl<'a> TreeBuilder<'a> {
                 // Else: parse error, ignore.
             }
             "frameset" => {
-                // WHATWG: If frameset_ok is false, ignore. Otherwise:
-                if !self.frameset_ok {
+                // WHATWG: If frameset_ok is false or fragment mode, ignore.
+                if !self.frameset_ok || self.is_fragment {
                     return;
                 }
                 // Remove the body element from the stack and document.
