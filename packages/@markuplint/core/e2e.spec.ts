@@ -2,13 +2,15 @@
  * E2E test: TS html-parser → MLAST JSON → Rust MLDOM (via napi) → TS
  */
 
- 
-
-import htmlSpec from '@markuplint/html-spec';
+import { createRequire } from 'node:module';
 import { parser } from '@markuplint/html-parser';
 import { describe, it, expect } from 'vitest';
 
+ 
 import { NapiDom, lint, matchCssSyntax, matchCssProperty } from './index.js';
+
+const require = createRequire(import.meta.url);
+const htmlSpec = require('@markuplint/html-spec');
 
 function buildDom(html: string): NapiDom {
 	const ast = parser.parse(html);
