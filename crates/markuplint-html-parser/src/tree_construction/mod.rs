@@ -1054,10 +1054,18 @@ impl<'a> TreeBuilder<'a> {
                 self.process_in_head(token);
             }
             "body" => {
-                // WHATWG: If body is already open, merge attributes from this
-                // second body tag into the existing body element.
-                if !self.is_fragment || self.has_element_in_scope("body") {
-                    // Find the body element and merge attributes.
+                // WHATWG: If the stack has only one node, or if the second
+                // element is not body, or fragment case → ignore.
+                // Otherwise, merge attributes.
+                let should_ignore = self.open_elements.len() <= 1
+                    || self.is_fragment
+                    || !self
+                        .open_elements
+                        .get(1)
+                        .is_some_and(|id| self.arena.get(id).is_html_element("body"));
+
+                if !should_ignore {
+                    // Merge attributes into existing body.
                     if !attributes.is_empty() {
                         for id in self.open_elements.iter_top_to_bottom() {
                             if self.arena.get(*id).is_html_element("body") {
@@ -1079,11 +1087,8 @@ impl<'a> TreeBuilder<'a> {
                         }
                     }
                     self.frameset_ok = false;
-                } else {
-                    // Fragment: no body in scope yet — insert as normal element.
-                    self.insert_html_element(tag_name, attributes, span);
-                    self.frameset_ok = false;
                 }
+                // Else: parse error, ignore.
             }
             "frameset" => {
                 // WHATWG: If frameset_ok is false, ignore. Otherwise:
@@ -1814,8 +1819,27 @@ impl<'a> TreeBuilder<'a> {
     }
 
     fn process_in_template(&mut self, token: Token) {
-        // Simplified: delegate to InBody.
-        self.process_in_body(token);
+        match &token {
+            Token::Eof => {
+                // WHATWG: If no template on stack, stop.
+                if self.template_insertion_modes.is_empty() {
+                    return;
+                }
+                // Pop template, clear AF, reset mode, reprocess.
+                self.pop_until("template");
+                self.active_formatting.clear_up_to_last_marker();
+                self.template_insertion_modes.pop();
+                self.reset_insertion_mode();
+                self.process_token(token);
+            }
+            Token::EndTag { tag_name, .. } if tag_name == "template" => {
+                self.process_template_end_tag();
+            }
+            _ => {
+                // Delegate to InBody.
+                self.process_in_body(token);
+            }
+        }
     }
 
     fn process_template_end_tag(&mut self) {
