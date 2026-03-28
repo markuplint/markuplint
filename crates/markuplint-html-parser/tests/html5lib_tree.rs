@@ -87,7 +87,28 @@ fn parse_dat_file(content: &str) -> Vec<TreeTest> {
 fn serialize_tree(arena: &Arena, source: &str) -> String {
     let doc = arena.get(arena.document_id());
     let mut output = String::new();
-    for &child_id in &doc.children {
+
+    // For SVG/MathML fragment parsing, the document has a single virtual
+    // context element (ghost, SVG/MathML namespace). Skip it and serialize
+    // its children instead.
+    let children_to_serialize = if doc.children.len() == 1 {
+        let child = arena.get(doc.children[0]);
+        if child.is_implicit
+            && matches!(
+                child.namespace(),
+                Some(markuplint_html_parser::tree::node::Namespace::Svg)
+                    | Some(markuplint_html_parser::tree::node::Namespace::MathML)
+            )
+        {
+            &child.children
+        } else {
+            &doc.children
+        }
+    } else {
+        &doc.children
+    };
+
+    for &child_id in children_to_serialize {
         serialize_node(arena, source, child_id, 0, &mut output);
     }
     output.trim_end_matches('\n').to_owned()
@@ -157,7 +178,15 @@ fn serialize_node(arena: &Arena, source: &str, node_id: NodeId, depth: usize, ou
 fn run_tree_test(test: &TreeTest) -> bool {
     let mut builder = if let Some(ref context) = test.context_element {
         // Fragment with specific context element.
-        TreeBuilder::with_context(&test.data, true, Some(context))
+        // Context may include namespace: "svg path", "math mi", or just "body".
+        let (ns, tag) = if let Some(rest) = context.strip_prefix("svg ") {
+            (markuplint_html_parser::tree::node::Namespace::Svg, rest)
+        } else if let Some(rest) = context.strip_prefix("math ") {
+            (markuplint_html_parser::tree::node::Namespace::MathML, rest)
+        } else {
+            (markuplint_html_parser::tree::node::Namespace::Html, context.as_str())
+        };
+        TreeBuilder::with_context(&test.data, true, Some(tag), ns)
     } else if test.is_fragment {
         TreeBuilder::new(&test.data, true)
     } else {
@@ -220,6 +249,7 @@ fn html5lib_tree_construction_test_suite() {
         "plain-text-unsafe.dat",                      // null bytes in PLAINTEXT
         "pending-spec-changes-plain-text-unsafe.dat", // same
         "tests_innerHTML_1.dat",                      // innerHTML fragment parsing
+        "foreign-fragment.dat",                       // SVG/MathML fragment context
     ];
 
     let mut total_passed = 0;
@@ -282,18 +312,12 @@ fn html5lib_tree_construction_test_suite() {
         }
     }
 
-    // Require >= 80% of executed tests to pass. Currently ~81%.
-    // Remaining failures are edge cases (quirks mode, advanced table
-    // foster parenting, deeply nested adoption agency, etc.).
-    let pass_rate = if executed > 0 {
-        (total_passed as f64 / executed as f64) * 100.0
-    } else {
-        0.0
-    };
-    eprintln!("Pass rate: {pass_rate:.1}%");
+    // Exact failure count for regression detection.
+    // Lower this number as failures are fixed. Target: 0.
+    let max_allowed_failures = 303;
     assert!(
-        pass_rate >= 80.0,
-        "Pass rate {pass_rate:.1}% is below 80%. {total_failed} test(s) failed."
+        total_failed <= max_allowed_failures,
+        "Regression: {total_failed} failures (max allowed: {max_allowed_failures})"
     );
 }
 

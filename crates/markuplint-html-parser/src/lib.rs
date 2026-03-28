@@ -66,7 +66,16 @@ pub fn parse_fragment(html: &str) -> Arena {
 /// - `"script"` — parses with script data tokenizer state
 #[must_use]
 pub fn parse_fragment_with_context(html: &str, context: &str) -> Arena {
-    let mut builder = TreeBuilder::with_context(html, true, Some(context));
+    let mut builder = TreeBuilder::with_context(html, true, Some(context), tree::node::Namespace::Html);
+    builder.run();
+    builder.arena
+}
+
+/// Parse an HTML string as a fragment with a specific context element
+/// and namespace (for SVG/MathML fragments).
+#[must_use]
+pub fn parse_fragment_with_context_ns(html: &str, context: &str, ns: tree::node::Namespace) -> Arena {
+    let mut builder = TreeBuilder::with_context(html, true, Some(context), ns);
     builder.run();
     builder.arena
 }

@@ -264,7 +264,8 @@ impl TreeBuilder<'_> {
 
     /// Handle `<svg>` start tag in `InBody`.
     pub(super) fn process_svg_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
-        self.insert_element_for_token("svg", attributes, span, Namespace::Svg);
+        let adjusted = adjust_svg_attributes(attributes);
+        self.insert_element_for_token("svg", &adjusted, span, Namespace::Svg);
     }
 
     /// Handle `<math>` start tag in `InBody`.

@@ -62,17 +62,17 @@ impl<'a> TreeBuilder<'a> {
     /// Create a tree builder for document mode.
     #[must_use]
     pub fn new(source: &'a str, is_fragment: bool) -> Self {
-        Self::with_context(source, is_fragment, None)
+        Self::with_context(source, is_fragment, None, Namespace::Html)
     }
 
     /// Create a tree builder with an optional context element for
     /// fragment parsing per WHATWG §13.2.6.4.
     ///
     /// `context` is the tag name of the context element (e.g. "body",
-    /// "table", "select"). If `None` and `is_fragment` is true,
-    /// defaults to "body".
+    /// "table", "select"). `context_ns` is the namespace.
+    /// If `None` and `is_fragment` is true, defaults to "body" in HTML.
     #[must_use]
-    pub fn with_context(source: &'a str, is_fragment: bool, context: Option<&str>) -> Self {
+    pub fn with_context(source: &'a str, is_fragment: bool, context: Option<&str>, context_ns: Namespace) -> Self {
         let mut builder = Self {
             tokenizer: Tokenizer::new(source),
             arena: Arena::new(),
@@ -90,7 +90,7 @@ impl<'a> TreeBuilder<'a> {
             reprocess_depth: 0,
         };
         if is_fragment {
-            builder.setup_fragment_parsing(context.unwrap_or("body"));
+            builder.setup_fragment_parsing(context.unwrap_or("body"), context_ns);
         }
         builder
     }
@@ -112,7 +112,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     /// WHATWG §13.2.6.4: Fragment parsing algorithm.
-    fn setup_fragment_parsing(&mut self, context_tag: &str) {
+    fn setup_fragment_parsing(&mut self, context_tag: &str, _context_ns: Namespace) {
         // Push the document root onto the open elements stack.
         self.open_elements.push(self.arena.document_id());
 
@@ -1067,6 +1067,14 @@ impl<'a> TreeBuilder<'a> {
                 }
                 self.insert_html_element(tag_name, attributes, span);
             }
+            "plaintext" => {
+                if self.has_element_in_button_scope("p") {
+                    self.close_p_element();
+                }
+                self.insert_html_element(tag_name, attributes, span);
+                self.frameset_ok = false;
+                self.tokenizer.set_state(TokenizerState::PlainText);
+            }
             "pre" | "listing" => {
                 if self.has_element_in_button_scope("p") {
                     self.close_p_element();
@@ -1460,9 +1468,26 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    pub(super) fn process_in_body_start_tag_html(&mut self, _attributes: &[RawAttribute], _span: Span) {
-        // TODO: Merge attributes into the existing <html> element.
-        let _ = self;
+    pub(super) fn process_in_body_start_tag_html(&mut self, new_attrs: &[RawAttribute], span: Span) {
+        // Merge attributes into the existing <html> element.
+        if new_attrs.is_empty() {
+            return;
+        }
+        if let Some(html_id) = self.open_elements.get(0) {
+            let attrs = convert_attributes(new_attrs, span);
+            let node = self.arena.get_mut(html_id);
+            if let crate::tree::node::NodeKind::Element {
+                attributes: ref mut existing,
+                ..
+            } = node.kind
+            {
+                for attr in attrs {
+                    if !existing.iter().any(|a| a.name == attr.name) {
+                        existing.push(attr);
+                    }
+                }
+            }
+        }
     }
 
     // ========================================================================
@@ -1563,11 +1588,13 @@ impl<'a> TreeBuilder<'a> {
                 span,
                 ..
             } => {
-                // Parse error. Insert the element anyway (matches browser behavior
-                // and html5lib test expectations for formatting in <select>).
-                let el_id = self.insert_html_element(tag_name, attributes, *span);
-                // Push formatting elements to AF so they reconstruct after
-                // select is closed.
+                // Parse error. Insert the element anyway.
+                let ns = match tag_name.as_str() {
+                    "svg" => Namespace::Svg,
+                    "math" => Namespace::MathML,
+                    _ => Namespace::Html,
+                };
+                let el_id = self.insert_element_for_token(tag_name, attributes, *span, ns);
                 if crate::tables::is_formatting_element(tag_name) {
                     self.active_formatting.push(FormatEntry::Element(el_id));
                 }
@@ -1579,7 +1606,33 @@ impl<'a> TreeBuilder<'a> {
     }
 
     fn process_in_select_in_table(&mut self, token: Token) {
-        self.process_in_select(token);
+        // WHATWG §13.2.6.4.18: table-related tags close the select.
+        match &token {
+            Token::StartTag { tag_name, .. }
+                if matches!(
+                    tag_name.as_str(),
+                    "caption" | "table" | "tbody" | "tfoot" | "thead" | "tr" | "td" | "th"
+                ) =>
+            {
+                // Parse error. Close select, reprocess.
+                self.pop_until("select");
+                self.reset_insertion_mode();
+                self.process_token(token);
+            }
+            Token::EndTag { tag_name, .. }
+                if matches!(
+                    tag_name.as_str(),
+                    "caption" | "table" | "tbody" | "tfoot" | "thead" | "tr" | "td" | "th"
+                ) =>
+            {
+                if self.has_element_in_table_scope(tag_name) {
+                    self.pop_until("select");
+                    self.reset_insertion_mode();
+                    self.process_token(token);
+                }
+            }
+            _ => self.process_in_select(token),
+        }
     }
 
     fn process_in_template(&mut self, token: Token) {
