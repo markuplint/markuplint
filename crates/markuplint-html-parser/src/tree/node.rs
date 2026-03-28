@@ -91,4 +91,43 @@ impl TreeNode {
     pub fn is_html_element(&self, name: &str) -> bool {
         self.tag_name() == Some(name) && self.namespace() == Some(Namespace::Html)
     }
+
+    /// Get the value of an attribute by name.
+    #[must_use]
+    pub fn attribute_value(&self, attr_name: &str) -> Option<&str> {
+        match &self.kind {
+            NodeKind::Element { attributes, .. } => attributes
+                .iter()
+                .find(|a| a.name.eq_ignore_ascii_case(attr_name))
+                .map(|a| a.value.as_str()),
+            _ => None,
+        }
+    }
+
+    /// Check if this is a `MathML` text integration point.
+    #[must_use]
+    pub fn is_mathml_text_integration_point(&self) -> bool {
+        self.namespace() == Some(Namespace::MathML)
+            && matches!(self.tag_name(), Some("mi" | "mo" | "mn" | "ms" | "mtext"))
+    }
+
+    /// Check if this is an HTML integration point per WHATWG §13.2.6.5.
+    #[must_use]
+    pub fn is_html_integration_point(&self) -> bool {
+        match self.namespace() {
+            Some(Namespace::Svg) => {
+                matches!(self.tag_name(), Some("foreignObject" | "desc" | "title"))
+            }
+            Some(Namespace::MathML) => {
+                self.tag_name() == Some("annotation-xml")
+                    && self
+                        .attribute_value("encoding")
+                        .is_some_and(|enc| {
+                            enc.eq_ignore_ascii_case("text/html")
+                                || enc.eq_ignore_ascii_case("application/xhtml+xml")
+                        })
+            }
+            _ => false,
+        }
+    }
 }

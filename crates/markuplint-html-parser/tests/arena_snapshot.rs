@@ -596,22 +596,20 @@ fn noscript_issue_737() {
 
 #[test]
 fn doc_doctype_space() {
+    // Per WHATWG §13.2.6.4.2, whitespace before <html> is ignored.
     let maps = debug_maps("<!DOCTYPE html> ");
     assert!(maps[0].contains("#doctype"), "first node should be doctype: {maps:?}");
-    assert!(
-        maps.iter().any(|m| m.contains("#text")),
-        "Expected text node for trailing space, got: {maps:?}"
-    );
+    // Whitespace after doctype is consumed (per spec: ignore whitespace in BeforeHtml mode).
+    // The implicit <html> is created, so there should be at least doctype + html.
+    assert!(maps.len() >= 2, "Expected doctype + html, got: {maps:?}");
 }
 
 #[test]
 fn doc_doctype_newline() {
+    // Per WHATWG §13.2.6.4.2, whitespace before <html> is ignored.
     let maps = debug_maps("<!DOCTYPE html>\n");
     assert!(maps[0].contains("#doctype"), "first node should be doctype: {maps:?}");
-    assert!(
-        maps.iter().any(|m| m.contains("#text")),
-        "Expected text node for trailing newline, got: {maps:?}"
-    );
+    assert!(maps.len() >= 2, "Expected doctype + html, got: {maps:?}");
 }
 
 #[test]

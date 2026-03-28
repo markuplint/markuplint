@@ -100,6 +100,9 @@ const BREAKOUT_ELEMENTS: &[&str] = &[
 /// `MathML` text integration points.
 const MATHML_TEXT_INTEGRATION: &[&str] = &["mi", "mo", "mn", "ms", "mtext"];
 
+/// `MathML` attribute name adjustments per WHATWG §13.2.6.5.
+const MATHML_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[("definitionurl", "definitionURL")];
+
 /// SVG attribute name adjustments per WHATWG §13.2.6.5.
 const SVG_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[
     ("attributename", "attributeName"),
@@ -164,6 +167,7 @@ const SVG_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[
 
 impl TreeBuilder<'_> {
     /// Check if we should process a token as foreign content.
+    /// Simple check: is the adjusted current node in a foreign namespace?
     pub(super) fn should_process_as_foreign(&self) -> bool {
         let Some(current) = self.current_node() else {
             return false;
@@ -173,7 +177,61 @@ impl TreeBuilder<'_> {
         ns == Some(Namespace::Svg) || ns == Some(Namespace::MathML)
     }
 
+    /// WHATWG §13.2.6: Full dispatch check including integration points.
+    /// Returns true if the token should be processed as foreign content.
+    pub(super) fn should_process_as_foreign_for_token(&self, token: &Token) -> bool {
+        let Some(current) = self.current_node() else {
+            return false;
+        };
+        let node = self.arena.get(current);
+        let ns = node.namespace();
+
+        // If not in a foreign namespace, never process as foreign.
+        if ns != Some(Namespace::Svg) && ns != Some(Namespace::MathML) {
+            return false;
+        }
+
+        // EOF always goes to the current insertion mode.
+        if matches!(token, Token::Eof) {
+            return false;
+        }
+
+        // MathML text integration point: start tags (except mglyph/malignmark)
+        // and character tokens go to the current insertion mode.
+        if node.is_mathml_text_integration_point() {
+            match token {
+                Token::StartTag { tag_name, .. }
+                    if tag_name != "mglyph" && tag_name != "malignmark" =>
+                {
+                    return false;
+                }
+                Token::Character { .. } => return false,
+                _ => {}
+            }
+        }
+
+        // MathML annotation-xml with <svg> start tag → current insertion mode.
+        if ns == Some(Namespace::MathML)
+            && node.tag_name() == Some("annotation-xml")
+            && matches!(token, Token::StartTag { tag_name, .. } if tag_name == "svg")
+        {
+            return false;
+        }
+
+        // HTML integration point: start tags and character tokens go to
+        // the current insertion mode.
+        if node.is_html_integration_point() {
+            match token {
+                Token::StartTag { .. } | Token::Character { .. } => return false,
+                _ => {}
+            }
+        }
+
+        true
+    }
+
     /// Process a token in foreign content mode.
+    #[allow(clippy::too_many_lines)]
     pub(super) fn process_foreign_content(&mut self, token: Token) {
         match &token {
             Token::Character { ch, offset, line, col } => {
@@ -208,8 +266,10 @@ impl TreeBuilder<'_> {
             } => {
                 let tag = tag_name.as_str();
 
-                // Check for breakout elements.
-                if BREAKOUT_ELEMENTS.contains(&tag) || (tag == "font" && has_font_attrs(attributes)) {
+                // Check for breakout elements (and special end-tag-like start tags).
+                if BREAKOUT_ELEMENTS.contains(&tag)
+                    || (tag == "font" && has_font_attrs(attributes))
+                {
                     // Pop until we're back in HTML namespace.
                     while let Some(id) = self.current_node() {
                         if self.arena.get(id).namespace() == Some(Namespace::Html) {
@@ -233,29 +293,72 @@ impl TreeBuilder<'_> {
                     tag.to_owned()
                 };
 
-                // Adjust attribute names for SVG elements.
-                let adjusted_attrs: Vec<RawAttribute>;
-                let attrs_ref = if current_ns == Namespace::Svg {
-                    adjusted_attrs = adjust_svg_attributes(attributes);
-                    &adjusted_attrs
+                // Adjust attribute names: SVG/MathML-specific + foreign namespace attrs.
+                let adjusted_attrs = if current_ns == Namespace::Svg {
+                    let svg_adjusted = adjust_svg_attributes(attributes);
+                    adjust_foreign_attributes(&svg_adjusted)
+                } else if current_ns == Namespace::MathML {
+                    let math_adjusted = adjust_mathml_attributes(attributes);
+                    adjust_foreign_attributes(&math_adjusted)
                 } else {
-                    attributes
+                    adjust_foreign_attributes(attributes)
                 };
 
-                self.insert_element_for_token(&adjusted_name, attrs_ref, *span, current_ns);
+                self.insert_element_for_token(&adjusted_name, &adjusted_attrs, *span, current_ns);
 
                 if *self_closing {
                     self.open_elements.pop();
                 }
             }
             Token::EndTag { tag_name, span, .. } => {
-                self.set_end_tag_span(tag_name, *span);
-                // Simple: pop if current node matches.
-                if let Some(id) = self.current_node() {
-                    let node = self.arena.get(id);
-                    if node.tag_name().is_some_and(|n| n.eq_ignore_ascii_case(tag_name)) {
+                // WHATWG §13.2.6.5: Certain end tags (like </br>, </p>) cause
+                // a breakout from foreign content, same as start tag breakout.
+                if BREAKOUT_ELEMENTS.contains(&tag_name.as_str()) {
+                    // Pop until HTML namespace, then reprocess.
+                    while let Some(id) = self.current_node() {
+                        if self.arena.get(id).namespace() == Some(Namespace::Html) {
+                            break;
+                        }
                         self.open_elements.pop();
                     }
+                    self.process_token(token);
+                    return;
+                }
+
+                self.set_end_tag_span(tag_name, *span);
+
+                // WHATWG §13.2.6.5: End tag in foreign content.
+                // Walk the stack from top looking for a match.
+                let mut found = false;
+                let stack_len = self.open_elements.len();
+                for i in (0..stack_len).rev() {
+                    let Some(node_id) = self.open_elements.get(i) else {
+                        continue;
+                    };
+                    let node = self.arena.get(node_id);
+
+                    // If this node's tag matches (case-insensitive), pop
+                    // down to and including it.
+                    if node.tag_name().is_some_and(|n| n.eq_ignore_ascii_case(tag_name)) {
+                        // Pop elements from top to this node.
+                        while self.open_elements.len() > i {
+                            self.open_elements.pop();
+                        }
+                        found = true;
+                        break;
+                    }
+
+                    // If we hit an HTML-namespace element, stop searching
+                    // and reprocess the end tag in InBody.
+                    if node.namespace() == Some(Namespace::Html) {
+                        self.process_token(token);
+                        return;
+                    }
+                }
+
+                if !found {
+                    // No match found. Reprocess in current mode.
+                    self.process_token(token);
                 }
             }
             _ => {}
@@ -265,20 +368,71 @@ impl TreeBuilder<'_> {
     /// Handle `<svg>` start tag in `InBody`.
     pub(super) fn process_svg_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
         let adjusted = adjust_svg_attributes(attributes);
+        let adjusted = adjust_foreign_attributes(&adjusted);
         self.insert_element_for_token("svg", &adjusted, span, Namespace::Svg);
     }
 
     /// Handle `<math>` start tag in `InBody`.
     pub(super) fn process_math_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
-        self.insert_element_for_token("math", attributes, span, Namespace::MathML);
+        let adjusted = adjust_mathml_attributes(attributes);
+        let adjusted = adjust_foreign_attributes(&adjusted);
+        self.insert_element_for_token("math", &adjusted, span, Namespace::MathML);
     }
 }
+
+/// Foreign content attribute namespace adjustments per WHATWG §13.2.6.5.
+/// These map `xlink:href` → `xlink href`, `xml:lang` → `xml lang`, etc.
+const FOREIGN_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[
+    ("xlink:actuate", "xlink actuate"),
+    ("xlink:arcrole", "xlink arcrole"),
+    ("xlink:href", "xlink href"),
+    ("xlink:role", "xlink role"),
+    ("xlink:show", "xlink show"),
+    ("xlink:title", "xlink title"),
+    ("xlink:type", "xlink type"),
+    ("xml:lang", "xml lang"),
+    ("xml:space", "xml space"),
+    ("xmlns", "xmlns"),
+    ("xmlns:xlink", "xmlns xlink"),
+];
 
 fn adjust_svg_attributes(attrs: &[RawAttribute]) -> Vec<RawAttribute> {
     attrs
         .iter()
         .map(|attr| {
             let adjusted_name = SVG_ATTR_ADJUSTMENTS
+                .iter()
+                .find(|(from, _)| *from == attr.raw_name)
+                .map_or_else(|| attr.raw_name.clone(), |(_, to)| (*to).to_owned());
+            RawAttribute {
+                raw_name: adjusted_name,
+                ..attr.clone()
+            }
+        })
+        .collect()
+}
+
+fn adjust_mathml_attributes(attrs: &[RawAttribute]) -> Vec<RawAttribute> {
+    attrs
+        .iter()
+        .map(|attr| {
+            let adjusted_name = MATHML_ATTR_ADJUSTMENTS
+                .iter()
+                .find(|(from, _)| *from == attr.raw_name)
+                .map_or_else(|| attr.raw_name.clone(), |(_, to)| (*to).to_owned());
+            RawAttribute {
+                raw_name: adjusted_name,
+                ..attr.clone()
+            }
+        })
+        .collect()
+}
+
+fn adjust_foreign_attributes(attrs: &[RawAttribute]) -> Vec<RawAttribute> {
+    attrs
+        .iter()
+        .map(|attr| {
+            let adjusted_name = FOREIGN_ATTR_ADJUSTMENTS
                 .iter()
                 .find(|(from, _)| *from == attr.raw_name)
                 .map_or_else(|| attr.raw_name.clone(), |(_, to)| (*to).to_owned());

@@ -16,10 +16,12 @@ impl TreeBuilder<'_> {
     pub(super) fn process_in_table(&mut self, token: Token) {
         match &token {
             Token::Character { .. } => {
-                // Foster parenting: process in InBody with foster_parenting enabled.
-                self.foster_parenting = true;
-                self.process_in_body(token);
-                self.foster_parenting = false;
+                // WHATWG §13.2.6.4.9: If current node is table/tbody/tfoot/thead/tr,
+                // switch to InTableText to accumulate characters.
+                self.pending_table_chars.clear();
+                self.original_mode = Some(InsertionMode::InTable);
+                self.mode = InsertionMode::InTableText;
+                self.process_token(token);
             }
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
@@ -135,15 +137,26 @@ impl TreeBuilder<'_> {
                 ));
             }
         } else {
-            // Process pending chars.
+            // Flush pending table characters.
             let has_non_space = self.pending_table_chars.iter().any(|(ch, _)| !ch.is_ascii_whitespace());
             let chars: Vec<(char, Position)> = std::mem::take(&mut self.pending_table_chars);
             if has_non_space {
-                // Foster parent all pending chars.
+                // Parse error. Process each through InBody with foster parenting.
+                // Per WHATWG: "process the token using the rules for the
+                // 'in body' insertion mode" with foster parenting enabled.
                 for (ch, pos) in chars {
-                    self.insert_character(ch, pos);
+                    let char_token = Token::Character {
+                        ch,
+                        offset: pos.offset,
+                        line: pos.line,
+                        col: pos.col,
+                    };
+                    self.foster_parenting = true;
+                    self.process_in_body(char_token);
+                    self.foster_parenting = false;
                 }
             } else {
+                // Whitespace-only: insert normally into the table.
                 for (ch, pos) in chars {
                     self.insert_character(ch, pos);
                 }

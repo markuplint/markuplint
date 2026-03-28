@@ -59,6 +59,8 @@ pub struct TreeBuilder<'a> {
     template_insertion_modes: Vec<InsertionMode>,
     /// Guard against infinite reprocessing of the same token.
     reprocess_depth: u32,
+    /// Skip next newline character (after `<pre>`, `<listing>`, `<textarea>`).
+    skip_next_newline: bool,
 }
 
 impl<'a> TreeBuilder<'a> {
@@ -92,6 +94,7 @@ impl<'a> TreeBuilder<'a> {
             pending_table_chars: Vec::new(),
             template_insertion_modes: Vec::new(),
             reprocess_depth: 0,
+            skip_next_newline: false,
         };
         if is_fragment {
             builder.setup_fragment_parsing(context.unwrap_or("body"), context_ns);
@@ -108,6 +111,19 @@ impl<'a> TreeBuilder<'a> {
             self.tokenizer.adjusted_current_node_is_foreign = self.should_process_as_foreign();
             let token = self.tokenizer.next_token();
             let is_eof = token == Token::Eof;
+
+            // Skip leading newline after <pre>, <listing>, <textarea>.
+            if self.skip_next_newline {
+                self.skip_next_newline = false;
+                if let Token::Character { ch: '\n', .. } = &token {
+                    token_count += 1;
+                    if is_eof || token_count >= max_tokens {
+                        break;
+                    }
+                    continue;
+                }
+            }
+
             self.reprocess_depth = 0;
             self.process_token(token);
             token_count += 1;
@@ -178,9 +194,10 @@ impl<'a> TreeBuilder<'a> {
             return;
         }
 
-        // §13.2.6.5: If the adjusted current node is in SVG/MathML namespace,
-        // process as foreign content (with some exceptions).
-        if self.should_process_as_foreign() && !matches!(token, Token::Eof) {
+        // WHATWG §13.2.6: Determine whether to process as foreign content.
+        // Check the adjusted current node for foreign namespace, integration
+        // points, and token-specific exceptions.
+        if self.should_process_as_foreign_for_token(&token) {
             self.process_foreign_content(token);
             return;
         }
@@ -622,38 +639,9 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment_to_document(data, *span);
             }
-            Token::Character { ch, offset, line, col } if ch.is_ascii_whitespace() => {
-                // WHATWG says ignore, but markuplint needs whitespace text
-                // nodes for position tracking. Insert as document child.
-                let doc_id = self.arena.document_id();
-                let pos = Position {
-                    offset: *offset,
-                    line: *line,
-                    col: *col,
-                };
-                // Merge with existing text or create new.
-                if let Some(last_child) = self.arena.last_child(doc_id) {
-                    let node = self.arena.get_mut(last_child);
-                    if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
-                        data.push(*ch);
-                        node.span.end = Position {
-                            offset: pos.offset + ch.len_utf8(),
-                            line: pos.line,
-                            col: pos.col + 1,
-                        };
-                        return;
-                    }
-                }
-                let span = Span::new(
-                    pos,
-                    Position {
-                        offset: pos.offset + ch.len_utf8(),
-                        line: pos.line,
-                        col: pos.col + 1,
-                    },
-                );
-                let text_id = self.arena.create_text(ch.to_string(), span);
-                self.arena.append_child(doc_id, text_id);
+            Token::Character { ch, .. } if ch.is_ascii_whitespace() => {
+                // WHATWG: Ignore whitespace before <html>.
+                let _ = ch;
             }
             Token::StartTag {
                 tag_name,
@@ -1013,12 +1001,13 @@ impl<'a> TreeBuilder<'a> {
                 tag_name,
                 attributes,
                 span,
-                ..
+                self_closing,
             } => {
                 let tag = tag_name.clone();
                 let attrs = attributes.clone();
                 let s = *span;
-                self.process_in_body_start_tag(&tag, &attrs, s);
+                let sc = *self_closing;
+                self.process_in_body_start_tag(&tag, &attrs, s, sc);
             }
             Token::EndTag { tag_name, span, .. } => {
                 let tag = tag_name.clone();
@@ -1029,7 +1018,13 @@ impl<'a> TreeBuilder<'a> {
     }
 
     #[allow(clippy::too_many_lines)]
-    pub(super) fn process_in_body_start_tag(&mut self, tag_name: &str, attributes: &[RawAttribute], span: Span) {
+    pub(super) fn process_in_body_start_tag(
+        &mut self,
+        tag_name: &str,
+        attributes: &[RawAttribute],
+        span: Span,
+        self_closing: bool,
+    ) {
         match tag_name {
             "html" => {
                 self.process_in_body_start_tag_html(attributes, span);
@@ -1046,16 +1041,70 @@ impl<'a> TreeBuilder<'a> {
                 self.process_in_head(token);
             }
             "body" => {
-                if self.is_fragment && !self.has_element_in_scope("body") {
-                    // Fragment: explicit <body> tag — insert as normal element.
-                    self.insert_html_element(tag_name, attributes, span);
+                // WHATWG: If body is already open, merge attributes from this
+                // second body tag into the existing body element.
+                if !self.is_fragment || self.has_element_in_scope("body") {
+                    // Find the body element and merge attributes.
+                    if !attributes.is_empty() {
+                        for id in self.open_elements.iter_top_to_bottom() {
+                            if self.arena.get(*id).is_html_element("body") {
+                                let new_attrs = convert_attributes(attributes, span);
+                                let node = self.arena.get_mut(*id);
+                                if let crate::tree::node::NodeKind::Element {
+                                    attributes: ref mut existing,
+                                    ..
+                                } = node.kind
+                                {
+                                    for attr in new_attrs {
+                                        if !existing.iter().any(|a| a.name == attr.name) {
+                                            existing.push(attr);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
                     self.frameset_ok = false;
                 } else {
-                    // Document mode: parse error. Ignore duplicate body.
+                    // Fragment: no body in scope yet — insert as normal element.
+                    self.insert_html_element(tag_name, attributes, span);
                     self.frameset_ok = false;
                 }
             }
-            "frameset" | "caption" | "col" | "colgroup" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" => {
+            "frameset" => {
+                // WHATWG: If frameset_ok is false, ignore. Otherwise:
+                if !self.frameset_ok {
+                    return;
+                }
+                // Remove the body element from the stack and document.
+                // Find and remove body from open elements.
+                let mut body_idx = None;
+                for i in 0..self.open_elements.len() {
+                    if let Some(id) = self.open_elements.get(i)
+                        && self.arena.get(id).is_html_element("body")
+                    {
+                        body_idx = Some(i);
+                        break;
+                    }
+                }
+                if let Some(idx) = body_idx {
+                    if let Some(body_id) = self.open_elements.get(idx) {
+                        // Remove body from its parent.
+                        if let Some(parent) = self.arena.get(body_id).parent {
+                            let parent_node = self.arena.get_mut(parent);
+                            parent_node.children.retain(|&id| id != body_id);
+                        }
+                    }
+                    // Remove from open elements: pop back to html.
+                    while self.open_elements.len() > idx {
+                        self.open_elements.pop();
+                    }
+                }
+                self.insert_html_element(tag_name, attributes, span);
+                self.mode = InsertionMode::InFrameset;
+            }
+            "caption" | "col" | "colgroup" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" => {
                 // Parse error. Ignore.
             }
             "address" | "article" | "aside" | "blockquote" | "center" | "details" | "dialog" | "dir" | "div" | "dl"
@@ -1093,7 +1142,7 @@ impl<'a> TreeBuilder<'a> {
                 }
                 self.insert_html_element(tag_name, attributes, span);
                 self.frameset_ok = false;
-                // TODO: skip next newline
+                self.skip_next_newline = true;
             }
             "button" => {
                 if self.has_element_in_scope("button") {
@@ -1243,6 +1292,7 @@ impl<'a> TreeBuilder<'a> {
             }
             "textarea" => {
                 self.insert_html_element(tag_name, attributes, span);
+                self.skip_next_newline = true;
                 self.tokenizer.set_state(TokenizerState::RcData);
                 self.original_mode = Some(self.mode);
                 self.frameset_ok = false;
@@ -1270,6 +1320,16 @@ impl<'a> TreeBuilder<'a> {
                 self.tokenizer.set_state(TokenizerState::RawText);
                 self.original_mode = Some(self.mode);
                 self.mode = InsertionMode::Text;
+            }
+            "noscript" if self.scripting_enabled => {
+                // WHATWG: scripting enabled → handle like InHead (RAWTEXT).
+                let token = Token::StartTag {
+                    tag_name: tag_name.to_owned(),
+                    self_closing: false,
+                    attributes: attributes.to_vec(),
+                    span,
+                };
+                self.process_in_head(token);
             }
             "select" => {
                 self.insert_html_element(tag_name, attributes, span);
@@ -1307,10 +1367,18 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
             }
             "svg" => {
+                self.reconstruct_active_formatting_elements();
                 self.process_svg_start_tag(attributes, span);
+                if self_closing {
+                    self.open_elements.pop();
+                }
             }
             "math" => {
+                self.reconstruct_active_formatting_elements();
                 self.process_math_start_tag(attributes, span);
+                if self_closing {
+                    self.open_elements.pop();
+                }
             }
             _ => {
                 // Any other start tag.
@@ -1539,6 +1607,7 @@ impl<'a> TreeBuilder<'a> {
     //                    InTableBody, InRow, InCell
     // - adoption_agency.rs: run_adoption_agency()
 
+    #[allow(clippy::too_many_lines)]
     fn process_in_select(&mut self, token: Token) {
         match &token {
             Token::Character { ch, offset, line, col } => {
@@ -1556,43 +1625,8 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
             }
-            Token::StartTag {
-                tag_name,
-                attributes,
-                span,
-                ..
-            } if tag_name == "option" => {
-                if self.current_node_is("option") {
-                    self.open_elements.pop();
-                }
-                self.insert_html_element(tag_name, attributes, *span);
-            }
-            Token::EndTag { tag_name, .. } if tag_name == "option" => {
-                if self.current_node_is("option") {
-                    self.open_elements.pop();
-                }
-            }
-            Token::EndTag { tag_name, .. } if tag_name == "select" => {
-                if self.has_element_in_scope("select") {
-                    self.pop_until("select");
-                    self.reset_insertion_mode();
-                }
-            }
-            Token::StartTag { tag_name, .. } if tag_name == "select" => {
-                self.pop_until("select");
-                self.reset_insertion_mode();
-            }
-            Token::EndTag { tag_name, .. } if tag_name == "optgroup" => {
-                // If current node is option and parent is optgroup, pop option.
-                if self.current_node_is("option") {
-                    self.open_elements.pop();
-                }
-                if self.current_node_is("optgroup") {
-                    self.open_elements.pop();
-                }
-            }
-            Token::Eof => {
-                self.process_in_body(token);
+            Token::Doctype { .. } => {
+                // Parse error. Ignore.
             }
             Token::StartTag {
                 tag_name,
@@ -1600,22 +1634,101 @@ impl<'a> TreeBuilder<'a> {
                 span,
                 ..
             } => {
-                // Parse error. Insert the element anyway.
-                let ns = match tag_name.as_str() {
-                    "svg" => Namespace::Svg,
-                    "math" => Namespace::MathML,
-                    _ => Namespace::Html,
-                };
-                let el_id = self.insert_element_for_token(tag_name, attributes, *span, ns);
-                if crate::tables::is_formatting_element(tag_name) {
-                    self.active_formatting.push(FormatEntry::Element(el_id));
+                match tag_name.as_str() {
+                    "html" => {
+                        self.process_in_body(token);
+                    }
+                    "option" => {
+                        if self.current_node_is("option") {
+                            self.open_elements.pop();
+                        }
+                        self.insert_html_element(tag_name, attributes, *span);
+                    }
+                    "optgroup" => {
+                        if self.current_node_is("option") {
+                            self.open_elements.pop();
+                        }
+                        if self.current_node_is("optgroup") {
+                            self.open_elements.pop();
+                        }
+                        self.insert_html_element(tag_name, attributes, *span);
+                    }
+                    "hr" => {
+                        // WHATWG: <hr> in select — close option/optgroup, insert void hr.
+                        if self.current_node_is("option") {
+                            self.open_elements.pop();
+                        }
+                        if self.current_node_is("optgroup") {
+                            self.open_elements.pop();
+                        }
+                        self.insert_html_element(tag_name, attributes, *span);
+                        self.open_elements.pop();
+                    }
+                    "select" => {
+                        // Parse error. Close existing select and reset.
+                        self.pop_until("select");
+                        self.reset_insertion_mode();
+                    }
+                    "input" | "keygen" | "textarea" => {
+                        // Parse error. Close select and reprocess.
+                        self.pop_until("select");
+                        self.reset_insertion_mode();
+                        self.process_token(token);
+                    }
+                    "script" | "template" => {
+                        self.process_in_head(token);
+                    }
+                    _ => {
+                        // Parse error. Insert the element anyway.
+                        let el_id = self.insert_html_element(tag_name, attributes, *span);
+                        if crate::tables::is_formatting_element(tag_name) {
+                            self.active_formatting.push(FormatEntry::Element(el_id));
+                        }
+                    }
                 }
             }
-            _ => {
-                // Ignore other tokens (end tags, etc.)
+            Token::EndTag { tag_name, .. } => {
+                match tag_name.as_str() {
+                    "optgroup" => {
+                        // If current is option whose parent is optgroup, pop option first.
+                        if self.current_node_is("option") {
+                            let stack_len = self.open_elements.len();
+                            if stack_len >= 2
+                                && self
+                                    .open_elements
+                                    .get(stack_len - 2)
+                                    .is_some_and(|id| self.arena.get(id).is_html_element("optgroup"))
+                            {
+                                self.open_elements.pop();
+                            }
+                        }
+                        if self.current_node_is("optgroup") {
+                            self.open_elements.pop();
+                        }
+                    }
+                    "option" => {
+                        if self.current_node_is("option") {
+                            self.open_elements.pop();
+                        }
+                    }
+                    "select" => {
+                        self.pop_until("select");
+                        self.reset_insertion_mode();
+                    }
+                    "template" => {
+                        self.process_in_head(token);
+                    }
+                    _ => {
+                        // Parse error. Ignore.
+                    }
+                }
+            }
+            Token::Eof => {
+                self.process_in_body(token);
             }
         }
     }
+
 
     fn process_in_select_in_table(&mut self, token: Token) {
         // WHATWG §13.2.6.4.18: table-related tags close the select.
@@ -1758,15 +1871,15 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment_to_document(data, *span);
             }
-            Token::Doctype { .. } | Token::Character { .. } => {
-                if matches!(&token, Token::Character { ch, .. } if ch.is_ascii_whitespace()) {
-                    self.process_in_body(token);
-                }
+            Token::Character { ch, .. } if ch.is_ascii_whitespace() => {
+                self.process_in_body(token);
+            }
+            Token::Doctype { .. } | Token::Eof => {
+                // Parse error. Ignore.
             }
             Token::StartTag { tag_name, .. } if tag_name == "html" => {
                 self.process_in_body(token);
             }
-            Token::Eof => {}
             _ => {
                 self.mode = InsertionMode::InBody;
                 self.process_token(token);
