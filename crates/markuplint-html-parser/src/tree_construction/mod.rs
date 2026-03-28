@@ -38,6 +38,7 @@ fn is_scope_barrier(name: &str, ns: Option<Namespace>) -> bool {
 use open_elements::OpenElementsStack;
 
 /// The tree builder: consumes tokens and builds a DOM tree.
+#[allow(clippy::struct_excessive_bools)]
 pub struct TreeBuilder<'a> {
     tokenizer: Tokenizer<'a>,
     pub arena: Arena,
@@ -51,6 +52,8 @@ pub struct TreeBuilder<'a> {
     #[allow(dead_code)]
     foster_parenting: bool,
     is_fragment: bool,
+    /// Whether scripting is enabled (affects noscript parsing).
+    pub scripting_enabled: bool,
     #[allow(dead_code)]
     pending_table_chars: Vec<(char, Position)>,
     template_insertion_modes: Vec<InsertionMode>,
@@ -85,6 +88,7 @@ impl<'a> TreeBuilder<'a> {
             frameset_ok: true,
             foster_parenting: false,
             is_fragment,
+            scripting_enabled: false,
             pending_table_chars: Vec::new(),
             template_insertion_modes: Vec::new(),
             reprocess_depth: 0,
@@ -780,10 +784,16 @@ impl<'a> TreeBuilder<'a> {
                 span,
                 ..
             } if tag_name == "noscript" => {
-                // Scripting is disabled in markuplint → use InHeadNoscript
-                // (content is parsed as HTML, not raw text).
                 self.insert_html_element(tag_name, attributes, *span);
-                self.mode = InsertionMode::InHeadNoscript;
+                if self.scripting_enabled {
+                    // Scripting enabled → RAWTEXT (content is opaque text).
+                    self.tokenizer.set_state(TokenizerState::RawText);
+                    self.original_mode = Some(self.mode);
+                    self.mode = InsertionMode::Text;
+                } else {
+                    // Scripting disabled → InHeadNoscript (parse as HTML).
+                    self.mode = InsertionMode::InHeadNoscript;
+                }
             }
             Token::StartTag {
                 tag_name,

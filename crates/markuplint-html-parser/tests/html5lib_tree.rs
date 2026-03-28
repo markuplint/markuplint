@@ -19,6 +19,7 @@ struct TreeTest {
     expected: String,
     is_fragment: bool,
     context_element: Option<String>,
+    scripting_enabled: bool,
 }
 
 fn parse_dat_file(content: &str) -> Vec<TreeTest> {
@@ -33,6 +34,7 @@ fn parse_dat_file(content: &str) -> Vec<TreeTest> {
         let mut expected = String::new();
         let mut is_fragment = false;
         let mut context_element = None;
+        let mut scripting_enabled = false;
         let mut current = "data";
 
         for line in section.lines() {
@@ -42,6 +44,12 @@ fn parse_dat_file(content: &str) -> Vec<TreeTest> {
                 "#document-fragment" => {
                     current = "fragment";
                     is_fragment = true;
+                }
+                "#script-on" => {
+                    scripting_enabled = true;
+                }
+                "#script-off" => {
+                    scripting_enabled = false;
                 }
                 _ => match current {
                     "data" => {
@@ -73,6 +81,7 @@ fn parse_dat_file(content: &str) -> Vec<TreeTest> {
                 expected: expected.trim_end().to_owned(),
                 is_fragment,
                 context_element,
+                scripting_enabled,
             });
         }
     }
@@ -177,8 +186,6 @@ fn serialize_node(arena: &Arena, source: &str, node_id: NodeId, depth: usize, ou
 
 fn run_tree_test(test: &TreeTest) -> bool {
     let mut builder = if let Some(ref context) = test.context_element {
-        // Fragment with specific context element.
-        // Context may include namespace: "svg path", "math mi", or just "body".
         let (ns, tag) = if let Some(rest) = context.strip_prefix("svg ") {
             (markuplint_html_parser::tree::node::Namespace::Svg, rest)
         } else if let Some(rest) = context.strip_prefix("math ") {
@@ -192,6 +199,7 @@ fn run_tree_test(test: &TreeTest) -> bool {
     } else {
         TreeBuilder::new(&test.data, false)
     };
+    builder.scripting_enabled = test.scripting_enabled;
     builder.run();
     let arena = builder.arena;
 
