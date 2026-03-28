@@ -190,15 +190,10 @@ fn html5lib_tokenizer_test_suite() {
     let mut total_failed = 0;
 
     // Skip test3.test (1590 tests) and unicodeChars*.test for now — they contain
-    // These files are too slow in debug builds (minutes per file due to
-    // 1590+ test cases with unoptimized code). They complete fine in
-    // release mode. CI should run:
-    //   cargo test --release -p markuplint-html-parser --test html5lib_tokenizer
-    let skip_files = [
-        "test3.test",        // 1590 tests — >3 min in debug
-        "test4.test",        // 85 tests — causes SIGKILL with others
-        "unicodeChars.test", // 323 tests — slow in debug
-    ];
+    // These files are skipped in debug builds only due to execution time
+    // (>10 min for 1590+ tests in unoptimized code). No infinite loops
+    // or OOM — just slow. CI should use --release for full coverage.
+    let skip_files = ["test3.test", "test4.test", "unicodeChars.test"];
 
     let mut files: Vec<_> = fs::read_dir(&test_dir)
         .expect("Failed to read test directory")

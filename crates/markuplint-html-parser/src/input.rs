@@ -156,9 +156,15 @@ impl<'a> Input<'a> {
 
     /// Back up one character (reconsume the last consumed character).
     pub fn reconsume(&mut self) {
-        self.pos = self.prev_pos;
-        self.line = self.prev_line;
-        self.col = self.prev_col;
+        // Only reconsume if pos actually advanced (not at EOF).
+        // Reconsuming at EOF would put pos back to the last real
+        // character, causing infinite loops in tokenizer states
+        // that reconsume on the catch-all arm.
+        if self.pos > self.prev_pos {
+            self.pos = self.prev_pos;
+            self.line = self.prev_line;
+            self.col = self.prev_col;
+        }
     }
 
     /// Current position in the source.
