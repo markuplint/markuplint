@@ -1,7 +1,7 @@
 //! Active formatting elements list per WHATWG §13.2.4.3.
 
 use crate::tree::Arena;
-use crate::tree::node::NodeId;
+use crate::tree::node::{NodeId, NodeKind};
 
 /// An entry in the active formatting elements list.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,6 +23,50 @@ impl ActiveFormattingElements {
     }
 
     pub fn push(&mut self, entry: FormatEntry) {
+        self.entries.push(entry);
+    }
+
+    /// Push with Noah's Ark constraint: if there are already 3 elements
+    /// after the last marker with the same tag/namespace/attributes,
+    /// remove the earliest one before adding the new element.
+    pub fn push_with_noahs_ark(&mut self, entry: FormatEntry, arena: &Arena) {
+        if let FormatEntry::Element(new_id) = &entry
+            && let NodeKind::Element {
+                tag_name: ref new_tag,
+                namespace: new_ns,
+                attributes: ref new_attrs,
+                ..
+            } = arena.get(*new_id).kind
+        {
+            let mut matching = Vec::new();
+            for (idx, e) in self.entries.iter().enumerate().rev() {
+                match e {
+                    FormatEntry::Marker => break,
+                    FormatEntry::Element(id) => {
+                        if let NodeKind::Element {
+                            tag_name: ref t,
+                            namespace: ns,
+                            attributes: ref attrs,
+                            ..
+                        } = arena.get(*id).kind
+                            && t == new_tag
+                            && ns == new_ns
+                            && attrs.len() == new_attrs.len()
+                            && attrs
+                                .iter()
+                                .all(|a| new_attrs.iter().any(|na| na.name == a.name && na.value == a.value))
+                        {
+                            matching.push(idx);
+                        }
+                    }
+                }
+            }
+            if matching.len() >= 3
+                && let Some(&earliest) = matching.last()
+            {
+                self.entries.remove(earliest);
+            }
+        }
         self.entries.push(entry);
     }
 

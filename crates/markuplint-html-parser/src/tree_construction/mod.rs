@@ -1241,12 +1241,14 @@ impl<'a> TreeBuilder<'a> {
                 self.reconstruct_active_formatting_elements();
                 // NOTE: <a> does NOT close <p> — only block elements do.
                 let el_id = self.insert_html_element(tag_name, attributes, span);
-                self.active_formatting.push(FormatEntry::Element(el_id));
+                self.active_formatting
+                    .push_with_noahs_ark(FormatEntry::Element(el_id), &self.arena);
             }
             "b" | "big" | "code" | "em" | "font" | "i" | "s" | "small" | "strike" | "strong" | "tt" | "u" => {
                 self.reconstruct_active_formatting_elements();
                 let el_id = self.insert_html_element(tag_name, attributes, span);
-                self.active_formatting.push(FormatEntry::Element(el_id));
+                self.active_formatting
+                    .push_with_noahs_ark(FormatEntry::Element(el_id), &self.arena);
             }
             "nobr" => {
                 self.reconstruct_active_formatting_elements();
@@ -1255,7 +1257,8 @@ impl<'a> TreeBuilder<'a> {
                     self.reconstruct_active_formatting_elements();
                 }
                 let el_id = self.insert_html_element(tag_name, attributes, span);
-                self.active_formatting.push(FormatEntry::Element(el_id));
+                self.active_formatting
+                    .push_with_noahs_ark(FormatEntry::Element(el_id), &self.arena);
             }
             "applet" | "marquee" | "object" => {
                 self.reconstruct_active_formatting_elements();
@@ -1709,7 +1712,8 @@ impl<'a> TreeBuilder<'a> {
                         };
                         let el_id = self.insert_element_for_token(tag_name, attributes, *span, ns);
                         if crate::tables::is_formatting_element(tag_name) {
-                            self.active_formatting.push(FormatEntry::Element(el_id));
+                            self.active_formatting
+                                .push_with_noahs_ark(FormatEntry::Element(el_id), &self.arena);
                         }
                     }
                 }
