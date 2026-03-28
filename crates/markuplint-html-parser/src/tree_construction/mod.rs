@@ -1080,6 +1080,12 @@ impl<'a> TreeBuilder<'a> {
                 let el_id = self.insert_html_element(tag_name, attributes, span);
                 self.active_formatting.push(FormatEntry::Element(el_id));
             }
+            "applet" | "marquee" | "object" => {
+                self.reconstruct_active_formatting_elements();
+                self.insert_html_element(tag_name, attributes, span);
+                self.active_formatting.push_marker();
+                self.frameset_ok = false;
+            }
             "table" => {
                 if self.has_element_in_button_scope("p") {
                     self.close_p_element();
@@ -1307,8 +1313,18 @@ impl<'a> TreeBuilder<'a> {
                     self.process_any_other_end_tag(tag_name, span);
                 }
             }
+            "applet" | "marquee" | "object" => {
+                if !self.has_element_in_scope(tag_name) {
+                    return;
+                }
+                self.generate_implied_end_tags(None);
+                self.set_end_tag_span(tag_name, span);
+                self.pop_until(tag_name);
+                self.active_formatting.clear_up_to_last_marker();
+            }
             "br" => {
                 // Parse error. Treat as <br>.
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element("br", &[], span);
                 self.open_elements.pop();
                 self.frameset_ok = false;
