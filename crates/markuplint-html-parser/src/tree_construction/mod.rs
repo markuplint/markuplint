@@ -1676,6 +1676,7 @@ impl<'a> TreeBuilder<'a> {
                         if self.current_node_is("option") {
                             self.open_elements.pop();
                         }
+                        self.reconstruct_active_formatting_elements();
                         self.insert_html_element(tag_name, attributes, *span);
                     }
                     "optgroup" => {
@@ -1716,6 +1717,26 @@ impl<'a> TreeBuilder<'a> {
                     // parse error, ignore.
                     "caption" | "table" | "tbody" | "tfoot" | "thead" | "tr" | "td" | "th" => {
                         // Parse error. Ignore.
+                    }
+                    "div" => {
+                        // New spec: <div> in select closes current option/optgroup.
+                        if self.current_node_is("option") {
+                            self.open_elements.pop();
+                        }
+                        if self.current_node_is("optgroup") {
+                            self.open_elements.pop();
+                        }
+                        self.reconstruct_active_formatting_elements();
+                        self.insert_html_element(tag_name, attributes, *span);
+                    }
+                    "button" => {
+                        // New spec: <button> in select.
+                        if self.has_element_in_scope("button") {
+                            self.generate_implied_end_tags(None);
+                            self.pop_until("button");
+                        }
+                        self.reconstruct_active_formatting_elements();
+                        self.insert_html_element(tag_name, attributes, *span);
                     }
                     "plaintext" => {
                         // Insert plaintext and switch to PLAINTEXT state.
