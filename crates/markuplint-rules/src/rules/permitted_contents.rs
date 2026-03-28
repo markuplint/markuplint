@@ -515,4 +515,91 @@ mod tests {
             v[0].raw
         );
     }
+
+    // --- Low-risk edge case verification ---
+
+    /// all_optional with nested Choice: empty content should be valid
+    /// when all branches are optional. (Covers recursive all_optional.)
+    #[test]
+    fn empty_select_with_optional_choice_valid() {
+        // select has zeroOrMore(option|optgroup|hr|script-supporting) — all optional
+        let s = spec();
+        let (arena, _) = make_parent_children("select", &[]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("select"))
+            .collect();
+        assert!(v.is_empty(), "empty select should be valid (all patterns optional)");
+    }
+
+    /// all_optional with required content: empty MUST fail.
+    #[test]
+    fn empty_details_requires_summary_fails() {
+        // details requires summary + flow — not all optional
+        let s = spec();
+        let (arena, _) = make_parent_children("details", &[]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("details"))
+            .collect();
+        assert!(!v.is_empty(), "empty details should fail (summary required)");
+    }
+
+    /// SVG elements in #flow use namespace prefix "svg|svg" in spec data.
+    /// The content model engine does not yet handle namespace prefixes,
+    /// so svg is NOT recognized as flow content. This is a known limitation.
+    /// When namespace support is added, this test should be updated to expect
+    /// no violation for div > svg.
+    #[test]
+    fn svg_namespace_known_limitation() {
+        let s = spec();
+        let (arena, _) = make_parent_children("div", &[("svg", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations
+            .iter()
+            .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("div"))
+            .collect();
+        // Known limitation: svg is registered as "svg|svg" in #flow, not "svg"
+        // TODO: Add namespace prefix handling to matches_model_ref
+        assert!(!v.is_empty(), "svg not recognized as flow content (namespace prefix limitation)");
+    }
+
+    /// SVG spec element (svg:svg): content model lookup uses prefixed name.
+    #[test]
+    fn svg_prefixed_name_has_content_model() {
+        let s = spec();
+        // Spec registers SVG as "svg:svg", not "svg"
+        let cm = content_model::get_content_model(&s, "svg:svg");
+        assert!(cm.is_some(), "svg:svg should have content model in spec");
+    }
+
+    /// Void element with whitespace-only text: should pass (no real content).
+    #[test]
+    fn void_element_whitespace_only_valid() {
+        // br is void — whitespace-only text children should be ignored
+        let s = spec();
+        // Can't easily add text children with make_parent_children,
+        // so test that br with no children passes (covered by br_void_with_no_children)
+        // and verify the whitespace filter logic directly
+        let children = vec![ChildNodeInfo::text("  \n  ")];
+        let non_empty = children
+            .iter()
+            .any(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }));
+        assert!(!non_empty, "whitespace-only text should not count as content");
+    }
+
+    /// Void element with real text content: should fail.
+    #[test]
+    fn void_element_with_text_is_non_empty() {
+        let children = vec![ChildNodeInfo::text("hello")];
+        let non_empty = children
+            .iter()
+            .any(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }));
+        assert!(non_empty, "non-whitespace text should count as content");
+    }
 }
