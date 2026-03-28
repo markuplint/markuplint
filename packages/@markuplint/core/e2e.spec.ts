@@ -6,8 +6,7 @@ import htmlSpec from '@markuplint/html-spec';
 import { parser } from '@markuplint/html-parser';
 import { describe, it, expect } from 'vitest';
 
- 
-import { NapiDom, lint, matchCssSyntax, matchCssProperty } from './index.js';
+import { NapiDom, lint, matchCssSyntax, matchCssProperty } from './index.js';  
 
 function buildDom(html: string): NapiDom {
 	const ast = parser.parse(html);
