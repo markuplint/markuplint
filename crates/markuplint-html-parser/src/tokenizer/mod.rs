@@ -1819,9 +1819,9 @@ impl<'a> Tokenizer<'a> {
             }
             None => {
                 self.current_doctype_start = Position {
-                    offset: self.input.position().offset - 9,
+                    offset: self.input.position().offset.saturating_sub(9),
                     line: self.input.position().line,
-                    col: self.input.position().col - 9,
+                    col: self.input.position().col.saturating_sub(9),
                 };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
@@ -1842,18 +1842,18 @@ impl<'a> Tokenizer<'a> {
             }
             Some('\0') => {
                 self.current_doctype_start = Position {
-                    offset: self.input.position().offset - 11,
+                    offset: self.input.position().offset.saturating_sub(11),
                     line: self.input.position().line,
-                    col: self.input.position().col - 11,
+                    col: self.input.position().col.saturating_sub(11),
                 };
                 self.current_doctype_name = Some("\u{FFFD}".to_owned());
                 self.state = State::DoctypeName;
             }
             Some('>') => {
                 self.current_doctype_start = Position {
-                    offset: self.input.position().offset - 10,
+                    offset: self.input.position().offset.saturating_sub(10),
                     line: self.input.position().line,
-                    col: self.input.position().col - 10,
+                    col: self.input.position().col.saturating_sub(10),
                 };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
@@ -1861,9 +1861,9 @@ impl<'a> Tokenizer<'a> {
             }
             None => {
                 self.current_doctype_start = Position {
-                    offset: self.input.position().offset - 9,
+                    offset: self.input.position().offset.saturating_sub(9),
                     line: self.input.position().line,
-                    col: self.input.position().col - 9,
+                    col: self.input.position().col.saturating_sub(9),
                 };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
@@ -1871,11 +1871,10 @@ impl<'a> Tokenizer<'a> {
             }
             Some(c) => {
                 // Calculate start position: <!DOCTYPE is 9 chars + whitespace
-                // We'll approximate using the markup declaration start
                 self.current_doctype_start = Position {
-                    offset: self.input.prev_position().offset - 9,
+                    offset: self.input.prev_position().offset.saturating_sub(9),
                     line: self.input.prev_position().line,
-                    col: self.input.prev_position().col - 9,
+                    col: self.input.prev_position().col.saturating_sub(9),
                 };
                 self.current_doctype_name = Some(c.to_ascii_lowercase().to_string());
                 self.state = State::DoctypeName;

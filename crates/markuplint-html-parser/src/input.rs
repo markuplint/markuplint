@@ -75,14 +75,16 @@ impl<'a> Input<'a> {
 
     /// Consume and return the next character, advancing position.
     pub fn next_char(&mut self) -> Option<char> {
-        if self.pos >= self.bytes.len() {
-            return None;
-        }
-
-        // Save previous position for reconsume.
+        // Save previous position for reconsume BEFORE the EOF check.
+        // This ensures prev_pos == pos at EOF, so reconsume() is a
+        // no-op and doesn't cause infinite loops.
         self.prev_pos = self.pos;
         self.prev_line = self.line;
         self.prev_col = self.col;
+
+        if self.pos >= self.bytes.len() {
+            return None;
+        }
 
         let mut ch = self.current_char_at(self.pos);
         self.pos += ch.len_utf8();
