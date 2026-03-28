@@ -33,6 +33,7 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
 - **NapiDom**: DOM tree from MLAST JSON with traversal queries
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
+- **`lint(mlastJson, configJson, specJson)`**: Full lint pipeline — runs all enabled Rust rules and returns violations
 
 ### markuplint-rules
 
@@ -42,6 +43,8 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
+- **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
+- **Built-in rules**: `attr-duplication`
 
 ### markuplint-types
 
