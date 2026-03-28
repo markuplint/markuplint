@@ -225,18 +225,19 @@ impl<'a> TreeBuilder<'a> {
 
         // Merge with existing text node if possible (only when not foster parenting).
         if before.is_none()
-            && let Some(last_child) = self.arena.last_child(target) {
-                let node = self.arena.get_mut(last_child);
-                if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
-                    data.push(ch);
-                    node.span.end = Position {
-                        offset: pos.offset + ch.len_utf8(),
-                        line: pos.line,
-                        col: pos.col + 1,
-                    };
-                    return;
-                }
+            && let Some(last_child) = self.arena.last_child(target)
+        {
+            let node = self.arena.get_mut(last_child);
+            if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
+                data.push(ch);
+                node.span.end = Position {
+                    offset: pos.offset + ch.len_utf8(),
+                    line: pos.line,
+                    col: pos.col + 1,
+                };
+                return;
             }
+        }
 
         let span = Span::new(
             pos,
@@ -409,9 +410,10 @@ impl<'a> TreeBuilder<'a> {
                 return true;
             }
             if let Some(name) = node.tag_name()
-                && (is_scope_barrier(name, node.namespace()) || matches!(name, "ol" | "ul")) {
-                    return false;
-                }
+                && (is_scope_barrier(name, node.namespace()) || matches!(name, "ol" | "ul"))
+            {
+                return false;
+            }
         }
         false
     }
@@ -1016,17 +1018,15 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
             }
             "a" => {
-                // Check for existing <a> in active formatting.
+                // WHATWG §13.2.6.4.7: If AF has <a> after last marker,
+                // run adoption agency, then remove from AF and stack.
                 if let Some(existing_a) = self.active_formatting.find_last_element("a", &self.arena) {
                     self.run_adoption_agency("a");
-                    // Remove if still present after adoption agency.
                     self.active_formatting.remove(existing_a);
                     self.open_elements.remove(existing_a);
                 }
                 self.reconstruct_active_formatting_elements();
-                if self.has_element_in_button_scope("p") {
-                    self.close_p_element();
-                }
+                // NOTE: <a> does NOT close <p> — only block elements do.
                 let el_id = self.insert_html_element(tag_name, attributes, span);
                 self.active_formatting.push(FormatEntry::Element(el_id));
             }
@@ -1394,10 +1394,31 @@ impl<'a> TreeBuilder<'a> {
                 self.pop_until("select");
                 self.reset_insertion_mode();
             }
+            Token::EndTag { tag_name, .. } if tag_name == "optgroup" => {
+                // If current node is option and parent is optgroup, pop option.
+                if self.current_node_is("option") {
+                    self.open_elements.pop();
+                }
+                if self.current_node_is("optgroup") {
+                    self.open_elements.pop();
+                }
+            }
             Token::Eof => {
                 self.process_in_body(token);
             }
-            _ => {}
+            Token::StartTag {
+                tag_name,
+                attributes,
+                span,
+                ..
+            } => {
+                // Parse error. Insert the element anyway (matches browser behavior
+                // and html5lib test expectations for formatting in <select>).
+                self.insert_html_element(tag_name, attributes, *span);
+            }
+            _ => {
+                // Ignore other tokens (end tags, etc.)
+            }
         }
     }
 
