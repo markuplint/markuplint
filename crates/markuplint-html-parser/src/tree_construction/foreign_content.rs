@@ -310,8 +310,16 @@ impl TreeBuilder<'_> {
                 }
             }
             Token::EndTag { tag_name, span, .. } => {
-                // WHATWG §13.2.6.5: Certain end tags (like </br>, </p>) cause
-                // a breakout from foreign content, same as start tag breakout.
+                // WHATWG §13.2.6.5 specifies end-tag breakout only for
+                // </br> and </p>. However, html5lib-tests expects ALL
+                // breakout-list end tags (</div>, </span>, etc.) to also
+                // trigger a pop-to-HTML before reprocessing. The spec text
+                // only mentions "br" and "p", but browser implementations
+                // (and thus the conformance tests) apply the breakout to
+                // the full list. We follow the test suite here.
+                //
+                // Spec: https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+                // html5lib-tests: tree-construction/tests26.dat, pending-spec-changes.dat
                 if BREAKOUT_ELEMENTS.contains(&tag_name.as_str()) {
                     // Pop until integration point or HTML namespace.
                     while let Some(id) = self.current_node() {

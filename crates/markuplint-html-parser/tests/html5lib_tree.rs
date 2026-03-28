@@ -330,6 +330,20 @@ fn html5lib_tree_construction_test_suite() {
 
     // Exact failure count for regression detection.
     // Lower this number as failures are fixed. Target: 0.
+    //
+    // Remaining 5 failures:
+    //
+    // [tests10.dat] <div><svg><path><foreignObject><math></div>a
+    //   - Foreign content end tag walk pops <div> including all SVG/MathML
+    //     descendants per WHATWG §13.2.6.5 step 2. html5lib expects <div>
+    //     to remain open. Likely a spec/test divergence for deeply nested
+    //     foreign-in-integration-point scenarios.
+    //
+    // [webkit02.dat] <select><button><selectedcontent>...</button><option>...
+    //   (4 tests) — The <selectedcontent> element clones selected <option>
+    //   content into the selectedcontent slot. This is a very new spec
+    //   addition (customizable <select>) not yet widely implemented.
+    //   Requires a dedicated cloning mechanism in the tree builder.
     let max_allowed_failures = 5;
     assert!(
         total_failed <= max_allowed_failures,
