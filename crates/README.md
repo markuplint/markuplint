@@ -41,7 +41,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **Content model matching engine**: order, choice, quantifiers, backtracking (ported from `@markuplint/rules/permitted-contents/`)
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
-- **ARIA algorithms** (Phase 2-3d): `is_exposed()` (WAI-ARIA §6.4 accessibility tree exposure), `may_be_focusable()` (interactive content heuristic)
+- **ARIA algorithms**: `get_computed_role()` (Phase 2-3b: full role computation with conflict resolution + condition evaluation), `is_exposed()` (Phase 2-3d: WAI-ARIA §6.4 accessibility tree exposure), `may_be_focusable()` (interactive content heuristic)
 
 ### markuplint-types
 
