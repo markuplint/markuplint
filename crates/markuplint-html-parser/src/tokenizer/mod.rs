@@ -763,7 +763,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            _ => {
+            other => {
                 // Not an appropriate end tag. Emit `</` + buffer as characters.
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
@@ -785,7 +785,10 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
-                self.input.reconsume();
+                // Only reconsume if we consumed an actual character (not EOF).
+                if other.is_some() {
+                    self.input.reconsume();
+                }
                 self.state = State::RcData;
             }
         }
@@ -857,7 +860,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            _ => {
+            other => {
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
                 let base_col = self.current_tag_start.col;
@@ -878,7 +881,9 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
-                self.input.reconsume();
+                if other.is_some() {
+                    self.input.reconsume();
+                }
                 self.state = State::RawText;
             }
         }
@@ -963,7 +968,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            _ => {
+            other => {
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
                 let base_col = self.current_tag_start.col;
@@ -984,7 +989,9 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
-                self.input.reconsume();
+                if other.is_some() {
+                    self.input.reconsume();
+                }
                 self.state = State::ScriptData;
             }
         }
@@ -1157,7 +1164,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            _ => {
+            other => {
                 let base = self.current_tag_start;
                 self.emit_char('<', base);
                 self.emit_char(
@@ -1169,7 +1176,9 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base.offset + 2, base.line, base.col + 2);
-                self.input.reconsume();
+                if other.is_some() {
+                    self.input.reconsume();
+                }
                 self.state = State::ScriptDataEscaped;
             }
         }
