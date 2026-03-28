@@ -21,6 +21,20 @@ use crate::tree::Arena;
 use crate::tree::node::{Attribute, Namespace, NodeId};
 use active_formatting::{ActiveFormattingElements, FormatEntry};
 use insertion_mode::InsertionMode;
+
+/// WHATWG §13.2.4.2: Scope barrier elements for "has an element in scope".
+/// These are NOT all special elements — only specific ones.
+fn is_scope_barrier(name: &str, ns: Option<Namespace>) -> bool {
+    match ns {
+        Some(Namespace::Html) => matches!(
+            name,
+            "applet" | "caption" | "html" | "table" | "td" | "th" | "marquee" | "object" | "template"
+        ),
+        Some(Namespace::MathML) => matches!(name, "mi" | "mo" | "mn" | "ms" | "mtext" | "annotation-xml"),
+        Some(Namespace::Svg) => matches!(name, "foreignObject" | "desc" | "title"),
+        None => false,
+    }
+}
 use open_elements::OpenElementsStack;
 
 /// The tree builder: consumes tokens and builds a DOM tree.
@@ -96,10 +110,9 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn process_token(&mut self, token: Token) {
-        // Guard against infinite reprocessing (e.g. mode switches that
-        // reprocess the same token endlessly).
+        // Guard against infinite reprocessing.
         self.reprocess_depth += 1;
-        if self.reprocess_depth > 20 {
+        if self.reprocess_depth > 50 {
             return;
         }
 
@@ -335,17 +348,17 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn has_element_in_scope(&self, target: &str) -> bool {
+        // WHATWG §13.2.4.2: scope barriers for "has an element in scope"
+        // are NOT all special elements — only specific ones.
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if node.is_html_element(target) {
                 return true;
             }
             if let Some(name) = node.tag_name()
-                && node.namespace() == Some(Namespace::Html)
-                && tables::is_special_element_html(name)
-            {
-                return false;
-            }
+                && is_scope_barrier(name, node.namespace()) {
+                    return false;
+                }
         }
         false
     }
@@ -357,11 +370,9 @@ impl<'a> TreeBuilder<'a> {
                 return true;
             }
             if let Some(name) = node.tag_name()
-                && node.namespace() == Some(Namespace::Html)
-                && (tables::is_special_element_html(name) || name == "button")
-            {
-                return false;
-            }
+                && (is_scope_barrier(name, node.namespace()) || name == "button") {
+                    return false;
+                }
         }
         false
     }

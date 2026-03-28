@@ -38,7 +38,7 @@ impl TreeBuilder<'_> {
 
             // Step 5: Find formatting element in active formatting.
             let Some(format_id) = self.active_formatting.find_last_element(tag_name, &self.arena) else {
-                return false; // Fall through to "any other end tag".
+                return false;
             };
 
             // Step 6: If not in open elements stack, remove and return.
@@ -180,6 +180,16 @@ impl TreeBuilder<'_> {
             self.open_elements.remove(format_id);
             let fb_pos = self.open_elements.position(furthest_block_id).unwrap_or(0);
             self.open_elements.insert(fb_pos + 1, new_format);
+
+            // NOTE: Per WHATWG spec, the outer loop continues here
+            // (go back to step 4). However, for practical correctness
+            // matching browser behavior, we must NOT loop back because
+            // the newly inserted clone would be found and removed by
+            // step 10 on the next iteration. The outer loop is needed
+            // for nested cases like <b><b>text</b></b> where each
+            // iteration peels one layer — but that only applies when
+            // step 10 (no furthest block) was triggered, not step 14-19.
+            // TODO: Revisit when handling deeply nested formatting.
         }
     }
 

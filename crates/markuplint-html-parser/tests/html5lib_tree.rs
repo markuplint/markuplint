@@ -310,6 +310,25 @@ fn html5lib_tree_construction_full() {
     // removed once we can run the full suite reliably.
 }
 
+/// Adoption agency test: <b><p></b>TEST
+#[test]
+fn adoption_agency_basic() {
+    let html = "<b><p></b>TEST";
+    let expected = "\
+| <html>
+|   <head>
+|   <body>
+|     <b>
+|     <p>
+|       <b>
+|       \"TEST\"";
+
+    let mut builder = TreeBuilder::new(html, false);
+    builder.run();
+    let actual = serialize_tree(&builder.arena, html);
+    assert_eq!(actual, expected, "Tree mismatch for {html:?}");
+}
+
 /// Quick smoke test with just tests1.dat to verify the harness works.
 #[test]
 fn html5lib_tree_smoke_test() {
