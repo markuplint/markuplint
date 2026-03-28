@@ -868,6 +868,9 @@ impl<'a> TreeBuilder<'a> {
             {
                 self.process_in_head(token);
             }
+            Token::StartTag { tag_name, .. } if matches!(tag_name.as_str(), "head" | "noscript") => {
+                // Parse error. Ignore.
+            }
             Token::EndTag { tag_name, .. } if tag_name != "br" => {
                 // Parse error. Ignore.
             }
@@ -1290,7 +1293,13 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
                 self.open_elements.pop();
                 // frameset_ok = false unless type=hidden.
-                self.frameset_ok = false;
+                let is_hidden = attributes.iter().any(|a| {
+                    a.raw_name.eq_ignore_ascii_case("type")
+                        && a.raw_value.trim().eq_ignore_ascii_case("hidden")
+                });
+                if !is_hidden {
+                    self.frameset_ok = false;
+                }
             }
             "param" | "source" | "track" => {
                 self.insert_html_element(tag_name, attributes, span);
