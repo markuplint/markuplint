@@ -159,19 +159,30 @@ impl<'a> TreeBuilder<'a> {
         self.open_elements.current_node()
     }
 
-    fn appropriate_insert_position(&self) -> NodeId {
+    /// Returns (`parent_id`, Option<`before_sibling_id`>).
+    /// When foster parenting, the sibling is the table element itself.
+    fn appropriate_insert_position(&self) -> (NodeId, Option<NodeId>) {
         if self.foster_parenting {
-            // Foster parenting: find the table element in the stack,
-            // insert before it (into its parent).
             for id in self.open_elements.iter_top_to_bottom() {
                 let node = self.arena.get(*id);
                 if node.is_html_element("table")
-                    && let Some(parent) = node.parent {
-                        return parent;
-                    }
+                    && let Some(parent) = node.parent
+                {
+                    return (parent, Some(*id));
+                }
             }
         }
-        self.current_node().unwrap_or(self.arena.document_id())
+        (self.current_node().unwrap_or(self.arena.document_id()), None)
+    }
+
+    /// Insert a node at the appropriate position (handles foster parenting).
+    fn insert_at_appropriate_position(&mut self, child_id: NodeId) {
+        let (parent, before) = self.appropriate_insert_position();
+        if let Some(sibling) = before {
+            self.arena.insert_before(parent, child_id, sibling);
+        } else {
+            self.arena.append_child(parent, child_id);
+        }
     }
 
     fn insert_element_for_token(
@@ -185,8 +196,7 @@ impl<'a> TreeBuilder<'a> {
         let node_id = self
             .arena
             .create_element(tag_name.to_owned(), namespace, attrs, false, span, false);
-        let target = self.appropriate_insert_position();
-        self.arena.append_child(target, node_id);
+        self.insert_at_appropriate_position(node_id);
         self.open_elements.push(node_id);
         node_id
     }
@@ -205,29 +215,28 @@ impl<'a> TreeBuilder<'a> {
             span,
             true, // implicit/ghost
         );
-        let target = self.appropriate_insert_position();
-        self.arena.append_child(target, node_id);
+        self.insert_at_appropriate_position(node_id);
         self.open_elements.push(node_id);
         node_id
     }
 
     pub(super) fn insert_character(&mut self, ch: char, pos: Position) {
-        let target = self.appropriate_insert_position();
+        let (target, before) = self.appropriate_insert_position();
 
-        // Merge with existing text node if possible.
-        if let Some(last_child) = self.arena.last_child(target) {
-            let node = self.arena.get_mut(last_child);
-            if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
-                data.push(ch);
-                // Extend the span.
-                node.span.end = Position {
-                    offset: pos.offset + ch.len_utf8(),
-                    line: pos.line,
-                    col: pos.col + 1,
-                };
-                return;
+        // Merge with existing text node if possible (only when not foster parenting).
+        if before.is_none()
+            && let Some(last_child) = self.arena.last_child(target) {
+                let node = self.arena.get_mut(last_child);
+                if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
+                    data.push(ch);
+                    node.span.end = Position {
+                        offset: pos.offset + ch.len_utf8(),
+                        line: pos.line,
+                        col: pos.col + 1,
+                    };
+                    return;
+                }
             }
-        }
 
         let span = Span::new(
             pos,
@@ -238,13 +247,16 @@ impl<'a> TreeBuilder<'a> {
             },
         );
         let text_id = self.arena.create_text(ch.to_string(), span);
-        self.arena.append_child(target, text_id);
+        if let Some(sibling) = before {
+            self.arena.insert_before(target, text_id, sibling);
+        } else {
+            self.arena.append_child(target, text_id);
+        }
     }
 
     pub(super) fn insert_comment(&mut self, data: &str, span: Span) {
-        let target = self.appropriate_insert_position();
         let comment_id = self.arena.create_comment(data.to_owned(), span);
-        self.arena.append_child(target, comment_id);
+        self.insert_at_appropriate_position(comment_id);
     }
 
     fn insert_comment_to_document(&mut self, data: &str, span: Span) {
@@ -323,8 +335,7 @@ impl<'a> TreeBuilder<'a> {
 
         for &old_id in &entries_to_reconstruct {
             let new_id = self.clone_formatting_element(old_id);
-            let target = self.appropriate_insert_position();
-            self.arena.append_child(target, new_id);
+            self.insert_at_appropriate_position(new_id);
             self.open_elements.push(new_id);
             self.active_formatting.replace(old_id, new_id);
         }
@@ -385,6 +396,22 @@ impl<'a> TreeBuilder<'a> {
             {
                 return false;
             }
+        }
+        false
+    }
+
+    /// WHATWG §13.2.4.2: "has an element in list item scope"
+    /// Same as regular scope plus ol and ul as barriers.
+    fn has_element_in_list_item_scope(&self, target: &str) -> bool {
+        for id in self.open_elements.iter_top_to_bottom() {
+            let node = self.arena.get(*id);
+            if node.is_html_element(target) {
+                return true;
+            }
+            if let Some(name) = node.tag_name()
+                && (is_scope_barrier(name, node.namespace()) || matches!(name, "ol" | "ul")) {
+                    return false;
+                }
         }
         false
     }
@@ -1201,7 +1228,7 @@ impl<'a> TreeBuilder<'a> {
                 self.close_p_element();
             }
             "li" => {
-                if !self.has_element_in_scope("li") {
+                if !self.has_element_in_list_item_scope("li") {
                     return;
                 }
                 self.generate_implied_end_tags(Some("li"));
