@@ -194,10 +194,6 @@ fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
     (passed, failed, failure_samples)
 }
 
-fn indent_lines(s: &str, prefix: &str) -> String {
-    s.lines().map(|l| format!("{prefix}{l}")).collect::<Vec<_>>().join("\n")
-}
-
 #[test]
 #[ignore = "Causes OOM in debug builds. Run: cargo test --release"]
 fn html5lib_tree_construction_test_suite() {
@@ -299,15 +295,6 @@ fn html5lib_tree_construction_test_suite() {
     // cause OOM on many test files. Run in release mode:
     //   cargo test --release -p markuplint-html-parser --test html5lib_tree
     assert!(pass_rate >= 30.0, "Pass rate {pass_rate:.1}% is below 30% threshold");
-}
-
-#[test]
-#[ignore = "Full tree-construction suite causes OOM in debug builds. \
-            Run with: cargo test --release -p markuplint-html-parser --test html5lib_tree"]
-fn html5lib_tree_construction_full() {
-    // This is the real test. It's ignored in debug mode.
-    // The html5lib_tree_construction_test_suite test above will be
-    // removed once we can run the full suite reliably.
 }
 
 /// Adoption agency test: <b><p></b>TEST

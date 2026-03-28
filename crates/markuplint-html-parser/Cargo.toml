@@ -7,9 +7,6 @@ publish = false
 [lib]
 crate-type = ["rlib"]
 
-[dependencies]
-markuplint-core = { path = "../markuplint-core" }
-
 [build-dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }

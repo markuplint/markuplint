@@ -462,9 +462,10 @@ impl<'a> Tokenizer<'a> {
                 self.state = State::TagOpen;
             }
             Some('\0') => {
-                // Parse error. Emit the current input character as a character token.
+                // WHATWG §13.2.5.1: "Parse error. Emit the current input
+                // character as a character token." — emit raw \0, not FFFD.
                 let pos = self.input.prev_position();
-                self.emit_char('\u{FFFD}', pos);
+                self.emit_char('\0', pos);
             }
             None => {
                 self.emit(Token::Eof);
@@ -763,7 +764,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            other => {
+            _ => {
                 // Not an appropriate end tag. Emit `</` + buffer as characters.
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
@@ -786,9 +787,7 @@ impl<'a> Tokenizer<'a> {
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
                 // Only reconsume if we consumed an actual character (not EOF).
-                if other.is_some() {
-                    self.input.reconsume();
-                }
+                self.input.reconsume();
                 self.state = State::RcData;
             }
         }
@@ -860,7 +859,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            other => {
+            _ => {
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
                 let base_col = self.current_tag_start.col;
@@ -881,9 +880,7 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
-                if other.is_some() {
-                    self.input.reconsume();
-                }
+                self.input.reconsume();
                 self.state = State::RawText;
             }
         }
@@ -968,7 +965,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            other => {
+            _ => {
                 let base_offset = self.current_tag_start.offset;
                 let base_line = self.current_tag_start.line;
                 let base_col = self.current_tag_start.col;
@@ -989,9 +986,7 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base_offset + 2, base_line, base_col + 2);
-                if other.is_some() {
-                    self.input.reconsume();
-                }
+                self.input.reconsume();
                 self.state = State::ScriptData;
             }
         }
@@ -1164,7 +1159,7 @@ impl<'a> Tokenizer<'a> {
                 self.current_tag_name.push(c.to_ascii_lowercase());
                 self.temp_buffer.push(c);
             }
-            other => {
+            _ => {
                 let base = self.current_tag_start;
                 self.emit_char('<', base);
                 self.emit_char(
@@ -1176,9 +1171,7 @@ impl<'a> Tokenizer<'a> {
                     },
                 );
                 self.emit_temp_buffer_as_chars(base.offset + 2, base.line, base.col + 2);
-                if other.is_some() {
-                    self.input.reconsume();
-                }
+                self.input.reconsume();
                 self.state = State::ScriptDataEscaped;
             }
         }
@@ -1602,6 +1595,12 @@ impl<'a> Tokenizer<'a> {
             };
             self.state = State::CommentStart;
         } else if self.input.starts_with_ci("DOCTYPE") {
+            // Record the start of <! for accurate doctype span.
+            self.current_doctype_start = Position {
+                offset: pos.offset.saturating_sub(2),
+                line: pos.line,
+                col: pos.col.saturating_sub(2),
+            };
             self.input.advance(7);
             self.state = State::Doctype;
         } else if self.input.starts_with("[CDATA[") {
@@ -1813,22 +1812,12 @@ impl<'a> Tokenizer<'a> {
             Some('\t' | '\n' | '\x0C' | ' ') => {
                 self.state = State::BeforeDoctypeName;
             }
-            Some('>') => {
-                self.input.reconsume();
-                self.state = State::BeforeDoctypeName;
-            }
             None => {
-                self.current_doctype_start = Position {
-                    offset: self.input.position().offset.saturating_sub(9),
-                    line: self.input.position().line,
-                    col: self.input.position().col.saturating_sub(9),
-                };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
                 self.emit(Token::Eof);
             }
             Some(_) => {
-                // Parse error. Reconsume in before DOCTYPE name.
                 self.input.reconsume();
                 self.state = State::BeforeDoctypeName;
             }
@@ -1837,45 +1826,22 @@ impl<'a> Tokenizer<'a> {
 
     fn state_before_doctype_name(&mut self) {
         match self.input.next_char() {
-            Some('\t' | '\n' | '\x0C' | ' ') => {
-                // Ignore whitespace.
-            }
+            Some('\t' | '\n' | '\x0C' | ' ') => {}
             Some('\0') => {
-                self.current_doctype_start = Position {
-                    offset: self.input.position().offset.saturating_sub(11),
-                    line: self.input.position().line,
-                    col: self.input.position().col.saturating_sub(11),
-                };
                 self.current_doctype_name = Some("\u{FFFD}".to_owned());
                 self.state = State::DoctypeName;
             }
             Some('>') => {
-                self.current_doctype_start = Position {
-                    offset: self.input.position().offset.saturating_sub(10),
-                    line: self.input.position().line,
-                    col: self.input.position().col.saturating_sub(10),
-                };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
                 self.state = State::Data;
             }
             None => {
-                self.current_doctype_start = Position {
-                    offset: self.input.position().offset.saturating_sub(9),
-                    line: self.input.position().line,
-                    col: self.input.position().col.saturating_sub(9),
-                };
                 self.current_doctype_force_quirks = true;
                 self.emit_current_doctype();
                 self.emit(Token::Eof);
             }
             Some(c) => {
-                // Calculate start position: <!DOCTYPE is 9 chars + whitespace
-                self.current_doctype_start = Position {
-                    offset: self.input.prev_position().offset.saturating_sub(9),
-                    line: self.input.prev_position().line,
-                    col: self.input.prev_position().col.saturating_sub(9),
-                };
                 self.current_doctype_name = Some(c.to_ascii_lowercase().to_string());
                 self.state = State::DoctypeName;
             }

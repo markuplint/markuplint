@@ -463,7 +463,6 @@ dependencies = [
 name = "markuplint-html-parser"
 version = "0.0.0"
 dependencies = [
- "markuplint-core",
  "serde",
  "serde_json",
 ]
