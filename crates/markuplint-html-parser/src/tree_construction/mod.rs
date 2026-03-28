@@ -1730,12 +1730,18 @@ impl<'a> TreeBuilder<'a> {
                         self.insert_html_element(tag_name, attributes, *span);
                     }
                     "button" => {
-                        // New spec: <button> in select.
+                        // New spec: <button> in select closes open button/div.
                         if self.has_element_in_scope("button") {
                             self.generate_implied_end_tags(None);
                             self.pop_until("button");
+                        } else if self.has_element_in_scope("div") {
+                            self.generate_implied_end_tags(None);
+                            self.pop_until("div");
                         }
                         self.reconstruct_active_formatting_elements();
+                        self.insert_html_element(tag_name, attributes, *span);
+                    }
+                    "datalist" => {
                         self.insert_html_element(tag_name, attributes, *span);
                     }
                     "plaintext" => {
@@ -1796,8 +1802,9 @@ impl<'a> TreeBuilder<'a> {
                     "template" => {
                         self.process_in_head(token);
                     }
-                    // New spec: </div>, </button> in select close their matching element.
-                    "div" | "button" => {
+                    // New spec: </div>, </button>, </datalist> in select
+                    // close their matching element.
+                    "div" | "button" | "datalist" => {
                         if self.has_element_in_scope(tag_name) {
                             self.generate_implied_end_tags(Some(tag_name));
                             self.pop_until(tag_name);
