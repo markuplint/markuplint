@@ -16,13 +16,26 @@ impl TreeBuilder<'_> {
     #[allow(clippy::too_many_lines)]
     pub(super) fn process_in_table(&mut self, token: Token) {
         match &token {
-            Token::Character { .. } => {
-                // WHATWG §13.2.6.4.9: If current node is table/tbody/tfoot/thead/tr,
-                // switch to InTableText to accumulate characters.
+            Token::Character { .. }
+                if self.current_node().is_some_and(|id| {
+                    let n = self.arena.get(id);
+                    n.namespace() == Some(crate::tree::node::Namespace::Html)
+                        && matches!(n.tag_name(), Some("table" | "tbody" | "tfoot" | "thead" | "tr"))
+                }) =>
+            {
+                // WHATWG §13.2.6.4.9: current node is table/tbody/tfoot/thead/tr →
+                // switch to InTableText.
                 self.pending_table_chars.clear();
                 self.original_mode = Some(InsertionMode::InTable);
                 self.mode = InsertionMode::InTableText;
                 self.process_token(token);
+            }
+            Token::Character { .. } => {
+                // Current node is NOT a table element (e.g., foreign content).
+                // Foster parent via InBody.
+                self.foster_parenting = true;
+                self.process_in_body(token);
+                self.foster_parenting = false;
             }
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
