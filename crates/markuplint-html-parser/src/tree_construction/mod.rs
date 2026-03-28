@@ -61,6 +61,8 @@ pub struct TreeBuilder<'a> {
     reprocess_depth: u32,
     /// Skip next newline character (after `<pre>`, `<listing>`, `<textarea>`).
     skip_next_newline: bool,
+    /// Whether the document is in quirks mode (affects p/table nesting).
+    quirks_mode: bool,
 }
 
 impl<'a> TreeBuilder<'a> {
@@ -95,6 +97,7 @@ impl<'a> TreeBuilder<'a> {
             template_insertion_modes: Vec::new(),
             reprocess_depth: 0,
             skip_next_newline: false,
+            quirks_mode: false,
         };
         if is_fragment {
             builder.setup_fragment_parsing(context.unwrap_or("body"), context_ns);
@@ -618,6 +621,12 @@ impl<'a> TreeBuilder<'a> {
                 );
                 let doc_id = self.arena.document_id();
                 self.arena.append_child(doc_id, doctype_id);
+                // Detect quirks mode per WHATWG §13.2.6.4.1.
+                self.quirks_mode = is_quirks_mode_doctype(
+                    name.as_deref(),
+                    public_id.as_deref(),
+                    system_id.as_deref(),
+                );
                 self.mode = InsertionMode::BeforeHtml;
             }
             _ => {
@@ -1104,7 +1113,7 @@ impl<'a> TreeBuilder<'a> {
                 self.insert_html_element(tag_name, attributes, span);
                 self.mode = InsertionMode::InFrameset;
             }
-            "caption" | "col" | "colgroup" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" => {
+            "head" | "frame" | "caption" | "col" | "colgroup" | "tbody" | "td" | "tfoot" | "th" | "thead" | "tr" => {
                 // Parse error. Ignore.
             }
             "address" | "article" | "aside" | "blockquote" | "center" | "details" | "dialog" | "dir" | "div" | "dl"
@@ -1254,7 +1263,8 @@ impl<'a> TreeBuilder<'a> {
                 self.frameset_ok = false;
             }
             "table" => {
-                if self.has_element_in_button_scope("p") {
+                // In quirks mode, <table> inside <p> doesn't close the <p>.
+                if !self.quirks_mode && self.has_element_in_button_scope("p") {
                     self.close_p_element();
                 }
                 self.insert_html_element(tag_name, attributes, span);
@@ -1669,7 +1679,7 @@ impl<'a> TreeBuilder<'a> {
                         self.pop_until("select");
                         self.reset_insertion_mode();
                     }
-                    "input" | "keygen" | "textarea" => {
+                    "input" | "textarea" => {
                         // Parse error. Close select and reprocess.
                         self.pop_until("select");
                         self.reset_insertion_mode();
@@ -1982,6 +1992,111 @@ impl<'a> TreeBuilder<'a> {
         }
         self.mode = InsertionMode::InBody;
     }
+}
+
+/// Quirks-triggering public identifiers (exact match).
+const QUIRKS_PUBLIC_IDS: &[&str] = &[
+    "-//w3o//dtd w3 html strict 3.0//en//",
+    "-/w3c/dtd html 4.0 transitional/en",
+    "html",
+];
+
+/// Quirks-triggering public identifier prefixes.
+const QUIRKS_PUBLIC_PREFIXES: &[&str] = &[
+    "+//silmaril//dtd html pro v0r11 19970101//",
+        "-//as//dtd html 3.0 aswedit 7.0//",
+        "-//advasoft ltd//dtd html 3.0 aswedit 7.0//",
+        "-//ietf//dtd html 2.0 level 1//",
+        "-//ietf//dtd html 2.0 level 2//",
+        "-//ietf//dtd html 2.0 strict level 1//",
+        "-//ietf//dtd html 2.0 strict level 2//",
+        "-//ietf//dtd html 2.0 strict//",
+        "-//ietf//dtd html 2.0//",
+        "-//ietf//dtd html 2.1e//",
+        "-//ietf//dtd html 3.0//",
+        "-//ietf//dtd html 3.2 final//",
+        "-//ietf//dtd html 3.2//",
+        "-//ietf//dtd html 3//",
+        "-//ietf//dtd html level 0//",
+        "-//ietf//dtd html level 1//",
+        "-//ietf//dtd html level 2//",
+        "-//ietf//dtd html level 3//",
+        "-//ietf//dtd html strict level 0//",
+        "-//ietf//dtd html strict level 1//",
+        "-//ietf//dtd html strict level 2//",
+        "-//ietf//dtd html strict level 3//",
+        "-//ietf//dtd html strict//",
+        "-//ietf//dtd html//",
+        "-//metrius//dtd metrius presentational//",
+        "-//microsoft//dtd internet explorer 2.0 html strict//",
+        "-//microsoft//dtd internet explorer 2.0 html//",
+        "-//microsoft//dtd internet explorer 2.0 tables//",
+        "-//microsoft//dtd internet explorer 3.0 html strict//",
+        "-//microsoft//dtd internet explorer 3.0 html//",
+        "-//microsoft//dtd internet explorer 3.0 tables//",
+        "-//netscape comm. corp.//dtd html//",
+        "-//netscape comm. corp.//dtd strict html//",
+        "-//o'reilly and associates//dtd html 2.0//",
+        "-//o'reilly and associates//dtd html extended 1.0//",
+        "-//o'reilly and associates//dtd html extended relaxed 1.0//",
+        "-//sq//dtd html 2.0 hotmetal + extensions//",
+        "-//softquad software//dtd hotmetal pro 6.0::19990601::extensions to html 4.0//",
+        "-//softquad//dtd hotmetal pro 4.0::19971010::extensions to html 4.0//",
+        "-//spyglass//dtd html 2.0 extended//",
+        "-//sun microsystems corp.//dtd hotjava html//",
+        "-//sun microsystems corp.//dtd hotjava strict html//",
+        "-//w3c//dtd html 3 1995-03-24//",
+        "-//w3c//dtd html 3.2 draft//",
+        "-//w3c//dtd html 3.2 final//",
+        "-//w3c//dtd html 3.2//",
+        "-//w3c//dtd html 3.2s draft//",
+        "-//w3c//dtd html 4.0 frameset//",
+        "-//w3c//dtd html 4.0 transitional//",
+        "-//w3c//dtd html experimental 19960712//",
+        "-//w3c//dtd html experimental 970421//",
+        "-//w3c//dtd w3 html//",
+        "-//w3o//dtd w3 html 3.0//",
+        "-//webtechs//dtd mozilla html 2.0//",
+        "-//webtechs//dtd mozilla html//",
+];
+
+/// Determine quirks mode from DOCTYPE per WHATWG §13.2.6.4.1.
+fn is_quirks_mode_doctype(name: Option<&str>, public_id: Option<&str>, system_id: Option<&str>) -> bool {
+    if name != Some("html") {
+        return true;
+    }
+
+    let pub_id = public_id.unwrap_or("");
+    let sys_id = system_id.unwrap_or("");
+    let pub_lower = pub_id.to_ascii_lowercase();
+
+    for &qid in QUIRKS_PUBLIC_IDS {
+        if pub_lower == qid {
+            return true;
+        }
+    }
+
+    for &prefix in QUIRKS_PUBLIC_PREFIXES {
+        if pub_lower.starts_with(prefix) {
+            return true;
+        }
+    }
+
+    // System identifier quirks: if system ID is missing and public ID
+    // starts with specific prefixes.
+    if sys_id.is_empty()
+        && (pub_lower.starts_with("-//w3c//dtd html 4.01 frameset//")
+            || pub_lower.starts_with("-//w3c//dtd html 4.01 transitional//"))
+    {
+        return true;
+    }
+
+    // System identifier that triggers quirks.
+    if sys_id.eq_ignore_ascii_case("http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd") {
+        return true;
+    }
+
+    false
 }
 
 /// Convert tokenizer `RawAttribute`s to tree `Attribute`s.
