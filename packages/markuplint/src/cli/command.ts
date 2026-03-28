@@ -24,7 +24,7 @@ import {
 } from '../suppressions/index.js';
 
 import { outputDryRunDiff } from './dry-run-output.js';
-import { output } from './output.js';
+import { output, outputSummary } from './output.js';
 
 /**
  * Executes the markuplint linting command against the given files.
@@ -153,6 +153,12 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			continue;
 		}
 
+		processedFiles.push(result.filePath);
+		filesContent.set(result.filePath, {
+			sourceCode: result.sourceCode,
+			fixedCode: result.fixedCode,
+		});
+
 		// Store engine for scope computation in suppressions
 		engines.set(result.filePath, engine);
 
@@ -169,13 +175,6 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 				},
 				options,
 			);
-		} else {
-			// 従来の動作：メモリに蓄積
-			processedFiles.push(result.filePath);
-			filesContent.set(result.filePath, {
-				sourceCode: result.sourceCode,
-				fixedCode: result.fixedCode,
-			});
 		}
 
 		// Add violations to collector
@@ -361,6 +360,46 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			}
 		}
 	}
+
+	let errorCount = 0;
+	let warningCount = 0;
+	let noticeCount = 0;
+	let failedFileCount = 0;
+
+	for (const filePath of processedFiles) {
+		const violations = outputViolationsByFile.get(filePath) || [];
+		if (violations.length > 0) {
+			failedFileCount++;
+		}
+		for (const violation of violations) {
+			switch (violation.severity) {
+				case 'error': {
+					errorCount++;
+					break;
+				}
+				case 'warning': {
+					warningCount++;
+					break;
+				}
+				case 'info': {
+					noticeCount++;
+					break;
+				}
+			}
+		}
+	}
+
+	outputSummary(
+		{
+			checkedFileCount: processedFiles.length,
+			failedFileCount,
+			skippedFileCount: skippedFiles.length,
+			errorCount,
+			warningCount,
+			noticeCount,
+		},
+		options,
+	);
 
 	// Check if max-warnings limit is exceeded (ESLint compatible)
 	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {

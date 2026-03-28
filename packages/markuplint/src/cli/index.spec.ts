@@ -48,7 +48,7 @@ describe('STDOUT Test', () => {
 	test('verify', async () => {
 		const targetFilePath = path.resolve(import.meta.dirname, '../../../../test/fixture/001.html');
 		const { stdout, exitCode } = await execa(entryFilePath, ['--no-color', escape(targetFilePath)]);
-		expect(stdout).toBe(`<markuplint> passed ${targetFilePath}`);
+		expect(stdout).toBe([`<markuplint> passed ${targetFilePath}`, '', '✔ 1 file checked, 0 problems'].join('\n'));
 		expect(exitCode).toBe(0);
 	});
 
@@ -64,7 +64,7 @@ describe('STDOUT Test', () => {
 			reject: false,
 		});
 		expect(stdout).toBe('');
-		expect(stderr.split('\n').length).toBe(30);
+		expect(stderr.split('\n').length).toBe(33);
 		expect(exitCode).toBe(0);
 	});
 
@@ -110,6 +110,9 @@ describe('STDOUT Test', () => {
 			'   6: \u2192   <meta\u2022http-equiv=X-UA-Compatible\u2022content=ie=edge>',
 			'                                           ^^^^^^^^^^^^^^^ ',
 			'   7: \u2192   <title>Document</title>',
+			'',
+			'✖ 6 problems (0 errors, 6 warnings) in 1 file',
+			'1 file checked: 0 passed, 1 failed',
 		]);
 		expect(exitCode).toBe(1);
 	});
@@ -272,7 +275,7 @@ describe('STDOUT Test', () => {
 			path.resolve(import.meta.dirname, '../../../../test/fixture/003.html'), // Should be skipped
 		];
 
-		const { stdout } = await execa(
+		const { stdout, stderr } = await execa(
 			entryFilePath,
 			['--no-color', '--max-count=3', '--format=simple', ...targetFiles.map(escape)],
 			{
@@ -283,6 +286,8 @@ describe('STDOUT Test', () => {
 		// Check for passed, processed, and skipped indicators
 		expect(stdout).toContain('✓'); // 001.html should be passed
 		expect(stdout).toContain('⚠'); // 003.html should be skipped
+		expect(stderr).toContain('✖ 3 problems (0 errors, 3 warnings) in 2 files');
+		expect(stderr).toContain('2 files checked: 1 passed, 1 failed');
 	});
 });
 
