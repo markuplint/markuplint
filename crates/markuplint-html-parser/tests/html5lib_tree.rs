@@ -222,15 +222,66 @@ struct TreeFileResult {
     failure_samples: Vec<String>,
 }
 
+/// Tests that are skipped with documented reasons.
+/// Each entry: (file_name, test_data_prefix, reason).
+const SKIP_TESTS: &[(&str, &str, &str)] = &[
+    // WHATWG §13.2.6.5 end-tag walk pops <div> including SVG/MathML descendants.
+    // html5lib expects <div> to remain open inside foreignObject>math.
+    // Spec/test divergence for deeply nested foreign-in-integration-point.
+    (
+        "tests10.dat",
+        "<div><svg><path><foreignObject><math></div>a",
+        "spec/test divergence: foreign content end tag walk vs integration point nesting",
+    ),
+    // <selectedcontent> clones selected <option> content into a slot.
+    // This is a new spec addition (customizable <select>) not yet widely
+    // implemented. Requires a dedicated cloning mechanism in the tree builder.
+    (
+        "webkit02.dat",
+        "<select><button><selectedcontent></button><option>X",
+        "unimplemented: <selectedcontent> option content cloning (customizable select)",
+    ),
+    (
+        "webkit02.dat",
+        "<select><button><selectedcontent></button><option>x<i>",
+        "unimplemented: <selectedcontent> option content cloning (customizable select)",
+    ),
+    (
+        "webkit02.dat",
+        "<select><button><selectedcontent></button><option>X<option>Y",
+        "unimplemented: <selectedcontent> option content cloning (customizable select)",
+    ),
+    (
+        "webkit02.dat",
+        "<select><button><selectedcontent></button><option>X<option s",
+        "unimplemented: <selectedcontent> option content cloning (customizable select)",
+    ),
+];
+
+fn should_skip_test(filename: &str, test: &TreeTest) -> Option<&'static str> {
+    for &(file, prefix, reason) in SKIP_TESTS {
+        if filename == file && test.data.starts_with(prefix) {
+            return Some(reason);
+        }
+    }
+    None
+}
+
 fn run_test_file(path: &Path) -> TreeFileResult {
     let content = fs::read_to_string(path).expect("Failed to read test file");
     let tests = parse_dat_file(&content);
+    let filename = path.file_name().unwrap().to_string_lossy();
     let mut passed = 0;
     let mut failed = 0;
     let mut skipped = 0;
     let mut failure_samples = Vec::new();
 
     for test in &tests {
+        if let Some(reason) = should_skip_test(&filename, test) {
+            skipped += 1;
+            eprintln!("    SKIP: {:?} — {reason}", &test.data[..test.data.len().min(50)]);
+            continue;
+        }
         if run_tree_test(test) {
             passed += 1;
         } else {
@@ -258,14 +309,14 @@ fn html5lib_tree_construction_test_suite() {
         return;
     }
 
-    // Skipped: features not yet implemented (each documented).
+    // Skipped files: features not yet implemented (each documented).
     let skip_files = [
         "template.dat",                               // InTemplate not fully implemented
         "domjs-unsafe.dat",                           // null bytes in unsafe contexts
         "plain-text-unsafe.dat",                      // null bytes in PLAINTEXT
         "pending-spec-changes-plain-text-unsafe.dat", // same
-        "tests_innerHTML_1.dat",                      // innerHTML fragment parsing
-        "foreign-fragment.dat",                       // SVG/MathML fragment context
+        "tests_innerHTML_1.dat",                      // innerHTML fragment parsing (76/80 pass, needs fragment setup rework)
+        "foreign-fragment.dat",                       // SVG/MathML fragment context (44/65 pass, needs fragment setup rework)
     ];
 
     let mut total_passed = 0;
@@ -328,26 +379,12 @@ fn html5lib_tree_construction_test_suite() {
         }
     }
 
-    // Exact failure count for regression detection.
-    // Lower this number as failures are fixed. Target: 0.
-    //
-    // Remaining 5 failures:
-    //
-    // [tests10.dat] <div><svg><path><foreignObject><math></div>a
-    //   - Foreign content end tag walk pops <div> including all SVG/MathML
-    //     descendants per WHATWG §13.2.6.5 step 2. html5lib expects <div>
-    //     to remain open. Likely a spec/test divergence for deeply nested
-    //     foreign-in-integration-point scenarios.
-    //
-    // [webkit02.dat] <select><button><selectedcontent>...</button><option>...
-    //   (4 tests) — The <selectedcontent> element clones selected <option>
-    //   content into the selectedcontent slot. This is a very new spec
-    //   addition (customizable <select>) not yet widely implemented.
-    //   Requires a dedicated cloning mechanism in the tree builder.
-    let max_allowed_failures = 5;
-    assert!(
-        total_failed <= max_allowed_failures,
-        "Regression: {total_failed} failures (max allowed: {max_allowed_failures})"
+    // All executed tests must pass. Known failures are explicitly
+    // skipped in SKIP_TESTS with documented reasons.
+    assert_eq!(
+        total_failed, 0,
+        "Unexpected failures: {total_failed}. If a test cannot pass, \
+         add it to SKIP_TESTS with a documented reason."
     );
 }
 
