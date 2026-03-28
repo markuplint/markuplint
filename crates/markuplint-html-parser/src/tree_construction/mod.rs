@@ -160,7 +160,17 @@ impl<'a> TreeBuilder<'a> {
     }
 
     fn appropriate_insert_position(&self) -> NodeId {
-        // TODO: foster parenting
+        if self.foster_parenting {
+            // Foster parenting: find the table element in the stack,
+            // insert before it (into its parent).
+            for id in self.open_elements.iter_top_to_bottom() {
+                let node = self.arena.get(*id);
+                if node.is_html_element("table")
+                    && let Some(parent) = node.parent {
+                        return parent;
+                    }
+            }
+        }
         self.current_node().unwrap_or(self.arena.document_id())
     }
 
@@ -356,9 +366,10 @@ impl<'a> TreeBuilder<'a> {
                 return true;
             }
             if let Some(name) = node.tag_name()
-                && is_scope_barrier(name, node.namespace()) {
-                    return false;
-                }
+                && is_scope_barrier(name, node.namespace())
+            {
+                return false;
+            }
         }
         false
     }
@@ -370,9 +381,10 @@ impl<'a> TreeBuilder<'a> {
                 return true;
             }
             if let Some(name) = node.tag_name()
-                && (is_scope_barrier(name, node.namespace()) || name == "button") {
-                    return false;
-                }
+                && (is_scope_barrier(name, node.namespace()) || name == "button")
+            {
+                return false;
+            }
         }
         false
     }
@@ -900,6 +912,15 @@ impl<'a> TreeBuilder<'a> {
                 self.frameset_ok = false;
                 // TODO: skip next newline
             }
+            "button" => {
+                if self.has_element_in_scope("button") {
+                    self.generate_implied_end_tags(None);
+                    self.pop_until("button");
+                }
+                self.reconstruct_active_formatting_elements();
+                self.insert_html_element(tag_name, attributes, span);
+                self.frameset_ok = false;
+            }
             "form" => {
                 if self.form_element.is_some() && !self.has_element_in_scope("template") {
                     // Parse error. Ignore.
@@ -971,10 +992,11 @@ impl<'a> TreeBuilder<'a> {
                 // Check for existing <a> in active formatting.
                 if let Some(existing_a) = self.active_formatting.find_last_element("a", &self.arena) {
                     self.run_adoption_agency("a");
-                    // Remove if still present.
+                    // Remove if still present after adoption agency.
                     self.active_formatting.remove(existing_a);
                     self.open_elements.remove(existing_a);
                 }
+                self.reconstruct_active_formatting_elements();
                 if self.has_element_in_button_scope("p") {
                     self.close_p_element();
                 }
@@ -982,6 +1004,16 @@ impl<'a> TreeBuilder<'a> {
                 self.active_formatting.push(FormatEntry::Element(el_id));
             }
             "b" | "big" | "code" | "em" | "font" | "i" | "s" | "small" | "strike" | "strong" | "tt" | "u" => {
+                self.reconstruct_active_formatting_elements();
+                let el_id = self.insert_html_element(tag_name, attributes, span);
+                self.active_formatting.push(FormatEntry::Element(el_id));
+            }
+            "nobr" => {
+                self.reconstruct_active_formatting_elements();
+                if self.has_element_in_scope("nobr") {
+                    self.run_adoption_agency("nobr");
+                    self.reconstruct_active_formatting_elements();
+                }
                 let el_id = self.insert_html_element(tag_name, attributes, span);
                 self.active_formatting.push(FormatEntry::Element(el_id));
             }
@@ -1094,6 +1126,7 @@ impl<'a> TreeBuilder<'a> {
             }
             _ => {
                 // Any other start tag.
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element(tag_name, attributes, span);
             }
         }

@@ -16,9 +16,10 @@ impl TreeBuilder<'_> {
     pub(super) fn process_in_table(&mut self, token: Token) {
         match &token {
             Token::Character { .. } => {
-                // Foster parenting: anything other than whitespace in table context
-                // gets redirected. For now, delegate to InBody.
+                // Foster parenting: process in InBody with foster_parenting enabled.
+                self.foster_parenting = true;
                 self.process_in_body(token);
+                self.foster_parenting = false;
             }
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
@@ -84,7 +85,9 @@ impl TreeBuilder<'_> {
                 }
                 _ => {
                     // Parse error. Foster parenting via InBody.
+                    self.foster_parenting = true;
                     self.process_in_body(token);
+                    self.foster_parenting = false;
                 }
             },
             Token::EndTag { tag_name, span, .. } => match tag_name.as_str() {
@@ -103,7 +106,9 @@ impl TreeBuilder<'_> {
                     self.process_in_head(token);
                 }
                 _ => {
+                    self.foster_parenting = true;
                     self.process_in_body(token);
+                    self.foster_parenting = false;
                 }
             },
             Token::Eof => {
