@@ -90,7 +90,7 @@ impl TreeBuilder<'_> {
                     // Only type=hidden is inserted directly; others foster parent.
                     let is_hidden = attributes
                         .iter()
-                        .any(|a| a.raw_name.eq_ignore_ascii_case("type") && a.raw_value.trim().eq_ignore_ascii_case("hidden"));
+                        .any(|a| a.raw_name.eq_ignore_ascii_case("type") && a.raw_value.eq_ignore_ascii_case("hidden"));
                     if is_hidden {
                         self.insert_html_element(tag_name, attributes, *span);
                         self.open_elements.pop();

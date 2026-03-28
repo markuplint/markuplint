@@ -322,7 +322,7 @@ fn html5lib_tree_construction_test_suite() {
 
     // Exact failure count for regression detection.
     // Lower this number as failures are fixed. Target: 0.
-    let max_allowed_failures = 23;
+    let max_allowed_failures = 21;
     assert!(
         total_failed <= max_allowed_failures,
         "Regression: {total_failed} failures (max allowed: {max_allowed_failures})"

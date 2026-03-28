@@ -235,24 +235,18 @@ impl TreeBuilder<'_> {
     pub(super) fn process_foreign_content(&mut self, token: Token) {
         match &token {
             Token::Character { ch, offset, line, col } => {
+                let pos = crate::input::Position {
+                    offset: *offset,
+                    line: *line,
+                    col: *col,
+                };
                 if *ch == '\0' {
-                    self.insert_character(
-                        '\u{FFFD}',
-                        crate::input::Position {
-                            offset: *offset,
-                            line: *line,
-                            col: *col,
-                        },
-                    );
+                    self.insert_character('\u{FFFD}', pos);
                 } else {
-                    self.insert_character(
-                        *ch,
-                        crate::input::Position {
-                            offset: *offset,
-                            line: *line,
-                            col: *col,
-                        },
-                    );
+                    if !ch.is_ascii_whitespace() {
+                        self.frameset_ok = false;
+                    }
+                    self.insert_character(*ch, pos);
                 }
             }
             Token::Comment { data, span } => {
