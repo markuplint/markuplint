@@ -1699,9 +1699,10 @@ impl<'a> Tokenizer<'a> {
     }
 
     fn state_comment_less_than_sign_bang(&mut self) {
-        if self.input.peek() == Some('-') {
+        if let Some('-') = self.input.next_char() {
             self.state = State::CommentLessThanSignBangDash;
         } else {
+            self.input.reconsume();
             self.state = State::Comment;
         }
     }
