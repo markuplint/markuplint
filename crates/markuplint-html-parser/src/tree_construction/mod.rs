@@ -630,7 +630,8 @@ impl<'a> TreeBuilder<'a> {
                 self.mode = InsertionMode::BeforeHtml;
             }
             _ => {
-                // Parse error. Switch to before HTML and reprocess.
+                // Parse error. No DOCTYPE → quirks mode.
+                self.quirks_mode = true;
                 self.mode = InsertionMode::BeforeHtml;
                 self.process_token(token);
             }
