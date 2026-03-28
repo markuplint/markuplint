@@ -44,7 +44,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
 - **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
-- **Built-in rules**: `attr-duplication`
+- **Built-in rules**: `attr-duplication`, `permitted-contents` (content model validation against HTML spec)
 
 ### markuplint-types
 

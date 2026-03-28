@@ -27,6 +27,10 @@ pub enum ChildNodeKind {
 ///
 /// Decoupled from the DOM arena so the matching engine can be tested
 /// without building a full DOM tree.
+///
+/// `line` and `col` default to `0` when position is unknown (e.g., nodes
+/// created by test helpers). Callers must check for `0` before using
+/// these values for violation reporting.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ChildNodeInfo {
     /// The kind of node (element type, text, or preprocessor block).
