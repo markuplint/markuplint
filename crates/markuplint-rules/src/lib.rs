@@ -1,19 +1,22 @@
-//! Rule implementations for markuplint.
+//! Lint rules and execution engine for markuplint.
 //!
-//! This crate exists to break a circular dependency: `markuplint-selector`
-//! depends on `markuplint-types` for spec data, so `markuplint-types` cannot
-//! depend on `markuplint-selector`. Content model matching needs both spec
-//! data (from `markuplint-types`) and CSS selector evaluation (from
-//! `markuplint-selector`), so it lives here — above both in the dependency
-//! graph.
+//! This crate contains:
+//! - **Rule trait and registry** (`rule.rs`, `rules/`)
+//! - **Lint function** (`lint.rs`) — MLAST + config + spec → violations
+//! - **ARIA algorithms** (`aria/`) — computed role, accname, isExposed
+//! - **Content model matching** (`content_model/`)
 //!
 //! ```text
-//! markuplint-types   (spec data, no selector dep)
+//! markuplint-types   (spec data)
 //!       ↑
-//! markuplint-selector (CSS selectors, depends on types)
+//! markuplint-selector (CSS selectors)
 //!       ↑
-//! markuplint-rules   (content model matching, depends on both)
+//! markuplint-rules   (rules + lint engine)
 //! ```
 
 pub mod aria;
 pub mod content_model;
+pub mod lint;
+pub mod rule;
+pub mod rules;
+pub mod violation;

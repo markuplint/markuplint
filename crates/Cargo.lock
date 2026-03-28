@@ -464,10 +464,12 @@ version = "0.0.0"
 dependencies = [
  "markuplint-core",
  "markuplint-dom",
+ "markuplint-rules",
  "markuplint-types",
  "napi",
  "napi-build",
  "napi-derive",
+ "serde_json",
 ]
 
 [[package]]
@@ -478,6 +480,7 @@ dependencies = [
  "markuplint-dom",
  "markuplint-selector",
  "markuplint-types",
+ "serde",
  "serde_json",
 ]
 

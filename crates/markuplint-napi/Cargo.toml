@@ -10,7 +10,9 @@ crate-type = ["cdylib"]
 [dependencies]
 markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
+markuplint-rules = { path = "../markuplint-rules" }
 markuplint-types = { path = "../markuplint-types" }
+serde_json = { workspace = true }
 napi = { version = "3", features = ["serde-json"] }
 napi-derive = "3"
 
