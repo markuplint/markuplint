@@ -182,9 +182,12 @@ impl<'a> TreeBuilder<'a> {
         }
 
         // Set the last start tag for RCDATA/RAWTEXT end tag matching.
+        // NOTE: "script" is excluded — in ScriptData state, the fragment
+        // context means the entire content is the script's text, so
+        // </script> should NOT be recognized as an end tag.
         if matches!(
             context_tag,
-            "title" | "textarea" | "style" | "xmp" | "iframe" | "noembed" | "noframes" | "script"
+            "title" | "textarea" | "style" | "xmp" | "iframe" | "noembed" | "noframes"
         ) {
             self.tokenizer.set_last_start_tag(context_tag);
         }
@@ -970,6 +973,9 @@ impl<'a> TreeBuilder<'a> {
             }
             Token::StartTag { tag_name, .. } if tag_name == "head" => {
                 // Parse error. Ignore.
+            }
+            Token::Eof if self.is_fragment => {
+                // Fragment mode: don't create implicit body on EOF.
             }
             _ => {
                 let pos = Self::token_position(&token);
