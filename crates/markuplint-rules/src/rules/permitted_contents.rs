@@ -143,6 +143,15 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
             }
             DomNode::Text(t) => {
                 let raw = &t.base.raw;
+                // Skip endtag nodes that the DOM builder stores as TextData.
+                // EndTags have raw like "</li>". They must remain in the DOM
+                // for rules like no-orphaned-end-tag, but content model
+                // validation should ignore them.
+                // TODO: Give endtags a proper DomNode variant instead of
+                // misusing TextData. Tracked in builder.rs convert_end_tag().
+                if raw.starts_with("</") {
+                    continue;
+                }
                 if !raw.is_empty() {
                     result.push(ChildNodeInfo::text(raw));
                 }
