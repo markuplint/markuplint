@@ -166,9 +166,17 @@ fn serialize_node(arena: &Arena, source: &str, node_id: NodeId, depth: usize, ou
                 output.push_str(&format!("| {indent}  {0}=\"{1}\"\n", attr.name, attr.value));
             }
 
-            // Children.
-            for &child_id in &node.children {
-                serialize_node(arena, source, child_id, depth + 1, output);
+            // Children (template uses "content" wrapper).
+            if tag_name == "template" && *namespace == markuplint_html_parser::tree::node::Namespace::Html {
+                let child_indent = "  ".repeat(depth + 1);
+                output.push_str(&format!("| {child_indent}content\n"));
+                for &child_id in &node.children {
+                    serialize_node(arena, source, child_id, depth + 2, output);
+                }
+            } else {
+                for &child_id in &node.children {
+                    serialize_node(arena, source, child_id, depth + 1, output);
+                }
             }
         }
         NodeKind::Text { data } => {
