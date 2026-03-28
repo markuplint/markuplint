@@ -6,11 +6,9 @@ import { createRequire } from 'node:module';
 import { parser } from '@markuplint/html-parser';
 import { describe, it, expect } from 'vitest';
 
- 
-import { NapiDom, lint, matchCssSyntax, matchCssProperty } from './index.js';
-
-const require = createRequire(import.meta.url);
-const htmlSpec = require('@markuplint/html-spec');
+const require_ = createRequire(import.meta.url);
+const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.js');
+const htmlSpec = require_('@markuplint/html-spec');
 
 function buildDom(html: string): NapiDom {
 	const ast = parser.parse(html);
