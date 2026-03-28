@@ -167,13 +167,12 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
     result
 }
 
-/// Check if all patterns are optional (zeroOrMore or optional).
+/// Check if all patterns are optional (zeroOrMore, optional, or choice with all-optional branches).
 fn all_optional(patterns: &[PermittedContentPattern]) -> bool {
-    patterns.iter().all(|p| {
-        matches!(
-            p,
-            PermittedContentPattern::ZeroOrMore(_) | PermittedContentPattern::Optional(_)
-        )
+    patterns.iter().all(|p| match p {
+        PermittedContentPattern::ZeroOrMore(_) | PermittedContentPattern::Optional(_) => true,
+        PermittedContentPattern::Choice(c) => c.choice.iter().all(|branch| all_optional(branch)),
+        _ => false,
     })
 }
 
@@ -354,5 +353,45 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         let table_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<table>")).collect();
         assert!(table_violations.is_empty(), "table > tbody should be valid");
+    }
+
+    #[test]
+    fn ul_multiple_li_valid() {
+        let s = spec();
+        let (arena, _) = make_parent_children("ul", &[("li", &[]), ("li", &[]), ("li", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
+        assert!(v.is_empty(), "ul > li*3 should be valid");
+    }
+
+    #[test]
+    fn ul_mixed_valid_invalid() {
+        let s = spec();
+        let (arena, _) = make_parent_children("ul", &[("li", &[]), ("div", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
+        assert!(!v.is_empty(), "ul > li + div should report div as invalid");
+    }
+
+    #[test]
+    fn dl_dt_dd_valid() {
+        let s = spec();
+        let (arena, _) = make_parent_children("dl", &[("dt", &[]), ("dd", &[]), ("dt", &[]), ("dd", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<dl>")).collect();
+        assert!(v.is_empty(), "dl > dt+dd repeated should be valid");
+    }
+
+    #[test]
+    fn details_requires_summary() {
+        let s = spec();
+        let (arena, _) = make_parent_children("details", &[("p", &[])]);
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<details>")).collect();
+        assert!(!v.is_empty(), "details without summary should report missing");
     }
 }
