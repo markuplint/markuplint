@@ -1720,7 +1720,13 @@ impl<'a> TreeBuilder<'a> {
                             _ => Namespace::Html,
                         };
                         let el_id = self.insert_element_for_token(tag_name, attributes, *span, ns);
-                        if crate::tables::is_formatting_element(tag_name) {
+                        // Void elements should be immediately popped.
+                        if matches!(
+                            tag_name.as_str(),
+                            "area" | "br" | "embed" | "img" | "keygen" | "wbr" | "input" | "param" | "source" | "track"
+                        ) {
+                            self.open_elements.pop();
+                        } else if crate::tables::is_formatting_element(tag_name) {
                             self.active_formatting
                                 .push_with_noahs_ark(FormatEntry::Element(el_id), &self.arena);
                         }
@@ -1757,6 +1763,13 @@ impl<'a> TreeBuilder<'a> {
                     }
                     "template" => {
                         self.process_in_head(token);
+                    }
+                    // New spec: </div>, </button> in select close their matching element.
+                    "div" | "button" => {
+                        if self.has_element_in_scope(tag_name) {
+                            self.generate_implied_end_tags(Some(tag_name));
+                            self.pop_until(tag_name);
+                        }
                     }
                     _ => {
                         // Parse error. Ignore.
