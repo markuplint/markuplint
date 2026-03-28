@@ -26,7 +26,10 @@ impl TreeBuilder<'_> {
                 // WHATWG §13.2.6.4.9: current node is table/tbody/tfoot/thead/tr →
                 // switch to InTableText.
                 self.pending_table_chars.clear();
-                self.original_mode = Some(InsertionMode::InTable);
+                // Save the actual current mode (may be InRow, InTableBody, etc.)
+                // not always InTable — delegating modes call process_in_table
+                // without changing self.mode.
+                self.original_mode = Some(self.mode);
                 self.mode = InsertionMode::InTableText;
                 self.process_token(token);
             }
