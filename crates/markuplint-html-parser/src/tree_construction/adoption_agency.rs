@@ -37,7 +37,8 @@ impl TreeBuilder<'_> {
             outer_loop_counter += 1;
 
             // Step 5: Find formatting element in active formatting.
-            let Some(format_id) = self.active_formatting.find_last_element(tag_name, &self.arena) else {
+            let Some(format_id) = self.active_formatting.find_last_element(tag_name, &self.arena)
+            else {
                 return false;
             };
 
@@ -81,23 +82,28 @@ impl TreeBuilder<'_> {
             // Step 12: bookmark = position of formatting element in active formatting.
             let mut bookmark = self.active_formatting.position(format_id).unwrap_or(0);
 
-            // Step 13: inner loop.
-            let mut node_id = furthest_block_id;
+            // Step 13: inner loop — use position-based tracking per WHATWG.
+            // "Let node be the element immediately above node in the stack,
+            //  or if node is no longer in the stack (because it was removed),
+            //  the element that was immediately above node before removal."
+            let mut node_above_pos = self
+                .open_elements
+                .position(furthest_block_id)
+                .unwrap_or(0);
             let mut last_node = furthest_block_id;
             let mut inner_loop_counter = 0;
 
             loop {
                 inner_loop_counter += 1;
 
-                // Step 13.3: Let node be the element immediately above node
-                // in the stack of open elements.
-                let node_pos = match self.open_elements.position(node_id) {
-                    Some(p) if p > 0 => p - 1,
-                    _ => break,
-                };
-                node_id = match self.open_elements.get(node_pos) {
-                    Some(id) => id,
-                    None => break,
+                // Step 13.3: Move up in the stack.
+                if node_above_pos == 0 {
+                    break;
+                }
+                node_above_pos -= 1;
+
+                let Some(mut node_id) = self.open_elements.get(node_above_pos) else {
+                    break;
                 };
 
                 // Step 13.4: If node is the formatting element, break.
@@ -112,34 +118,29 @@ impl TreeBuilder<'_> {
                 }
 
                 // Step 13.6: If node is not in active formatting, remove from
-                // stack and continue.
+                // stack and continue. After removal, elements above shift
+                // down, so node_above_pos stays the same — the next
+                // iteration's decrement will land on the correct element.
                 if !self.active_formatting.contains(node_id) {
                     self.open_elements.remove(node_id);
                     continue;
                 }
 
-                // Step 13.7: Create a new element with same tag/ns/attrs as node.
+                // Step 13.7: Create a new element with same tag/ns/attrs.
                 let new_element = self.clone_element(node_id);
 
                 // Replace node in active formatting and open elements.
                 self.active_formatting.replace(node_id, new_element);
                 self.open_elements.replace_id(node_id, new_element);
-
-                // Update bookmark if needed.
-                if let Some(af_pos) = self.active_formatting.position(new_element) {
-                    if af_pos < bookmark {
-                        // Bookmark stays the same.
-                    } else {
-                        bookmark = af_pos;
-                    }
-                }
-
                 node_id = new_element;
 
                 // Step 13.8: If last node is furthest block, set bookmark
                 // to one past new element in active formatting.
                 if last_node == furthest_block_id {
-                    bookmark = self.active_formatting.position(new_element).map_or(bookmark, |p| p + 1);
+                    bookmark = self
+                        .active_formatting
+                        .position(new_element)
+                        .map_or(bookmark, |p| p + 1);
                 }
 
                 // Step 13.9: Reparent last_node under node.
@@ -150,10 +151,16 @@ impl TreeBuilder<'_> {
                 last_node = node_id;
             }
 
-            // Step 14: Insert last node into common ancestor.
+            // Step 14: Insert last node at the appropriate position under
+            // common ancestor. If foster parenting is active, use the
+            // appropriate insertion position.
             if let Some(ancestor) = common_ancestor {
                 self.arena.remove_from_parent(last_node);
-                self.arena.append_child(ancestor, last_node);
+                if self.foster_parenting {
+                    self.insert_at_appropriate_position(last_node);
+                } else {
+                    self.arena.append_child(ancestor, last_node);
+                }
             }
 
             // Step 15: Create new element for formatting element.
@@ -173,7 +180,7 @@ impl TreeBuilder<'_> {
             // insert new element at bookmark position.
             self.active_formatting.remove(format_id);
             self.active_formatting
-                .insert_at(bookmark, FormatEntry::Element(new_format));
+                .insert_at(bookmark.min(self.active_formatting.entries().len()), FormatEntry::Element(new_format));
 
             // Step 19: Remove formatting element from open elements,
             // insert new element after furthest block.
@@ -181,15 +188,7 @@ impl TreeBuilder<'_> {
             let fb_pos = self.open_elements.position(furthest_block_id).unwrap_or(0);
             self.open_elements.insert(fb_pos + 1, new_format);
 
-            // NOTE: Per WHATWG spec, the outer loop continues here
-            // (go back to step 4). However, for practical correctness
-            // matching browser behavior, we must NOT loop back because
-            // the newly inserted clone would be found and removed by
-            // step 10 on the next iteration. The outer loop is needed
-            // for nested cases like <b><b>text</b></b> where each
-            // iteration peels one layer — but that only applies when
-            // step 10 (no furthest block) was triggered, not step 14-19.
-            // TODO: Revisit when handling deeply nested formatting.
+            // Outer loop continues to step 4.
         }
     }
 
