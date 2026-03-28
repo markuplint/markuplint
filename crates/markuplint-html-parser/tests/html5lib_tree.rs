@@ -155,11 +155,14 @@ fn serialize_node(arena: &Arena, source: &str, node_id: NodeId, depth: usize, ou
 // ============================================================================
 
 fn run_tree_test(test: &TreeTest) -> bool {
-    // html5lib tree-construction tests are always document mode unless
-    // explicitly marked with #document-fragment.
-    let is_fragment = test.is_fragment;
-
-    let mut builder = TreeBuilder::new(&test.data, is_fragment);
+    let mut builder = if let Some(ref context) = test.context_element {
+        // Fragment with specific context element.
+        TreeBuilder::with_context(&test.data, true, Some(context))
+    } else if test.is_fragment {
+        TreeBuilder::new(&test.data, true)
+    } else {
+        TreeBuilder::new(&test.data, false)
+    };
     builder.run();
     let arena = builder.arena;
 
@@ -183,13 +186,6 @@ fn run_test_file(path: &Path) -> TreeFileResult {
     let mut failure_samples = Vec::new();
 
     for test in &tests {
-        // Fragment tests with specific context elements are not yet
-        // supported. Count honestly as skipped.
-        if test.context_element.is_some() {
-            skipped += 1;
-            continue;
-        }
-
         if run_tree_test(test) {
             passed += 1;
         } else {

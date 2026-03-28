@@ -48,10 +48,25 @@ pub fn parse(html: &str) -> Arena {
     builder.arena
 }
 
-/// Parse an HTML string as a document fragment.
+/// Parse an HTML string as a document fragment with body context.
 #[must_use]
 pub fn parse_fragment(html: &str) -> Arena {
-    let mut builder = TreeBuilder::new(html, true);
+    parse_fragment_with_context(html, "body")
+}
+
+/// Parse an HTML string as a fragment with a specific context element.
+///
+/// The context element determines the initial insertion mode and
+/// tokenizer state per WHATWG §13.2.6.4. Examples:
+/// - `"body"` — default, parses as body content
+/// - `"table"` — parses as table content (`InTable` mode)
+/// - `"select"` — parses as select content (`InSelect` mode)
+/// - `"td"` / `"th"` — parses as table cell content
+/// - `"head"` — parses as head content
+/// - `"script"` — parses with script data tokenizer state
+#[must_use]
+pub fn parse_fragment_with_context(html: &str, context: &str) -> Arena {
+    let mut builder = TreeBuilder::with_context(html, true, Some(context));
     builder.run();
     builder.arena
 }

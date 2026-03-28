@@ -59,9 +59,21 @@ pub struct TreeBuilder<'a> {
 }
 
 impl<'a> TreeBuilder<'a> {
+    /// Create a tree builder for document mode.
     #[must_use]
     pub fn new(source: &'a str, is_fragment: bool) -> Self {
-        Self {
+        Self::with_context(source, is_fragment, None)
+    }
+
+    /// Create a tree builder with an optional context element for
+    /// fragment parsing per WHATWG §13.2.6.4.
+    ///
+    /// `context` is the tag name of the context element (e.g. "body",
+    /// "table", "select"). If `None` and `is_fragment` is true,
+    /// defaults to "body".
+    #[must_use]
+    pub fn with_context(source: &'a str, is_fragment: bool, context: Option<&str>) -> Self {
+        let mut builder = Self {
             tokenizer: Tokenizer::new(source),
             arena: Arena::new(),
             mode: InsertionMode::Initial,
@@ -76,15 +88,15 @@ impl<'a> TreeBuilder<'a> {
             pending_table_chars: Vec::new(),
             template_insertion_modes: Vec::new(),
             reprocess_depth: 0,
+        };
+        if is_fragment {
+            builder.setup_fragment_parsing(context.unwrap_or("body"));
         }
+        builder
     }
 
     /// Run the tree construction algorithm to completion.
     pub fn run(&mut self) {
-        if self.is_fragment {
-            self.setup_fragment_parsing();
-        }
-
         let mut token_count = 0;
         let max_tokens = 1_000_000; // safety limit
         loop {
@@ -99,14 +111,58 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    fn setup_fragment_parsing(&mut self) {
-        // Fragment parsing per WHATWG §13.2.6.4 (parseFragment).
-        // parse5 uses a context element (default: body) but does NOT
-        // insert it into the tree — only its children appear in output.
-        // We push the document root onto the open elements stack so that
-        // nodes are appended directly under the document.
+    /// WHATWG §13.2.6.4: Fragment parsing algorithm.
+    fn setup_fragment_parsing(&mut self, context_tag: &str) {
+        // Push the document root onto the open elements stack.
         self.open_elements.push(self.arena.document_id());
-        self.mode = InsertionMode::InBody;
+
+        // Set the tokenizer state based on the context element.
+        match context_tag {
+            "title" | "textarea" => {
+                self.tokenizer.set_state(TokenizerState::RcData);
+            }
+            "style" | "xmp" | "iframe" | "noembed" | "noframes" => {
+                self.tokenizer.set_state(TokenizerState::RawText);
+            }
+            "script" => {
+                self.tokenizer.set_state(TokenizerState::ScriptData);
+            }
+            // noscript: scripting disabled → normal parsing (no state change)
+            "plaintext" => {
+                self.tokenizer.set_state(TokenizerState::PlainText);
+            }
+            _ => {}
+        }
+
+        // Reset the insertion mode based on the context element.
+        self.mode = match context_tag {
+            "select" => InsertionMode::InSelect,
+            "td" | "th" => InsertionMode::InCell,
+            "tr" => InsertionMode::InRow,
+            "tbody" | "thead" | "tfoot" => InsertionMode::InTableBody,
+            "caption" => InsertionMode::InCaption,
+            "colgroup" => InsertionMode::InColumnGroup,
+            "table" => InsertionMode::InTable,
+            "template" => InsertionMode::InTemplate,
+            "head" => InsertionMode::InHead,
+            "frameset" => InsertionMode::InFrameset,
+            "html" => InsertionMode::BeforeHead,
+            // "body" and everything else → InBody
+            _ => InsertionMode::InBody,
+        };
+
+        // For template, push template insertion mode.
+        if context_tag == "template" {
+            self.template_insertion_modes.push(InsertionMode::InTemplate);
+        }
+
+        // Set the last start tag for RCDATA/RAWTEXT end tag matching.
+        if matches!(
+            context_tag,
+            "title" | "textarea" | "style" | "xmp" | "iframe" | "noembed" | "noframes" | "script"
+        ) {
+            self.tokenizer.set_last_start_tag(context_tag);
+        }
     }
 
     pub(super) fn process_token(&mut self, token: Token) {
