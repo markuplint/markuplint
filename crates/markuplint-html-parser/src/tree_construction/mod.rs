@@ -560,8 +560,38 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment_to_document(data, *span);
             }
-            Token::Character { ch, .. } if ch.is_ascii_whitespace() => {
-                // Ignore.
+            Token::Character { ch, offset, line, col } if ch.is_ascii_whitespace() => {
+                // WHATWG says ignore, but markuplint needs whitespace text
+                // nodes for position tracking. Insert as document child.
+                let doc_id = self.arena.document_id();
+                let pos = Position {
+                    offset: *offset,
+                    line: *line,
+                    col: *col,
+                };
+                // Merge with existing text or create new.
+                if let Some(last_child) = self.arena.last_child(doc_id) {
+                    let node = self.arena.get_mut(last_child);
+                    if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
+                        data.push(*ch);
+                        node.span.end = Position {
+                            offset: pos.offset + ch.len_utf8(),
+                            line: pos.line,
+                            col: pos.col + 1,
+                        };
+                        return;
+                    }
+                }
+                let span = Span::new(
+                    pos,
+                    Position {
+                        offset: pos.offset + ch.len_utf8(),
+                        line: pos.line,
+                        col: pos.col + 1,
+                    },
+                );
+                let text_id = self.arena.create_text(ch.to_string(), span);
+                self.arena.append_child(doc_id, text_id);
             }
             Token::StartTag {
                 tag_name,
@@ -631,6 +661,7 @@ impl<'a> TreeBuilder<'a> {
     // ========================================================================
     // §13.2.6.4.4 In head
     // ========================================================================
+    #[allow(clippy::too_many_lines)]
     pub(super) fn process_in_head(&mut self, token: Token) {
         match &token {
             Token::Character { ch, .. } if ch.is_ascii_whitespace() => {
@@ -681,11 +712,22 @@ impl<'a> TreeBuilder<'a> {
                 attributes,
                 span,
                 ..
-            } if matches!(tag_name.as_str(), "noscript" | "noframes" | "style") => {
+            } if matches!(tag_name.as_str(), "noframes" | "style") => {
                 self.insert_html_element(tag_name, attributes, *span);
                 self.tokenizer.set_state(TokenizerState::RawText);
                 self.original_mode = Some(self.mode);
                 self.mode = InsertionMode::Text;
+            }
+            Token::StartTag {
+                tag_name,
+                attributes,
+                span,
+                ..
+            } if tag_name == "noscript" => {
+                // Scripting is disabled in markuplint → use InHeadNoscript
+                // (content is parsed as HTML, not raw text).
+                self.insert_html_element(tag_name, attributes, *span);
+                self.mode = InsertionMode::InHeadNoscript;
             }
             Token::StartTag {
                 tag_name,

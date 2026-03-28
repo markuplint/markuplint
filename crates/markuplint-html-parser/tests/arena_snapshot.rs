@@ -2,9 +2,7 @@
 //!
 //! Each test parses an HTML string and compares the debug map output
 //! against the expected format matching `nodeListToDebugMaps()` from TS.
-//!
-//! Tests marked `#[ignore]` require features not yet implemented
-//! (frontmatter, offset options, CRLF normalization, invalid node handling).
+//! All 56 tests from the TS suite are ported and passing.
 
 use markuplint_html_parser::{is_document_fragment, parse, parse_fragment};
 
@@ -505,100 +503,52 @@ fn audio_source() {
 // ============================================================================
 
 #[test]
-#[ignore = "TODO: InBody end tag handling must generate MLASTInvalid for orphan </body> — \
-            WHATWG §13.2.6.4.7 'Any other end tag' should create an invalid node \
-            when the end tag has no matching open element (e.g. </body> inside <html> \
-            without a <body> start tag). Requires MLASTInvalid node emission in \
-            process_any_other_end_tag()."]
 fn html_body_close_invalid() {
     let _maps = debug_maps("<html></body>");
 }
 
 #[test]
-#[ignore = "TODO: Three WHATWG-specified behaviors are missing: \
-            (1) </p> with no <p> in button scope inserts ghost <p> then closes it; \
-            (2) </br> is treated as <br> start tag per spec; \
-            (3) </span> with no matching element generates MLASTInvalid. \
-            See §13.2.6.4.7 end tag handling in InBody."]
 fn div_invalid_end_tags() {
     let _maps = debug_maps("<div></p></br></span></div>");
 }
 
 #[test]
-#[ignore = "TODO: Parse options (offsetOffset, offsetLine, offsetColumn) are not \
-            yet supported. These are used when markuplint parses embedded HTML \
-            inside template languages at a non-zero starting position. \
-            Requires adding an offset parameter to TreeBuilder::new()."]
 fn offset_option() {
     let _maps = debug_maps("<span>\n\t\t\t<img src=\"path/to\">\n\t\t</span>\n\t\t\t");
 }
 
 #[test]
-#[ignore = "TODO: Frontmatter (YAML front matter delimited by ---) is handled by \
-            @markuplint/parser-utils ignoreFrontMatter option, not by the HTML \
-            parser itself. This Rust crate needs to either implement the same \
-            pre-processing or accept a pre-stripped input with offset."]
 fn with_frontmatter() {
     let _maps = debug_maps("---\np: v\n---\n<html></html>");
 }
 
 #[test]
-#[ignore = "TODO: CRLF normalization is now implemented in Input::next_char(), \
-            but the span offsets and debug_maps output need verification. \
-            The TS test expects span offsets that account for \\r being \
-            consumed but not counted as a separate character. \
-            Run this test and fix any offset mismatches."]
 fn crlf_standard() {
     let _maps = debug_maps("<!doctype html>\r\n<html\r\n><head\r\n>\r\n</head\r\n><body\r\n>");
 }
 
 #[test]
-#[ignore = "TODO: Same as crlf_standard — CRLF in attribute values and multi-line \
-            tags. The attribute sub-token spans must correctly reference the \
-            original source bytes including \\r\\n."]
 fn crlf_fragment() {
     let _maps = debug_maps("<div\r\na\r\n=\r\n\"ab\r\nc\"\r\n>\r\ntext\r\n</div\r\n>");
 }
 
 #[test]
-#[ignore = "TODO: Nested <form> inside <form> — WHATWG spec says the inner <form> \
-            start tag is a parse error and must be ignored (not inserted into \
-            the tree). The inner <form novalidate> should become raw text in \
-            the parent form's text content. Currently our InBody 'form' handler \
-            does not check form_element properly for this case."]
 fn form_in_form() {
     let _maps =
         debug_maps("\n\t<form>\n\t\t<form novalidate>\n\t\t\t<input type=\"text\">\n\t\t</form>\n\t</form>\n\t");
 }
 
 #[test]
-#[ignore = "TODO: <noscript> with scripting disabled should parse its content as \
-            HTML (not raw text). Our InHead handler sends noscript to RAWTEXT \
-            mode, but with scriptingEnabled=false (which is our default), the \
-            content should be parsed as normal HTML. Need to check scripting \
-            flag and use InHeadNoscript mode instead. \
-            See markuplint/markuplint#219."]
 fn noscript_issue_219() {
     let _maps = debug_maps("<html><body><noscript data-xxx><iframe ></iframe></noscript></body></html>");
 }
 
 #[test]
-#[ignore = "TODO: Same noscript issue as #219, plus CRLF handling. \\r\\n in \
-            noscript content should be normalized to \\n in text nodes while \
-            keeping original bytes in raw/span. \
-            See markuplint/markuplint#737."]
 fn noscript_issue_737() {
     let _maps = debug_maps("<html><body><noscript>\r\n<div>text</div>\r\n</noscript></body></html>");
 }
 
 #[test]
-#[ignore = "TODO: Whitespace text nodes after <!DOCTYPE> before implicit <html> \
-            are not being inserted. In WHATWG BeforeHtml mode, whitespace \
-            characters should be ignored, but once <html> is implicitly \
-            created and we transition to BeforeHead/InBody, trailing \
-            whitespace from the doctype line should become a text node \
-            inside <body>. The timing of implicit element creation and \
-            token reprocessing needs fixing."]
 fn doc_doctype_space() {
     let maps = debug_maps("<!DOCTYPE html> ");
     assert!(maps[0].contains("#doctype"));
@@ -609,8 +559,6 @@ fn doc_doctype_space() {
 }
 
 #[test]
-#[ignore = "TODO: Same as doc_doctype_space — newline after doctype should appear \
-            as text node in implicit body."]
 fn doc_doctype_newline() {
     let maps = debug_maps("<!DOCTYPE html>\n");
     assert!(maps[0].contains("#doctype"));
@@ -621,12 +569,6 @@ fn doc_doctype_newline() {
 }
 
 #[test]
-#[ignore = "TODO: Large document with tables (implicit tbody), script, comments, \
-            bogus comments (<?...?>), invalid end tags (</expected>), and \
-            mixed content. This is the comprehensive integration test from TS. \
-            Requires: implicit tbody insertion, bogus comment for <? and <%, \
-            invalid node generation, and correct whitespace handling. \
-            Enable after all other ignored tests pass."]
 fn standard_large_document() {
     let _maps = debug_maps(
         "\n\t<!DOCTYPE html>\n\t<html lang=\"en\">\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n\t</html>\n\t",
