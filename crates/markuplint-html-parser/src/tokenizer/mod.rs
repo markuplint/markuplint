@@ -12,10 +12,14 @@ use state::State;
 use token::{RawAttribute, Token};
 
 /// The HTML tokenizer.
+#[allow(clippy::struct_excessive_bools)]
 pub struct Tokenizer<'a> {
     input: Input<'a>,
     state: State,
     return_state: State,
+    /// Set by tree builder when adjusted current node is in a foreign namespace.
+    /// Affects CDATA section handling in `MarkupDeclarationOpen` state.
+    pub adjusted_current_node_is_foreign: bool,
     /// Queue of tokens to emit.
     pending_tokens: Vec<Token>,
     /// Whether the current tag is an end tag.
@@ -62,6 +66,7 @@ impl<'a> Tokenizer<'a> {
             input: Input::new(source),
             state: State::Data,
             return_state: State::Data,
+            adjusted_current_node_is_foreign: false,
             pending_tokens: Vec::new(),
             is_end_tag: false,
             current_tag_name: String::new(),
@@ -1605,15 +1610,20 @@ impl<'a> Tokenizer<'a> {
             self.state = State::Doctype;
         } else if self.input.starts_with("[CDATA[") {
             self.input.advance(7);
-            // For HTML, CDATA is a parse error. Treat as bogus comment.
-            self.current_comment.clear();
-            self.current_comment.push_str("[CDATA[");
-            self.current_comment_start = Position {
-                offset: pos.offset - 2,
-                line: pos.line,
-                col: pos.col - 2,
-            };
-            self.state = State::BogusComment;
+            if self.adjusted_current_node_is_foreign {
+                // CDATA section in foreign content (SVG/MathML).
+                self.state = State::CDataSection;
+            } else {
+                // For HTML, CDATA is a parse error. Treat as bogus comment.
+                self.current_comment.clear();
+                self.current_comment.push_str("[CDATA[");
+                self.current_comment_start = Position {
+                    offset: pos.offset - 2,
+                    line: pos.line,
+                    col: pos.col - 2,
+                };
+                self.state = State::BogusComment;
+            }
         } else {
             // Parse error. Bogus comment.
             self.current_comment.clear();

@@ -104,6 +104,8 @@ impl<'a> TreeBuilder<'a> {
         let mut token_count = 0;
         let max_tokens = 1_000_000; // safety limit
         loop {
+            // Update tokenizer's foreign context flag before each token.
+            self.tokenizer.adjusted_current_node_is_foreign = self.should_process_as_foreign();
             let token = self.tokenizer.next_token();
             let is_eof = token == Token::Eof;
             self.reprocess_depth = 0;
