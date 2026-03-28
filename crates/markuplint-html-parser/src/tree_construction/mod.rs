@@ -1291,16 +1291,19 @@ impl<'a> TreeBuilder<'a> {
             }
             // WHATWG: <image> is a parse error — treat as <img>.
             "image" => {
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element("img", attributes, span);
                 self.open_elements.pop();
                 self.frameset_ok = false;
             }
             "area" | "br" | "embed" | "img" | "keygen" | "wbr" => {
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element(tag_name, attributes, span);
                 self.open_elements.pop();
                 self.frameset_ok = false;
             }
             "input" => {
+                self.reconstruct_active_formatting_elements();
                 self.insert_html_element(tag_name, attributes, span);
                 self.open_elements.pop();
                 // frameset_ok = false unless type=hidden.
