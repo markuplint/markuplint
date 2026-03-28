@@ -151,13 +151,25 @@ impl TreeBuilder<'_> {
                 last_node = node_id;
             }
 
-            // Step 14: Insert last node at the appropriate position under
-            // common ancestor. If foster parenting is active, use the
-            // appropriate insertion position.
+            // Step 14: Insert last node at the appropriate place for inserting
+            // a node under common ancestor. Per WHATWG: if foster parenting
+            // would be required (i.e. common ancestor is table/tbody/tfoot/
+            // thead/tr), foster parent; otherwise append to common ancestor.
             if let Some(ancestor) = common_ancestor {
                 self.arena.remove_from_parent(last_node);
-                if self.foster_parenting {
-                    self.insert_at_appropriate_position(last_node);
+                let needs_foster = self
+                    .arena
+                    .get(ancestor)
+                    .tag_name()
+                    .is_some_and(|n| matches!(n, "table" | "tbody" | "tfoot" | "thead" | "tr"));
+                if needs_foster {
+                    // Foster parent: insert before the table-like ancestor
+                    // in its parent.
+                    if let Some(parent) = self.arena.get(ancestor).parent {
+                        self.arena.insert_before(parent, last_node, ancestor);
+                    } else {
+                        self.arena.append_child(ancestor, last_node);
+                    }
                 } else {
                     self.arena.append_child(ancestor, last_node);
                 }
