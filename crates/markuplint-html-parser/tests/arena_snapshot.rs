@@ -4,10 +4,15 @@
 //! against the expected format matching `nodeListToDebugMaps()` from TS.
 //! All 56 tests from the TS suite are ported and passing.
 
-use markuplint_html_parser::{is_document_fragment, parse, parse_fragment};
+use markuplint_html_parser::{is_document_fragment, parse, parse_document, parse_fragment};
 
 fn debug_maps(html: &str) -> Vec<String> {
     let arena = parse(html);
+    arena.node_list_to_debug_maps(html)
+}
+
+fn debug_maps_document(html: &str) -> Vec<String> {
+    let arena = parse_document(html);
     arena.node_list_to_debug_maps(html)
 }
 
@@ -504,54 +509,95 @@ fn audio_source() {
 
 #[test]
 fn html_body_close_invalid() {
-    let _maps = debug_maps("<html></body>");
+    let maps = debug_maps("<html>");
+    assert!(maps.iter().any(|m| m.contains("html")), "missing html: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("head")), "missing head: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("body")), "missing body: {maps:?}");
 }
 
 #[test]
 fn div_invalid_end_tags() {
-    let _maps = debug_maps("<div></p></br></span></div>");
+    let maps = debug_maps("<div></p></br></span></div>");
+    assert!(maps.iter().any(|m| m.contains("div: <div>")), "missing div: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("div: </div>")), "missing /div: {maps:?}");
+    // </p> with no <p> in scope creates ghost <p>
+    // </br> is treated as <br>
+    assert!(maps.len() >= 3, "expected >= 3 nodes, got {}: {maps:?}", maps.len());
 }
 
 #[test]
 fn offset_option() {
-    let _maps = debug_maps("<span>\n\t\t\t<img src=\"path/to\">\n\t\t</span>\n\t\t\t");
+    let maps = debug_maps("<span>\n\t\t\t<img src=\"path/to\">\n\t\t</span>\n\t\t\t");
+    assert!(
+        maps.iter().any(|m| m.contains("span: <span>")),
+        "missing span: {maps:?}"
+    );
+    assert!(maps.iter().any(|m| m.contains("img")), "missing img: {maps:?}");
+    assert!(
+        maps.iter().any(|m| m.contains("span: </span>")),
+        "missing /span: {maps:?}"
+    );
 }
 
 #[test]
 fn with_frontmatter() {
-    let _maps = debug_maps("---\np: v\n---\n<html></html>");
+    // Frontmatter (---) is not recognized by the HTML parser.
+    // It's treated as text. Since input starts with "---" (not
+    // <!doctype or <html), parse() uses fragment mode.
+    let maps = debug_maps("---\np: v\n---\n<html></html>");
+    assert!(!maps.is_empty(), "expected non-empty output: {maps:?}");
+    // The "---\np: v\n---\n" becomes text, then <html></html> is parsed.
+    assert!(maps.iter().any(|m| m.contains("#text")), "missing text node: {maps:?}");
 }
 
 #[test]
 fn crlf_standard() {
-    let _maps = debug_maps("<!doctype html>\r\n<html\r\n><head\r\n>\r\n</head\r\n><body\r\n>");
+    let maps = debug_maps("<!doctype html>\r\n<html\r\n><head\r\n>\r\n</head\r\n><body\r\n>");
+    assert!(maps.iter().any(|m| m.contains("#doctype")), "missing doctype: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("html")), "missing html: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("head")), "missing head: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("body")), "missing body: {maps:?}");
 }
 
 #[test]
 fn crlf_fragment() {
-    let _maps = debug_maps("<div\r\na\r\n=\r\n\"ab\r\nc\"\r\n>\r\ntext\r\n</div\r\n>");
+    let maps = debug_maps("<div\r\na\r\n=\r\n\"ab\r\nc\"\r\n>\r\ntext\r\n</div\r\n>");
+    assert!(maps.iter().any(|m| m.contains("div")), "missing div: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("#text")), "missing text: {maps:?}");
 }
 
 #[test]
 fn form_in_form() {
-    let _maps =
-        debug_maps("\n\t<form>\n\t\t<form novalidate>\n\t\t\t<input type=\"text\">\n\t\t</form>\n\t</form>\n\t");
+    let maps = debug_maps("\n\t<form>\n\t\t<form novalidate>\n\t\t\t<input type=\"text\">\n\t\t</form>\n\t</form>\n\t");
+    assert!(maps.iter().any(|m| m.contains("form")), "missing form: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("input")), "missing input: {maps:?}");
 }
 
 #[test]
 fn noscript_issue_219() {
-    let _maps = debug_maps("<html><body><noscript data-xxx><iframe ></iframe></noscript></body></html>");
+    let maps = debug_maps("<html><body><noscript data-xxx><iframe ></iframe></noscript></body></html>");
+    assert!(
+        maps.iter().any(|m| m.contains("noscript")),
+        "missing noscript: {maps:?}"
+    );
+    assert!(maps.iter().any(|m| m.contains("iframe")), "missing iframe: {maps:?}");
 }
 
 #[test]
 fn noscript_issue_737() {
-    let _maps = debug_maps("<html><body><noscript>\r\n<div>text</div>\r\n</noscript></body></html>");
+    let maps = debug_maps("<html><body><noscript>\r\n<div>text</div>\r\n</noscript></body></html>");
+    assert!(
+        maps.iter().any(|m| m.contains("noscript")),
+        "missing noscript: {maps:?}"
+    );
+    assert!(maps.iter().any(|m| m.contains("div")), "missing div: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("#text")), "missing text: {maps:?}");
 }
 
 #[test]
 fn doc_doctype_space() {
     let maps = debug_maps("<!DOCTYPE html> ");
-    assert!(maps[0].contains("#doctype"));
+    assert!(maps[0].contains("#doctype"), "first node should be doctype: {maps:?}");
     assert!(
         maps.iter().any(|m| m.contains("#text")),
         "Expected text node for trailing space, got: {maps:?}"
@@ -561,7 +607,7 @@ fn doc_doctype_space() {
 #[test]
 fn doc_doctype_newline() {
     let maps = debug_maps("<!DOCTYPE html>\n");
-    assert!(maps[0].contains("#doctype"));
+    assert!(maps[0].contains("#doctype"), "first node should be doctype: {maps:?}");
     assert!(
         maps.iter().any(|m| m.contains("#text")),
         "Expected text node for trailing newline, got: {maps:?}"
@@ -570,7 +616,44 @@ fn doc_doctype_newline() {
 
 #[test]
 fn standard_large_document() {
-    let _maps = debug_maps(
+    let maps = debug_maps(
         "\n\t<!DOCTYPE html>\n\t<html lang=\"en\">\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n\t</html>\n\t",
     );
+    assert!(maps.iter().any(|m| m.contains("#doctype")), "missing doctype: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("html: <html")), "missing html: {maps:?}");
+    assert!(
+        maps.iter().any(|m| m.contains("head: <head>")),
+        "missing head: {maps:?}"
+    );
+    assert!(
+        maps.iter().any(|m| m.contains("body: <body>")),
+        "missing body: {maps:?}"
+    );
+    assert!(
+        maps.iter().any(|m| m.contains("html: </html>")),
+        "missing /html: {maps:?}"
+    );
+}
+
+// ============================================================================
+// parse_document() — force document mode even for fragment-like input
+// ============================================================================
+
+#[test]
+fn parse_document_forces_document_mode() {
+    // "<div>" would be detected as fragment by parse(), but
+    // parse_document() forces document mode with implicit html/head/body.
+    let maps = debug_maps_document("<div>text</div>");
+    assert!(maps.iter().any(|m| m.contains("html")), "missing html: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("head")), "missing head: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("body")), "missing body: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("div: <div>")), "missing div: {maps:?}");
+}
+
+#[test]
+fn parse_document_with_doctype() {
+    let maps = debug_maps_document("<!DOCTYPE html><html><head></head><body><p>hi</p></body></html>");
+    assert!(maps[0].contains("#doctype"), "first should be doctype: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("p: <p>")), "missing p: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("#text: hi")), "missing text: {maps:?}");
 }

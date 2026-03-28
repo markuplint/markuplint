@@ -136,15 +136,30 @@ fn run_test(input: &str, expected: &[Value], initial_states: &[&str], last_start
     true
 }
 
-fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
+struct TestFileResult {
+    passed: usize,
+    failed: usize,
+    skipped: usize,
+    failure_details: Vec<String>,
+}
+
+fn run_test_file(path: &Path) -> TestFileResult {
     let content = fs::read_to_string(path).expect("Failed to read test file");
     let data: Value = serde_json::from_str(&content).expect("Failed to parse test JSON");
     let Some(tests) = data["tests"].as_array() else {
-        // Some files (like xmlViolation.test) use different keys.
-        return (0, 0, Vec::new());
+        // Files like xmlViolation.test use non-standard keys.
+        // Report as skipped, not passed.
+        let alt_count = data["xmlViolationTests"].as_array().map_or(0, |a| a.len());
+        return TestFileResult {
+            passed: 0,
+            failed: 0,
+            skipped: alt_count,
+            failure_details: Vec::new(),
+        };
     };
     let mut passed = 0;
     let mut failed = 0;
+    let mut skipped = 0;
     let mut failure_details = Vec::new();
 
     for test in tests {
@@ -153,7 +168,9 @@ fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
         let double_escaped = test["doubleEscaped"].as_bool().unwrap_or(false);
 
         if double_escaped {
-            passed += 1;
+            // Not implemented: doubleEscaped requires unescaping \uXXXX
+            // in input/output strings. Count honestly as skipped.
+            skipped += 1;
             continue;
         }
 
@@ -174,7 +191,12 @@ fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
         }
     }
 
-    (passed, failed, failure_details)
+    TestFileResult {
+        passed,
+        failed,
+        skipped,
+        failure_details,
+    }
 }
 
 #[test]
@@ -188,47 +210,54 @@ fn html5lib_tokenizer_test_suite() {
 
     let mut total_passed = 0;
     let mut total_failed = 0;
+    let mut total_skipped = 0;
+    let mut all_failure_samples = Vec::new();
 
-    // Skip test3.test (1590 tests) and unicodeChars*.test for now — they contain
-    let skip_files: [&str; 0] = [];
-
+    // No files are skipped. Large files (test3: 1590 tests) run fine
+    // after the reconsume-at-EOF fix.
     let mut files: Vec<_> = fs::read_dir(&test_dir)
         .expect("Failed to read test directory")
         .filter_map(Result::ok)
-        .filter(|e| {
-            let name = e.file_name();
-            let name_str = name.to_string_lossy();
-            e.path().extension().is_some_and(|ext| ext == "test") && !skip_files.contains(&name_str.as_ref())
-        })
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "test"))
         .collect();
     files.sort_by_key(|e| e.file_name());
 
-    let mut all_failure_samples = Vec::new();
     for entry in &files {
         let path = entry.path();
-        let (passed, failed, details) = run_test_file(&path);
+        let result = run_test_file(&path);
         let filename = path.file_name().unwrap().to_string_lossy();
-        eprintln!("  {filename}: {passed} passed, {failed} failed");
-        total_passed += passed;
-        total_failed += failed;
-        for d in details {
+        if result.failed > 0 || result.skipped > 0 {
+            eprintln!(
+                "  {filename}: {} passed, {} failed, {} skipped",
+                result.passed, result.failed, result.skipped
+            );
+        }
+        total_passed += result.passed;
+        total_failed += result.failed;
+        total_skipped += result.skipped;
+        for d in result.failure_details {
             all_failure_samples.push(format!("[{filename}] {d}"));
         }
     }
 
-    let total = total_passed + total_failed;
-    let pass_rate = if total > 0 {
-        (total_passed as f64 / total as f64) * 100.0
+    let executed = total_passed + total_failed;
+    let total = executed + total_skipped;
+    let pass_rate = if executed > 0 {
+        (total_passed as f64 / executed as f64) * 100.0
     } else {
         0.0
     };
-    eprintln!("\nhtml5lib tokenizer: {total_passed}/{total} passed ({pass_rate:.1}%)");
+    eprintln!(
+        "\nhtml5lib tokenizer: {total_passed}/{executed} executed ({pass_rate:.1}%), {total_skipped} skipped, {total} total"
+    );
+
     if !all_failure_samples.is_empty() {
-        eprintln!("\nSample failures (first 3 per file):");
+        eprintln!("\nSample failures:");
         for s in &all_failure_samples {
             eprintln!("{s}");
         }
     }
 
-    assert!(pass_rate >= 80.0, "Pass rate {pass_rate:.1}% is below 80% threshold");
+    // Strict: require 100% of executed tests to pass.
+    assert_eq!(total_failed, 0, "{total_failed} test(s) failed");
 }

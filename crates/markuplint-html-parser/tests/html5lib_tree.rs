@@ -167,17 +167,26 @@ fn run_tree_test(test: &TreeTest) -> bool {
     actual == test.expected
 }
 
-fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
+struct TreeFileResult {
+    passed: usize,
+    failed: usize,
+    skipped: usize,
+    failure_samples: Vec<String>,
+}
+
+fn run_test_file(path: &Path) -> TreeFileResult {
     let content = fs::read_to_string(path).expect("Failed to read test file");
     let tests = parse_dat_file(&content);
     let mut passed = 0;
     let mut failed = 0;
+    let mut skipped = 0;
     let mut failure_samples = Vec::new();
 
     for test in &tests {
-        // Skip fragment tests with specific context elements for now.
+        // Fragment tests with specific context elements are not yet
+        // supported. Count honestly as skipped.
         if test.context_element.is_some() {
-            passed += 1;
+            skipped += 1;
             continue;
         }
 
@@ -191,7 +200,12 @@ fn run_test_file(path: &Path) -> (usize, usize, Vec<String>) {
         }
     }
 
-    (passed, failed, failure_samples)
+    TreeFileResult {
+        passed,
+        failed,
+        skipped,
+        failure_samples,
+    }
 }
 
 #[test]
@@ -248,53 +262,66 @@ fn html5lib_tree_construction_test_suite() {
 
     let mut total_passed = 0;
     let mut total_failed = 0;
+    let mut total_skipped = 0;
+    let mut total_file_skipped = 0;
     let mut all_samples = Vec::new();
 
-    let mut files: Vec<_> = fs::read_dir(&test_dir)
+    let all_files: Vec<_> = fs::read_dir(&test_dir)
         .expect("Failed to read test directory")
         .filter_map(Result::ok)
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "dat"))
+        .collect();
+    let total_files = all_files.len();
+
+    let mut files: Vec<_> = all_files
+        .into_iter()
         .filter(|e| {
             let name = e.file_name();
             let name_str = name.to_string_lossy();
-            e.path().extension().is_some_and(|ext| ext == "dat") && !skip_files.contains(&name_str.as_ref())
+            if skip_files.contains(&name_str.as_ref()) {
+                total_file_skipped += 1;
+                false
+            } else {
+                true
+            }
         })
         .collect();
     files.sort_by_key(|e| e.file_name());
 
     for entry in &files {
         let path = entry.path();
-        let (passed, failed, samples) = run_test_file(&path);
+        let result = run_test_file(&path);
         let filename = path.file_name().unwrap().to_string_lossy();
-        if failed > 0 {
-            eprintln!("  {filename}: {passed} passed, {failed} failed");
+        if result.failed > 0 || result.skipped > 0 {
+            eprintln!(
+                "  {filename}: {} passed, {} failed, {} skipped",
+                result.passed, result.failed, result.skipped
+            );
         }
-        total_passed += passed;
-        total_failed += failed;
-        for s in samples {
-            all_samples.push(format!("[{filename}]\n{s}"));
+        total_passed += result.passed;
+        total_failed += result.failed;
+        total_skipped += result.skipped;
+        for s in result.failure_samples {
+            all_samples.push(format!("[{filename}] {s}"));
         }
     }
 
-    let total = total_passed + total_failed;
-    let pass_rate = if total > 0 {
-        (total_passed as f64 / total as f64) * 100.0
-    } else {
-        0.0
-    };
-    eprintln!("\nhtml5lib tree-construction: {total_passed}/{total} passed ({pass_rate:.1}%)");
+    let executed = total_passed + total_failed;
+    let _total = executed + total_skipped;
+    eprintln!(
+        "\nhtml5lib tree-construction: {total_passed}/{executed} executed, \
+         {total_skipped} skipped (fragment), {total_file_skipped}/{total_files} files skipped"
+    );
 
     if !all_samples.is_empty() {
-        eprintln!("\nSample failures (first 2 per file):");
+        eprintln!("\nSample failures:");
         for s in &all_samples[..all_samples.len().min(10)] {
             eprintln!("{s}");
         }
     }
 
-    // Start with a low threshold and increase as we fix issues.
-    // NOTE: This test is ignored by default because debug builds
-    // cause OOM on many test files. Run in release mode:
-    //   cargo test --release -p markuplint-html-parser --test html5lib_tree
-    assert!(pass_rate >= 30.0, "Pass rate {pass_rate:.1}% is below 30% threshold");
+    // Strict: require 100% of executed tests to pass.
+    assert_eq!(total_failed, 0, "{total_failed} tree test(s) failed");
 }
 
 /// Adoption agency test: <b><p></b>TEST
@@ -316,17 +343,31 @@ fn adoption_agency_basic() {
     assert_eq!(actual, expected, "Tree mismatch for {html:?}");
 }
 
-/// Quick smoke test with just tests1.dat to verify the harness works.
+/// Smoke test: tests1.dat must have 111/111 pass, 0 fail, 0 skip.
 #[test]
 fn html5lib_tree_smoke_test() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tree-construction/tests1.dat");
     if !path.exists() {
         return;
     }
-    let (passed, failed, samples) = run_test_file(&path);
-    eprintln!("tests1.dat: {passed} passed, {failed} failed");
-    for s in &samples {
+    let result = run_test_file(&path);
+    eprintln!(
+        "tests1.dat: {} passed, {} failed, {} skipped",
+        result.passed, result.failed, result.skipped
+    );
+    for s in &result.failure_samples {
         eprintln!("{s}");
     }
-    assert!(passed > 0, "Expected at least some passing tests");
+    // Strict: tests1.dat has 111 tests, 0 fragments. All must pass.
+    assert_eq!(result.failed, 0, "tests1.dat: {} test(s) failed", result.failed);
+    assert_eq!(
+        result.passed, 111,
+        "tests1.dat: expected 111 passed, got {}",
+        result.passed
+    );
+    assert_eq!(
+        result.skipped, 0,
+        "tests1.dat: {} test(s) unexpectedly skipped",
+        result.skipped
+    );
 }
