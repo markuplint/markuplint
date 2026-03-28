@@ -100,6 +100,68 @@ const BREAKOUT_ELEMENTS: &[&str] = &[
 /// `MathML` text integration points.
 const MATHML_TEXT_INTEGRATION: &[&str] = &["mi", "mo", "mn", "ms", "mtext"];
 
+/// SVG attribute name adjustments per WHATWG §13.2.6.5.
+const SVG_ATTR_ADJUSTMENTS: &[(&str, &str)] = &[
+    ("attributename", "attributeName"),
+    ("attributetype", "attributeType"),
+    ("basefrequency", "baseFrequency"),
+    ("baseprofile", "baseProfile"),
+    ("calcmode", "calcMode"),
+    ("clippathunits", "clipPathUnits"),
+    ("diffuseconstant", "diffuseConstant"),
+    ("edgemode", "edgeMode"),
+    ("filterunits", "filterUnits"),
+    ("glyphref", "glyphRef"),
+    ("gradienttransform", "gradientTransform"),
+    ("gradientunits", "gradientUnits"),
+    ("kernelmatrix", "kernelMatrix"),
+    ("kernelunitlength", "kernelUnitLength"),
+    ("keypoints", "keyPoints"),
+    ("keysplines", "keySplines"),
+    ("keytimes", "keyTimes"),
+    ("lengthadjust", "lengthAdjust"),
+    ("limitingconeangle", "limitingConeAngle"),
+    ("markerheight", "markerHeight"),
+    ("markerunits", "markerUnits"),
+    ("markerwidth", "markerWidth"),
+    ("maskcontentunits", "maskContentUnits"),
+    ("maskunits", "maskUnits"),
+    ("numoctaves", "numOctaves"),
+    ("pathlength", "pathLength"),
+    ("patterncontentunits", "patternContentUnits"),
+    ("patterntransform", "patternTransform"),
+    ("patternunits", "patternUnits"),
+    ("pointsatx", "pointsAtX"),
+    ("pointsaty", "pointsAtY"),
+    ("pointsatz", "pointsAtZ"),
+    ("preservealpha", "preserveAlpha"),
+    ("preserveaspectratio", "preserveAspectRatio"),
+    ("primitiveunits", "primitiveUnits"),
+    ("refx", "refX"),
+    ("refy", "refY"),
+    ("repeatcount", "repeatCount"),
+    ("repeatdur", "repeatDur"),
+    ("requiredextensions", "requiredExtensions"),
+    ("requiredfeatures", "requiredFeatures"),
+    ("specularconstant", "specularConstant"),
+    ("specularexponent", "specularExponent"),
+    ("spreadmethod", "spreadMethod"),
+    ("startoffset", "startOffset"),
+    ("stddeviation", "stdDeviation"),
+    ("stitchtiles", "stitchTiles"),
+    ("surfacescale", "surfaceScale"),
+    ("systemlanguage", "systemLanguage"),
+    ("tablevalues", "tableValues"),
+    ("targetx", "targetX"),
+    ("targety", "targetY"),
+    ("textlength", "textLength"),
+    ("viewbox", "viewBox"),
+    ("viewtarget", "viewTarget"),
+    ("xchannelselector", "xChannelSelector"),
+    ("ychannelselector", "yChannelSelector"),
+    ("zoomandpan", "zoomAndPan"),
+];
+
 impl TreeBuilder<'_> {
     /// Check if we should process a token as foreign content.
     pub(super) fn should_process_as_foreign(&self) -> bool {
@@ -171,7 +233,16 @@ impl TreeBuilder<'_> {
                     tag.to_owned()
                 };
 
-                self.insert_element_for_token(&adjusted_name, attributes, *span, current_ns);
+                // Adjust attribute names for SVG elements.
+                let adjusted_attrs: Vec<RawAttribute>;
+                let attrs_ref = if current_ns == Namespace::Svg {
+                    adjusted_attrs = adjust_svg_attributes(attributes);
+                    &adjusted_attrs
+                } else {
+                    attributes
+                };
+
+                self.insert_element_for_token(&adjusted_name, attrs_ref, *span, current_ns);
 
                 if *self_closing {
                     self.open_elements.pop();
@@ -200,6 +271,22 @@ impl TreeBuilder<'_> {
     pub(super) fn process_math_start_tag(&mut self, attributes: &[RawAttribute], span: Span) {
         self.insert_element_for_token("math", attributes, span, Namespace::MathML);
     }
+}
+
+fn adjust_svg_attributes(attrs: &[RawAttribute]) -> Vec<RawAttribute> {
+    attrs
+        .iter()
+        .map(|attr| {
+            let adjusted_name = SVG_ATTR_ADJUSTMENTS
+                .iter()
+                .find(|(from, _)| *from == attr.raw_name)
+                .map_or_else(|| attr.raw_name.clone(), |(_, to)| (*to).to_owned());
+            RawAttribute {
+                raw_name: adjusted_name,
+                ..attr.clone()
+            }
+        })
+        .collect()
 }
 
 fn adjust_svg_tag_name(name: &str) -> String {
