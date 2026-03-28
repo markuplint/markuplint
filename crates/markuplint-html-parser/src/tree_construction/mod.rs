@@ -163,16 +163,42 @@ impl<'a> TreeBuilder<'a> {
     /// When foster parenting, the sibling is the table element itself.
     fn appropriate_insert_position(&self) -> (NodeId, Option<NodeId>) {
         if self.foster_parenting {
+            // Find the table element.
+            let mut table_id = None;
             for id in self.open_elements.iter_top_to_bottom() {
-                let node = self.arena.get(*id);
-                if node.is_html_element("table")
-                    && let Some(parent) = node.parent
-                {
-                    return (parent, Some(*id));
+                if self.arena.get(*id).is_html_element("table") {
+                    table_id = Some(*id);
+                    break;
+                }
+            }
+
+            if let Some(tid) = table_id {
+                let current = self.current_node().unwrap_or(self.arena.document_id());
+                // If current node was already foster-parented (not inside the table),
+                // use normal insertion into current node.
+                if current != tid && !self.is_descendant_of(current, tid) {
+                    return (current, None);
+                }
+                if let Some(parent) = self.arena.get(tid).parent {
+                    return (parent, Some(tid));
                 }
             }
         }
         (self.current_node().unwrap_or(self.arena.document_id()), None)
+    }
+
+    fn is_descendant_of(&self, node_id: NodeId, ancestor_id: NodeId) -> bool {
+        let mut current = node_id;
+        for _ in 0..100 {
+            if current == ancestor_id {
+                return true;
+            }
+            match self.arena.get(current).parent {
+                Some(parent) => current = parent,
+                None => return false,
+            }
+        }
+        false
     }
 
     /// Insert a node at the appropriate position (handles foster parenting).
@@ -223,11 +249,21 @@ impl<'a> TreeBuilder<'a> {
     pub(super) fn insert_character(&mut self, ch: char, pos: Position) {
         let (target, before) = self.appropriate_insert_position();
 
-        // Merge with existing text node if possible (only when not foster parenting).
-        if before.is_none()
-            && let Some(last_child) = self.arena.last_child(target)
-        {
-            let node = self.arena.get_mut(last_child);
+        // Merge with existing adjacent text node if possible.
+        // For foster parenting, check the node before the sibling.
+        // For normal insertion, check the last child.
+        let merge_target = if let Some(sibling) = before {
+            // Find the child just before the sibling in parent's children.
+            let children = &self.arena.get(target).children;
+            children
+                .iter()
+                .position(|&id| id == sibling)
+                .and_then(|pos| if pos > 0 { children.get(pos - 1).copied() } else { None })
+        } else {
+            self.arena.last_child(target)
+        };
+        if let Some(text_id) = merge_target {
+            let node = self.arena.get_mut(text_id);
             if let crate::tree::node::NodeKind::Text { ref mut data } = node.kind {
                 data.push(ch);
                 node.span.end = Position {
