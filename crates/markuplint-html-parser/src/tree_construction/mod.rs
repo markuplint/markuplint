@@ -1678,9 +1678,25 @@ impl<'a> TreeBuilder<'a> {
                     "script" | "template" => {
                         self.process_in_head(token);
                     }
+                    // Table-related start tags in InSelect (not InSelectInTable):
+                    // parse error, ignore.
+                    "caption" | "table" | "tbody" | "tfoot" | "thead" | "tr" | "td" | "th" => {
+                        // Parse error. Ignore.
+                    }
+                    "plaintext" => {
+                        // Insert plaintext and switch to PLAINTEXT state.
+                        self.insert_html_element(tag_name, attributes, *span);
+                        self.tokenizer.set_state(TokenizerState::PlainText);
+                    }
                     _ => {
                         // Parse error. Insert the element anyway.
-                        let el_id = self.insert_html_element(tag_name, attributes, *span);
+                        // SVG/MathML elements keep their namespace.
+                        let ns = match tag_name.as_str() {
+                            "svg" => Namespace::Svg,
+                            "math" => Namespace::MathML,
+                            _ => Namespace::Html,
+                        };
+                        let el_id = self.insert_element_for_token(tag_name, attributes, *span, ns);
                         if crate::tables::is_formatting_element(tag_name) {
                             self.active_formatting.push(FormatEntry::Element(el_id));
                         }

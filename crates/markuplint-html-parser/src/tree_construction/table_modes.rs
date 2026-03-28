@@ -13,6 +13,7 @@ impl TreeBuilder<'_> {
     // ========================================================================
     // §13.2.6.4.9 In table
     // ========================================================================
+    #[allow(clippy::too_many_lines)]
     pub(super) fn process_in_table(&mut self, token: Token) {
         match &token {
             Token::Character { .. } => {
@@ -73,9 +74,18 @@ impl TreeBuilder<'_> {
                     self.process_in_head(token);
                 }
                 "input" => {
-                    // Only if type=hidden, otherwise foster parent.
-                    self.insert_html_element(tag_name, attributes, *span);
-                    self.open_elements.pop();
+                    // Only type=hidden is inserted directly; others foster parent.
+                    let is_hidden = attributes
+                        .iter()
+                        .any(|a| a.raw_name.eq_ignore_ascii_case("type") && a.raw_value.trim().eq_ignore_ascii_case("hidden"));
+                    if is_hidden {
+                        self.insert_html_element(tag_name, attributes, *span);
+                        self.open_elements.pop();
+                    } else {
+                        self.foster_parenting = true;
+                        self.process_in_body(token);
+                        self.foster_parenting = false;
+                    }
                 }
                 "form" => {
                     if self.form_element.is_some() || self.has_element_in_scope("template") {
