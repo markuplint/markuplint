@@ -579,11 +579,7 @@ fn match_element_tag(
 /// When a category entry has an attribute selector (e.g., `meta[itemprop]`),
 /// the child must have that attribute to match. Without this, `meta` without
 /// `itemprop` would incorrectly match `#flow` which includes `meta[itemprop]`.
-fn matches_model_ref_with_attrs(
-    spec: &MLMLSpec,
-    child: &ChildNodeInfo,
-    model_ref: &str,
-) -> bool {
+fn matches_model_ref_with_attrs(spec: &MLMLSpec, child: &ChildNodeInfo, model_ref: &str) -> bool {
     use markuplint_types::spec::content_model;
 
     // Exact tag match (no category lookup needed)
@@ -622,10 +618,7 @@ fn matches_model_ref_with_attrs(
                     return content_model::matches_model_ref(spec, &child.node_name, t);
                 }
                 // Handle namespace prefix: "svg|rect[...]" → "rect"
-                let tag_name = tag_part
-                    .split('|')
-                    .next_back()
-                    .unwrap_or(tag_part);
+                let tag_name = tag_part.split('|').next_back().unwrap_or(tag_part);
                 if !tag_name.eq_ignore_ascii_case(&child.node_name) {
                     return false;
                 }

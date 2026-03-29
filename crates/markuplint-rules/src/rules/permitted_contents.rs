@@ -110,8 +110,7 @@ impl Rule for PermittedContents {
                     );
 
                     // 2. Resolve transparent child elements for parent content model.
-                    let resolved_children =
-                        represent_transparent_nodes(arena, node_id, spec);
+                    let resolved_children = represent_transparent_nodes(arena, node_id, spec);
 
                     // Filter whitespace from resolved children too
                     let resolved_filtered: Vec<_> = resolved_children
@@ -160,10 +159,7 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 severity: config.severity.clone(),
-                                message: format!(
-                                    "Require an element. (Need \"{}\")",
-                                    result.query,
-                                ),
+                                message: format!("Require an element. (Need \"{}\")", result.query,),
                                 line: el.base.line,
                                 col: el.base.col,
                                 raw: el.base.raw.clone(),
@@ -184,10 +180,7 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 severity: config.severity.clone(),
-                                message: format!(
-                                    "Require one or more elements. (Need \"{}\")",
-                                    result.query,
-                                ),
+                                message: format!("Require one or more elements. (Need \"{}\")", result.query,),
                                 line,
                                 col,
                                 raw,
@@ -252,11 +245,7 @@ fn spec_lookup_name(namespace: &markuplint_core::mlast::NamespaceURI, tag_name: 
 /// Condition types:
 /// - Attribute selectors: `[src]` — element has the attribute
 /// - Structural selectors: `dl > div` — parent relationship
-fn resolve_content_model(
-    cm: &ContentModel,
-    arena: &DomArena,
-    node_id: NodeId,
-) -> ContentModelContents {
+fn resolve_content_model(cm: &ContentModel, arena: &DomArena, node_id: NodeId) -> ContentModelContents {
     let Some(ref conditionals) = cm.conditional else {
         return cm.contents.clone();
     };
@@ -286,11 +275,7 @@ fn resolve_content_model(
 /// - `svg|switch > svg|a` — namespace-prefixed parent check
 /// - `datalist > [label]` — parent name + attribute check
 /// - `label` — bare string (checked as parent name for `option`)
-fn evaluate_condition(
-    condition: &str,
-    el: &markuplint_dom::node::ElementData,
-    arena: &DomArena,
-) -> bool {
+fn evaluate_condition(condition: &str, el: &markuplint_dom::node::ElementData, arena: &DomArena) -> bool {
     let condition = condition.trim();
 
     // Pure attribute selector(s): starts with `[`
@@ -315,15 +300,8 @@ fn evaluate_condition(
         };
 
         // Match parent name (strip namespace prefix: "svg|switch" → "switch")
-        let parent_name = ancestor_part
-            .split('|')
-            .next_back()
-            .unwrap_or(ancestor_part);
-        if !parent_el
-            .base
-            .node_name
-            .eq_ignore_ascii_case(parent_name)
-        {
+        let parent_name = ancestor_part.split('|').next_back().unwrap_or(ancestor_part);
+        if !parent_el.base.node_name.eq_ignore_ascii_case(parent_name) {
             return false;
         }
 
@@ -341,10 +319,7 @@ fn evaluate_condition(
             && let Some(parent_node) = arena.get(parent_id)
             && let Some(parent_el) = parent_node.as_element()
         {
-            return parent_el
-                .base
-                .node_name
-                .eq_ignore_ascii_case(condition);
+            return parent_el.base.node_name.eq_ignore_ascii_case(condition);
         }
         return false;
     }
@@ -353,10 +328,7 @@ fn evaluate_condition(
 }
 
 /// Check attribute presence conditions like `[src]`, `[label][value]`.
-fn check_attr_condition(
-    condition: &str,
-    el: &markuplint_dom::node::ElementData,
-) -> bool {
+fn check_attr_condition(condition: &str, el: &markuplint_dom::node::ElementData) -> bool {
     // Split multiple attribute selectors: "[label][value]" → ["label", "value"]
     let mut remaining = condition;
     while let Some(start) = remaining.find('[') {
@@ -649,11 +621,7 @@ fn non_transparent_patterns(patterns: &[PermittedContentPattern]) -> Vec<Permitt
 /// For the wildcard `"*"`, everything matches.
 /// For complex selectors containing `:not()`, `:has()`, or `:model()`, uses the
 /// full CSS selector engine via `arena_bridge`.
-fn matches_transparent_constraint(
-    child: &ChildNodeInfo,
-    constraint: &str,
-    spec: &MLMLSpec,
-) -> bool {
+fn matches_transparent_constraint(child: &ChildNodeInfo, constraint: &str, spec: &MLMLSpec) -> bool {
     // Wildcard — everything is allowed
     if constraint == "*" {
         return true;
@@ -670,20 +638,13 @@ fn matches_transparent_constraint(
             return true; // Parse failure — be permissive
         };
 
-        let bridge =
-            crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(child));
+        let bridge = crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(child));
 
         let Some(&node_id) = bridge.child_ids.first() else {
             return true;
         };
 
-        return markuplint_selector::matcher::matches(
-            &selector,
-            &bridge.arena,
-            node_id,
-            None,
-            None,
-        );
+        return markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
     }
 
     // Simple selector: exact tag name or category
@@ -701,11 +662,7 @@ fn matches_transparent_constraint(
 ///
 /// Returns the flattened children with transparent elements expanded.
 #[allow(clippy::too_many_lines)]
-fn represent_transparent_nodes(
-    arena: &DomArena,
-    parent_id: NodeId,
-    spec: &MLMLSpec,
-) -> Vec<ChildNodeInfo> {
+fn represent_transparent_nodes(arena: &DomArena, parent_id: NodeId, spec: &MLMLSpec) -> Vec<ChildNodeInfo> {
     let Some(children_ids) = arena.children_of(parent_id) else {
         return vec![];
     };
@@ -759,9 +716,7 @@ fn represent_transparent_nodes(
         // Get the child element's content model (with conditional evaluation)
         let child_lookup = spec_lookup_name(&child_el.namespace, &child_el.base.node_name);
         let child_cm = content_model::get_content_model(spec, &child_lookup);
-        let child_resolved = child_cm
-            .as_ref()
-            .map(|cm| resolve_content_model(cm, arena, child_id));
+        let child_resolved = child_cm.as_ref().map(|cm| resolve_content_model(cm, arena, child_id));
 
         let is_transparent = child_resolved.as_ref().is_some_and(|contents| {
             if let ContentModelContents::Patterns(patterns) = contents {
@@ -798,8 +753,7 @@ fn represent_transparent_nodes(
         let unmatched = if non_transparent.is_empty() {
             grandchildren.clone()
         } else {
-            let match_result =
-                matching::validate_content_model(spec, &non_transparent, &grandchildren);
+            let match_result = matching::validate_content_model(spec, &non_transparent, &grandchildren);
             match_result
                 .unmatched
                 .iter()
@@ -813,8 +767,7 @@ fn represent_transparent_nodes(
         // on the transparent element itself, NOT here — avoiding duplicate reports.
         for grandchild in &unmatched {
             let mut resolved = grandchild.clone();
-            resolved.transparent_ancestor =
-                Some(child_el.base.node_name.to_ascii_lowercase());
+            resolved.transparent_ancestor = Some(child_el.base.node_name.to_ascii_lowercase());
             result_children.push(resolved);
         }
     }
@@ -867,9 +820,7 @@ fn extract_attribute_names(attrs: &[markuplint_core::mlast::MLASTAttr]) -> Vec<S
     attrs
         .iter()
         .filter_map(|a| match a {
-            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => {
-                Some(html_attr.name.raw.to_ascii_lowercase())
-            }
+            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => Some(html_attr.name.raw.to_ascii_lowercase()),
             markuplint_core::mlast::MLASTAttr::Spread(_) => None,
         })
         .collect()
@@ -1170,10 +1121,7 @@ mod tests {
         let (arena, _) = make_parent_children("head", &[("meta", &[])]);
         let rule = PermittedContents;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        let v: Vec<_> = violations
-            .iter()
-            .filter(|v| v.message.contains("Require"))
-            .collect();
+        let v: Vec<_> = violations.iter().filter(|v| v.message.contains("Require")).collect();
         assert!(!v.is_empty(), "should have violation");
         // raw should point to the parent (where content is missing)
         assert!(
@@ -1228,7 +1176,10 @@ mod tests {
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("div"))
             .collect();
-        assert!(v.is_empty(), "svg should be recognized as flow content via namespace prefix");
+        assert!(
+            v.is_empty(),
+            "svg should be recognized as flow content via namespace prefix"
+        );
     }
 
     /// SVG spec element (svg:svg): content model lookup uses prefixed name.
@@ -1328,24 +1279,18 @@ mod tests {
     #[test]
     fn transparent_constraint_rejects_interactive() {
         let s = spec();
-        let constraint =
-            ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))";
+        let constraint = ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))";
 
         let expanded = crate::content_model::matching::expand_model_refs(constraint, &s);
         let selector = markuplint_selector::parser::parse(&expanded).unwrap();
 
         let child = ChildNodeInfo::element("button");
-        let bridge =
-            crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(&child));
+        let bridge = crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(&child));
         let node_id = bridge.child_ids[0];
 
-        let result =
-            markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
+        let result = markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
         // button is interactive → :not(interactive) should be false
-        assert!(
-            !result,
-            "button should NOT match :not(:model(interactive), ...)"
-        );
+        assert!(!result, "button should NOT match :not(:model(interactive), ...)");
     }
 
     // --- strip_has_from_constraint ---
@@ -1419,12 +1364,7 @@ mod tests {
             transparent_ancestor: None,
         };
         // meta without itemprop should NOT match :model(flow)
-        let matched = crate::content_model::matching::matches_selector(
-            ":model(flow)",
-            Some(&meta),
-            1,
-            &s,
-        );
+        let matched = crate::content_model::matching::matches_selector(":model(flow)", Some(&meta), 1, &s);
         assert!(
             !matched.result_type.is_matched(),
             "meta without itemprop should not match #flow"
@@ -1444,12 +1384,7 @@ mod tests {
             attribute_names: vec!["itemprop".to_string(), "content".to_string()],
             transparent_ancestor: None,
         };
-        let matched = crate::content_model::matching::matches_selector(
-            ":model(flow)",
-            Some(&meta),
-            1,
-            &s,
-        );
+        let matched = crate::content_model::matching::matches_selector(":model(flow)", Some(&meta), 1, &s);
         assert!(
             matched.result_type.is_matched(),
             "meta with itemprop should match #flow"
@@ -1460,10 +1395,7 @@ mod tests {
 
     #[test]
     fn evaluate_condition_attribute_presence() {
-        assert_eq!(
-            check_attr_condition("[src]", &make_el_with_attr("audio", "src")),
-            true
-        );
+        assert_eq!(check_attr_condition("[src]", &make_el_with_attr("audio", "src")), true);
         assert_eq!(
             check_attr_condition("[src]", &make_el_with_attr("audio", "controls")),
             false
@@ -1591,14 +1523,62 @@ mod tests {
                 line: 1,
                 col: 1,
                 node_name: attr.to_string(),
-                spaces_before_name: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                name: MLASTToken { uuid: String::new(), raw: attr.to_string(), offset: 0, line: 1, col: 1 },
-                spaces_before_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                spaces_after_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                start_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                value: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                end_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                spaces_before_name: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                name: MLASTToken {
+                    uuid: String::new(),
+                    raw: attr.to_string(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                spaces_before_equal: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                equal: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                spaces_after_equal: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                start_quote: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                value: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
+                end_quote: MLASTToken {
+                    uuid: String::new(),
+                    raw: String::new(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                },
                 is_dynamic_value: None,
                 is_directive: None,
                 potential_name: None,
@@ -1628,14 +1608,62 @@ mod tests {
                     line: 1,
                     col: 1,
                     node_name: attr.to_string(),
-                    spaces_before_name: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    name: MLASTToken { uuid: String::new(), raw: attr.to_string(), offset: 0, line: 1, col: 1 },
-                    spaces_before_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    spaces_after_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    start_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    value: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
-                    end_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    spaces_before_name: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    name: MLASTToken {
+                        uuid: String::new(),
+                        raw: attr.to_string(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    spaces_before_equal: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    equal: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    spaces_after_equal: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    start_quote: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    value: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
+                    end_quote: MLASTToken {
+                        uuid: String::new(),
+                        raw: String::new(),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                    },
                     is_dynamic_value: None,
                     is_directive: None,
                     potential_name: None,

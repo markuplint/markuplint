@@ -204,9 +204,11 @@ test('ruby:2 missing rp invalid', () => {
 		).length > 0
 	);
 });
+// cspell:disable-next-line
 test('ruby:3 complex multi-rt valid', () => {
 	return (
 		pc(
+			// cspell:disable-next-line
 			lintHtml(
 				'<ruby>♥ <rt> Heart <rt lang=fr> Cœur </rt>☘ <rt> Shamrock <rt lang=fr> Trèfle </rt>✶ <rt> Star <rt lang=fr> Étoile </rt></ruby>',
 			),
