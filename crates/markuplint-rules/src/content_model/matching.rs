@@ -641,9 +641,25 @@ pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
                     // Category lists include "#text" and "#custom" pseudo-entries;
                     // these are handled separately by opt_condition's has_text/has_custom flags.
                     .filter(|t| !t.starts_with('#'))
-                    // Category entries may include attribute selectors (e.g., "meta[itemprop]");
-                    // strip these since :is() expansion only needs tag names.
-                    .map(|t| t.split('[').next().unwrap_or(t))
+                    // Extract the tag name portion only: strip attribute selectors
+                    // and pseudo-classes. Handle cases like:
+                    // - "meta[itemprop]" → "meta"
+                    // - "input:not([type='hidden' i])" → "input"
+                    // - "svg|svg" → "svg" (namespace prefix)
+                    .map(|t| {
+                        // First handle namespace prefix
+                        let t = t.split('|').next_back().unwrap_or(t);
+                        // Strip from first '[' or ':' — whichever comes first
+                        let bracket_pos = t.find('[');
+                        let colon_pos = t.find(':');
+                        match (bracket_pos, colon_pos) {
+                            (Some(b), Some(c)) => &t[..b.min(c)],
+                            (Some(b), None) => &t[..b],
+                            (None, Some(c)) => &t[..c],
+                            (None, None) => t,
+                        }
+                    })
+                    .filter(|t| !t.is_empty())
                     .collect();
                 if tag_list.is_empty() {
                     // Category resolved but contained only #text/#custom — no concrete tags.
