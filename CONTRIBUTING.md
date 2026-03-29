@@ -29,7 +29,7 @@ When you wrote code then:
 
 - Format and lint code through `yarn lint`.
 - Check to build successfully through `yarn build`.
-- Test your code through `yarn test`.
+- Test your code through `yarn test` (this also runs TypeScript type-checking on spec files).
 - Push to the topic branch and open a pull request.
 - Assign reviewer:
   - For the improved code: @yusukehirao
