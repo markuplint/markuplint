@@ -66,6 +66,7 @@ pub enum NodeKind {
 }
 
 impl TreeNode {
+    /// Returns the tag name if this node is an element, or `None` otherwise.
     #[must_use]
     pub fn tag_name(&self) -> Option<&str> {
         match &self.kind {
@@ -74,6 +75,7 @@ impl TreeNode {
         }
     }
 
+    /// Returns the namespace if this node is an element, or `None` otherwise.
     #[must_use]
     pub fn namespace(&self) -> Option<Namespace> {
         match &self.kind {
@@ -82,11 +84,13 @@ impl TreeNode {
         }
     }
 
+    /// Check if this node is an element with the given tag name (any namespace).
     #[must_use]
     pub fn is_element(&self, name: &str) -> bool {
         self.tag_name() == Some(name)
     }
 
+    /// Check if this node is an HTML-namespace element with the given tag name.
     #[must_use]
     pub fn is_html_element(&self, name: &str) -> bool {
         self.tag_name() == Some(name) && self.namespace() == Some(Namespace::Html)

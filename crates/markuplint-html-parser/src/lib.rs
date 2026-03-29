@@ -10,6 +10,7 @@
 //! - **Tokenizer** (`tokenizer`): State machine per §13.2.5
 //! - **Tree Construction** (`tree_construction`): Tree builder per §13.2.6
 //! - **Internal Tree** (`tree`): Arena-based tree used during construction
+//! - **Tables** (`tables`): Element category tables (void, formatting, special)
 
 pub mod input;
 pub mod tables;
@@ -57,7 +58,7 @@ pub fn parse_fragment(html: &str) -> Arena {
 /// Parse an HTML string as a fragment with a specific context element.
 ///
 /// The context element determines the initial insertion mode and
-/// tokenizer state per WHATWG §13.2.6.4. Examples:
+/// tokenizer state per WHATWG §13.2.6.5. Examples:
 /// - `"body"` — default, parses as body content
 /// - `"table"` — parses as table content (`InTable` mode)
 /// - `"select"` — parses as select content (`InSelect` mode)

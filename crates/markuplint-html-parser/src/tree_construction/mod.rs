@@ -77,7 +77,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     /// Create a tree builder with an optional context element for
-    /// fragment parsing per WHATWG §13.2.6.4.
+    /// fragment parsing per WHATWG §13.2.6.5.
     ///
     /// `context` is the tag name of the context element (e.g. "body",
     /// "table", "select"). `context_ns` is the namespace.

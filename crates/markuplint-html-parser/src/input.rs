@@ -207,7 +207,7 @@ impl<'a> Input<'a> {
         self.source
     }
 
-    /// Skip `n` bytes, advancing position tracking.
+    /// Skip `n` characters, advancing position tracking.
     pub fn advance(&mut self, n: usize) {
         for _ in 0..n {
             if self.next_char().is_none() {

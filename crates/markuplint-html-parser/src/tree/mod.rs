@@ -219,7 +219,7 @@ impl Arena {
     /// Special characters in `raw` are escaped:
     /// - `\n` → `⏎`
     /// - `\t` → `→`
-    /// - ` ` (space in certain contexts) → `␣`
+    /// - ` ` (all spaces) → `␣`
     ///
     /// Ghost nodes are suffixed with `(👻)`.
     #[must_use]

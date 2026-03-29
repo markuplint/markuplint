@@ -72,6 +72,8 @@ Source files map to WHATWG spec sections:
 | `src/tree_construction/foreign_content.rs` | §13.2.6.5 Foreign content |
 | `src/tree_construction/table_modes.rs` | §13.2.6.4 Table-related modes |
 | `src/input.rs` | §13.2.3.5 Input stream preprocessing |
+| `src/tables.rs` | Element categories (void, formatting, special, implied end tags) |
+| `src/tree/` | Internal arena-based tree (nodes, attributes, spans) |
 
 #### Submodule setup
 
