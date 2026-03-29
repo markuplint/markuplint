@@ -49198,7 +49198,7 @@
 			},
 			"attributes": {
 				"autoplay": {
-					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay."
+					"description": "A Boolean attribute: if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading. Note: Sites that automatically play audio (or videos with an audio track) can be an unpleasant experience for users, so should be avoided when possible. If you must offer autoplay functionality, you should make it opt-in (requiring a user to specifically enable it). However, this can be useful when creating media elements whose source will be set at a later time, under user control. See our autoplay guide for additional information about how to properly use autoplay. Note: Audio with the loading=\"lazy\" attribute set will not start downloading and autoplaying until the element is near or within the viewport."
 				},
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control audio playback, including volume, seeking, and pause/resume playback."
@@ -49211,6 +49211,9 @@
 				},
 				"disableremoteplayback": {
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
+				},
+				"loading": {
+					"description": "Indicates how the browser should load the audio: eager Loads the audio immediately, regardless of whether or not the audio is currently within the visible viewport (this is the default value). lazy Defers loading the audio until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the audio until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. Lazy-loaded audio located in the visual viewport may not yet be downloaded when the Window load event is fired. This is because the event is fired based on eager-loaded audio only — lazy-loaded audio is not considered even if it is located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing audio in a page's markup such that a server can track how many audio are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay attribute as described in that section of this page."
 				},
 				"loop": {
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
@@ -49498,11 +49501,11 @@
 					"deprecated": true
 				},
 				"bottommargin": {
-					"description": "The margin of the bottom of the body. Use the CSS margin-bottom property (or the logical margin-block-end property) instead.",
+					"description": "Ignored.",
 					"deprecated": true
 				},
 				"leftmargin": {
-					"description": "The margin of the left of the body. Use the CSS margin-left property (or the logical margin-inline-start property) instead.",
+					"description": "The margin of the left and right of the body. Use the CSS margin-left and margin-right properties (or the logical margin-inline property) instead.",
 					"deprecated": true
 				},
 				"link": {
@@ -49564,7 +49567,7 @@
 					"type": "FunctionBody"
 				},
 				"rightmargin": {
-					"description": "The margin of the right of the body. Use the CSS margin-right property or the logical margin-inline-end property) instead.",
+					"description": "Ignored.",
 					"deprecated": true
 				},
 				"text": {
@@ -49572,7 +49575,7 @@
 					"deprecated": true
 				},
 				"topmargin": {
-					"description": "The margin of the top of the body. Use the CSS margin-top property (or the logical margin-block-start property) instead.",
+					"description": "The margin of the top and bottom of the body. Use the CSS margin-top and margin-bottom properties (or the logical margin-block property) instead.",
 					"deprecated": true
 				},
 				"vlink": {
@@ -51503,7 +51506,7 @@
 					"condition": "a[href] img"
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. The intent is to avoid the network and storage bandwidth needed to handle the image until it's reasonably certain that it will be needed. This generally improves the performance of the content in most typical use cases. While explicit width and height attributes are recommended for all images to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded images will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded images have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. The load event is fired after eager-loaded images have been fetched and processed, but before lazy-laded ones are, even if the lazy-loaded images are located within the visual viewport immediately upon initial page load. These images are still loaded as soon as layout completes; they just don't affect the timing of the load event. That means that when load fires, it's possible that any lazy-loaded images located in the visual viewport may not yet be visible. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
+					"description": "Indicates how the browser should load the image: eager Loads the image immediately, regardless of whether or not the image is currently within the visible viewport (this is the default value). lazy Defers loading the image until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the image until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all images to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded images will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded images have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded images located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded images — lazy-loaded images are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing images in a page's markup such that a server can track how many images are requested and when."
 				},
 				"longdesc": {
 					"description": "A link to a more detailed description of the image. Possible values are a URL or an element id. Note: This attribute is considered obsolete in the HTML spec. It has an uncertain future; authors should use a WAI-ARIA alternative such as aria-describedby or aria-details.",
@@ -55693,7 +55696,7 @@
 			},
 			"attributes": {
 				"autoplay": {
-					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can without stopping to finish loading the data. Note: Modern browsers block audio (or videos with an unmuted audio track) from autoplaying, as sites that automatically play audio can be an unpleasant experience for users. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether."
+					"description": "A Boolean attribute; if specified, the video automatically begins to play back as soon as it can without stopping to finish loading the data. Note: Modern browsers block audio (or videos with an unmuted audio track) from autoplaying, as sites that automatically play audio can be an unpleasant experience for users. See our autoplay guide for additional information about how to properly use autoplay. To disable video autoplay, autoplay=\"false\" will not work; the video will autoplay if the attribute is there in the <video> tag at all. To remove autoplay, the attribute needs to be removed altogether. Note: Videos with the loading=\"lazy\" attribute set will not start downloading and autoplaying until the element is near or within the viewport."
 				},
 				"controls": {
 					"description": "If this attribute is present, the browser will offer controls to allow the user to control video playback, including volume, seeking, and pause/resume playback."
@@ -55722,6 +55725,9 @@
 				"height": {
 					"description": "The height of the video's display area, in CSS pixels (absolute values only; no percentages)."
 				},
+				"loading": {
+					"description": "Indicates how the browser should load the video (including any poster image): eager Loads the video immediately, regardless of whether or not the video is currently within the visible viewport (this is the default value). lazy Defers loading the video until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the video until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. While explicit width and height attributes are recommended for all videos to avoid layout shift, they are especially important for lazy-loaded ones. Lazy-loaded videos will never be loaded if they do not intersect a visible part of an element, even if loading them would change that, because unloaded videos have a width and height of 0. It creates an even more disruptive user experience when the content visible in the viewport reflows in the middle of reading it. Lazy-loaded videos located in the visual viewport may not yet be visible when the Window load event is fired. This is because the event is fired based on eager-loaded videos — lazy-loaded videos are not considered even if they are located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing videos in a page's markup such that a server can track how many videos are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay, poster, and preload attributes, as described in each of those sections of the page."
+				},
 				"loop": {
 					"description": "A Boolean attribute; if specified, the browser will automatically seek back to the start upon reaching the end of the video."
 				},
@@ -55733,11 +55739,11 @@
 					"type": "Boolean"
 				},
 				"poster": {
-					"description": "A URL for an image to be shown while the video is downloading. If this attribute isn't specified, nothing is displayed until the first frame is available, then the first frame is shown as the poster frame.",
+					"description": "A URL for an image to be shown while the video is downloading. If this attribute isn't specified, nothing is displayed until the first frame is available, then the first frame is shown as the poster frame. Note: Videos with the loading=\"lazy\" attribute set will only download the poster resource once the video is near or within the viewport.",
 					"type": "URL"
 				},
 				"preload": {
-					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g., length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint."
+					"description": "This enumerated attribute is intended to provide a hint to the browser about what the author thinks will lead to the best user experience regarding what content is loaded before the video is played. It may have one of the following values: none: Indicates that the video should not be preloaded. metadata: Indicates that only video metadata (e.g., length) is fetched. auto: Indicates that the whole video file can be downloaded, even if the user is not expected to use it. empty string: A synonym of the auto value. The default value is different for each browser. The spec advises it to be set to metadata. Note: The autoplay attribute has precedence over preload. If autoplay is specified, the browser would obviously need to start downloading the video for playback. The specification does not force the browser to follow the value of this attribute; it is a mere hint. Note: Videos with the loading=\"lazy\" attribute set will only apply the preload behavior once the video is near or within the viewport."
 				},
 				"src": {
 					"description": "The URL of the video to embed. This is optional; you may instead use the <source> element within the video block to specify the video to embed."
