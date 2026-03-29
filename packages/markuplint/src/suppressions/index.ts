@@ -25,3 +25,6 @@ export {
 	toRelativePath,
 	toAbsolutePath,
 } from './suppressions-file.js';
+export type { DowngradedViolation, DowngradeResult } from './downgrade-severity.js';
+export { analyzeForDowngrade, applyDowngrade } from './downgrade-severity.js';
+export { isFatalError } from '@markuplint/shared';

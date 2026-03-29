@@ -19,6 +19,7 @@ import { SOURCE_FIX_ALL_MARKUPLINT } from './code-actions.js';
 import { verbosely } from './debug.js';
 import { createEventHandlers } from './document-events.js';
 import { getModule } from './get-module.js';
+import { configureGitPath } from './suppression-support.js';
 
 const DEBUG = false;
 
@@ -62,7 +63,9 @@ export function bootServer() {
 
 		const locale = params.locale ?? 'en';
 		const initOptions: InitializationOptions = params.initializationOptions;
-		const { langConfigs, workingDirectories, workspaceFolders } = initOptions;
+		const { langConfigs, workingDirectories, workspaceFolders, gitPath } = initOptions;
+
+		configureGitPath(gitPath);
 
 		connection.onInitialized(async () => {
 			log('onInitialized');

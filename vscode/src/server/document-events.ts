@@ -17,6 +17,7 @@ import { t } from '../i18n.js';
 import * as v2 from './v2.js';
 import * as v3 from './v3.js';
 import * as v4 from './v4.js';
+import * as v5 from './v5.js';
 
 /**
  * Callback for publishing diagnostics from the language server to the client.
@@ -45,6 +46,8 @@ export type EventHandlerOptions = {
 	errorLog: Log;
 	sendDiagnostics: SendDiagnostics;
 	initUI: () => void;
+	/** Path to the git binary, from VS Code's `git.path` setting. */
+	gitPath?: string;
 };
 
 /**
@@ -113,7 +116,24 @@ export function createEventHandlers(
 				return;
 			}
 
-			void v4.onDidOpen(
+			if (satisfies(options.mod.version, '4.x')) {
+				void v4.onDidOpen(
+					document,
+					options.mod.markuplint.MLEngine,
+					langConfig,
+					options.locale,
+					options.log,
+					options.diagnosticsLog,
+					options.sendDiagnostics,
+					notFoundParserError(languageId, options.errorLog),
+					options.workingDirectories,
+					options.workspaceFolders,
+				);
+				return;
+			}
+
+			// v5+
+			void v5.onDidOpen(
 				document,
 				options.mod.markuplint.MLEngine,
 				langConfig,
@@ -148,7 +168,13 @@ export function createEventHandlers(
 				return;
 			}
 
-			v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+			if (satisfies(options.mod.version, '4.x')) {
+				v4.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
+				return;
+			}
+
+			// v5+
+			v5.onDidChangeContent(document, options.log, notFoundParserError(languageId, options.errorLog));
 		},
 
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -159,7 +185,7 @@ export function createEventHandlers(
 				options.log(`Code Actions skipped: markuplint ${options.mod.version} < 5.0.0`, 'debug');
 				return [];
 			}
-			const actions = v4.onCodeAction(params);
+			const actions = v5.onCodeAction(params);
 			options.log(`Code Actions: ${actions.length} for ${params.textDocument.uri}`, 'debug');
 			return actions;
 		},
@@ -200,7 +226,9 @@ export function createEventHandlers(
 				};
 			}
 
-			const aria = await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
+			const aria = satisfies(options.mod.version, '4.x')
+				? await v4.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion)
+				: await v5.getNodeWithAccessibilityProps(params.textDocument, params.position, ariaVersion);
 			if (!aria) {
 				return;
 			}
