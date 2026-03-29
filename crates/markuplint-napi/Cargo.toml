@@ -9,7 +9,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 markuplint-core = { path = "../markuplint-core" }
-markuplint-dom = { path = "../markuplint-dom" }
+markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
+markuplint-html-parser = { path = "../markuplint-html-parser" }
 markuplint-rules = { path = "../markuplint-rules" }
 markuplint-types = { path = "../markuplint-types" }
 serde_json = { workspace = true }

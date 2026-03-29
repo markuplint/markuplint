@@ -1,0 +1,354 @@
+//! Test harness for html5lib-tests tokenizer test suite.
+
+use markuplint_html_parser::tokenizer::Tokenizer;
+use markuplint_html_parser::tokenizer::state::State;
+use markuplint_html_parser::tokenizer::token::Token;
+use serde_json::Value;
+use std::fs;
+use std::path::Path;
+
+/// Unescape `\uXXXX` sequences in a string (for doubleEscaped tests).
+/// Handles surrogate pairs: `\uD800\uDC00` → U+10000.
+fn unescape_unicode(s: &str) -> String {
+    let mut result = String::with_capacity(s.len());
+    let mut chars = s.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\\' && chars.peek() == Some(&'u') {
+            chars.next(); // consume 'u'
+            let hex: String = chars.by_ref().take(4).collect();
+            if hex.len() == 4 {
+                if let Ok(cp) = u32::from_str_radix(&hex, 16) {
+                    // Handle surrogate pairs (U+D800..U+DBFF followed by \uDC00..U+DFFF).
+                    if (0xD800..=0xDBFF).contains(&cp) {
+                        // Check for low surrogate.
+                        let mut peek_chars = chars.clone();
+                        if peek_chars.next() == Some('\\') && peek_chars.next() == Some('u') {
+                            let hex2: String = peek_chars.by_ref().take(4).collect();
+                            if hex2.len() == 4 {
+                                if let Ok(cp2) = u32::from_str_radix(&hex2, 16) {
+                                    if (0xDC00..=0xDFFF).contains(&cp2) {
+                                        let combined = 0x10000 + ((cp - 0xD800) << 10) + (cp2 - 0xDC00);
+                                        if let Some(c) = char::from_u32(combined) {
+                                            // Advance past the low surrogate.
+                                            chars.next(); // '\'
+                                            chars.next(); // 'u'
+                                            for _ in 0..4 {
+                                                chars.next();
+                                            }
+                                            result.push(c);
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Lone high surrogate: replace with U+FFFD.
+                        result.push('\u{FFFD}');
+                        continue;
+                    }
+                    if let Some(c) = char::from_u32(cp) {
+                        result.push(c);
+                        continue;
+                    }
+                }
+            }
+            // Fallback: keep original
+            result.push('\\');
+            result.push('u');
+            result.push_str(&hex);
+        } else {
+            result.push(ch);
+        }
+    }
+    result
+}
+
+/// Recursively unescape `\uXXXX` in all string values of a JSON value.
+fn unescape_json_value(val: &Value) -> Value {
+    match val {
+        Value::String(s) => Value::String(unescape_unicode(s)),
+        Value::Array(arr) => Value::Array(arr.iter().map(unescape_json_value).collect()),
+        Value::Object(obj) => Value::Object(obj.iter().map(|(k, v)| (k.clone(), unescape_json_value(v))).collect()),
+        other => other.clone(),
+    }
+}
+
+fn token_to_html5lib(token: &Token) -> Value {
+    match token {
+        Token::Doctype {
+            name,
+            public_id,
+            system_id,
+            force_quirks,
+            ..
+        } => Value::Array(vec![
+            Value::String("DOCTYPE".to_owned()),
+            name.as_deref().map_or(Value::Null, |n| Value::String(n.to_owned())),
+            public_id
+                .as_deref()
+                .map_or(Value::Null, |p| Value::String(p.to_owned())),
+            system_id
+                .as_deref()
+                .map_or(Value::Null, |s| Value::String(s.to_owned())),
+            Value::Bool(!force_quirks),
+        ]),
+        Token::StartTag {
+            tag_name,
+            self_closing,
+            attributes,
+            ..
+        } => {
+            let mut attrs = serde_json::Map::new();
+            for attr in attributes {
+                // html5lib uses first-wins for duplicate attributes.
+                attrs
+                    .entry(attr.raw_name.clone())
+                    .or_insert_with(|| Value::String(attr.raw_value.clone()));
+            }
+            let mut arr = vec![
+                Value::String("StartTag".to_owned()),
+                Value::String(tag_name.clone()),
+                Value::Object(attrs),
+            ];
+            if *self_closing {
+                arr.push(Value::Bool(true));
+            }
+            Value::Array(arr)
+        }
+        Token::EndTag { tag_name, .. } => Value::Array(vec![
+            Value::String("EndTag".to_owned()),
+            Value::String(tag_name.clone()),
+        ]),
+        Token::Comment { data, .. } => {
+            Value::Array(vec![Value::String("Comment".to_owned()), Value::String(data.clone())])
+        }
+        Token::Character { ch, .. } => Value::Array(vec![
+            Value::String("Character".to_owned()),
+            Value::String(ch.to_string()),
+        ]),
+        Token::Eof => Value::Null,
+    }
+}
+
+fn merge_character_tokens(tokens: &[Value]) -> Vec<Value> {
+    let mut result = Vec::new();
+    let mut pending_chars = String::new();
+
+    for token in tokens {
+        if let Value::Array(arr) = token {
+            if arr.first().and_then(Value::as_str) == Some("Character") {
+                if let Some(s) = arr.get(1).and_then(Value::as_str) {
+                    pending_chars.push_str(s);
+                    continue;
+                }
+            }
+        }
+        if !pending_chars.is_empty() {
+            result.push(Value::Array(vec![
+                Value::String("Character".to_owned()),
+                Value::String(std::mem::take(&mut pending_chars)),
+            ]));
+        }
+        result.push(token.clone());
+    }
+    if !pending_chars.is_empty() {
+        result.push(Value::Array(vec![
+            Value::String("Character".to_owned()),
+            Value::String(pending_chars),
+        ]));
+    }
+    result
+}
+
+/// Run a single test case. Returns true if passed, false if failed.
+fn run_test(input: &str, expected: &[Value], initial_states: &[&str], last_start_tag: Option<&str>) -> bool {
+    let states = if initial_states.is_empty() {
+        vec![State::Data]
+    } else {
+        initial_states
+            .iter()
+            .map(|s| match *s {
+                "RCDATA state" => State::RcData,
+                "RAWTEXT state" => State::RawText,
+                "Script data state" => State::ScriptData,
+                "PLAINTEXT state" => State::PlainText,
+                "CDATA section state" => State::CDataSection,
+                _ => State::Data,
+            })
+            .collect()
+    };
+
+    for state in states {
+        let mut tokenizer = Tokenizer::new(input);
+        tokenizer.set_state(state);
+        if let Some(tag) = last_start_tag {
+            tokenizer.set_last_start_tag(tag);
+        }
+
+        let mut tokens = Vec::new();
+        loop {
+            let token = tokenizer.next_token();
+            if token == Token::Eof {
+                break;
+            }
+            tokens.push(token_to_html5lib(&token));
+        }
+
+        let merged = merge_character_tokens(&tokens);
+        if merged != expected {
+            return false;
+        }
+    }
+    true
+}
+
+struct TestFileResult {
+    passed: usize,
+    failed: usize,
+    skipped: usize,
+    failure_details: Vec<String>,
+}
+
+fn run_test_file(path: &Path) -> TestFileResult {
+    let content = fs::read_to_string(path).expect("Failed to read test file");
+    let data: Value = serde_json::from_str(&content).expect("Failed to parse test JSON");
+    // html5lib uses "tests" for most files, but "xmlViolationTests" for xmlViolation.test.
+    let tests = data["tests"]
+        .as_array()
+        .or_else(|| data["xmlViolationTests"].as_array());
+    let Some(tests) = tests else {
+        return TestFileResult {
+            passed: 0,
+            failed: 0,
+            skipped: 0,
+            failure_details: Vec::new(),
+        };
+    };
+    let mut passed = 0;
+    let mut failed = 0;
+    let skipped = 0;
+    let mut failure_details = Vec::new();
+
+    for test in tests {
+        let input = test["input"].as_str().unwrap_or("");
+        let expected = test["output"].as_array().unwrap_or(&Vec::new()).clone();
+        let double_escaped = test["doubleEscaped"].as_bool().unwrap_or(false);
+
+        if double_escaped {
+            let unescaped_input = unescape_unicode(input);
+            let unescaped_expected = unescape_json_value(&Value::Array(expected.clone()));
+            if let Value::Array(arr) = &unescaped_expected {
+                // Use unescaped values.
+                let initial_states: Vec<&str> = test["initialStates"]
+                    .as_array()
+                    .map(|a| a.iter().filter_map(Value::as_str).collect())
+                    .unwrap_or_default();
+                let last_start_tag = test["lastStartTag"].as_str();
+                if run_test(&unescaped_input, arr, &initial_states, last_start_tag) {
+                    passed += 1;
+                } else {
+                    failed += 1;
+                    let desc = test["description"].as_str().unwrap_or("<unknown>");
+                    if failure_details.len() < 3 {
+                        failure_details.push(format!("  {desc}: input={input:?}"));
+                    }
+                }
+                continue;
+            }
+        }
+
+        let initial_states: Vec<&str> = test["initialStates"]
+            .as_array()
+            .map(|arr| arr.iter().filter_map(Value::as_str).collect())
+            .unwrap_or_default();
+        let last_start_tag = test["lastStartTag"].as_str();
+
+        if run_test(input, &expected, &initial_states, last_start_tag) {
+            passed += 1;
+        } else {
+            failed += 1;
+            let desc = test["description"].as_str().unwrap_or("<unknown>");
+            if failure_details.len() < 3 {
+                failure_details.push(format!("  {desc}: input={input:?}"));
+            }
+        }
+    }
+
+    TestFileResult {
+        passed,
+        failed,
+        skipped,
+        failure_details,
+    }
+}
+
+#[test]
+fn html5lib_tokenizer_test_suite() {
+    let test_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tokenizer");
+
+    assert!(
+        test_dir.exists(),
+        "html5lib-tests not found at {test_dir:?}. Run: git submodule update --init --recursive"
+    );
+
+    let mut total_passed = 0;
+    let mut total_failed = 0;
+    let mut total_skipped = 0;
+    let mut all_failure_samples = Vec::new();
+
+    // xmlViolation.test tests XML-specific behavior (non-XML characters,
+    // form feed replacement, double-hyphen in comments) that is outside
+    // the scope of an HTML parser. Skip it.
+    let skip_files = ["xmlViolation.test"];
+    let mut files: Vec<_> = fs::read_dir(&test_dir)
+        .expect("Failed to read test directory")
+        .filter_map(Result::ok)
+        .filter(|e| {
+            e.path().extension().is_some_and(|ext| ext == "test")
+                && !skip_files.contains(&e.file_name().to_string_lossy().as_ref())
+        })
+        .collect();
+    files.sort_by_key(|e| e.file_name());
+
+    for entry in &files {
+        let path = entry.path();
+        let result = run_test_file(&path);
+        let filename = path.file_name().unwrap().to_string_lossy();
+        if result.failed > 0 || result.skipped > 0 {
+            eprintln!(
+                "  {filename}: {} passed, {} failed, {} skipped",
+                result.passed, result.failed, result.skipped
+            );
+        }
+        total_passed += result.passed;
+        total_failed += result.failed;
+        total_skipped += result.skipped;
+        for d in result.failure_details {
+            all_failure_samples.push(format!("[{filename}] {d}"));
+        }
+    }
+
+    let executed = total_passed + total_failed;
+    let _total = executed + total_skipped;
+    let pass_rate = if executed > 0 {
+        (total_passed as f64 / executed as f64) * 100.0
+    } else {
+        0.0
+    };
+    let file_skip_count = skip_files.len();
+    let total_file_count = files.len() + file_skip_count;
+    eprintln!(
+        "\nhtml5lib tokenizer: {total_passed}/{executed} executed ({pass_rate:.1}%), \
+         {total_skipped} skipped, {file_skip_count}/{total_file_count} files skipped"
+    );
+
+    if !all_failure_samples.is_empty() {
+        eprintln!("\nSample failures:");
+        for s in &all_failure_samples {
+            eprintln!("{s}");
+        }
+    }
+
+    // Strict: require 100% of executed tests to pass.
+    assert_eq!(total_failed, 0, "{total_failed} test(s) failed");
+}

@@ -6,12 +6,13 @@ Rust implementation of markuplint's core components: DOM layer and type validati
 
 ```
 crates/
-├── markuplint-core/      MLAST serde types (deserialization from JSON)
-├── markuplint-dom/       Arena-based DOM tree (builder + traversal + attr helpers)
-├── markuplint-napi/      Node.js bridge via napi-rs v3
-├── markuplint-rules/     Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
-├── markuplint-selector/  CSS selector parser + matcher (with :model/:role/:aria)
-└── markuplint-types/     Type validation and spec data (serde types, lookup)
+├── markuplint-core/         MLAST serde types (deserialization from JSON)
+├── markuplint-dom/          Arena-based DOM tree (builder + traversal + attr helpers)
+├── markuplint-html-parser/  WHATWG-conformant HTML parser (tokenizer + tree construction)
+├── markuplint-napi/         Node.js bridge via napi-rs v3
+├── markuplint-rules/        Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
+├── markuplint-selector/     CSS selector parser + matcher (with :model/:role/:aria)
+└── markuplint-types/        Type validation and spec data (serde types, lookup)
 ```
 
 ### markuplint-core
@@ -30,7 +31,9 @@ Provides traversal: parent, children, siblings, ancestors (bottom-up), descendan
 
 Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-specific `.node` binary. Provides:
 
-- **NapiDom**: DOM tree from MLAST JSON with traversal queries
+- **NapiDom**: DOM tree with traversal queries. Two construction paths:
+  - `new NapiDom(mlastJson)` — from MLAST JSON (TS parser output)
+  - `NapiDom.fromHtml(html)` — direct HTML parsing via Rust (no MLAST intermediate)
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
 - **`lint(mlastJson, configJson, specJson)`**: Full lint pipeline — runs all enabled Rust rules and returns violations
@@ -56,6 +59,48 @@ Rust implementation of `@markuplint/types` and spec-related modules. Contains:
 - **Content model serde types** (Phase 2-4): `ContentModel`, `PermittedContentPattern`, `matches_model_ref()` — matching engine is in `markuplint-rules`
 
 See `crates/markuplint-types/README.md` for detailed architecture and design decisions.
+
+### markuplint-html-parser
+
+WHATWG-conformant HTML parser implementing §13.2.5 (tokenization) and §13.2.6 (tree construction). Replaces parse5 with a pure Rust implementation. Zero runtime dependencies.
+
+- **Tokenizer**: Full 80-state state machine with position tracking on all tokens
+- **Named character references**: Complete WHATWG entity table (2231 entries), generated at build time from `entities.json`
+- **Tree construction**: All 23 insertion modes, adoption agency, foster parenting, foreign content (SVG/MathML), customizable `<select>`, fragment parsing
+- **Conformance**: [html5lib-tests](https://github.com/html5lib/html5lib-tests) — **tokenizer 6806/6806 (100%)**, **tree construction 1777/1778 (1 documented spec/test divergence skip)**
+
+Source files map to WHATWG spec sections:
+| File | WHATWG Section |
+|------|---------------|
+| `src/tokenizer/` | §13.2.5 Tokenization |
+| `src/tree_construction/mod.rs` | §13.2.6 Tree construction |
+| `src/tree_construction/adoption_agency.rs` | §13.2.6.4.7 Adoption agency |
+| `src/tree_construction/foreign_content.rs` | §13.2.6.5 Foreign content |
+| `src/tree_construction/table_modes.rs` | §13.2.6.4 Table-related modes |
+| `src/input.rs` | §13.2.3.5 Input stream preprocessing |
+| `src/tables.rs` | Element categories (void, formatting, special, implied end tags) |
+| `src/tree/` | Internal arena-based tree (nodes, attributes, spans) |
+
+#### Submodule setup
+
+The html5lib-tests conformance suite is included as a git submodule. After cloning, run:
+
+```bash
+git submodule update --init --recursive
+```
+
+#### Updating html5lib-tests
+
+When the upstream html5lib-tests repo is updated:
+
+```bash
+cd crates/markuplint-html-parser/tests/html5lib-tests
+git pull origin master
+cd ../../../..
+cargo test -p markuplint-html-parser
+```
+
+If new tests fail, either fix the parser or add the test to `SKIP_TESTS` in `html5lib_tree.rs` with a documented reason. The test harness enforces `assert_eq!(total_failed, 0)` — no numeric thresholds.
 
 ## Prerequisites
 
@@ -86,23 +131,28 @@ The `.node` binary is output to `packages/@markuplint/core/`.
 
 ### DOM Layer
 
+Two construction paths:
+
 ```
-TS html-parser
-     │  parser.parse(html)
-     ▼
-MLAST JSON string
-     │  NapiDom::new(json)
-     ▼
-markuplint-core     serde deserialize → MLASTDocument
-     │
-     ▼
-markuplint-dom      build() → DomArena (Vec<DomNode> + UUID index)
-     │
-     ▼
-markuplint-napi     NapiDom / NapiNode / NapiElement → JavaScript
-     │
-     ▼
-@markuplint/core    index.js (platform-specific .node loader)
+Path A: TS parser (current)          Path B: Rust parser (new)
+
+TS html-parser (parse5)              HTML string
+     │  parser.parse(html)                │  NapiDom.fromHtml(html)
+     ▼                                    ▼
+MLAST JSON string                    markuplint-html-parser
+     │  NapiDom::new(json)                │  parse() → Arena
+     ▼                                    ▼
+markuplint-core                      markuplint-dom
+  serde → MLASTDocument                html_builder → DomArena
+     │                                    │
+     └──────────────┬─────────────────────┘
+                    ▼
+              markuplint-napi
+         NapiDom / NapiNode / NapiElement → JavaScript
+                    │
+                    ▼
+            @markuplint/core
+         index.js (platform-specific .node loader)
 ```
 
 ### Type Validation Layer

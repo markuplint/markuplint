@@ -15,6 +15,13 @@ export declare class NapiDom {
    * Returns an error if the JSON cannot be parsed as a valid MLAST document.
    */
   constructor(mlastJson: string)
+  /**
+   * Build a DOM by parsing an HTML string directly (no MLAST JSON).
+   *
+   * Uses the Rust WHATWG-conformant HTML parser. Automatically detects
+   * whether the input is a full document or a fragment.
+   */
+  static fromHtml(html: string): NapiDom
   /** Total number of nodes in the DOM. */
   get nodeCount(): number
   /** Get a node by its UUID string. Returns null if not found. */
@@ -36,6 +43,59 @@ export declare class NapiDom {
   /** Get all descendant nodes of a node in document order. */
   getDescendants(id: number): Array<NapiNode>
 }
+
+/** Result of a CSS value match attempt. */
+export interface CssMatchResult {
+  /** Whether the value matched the syntax. */
+  matched: boolean
+  /** Byte offset of the mismatch (only present when matched is false). */
+  offset?: number
+  /** Length of the mismatched segment (only present when matched is false). */
+  length?: number
+  /** Expected values at the mismatch point. */
+  expected?: Array<string>
+}
+
+/** Checks whether a string is a valid floating-point number. */
+export declare function isFloat(value: string): boolean
+
+/** Checks whether a string is a valid signed integer. */
+export declare function isInt(value: string): boolean
+
+/** Checks whether a string is a valid non-zero unsigned integer. */
+export declare function isNonZeroUint(value: string): boolean
+
+/** Checks whether a string is a valid number with one of the allowed unit suffixes. */
+export declare function isQuantity(value: string, units: Array<string>, numberType?: string | undefined | null): boolean
+
+/**
+ * Checks whether a string is a valid non-negative integer.
+ * Optionally requires the value to be greater than `gt`.
+ */
+export declare function isUint(value: string, gt?: number | undefined | null): boolean
+
+/**
+ * Match a CSS property value, including CSS-wide keywords.
+ *
+ * Checks CSS-wide keywords (inherit, initial, unset, revert, revert-layer)
+ * before matching against the syntax definition.
+ *
+ * # Errors
+ *
+ * Returns a napi error if the syntax string is invalid.
+ */
+export declare function matchCssProperty(syntax: string, value: string): CssMatchResult
+
+/**
+ * Match a CSS value against a CSS Value Definition Syntax string.
+ *
+ * This is the Rust replacement for css-tree's `lexer.match()`.
+ *
+ * # Errors
+ *
+ * Returns a napi error if the syntax string is invalid.
+ */
+export declare function matchCssSyntax(syntax: string, value: string): CssMatchResult
 
 /** A serializable element node with additional element-specific properties. */
 export interface NapiElement {
@@ -83,4 +143,16 @@ export interface NapiNode {
   col: number
   /** Nesting depth. */
   depth: number
+}
+
+/** Checks whether a numeric string value falls within an inclusive range. */
+export declare function range(value: string, from: number, to: number): boolean
+
+/** Splits a value string into its numeric and unit parts. */
+export declare function splitUnit(value: string): SplitUnitResult
+
+/** Splits a value string into its numeric and unit parts. */
+export interface SplitUnitResult {
+  num: string
+  unit: string
 }
