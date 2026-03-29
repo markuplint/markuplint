@@ -14,9 +14,12 @@ use markuplint_types::primitive;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
-/// A DOM tree built from an MLAST JSON string.
+/// A DOM tree built from MLAST JSON or an HTML string.
 ///
-/// Use the constructor to parse MLAST JSON and build the DOM.
+/// Two construction paths:
+/// - `new(mlast_json)` — from MLAST JSON (TS parser output)
+/// - `from_html(html)` — direct HTML parsing via Rust parser
+///
 /// Then query nodes by UUID or traverse the tree.
 #[napi]
 pub struct NapiDom {

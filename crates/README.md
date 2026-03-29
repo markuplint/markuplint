@@ -31,7 +31,9 @@ Provides traversal: parent, children, siblings, ancestors (bottom-up), descendan
 
 Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-specific `.node` binary. Provides:
 
-- **NapiDom**: DOM tree from MLAST JSON with traversal queries
+- **NapiDom**: DOM tree with traversal queries. Two construction paths:
+  - `new NapiDom(mlastJson)` — from MLAST JSON (TS parser output)
+  - `NapiDom.fromHtml(html)` — direct HTML parsing via Rust (no MLAST intermediate)
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
 
@@ -125,23 +127,28 @@ The `.node` binary is output to `packages/@markuplint/core/`.
 
 ### DOM Layer
 
+Two construction paths:
+
 ```
-TS html-parser
-     │  parser.parse(html)
-     ▼
-MLAST JSON string
-     │  NapiDom::new(json)
-     ▼
-markuplint-core     serde deserialize → MLASTDocument
-     │
-     ▼
-markuplint-dom      build() → DomArena (Vec<DomNode> + UUID index)
-     │
-     ▼
-markuplint-napi     NapiDom / NapiNode / NapiElement → JavaScript
-     │
-     ▼
-@markuplint/core    index.js (platform-specific .node loader)
+Path A: TS parser (current)          Path B: Rust parser (new)
+
+TS html-parser (parse5)              HTML string
+     │  parser.parse(html)                │  NapiDom.fromHtml(html)
+     ▼                                    ▼
+MLAST JSON string                    markuplint-html-parser
+     │  NapiDom::new(json)                │  parse() → Arena
+     ▼                                    ▼
+markuplint-core                      markuplint-dom
+  serde → MLASTDocument                html_builder → DomArena
+     │                                    │
+     └──────────────┬─────────────────────┘
+                    ▼
+              markuplint-napi
+         NapiDom / NapiNode / NapiElement → JavaScript
+                    │
+                    ▼
+            @markuplint/core
+         index.js (platform-specific .node loader)
 ```
 
 ### Type Validation Layer
