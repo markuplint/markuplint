@@ -314,11 +314,7 @@ fn html5lib_tree_construction_test_suite() {
     }
 
     // Skipped files: features not yet implemented (each documented).
-    let skip_files = [
-        "domjs-unsafe.dat",                           // null bytes in unsafe contexts
-        "plain-text-unsafe.dat",                      // null bytes in PLAINTEXT
-        "pending-spec-changes-plain-text-unsafe.dat", // same
-    ];
+    let skip_files: [&str; 0] = [];
 
     let mut total_passed = 0;
     let mut total_failed = 0;
