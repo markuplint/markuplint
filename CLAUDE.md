@@ -64,9 +64,11 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 
 ### Test
 
-- **Full test**: `yarn test` (no arguments)
-- **Single file/directory**: `npx vitest run <path>`
+- **Full test**: `yarn test` (no arguments) — includes `--typecheck` (TypeScript type-checking of spec files)
+- **Single file/directory**: `npx vitest run <path>` (runtime tests only, no type-checking)
+- **Single file with type-checking**: `npx vitest --typecheck run <path>`
 - **NEVER use**: `npx lerna run test`, `yarn test --scope @markuplint/*`, or any other variant
+- **NEVER use**: `npx tsc --noEmit` — does not work correctly in this monorepo (no root `include`, `composite` conflicts with `--noEmit` in build mode)
 
 ### Lint
 
