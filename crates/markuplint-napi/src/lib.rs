@@ -446,3 +446,52 @@ pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi:
 
     Ok(violations)
 }
+
+/// Run Rust-native lint rules on raw HTML (full Rust path).
+///
+/// Parses HTML via the Rust WHATWG-conformant parser, builds a DOM,
+/// then runs all enabled rules. No MLAST JSON intermediate.
+///
+/// # Errors
+///
+/// Throws a napi error if spec or config JSON fails to parse.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn lint_html(html: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
+    // Use the lint-aware heuristic: <body>/<head> are also treated as documents
+    // to preserve parent context for rules like permitted-contents.
+    let as_document = markuplint_html_parser::should_parse_as_document(&html);
+    let is_fragment = !as_document;
+    let parser_arena = if is_fragment {
+        markuplint_html_parser::parse_fragment(&html)
+    } else {
+        markuplint_html_parser::parse_document(&html)
+    };
+    let arena = html_builder::build_from_html_arena(&html, &parser_arena, is_fragment);
+
+    let spec = markuplint_types::spec::load_spec(&spec_json)
+        .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
+    let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(&config_json)
+        .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
+
+    let result = markuplint_rules::lint::lint(&arena, &spec, &config);
+
+    let violations = result
+        .violations
+        .into_iter()
+        .map(|v| NapiViolation {
+            rule_id: v.rule_id,
+            severity: match v.severity {
+                markuplint_rules::violation::Severity::Error => "error".to_string(),
+                markuplint_rules::violation::Severity::Warning => "warning".to_string(),
+                markuplint_rules::violation::Severity::Info => "info".to_string(),
+            },
+            message: v.message,
+            line: v.line,
+            col: v.col,
+            raw: v.raw,
+        })
+        .collect::<Vec<_>>();
+
+    Ok(violations)
+}
