@@ -5,13 +5,11 @@
 //! Only available when the `html-parser` feature is enabled.
 
 use markuplint_core::mlast::{ElementType, NamespaceURI};
-use markuplint_html_parser::tree::node::{Namespace, NodeId as ParserNodeId, NodeKind};
 use markuplint_html_parser::tree::Arena as ParserArena;
+use markuplint_html_parser::tree::node::{Namespace, NodeId as ParserNodeId, NodeKind};
 
 use crate::arena::{DomArena, NodeId};
-use crate::node::{
-    CommentData, DoctypeData, DocumentData, DomNode, ElementData, NodeBase, TextData,
-};
+use crate::node::{CommentData, DoctypeData, DocumentData, DomNode, ElementData, NodeBase, TextData};
 
 /// Build a `DomArena` directly from the HTML parser's internal arena.
 ///
@@ -105,51 +103,58 @@ fn convert_parser_node(
                 .map(|attr| {
                     // Build minimal MLAST attribute from parser attribute spans.
                     let attr_uuid = (dom.len() + 1).to_string(); // placeholder
-                    markuplint_core::mlast::MLASTAttr::HTMLAttr(Box::new(
-                        markuplint_core::mlast::MLASTHTMLAttr {
-                            uuid: attr_uuid,
-                            raw: slice_span(source, attr.name_span.start.offset, attr.quote_end_span.map_or(
+                    markuplint_core::mlast::MLASTAttr::HTMLAttr(Box::new(markuplint_core::mlast::MLASTHTMLAttr {
+                        uuid: attr_uuid,
+                        raw: slice_span(
+                            source,
+                            attr.name_span.start.offset,
+                            attr.quote_end_span.map_or(
                                 attr.value_span.map_or(attr.name_span.end.offset, |v| v.end.offset),
                                 |q| q.end.offset,
-                            )),
-                            offset: attr.name_span.start.offset,
-                            line: attr.name_span.start.line,
-                            col: attr.name_span.start.col,
-                            node_name: attr.name.clone(),
-                            spaces_before_name: make_token(source, attr.spaces_before_span),
-                            name: make_token(source, attr.name_span),
-                            spaces_before_equal: make_token(source, attr.spaces_before_eq_span),
-                            equal: make_token(source, attr.equal_span.unwrap_or(
-                                markuplint_html_parser::input::Span::empty(attr.name_span.end),
-                            )),
-                            spaces_after_equal: make_token(source, attr.spaces_after_eq_span),
-                            start_quote: make_token(source, attr.quote_start_span.unwrap_or(
-                                markuplint_html_parser::input::Span::empty(
+                            ),
+                        ),
+                        offset: attr.name_span.start.offset,
+                        line: attr.name_span.start.line,
+                        col: attr.name_span.start.col,
+                        node_name: attr.name.clone(),
+                        spaces_before_name: make_token(source, attr.spaces_before_span),
+                        name: make_token(source, attr.name_span),
+                        spaces_before_equal: make_token(source, attr.spaces_before_eq_span),
+                        equal: make_token(
+                            source,
+                            attr.equal_span
+                                .unwrap_or(markuplint_html_parser::input::Span::empty(attr.name_span.end)),
+                        ),
+                        spaces_after_equal: make_token(source, attr.spaces_after_eq_span),
+                        start_quote: make_token(
+                            source,
+                            attr.quote_start_span
+                                .unwrap_or(markuplint_html_parser::input::Span::empty(
                                     attr.equal_span.map_or(attr.name_span.end, |e| e.end),
-                                ),
+                                )),
+                        ),
+                        value: make_token(
+                            source,
+                            attr.value_span.unwrap_or(markuplint_html_parser::input::Span::empty(
+                                attr.quote_start_span
+                                    .map_or(attr.equal_span.map_or(attr.name_span.end, |e| e.end), |q| q.end),
                             )),
-                            value: make_token(source, attr.value_span.unwrap_or(
-                                markuplint_html_parser::input::Span::empty(
-                                    attr.quote_start_span.map_or(
-                                        attr.equal_span.map_or(attr.name_span.end, |e| e.end),
-                                        |q| q.end,
-                                    ),
-                                ),
-                            )),
-                            end_quote: make_token(source, attr.quote_end_span.unwrap_or(
-                                markuplint_html_parser::input::Span::empty(
+                        ),
+                        end_quote: make_token(
+                            source,
+                            attr.quote_end_span
+                                .unwrap_or(markuplint_html_parser::input::Span::empty(
                                     attr.value_span.map_or(attr.name_span.end, |v| v.end),
-                                ),
-                            )),
-                            is_dynamic_value: None,
-                            is_directive: None,
-                            potential_name: None,
-                            potential_value: None,
-                            value_type: None,
-                            candidate: None,
-                            is_duplicatable: false,
-                        },
-                    ))
+                                )),
+                        ),
+                        is_dynamic_value: None,
+                        is_directive: None,
+                        potential_name: None,
+                        potential_value: None,
+                        value_type: None,
+                        candidate: None,
+                        is_duplicatable: false,
+                    }))
                 })
                 .collect();
 

@@ -37,8 +37,7 @@ impl TreeBuilder<'_> {
             outer_loop_counter += 1;
 
             // Step 5: Find formatting element in active formatting.
-            let Some(format_id) = self.active_formatting.find_last_element(tag_name, &self.arena)
-            else {
+            let Some(format_id) = self.active_formatting.find_last_element(tag_name, &self.arena) else {
                 return false;
             };
 
@@ -86,10 +85,7 @@ impl TreeBuilder<'_> {
             // "Let node be the element immediately above node in the stack,
             //  or if node is no longer in the stack (because it was removed),
             //  the element that was immediately above node before removal."
-            let mut node_above_pos = self
-                .open_elements
-                .position(furthest_block_id)
-                .unwrap_or(0);
+            let mut node_above_pos = self.open_elements.position(furthest_block_id).unwrap_or(0);
             let mut last_node = furthest_block_id;
             let mut inner_loop_counter = 0;
 
@@ -137,10 +133,7 @@ impl TreeBuilder<'_> {
                 // Step 13.8: If last node is furthest block, set bookmark
                 // to one past new element in active formatting.
                 if last_node == furthest_block_id {
-                    bookmark = self
-                        .active_formatting
-                        .position(new_element)
-                        .map_or(bookmark, |p| p + 1);
+                    bookmark = self.active_formatting.position(new_element).map_or(bookmark, |p| p + 1);
                 }
 
                 // Step 13.9: Reparent last_node under node.
@@ -191,8 +184,10 @@ impl TreeBuilder<'_> {
             // Step 18: Remove formatting element from active formatting,
             // insert new element at bookmark position.
             self.active_formatting.remove(format_id);
-            self.active_formatting
-                .insert_at(bookmark.min(self.active_formatting.entries().len()), FormatEntry::Element(new_format));
+            self.active_formatting.insert_at(
+                bookmark.min(self.active_formatting.entries().len()),
+                FormatEntry::Element(new_format),
+            );
 
             // Step 19: Remove formatting element from open elements,
             // insert new element after furthest block.

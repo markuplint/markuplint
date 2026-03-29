@@ -200,9 +200,7 @@ impl TreeBuilder<'_> {
         // and character tokens go to the current insertion mode.
         if node.is_mathml_text_integration_point() {
             match token {
-                Token::StartTag { tag_name, .. }
-                    if tag_name != "mglyph" && tag_name != "malignmark" =>
-                {
+                Token::StartTag { tag_name, .. } if tag_name != "mglyph" && tag_name != "malignmark" => {
                     return false;
                 }
                 Token::Character { .. } => return false,
@@ -261,9 +259,7 @@ impl TreeBuilder<'_> {
                 let tag = tag_name.as_str();
 
                 // Check for breakout elements (and special end-tag-like start tags).
-                if BREAKOUT_ELEMENTS.contains(&tag)
-                    || (tag == "font" && has_font_attrs(attributes))
-                {
+                if BREAKOUT_ELEMENTS.contains(&tag) || (tag == "font" && has_font_attrs(attributes)) {
                     // Pop until MathML text integration point, HTML integration
                     // point, or HTML namespace element per WHATWG §13.2.6.5.
                     let mut hit_fragment_root = false;

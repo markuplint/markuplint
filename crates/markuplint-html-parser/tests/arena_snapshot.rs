@@ -164,10 +164,7 @@ fn frag_body_p() {
         maps.iter().any(|m| m.contains("p") && m.contains("<p>")),
         "Expected <p>: {maps:?}"
     );
-    assert!(
-        maps.iter().any(|m| m.contains("TEXT")),
-        "Expected TEXT: {maps:?}"
-    );
+    assert!(maps.iter().any(|m| m.contains("TEXT")), "Expected TEXT: {maps:?}");
 }
 
 #[test]
@@ -175,31 +172,16 @@ fn frag_head_and_body() {
     // Per WHATWG, <head> in InBody is ignored. <title> is processed
     // via InHead rules. <body> merges attributes into existing body.
     let maps = debug_maps("<head><title>TITLE</title></head><body><p>TEXT</p></body>");
-    assert!(
-        maps.iter().any(|m| m.contains("title")),
-        "Expected title: {maps:?}"
-    );
-    assert!(
-        maps.iter().any(|m| m.contains("TEXT")),
-        "Expected TEXT: {maps:?}"
-    );
-    assert!(
-        maps.iter().any(|m| m.contains("p")),
-        "Expected p: {maps:?}"
-    );
+    assert!(maps.iter().any(|m| m.contains("title")), "Expected title: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("TEXT")), "Expected TEXT: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("p")), "Expected p: {maps:?}");
 }
 
 #[test]
 fn frag_head_title_only() {
     let maps = debug_maps("<head><title>TITLE</title>");
-    assert!(
-        maps.iter().any(|m| m.contains("title")),
-        "Expected title: {maps:?}"
-    );
-    assert!(
-        maps.iter().any(|m| m.contains("TITLE")),
-        "Expected TITLE: {maps:?}"
-    );
+    assert!(maps.iter().any(|m| m.contains("title")), "Expected title: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("TITLE")), "Expected TITLE: {maps:?}");
 }
 
 #[test]
@@ -210,23 +192,14 @@ fn frag_body_p_only() {
         maps.iter().any(|m| m.contains("p") && m.contains("<p>")),
         "Expected <p>: {maps:?}"
     );
-    assert!(
-        maps.iter().any(|m| m.contains("TEXT")),
-        "Expected TEXT: {maps:?}"
-    );
+    assert!(maps.iter().any(|m| m.contains("TEXT")), "Expected TEXT: {maps:?}");
 }
 
 #[test]
 fn frag_head_body_no_close() {
     let maps = debug_maps("<head><title>TITLE</title><body><p>TEXT</p>");
-    assert!(
-        maps.iter().any(|m| m.contains("title")),
-        "Expected title: {maps:?}"
-    );
-    assert!(
-        maps.iter().any(|m| m.contains("TITLE")),
-        "Expected TITLE: {maps:?}"
-    );
+    assert!(maps.iter().any(|m| m.contains("title")), "Expected title: {maps:?}");
+    assert!(maps.iter().any(|m| m.contains("TITLE")), "Expected TITLE: {maps:?}");
     assert!(
         maps.iter().any(|m| m.contains("p") && m.contains("<p>")),
         "Expected p: {maps:?}"

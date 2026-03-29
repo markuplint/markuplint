@@ -124,12 +124,9 @@ impl TreeNode {
             }
             Some(Namespace::MathML) => {
                 self.tag_name() == Some("annotation-xml")
-                    && self
-                        .attribute_value("encoding")
-                        .is_some_and(|enc| {
-                            enc.eq_ignore_ascii_case("text/html")
-                                || enc.eq_ignore_ascii_case("application/xhtml+xml")
-                        })
+                    && self.attribute_value("encoding").is_some_and(|enc| {
+                        enc.eq_ignore_ascii_case("text/html") || enc.eq_ignore_ascii_case("application/xhtml+xml")
+                    })
             }
             _ => false,
         }

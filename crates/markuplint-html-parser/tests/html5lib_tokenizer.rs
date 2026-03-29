@@ -32,7 +32,9 @@ fn unescape_unicode(s: &str) -> String {
                                             // Advance past the low surrogate.
                                             chars.next(); // '\'
                                             chars.next(); // 'u'
-                                            for _ in 0..4 { chars.next(); }
+                                            for _ in 0..4 {
+                                                chars.next();
+                                            }
                                             result.push(c);
                                             continue;
                                         }
@@ -66,9 +68,7 @@ fn unescape_json_value(val: &Value) -> Value {
     match val {
         Value::String(s) => Value::String(unescape_unicode(s)),
         Value::Array(arr) => Value::Array(arr.iter().map(unescape_json_value).collect()),
-        Value::Object(obj) => {
-            Value::Object(obj.iter().map(|(k, v)| (k.clone(), unescape_json_value(v))).collect())
-        }
+        Value::Object(obj) => Value::Object(obj.iter().map(|(k, v)| (k.clone(), unescape_json_value(v))).collect()),
         other => other.clone(),
     }
 }

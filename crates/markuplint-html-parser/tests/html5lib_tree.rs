@@ -401,7 +401,10 @@ fn adoption_agency_basic() {
 #[test]
 fn html5lib_tree_smoke_test() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tree-construction/tests1.dat");
-    assert!(path.exists(), "html5lib-tests not found. Run: git submodule update --init --recursive");
+    assert!(
+        path.exists(),
+        "html5lib-tests not found. Run: git submodule update --init --recursive"
+    );
     let result = run_test_file(&path);
     eprintln!(
         "tests1.dat: {} passed, {} failed, {} skipped",

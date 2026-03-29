@@ -150,7 +150,11 @@ impl<'a> TreeBuilder<'a> {
         // so that should_process_as_foreign_for_token sees the correct
         // namespace on the adjusted current node.
         if context_ns != Namespace::Html {
-            let pos = Position { offset: 0, line: 1, col: 1 };
+            let pos = Position {
+                offset: 0,
+                line: 1,
+                col: 1,
+            };
             let ghost_id = self.arena.create_element(
                 context_tag.to_owned(),
                 context_ns,
@@ -773,11 +777,7 @@ impl<'a> TreeBuilder<'a> {
                 let doc_id = self.arena.document_id();
                 self.arena.append_child(doc_id, doctype_id);
                 // Detect quirks mode per WHATWG §13.2.6.4.1.
-                self.quirks_mode = is_quirks_mode_doctype(
-                    name.as_deref(),
-                    public_id.as_deref(),
-                    system_id.as_deref(),
-                );
+                self.quirks_mode = is_quirks_mode_doctype(name.as_deref(), public_id.as_deref(), system_id.as_deref());
                 self.mode = InsertionMode::BeforeHtml;
             }
             _ => {
@@ -1481,8 +1481,7 @@ impl<'a> TreeBuilder<'a> {
                 self.open_elements.pop();
                 // frameset_ok = false unless type=hidden.
                 let is_hidden = attributes.iter().any(|a| {
-                    a.raw_name.eq_ignore_ascii_case("type")
-                        && a.raw_value.trim().eq_ignore_ascii_case("hidden")
+                    a.raw_name.eq_ignore_ascii_case("type") && a.raw_value.trim().eq_ignore_ascii_case("hidden")
                 });
                 if !is_hidden {
                     self.frameset_ok = false;
@@ -2021,7 +2020,6 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-
     fn process_in_select_in_table(&mut self, token: Token) {
         // WHATWG §13.2.6.4.18: table-related tags close the select.
         match &token {
@@ -2087,10 +2085,7 @@ impl<'a> TreeBuilder<'a> {
 
             // Start tags that switch to table-related modes.
             Token::StartTag { tag_name, .. }
-                if matches!(
-                    tag_name.as_str(),
-                    "caption" | "colgroup" | "tbody" | "tfoot" | "thead"
-                ) =>
+                if matches!(tag_name.as_str(), "caption" | "colgroup" | "tbody" | "tfoot" | "thead") =>
             {
                 self.template_insertion_modes.pop();
                 self.template_insertion_modes.push(InsertionMode::InTable);
@@ -2375,60 +2370,60 @@ const QUIRKS_PUBLIC_IDS: &[&str] = &[
 /// Quirks-triggering public identifier prefixes.
 const QUIRKS_PUBLIC_PREFIXES: &[&str] = &[
     "+//silmaril//dtd html pro v0r11 19970101//",
-        "-//as//dtd html 3.0 aswedit 7.0//",
-        "-//advasoft ltd//dtd html 3.0 aswedit 7.0//",
-        "-//ietf//dtd html 2.0 level 1//",
-        "-//ietf//dtd html 2.0 level 2//",
-        "-//ietf//dtd html 2.0 strict level 1//",
-        "-//ietf//dtd html 2.0 strict level 2//",
-        "-//ietf//dtd html 2.0 strict//",
-        "-//ietf//dtd html 2.0//",
-        "-//ietf//dtd html 2.1e//",
-        "-//ietf//dtd html 3.0//",
-        "-//ietf//dtd html 3.2 final//",
-        "-//ietf//dtd html 3.2//",
-        "-//ietf//dtd html 3//",
-        "-//ietf//dtd html level 0//",
-        "-//ietf//dtd html level 1//",
-        "-//ietf//dtd html level 2//",
-        "-//ietf//dtd html level 3//",
-        "-//ietf//dtd html strict level 0//",
-        "-//ietf//dtd html strict level 1//",
-        "-//ietf//dtd html strict level 2//",
-        "-//ietf//dtd html strict level 3//",
-        "-//ietf//dtd html strict//",
-        "-//ietf//dtd html//",
-        "-//metrius//dtd metrius presentational//",
-        "-//microsoft//dtd internet explorer 2.0 html strict//",
-        "-//microsoft//dtd internet explorer 2.0 html//",
-        "-//microsoft//dtd internet explorer 2.0 tables//",
-        "-//microsoft//dtd internet explorer 3.0 html strict//",
-        "-//microsoft//dtd internet explorer 3.0 html//",
-        "-//microsoft//dtd internet explorer 3.0 tables//",
-        "-//netscape comm. corp.//dtd html//",
-        "-//netscape comm. corp.//dtd strict html//",
-        "-//o'reilly and associates//dtd html 2.0//",
-        "-//o'reilly and associates//dtd html extended 1.0//",
-        "-//o'reilly and associates//dtd html extended relaxed 1.0//",
-        "-//sq//dtd html 2.0 hotmetal + extensions//",
-        "-//softquad software//dtd hotmetal pro 6.0::19990601::extensions to html 4.0//",
-        "-//softquad//dtd hotmetal pro 4.0::19971010::extensions to html 4.0//",
-        "-//spyglass//dtd html 2.0 extended//",
-        "-//sun microsystems corp.//dtd hotjava html//",
-        "-//sun microsystems corp.//dtd hotjava strict html//",
-        "-//w3c//dtd html 3 1995-03-24//",
-        "-//w3c//dtd html 3.2 draft//",
-        "-//w3c//dtd html 3.2 final//",
-        "-//w3c//dtd html 3.2//",
-        "-//w3c//dtd html 3.2s draft//",
-        "-//w3c//dtd html 4.0 frameset//",
-        "-//w3c//dtd html 4.0 transitional//",
-        "-//w3c//dtd html experimental 19960712//",
-        "-//w3c//dtd html experimental 970421//",
-        "-//w3c//dtd w3 html//",
-        "-//w3o//dtd w3 html 3.0//",
-        "-//webtechs//dtd mozilla html 2.0//",
-        "-//webtechs//dtd mozilla html//",
+    "-//as//dtd html 3.0 aswedit 7.0//",
+    "-//advasoft ltd//dtd html 3.0 aswedit 7.0//",
+    "-//ietf//dtd html 2.0 level 1//",
+    "-//ietf//dtd html 2.0 level 2//",
+    "-//ietf//dtd html 2.0 strict level 1//",
+    "-//ietf//dtd html 2.0 strict level 2//",
+    "-//ietf//dtd html 2.0 strict//",
+    "-//ietf//dtd html 2.0//",
+    "-//ietf//dtd html 2.1e//",
+    "-//ietf//dtd html 3.0//",
+    "-//ietf//dtd html 3.2 final//",
+    "-//ietf//dtd html 3.2//",
+    "-//ietf//dtd html 3//",
+    "-//ietf//dtd html level 0//",
+    "-//ietf//dtd html level 1//",
+    "-//ietf//dtd html level 2//",
+    "-//ietf//dtd html level 3//",
+    "-//ietf//dtd html strict level 0//",
+    "-//ietf//dtd html strict level 1//",
+    "-//ietf//dtd html strict level 2//",
+    "-//ietf//dtd html strict level 3//",
+    "-//ietf//dtd html strict//",
+    "-//ietf//dtd html//",
+    "-//metrius//dtd metrius presentational//",
+    "-//microsoft//dtd internet explorer 2.0 html strict//",
+    "-//microsoft//dtd internet explorer 2.0 html//",
+    "-//microsoft//dtd internet explorer 2.0 tables//",
+    "-//microsoft//dtd internet explorer 3.0 html strict//",
+    "-//microsoft//dtd internet explorer 3.0 html//",
+    "-//microsoft//dtd internet explorer 3.0 tables//",
+    "-//netscape comm. corp.//dtd html//",
+    "-//netscape comm. corp.//dtd strict html//",
+    "-//o'reilly and associates//dtd html 2.0//",
+    "-//o'reilly and associates//dtd html extended 1.0//",
+    "-//o'reilly and associates//dtd html extended relaxed 1.0//",
+    "-//sq//dtd html 2.0 hotmetal + extensions//",
+    "-//softquad software//dtd hotmetal pro 6.0::19990601::extensions to html 4.0//",
+    "-//softquad//dtd hotmetal pro 4.0::19971010::extensions to html 4.0//",
+    "-//spyglass//dtd html 2.0 extended//",
+    "-//sun microsystems corp.//dtd hotjava html//",
+    "-//sun microsystems corp.//dtd hotjava strict html//",
+    "-//w3c//dtd html 3 1995-03-24//",
+    "-//w3c//dtd html 3.2 draft//",
+    "-//w3c//dtd html 3.2 final//",
+    "-//w3c//dtd html 3.2//",
+    "-//w3c//dtd html 3.2s draft//",
+    "-//w3c//dtd html 4.0 frameset//",
+    "-//w3c//dtd html 4.0 transitional//",
+    "-//w3c//dtd html experimental 19960712//",
+    "-//w3c//dtd html experimental 970421//",
+    "-//w3c//dtd w3 html//",
+    "-//w3o//dtd w3 html 3.0//",
+    "-//webtechs//dtd mozilla html 2.0//",
+    "-//webtechs//dtd mozilla html//",
 ];
 
 /// Determine quirks mode from DOCTYPE per WHATWG §13.2.6.4.1.
