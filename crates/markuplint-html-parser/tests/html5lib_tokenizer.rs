@@ -8,6 +8,7 @@ use std::fs;
 use std::path::Path;
 
 /// Unescape `\uXXXX` sequences in a string (for doubleEscaped tests).
+/// Handles surrogate pairs: `\uD800\uDC00` → U+10000.
 fn unescape_unicode(s: &str) -> String {
     let mut result = String::with_capacity(s.len());
     let mut chars = s.chars().peekable();
@@ -17,6 +18,32 @@ fn unescape_unicode(s: &str) -> String {
             let hex: String = chars.by_ref().take(4).collect();
             if hex.len() == 4 {
                 if let Ok(cp) = u32::from_str_radix(&hex, 16) {
+                    // Handle surrogate pairs (U+D800..U+DBFF followed by \uDC00..U+DFFF).
+                    if (0xD800..=0xDBFF).contains(&cp) {
+                        // Check for low surrogate.
+                        let mut peek_chars = chars.clone();
+                        if peek_chars.next() == Some('\\') && peek_chars.next() == Some('u') {
+                            let hex2: String = peek_chars.by_ref().take(4).collect();
+                            if hex2.len() == 4 {
+                                if let Ok(cp2) = u32::from_str_radix(&hex2, 16) {
+                                    if (0xDC00..=0xDFFF).contains(&cp2) {
+                                        let combined = 0x10000 + ((cp - 0xD800) << 10) + (cp2 - 0xDC00);
+                                        if let Some(c) = char::from_u32(combined) {
+                                            // Advance past the low surrogate.
+                                            chars.next(); // '\'
+                                            chars.next(); // 'u'
+                                            for _ in 0..4 { chars.next(); }
+                                            result.push(c);
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Lone high surrogate: replace with U+FFFD.
+                        result.push('\u{FFFD}');
+                        continue;
+                    }
                     if let Some(c) = char::from_u32(cp) {
                         result.push(c);
                         continue;
@@ -302,14 +329,17 @@ fn html5lib_tokenizer_test_suite() {
     }
 
     let executed = total_passed + total_failed;
-    let total = executed + total_skipped;
+    let _total = executed + total_skipped;
     let pass_rate = if executed > 0 {
         (total_passed as f64 / executed as f64) * 100.0
     } else {
         0.0
     };
+    let file_skip_count = skip_files.len();
+    let total_file_count = files.len() + file_skip_count;
     eprintln!(
-        "\nhtml5lib tokenizer: {total_passed}/{executed} executed ({pass_rate:.1}%), {total_skipped} skipped, {total} total"
+        "\nhtml5lib tokenizer: {total_passed}/{executed} executed ({pass_rate:.1}%), \
+         {total_skipped} skipped, {file_skip_count}/{total_file_count} files skipped"
     );
 
     if !all_failure_samples.is_empty() {

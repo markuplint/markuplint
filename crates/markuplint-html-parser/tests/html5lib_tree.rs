@@ -24,9 +24,12 @@ struct TreeTest {
 
 fn parse_dat_file(content: &str) -> Vec<TreeTest> {
     let mut tests = Vec::new();
-    let mut sections = content.split("\n#data\n");
+    // Normalize: ensure content starts with \n so the split on \n#data\n
+    // captures the very first test case (files begin with #data\n directly).
+    let normalized = format!("\n{content}");
+    let mut sections = normalized.split("\n#data\n");
 
-    // Skip content before first #data.
+    // Skip empty segment before first #data.
     sections.next();
 
     for section in sections {
@@ -310,6 +313,8 @@ fn html5lib_tree_construction_test_suite() {
     let mut total_file_skipped = 0;
     let mut all_samples = Vec::new();
 
+    // Read top-level .dat files only. The scripted/ subdirectory (3 files)
+    // requires JavaScript execution and is not applicable to this parser.
     let all_files: Vec<_> = fs::read_dir(&test_dir)
         .expect("Failed to read test directory")
         .filter_map(Result::ok)
@@ -407,11 +412,11 @@ fn html5lib_tree_smoke_test() {
     for s in &result.failure_samples {
         eprintln!("{s}");
     }
-    // Strict: tests1.dat has 111 tests, 0 fragments. All must pass.
+    // Strict: tests1.dat has 112 tests, 0 fragments. All must pass.
     assert_eq!(result.failed, 0, "tests1.dat: {} test(s) failed", result.failed);
     assert_eq!(
-        result.passed, 111,
-        "tests1.dat: expected 111 passed, got {}",
+        result.passed, 112,
+        "tests1.dat: expected 112 passed, got {}",
         result.passed
     );
     assert_eq!(
