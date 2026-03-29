@@ -16,6 +16,7 @@ use serde_json::Value;
 
 use crate::rule::{Rule, RuleConfig};
 use crate::rules::attr_duplication::AttrDuplication;
+use crate::rules::permitted_contents::PermittedContents;
 use crate::violation::{Severity, Violation};
 
 /// Lint configuration for enabled rules.
@@ -122,7 +123,7 @@ fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
 
 /// Get all registered rules.
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
-    vec![Box::new(AttrDuplication)]
+    vec![Box::new(AttrDuplication), Box::new(PermittedContents)]
 }
 
 #[cfg(test)]

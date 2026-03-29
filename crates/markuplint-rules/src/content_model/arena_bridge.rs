@@ -177,6 +177,7 @@ fn node_base_mut(node: &mut DomNode) -> Option<&mut NodeBase> {
         DomNode::Doctype(d) => Some(&mut d.base),
         DomNode::PSBlock(d) => Some(&mut d.base),
         DomNode::Invalid(d) => Some(&mut d.base),
+        DomNode::EndTag(d) => Some(&mut d.base),
         DomNode::Document(_) => None,
     }
 }

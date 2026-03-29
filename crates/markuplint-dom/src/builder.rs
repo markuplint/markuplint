@@ -7,7 +7,8 @@ use markuplint_core::mlast::{self, MLASTChildNode, MLASTDocument, MLASTNode, Nam
 
 use crate::arena::{DomArena, NodeId};
 use crate::node::{
-    CommentData, DoctypeData, DocumentData, DomNode, ElementData, InvalidData, NodeBase, PSBlockData, TextData,
+    CommentData, DoctypeData, DocumentData, DomNode, ElementData, EndTagData, InvalidData, NodeBase, PSBlockData,
+    TextData,
 };
 
 /// Build a `DomArena` from an `MLASTDocument`.
@@ -149,7 +150,7 @@ fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
 
 fn convert_end_tag(et: &mlast::MLASTElementCloseTag, arena: &mut DomArena) -> NodeId {
     let id = arena.len();
-    let node = DomNode::Text(TextData {
+    let node = DomNode::EndTag(EndTagData {
         base: make_base(
             id,
             &et.uuid,
@@ -331,6 +332,7 @@ fn resolve_parents_and_siblings(arena: &mut DomArena, child_ids: &[NodeId], pare
                 DomNode::Doctype(d) => Some(&mut d.base),
                 DomNode::PSBlock(d) => Some(&mut d.base),
                 DomNode::Invalid(d) => Some(&mut d.base),
+                DomNode::EndTag(d) => Some(&mut d.base),
             }
         {
             base.parent = Some(parent_id);

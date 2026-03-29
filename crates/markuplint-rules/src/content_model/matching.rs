@@ -548,7 +548,7 @@ fn match_element_tag(
     } else if needs_full_selector(query) {
         full_selector_match(node, query, spec, cond)
     } else {
-        markuplint_types::spec::content_model::matches_model_ref(spec, &node.node_name, &cond.resolved_selector)
+        matches_model_ref_with_attrs(spec, node, &cond.resolved_selector)
     };
 
     if matched {
@@ -572,6 +572,78 @@ fn match_element_tag(
             hint: Hints::default(),
         }
     }
+}
+
+/// Like `matches_model_ref` but also checks attribute selectors.
+///
+/// When a category entry has an attribute selector (e.g., `meta[itemprop]`),
+/// the child must have that attribute to match. Without this, `meta` without
+/// `itemprop` would incorrectly match `#flow` which includes `meta[itemprop]`.
+fn matches_model_ref_with_attrs(spec: &MLMLSpec, child: &ChildNodeInfo, model_ref: &str) -> bool {
+    use markuplint_types::spec::content_model;
+
+    // Exact tag match (no category lookup needed)
+    if model_ref.eq_ignore_ascii_case(&child.node_name) {
+        return true;
+    }
+
+    // Namespace prefix: "svg|svg" → "svg"
+    if let Some((_ns, local)) = model_ref.split_once('|')
+        && local.eq_ignore_ascii_case(&child.node_name)
+    {
+        return true;
+    }
+
+    // Category reference: `:model(category)` or `#category`
+    let category = if let Some(rest) = model_ref.strip_prefix(":model(") {
+        rest.find(')').map(|pos| format!("#{}", &rest[..pos]))
+    } else if model_ref.starts_with('#') {
+        Some(model_ref.split(':').next().unwrap_or(model_ref).to_string())
+    } else {
+        None
+    };
+
+    if let Some(cat) = category
+        && let Some(tags) = markuplint_types::spec::lookup::get_content_model_tags(spec, &cat)
+    {
+        return tags.iter().any(|t| {
+            // Simple attribute selector: "meta[itemprop]", "a[href]"
+            // Pattern: tag_name followed by ONE [attr] without pseudo-classes
+            if let Some(bracket_pos) = t.find('[') {
+                let tag_part = &t[..bracket_pos];
+                // Skip complex selectors like "input:not([type='hidden' i])"
+                // — these contain pseudo-classes before `[` and need
+                // full selector matching, not simple attribute checks.
+                if tag_part.contains(':') {
+                    return content_model::matches_model_ref(spec, &child.node_name, t);
+                }
+                // Handle namespace prefix: "svg|rect[...]" → "rect"
+                let tag_name = tag_part.split('|').next_back().unwrap_or(tag_part);
+                if !tag_name.eq_ignore_ascii_case(&child.node_name) {
+                    return false;
+                }
+                // Find balanced `]` for the attribute selector
+                let close = t[bracket_pos..].find(']').map(|p| bracket_pos + p);
+                let Some(close_pos) = close else {
+                    return false;
+                };
+                let attr_part = &t[bracket_pos + 1..close_pos];
+                let required_attr = attr_part
+                    .split('=')
+                    .next()
+                    .unwrap_or(attr_part)
+                    .trim()
+                    .to_ascii_lowercase();
+                child.attribute_names.iter().any(|a| a == &required_attr)
+            } else {
+                // No attribute selector — simple tag match
+                content_model::matches_model_ref(spec, &child.node_name, t)
+            }
+        });
+    }
+
+    // Fall back to simple match
+    content_model::matches_model_ref(spec, &child.node_name, model_ref)
 }
 
 /// Check if a query requires the full CSS selector engine (`:not()`, `:has()`, `:is()`).
@@ -641,9 +713,25 @@ pub(crate) fn expand_model_refs(query: &str, spec: &MLMLSpec) -> String {
                     // Category lists include "#text" and "#custom" pseudo-entries;
                     // these are handled separately by opt_condition's has_text/has_custom flags.
                     .filter(|t| !t.starts_with('#'))
-                    // Category entries may include attribute selectors (e.g., "meta[itemprop]");
-                    // strip these since :is() expansion only needs tag names.
-                    .map(|t| t.split('[').next().unwrap_or(t))
+                    // Extract the tag name portion only: strip attribute selectors
+                    // and pseudo-classes. Handle cases like:
+                    // - "meta[itemprop]" → "meta"
+                    // - "input:not([type='hidden' i])" → "input"
+                    // - "svg|svg" → "svg" (namespace prefix)
+                    .map(|t| {
+                        // First handle namespace prefix
+                        let t = t.split('|').next_back().unwrap_or(t);
+                        // Strip from first '[' or ':' — whichever comes first
+                        let bracket_pos = t.find('[');
+                        let colon_pos = t.find(':');
+                        match (bracket_pos, colon_pos) {
+                            (Some(b), Some(c)) => &t[..b.min(c)],
+                            (Some(b), None) => &t[..b],
+                            (None, Some(c)) => &t[..c],
+                            (None, None) => t,
+                        }
+                    })
+                    .filter(|t| !t.is_empty())
                     .collect();
                 if tag_list.is_empty() {
                     // Category resolved but contained only #text/#custom — no concrete tags.

@@ -42,6 +42,13 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
         return true;
     }
 
+    // Handle namespace prefix in model_ref: "svg|svg" → match "svg"
+    if let Some((_ns, local)) = model_ref.split_once('|')
+        && local.eq_ignore_ascii_case(child_name)
+    {
+        return true;
+    }
+
     // Category reference: `:model(category)` or `#category`
     // `:model(phrasing):not(ruby)` → find first `)` to extract "phrasing"
     let category = if let Some(rest) = model_ref.strip_prefix(":model(") {
@@ -57,10 +64,22 @@ pub fn matches_model_ref(spec: &MLMLSpec, child_name: &str, model_ref: &str) -> 
         && let Some(tags) = lookup::get_content_model_tags(spec, &cat)
     {
         return tags.iter().any(|t| {
+            // Direct match
             t.eq_ignore_ascii_case(child_name)
+                // Attribute selector prefix: "meta[itemprop]" matches "meta"
                 || t.split('[')
                     .next()
                     .is_some_and(|prefix| prefix.eq_ignore_ascii_case(child_name))
+                // Namespace prefix: "svg|svg" matches "svg"
+                || t.split('|')
+                    .nth(1)
+                    .is_some_and(|local| {
+                        local.eq_ignore_ascii_case(child_name)
+                            || local
+                                .split('[')
+                                .next()
+                                .is_some_and(|lp| lp.eq_ignore_ascii_case(child_name))
+                    })
         });
     }
 

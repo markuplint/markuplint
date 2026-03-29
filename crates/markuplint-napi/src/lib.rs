@@ -222,6 +222,7 @@ fn node_type_str(node: &DomNode) -> &'static str {
         DomNode::Doctype(_) => "doctype",
         DomNode::PSBlock(_) => "psblock",
         DomNode::Invalid(_) => "invalid",
+        DomNode::EndTag(_) => "endtag",
     }
 }
 

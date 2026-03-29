@@ -27,6 +27,10 @@ pub enum ChildNodeKind {
 ///
 /// Decoupled from the DOM arena so the matching engine can be tested
 /// without building a full DOM tree.
+///
+/// `line` and `col` default to `0` when position is unknown (e.g., nodes
+/// created by test helpers). Callers must check for `0` before using
+/// these values for violation reporting.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ChildNodeInfo {
     /// The kind of node (element type, text, or preprocessor block).
@@ -36,9 +40,19 @@ pub struct ChildNodeInfo {
     pub node_name: String,
     /// Raw source text (for debug/display purposes).
     pub raw: String,
+    /// 1-based line number (0 = unknown).
+    pub line: u32,
+    /// 1-based column number (0 = unknown).
+    pub col: u32,
     /// Child nodes for `:has()` selector support.
     /// Aligns with TS `childNodes`.
     pub child_nodes: Vec<ChildNodeInfo>,
+    /// Attribute names present on this element (lowercase).
+    /// Used for attribute-qualified content model matching (e.g., `meta[itemprop]`).
+    pub attribute_names: Vec<String>,
+    /// If this node was resolved from a transparent element, the transparent element's tag name.
+    /// Used to generate "through the transparent model" messages.
+    pub transparent_ancestor: Option<String>,
 }
 
 impl ChildNodeInfo {
@@ -48,7 +62,11 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::HtmlElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
@@ -58,7 +76,11 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::HtmlElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes,
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
@@ -68,7 +90,11 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::WebComponent,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
@@ -78,7 +104,11 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::AuthoredElement,
             node_name: node_name.to_ascii_lowercase(),
             raw: format!("<{node_name}>"),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
@@ -96,7 +126,11 @@ impl ChildNodeInfo {
             },
             node_name: String::new(),
             raw: raw.to_string(),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
@@ -106,7 +140,11 @@ impl ChildNodeInfo {
             kind: ChildNodeKind::PreprocessorBlock,
             node_name: String::new(),
             raw: raw.to_string(),
+            line: 0,
+            col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
+            transparent_ancestor: None,
         }
     }
 
