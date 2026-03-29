@@ -473,6 +473,7 @@ version = "0.0.0"
 dependencies = [
  "markuplint-core",
  "markuplint-dom",
+ "markuplint-html-parser",
  "markuplint-types",
  "napi",
  "napi-build",

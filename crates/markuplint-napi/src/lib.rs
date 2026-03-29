@@ -1,12 +1,13 @@
 //! N-API bridge for markuplint Rust modules.
 //!
-//! Exposes the Rust MLDOM and type validators to Node.js via napi-rs.
+//! Exposes the Rust MLDOM, HTML parser, and type validators to Node.js via napi-rs.
 
 #![allow(clippy::cast_possible_truncation)]
 
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::builder;
+use markuplint_dom::html_builder;
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::css::value_match;
 use markuplint_types::primitive;
@@ -35,6 +36,23 @@ impl NapiDom {
         let arena = builder::build_from_json(&mlast_json)
             .map_err(|e| Error::from_reason(format!("Failed to parse MLAST JSON: {e}")))?;
         Ok(Self { arena })
+    }
+
+    /// Build a DOM by parsing an HTML string directly (no MLAST JSON).
+    ///
+    /// Uses the Rust WHATWG-conformant HTML parser. Automatically detects
+    /// whether the input is a full document or a fragment.
+    #[napi(factory)]
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn from_html(html: String) -> Self {
+        let is_fragment = markuplint_html_parser::is_document_fragment(&html);
+        let parser_arena = if is_fragment {
+            markuplint_html_parser::parse_fragment(&html)
+        } else {
+            markuplint_html_parser::parse_document(&html)
+        };
+        let arena = html_builder::build_from_html_arena(&html, &parser_arena, is_fragment);
+        Self { arena }
     }
 
     /// Total number of nodes in the DOM.

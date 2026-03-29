@@ -15,6 +15,13 @@ export declare class NapiDom {
    * Returns an error if the JSON cannot be parsed as a valid MLAST document.
    */
   constructor(mlastJson: string)
+  /**
+   * Build a DOM by parsing an HTML string directly (no MLAST JSON).
+   *
+   * Uses the Rust WHATWG-conformant HTML parser. Automatically detects
+   * whether the input is a full document or a fragment.
+   */
+  static fromHtml(html: string): NapiDom
   /** Total number of nodes in the DOM. */
   get nodeCount(): number
   /** Get a node by its UUID string. Returns null if not found. */
