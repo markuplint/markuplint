@@ -65,6 +65,8 @@ pub struct TreeBuilder<'a> {
     quirks_mode: bool,
     /// The fragment context tag name (for distinguishing "html" from "head" etc.).
     fragment_context: Option<String>,
+    /// Tracked `<selectedcontent>` element for customizable `<select>`.
+    selectedcontent_element: Option<NodeId>,
 }
 
 impl<'a> TreeBuilder<'a> {
@@ -101,6 +103,7 @@ impl<'a> TreeBuilder<'a> {
             skip_next_newline: false,
             quirks_mode: false,
             fragment_context: None,
+            selectedcontent_element: None,
         };
         if is_fragment {
             let ctx = context.unwrap_or("body");
@@ -632,6 +635,62 @@ impl<'a> TreeBuilder<'a> {
     pub(super) fn close_p_element(&mut self) {
         self.generate_implied_end_tags(Some("p"));
         self.pop_until("p");
+    }
+
+    /// Clone the selected `<option>`'s children into `<selectedcontent>`.
+    /// Called when a `<select>` element is closed or at EOF in `InSelect`.
+    fn clone_selected_into_selectedcontent(&mut self) {
+        let Some(sc_id) = self.selectedcontent_element else {
+            return;
+        };
+        // Find the select element on the stack.
+        let mut select_id = None;
+        for id in self.open_elements.iter_top_to_bottom() {
+            if self.arena.get(*id).is_html_element("select") {
+                select_id = Some(*id);
+                break;
+            }
+        }
+        let Some(select_id) = select_id else {
+            return;
+        };
+        // Walk select's descendants to find option elements.
+        let selected = self.find_selected_option(select_id);
+        if let Some(option_id) = selected {
+            self.arena.clone_children_into(option_id, sc_id);
+        }
+        self.selectedcontent_element = None;
+    }
+
+    /// Find the selected option inside a select element.
+    /// Returns the option with `selected` attribute, or the first option.
+    fn find_selected_option(&self, select_id: NodeId) -> Option<NodeId> {
+        let mut first_option = None;
+        let mut selected_option = None;
+        self.walk_for_options(select_id, &mut first_option, &mut selected_option);
+        selected_option.or(first_option)
+    }
+
+    fn walk_for_options(
+        &self,
+        node_id: NodeId,
+        first_option: &mut Option<NodeId>,
+        selected_option: &mut Option<NodeId>,
+    ) {
+        let children: Vec<NodeId> = self.arena.get(node_id).children.clone();
+        for child_id in children {
+            let child = self.arena.get(child_id);
+            if child.is_html_element("option") {
+                if first_option.is_none() {
+                    *first_option = Some(child_id);
+                }
+                if child.attribute_value("selected").is_some() {
+                    *selected_option = Some(child_id);
+                }
+            }
+            // Recurse into non-option children (e.g. optgroup).
+            self.walk_for_options(child_id, first_option, selected_option);
+        }
     }
 
     pub(super) fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
@@ -1840,6 +1899,10 @@ impl<'a> TreeBuilder<'a> {
                         self.reconstruct_active_formatting_elements();
                         self.insert_html_element(tag_name, attributes, *span);
                     }
+                    "selectedcontent" => {
+                        let id = self.insert_html_element(tag_name, attributes, *span);
+                        self.selectedcontent_element = Some(id);
+                    }
                     "datalist" => {
                         self.insert_html_element(tag_name, attributes, *span);
                     }
@@ -1895,6 +1958,7 @@ impl<'a> TreeBuilder<'a> {
                         }
                     }
                     "select" => {
+                        self.clone_selected_into_selectedcontent();
                         self.pop_until("select");
                         self.reset_insertion_mode();
                     }
@@ -1915,6 +1979,7 @@ impl<'a> TreeBuilder<'a> {
                 }
             }
             Token::Eof => {
+                self.clone_selected_into_selectedcontent();
                 self.process_in_body(token);
             }
         }

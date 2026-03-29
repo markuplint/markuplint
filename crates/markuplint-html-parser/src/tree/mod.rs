@@ -171,6 +171,42 @@ impl Arena {
         self.nodes[parent_id].children.last().copied()
     }
 
+    /// Deep-clone all children of `source_id` and append them to `target_id`.
+    pub fn clone_children_into(&mut self, source_id: NodeId, target_id: NodeId) {
+        let child_ids: Vec<NodeId> = self.nodes[source_id].children.clone();
+        for child_id in child_ids {
+            let cloned = self.clone_node_deep(child_id);
+            self.append_child(target_id, cloned);
+        }
+    }
+
+    /// Deep-clone a single node and all its descendants.
+    fn clone_node_deep(&mut self, node_id: NodeId) -> NodeId {
+        let node = &self.nodes[node_id];
+        let kind = node.kind.clone();
+        let span = node.span;
+        let end_tag_span = node.end_tag_span;
+        let is_implicit = node.is_implicit;
+        let children: Vec<NodeId> = node.children.clone();
+
+        let new_id = self.nodes.len();
+        self.nodes.push(TreeNode {
+            kind,
+            parent: None,
+            children: Vec::new(),
+            span,
+            end_tag_span,
+            is_implicit,
+        });
+
+        for child_id in children {
+            let cloned_child = self.clone_node_deep(child_id);
+            self.append_child(new_id, cloned_child);
+        }
+
+        new_id
+    }
+
     /// Iterator over all nodes in the arena.
     pub fn iter(&self) -> impl Iterator<Item = (NodeId, &TreeNode)> {
         self.nodes.iter().enumerate()

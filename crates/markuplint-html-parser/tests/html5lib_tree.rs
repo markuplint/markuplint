@@ -237,28 +237,14 @@ const SKIP_TESTS: &[(&str, &str, &str)] = &[
         "<div><svg><path><foreignObject><math></div>a",
         "spec/test divergence: foreign content end tag walk vs integration point nesting",
     ),
-    // <selectedcontent> clones selected <option> content into a slot.
-    // This is a new spec addition (customizable <select>) not yet widely
-    // implemented. Requires a dedicated cloning mechanism in the tree builder.
-    (
-        "webkit02.dat",
-        "<select><button><selectedcontent></button><option>X",
-        "unimplemented: <selectedcontent> option content cloning (customizable select)",
-    ),
+    // Customizable <select>: end tags inside <option> need adoption agency
+    // processing (InBody-like). Current InSelect ignores non-matching end tags.
+    // Full customizable-select InBody delegation for option content is not yet
+    // implemented; requires significant changes to InSelect end-tag handling.
     (
         "webkit02.dat",
         "<select><button><selectedcontent></button><option>x<i>",
-        "unimplemented: <selectedcontent> option content cloning (customizable select)",
-    ),
-    (
-        "webkit02.dat",
-        "<select><button><selectedcontent></button><option>X<option>Y",
-        "unimplemented: <selectedcontent> option content cloning (customizable select)",
-    ),
-    (
-        "webkit02.dat",
-        "<select><button><selectedcontent></button><option>X<option s",
-        "unimplemented: <selectedcontent> option content cloning (customizable select)",
+        "unimplemented: adoption agency inside <option> in customizable select",
     ),
 ];
 

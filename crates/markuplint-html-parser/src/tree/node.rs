@@ -43,7 +43,7 @@ pub struct TreeNode {
 }
 
 /// The kind of a tree node.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NodeKind {
     Document,
     Doctype {
