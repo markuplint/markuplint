@@ -1,0 +1,17 @@
+[package]
+name = "markuplint-rules"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+markuplint-core = { path = "../markuplint-core" }
+markuplint-dom = { path = "../markuplint-dom" }
+markuplint-selector = { path = "../markuplint-selector" }
+markuplint-types = { path = "../markuplint-types" }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

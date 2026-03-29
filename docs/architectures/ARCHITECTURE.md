@@ -479,6 +479,50 @@ Process packages in the following tier order. Within the same tier, order does n
 - **Single-package changes**: Skip ordering -- just commit the affected package
 - **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
 
+## Rust Native Layer
+
+Rust implementations of performance-critical components are available under `crates/`. These are part of the [Rust rewrite initiative](https://github.com/markuplint/markuplint/issues/3178).
+
+### Crate Structure
+
+```
+crates/
+├── markuplint-core/      MLAST serde types (JSON → Rust structs)
+├── markuplint-dom/       Arena-based DOM (builder + traversal)
+├── markuplint-napi/      napi-rs bridge → @markuplint/core
+├── markuplint-rules/     Content model matching (depends on types + selector)
+├── markuplint-selector/  CSS selector parser + matcher
+└── markuplint-types/     Type validation and spec data
+
+Dependency graph (→ = depends on):
+  markuplint-rules → markuplint-selector → markuplint-types
+                   → markuplint-dom      → markuplint-core
+```
+
+### DOM Layer Data Flow
+
+```
+TS html-parser → MLAST JSON → markuplint-core (serde) → markuplint-dom (arena) → markuplint-napi → JS
+```
+
+### Type Validation Layer Data Flow
+
+```
+CSS syntax string → markuplint-types (parse → AST) + CSS value string (tokenize → Token[]) → matcher → MatchResult
+```
+
+`markuplint-types` is the Rust counterpart of `@markuplint/types`. It includes CSS value validation (`calc()` type checking, `var()` validation), spec data loading/lookup, ARIA role resolution, and content model pattern matching.
+
+### Relationship to TypeScript Packages
+
+The Rust crates are parallel implementations of TypeScript modules. They currently operate independently and will be exposed via napi-rs to replace the TypeScript implementations incrementally:
+
+- `markuplint-core` / `markuplint-dom` → replaces MLDOM in `@markuplint/ml-core`
+- `markuplint-types` → replaces `@markuplint/types` (CSS validation, spec data)
+- `markuplint-rules` → replaces `@markuplint/rules/permitted-contents` (content model matching)
+
+The TypeScript packages (`ml-core`, `rules`, parsers, etc.) remain unchanged during migration. See `crates/README.md` for build instructions and detailed architecture.
+
 ## Conclusion
 
 The current architecture represents a mature, well-optimized design that effectively balances:

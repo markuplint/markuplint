@@ -248,6 +248,17 @@ flowchart LR
 
 また、`@markuplint/rules` は存在しない属性が検出された際に類似する属性名を提案するため `getCandidate()` も呼び出します。属性値の候補提示と同じレーベンシュタイン距離ベースの類似度閾値（50%以上）が属性名の候補提示にも適用されます。
 
+## Rust 実装
+
+[Rust 書き換えイニシアチブ](https://github.com/markuplint/markuplint/issues/3178) の一環として、本パッケージの Rust 版が `crates/markuplint-types/` に存在します。CSS 値バリデーションパイプライン（現在は `css-syntax.ts` + `css-tree` が担当）を、追加機能付きで再実装しています:
+
+- CSS Value Definition Syntax パーサー（Phase 1B-1）
+- CSS 値マッチングエンジン — `calc()` 型チェック・`var()` バリデーション付き（Phase 1B-2）
+
+Rust 実装は napi-rs 経由で公開され（Phase 1B-4）、本 TypeScript パッケージの `cssSyntaxMatch()` パスを置き換えます。それ以外の部分（キーワード解決、list/enum/number チェッカー、WHATWG/RFC/W3C バリデーター）は TypeScript に残ります。
+
+アーキテクチャの詳細と設計判断は `crates/markuplint-types/README.md` を参照。
+
 ## ドキュメントマップ
 
 - [型システム](docs/type-system.ja.md) -- 型共用体、Result型、Defsレジストリ、スキーマ生成

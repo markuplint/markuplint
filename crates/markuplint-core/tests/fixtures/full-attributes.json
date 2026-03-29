@@ -1,0 +1,292 @@
+{
+	"raw": "<input type=\"text\" disabled required=\"required\" data-value=unquoted>",
+	"nodeList": [
+		{
+			"uuid": "98d644c3",
+			"raw": "<input type=\"text\" disabled required=\"required\" data-value=unquoted>",
+			"offset": 0,
+			"line": 1,
+			"col": 1,
+			"depth": 0,
+			"nodeName": "input",
+			"parentNodeUuid": null,
+			"type": "starttag",
+			"elementType": "html",
+			"namespace": "http://www.w3.org/1999/xhtml",
+			"attributes": [
+				{
+					"uuid": "5b2aa3cb",
+					"raw": "type=\"text\"",
+					"offset": 7,
+					"line": 1,
+					"col": 8,
+					"type": "attr",
+					"nodeName": "type",
+					"spacesBeforeName": {
+						"uuid": "35c76d70",
+						"raw": " ",
+						"offset": 6,
+						"line": 1,
+						"col": 7
+					},
+					"name": {
+						"uuid": "d7fc16bf",
+						"raw": "type",
+						"offset": 7,
+						"line": 1,
+						"col": 8
+					},
+					"spacesBeforeEqual": {
+						"uuid": "245e0084",
+						"raw": "",
+						"offset": 11,
+						"line": 1,
+						"col": 12
+					},
+					"equal": {
+						"uuid": "4e59f9cd",
+						"raw": "=",
+						"offset": 11,
+						"line": 1,
+						"col": 12
+					},
+					"spacesAfterEqual": {
+						"uuid": "eacc72e9",
+						"raw": "",
+						"offset": 12,
+						"line": 1,
+						"col": 13
+					},
+					"startQuote": {
+						"uuid": "4e5142b7",
+						"raw": "\"",
+						"offset": 12,
+						"line": 1,
+						"col": 13
+					},
+					"value": {
+						"uuid": "9aaa2624",
+						"raw": "text",
+						"offset": 13,
+						"line": 1,
+						"col": 14
+					},
+					"endQuote": {
+						"uuid": "6c10bbfe",
+						"raw": "\"",
+						"offset": 17,
+						"line": 1,
+						"col": 18
+					},
+					"isDuplicatable": false
+				},
+				{
+					"uuid": "d5461eae",
+					"raw": "disabled",
+					"offset": 19,
+					"line": 1,
+					"col": 20,
+					"type": "attr",
+					"nodeName": "disabled",
+					"spacesBeforeName": {
+						"uuid": "d4bbbd4e",
+						"raw": " ",
+						"offset": 18,
+						"line": 1,
+						"col": 19
+					},
+					"name": {
+						"uuid": "c5226f5b",
+						"raw": "disabled",
+						"offset": 19,
+						"line": 1,
+						"col": 20
+					},
+					"spacesBeforeEqual": {
+						"uuid": "9d5c8dba",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"equal": {
+						"uuid": "75dce695",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"spacesAfterEqual": {
+						"uuid": "d7a8dbb0",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"startQuote": {
+						"uuid": "2f69c8b1",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"value": {
+						"uuid": "f9bed61d",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"endQuote": {
+						"uuid": "32d1129b",
+						"raw": "",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"isDuplicatable": false
+				},
+				{
+					"uuid": "ad8df294",
+					"raw": "required=\"required\"",
+					"offset": 28,
+					"line": 1,
+					"col": 29,
+					"type": "attr",
+					"nodeName": "required",
+					"spacesBeforeName": {
+						"uuid": "16928c57",
+						"raw": " ",
+						"offset": 27,
+						"line": 1,
+						"col": 28
+					},
+					"name": {
+						"uuid": "38162417",
+						"raw": "required",
+						"offset": 28,
+						"line": 1,
+						"col": 29
+					},
+					"spacesBeforeEqual": {
+						"uuid": "17a9196a",
+						"raw": "",
+						"offset": 36,
+						"line": 1,
+						"col": 37
+					},
+					"equal": {
+						"uuid": "a8bdfdb6",
+						"raw": "=",
+						"offset": 36,
+						"line": 1,
+						"col": 37
+					},
+					"spacesAfterEqual": {
+						"uuid": "07336f29",
+						"raw": "",
+						"offset": 37,
+						"line": 1,
+						"col": 38
+					},
+					"startQuote": {
+						"uuid": "d77f350a",
+						"raw": "\"",
+						"offset": 37,
+						"line": 1,
+						"col": 38
+					},
+					"value": {
+						"uuid": "54baab65",
+						"raw": "required",
+						"offset": 38,
+						"line": 1,
+						"col": 39
+					},
+					"endQuote": {
+						"uuid": "156c4e1a",
+						"raw": "\"",
+						"offset": 46,
+						"line": 1,
+						"col": 47
+					},
+					"isDuplicatable": false
+				},
+				{
+					"uuid": "feadf57e",
+					"raw": "data-value=unquoted",
+					"offset": 48,
+					"line": 1,
+					"col": 49,
+					"type": "attr",
+					"nodeName": "data-value",
+					"spacesBeforeName": {
+						"uuid": "7e2a050c",
+						"raw": " ",
+						"offset": 47,
+						"line": 1,
+						"col": 48
+					},
+					"name": {
+						"uuid": "5cac8c70",
+						"raw": "data-value",
+						"offset": 48,
+						"line": 1,
+						"col": 49
+					},
+					"spacesBeforeEqual": {
+						"uuid": "b84af507",
+						"raw": "",
+						"offset": 58,
+						"line": 1,
+						"col": 59
+					},
+					"equal": {
+						"uuid": "16309cce",
+						"raw": "=",
+						"offset": 58,
+						"line": 1,
+						"col": 59
+					},
+					"spacesAfterEqual": {
+						"uuid": "b0efacc0",
+						"raw": "",
+						"offset": 59,
+						"line": 1,
+						"col": 60
+					},
+					"startQuote": {
+						"uuid": "64e0116e",
+						"raw": "",
+						"offset": 59,
+						"line": 1,
+						"col": 60
+					},
+					"value": {
+						"uuid": "d6c9dbb3",
+						"raw": "unquoted",
+						"offset": 59,
+						"line": 1,
+						"col": 60
+					},
+					"endQuote": {
+						"uuid": "107895e8",
+						"raw": "",
+						"offset": 67,
+						"line": 1,
+						"col": 68
+					},
+					"isDuplicatable": false
+				}
+			],
+			"childNodes": [],
+			"pairNodeUuid": null,
+			"tagOpenChar": "<",
+			"tagCloseChar": ">",
+			"blockBehavior": null,
+			"isGhost": false,
+			"isFragment": false
+		}
+	],
+	"isFragment": true
+}

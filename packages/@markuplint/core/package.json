@@ -1,0 +1,15 @@
+{
+	"name": "@markuplint/core",
+	"version": "0.0.0",
+	"private": true,
+	"napi": {
+		"binaryName": "markuplint-napi"
+	},
+	"scripts": {
+		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform",
+		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform"
+	},
+	"devDependencies": {
+		"@napi-rs/cli": "^3.0.0"
+	}
+}

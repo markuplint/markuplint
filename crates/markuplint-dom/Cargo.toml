@@ -1,0 +1,22 @@
+[package]
+name = "markuplint-dom"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+markuplint-core = { path = "../markuplint-core" }
+markuplint-html-parser = { path = "../markuplint-html-parser", optional = true }
+
+[dev-dependencies]
+insta = "1"
+serde_json = { workspace = true }
+
+[features]
+html-parser = ["dep:markuplint-html-parser"]
+
+[lints]
+workspace = true

@@ -94,6 +94,14 @@ Worktree operations use [`git-wt`](https://github.com/k1LoW/git-wt) (`git wt`). 
 
 Commands such as `/pr`, `/release`, `/issue`, and `/sponsors` require `gh` (GitHub CLI). If `gh` is not installed, install it following [the official instructions](https://github.com/cli/cli#installation) and authenticate with `gh auth login`.
 
+#### Git submodules
+
+The `html5lib-tests` conformance suite is included as a git submodule under `crates/markuplint-html-parser/tests/html5lib-tests/`. After cloning or creating a worktree, initialize it:
+
+```bash
+git submodule update --init --recursive
+```
+
 #### git-wt
 
 If `git wt` is not installed, install and configure it:
