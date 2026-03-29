@@ -1251,6 +1251,19 @@ mod tests {
         }
 
         #[test]
+        fn expand_model_refs_interactive_preserves_attr_selectors() {
+            let spec = html_spec();
+            let expanded = expand_model_refs(":model(interactive)", &spec);
+            // Attribute selectors must be preserved, not stripped to bare tag names
+            assert!(expanded.contains("audio[controls]"), "expanded: {expanded}");
+            assert!(expanded.contains("video[controls]"), "expanded: {expanded}");
+            assert!(expanded.contains("a[href]"), "expanded: {expanded}");
+            assert!(expanded.contains("img[usemap]"), "expanded: {expanded}");
+            // Pseudo-class selectors must be preserved
+            assert!(expanded.contains("input:not("), "expanded: {expanded}");
+        }
+
+        #[test]
         fn expand_model_refs_invalid_category() {
             let spec = html_spec();
             let expanded = expand_model_refs(":model(nonexistent)", &spec);
@@ -1441,6 +1454,70 @@ mod tests {
                     .element_type,
                 ElementType::Authored
             );
+        }
+    }
+
+    // ================================================================
+    // arena_bridge attribute propagation
+    // ================================================================
+    mod arena_attribute_tests {
+        use super::*;
+        use crate::content_model::arena_bridge;
+        use markuplint_core::mlast::MLASTAttr;
+
+        #[test]
+        fn build_arena_preserves_attributes() {
+            let mut child = ChildNodeInfo::element("audio");
+            child.attribute_names = vec!["controls".to_string(), "src".to_string()];
+            let bridge = arena_bridge::build_arena("div", &[child]);
+            let node_id = bridge.child_ids[0];
+            let el = bridge.arena.get(node_id).unwrap().as_element().unwrap();
+            assert_eq!(el.attributes.len(), 2);
+            let names: Vec<&str> = el
+                .attributes
+                .iter()
+                .filter_map(|a| match a {
+                    MLASTAttr::HTMLAttr(h) => Some(h.node_name.as_str()),
+                    _ => None,
+                })
+                .collect();
+            assert!(names.contains(&"controls"), "attributes: {names:?}");
+            assert!(names.contains(&"src"), "attributes: {names:?}");
+        }
+
+        #[test]
+        fn build_arena_empty_attributes() {
+            let child = ChildNodeInfo::element("div");
+            let bridge = arena_bridge::build_arena("div", &[child]);
+            let el = bridge.arena.get(bridge.child_ids[0]).unwrap().as_element().unwrap();
+            assert!(el.attributes.is_empty());
+        }
+
+        #[test]
+        fn attribute_selector_matches_via_bridge() {
+            // audio[controls] should match an audio element with controls attribute
+            let mut child = ChildNodeInfo::element("audio");
+            child.attribute_names = vec!["controls".to_string()];
+            let bridge = arena_bridge::build_arena("div", &[child]);
+            let sel = markuplint_selector::parser::parse("audio[controls]").unwrap();
+            assert!(markuplint_selector::matcher::matches(
+                &sel,
+                &bridge.arena,
+                bridge.child_ids[0],
+                None,
+                None,
+            ));
+
+            // audio without controls should NOT match audio[controls]
+            let child_no_attr = ChildNodeInfo::element("audio");
+            let bridge2 = arena_bridge::build_arena("div", &[child_no_attr]);
+            assert!(!markuplint_selector::matcher::matches(
+                &sel,
+                &bridge2.arena,
+                bridge2.child_ids[0],
+                None,
+                None,
+            ));
         }
     }
 

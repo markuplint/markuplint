@@ -4,7 +4,7 @@
 //! `markuplint-selector` crate's matcher can evaluate `:not()`, `:has()`,
 //! and other CSS pseudo-classes that require tree traversal.
 
-use markuplint_core::mlast::{ElementType, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArenaBuilder, NodeId};
 use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase, PSBlockData, TextData};
 
@@ -94,12 +94,47 @@ fn build_children(
                 ChildNodeKind::AuthoredElement => ElementType::Authored,
                 _ => unreachable!("is_element() was true"),
             };
+            let attributes = child
+                .attribute_names
+                .iter()
+                .map(|name| {
+                    MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
+                        uuid: String::new(),
+                        raw: name.clone(),
+                        offset: 0,
+                        line: 0,
+                        col: 0,
+                        node_name: name.clone(),
+                        spaces_before_name: empty_token(),
+                        name: MLASTToken {
+                            uuid: String::new(),
+                            raw: name.clone(),
+                            offset: 0,
+                            line: 0,
+                            col: 0,
+                        },
+                        spaces_before_equal: empty_token(),
+                        equal: empty_token(),
+                        spaces_after_equal: empty_token(),
+                        start_quote: empty_token(),
+                        value: empty_token(),
+                        end_quote: empty_token(),
+                        is_dynamic_value: None,
+                        is_directive: None,
+                        potential_name: None,
+                        potential_value: None,
+                        value_type: None,
+                        candidate: None,
+                        is_duplicatable: false,
+                    }))
+                })
+                .collect();
             let eid = builder.push(DomNode::Element(ElementData {
                 base: make_base(*next_id, &child.node_name, Some(parent_id), depth),
                 namespace: NamespaceURI::XHTML,
                 element_type: elem_type,
                 is_fragment: false,
-                attributes: Vec::new(),
+                attributes,
                 has_spread_attr: false,
                 block_behavior: None,
                 pair_node_id: None,
@@ -166,6 +201,16 @@ fn make_base(id: NodeId, node_name: &str, parent: Option<NodeId>, depth: u32) ->
         next_sibling: None,
         prev_sibling: None,
         depth,
+    }
+}
+
+fn empty_token() -> MLASTToken {
+    MLASTToken {
+        uuid: String::new(),
+        raw: String::new(),
+        offset: 0,
+        line: 0,
+        col: 0,
     }
 }
 

@@ -4,7 +4,7 @@
 //! against the expected format matching `nodeListToDebugMaps()` from TS.
 //! All 56 tests from the TS suite are ported and passing.
 
-use markuplint_html_parser::{is_document_fragment, parse, parse_document, parse_fragment};
+use markuplint_html_parser::{is_document_fragment, parse, parse_document, parse_fragment, should_parse_as_document};
 
 fn debug_maps(html: &str) -> Vec<String> {
     let arena = parse(html);
@@ -82,6 +82,49 @@ fn is_fragment_div() {
 fn is_fragment_template() {
     assert!(is_document_fragment("<template></template>"));
     assert!(is_document_fragment("<head></head>"));
+}
+
+// ============================================================================
+// should_parse_as_document — lint-aware heuristic
+// ============================================================================
+
+#[test]
+fn should_parse_as_document_doctype() {
+    assert!(should_parse_as_document("<!DOCTYPE html>"));
+    assert!(should_parse_as_document("<!doctype html>"));
+    assert!(should_parse_as_document("  \n\t<!DOCTYPE html>"));
+}
+
+#[test]
+fn should_parse_as_document_html() {
+    assert!(should_parse_as_document("<html>"));
+    assert!(should_parse_as_document("<html lang=\"en\">"));
+    assert!(should_parse_as_document("<HTML>"));
+}
+
+#[test]
+fn should_parse_as_document_head() {
+    assert!(should_parse_as_document("<head><title>T</title></head>"));
+    assert!(should_parse_as_document("<HEAD>"));
+    assert!(should_parse_as_document("  <head>"));
+}
+
+#[test]
+fn should_parse_as_document_body() {
+    assert!(should_parse_as_document("<body><p>text</p></body>"));
+    assert!(should_parse_as_document("<BODY>"));
+    assert!(should_parse_as_document("\n\t\t<body>\n\t\t"));
+    assert!(should_parse_as_document("<body class=\"main\">"));
+}
+
+#[test]
+fn should_parse_as_document_fragments() {
+    assert!(!should_parse_as_document("<div></div>"));
+    assert!(!should_parse_as_document("<p>text</p>"));
+    assert!(!should_parse_as_document("<template></template>"));
+    assert!(!should_parse_as_document("text only"));
+    assert!(!should_parse_as_document(""));
+    assert!(!should_parse_as_document("<span><a href=\"#\">link</a></span>"));
 }
 
 // ============================================================================

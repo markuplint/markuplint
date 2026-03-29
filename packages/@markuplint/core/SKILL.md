@@ -68,25 +68,37 @@ When `@markuplint/ml-ast` types change:
 cargo test
 cargo clippy -- -D warnings
 
-# napi binary (from packages/@markuplint/core/)
-npx napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform
+# napi binary (from repository root)
+yarn workspace @markuplint/core run build:napi        # Release
+yarn workspace @markuplint/core run build:napi:debug  # Debug
 
 # E2E: DOM tests
 npx vitest run packages/@markuplint/core/e2e.spec.ts
 
-# E2E: permitted-contents rule (requires napi build first)
+# E2E: permitted-contents via TS parser path (requires napi build first)
 node packages/@markuplint/core/e2e-permitted-contents.mjs
+
+# E2E: permitted-contents via full Rust path (requires napi build first)
+node packages/@markuplint/core/e2e-permitted-contents-rust-path.mjs
+
+# Benchmark: TS Full (mlTest) vs Full Rust (lintHtml)
+node packages/@markuplint/core/bench-rust-vs-ts.mjs
 ```
 
 ### E2E permitted-contents test details
 
-`e2e-permitted-contents.mjs` runs 118 test cases ported from
-`@markuplint/rules/src/permitted-contents/index.spec.ts`.
-It requires the napi debug binary to be built first.
+Two E2E test files exist, covering the same assertions through different paths:
 
-- 88 pass: HTML-only tests executed via NAPI `lint()`
-- 30 skip: 26 framework parser dependent, 3 parser circular
-  reference bugs, 1 per-element rule config not yet supported
+**`e2e-permitted-contents.mjs`** (TS parser → MLAST JSON → Rust `lint()`):
+
+- 88 pass, 30 skip (26 framework parser, 3 parser circular ref, 1 per-element config)
+
+**`e2e-permitted-contents-rust-path.mjs`** (Full Rust: `lintHtml()` → Rust parser → Rust DOM → Rust rules):
+
+- 95 pass, 27 skip (same framework/config skips, but no circular ref issues)
+- Includes additional tests for conditional interactive content (`audio[controls]`, `video[controls]` in `<a>`)
+
+Both require the napi binary to be built first.
 
 ## Important Notes
 

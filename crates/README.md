@@ -36,7 +36,8 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
   - `NapiDom.fromHtml(html)` — direct HTML parsing via Rust (no MLAST intermediate)
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
-- **`lint(mlastJson, configJson, specJson)`**: Full lint pipeline — runs all enabled Rust rules and returns violations
+- **`lint(mlastJson, configJson, specJson)`**: Lint pipeline from MLAST JSON — runs all enabled Rust rules and returns violations
+- **`lintHtml(html, configJson, specJson)`**: Full Rust lint pipeline — parses HTML via Rust WHATWG parser, builds DOM, runs rules. No MLAST JSON intermediate. Uses `should_parse_as_document()` to treat `<body>`/`<head>` starting inputs as documents
 
 ### markuplint-rules
 
@@ -68,6 +69,9 @@ WHATWG-conformant HTML parser implementing §13.2.5 (tokenization) and §13.2.6 
 - **Named character references**: Complete WHATWG entity table (2231 entries), generated at build time from `entities.json`
 - **Tree construction**: All 23 insertion modes, adoption agency, foster parenting, foreign content (SVG/MathML), customizable `<select>`, fragment parsing
 - **Conformance**: [html5lib-tests](https://github.com/html5lib/html5lib-tests) — **tokenizer 6806/6806 (100%)**, **tree construction 1777/1778 (1 documented spec/test divergence skip)**
+- **Fragment detection**: Two heuristics are provided:
+  - `is_document_fragment(html)` — general-purpose, mirrors TS `isDocumentFragment()`. Treats `<body>`/`<head>` as fragments (matching parse5 behavior)
+  - `should_parse_as_document(html)` — lint-aware, also treats `<body>`/`<head>` as documents. In fragment mode the WHATWG parser drops these tags, which loses parent context needed by `permitted-contents`. Use this for `lintHtml()`
 
 Source files map to WHATWG spec sections:
 | File | WHATWG Section |
@@ -183,6 +187,7 @@ The Rust `permitted-contents` rule aims for full parity with
 
 | Area | Rust behavior | TS behavior |
 |------|---------------|-------------|
+| `<image>` element | Converted to `<img>` per WHATWG §13.2.6.4.7 | Preserved as `image` (parse5 behavior) |
 | `:has()` descent in non-transparent models | Reports the container that fails `:has()` | Reports the deeply nested descendant via `descendants()` |
 | Per-element rule config | Not yet supported | `rule: [{ tag, contents }]` overrides |
 | Framework parser tests | Skipped (26 tests) | All pass with JSX/Vue/Svelte/etc. parsers |
