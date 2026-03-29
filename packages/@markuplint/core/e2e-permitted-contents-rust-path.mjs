@@ -90,7 +90,8 @@ test('audio:1 source in div through transparent invalid (src attr)', () => {
 });
 test('audio:2 source+div valid (no src attr)', () =>
 	pc(lintHtmlRust('<div><audio><source><div></div></audio></div>')).length === 0);
-test('audio:3 source only valid (no src attr)', () => pc(lintHtmlRust('<div><audio><source></audio></div>')).length === 0);
+test('audio:3 source only valid (no src attr)', () =>
+	pc(lintHtmlRust('<div><audio><source></audio></div>')).length === 0);
 // --- interactive content conditional matching ---
 test('audio without controls in a valid', () => pc(lintHtmlRust('<a href="#"><audio></audio></a>')).length === 0);
 test('audio[controls] in a invalid', () => {
@@ -376,7 +377,8 @@ test('Interactive Element in SVG: video invalid', () => {
 });
 
 // --- MathML ---
-test('mml:mfrac 2 children valid', () => pc(lintHtmlRust('<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>')).length === 0);
+test('mml:mfrac 2 children valid', () =>
+	pc(lintHtmlRust('<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>')).length === 0);
 test('mml:mfrac 3 children invalid', () =>
 	pc(lintHtmlRust('<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>')).length > 0);
 test('mml:math presentation elements valid', () =>
@@ -568,7 +570,8 @@ test('#617: span>noscript>div invalid (div not phrasing)', () => {
 skipTest('#617: Pug noscript', 'requires Pug parser');
 
 test('#637: ruby valid 1', () =>
-	pc(lintHtmlRust('<ruby>漢<rp>（</rp><rt>かん</rt><rp>）</rp>字<rp>（</rp><rt>じ</rt><rp>）</rp></ruby>')).length === 0);
+	pc(lintHtmlRust('<ruby>漢<rp>（</rp><rt>かん</rt><rp>）</rp>字<rp>（</rp><rt>じ</rt><rp>）</rp></ruby>')).length ===
+	0);
 test('#637: ruby valid 2', () =>
 	pc(lintHtmlRust('<ruby>A<rp></rp><rt></rt><rp></rp>B<rp></rp><rt></rt><rp></rp></ruby>')).length === 0);
 
