@@ -266,6 +266,7 @@ impl TreeBuilder<'_> {
                 {
                     // Pop until MathML text integration point, HTML integration
                     // point, or HTML namespace element per WHATWG §13.2.6.5.
+                    let mut hit_fragment_root = false;
                     while let Some(id) = self.current_node() {
                         let node = self.arena.get(id);
                         if node.namespace() == Some(Namespace::Html)
@@ -274,9 +275,20 @@ impl TreeBuilder<'_> {
                         {
                             break;
                         }
+                        if self.open_elements.len() <= 1 {
+                            hit_fragment_root = true;
+                            break;
+                        }
                         self.open_elements.pop();
                     }
-                    self.process_token(token);
+                    if hit_fragment_root {
+                        // Fragment context root is foreign with no integration
+                        // point. Process directly in InBody to avoid infinite
+                        // re-entry into foreign content.
+                        self.process_in_body(token);
+                    } else {
+                        self.process_token(token);
+                    }
                     return;
                 }
 
@@ -322,6 +334,7 @@ impl TreeBuilder<'_> {
                 // html5lib-tests: tree-construction/tests26.dat, pending-spec-changes.dat
                 if BREAKOUT_ELEMENTS.contains(&tag_name.as_str()) {
                     // Pop until integration point or HTML namespace.
+                    let mut hit_fragment_root = false;
                     while let Some(id) = self.current_node() {
                         let node = self.arena.get(id);
                         if node.namespace() == Some(Namespace::Html)
@@ -330,9 +343,17 @@ impl TreeBuilder<'_> {
                         {
                             break;
                         }
+                        if self.open_elements.len() <= 1 {
+                            hit_fragment_root = true;
+                            break;
+                        }
                         self.open_elements.pop();
                     }
-                    self.process_token(token);
+                    if hit_fragment_root {
+                        self.process_in_body(token);
+                    } else {
+                        self.process_token(token);
+                    }
                     return;
                 }
 
@@ -340,9 +361,11 @@ impl TreeBuilder<'_> {
 
                 // WHATWG §13.2.6.5: End tag in foreign content.
                 // Walk the stack from top looking for a match.
+                // In fragment mode, never pop the bottom element (context root).
                 let mut found = false;
                 let stack_len = self.open_elements.len();
-                for i in (0..stack_len).rev() {
+                let bottom = usize::from(self.is_fragment);
+                for i in (bottom..stack_len).rev() {
                     let Some(node_id) = self.open_elements.get(i) else {
                         continue;
                     };

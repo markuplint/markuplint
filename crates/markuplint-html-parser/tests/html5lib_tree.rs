@@ -97,27 +97,31 @@ fn serialize_tree(arena: &Arena, source: &str) -> String {
     let doc = arena.get(arena.document_id());
     let mut output = String::new();
 
-    // For SVG/MathML fragment parsing, the document has a single virtual
-    // context element (ghost, SVG/MathML namespace). Skip it and serialize
-    // its children instead.
-    let children_to_serialize = if doc.children.len() == 1 {
-        let child = arena.get(doc.children[0]);
-        if child.is_implicit
+    // For SVG/MathML fragment parsing, the first child of the document is a
+    // ghost context element. Skip it and serialize its children, then also
+    // serialize any subsequent document children (from HTML breakout).
+    if !doc.children.is_empty() {
+        let first_child = arena.get(doc.children[0]);
+        if first_child.is_implicit
             && matches!(
-                child.namespace(),
+                first_child.namespace(),
                 Some(markuplint_html_parser::tree::node::Namespace::Svg)
                     | Some(markuplint_html_parser::tree::node::Namespace::MathML)
             )
         {
-            &child.children
-        } else {
-            &doc.children
+            // Serialize ghost element's children (the foreign content).
+            for &child_id in &first_child.children {
+                serialize_node(arena, source, child_id, 0, &mut output);
+            }
+            // Serialize any remaining document children (HTML breakout).
+            for &child_id in &doc.children[1..] {
+                serialize_node(arena, source, child_id, 0, &mut output);
+            }
+            return output.trim_end_matches('\n').to_owned();
         }
-    } else {
-        &doc.children
-    };
+    }
 
-    for &child_id in children_to_serialize {
+    for &child_id in &doc.children {
         serialize_node(arena, source, child_id, 0, &mut output);
     }
     output.trim_end_matches('\n').to_owned()
@@ -311,11 +315,9 @@ fn html5lib_tree_construction_test_suite() {
 
     // Skipped files: features not yet implemented (each documented).
     let skip_files = [
-        "template.dat",                               // InTemplate needs full mode push/pop (52/111 pass)
         "domjs-unsafe.dat",                           // null bytes in unsafe contexts
         "plain-text-unsafe.dat",                      // null bytes in PLAINTEXT
         "pending-spec-changes-plain-text-unsafe.dat", // same
-        "foreign-fragment.dat",                       // SVG/MathML fragment context (45/65 pass, needs mglyph/malignmark handling)
     ];
 
     let mut total_passed = 0;

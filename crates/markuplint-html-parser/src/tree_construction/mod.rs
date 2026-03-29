@@ -142,7 +142,26 @@ impl<'a> TreeBuilder<'a> {
     }
 
     /// WHATWG §13.2.6.4: Fragment parsing algorithm.
-    fn setup_fragment_parsing(&mut self, context_tag: &str, _context_ns: Namespace) {
+    fn setup_fragment_parsing(&mut self, context_tag: &str, context_ns: Namespace) {
+        // For SVG/MathML fragment context, create a ghost context element
+        // so that should_process_as_foreign_for_token sees the correct
+        // namespace on the adjusted current node.
+        if context_ns != Namespace::Html {
+            let pos = Position { offset: 0, line: 1, col: 1 };
+            let ghost_id = self.arena.create_element(
+                context_tag.to_owned(),
+                context_ns,
+                Vec::new(),
+                false,
+                Span::empty(pos),
+                true, // is_implicit (ghost)
+            );
+            self.arena.append_child(self.arena.document_id(), ghost_id);
+            self.open_elements.push(ghost_id);
+            self.mode = InsertionMode::InBody;
+            return;
+        }
+
         // Push the document root onto the open elements stack.
         self.open_elements.push(self.arena.document_id());
 
@@ -250,19 +269,36 @@ impl<'a> TreeBuilder<'a> {
     }
 
     /// Returns (`parent_id`, Option<`before_sibling_id`>).
-    /// When foster parenting, the sibling is the table element itself.
+    /// WHATWG §13.2.6.1 "the appropriate place for inserting a node".
     fn appropriate_insert_position(&self) -> (NodeId, Option<NodeId>) {
         if self.foster_parenting {
-            // Find the table element.
-            let mut table_id = None;
-            for id in self.open_elements.iter_top_to_bottom() {
-                if self.arena.get(*id).is_html_element("table") {
-                    table_id = Some(*id);
+            // Find last template and last table in the stack (top-to-bottom).
+            let mut last_template: Option<(usize, NodeId)> = None;
+            let mut last_table: Option<(usize, NodeId)> = None;
+            for (stack_idx, id) in self.open_elements.iter_top_to_bottom().enumerate() {
+                let node = self.arena.get(*id);
+                if last_template.is_none() && node.is_html_element("template") {
+                    last_template = Some((stack_idx, *id));
+                }
+                if last_table.is_none() && node.is_html_element("table") {
+                    last_table = Some((stack_idx, *id));
+                }
+                if last_template.is_some() && last_table.is_some() {
                     break;
                 }
             }
 
-            if let Some(tid) = table_id {
+            // WHATWG: If there is a last template and either there is no
+            // last table, or last template is higher in the stack (closer
+            // to top, i.e. smaller index in top-to-bottom iteration),
+            // insert inside the template element.
+            if let Some((tpl_idx, tpl_id)) = last_template
+                && (last_table.is_none() || tpl_idx < last_table.unwrap().0)
+            {
+                return (tpl_id, None);
+            }
+
+            if let Some((_, tid)) = last_table {
                 let current = self.current_node().unwrap_or(self.arena.document_id());
                 // If current node was already foster-parented (not inside the table),
                 // use normal insertion into current node.
@@ -271,6 +307,17 @@ impl<'a> TreeBuilder<'a> {
                 }
                 if let Some(parent) = self.arena.get(tid).parent {
                     return (parent, Some(tid));
+                }
+                // No parent → insert into element above table in the stack.
+                if let Some(pos) = self.open_elements.position(tid)
+                    && pos > 0
+                    && let Some(prev) = self.open_elements.get(pos - 1)
+                {
+                    return (prev, None);
+                }
+                // Fallback: first element in the stack (html).
+                if let Some(first) = self.open_elements.get(0) {
+                    return (first, None);
                 }
             }
         }
@@ -398,6 +445,20 @@ impl<'a> TreeBuilder<'a> {
                 && let Some(name) = self.arena.get(id).tag_name()
                 && tables::IMPLIED_END_TAG_ELEMENTS.contains(&name)
                 && (exclude != Some(name))
+            {
+                self.open_elements.pop();
+                continue;
+            }
+            break;
+        }
+    }
+
+    /// Generate all implied end tags thoroughly per WHATWG §13.2.6.4.
+    pub(super) fn generate_implied_end_tags_thoroughly(&mut self) {
+        loop {
+            if let Some(id) = self.current_node()
+                && let Some(name) = self.arena.get(id).tag_name()
+                && tables::IMPLIED_END_TAG_THOROUGHLY_ELEMENTS.contains(&name)
             {
                 self.open_elements.pop();
                 continue;
@@ -819,12 +880,6 @@ impl<'a> TreeBuilder<'a> {
                 self.open_elements.pop();
                 self.mode = InsertionMode::AfterHead;
             }
-            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
-                // Parse error. Ignore.
-            }
-            Token::StartTag { tag_name, .. } if tag_name == "head" => {
-                // Parse error. Ignore.
-            }
             Token::StartTag {
                 tag_name,
                 attributes,
@@ -838,7 +893,27 @@ impl<'a> TreeBuilder<'a> {
                 self.template_insertion_modes.push(InsertionMode::InTemplate);
             }
             Token::EndTag { tag_name, .. } if tag_name == "template" => {
-                self.process_template_end_tag();
+                // WHATWG §13.2.6.4.4: An end tag whose tag name is "template".
+                // Step 1: If there is no template element on the stack, ignore.
+                if self.template_insertion_modes.is_empty() {
+                    return;
+                }
+                // Step 2: Generate all implied end tags thoroughly.
+                self.generate_implied_end_tags_thoroughly();
+                // Step 3: Pop elements until a template element has been popped.
+                self.pop_until("template");
+                // Step 4: Clear the list of active formatting elements up to the last marker.
+                self.active_formatting.clear_up_to_last_marker();
+                // Step 5: Pop the current template insertion mode.
+                self.template_insertion_modes.pop();
+                // Step 6: Reset the insertion mode appropriately.
+                self.reset_insertion_mode();
+            }
+            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
+                // Parse error. Ignore.
+            }
+            Token::StartTag { tag_name, .. } if tag_name == "head" => {
+                // Parse error. Ignore.
             }
             _ => {
                 // Act as if </head> was seen.
@@ -1019,8 +1094,17 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
             }
-            Token::Doctype { .. } | Token::Eof => {
-                // Parse error / stop parsing. Ignore.
+            Token::Doctype { .. } => {
+                // Parse error. Ignore.
+            }
+            Token::Eof => {
+                // WHATWG §13.2.6.4.7: If the stack of template insertion
+                // modes is not empty, process the token using the rules for
+                // the "in template" insertion mode.
+                if !self.template_insertion_modes.is_empty() {
+                    self.process_in_template(token);
+                }
+                // Otherwise, stop parsing.
             }
             Token::StartTag {
                 tag_name,
@@ -1066,10 +1150,11 @@ impl<'a> TreeBuilder<'a> {
                 self.process_in_head(token);
             }
             "body" => {
-                // WHATWG: If the stack has only one node, or if the second
+                // WHATWG: If there is a template element on the stack of open
+                // elements, or if the stack has only one node, or if the second
                 // element is not body, or fragment case → ignore.
-                // Otherwise, merge attributes.
-                let should_ignore = self.open_elements.len() <= 1
+                let should_ignore = !self.template_insertion_modes.is_empty()
+                    || self.open_elements.len() <= 1
                     || self.is_fragment
                     || !self
                         .open_elements
@@ -1592,6 +1677,11 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn process_in_body_start_tag_html(&mut self, new_attrs: &[RawAttribute], span: Span) {
+        // WHATWG §13.2.6.4.7: If there is a template element on the stack
+        // of open elements, then ignore the token.
+        if !self.template_insertion_modes.is_empty() {
+            return;
+        }
         // Merge attributes into the existing <html> element.
         if new_attrs.is_empty() {
             return;
@@ -1861,38 +1951,102 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
+    /// WHATWG §13.2.6.4.18 The "in template" insertion mode.
     fn process_in_template(&mut self, token: Token) {
         match &token {
+            // Character, Comment, Doctype → process using InBody rules.
+            Token::Character { .. } | Token::Comment { .. } | Token::Doctype { .. } => {
+                self.process_in_body(token);
+            }
+
+            // Start tags handled by InHead: base, basefont, bgsound, link,
+            // meta, noframes, script, style, template, title.
+            Token::StartTag { tag_name, .. }
+                if matches!(
+                    tag_name.as_str(),
+                    "base"
+                        | "basefont"
+                        | "bgsound"
+                        | "link"
+                        | "meta"
+                        | "noframes"
+                        | "script"
+                        | "style"
+                        | "template"
+                        | "title"
+                ) =>
+            {
+                self.process_in_head(token);
+            }
+
+            // End tag "template" → process using InHead rules.
+            Token::EndTag { tag_name, .. } if tag_name == "template" => {
+                self.process_in_head(token);
+            }
+
+            // Start tags that switch to table-related modes.
+            Token::StartTag { tag_name, .. }
+                if matches!(
+                    tag_name.as_str(),
+                    "caption" | "colgroup" | "tbody" | "tfoot" | "thead"
+                ) =>
+            {
+                self.template_insertion_modes.pop();
+                self.template_insertion_modes.push(InsertionMode::InTable);
+                self.mode = InsertionMode::InTable;
+                self.process_token(token);
+            }
+
+            // Start tag "col" → switch to InColumnGroup.
+            Token::StartTag { tag_name, .. } if tag_name == "col" => {
+                self.template_insertion_modes.pop();
+                self.template_insertion_modes.push(InsertionMode::InColumnGroup);
+                self.mode = InsertionMode::InColumnGroup;
+                self.process_token(token);
+            }
+
+            // Start tag "tr" → switch to InTableBody.
+            Token::StartTag { tag_name, .. } if tag_name == "tr" => {
+                self.template_insertion_modes.pop();
+                self.template_insertion_modes.push(InsertionMode::InTableBody);
+                self.mode = InsertionMode::InTableBody;
+                self.process_token(token);
+            }
+
+            // Start tags "td", "th" → switch to InRow.
+            Token::StartTag { tag_name, .. } if matches!(tag_name.as_str(), "td" | "th") => {
+                self.template_insertion_modes.pop();
+                self.template_insertion_modes.push(InsertionMode::InRow);
+                self.mode = InsertionMode::InRow;
+                self.process_token(token);
+            }
+
+            // Any other start tag → switch to InBody.
+            Token::StartTag { .. } => {
+                self.template_insertion_modes.pop();
+                self.template_insertion_modes.push(InsertionMode::InBody);
+                self.mode = InsertionMode::InBody;
+                self.process_token(token);
+            }
+
+            // Any other end tag → ignore.
+            Token::EndTag { .. } => {}
+
+            // EOF.
             Token::Eof => {
-                // WHATWG: If no template on stack, stop.
+                // If there is no template element on the stack of open elements,
+                // stop parsing (fragment case).
                 if self.template_insertion_modes.is_empty() {
                     return;
                 }
-                // Pop template, clear AF, reset mode, reprocess.
+                // Pop elements until a template element has been popped.
                 self.pop_until("template");
                 self.active_formatting.clear_up_to_last_marker();
                 self.template_insertion_modes.pop();
                 self.reset_insertion_mode();
                 self.process_token(token);
             }
-            Token::EndTag { tag_name, .. } if tag_name == "template" => {
-                self.process_template_end_tag();
-            }
-            _ => {
-                // Delegate to InBody.
-                self.process_in_body(token);
-            }
         }
-    }
-
-    fn process_template_end_tag(&mut self) {
-        if self.template_insertion_modes.is_empty() {
-            return;
-        }
-        self.template_insertion_modes.pop();
-        self.pop_until("template");
-        self.active_formatting.clear_up_to_last_marker();
-        self.reset_insertion_mode();
     }
 
     // ========================================================================
@@ -2031,7 +2185,25 @@ impl<'a> TreeBuilder<'a> {
             if let Some(name) = node.tag_name() {
                 match name {
                     "select" => {
-                        self.mode = InsertionMode::InSelect;
+                        // WHATWG: Walk ancestors of select to find table or template.
+                        // If table is found before template → InSelectInTable.
+                        let select_pos = self.open_elements.position(*id);
+                        let mut mode = InsertionMode::InSelect;
+                        if let Some(pos) = select_pos {
+                            for i in (0..pos).rev() {
+                                if let Some(ancestor_id) = self.open_elements.get(i) {
+                                    let ancestor = self.arena.get(ancestor_id);
+                                    if ancestor.is_html_element("template") {
+                                        break;
+                                    }
+                                    if ancestor.is_html_element("table") {
+                                        mode = InsertionMode::InSelectInTable;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        self.mode = mode;
                         return;
                     }
                     "td" | "th" => {

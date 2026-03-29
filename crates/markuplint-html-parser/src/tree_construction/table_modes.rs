@@ -270,13 +270,7 @@ impl TreeBuilder<'_> {
                 self.insert_html_element(tag_name, attributes, *span);
                 self.open_elements.pop();
             }
-            Token::StartTag {
-                tag_name,
-                attributes,
-                span,
-                ..
-            } if tag_name == "template" => {
-                self.insert_html_element(tag_name, attributes, *span);
+            Token::StartTag { tag_name, .. } if tag_name == "template" => {
                 self.process_in_head(token);
             }
             Token::EndTag { tag_name, .. } if tag_name == "template" => {
@@ -290,6 +284,10 @@ impl TreeBuilder<'_> {
             }
             Token::EndTag { tag_name, .. } if tag_name == "col" => {
                 // Parse error. Ignore.
+            }
+            Token::Eof => {
+                // WHATWG §13.2.6.4.13: EOF → process using InBody rules.
+                self.process_in_body(token);
             }
             _ => {
                 if self.current_node_is("colgroup") {
