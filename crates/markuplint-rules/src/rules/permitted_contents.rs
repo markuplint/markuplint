@@ -28,8 +28,11 @@ impl Rule for PermittedContents {
         for (node_id, el) in arena.elements() {
             let tag_name = &el.base.node_name;
 
+            // Build namespace-prefixed spec lookup name
+            let spec_name = spec_lookup_name(&el.namespace, tag_name);
+
             // Get content model from spec
-            let Some(cm) = content_model::get_content_model(spec, tag_name) else {
+            let Some(cm) = content_model::get_content_model(spec, &spec_name) else {
                 continue; // Unknown element — skip
             };
 
@@ -212,6 +215,19 @@ impl Rule for PermittedContents {
         }
 
         violations
+    }
+}
+
+/// Build the spec lookup name for an element, prefixing with namespace if needed.
+///
+/// - SVG: `svg:tagname` (e.g., `svg:a`, `svg:feBlend`)
+/// - `MathML`: `math:tagname` (e.g., `math:mfrac`)
+/// - HTML: `tagname` (no prefix)
+fn spec_lookup_name(namespace: &markuplint_core::mlast::NamespaceURI, tag_name: &str) -> String {
+    match namespace {
+        markuplint_core::mlast::NamespaceURI::SVG => format!("svg:{tag_name}"),
+        markuplint_core::mlast::NamespaceURI::MathML => format!("math:{tag_name}"),
+        _ => tag_name.to_string(),
     }
 }
 
