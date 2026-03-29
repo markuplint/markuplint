@@ -86,20 +86,8 @@ impl Rule for PermittedContents {
                     );
 
                     // 2. Resolve transparent child elements for parent content model.
-                    let (resolved_children, transparent_errors) =
-                        represent_transparent_nodes(arena, node_id, patterns, spec);
-
-                    // Report transparent model violations
-                    for te in transparent_errors {
-                        violations.push(Violation {
-                            rule_id: self.id().to_string(),
-                            severity: config.severity.clone(),
-                            message: te.message,
-                            line: te.line,
-                            col: te.col,
-                            raw: te.raw,
-                        });
-                    }
+                    let resolved_children =
+                        represent_transparent_nodes(arena, node_id, spec);
 
                     // Filter whitespace from resolved children too
                     let resolved_filtered: Vec<_> = resolved_children
@@ -371,7 +359,9 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
 /// Check if all patterns are optional (zeroOrMore, optional, or choice with all-optional branches).
 fn all_optional(patterns: &[PermittedContentPattern]) -> bool {
     patterns.iter().all(|p| match p {
-        PermittedContentPattern::ZeroOrMore(_) | PermittedContentPattern::Optional(_) => true,
+        PermittedContentPattern::ZeroOrMore(_)
+        | PermittedContentPattern::Optional(_)
+        | PermittedContentPattern::Transparent(_) => true,
         PermittedContentPattern::Choice(c) => c.choice.iter().all(|branch| all_optional(branch)),
         _ => false,
     })
@@ -538,7 +528,9 @@ fn find_deep_violator(
 ) -> Option<ChildNodeInfo> {
     let children_ids = arena.children_of(node_id)?.to_vec();
     for child_id in children_ids {
-        let child_node = arena.get(child_id)?;
+        let Some(child_node) = arena.get(child_id) else {
+            continue; // Skip missing nodes, don't abort sibling traversal
+        };
         if let Some(child_el) = child_node.as_element() {
             let info = element_to_child_info(child_el);
             if !matches_transparent_constraint(&info, simple_constraint, spec) {
@@ -551,14 +543,6 @@ fn find_deep_violator(
         }
     }
     None
-}
-
-/// A transparent model violation detected during resolution.
-struct TransparentError {
-    message: String,
-    line: u32,
-    col: u32,
-    raw: String,
 }
 
 /// Check if a pattern is a `TransparentPattern`.
@@ -630,21 +614,20 @@ fn matches_transparent_constraint(
 /// - Remaining children are checked against the constraint; failures produce errors.
 /// - The transparent element is replaced by its surviving children in the output.
 ///
-/// Returns `(flattened_children, transparent_errors)`.
+/// Returns the flattened children with transparent elements expanded.
 #[allow(clippy::too_many_lines)]
 fn represent_transparent_nodes(
     arena: &DomArena,
     parent_id: NodeId,
-    _parent_patterns: &[PermittedContentPattern],
     spec: &MLMLSpec,
-) -> (Vec<ChildNodeInfo>, Vec<TransparentError>) {
+) -> Vec<ChildNodeInfo> {
     let Some(children_ids) = arena.children_of(parent_id) else {
-        return (vec![], vec![]);
+        return vec![];
     };
     let children_ids: Vec<NodeId> = children_ids.to_vec();
 
     if children_ids.is_empty() {
-        return (vec![], vec![]);
+        return vec![];
     }
 
     // Check if any child has a transparent content model — early exit if none
@@ -655,7 +638,8 @@ fn represent_transparent_nodes(
         let Some(el) = child.as_element() else {
             return false;
         };
-        let Some(cm) = content_model::get_content_model(spec, &el.base.node_name) else {
+        let lookup = spec_lookup_name(&el.namespace, &el.base.node_name);
+        let Some(cm) = content_model::get_content_model(spec, &lookup) else {
             return false;
         };
         let resolved = resolve_content_model(&cm, arena, cid);
@@ -667,11 +651,10 @@ fn represent_transparent_nodes(
     });
 
     if !has_any_transparent {
-        return (collect_child_nodes(arena, parent_id), vec![]);
+        return collect_child_nodes(arena, parent_id);
     }
 
     let mut result_children: Vec<ChildNodeInfo> = Vec::new();
-    let errors: Vec<TransparentError> = Vec::new();
 
     for &child_id in &children_ids {
         let Some(child_node) = arena.get(child_id) else {
@@ -689,7 +672,8 @@ fn represent_transparent_nodes(
         };
 
         // Get the child element's content model (with conditional evaluation)
-        let child_cm = content_model::get_content_model(spec, &child_el.base.node_name);
+        let child_lookup = spec_lookup_name(&child_el.namespace, &child_el.base.node_name);
+        let child_cm = content_model::get_content_model(spec, &child_lookup);
         let child_resolved = child_cm
             .as_ref()
             .map(|cm| resolve_content_model(cm, arena, child_id));
@@ -712,8 +696,6 @@ fn represent_transparent_nodes(
             result_children.push(element_to_child_info(child_el));
             continue;
         };
-        // constraint is checked by check_own_transparent_constraint, not here
-        let _ = find_transparent(&child_patterns).unwrap();
         let non_transparent = non_transparent_patterns(&child_patterns);
 
         // Collect the transparent element's children (filter whitespace, like TS)
@@ -752,7 +734,7 @@ fn represent_transparent_nodes(
         }
     }
 
-    (result_children, errors)
+    result_children
 }
 
 /// Convert a `DomNode` (non-element) to a `ChildNodeInfo`, if applicable.
@@ -1200,19 +1182,14 @@ mod tests {
 
     /// Debug: transparent constraint matching for button against :not(:model(interactive), ...)
     #[test]
-    fn debug_transparent_constraint_button() {
+    fn transparent_constraint_rejects_interactive() {
         let s = spec();
         let constraint =
             ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))";
 
-        // Expand :model refs
         let expanded = crate::content_model::matching::expand_model_refs(constraint, &s);
-        eprintln!("Expanded: {expanded}");
-
-        // Parse
         let selector = markuplint_selector::parser::parse(&expanded).unwrap();
 
-        // Build a mini arena with button
         let child = ChildNodeInfo::element("button");
         let bridge =
             crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(&child));
@@ -1220,11 +1197,118 @@ mod tests {
 
         let result =
             markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
-        eprintln!("button matches constraint: {result}");
         // button is interactive → :not(interactive) should be false
         assert!(
             !result,
             "button should NOT match :not(:model(interactive), ...)"
+        );
+    }
+
+    // --- strip_has_from_constraint ---
+
+    #[test]
+    fn strip_has_basic() {
+        assert_eq!(
+            strip_has_from_constraint(
+                ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))"
+            ),
+            ":not(:model(interactive), a, [tabindex])"
+        );
+    }
+
+    #[test]
+    fn strip_has_no_has() {
+        assert_eq!(
+            strip_has_from_constraint(":not(:model(interactive), a)"),
+            ":not(:model(interactive), a)"
+        );
+    }
+
+    #[test]
+    fn strip_has_wildcard() {
+        assert_eq!(strip_has_from_constraint("*"), "*");
+    }
+
+    // --- spec_lookup_name ---
+
+    #[test]
+    fn spec_lookup_html() {
+        assert_eq!(spec_lookup_name(&NamespaceURI::XHTML, "div"), "div");
+    }
+
+    #[test]
+    fn spec_lookup_svg() {
+        assert_eq!(spec_lookup_name(&NamespaceURI::SVG, "a"), "svg:a");
+    }
+
+    #[test]
+    fn spec_lookup_mathml() {
+        assert_eq!(
+            spec_lookup_name(&markuplint_core::mlast::NamespaceURI::MathML, "mfrac"),
+            "mml:mfrac"
+        );
+    }
+
+    // --- all_optional with transparent ---
+
+    #[test]
+    fn all_optional_transparent_is_optional() {
+        let patterns = vec![PermittedContentPattern::Transparent(TransparentPattern {
+            transparent: "*".to_string(),
+        })];
+        assert!(all_optional(&patterns));
+    }
+
+    // --- matches_model_ref_with_attrs (via E2E for meta) ---
+
+    #[test]
+    fn meta_without_itemprop_not_flow() {
+        let s = spec();
+        let meta = ChildNodeInfo {
+            kind: ChildNodeKind::HtmlElement,
+            node_name: "meta".to_string(),
+            raw: "<meta>".to_string(),
+            line: 0,
+            col: 0,
+            child_nodes: vec![],
+            attribute_names: vec!["content".to_string()],
+            transparent_ancestor: None,
+        };
+        // meta without itemprop should NOT match :model(flow)
+        let matched = crate::content_model::matching::matches_selector(
+            ":model(flow)",
+            Some(&meta),
+            1,
+            &s,
+        );
+        assert!(
+            !matched.result_type.is_matched(),
+            "meta without itemprop should not match #flow"
+        );
+    }
+
+    #[test]
+    fn meta_with_itemprop_is_flow() {
+        let s = spec();
+        let meta = ChildNodeInfo {
+            kind: ChildNodeKind::HtmlElement,
+            node_name: "meta".to_string(),
+            raw: "<meta>".to_string(),
+            line: 0,
+            col: 0,
+            child_nodes: vec![],
+            attribute_names: vec!["itemprop".to_string(), "content".to_string()],
+            transparent_ancestor: None,
+        };
+        let matched = crate::content_model::matching::matches_selector(
+            ":model(flow)",
+            Some(&meta),
+            1,
+            &s,
+        );
+        assert!(
+            matched.result_type.is_matched(),
+            "meta with itemprop should match #flow"
         );
     }
 }

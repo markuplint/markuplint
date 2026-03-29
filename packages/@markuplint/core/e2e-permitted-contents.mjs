@@ -300,9 +300,14 @@ test('select:7 div parse error invalid', () => {
 	try {
 		const v = pc(lintHtml('<select>\n\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t</select>'));
 		return v.length > 0;
-	} catch {
-		// HTML parser produces circular reference for parse errors in select — known parser bug
-		return true;
+	} catch (error) {
+		if (error.message?.includes('circular structure')) {
+			// Known parser bug: circular reference on parse errors in select
+			skip++;
+			pass--;
+			return true;
+		}
+		throw error;
 	}
 });
 test('select:8 optgroup>div parse error invalid', () => {
@@ -313,8 +318,13 @@ test('select:8 optgroup>div parse error invalid', () => {
 			),
 		);
 		return v.length > 0;
-	} catch {
-		return true;
+	} catch (error) {
+		if (error.message?.includes('circular structure')) {
+			skip++;
+			pass--;
+			return true;
+		}
+		throw error;
 	}
 });
 
@@ -356,9 +366,13 @@ test('svg:foreignObject div valid', () =>
 test('svg:foreignObject rect valid', () => {
 	try {
 		return pc(lintHtml('<svg><foreignObject><rect /></foreignObject></svg>')).length === 0;
-	} catch {
-		// HTML parser may produce circular reference for foreignObject — known parser bug
-		return true;
+	} catch (error) {
+		if (error.message?.includes('circular structure')) {
+			skip++;
+			pass--;
+			return true;
+		}
+		throw error;
 	}
 });
 test('svg:foreignObject div>rect invalid', () => {
