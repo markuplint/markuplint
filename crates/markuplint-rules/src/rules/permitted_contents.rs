@@ -820,7 +820,9 @@ fn extract_attribute_names(attrs: &[markuplint_core::mlast::MLASTAttr]) -> Vec<S
     attrs
         .iter()
         .filter_map(|a| match a {
-            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => Some(html_attr.name.raw.to_ascii_lowercase()),
+            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => {
+                Some(html_attr.node_name.to_ascii_lowercase())
+            }
             markuplint_core::mlast::MLASTAttr::Spread(_) => None,
         })
         .collect()
