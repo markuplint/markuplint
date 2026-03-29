@@ -1,13 +1,142 @@
 //! Type definitions for markuplint spec data.
 //!
 //! These types mirror the TypeScript definitions in `@markuplint/ml-spec/src/types/`.
-//! Fields use `serde_json::Value` where the TypeScript type is complex or rarely
-//! accessed in Rust, allowing incremental typing as needed.
+//! Fields marked with `serde_json::Value` are intentionally untyped — see the inline
+//! comments for each field explaining when they will be typed (tracked in #3521).
 
 use std::collections::HashMap;
 
 use serde::Deserialize;
 use serde_json::Value;
+
+// ============================================================
+// Typed enums (replacing former Value escape hatches)
+// ============================================================
+
+/// TS: `true | { alt: string }`
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum Obsolete {
+    /// Simply obsolete.
+    Flag(bool),
+    /// Obsolete with an alternative element/approach.
+    Info {
+        /// Suggested alternative.
+        alt: String,
+    },
+}
+
+/// TS: `false | string` — implicit ARIA role.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum ImplicitRole {
+    /// No implicit role (`false`).
+    None(bool),
+    /// A specific implicit role name (e.g., `"button"`, `"link"`).
+    Role(String),
+}
+
+/// TS: `AttributeCondition = string | [string, ...string[]]`
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum AttributeCondition {
+    /// Single CSS selector condition.
+    Single(String),
+    /// Multiple CSS selector conditions (any must match).
+    Multiple(Vec<String>),
+}
+
+/// TS: `bool | AttributeCondition`
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum AttributeRequired {
+    /// Always required or never required.
+    Flag(bool),
+    /// Required under specific conditions.
+    Conditional(AttributeCondition),
+}
+
+/// TS: `'property' | 'state'`
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ARIAPropertyType {
+    /// An ARIA property.
+    Property,
+    /// An ARIA state.
+    State,
+}
+
+/// TS: `ARIAAttributeValue` — 10 literal string union.
+#[derive(Debug, Deserialize)]
+pub enum ARIAAttributeValue {
+    /// `"true/false"`
+    #[serde(rename = "true/false")]
+    TrueFalse,
+    /// `"tristate"`
+    #[serde(rename = "tristate")]
+    Tristate,
+    /// `"true/false/undefined"`
+    #[serde(rename = "true/false/undefined")]
+    TrueFalseUndefined,
+    /// `"ID reference"`
+    #[serde(rename = "ID reference")]
+    IdReference,
+    /// `"ID reference list"`
+    #[serde(rename = "ID reference list")]
+    IdReferenceList,
+    /// `"integer"`
+    #[serde(rename = "integer")]
+    Integer,
+    /// `"number"`
+    #[serde(rename = "number")]
+    Number,
+    /// `"string"`
+    #[serde(rename = "string")]
+    StringValue,
+    /// `"token"`
+    #[serde(rename = "token")]
+    Token,
+    /// `"token list"`
+    #[serde(rename = "token list")]
+    TokenList,
+    /// `"URI"`
+    #[serde(rename = "URI")]
+    Uri,
+}
+
+/// TS: `'idl' | 'both'`
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AcceptedAttrNames {
+    /// IDL attribute names only.
+    Idl,
+    /// Both IDL and content attribute names.
+    Both,
+}
+
+/// TS: `'string' | 'number' | 'boolean' | 'code'`
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DirectiveValueType {
+    /// String value.
+    String,
+    /// Numeric value.
+    Number,
+    /// Boolean value.
+    Boolean,
+    /// Code expression value.
+    Code,
+}
+
+/// TS: `true | readonly string[]`
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum IsDuplicatable {
+    /// Duplicatable for all cases.
+    All(bool),
+    /// Duplicatable only for specific attribute names.
+    Specific(Vec<String>),
+}
 
 // ============================================================
 // Top-level spec
@@ -27,13 +156,15 @@ pub struct MLMLSpec {
     pub directive_patterns: Vec<DirectivePattern>,
     /// Accepted attribute name format.
     #[serde(default, rename = "acceptedAttrNames")]
-    pub accepted_attr_names: Option<String>,
+    pub accepted_attr_names: Option<AcceptedAttrNames>,
 }
 
 /// Internal definition data.
 #[derive(Debug, Deserialize)]
 pub struct SpecDefs {
     /// Global attribute categories.
+    /// Value remains `Value` — complex nested structure with 15+ known keys.
+    /// Will be typed when global attr merging is implemented (#3521).
     #[serde(rename = "#globalAttrs")]
     pub global_attrs: HashMap<String, HashMap<String, Value>>,
     /// ARIA specs by version.
@@ -95,8 +226,9 @@ pub struct ElementSpec {
     #[serde(default)]
     pub experimental: Option<bool>,
     /// Obsolete flag or alternative info.
+    /// TS: `true | { alt: string }`
     #[serde(default)]
-    pub obsolete: Option<Value>,
+    pub obsolete: Option<Obsolete>,
     /// Deprecated flag.
     #[serde(default)]
     pub deprecated: Option<bool>,
@@ -107,12 +239,15 @@ pub struct ElementSpec {
     #[serde(default)]
     pub categories: Vec<String>,
     /// Permitted contents and parents.
+    /// Remains `Value` — deserialized on demand via `get_content_model()`.
     #[serde(default, rename = "contentModel")]
     pub content_model: Value,
     /// Tag omission rules.
+    /// Remains `Value` — complex conditional structure, typed when omission rules are implemented.
     #[serde(default)]
     pub omission: Value,
     /// Global attribute categories enabled for this element.
+    /// Remains `Value` — 15+ known keys + pattern properties (#3521).
     #[serde(default, rename = "globalAttrs")]
     pub global_attrs: HashMap<String, Value>,
     /// Element-specific attributes.
@@ -137,6 +272,8 @@ pub struct Attribute {
     #[serde(default)]
     pub name: Option<String>,
     /// Attribute type — string (keyword type) or object (enum, token, number, etc.).
+    /// Remains `Value` — 900+ CSS property keyword types as discriminated union.
+    /// Will be typed in Phase 8-9 (invalid-attr rule implementation).
     #[serde(default, rename = "type")]
     pub attr_type: Value,
     /// Description.
@@ -159,22 +296,26 @@ pub struct Attribute {
     pub non_standard: Option<bool>,
     /// Default value.
     #[serde(default, rename = "defaultValue")]
-    pub default_value: Option<Value>,
-    /// Required flag.
+    pub default_value: Option<String>,
+    /// Required flag or condition.
+    /// TS: `bool | AttributeCondition`
     #[serde(default)]
-    pub required: Option<Value>,
-    /// Condition under which this attribute applies (CSS selector).
+    pub required: Option<AttributeRequired>,
+    /// Condition under which this attribute applies.
+    /// TS: `AttributeCondition` (CSS selector string or array of selector strings).
     #[serde(default)]
-    pub condition: Option<Value>,
+    pub condition: Option<AttributeCondition>,
     /// Equivalent states or properties.
+    /// Remains `Value` — open dictionary `{[k: string]: unknown}`.
     #[serde(default, rename = "sameStates")]
     pub same_states: Option<Value>,
     /// Ineffective condition.
+    /// TS: `AttributeCondition`
     #[serde(default)]
-    pub ineffective: Option<Value>,
+    pub ineffective: Option<AttributeCondition>,
     /// Animation type.
     #[serde(default, rename = "animationType")]
-    pub animation_type: Option<Value>,
+    pub animation_type: Option<String>,
 }
 
 // ============================================================
@@ -185,24 +326,35 @@ pub struct Attribute {
 #[derive(Debug, Default, Deserialize)]
 pub struct ElementARIA {
     /// Implicit (native) ARIA role.
+    /// TS: `false | string`
     #[serde(default, rename = "implicitRole")]
-    pub implicit_role: Option<Value>,
+    pub implicit_role: Option<ImplicitRole>,
     /// Permitted ARIA roles.
+    /// Remains `Value` — complex 3-way union: `bool | (string | {name, deprecated})[] | AAMInfo`.
+    /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default, rename = "permittedRoles")]
     pub permitted_roles: Option<Value>,
     /// ARIA properties configuration.
+    /// Remains `Value` — complex object with optional fields.
+    /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default)]
     pub properties: Option<Value>,
     /// Naming prohibited flag.
     #[serde(default, rename = "namingProhibited")]
     pub naming_prohibited: Option<bool>,
     /// Conditional ARIA overrides by selector.
+    /// Values remain `Value` — recursive ARIA override structure.
+    /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default)]
     pub conditions: Option<HashMap<String, Value>>,
     /// ARIA 1.1 version-specific overrides.
+    /// Remains `Value` — same shape as `ElementARIA` but version-specific.
+    /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default, rename = "1.1")]
     pub v1_1: Option<Value>,
     /// ARIA 1.2 version-specific overrides.
+    /// Remains `Value` — same shape as `ElementARIA` but version-specific.
+    /// Will be typed in Phase 2-3 (ARIA computation).
     #[serde(default, rename = "1.2")]
     pub v1_2: Option<Value>,
 }
@@ -282,7 +434,7 @@ pub struct ARIAProperty {
     pub name: String,
     /// Whether this is a "property" or "state".
     #[serde(rename = "type")]
-    pub prop_type: String,
+    pub prop_type: ARIAPropertyType,
     /// Deprecated flag.
     #[serde(default)]
     pub deprecated: Option<bool>,
@@ -290,7 +442,7 @@ pub struct ARIAProperty {
     #[serde(default, rename = "isGlobal")]
     pub is_global: Option<bool>,
     /// Value type.
-    pub value: String,
+    pub value: ARIAAttributeValue,
     /// Conditional values per role.
     #[serde(default, rename = "conditionalValue")]
     pub conditional_value: Option<Vec<ConditionalARIAValue>>,
@@ -314,7 +466,7 @@ pub struct ConditionalARIAValue {
     /// Roles to which this conditional value applies.
     pub role: Vec<String>,
     /// The value type for these roles.
-    pub value: String,
+    pub value: ARIAAttributeValue,
 }
 
 /// An HTML attribute equivalent to an ARIA property.
@@ -353,8 +505,9 @@ pub struct DirectivePattern {
     pub is_dynamic_value: Option<bool>,
     /// Semantic value type.
     #[serde(default, rename = "valueType")]
-    pub value_type: Option<String>,
+    pub value_type: Option<DirectiveValueType>,
     /// Whether duplicatable.
+    /// TS: `true | readonly string[]`
     #[serde(default, rename = "isDuplicatable")]
-    pub is_duplicatable: Option<Value>,
+    pub is_duplicatable: Option<IsDuplicatable>,
 }

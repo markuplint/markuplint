@@ -1,8 +1,10 @@
 ---
-description: Maintenance tasks for @markuplint/core — Rust-based MLDOM and CSS type validation exposed to Node.js via napi-rs
+description: Maintenance tasks for @markuplint/core — Rust-based MLDOM, lint engine, and type validation exposed to Node.js via napi-rs
 globs:
   - crates/markuplint-core/src/**/*.rs
   - crates/markuplint-dom/src/**/*.rs
+  - crates/markuplint-rules/src/**/*.rs
+  - crates/markuplint-selector/src/**/*.rs
   - crates/markuplint-types/src/**/*.rs
   - crates/markuplint-napi/src/**/*.rs
   - crates/**/Cargo.toml
@@ -16,11 +18,13 @@ You are maintaining `@markuplint/core`, the Rust-based DOM engine for markuplint
 
 ## Architecture
 
-This package is a Node.js native addon built with napi-rs v3. It wraps four Rust crates:
+This package is a Node.js native addon built with napi-rs v3. It wraps six Rust crates:
 
 - **markuplint-core** (`crates/markuplint-core/`) — MLAST serde types
 - **markuplint-dom** (`crates/markuplint-dom/`) — Arena-based DOM builder and traversal
-- **markuplint-types** (`crates/markuplint-types/`) — Type validators and CSS value matching engine
+- **markuplint-rules** (`crates/markuplint-rules/`) — Lint engine, rule trait, built-in rules (permitted-contents, attr-duplication)
+- **markuplint-selector** (`crates/markuplint-selector/`) — CSS selector parser and matcher
+- **markuplint-types** (`crates/markuplint-types/`) — Type validators, CSS value matching, spec data
 - **markuplint-napi** (`crates/markuplint-napi/`) — napi bridge exposing all of the above to JS
 
 See `crates/README.md` for the full architecture diagram.
@@ -57,18 +61,32 @@ When `@markuplint/ml-ast` types change:
 3. Run serde tests: `cargo test -p markuplint-core`
 4. Fix any DOM builder changes in `crates/markuplint-dom/src/builder.rs`
 
-## Build
+## Build & Test
 
 ```bash
-# Rust tests
-cargo test --manifest-path crates/Cargo.toml
+# Rust tests (from crates/ directory)
+cargo test
+cargo clippy -- -D warnings
 
-# napi binary (release)
-yarn workspace @markuplint/core run build:napi
+# napi binary (from packages/@markuplint/core/)
+npx napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform
 
-# E2E tests
+# E2E: DOM tests
 npx vitest run packages/@markuplint/core/e2e.spec.ts
+
+# E2E: permitted-contents rule (requires napi build first)
+node packages/@markuplint/core/e2e-permitted-contents.mjs
 ```
+
+### E2E permitted-contents test details
+
+`e2e-permitted-contents.mjs` runs 118 test cases ported from
+`@markuplint/rules/src/permitted-contents/index.spec.ts`.
+It requires the napi debug binary to be built first.
+
+- 88 pass: HTML-only tests executed via NAPI `lint()`
+- 30 skip: 26 framework parser dependent, 3 parser circular
+  reference bugs, 1 per-element rule config not yet supported
 
 ## Important Notes
 

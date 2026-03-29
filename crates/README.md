@@ -7,10 +7,10 @@ Rust implementation of markuplint's core components: DOM layer and type validati
 ```
 crates/
 ├── markuplint-core/         MLAST serde types (deserialization from JSON)
-├── markuplint-dom/          Arena-based DOM tree (builder + traversal)
+├── markuplint-dom/          Arena-based DOM tree (builder + traversal + attr helpers)
 ├── markuplint-html-parser/  WHATWG-conformant HTML parser (tokenizer + tree construction)
 ├── markuplint-napi/         Node.js bridge via napi-rs v3
-├── markuplint-rules/        Content model matching with full CSS selector support
+├── markuplint-rules/        Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
 ├── markuplint-selector/     CSS selector parser + matcher (with :model/:role/:aria)
 └── markuplint-types/        Type validation and spec data (serde types, lookup)
 ```
@@ -36,14 +36,18 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
   - `NapiDom.fromHtml(html)` — direct HTML parsing via Rust (no MLAST intermediate)
 - **Primitive validators**: `isInt`, `isUint`, `isFloat`, `isQuantity`, `range`, `splitUnit`
 - **CSS value matching**: `matchCssSyntax(syntax, value)` and `matchCssProperty(syntax, value)` — validates CSS values against Value Definition Syntax, including calc() type checking and var() validation
+- **`lint(mlastJson, configJson, specJson)`**: Full lint pipeline — runs all enabled Rust rules and returns violations
 
 ### markuplint-rules
 
 Content model validation rules. Bridges `markuplint-types` (spec data) and `markuplint-selector` (CSS selector matching) — exists as a separate crate to avoid a circular dependency between those two.
 
-- **Content model matching engine**: order, choice, quantifiers, backtracking (ported from `@markuplint/rules/permitted-contents/`)
+- **Content model matching engine**: order, choice, quantifiers, transparent model, conditional content model, namespace-aware lookup, backtracking (ported from `@markuplint/rules/permitted-contents/`)
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
+- **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
+- **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
+- **Built-in rules**: `attr-duplication`, `permitted-contents` (content model validation against HTML spec)
 
 ### markuplint-types
 
@@ -172,9 +176,24 @@ The Rust DOM is exposed as `@markuplint/core` (TS package). It is currently `pri
 
 `markuplint-types` is the Rust counterpart of `@markuplint/types`. It will be exposed via napi-rs in Phase 1B-4 to replace the CSS validation portion of the TypeScript package.
 
+## Known behavioral differences (Rust vs TS)
+
+The Rust `permitted-contents` rule aims for full parity with
+`@markuplint/rules/src/permitted-contents/`. Remaining differences:
+
+| Area | Rust behavior | TS behavior |
+|------|---------------|-------------|
+| `:has()` descent in non-transparent models | Reports the container that fails `:has()` | Reports the deeply nested descendant via `descendants()` |
+| Per-element rule config | Not yet supported | `rule: [{ tag, contents }]` overrides |
+| Framework parser tests | Skipped (26 tests) | All pass with JSX/Vue/Svelte/etc. parsers |
+
+See `permitted_contents.rs` module doc for the full TS↔Rust
+correspondence table.
+
 ## References
 
 - [napi-rs documentation](https://napi.rs/)
 - [markuplint ARCHITECTURE.md](../docs/architectures/ARCHITECTURE.md)
 - MLAST type definitions: `packages/@markuplint/ml-ast/src/types.ts`
 - TS MLDOM: `packages/@markuplint/ml-core/src/ml-dom/`
+- TS permitted-contents: `packages/@markuplint/rules/src/permitted-contents/`

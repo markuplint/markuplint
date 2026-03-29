@@ -490,7 +490,7 @@ crates/
 ├── markuplint-core/      MLAST serde types (JSON → Rust structs)
 ├── markuplint-dom/       Arena-based DOM (builder + traversal)
 ├── markuplint-napi/      napi-rs bridge → @markuplint/core
-├── markuplint-rules/     Content model matching (depends on types + selector)
+├── markuplint-rules/     Lint engine + rules + content model matching (depends on types + selector)
 ├── markuplint-selector/  CSS selector parser + matcher
 └── markuplint-types/     Type validation and spec data
 

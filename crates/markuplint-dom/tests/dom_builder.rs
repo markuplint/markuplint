@@ -455,6 +455,7 @@ fn format_tree(arena: &markuplint_dom::arena::DomArena, id: NodeId, indent: usiz
         DomNode::Doctype(d) => output.push_str(&format!("{prefix}Doctype({})\n", d.name)),
         DomNode::PSBlock(d) => output.push_str(&format!("{prefix}PSBlock({})\n", d.base.node_name)),
         DomNode::Invalid(d) => output.push_str(&format!("{prefix}Invalid({})\n", d.base.node_name)),
+        DomNode::EndTag(d) => output.push_str(&format!("{prefix}EndTag({})\n", d.base.node_name)),
     }
     for &child_id in node.children() {
         format_tree(arena, child_id, indent + 1, output);

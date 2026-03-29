@@ -243,6 +243,7 @@ fn node_type_str(node: &DomNode) -> &'static str {
         DomNode::Doctype(_) => "doctype",
         DomNode::PSBlock(_) => "psblock",
         DomNode::Invalid(_) => "invalid",
+        DomNode::EndTag(_) => "endtag",
     }
 }
 
@@ -381,4 +382,67 @@ pub fn match_css_property(syntax: String, value: String) -> CssMatchResult {
             expected: Some(info.expected),
         },
     }
+}
+
+// ============================================================
+// Lint pipeline
+// ============================================================
+
+/// A lint violation reported by a Rust rule.
+#[napi(object)]
+pub struct NapiViolation {
+    /// Rule identifier (e.g., `"attr-duplication"`).
+    pub rule_id: String,
+    /// Severity: `"error"`, `"warning"`, or `"info"`.
+    pub severity: String,
+    /// Human-readable message.
+    pub message: String,
+    /// 1-based line number.
+    pub line: u32,
+    /// 1-based column number.
+    pub col: u32,
+    /// Raw source text at the violation location.
+    pub raw: String,
+}
+
+/// Run Rust-native lint rules on an MLAST document.
+///
+/// Takes MLAST JSON (from any markuplint parser), a rule config JSON, and
+/// spec JSON (html-spec). Returns an array of violations.
+///
+/// Config format: `{ "rules": { "attr-duplication": true, ... } }`
+///
+/// # Errors
+///
+/// Throws a napi error if MLAST, spec, or config JSON fails to parse.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
+    let arena = builder::build_from_json(&mlast_json)
+        .map_err(|e| napi::Error::from_reason(format!("MLAST parse error: {e}")))?;
+    let spec = markuplint_types::spec::load_spec(&spec_json)
+        .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
+    let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(&config_json)
+        .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
+
+    let result = markuplint_rules::lint::lint(&arena, &spec, &config);
+
+    let violations = result
+        .violations
+        .into_iter()
+        .map(|v| NapiViolation {
+            rule_id: v.rule_id,
+            severity: match v.severity {
+                markuplint_rules::violation::Severity::Error => "error".to_string(),
+                markuplint_rules::violation::Severity::Warning => "warning".to_string(),
+                markuplint_rules::violation::Severity::Info => "info".to_string(),
+            },
+            message: v.message,
+            line: v.line,
+            col: v.col,
+            raw: v.raw,
+        })
+        .collect::<Vec<_>>();
+
+    Ok(violations)
 }

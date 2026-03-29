@@ -87,55 +87,53 @@ fn build_children(
     let mut ids = Vec::with_capacity(children.len());
 
     for child in children {
-        let id = match child.kind {
-            ChildNodeKind::Element | ChildNodeKind::CustomElement => {
-                let elem_type = if child.kind == ChildNodeKind::CustomElement {
-                    ElementType::WebComponent
-                } else {
-                    ElementType::Html
-                };
-                let eid = builder.push(DomNode::Element(ElementData {
-                    base: make_base(*next_id, &child.tag_name, Some(parent_id), depth),
-                    namespace: NamespaceURI::XHTML,
-                    element_type: elem_type,
-                    is_fragment: false,
-                    attributes: Vec::new(),
-                    has_spread_attr: false,
-                    block_behavior: None,
-                    pair_node_id: None,
-                    tag_open_char: "<".to_string(),
-                    tag_close_char: ">".to_string(),
-                    is_ghost: false,
-                }));
-                *next_id += 1;
+        let id = if child.is_element() {
+            let elem_type = match child.kind {
+                ChildNodeKind::HtmlElement => ElementType::Html,
+                ChildNodeKind::WebComponent => ElementType::WebComponent,
+                ChildNodeKind::AuthoredElement => ElementType::Authored,
+                _ => unreachable!("is_element() was true"),
+            };
+            let eid = builder.push(DomNode::Element(ElementData {
+                base: make_base(*next_id, &child.node_name, Some(parent_id), depth),
+                namespace: NamespaceURI::XHTML,
+                element_type: elem_type,
+                is_fragment: false,
+                attributes: Vec::new(),
+                has_spread_attr: false,
+                block_behavior: None,
+                pair_node_id: None,
+                tag_open_char: "<".to_string(),
+                tag_close_char: ">".to_string(),
+                is_ghost: false,
+            }));
+            *next_id += 1;
 
-                // Recurse for :has() descendants
-                if !child.children.is_empty() {
-                    let grandchild_ids = build_children(builder, next_id, &child.children, eid, depth + 1);
-                    wire_siblings(builder, &grandchild_ids);
-                    if let Some(DomNode::Element(data)) = builder.get_mut(eid) {
-                        data.base.children = grandchild_ids;
-                    }
+            // Recurse for :has() descendants
+            if !child.child_nodes.is_empty() {
+                let grandchild_ids = build_children(builder, next_id, &child.child_nodes, eid, depth + 1);
+                wire_siblings(builder, &grandchild_ids);
+                if let Some(DomNode::Element(data)) = builder.get_mut(eid) {
+                    data.base.children = grandchild_ids;
                 }
-                eid
             }
-            ChildNodeKind::Text => {
-                let tid = builder.push(DomNode::Text(TextData {
-                    base: make_base(*next_id, "#text", Some(parent_id), depth),
-                }));
-                *next_id += 1;
-                tid
-            }
-            ChildNodeKind::PreprocessorBlock => {
-                let pid = builder.push(DomNode::PSBlock(PSBlockData {
-                    base: make_base(*next_id, "#ps:block", Some(parent_id), depth),
-                    is_fragment: false,
-                    block_behavior: None,
-                    is_bogus: false,
-                }));
-                *next_id += 1;
-                pid
-            }
+            eid
+        } else if child.is_text() {
+            let tid = builder.push(DomNode::Text(TextData {
+                base: make_base(*next_id, "#text", Some(parent_id), depth),
+            }));
+            *next_id += 1;
+            tid
+        } else {
+            // PreprocessorBlock
+            let pid = builder.push(DomNode::PSBlock(PSBlockData {
+                base: make_base(*next_id, "#ps:block", Some(parent_id), depth),
+                is_fragment: false,
+                block_behavior: None,
+                is_bogus: false,
+            }));
+            *next_id += 1;
+            pid
         };
         ids.push(id);
     }
@@ -179,6 +177,7 @@ fn node_base_mut(node: &mut DomNode) -> Option<&mut NodeBase> {
         DomNode::Doctype(d) => Some(&mut d.base),
         DomNode::PSBlock(d) => Some(&mut d.base),
         DomNode::Invalid(d) => Some(&mut d.base),
+        DomNode::EndTag(d) => Some(&mut d.base),
         DomNode::Document(_) => None,
     }
 }

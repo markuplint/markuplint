@@ -9,8 +9,7 @@ markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
 markuplint-selector = { path = "../markuplint-selector" }
 markuplint-types = { path = "../markuplint-types" }
-
-[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [lints]

@@ -180,9 +180,10 @@ pub enum ExplicitRoleError {
 // --- Internal helpers ---
 
 fn implicit_role_from_aria(aria: &ElementARIA) -> Option<&str> {
-    let value = aria.implicit_role.as_ref()?;
-    // implicitRole can be a string or false (no implicit role)
-    value.as_str()
+    match aria.implicit_role.as_ref()? {
+        super::types::ImplicitRole::Role(role) => Some(role.as_str()),
+        super::types::ImplicitRole::None(_) => None,
+    }
 }
 
 fn permitted_roles_from_aria(aria: &ElementARIA) -> Option<Vec<String>> {

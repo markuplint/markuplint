@@ -860,13 +860,13 @@ mod tests {
             let selector = parsed.unwrap();
             assert_eq!(bridge.child_ids.len(), 1, "should have 1 child");
             let span_id = bridge.child_ids[0];
-            let matched = markuplint_selector::matcher::matches(&selector, &bridge.arena, span_id, None);
+            let matched = markuplint_selector::matcher::matches(&selector, &bridge.arena, span_id, None, None);
             assert!(matched, "span should match expanded selector: {expanded}");
 
             // Also test that ruby does NOT match
             let bridge2 = crate::content_model::arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
             let ruby_id = bridge2.child_ids[0];
-            let matched2 = markuplint_selector::matcher::matches(&selector, &bridge2.arena, ruby_id, None);
+            let matched2 = markuplint_selector::matcher::matches(&selector, &bridge2.arena, ruby_id, None, None);
             assert!(!matched2, "ruby should NOT match expanded selector");
         }
     }
@@ -1176,7 +1176,8 @@ mod tests {
                 &sel,
                 &bridge.arena,
                 bridge.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
@@ -1184,7 +1185,8 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
-                None
+                None,
+                None,
             ));
         }
 
@@ -1199,7 +1201,8 @@ mod tests {
                 &sel,
                 &bridge.arena,
                 bridge.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             // Without ruby child → doesn't match
@@ -1209,7 +1212,8 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
-                None
+                None,
+                None,
             ));
         }
 
@@ -1222,7 +1226,8 @@ mod tests {
                 &sel,
                 &bridge.arena,
                 bridge.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("div")]);
@@ -1230,7 +1235,8 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
-                None
+                None,
+                None,
             ));
         }
 
@@ -1270,7 +1276,8 @@ mod tests {
                 &sel,
                 &bridge.arena,
                 bridge.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             // Ruby containing ruby → doesn't match
@@ -1280,7 +1287,8 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
-                None
+                None,
+                None,
             ));
         }
 
@@ -1296,7 +1304,8 @@ mod tests {
                 &sel,
                 &bridge_meta.arena,
                 bridge_meta.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             let bridge_title = arena_bridge::build_arena("head", &[ChildNodeInfo::element("title")]);
@@ -1304,7 +1313,8 @@ mod tests {
                 &sel,
                 &bridge_title.arena,
                 bridge_title.child_ids[0],
-                None
+                None,
+                None,
             ));
 
             let bridge_link = arena_bridge::build_arena("head", &[ChildNodeInfo::element("link")]);
@@ -1312,7 +1322,8 @@ mod tests {
                 &sel,
                 &bridge_link.arena,
                 bridge_link.child_ids[0],
-                None
+                None,
+                None,
             ));
         }
 
@@ -1341,12 +1352,144 @@ mod tests {
 
         #[test]
         fn expand_model_refs_preserves_hash_category_not() {
-            // #metadata:not(title) — # prefix category with :not()
-            let spec = html_spec();
-            // needs_full_selector detects :not()
+            let _spec = html_spec();
             assert!(crate::content_model::matching::needs_full_selector(
                 "#metadata:not(title)"
             ));
+        }
+    }
+
+    // ================================================================
+    // ChildNodeInfo accessor + variant tests
+    // ================================================================
+    mod child_node_tests {
+        use super::*;
+        use crate::content_model::child_node::ChildNodeKind;
+
+        #[test]
+        fn accessors() {
+            assert!(ChildNodeInfo::text("hello").is_text());
+            assert!(!ChildNodeInfo::element("div").is_text());
+
+            assert!(ChildNodeInfo::element("div").is_element());
+            assert!(ChildNodeInfo::web_component("my-el").is_element());
+            assert!(ChildNodeInfo::authored_element("X").is_element());
+            assert!(!ChildNodeInfo::text("x").is_element());
+
+            assert!(ChildNodeInfo::web_component("x").is_custom());
+            assert!(ChildNodeInfo::authored_element("X").is_custom());
+            assert!(!ChildNodeInfo::element("div").is_custom());
+
+            assert!(ChildNodeInfo::text("   ").is_whitespace());
+            assert!(!ChildNodeInfo::text("hello").is_whitespace());
+            assert!(!ChildNodeInfo::element("div").is_whitespace());
+        }
+
+        #[test]
+        fn variant_kinds() {
+            assert!(matches!(
+                ChildNodeInfo::web_component("x").kind,
+                ChildNodeKind::WebComponent
+            ));
+            assert!(matches!(
+                ChildNodeInfo::authored_element("X").kind,
+                ChildNodeKind::AuthoredElement
+            ));
+            assert_eq!(ChildNodeInfo::custom_element("x"), ChildNodeInfo::web_component("x"));
+        }
+    }
+
+    // ================================================================
+    // arena_bridge ElementType mapping
+    // ================================================================
+    mod arena_element_type_tests {
+        use super::*;
+        use crate::content_model::arena_bridge;
+        use markuplint_core::mlast::ElementType;
+
+        #[test]
+        fn element_type_mapping() {
+            let b1 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("span")]);
+            assert_eq!(
+                b1.arena
+                    .get(b1.child_ids[0])
+                    .unwrap()
+                    .as_element()
+                    .unwrap()
+                    .element_type,
+                ElementType::Html
+            );
+
+            let b2 = arena_bridge::build_arena("div", &[ChildNodeInfo::web_component("my-el")]);
+            assert_eq!(
+                b2.arena
+                    .get(b2.child_ids[0])
+                    .unwrap()
+                    .as_element()
+                    .unwrap()
+                    .element_type,
+                ElementType::WebComponent
+            );
+
+            let b3 = arena_bridge::build_arena("div", &[ChildNodeInfo::authored_element("X")]);
+            assert_eq!(
+                b3.arena
+                    .get(b3.child_ids[0])
+                    .unwrap()
+                    .as_element()
+                    .unwrap()
+                    .element_type,
+                ElementType::Authored
+            );
+        }
+    }
+
+    // ================================================================
+    // types.rs enum deserialization
+    // ================================================================
+    mod types_enum_tests {
+        use markuplint_types::spec::load_spec;
+        use markuplint_types::spec::types::*;
+
+        fn spec() -> MLMLSpec {
+            load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+        }
+
+        #[test]
+        fn implicit_role_deserializes() {
+            let s = spec();
+            let button = s.specs.iter().find(|e| e.name == "button").unwrap();
+            assert!(matches!(button.aria.implicit_role, Some(ImplicitRole::Role(ref r)) if r == "button"));
+        }
+
+        #[test]
+        fn aria_property_type_deserializes() {
+            let s = spec();
+            let label = s.def.aria.v1_3.props.iter().find(|p| p.name == "aria-label").unwrap();
+            assert!(matches!(label.prop_type, ARIAPropertyType::Property));
+            let expanded = s
+                .def
+                .aria
+                .v1_3
+                .props
+                .iter()
+                .find(|p| p.name == "aria-expanded")
+                .unwrap();
+            assert!(matches!(expanded.prop_type, ARIAPropertyType::State));
+        }
+
+        #[test]
+        fn aria_attribute_value_deserializes() {
+            let s = spec();
+            let hidden = s.def.aria.v1_3.props.iter().find(|p| p.name == "aria-hidden").unwrap();
+            assert!(matches!(hidden.value, ARIAAttributeValue::TrueFalseUndefined));
+        }
+
+        #[test]
+        fn attribute_condition_deserializes() {
+            let s = spec();
+            let input = s.specs.iter().find(|e| e.name == "input").unwrap();
+            assert!(input.attributes["accept"].condition.is_some());
         }
     }
 }

@@ -270,6 +270,7 @@ fn resolve_links(dom: &mut DomArena, child_ids: &[NodeId], parent_id: NodeId) {
                 DomNode::Doctype(d) => Some(&mut d.base),
                 DomNode::PSBlock(d) => Some(&mut d.base),
                 DomNode::Invalid(d) => Some(&mut d.base),
+                DomNode::EndTag(d) => Some(&mut d.base),
             }
         {
             base.parent = Some(parent_id);
