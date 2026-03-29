@@ -10,7 +10,7 @@
 		"build": "lerna run build",
 		"clean": "lerna run clean",
 		"dev": "lerna run --parallel dev",
-		"test": "vitest run",
+		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
 		"lint": "run-p lint:eslint lint:prettier lint:spellcheck lint:github-actions",
 		"lint:eslint": "npx eslint --fix \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
