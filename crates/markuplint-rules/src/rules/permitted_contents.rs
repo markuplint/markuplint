@@ -221,12 +221,12 @@ impl Rule for PermittedContents {
 /// Build the spec lookup name for an element, prefixing with namespace if needed.
 ///
 /// - SVG: `svg:tagname` (e.g., `svg:a`, `svg:feBlend`)
-/// - `MathML`: `math:tagname` (e.g., `math:mfrac`)
+/// - `MathML`: `mml:tagname` (e.g., `mml:mfrac`)
 /// - HTML: `tagname` (no prefix)
 fn spec_lookup_name(namespace: &markuplint_core::mlast::NamespaceURI, tag_name: &str) -> String {
     match namespace {
         markuplint_core::mlast::NamespaceURI::SVG => format!("svg:{tag_name}"),
-        markuplint_core::mlast::NamespaceURI::MathML => format!("math:{tag_name}"),
+        markuplint_core::mlast::NamespaceURI::MathML => format!("mml:{tag_name}"),
         _ => tag_name.to_string(),
     }
 }
@@ -335,6 +335,8 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
                 };
                 // Recursively collect descendants for :has() support
                 let grandchildren = collect_child_nodes(arena, child_id);
+                // Collect attribute names for attribute-qualified matching
+                let attribute_names = extract_attribute_names(&el.attributes);
                 result.push(ChildNodeInfo {
                     kind,
                     node_name: el.base.node_name.to_ascii_lowercase(),
@@ -342,6 +344,7 @@ fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo
                     line: el.base.line,
                     col: el.base.col,
                     child_nodes: grandchildren,
+                    attribute_names,
                     transparent_ancestor: None,
                 });
             }
@@ -787,8 +790,22 @@ fn element_to_child_info(el: &markuplint_dom::node::ElementData) -> ChildNodeInf
         line: el.base.line,
         col: el.base.col,
         child_nodes: vec![],
+        attribute_names: extract_attribute_names(&el.attributes),
         transparent_ancestor: None,
     }
+}
+
+/// Extract lowercase attribute names from an element's attributes.
+fn extract_attribute_names(attrs: &[markuplint_core::mlast::MLASTAttr]) -> Vec<String> {
+    attrs
+        .iter()
+        .filter_map(|a| match a {
+            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => {
+                Some(html_attr.name.raw.to_ascii_lowercase())
+            }
+            markuplint_core::mlast::MLASTAttr::Spread(_) => None,
+        })
+        .collect()
 }
 
 #[cfg(test)]

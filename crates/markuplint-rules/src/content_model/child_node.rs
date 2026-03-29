@@ -47,6 +47,9 @@ pub struct ChildNodeInfo {
     /// Child nodes for `:has()` selector support.
     /// Aligns with TS `childNodes`.
     pub child_nodes: Vec<ChildNodeInfo>,
+    /// Attribute names present on this element (lowercase).
+    /// Used for attribute-qualified content model matching (e.g., `meta[itemprop]`).
+    pub attribute_names: Vec<String>,
     /// If this node was resolved from a transparent element, the transparent element's tag name.
     /// Used to generate "through the transparent model" messages.
     pub transparent_ancestor: Option<String>,
@@ -62,6 +65,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }
@@ -75,6 +79,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes,
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }
@@ -88,6 +93,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }
@@ -101,6 +107,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }
@@ -122,6 +129,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }
@@ -135,6 +143,7 @@ impl ChildNodeInfo {
             line: 0,
             col: 0,
             child_nodes: Vec::new(),
+            attribute_names: Vec::new(),
             transparent_ancestor: None,
         }
     }

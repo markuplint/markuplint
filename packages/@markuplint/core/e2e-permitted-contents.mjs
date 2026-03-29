@@ -224,10 +224,17 @@ test('ul:3 li valid', () => pc(lintHtml('<ul><li></li></ul>')).length === 0);
 test('ul:4 multiple li valid', () => pc(lintHtml('<ul><li></li><li></li><li></li></ul>')).length === 0);
 
 // --- meta ---
-skipTest(
-	'meta:1 meta without itemprop in li invalid',
-	'meta conditional content model not yet evaluated (requires attribute presence on child)',
-);
+test('meta:1 meta without itemprop in li invalid', () => {
+	const v = pc(
+		lintHtml(`<ol>
+\t\t\t\t<li>
+\t\t\t\t\t<span>Award winners</span>
+\t\t\t\t\t<meta content="3" />
+\t\t\t\t</li>
+\t\t\t</ol>`),
+	);
+	return v.some(x => x.message.includes('meta'));
+});
 test('meta:2 meta with itemprop in li valid', () => {
 	return (
 		pc(
@@ -365,7 +372,8 @@ test('Interactive Element in SVG: video invalid', () => {
 
 // --- MathML ---
 test('mml:mfrac 2 children valid', () => pc(lintHtml('<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>')).length === 0);
-skipTest('mml:mfrac 3 children invalid', 'MathML namespace content model lookup not yet implemented');
+test('mml:mfrac 3 children invalid', () =>
+	pc(lintHtml('<math><mfrac><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>')).length > 0);
 test('mml:math presentation elements valid', () =>
 	pc(lintHtml('<math><mi>x</mi><mo>+</mo><mn>1</mn></math>')).length === 0);
 

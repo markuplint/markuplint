@@ -548,7 +548,7 @@ fn match_element_tag(
     } else if needs_full_selector(query) {
         full_selector_match(node, query, spec, cond)
     } else {
-        markuplint_types::spec::content_model::matches_model_ref(spec, &node.node_name, &cond.resolved_selector)
+        matches_model_ref_with_attrs(spec, node, &cond.resolved_selector)
     };
 
     if matched {
@@ -572,6 +572,75 @@ fn match_element_tag(
             hint: Hints::default(),
         }
     }
+}
+
+/// Like `matches_model_ref` but also checks attribute selectors.
+///
+/// When a category entry has an attribute selector (e.g., `meta[itemprop]`),
+/// the child must have that attribute to match. Without this, `meta` without
+/// `itemprop` would incorrectly match `#flow` which includes `meta[itemprop]`.
+fn matches_model_ref_with_attrs(
+    spec: &MLMLSpec,
+    child: &ChildNodeInfo,
+    model_ref: &str,
+) -> bool {
+    use markuplint_types::spec::content_model;
+
+    // Exact tag match (no category lookup needed)
+    if model_ref.eq_ignore_ascii_case(&child.node_name) {
+        return true;
+    }
+
+    // Namespace prefix: "svg|svg" → "svg"
+    if let Some((_ns, local)) = model_ref.split_once('|')
+        && local.eq_ignore_ascii_case(&child.node_name)
+    {
+        return true;
+    }
+
+    // Category reference: `:model(category)` or `#category`
+    let category = if let Some(rest) = model_ref.strip_prefix(":model(") {
+        rest.find(')').map(|pos| format!("#{}", &rest[..pos]))
+    } else if model_ref.starts_with('#') {
+        Some(model_ref.split(':').next().unwrap_or(model_ref).to_string())
+    } else {
+        None
+    };
+
+    if let Some(cat) = category
+        && let Some(tags) = markuplint_types::spec::lookup::get_content_model_tags(spec, &cat)
+    {
+        return tags.iter().any(|t| {
+            // Check if entry has attribute selector: "meta[itemprop]"
+            if let Some(bracket_pos) = t.find('[') {
+                let tag_part = &t[..bracket_pos];
+                // Handle namespace prefix
+                let tag_name = tag_part
+                    .split('|')
+                    .next_back()
+                    .unwrap_or(tag_part);
+                if !tag_name.eq_ignore_ascii_case(&child.node_name) {
+                    return false;
+                }
+                // Extract required attribute name from [attr] or [attr=value]
+                let attr_part = &t[bracket_pos + 1..t.len().saturating_sub(1)];
+                let required_attr = attr_part
+                    .split('=')
+                    .next()
+                    .unwrap_or(attr_part)
+                    .trim()
+                    .to_ascii_lowercase();
+                // Check if child has this attribute
+                child.attribute_names.iter().any(|a| a == &required_attr)
+            } else {
+                // No attribute selector — simple tag match
+                content_model::matches_model_ref(spec, &child.node_name, t)
+            }
+        });
+    }
+
+    // Fall back to simple match
+    content_model::matches_model_ref(spec, &child.node_name, model_ref)
 }
 
 /// Check if a query requires the full CSS selector engine (`:not()`, `:has()`, `:is()`).
