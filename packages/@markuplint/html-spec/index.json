@@ -49194,7 +49194,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"]
 			},
 			"attributes": {
 				"autoplay": {
@@ -55689,7 +55689,7 @@
 					"width"
 				],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["crossorigin"]
+				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"]
 			},
 			"attributes": {
 				"autoplay": {
