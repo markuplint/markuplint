@@ -257,7 +257,11 @@ fn resolve_content_model(
 ///
 /// Supports:
 /// - `[attr]` — element has the attribute
+/// - `[attr][attr2]` — element has both attributes
 /// - `parent > child` — direct parent name check
+/// - `svg|switch > svg|a` — namespace-prefixed parent check
+/// - `datalist > [label]` — parent name + attribute check
+/// - `label` — bare string (checked as parent name for `option`)
 fn evaluate_condition(
     condition: &str,
     el: &markuplint_dom::node::ElementData,
@@ -265,24 +269,50 @@ fn evaluate_condition(
 ) -> bool {
     let condition = condition.trim();
 
-    // Attribute selector: [attr] or [attr=value]
-    if condition.starts_with('[') && condition.ends_with(']') {
-        let inner = &condition[1..condition.len() - 1];
-        // Simple presence check: [src]
-        let attr_name = inner.split('=').next().unwrap_or(inner).trim();
-        return el.attributes.iter().any(|a| match a {
-            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => {
-                html_attr.name.raw.eq_ignore_ascii_case(attr_name)
-            }
-            markuplint_core::mlast::MLASTAttr::Spread(_) => false,
-        });
+    // Pure attribute selector(s): starts with `[`
+    if condition.starts_with('[') {
+        return check_attr_condition(condition, el);
     }
 
-    // Structural selector: "parent > child" (direct child combinator)
+    // Structural selector: "parent > child"
     if let Some(pos) = condition.find('>') {
-        let parent_sel = condition[..pos].trim();
-        let _child_sel = condition[pos + 1..].trim();
-        // Check if parent element matches parent_sel
+        let ancestor_part = condition[..pos].trim();
+        let descendant_part = condition[pos + 1..].trim();
+
+        // Get parent element
+        let Some(parent_id) = el.base.parent else {
+            return false;
+        };
+        let Some(parent_node) = arena.get(parent_id) else {
+            return false;
+        };
+        let Some(parent_el) = parent_node.as_element() else {
+            return false;
+        };
+
+        // Match parent name (strip namespace prefix: "svg|switch" → "switch")
+        let parent_name = ancestor_part
+            .split('|')
+            .next_back()
+            .unwrap_or(ancestor_part);
+        if !parent_el
+            .base
+            .node_name
+            .eq_ignore_ascii_case(parent_name)
+        {
+            return false;
+        }
+
+        // If descendant part has attribute condition, check it too
+        if descendant_part.starts_with('[') {
+            return check_attr_condition(descendant_part, el);
+        }
+
+        return true;
+    }
+
+    // Bare string: treated as parent name check (e.g., "label" for option)
+    if !condition.is_empty() && !condition.contains('[') {
         if let Some(parent_id) = el.base.parent
             && let Some(parent_node) = arena.get(parent_id)
             && let Some(parent_el) = parent_node.as_element()
@@ -290,12 +320,39 @@ fn evaluate_condition(
             return parent_el
                 .base
                 .node_name
-                .eq_ignore_ascii_case(parent_sel);
+                .eq_ignore_ascii_case(condition);
         }
         return false;
     }
 
     false
+}
+
+/// Check attribute presence conditions like `[src]`, `[label][value]`.
+fn check_attr_condition(
+    condition: &str,
+    el: &markuplint_dom::node::ElementData,
+) -> bool {
+    // Split multiple attribute selectors: "[label][value]" → ["label", "value"]
+    let mut remaining = condition;
+    while let Some(start) = remaining.find('[') {
+        let Some(end) = remaining[start..].find(']') else {
+            break;
+        };
+        let attr_name = &remaining[start + 1..start + end];
+        let attr_name = attr_name.split('=').next().unwrap_or(attr_name).trim();
+        let has_attr = el.attributes.iter().any(|a| match a {
+            markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) => {
+                html_attr.name.raw.eq_ignore_ascii_case(attr_name)
+            }
+            markuplint_core::mlast::MLASTAttr::Spread(_) => false,
+        });
+        if !has_attr {
+            return false;
+        }
+        remaining = &remaining[start + end + 1..];
+    }
+    true
 }
 
 /// Convert `DomArena` children of an element to `ChildNodeInfo` vec.
@@ -1156,18 +1213,77 @@ mod tests {
     }
 
     /// Void element with whitespace-only text: should pass (no real content).
+    /// Tests through verify() by building a DOM with a text child inside br.
     #[test]
     fn void_element_whitespace_only_valid() {
-        // br is void — whitespace-only text children should be ignored
         let s = spec();
-        // Can't easily add text children with make_parent_children,
-        // so test that br with no children passes (covered by br_void_with_no_children)
-        // and verify the whitespace filter logic directly
-        let children = vec![ChildNodeInfo::text("  \n  ")];
-        let non_empty = children
-            .iter()
-            .any(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }));
-        assert!(!non_empty, "whitespace-only text should not count as content");
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let br_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "br".to_string(),
+                raw: "<br>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "br".to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(br_id) {
+            e.base.id = br_id;
+        }
+        let text_id = builder.push(DomNode::Text(TextData {
+            base: NodeBase {
+                id: 0,
+                uuid: "ws".to_string(),
+                raw: "  \n  ".to_string(),
+                offset: 4,
+                line: 1,
+                col: 5,
+                node_name: "#text".to_string(),
+                parent: Some(br_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 2,
+            },
+        }));
+        if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
+            t.base.id = text_id;
+        }
+        if let Some(DomNode::Element(e)) = builder.get_mut(br_id) {
+            e.base.children = vec![text_id];
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![br_id];
+        }
+        let arena = builder.finish();
+        let rule = PermittedContents;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let br_v: Vec<_> = violations.iter().filter(|v| v.raw == "<br>").collect();
+        assert!(br_v.is_empty(), "br with whitespace-only text should be valid");
     }
 
     /// Void element with real text content: should fail.
@@ -1310,5 +1426,223 @@ mod tests {
             matched.result_type.is_matched(),
             "meta with itemprop should match #flow"
         );
+    }
+
+    // --- evaluate_condition ---
+
+    #[test]
+    fn evaluate_condition_attribute_presence() {
+        assert_eq!(
+            check_attr_condition("[src]", &make_el_with_attr("audio", "src")),
+            true
+        );
+        assert_eq!(
+            check_attr_condition("[src]", &make_el_with_attr("audio", "controls")),
+            false
+        );
+    }
+
+    #[test]
+    fn evaluate_condition_multiple_attrs() {
+        // [label][value] — both must be present
+        let el = make_el_with_attrs("option", &["label", "value"]);
+        assert!(check_attr_condition("[label][value]", &el));
+        let el2 = make_el_with_attr("option", "label");
+        assert!(!check_attr_condition("[label][value]", &el2));
+    }
+
+    #[test]
+    fn evaluate_condition_structural_namespace() {
+        // "svg|switch > svg|a" — parent must be "switch"
+        let s = spec();
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let switch_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "sw".to_string(),
+                raw: "<switch>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "switch".to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::SVG,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(switch_id) {
+            e.base.id = switch_id;
+        }
+        let a_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "a".to_string(),
+                raw: "<a>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 9,
+                node_name: "a".to_string(),
+                parent: Some(switch_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 2,
+            },
+            namespace: NamespaceURI::SVG,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(a_id) {
+            e.base.id = a_id;
+        }
+        if let Some(DomNode::Element(e)) = builder.get_mut(switch_id) {
+            e.base.children = vec![a_id];
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![switch_id];
+        }
+        let arena = builder.finish();
+
+        let a_el = arena.get(a_id).unwrap().as_element().unwrap();
+        assert!(
+            evaluate_condition("svg|switch > svg|a", a_el, &arena),
+            "svg|switch > svg|a should match when parent is switch"
+        );
+    }
+
+    fn make_el_with_attr(tag: &str, attr: &str) -> markuplint_dom::node::ElementData {
+        use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, MLASTToken};
+        ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: String::new(),
+                raw: format!("<{tag}>"),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: tag.to_string(),
+                parent: None,
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 0,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
+                uuid: String::new(),
+                raw: attr.to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: attr.to_string(),
+                spaces_before_name: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                name: MLASTToken { uuid: String::new(), raw: attr.to_string(), offset: 0, line: 1, col: 1 },
+                spaces_before_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                spaces_after_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                start_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                value: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                end_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                is_dynamic_value: None,
+                is_directive: None,
+                potential_name: None,
+                potential_value: None,
+                value_type: None,
+                candidate: None,
+                is_duplicatable: false,
+            }))],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }
+    }
+
+    fn make_el_with_attrs(tag: &str, attrs: &[&str]) -> markuplint_dom::node::ElementData {
+        use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, MLASTToken};
+        let attributes = attrs
+            .iter()
+            .map(|attr| {
+                MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
+                    uuid: String::new(),
+                    raw: attr.to_string(),
+                    offset: 0,
+                    line: 1,
+                    col: 1,
+                    node_name: attr.to_string(),
+                    spaces_before_name: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    name: MLASTToken { uuid: String::new(), raw: attr.to_string(), offset: 0, line: 1, col: 1 },
+                    spaces_before_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    spaces_after_equal: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    start_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    value: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    end_quote: MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 1, col: 1 },
+                    is_dynamic_value: None,
+                    is_directive: None,
+                    potential_name: None,
+                    potential_value: None,
+                    value_type: None,
+                    candidate: None,
+                    is_duplicatable: false,
+                }))
+            })
+            .collect();
+        ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: String::new(),
+                raw: format!("<{tag}>"),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: tag.to_string(),
+                parent: None,
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 0,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes,
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }
     }
 }

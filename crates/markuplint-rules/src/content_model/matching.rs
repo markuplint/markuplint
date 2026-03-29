@@ -611,10 +611,17 @@ fn matches_model_ref_with_attrs(
         && let Some(tags) = markuplint_types::spec::lookup::get_content_model_tags(spec, &cat)
     {
         return tags.iter().any(|t| {
-            // Check if entry has attribute selector: "meta[itemprop]"
+            // Simple attribute selector: "meta[itemprop]", "a[href]"
+            // Pattern: tag_name followed by ONE [attr] without pseudo-classes
             if let Some(bracket_pos) = t.find('[') {
                 let tag_part = &t[..bracket_pos];
-                // Handle namespace prefix
+                // Skip complex selectors like "input:not([type='hidden' i])"
+                // — these contain pseudo-classes before `[` and need
+                // full selector matching, not simple attribute checks.
+                if tag_part.contains(':') {
+                    return content_model::matches_model_ref(spec, &child.node_name, t);
+                }
+                // Handle namespace prefix: "svg|rect[...]" → "rect"
                 let tag_name = tag_part
                     .split('|')
                     .next_back()
@@ -622,15 +629,18 @@ fn matches_model_ref_with_attrs(
                 if !tag_name.eq_ignore_ascii_case(&child.node_name) {
                     return false;
                 }
-                // Extract required attribute name from [attr] or [attr=value]
-                let attr_part = &t[bracket_pos + 1..t.len().saturating_sub(1)];
+                // Find balanced `]` for the attribute selector
+                let close = t[bracket_pos..].find(']').map(|p| bracket_pos + p);
+                let Some(close_pos) = close else {
+                    return false;
+                };
+                let attr_part = &t[bracket_pos + 1..close_pos];
                 let required_attr = attr_part
                     .split('=')
                     .next()
                     .unwrap_or(attr_part)
                     .trim()
                     .to_ascii_lowercase();
-                // Check if child has this attribute
                 child.attribute_names.iter().any(|a| a == &required_attr)
             } else {
                 // No attribute selector — simple tag match
