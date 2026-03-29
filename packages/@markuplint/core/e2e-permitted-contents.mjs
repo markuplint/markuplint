@@ -75,24 +75,27 @@ test('address:1 nested address invalid', () => {
 });
 test('address:2 deeply nested address invalid', () => {
 	const v = pc(lintHtml('<address><div><div><div><address></address></div></div></div></address>'));
-	return v.length === 1;
+	// TS reports the deeply nested <address> via :has() descent;
+	// Rust reports the intermediate <div> that contains <address>.
+	// Both detect exactly 1 violation — the target element differs.
+	return v.length === 1 && (v[0].message.includes('address') || v[0].message.includes('div'));
 });
 
 // --- audio (transparent) ---
 test('audio:1 source in div through transparent invalid (src attr)', () => {
 	const v = pc(lintHtml('<div><audio src="path/to"><source></audio></div>'));
-	return v.some(x => x.message.includes('source') && x.message.includes('through the transparent model'));
+	return v.length === 1 && v[0].message.includes('source') && v[0].message.includes('through the transparent model');
 });
 test('audio:2 source+div valid (no src attr)', () =>
 	pc(lintHtml('<div><audio><source><div></div></audio></div>')).length === 0);
 test('audio:3 source only valid (no src attr)', () => pc(lintHtml('<div><audio><source></audio></div>')).length === 0);
 test('audio:4 nested audio invalid', () => {
 	const v = pc(lintHtml('<audio><audio></audio></audio>'));
-	return v.some(x => x.message.includes('disallows') && x.message.includes('audio'));
+	return v.length === 1 && v[0].message.includes('disallows') && v[0].message.includes('audio');
 });
 test('audio:5 nested audio in div invalid', () => {
 	const v = pc(lintHtml('<div><audio><audio></audio></audio></div>'));
-	return v.some(x => x.message.includes('disallows') && x.message.includes('audio'));
+	return v.length === 1 && v[0].message.includes('disallows') && v[0].message.includes('audio');
 });
 
 // --- dl ---
@@ -105,7 +108,7 @@ test('dl:2 dt+dd+div mixed invalid', () => {
 \t\t\t\t<div></div>
 \t\t\t</dl>`),
 	);
-	return v.length > 0;
+	return v.length === 2;
 });
 test('dl:3 dt+div+dd+div mixed invalid', () => {
 	const v = pc(
@@ -116,7 +119,7 @@ test('dl:3 dt+div+dd+div mixed invalid', () => {
 \t\t\t\t<div></div>
 \t\t\t</dl>`),
 	);
-	return v.length > 0;
+	return v.length === 3;
 });
 test('dl:4 all divs', () => {
 	const v = pc(
@@ -137,7 +140,7 @@ test('dl:6 dt+dd in div (not dl child) invalid', () => {
 \t\t\t\t<dd></dd>
 \t\t\t</div>`),
 	);
-	return v.some(x => x.message.includes('dt'));
+	return v.length === 1 && v[0].message.includes('dt');
 });
 test('dl:7 div>span in dl invalid', () => {
 	const v = pc(
@@ -147,7 +150,7 @@ test('dl:7 div>span in dl invalid', () => {
 \t\t\t\t</div>
 \t\t\t</dl>`),
 	);
-	return v.length > 0;
+	return v.length === 1;
 });
 
 // --- table ---
@@ -174,7 +177,7 @@ test('table:2 tbody+thead order invalid', () => {
 \t\t\t<thead></thead>
 \t\t</table>`),
 	);
-	return v.some(x => x.message.includes('thead'));
+	return v.length === 1 && v[0].message.includes('thead');
 });
 
 // --- ruby ---
@@ -233,7 +236,7 @@ test('meta:1 meta without itemprop in li invalid', () => {
 \t\t\t\t</li>
 \t\t\t</ol>`),
 	);
-	return v.some(x => x.message.includes('meta'));
+	return v.length === 1 && v[0].message.includes('meta');
 });
 test('meta:2 meta with itemprop in li valid', () => {
 	return (
@@ -260,7 +263,7 @@ test('hgroup:2 h1+h2+h2 two extra h2 invalid', () => {
 \t\t\t\t<h2>Sub2</h2>
 \t\t\t</hgroup>`),
 	);
-	return v.some(x => x.message.includes('h2'));
+	return v.length === 1 && v[0].message.includes('h2');
 });
 test('hgroup:3 template+h1+template+h2+template invalid', () => {
 	const v = pc(
@@ -282,7 +285,7 @@ test('hgroup:4 template only invalid', () => {
 \t\t\t\t<template></template>
 \t\t\t</hgroup>`),
 	);
-	return v.length > 0;
+	return v.length === 1;
 });
 
 // --- select ---
@@ -346,7 +349,7 @@ test('Multiple: body with a>button and audio>source', () => {
 \t</audio>
 </body>`),
 	);
-	return v.length >= 2;
+	return v.length === 2;
 });
 
 // --- Dep exp named capture ---
@@ -359,7 +362,7 @@ test('custom element in div valid', () => pc(lintHtml('<div><x-item></x-item></d
 test('svg:a text valid', () => pc(lintHtml('<svg><a><text>text</text></a></svg>')).length === 0);
 test('svg:a feBlend invalid', () => {
 	const v = pc(lintHtml('<svg><a><feBlend /></a></svg>'));
-	return v.some(x => x.message.toLowerCase().includes('feblend'));
+	return v.length === 1 && v[0].message.toLowerCase().includes('feblend');
 });
 test('svg:foreignObject div valid', () =>
 	pc(lintHtml('<svg><foreignObject><div>text</div></foreignObject></svg>')).length === 0);
@@ -377,11 +380,11 @@ test('svg:foreignObject rect valid', () => {
 });
 test('svg:foreignObject div>rect invalid', () => {
 	const v = pc(lintHtml('<svg><foreignObject><div><rect /></div></foreignObject></svg>'));
-	return v.some(x => x.message.includes('rect'));
+	return v.length === 1 && v[0].message.includes('rect');
 });
 test('Interactive Element in SVG: video invalid', () => {
 	const v = pc(lintHtml('<svg><video></video></svg>'));
-	return v.some(x => x.message.includes('video'));
+	return v.length === 1 && v[0].message.includes('video');
 });
 
 // --- MathML ---
@@ -396,7 +399,7 @@ test('svg image valid', () =>
 	pc(lintHtml('<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>')).length === 0);
 test('html image in span invalid', () => {
 	const v = pc(lintHtml('<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>'));
-	return v.length > 0;
+	return v.length === 1;
 });
 
 // --- Custom element with rule config ---
@@ -416,7 +419,7 @@ test('noscript: nested noscript invalid', () => {
 \t\t\t\t\t\t<noscript></noscript>
 \t\t\t\t\t</noscript>`),
 	);
-	return v.some(x => x.message.includes('noscript') && x.message.includes('disallows'));
+	return v.length === 1 && v[0].message.includes('noscript') && v[0].message.includes('disallows');
 });
 test('iframe: disallows contents', () => {
 	const v = pc(
@@ -427,7 +430,7 @@ test('iframe: disallows contents', () => {
 \t\t\t\t\t\t<iframe></iframe>
 \t\t\t\t\t</iframe>`),
 	);
-	return v.some(x => x.message.includes('disallows contents') || x.message.includes('must not have contents'));
+	return v.length === 1 && v[0].message === 'The element disallows contents';
 });
 
 // ============================================================
@@ -516,7 +519,7 @@ test('#398: colgroup valid', () => {
 		).length === 0
 	);
 });
-test('#491: hgroup p invalid', () => pc(lintHtml('<hgroup><p>HEADING</p></hgroup>')).length > 0);
+test('#491: hgroup p invalid', () => pc(lintHtml('<hgroup><p>HEADING</p></hgroup>')).length === 1);
 test('#491: hgroup h1 valid', () => pc(lintHtml('<hgroup><h1>HEADING</h1></hgroup>')).length === 0);
 test('#491: hgroup h2 valid', () => pc(lintHtml('<hgroup><h2>HEADING</h2></hgroup>')).length === 0);
 test('#491: hgroup p+h1+p valid', () =>
@@ -528,7 +531,7 @@ test('#566: hgroup h1+h2 invalid', () => {
 \t\t\t\t\t\t<h2></h2>
 \t\t\t\t\t</hgroup>`),
 	);
-	return v.some(x => x.message.includes('h2'));
+	return v.length === 1 && v[0].message.includes('h2');
 });
 test('#606: dl>template>dt+dd invalid', () => {
 	const v = pc(
@@ -539,7 +542,7 @@ test('#606: dl>template>dt+dd invalid', () => {
 \t\t\t\t\t</template>
 \t\t\t\t</dl>`),
 	);
-	return v.length > 0;
+	return v.length === 1;
 });
 test('#617: head>title+noscript>style valid', () => {
 	return (
@@ -573,7 +576,7 @@ test('#617: div>noscript>style invalid (style not flow)', () => {
 \t\t\t\t\t</style>
 \t\t\t\t</noscript></div>`),
 	);
-	return v.some(x => x.message.includes('style') && x.message.includes('through the transparent model'));
+	return v.length === 1 && v[0].message.includes('style') && v[0].message.includes('through the transparent model');
 });
 test('#617: span>noscript>div invalid (div not phrasing)', () => {
 	const v = pc(
@@ -582,7 +585,7 @@ test('#617: span>noscript>div invalid (div not phrasing)', () => {
 \t\t\t\t\t</div>
 \t\t\t\t</noscript></span>`),
 	);
-	return v.some(x => x.message.includes('div') && x.message.includes('through the transparent model'));
+	return v.length === 1 && v[0].message.includes('div') && v[0].message.includes('through the transparent model');
 });
 skipTest('#617: Pug noscript', 'requires Pug parser');
 
@@ -594,22 +597,18 @@ test('#637: ruby valid 2', () =>
 skipTest('#1046: JSX severity override', 'requires JSX parser');
 test('#1146: datalist option valid', () => pc(lintHtml('<datalist><option></option></datalist>')).length === 0);
 
-test('#1023: custom element with config', () => {
-	// This test needs rule config option — currently we can only pass true/false
-	// The TS test uses { rule: [{ tag: 'x-container', contents: [{ require: 'x-item' }] }] }
-	// Skip for now as Rust lint() doesn't support per-element rule configs
-	return true; // TODO: implement per-element rule config
-});
+skipTest(
+	'#1023: custom element with config',
+	'requires per-element rule config option not yet supported in Rust lint()',
+);
 
 test('#1359: svg text>tspan valid', () => pc(lintHtml('<svg><text><tspan>Text</tspan></text></svg>')).length === 0);
 
 skipTest('#1451: multiple parsers', 'requires multiple framework parsers');
-test('#1451: html span>div invalid', () => pc(lintHtml('<span><div></div></span>')).length > 0);
+test('#1451: html span>div invalid', () => pc(lintHtml('<span><div></div></span>')).length === 1);
 test('#1451: html span>Div invalid (capitalized)', () => {
-	// Without JSX parser, `Div` is treated as authored element → no error
-	// In TS without JSX parser, `<Div>` is treated as regular element → error
 	const v = pc(lintHtml('<span><Div></Div></span>'));
-	return v.length > 0;
+	return v.length === 1;
 });
 
 test('#1502: svg defs>filter>feTurbulence valid', () => {
@@ -644,7 +643,7 @@ test('#3249: many transparent siblings perf', () => {
 // ============================================================
 test('details: summary+flow valid', () =>
 	pc(lintHtml('<details><summary>S</summary><p>Content</p></details>')).length === 0);
-test('details: empty invalid', () => pc(lintHtml('<details></details>')).length > 0);
+test('details: empty invalid', () => pc(lintHtml('<details></details>')).length === 1);
 test('head: title valid', () => pc(lintHtml('<html><head><title>T</title></head></html>')).length === 0);
 test('span: div invalid', () => pc(lintHtml('<span><div></div></span>')).length > 0);
 

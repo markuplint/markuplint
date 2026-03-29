@@ -50,7 +50,7 @@ impl Rule for PermittedContents {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             severity: config.severity.clone(),
-                            message: format!("The \"{tag_name}\" element must not have contents"),
+                            message: "The element disallows contents".to_string(),
                             line: el.base.line,
                             col: el.base.col,
                             raw: el.base.raw.clone(),
