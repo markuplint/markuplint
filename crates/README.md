@@ -56,12 +56,22 @@ See `crates/markuplint-types/README.md` for detailed architecture and design dec
 
 ### markuplint-html-parser
 
-WHATWG-conformant HTML parser implementing §13.2.5 (tokenization) and §13.2.6 (tree construction). Replaces parse5 with a pure Rust implementation.
+WHATWG-conformant HTML parser implementing §13.2.5 (tokenization) and §13.2.6 (tree construction). Replaces parse5 with a pure Rust implementation. Zero runtime dependencies.
 
 - **Tokenizer**: Full 80-state state machine with position tracking on all tokens
 - **Named character references**: Complete WHATWG entity table (2231 entries), generated at build time from `entities.json`
-- **Conformance testing**: Uses [html5lib-tests](https://github.com/html5lib/html5lib-tests) as a git submodule (98.3% tokenizer pass rate)
-- **Tree construction**: Arena-based internal tree (in progress)
+- **Tree construction**: All 23 insertion modes, adoption agency, foster parenting, foreign content (SVG/MathML), customizable `<select>`, fragment parsing
+- **Conformance**: [html5lib-tests](https://github.com/html5lib/html5lib-tests) — **tokenizer 6806/6806 (100%)**, **tree construction 1777/1778 (1 documented spec/test divergence skip)**
+
+Source files map to WHATWG spec sections:
+| File | WHATWG Section |
+|------|---------------|
+| `src/tokenizer/` | §13.2.5 Tokenization |
+| `src/tree_construction/mod.rs` | §13.2.6 Tree construction |
+| `src/tree_construction/adoption_agency.rs` | §13.2.6.4.7 Adoption agency |
+| `src/tree_construction/foreign_content.rs` | §13.2.6.5 Foreign content |
+| `src/tree_construction/table_modes.rs` | §13.2.6.4 Table-related modes |
+| `src/input.rs` | §13.2.3.5 Input stream preprocessing |
 
 #### Submodule setup
 
@@ -70,6 +80,19 @@ The html5lib-tests conformance suite is included as a git submodule. After cloni
 ```bash
 git submodule update --init --recursive
 ```
+
+#### Updating html5lib-tests
+
+When the upstream html5lib-tests repo is updated:
+
+```bash
+cd crates/markuplint-html-parser/tests/html5lib-tests
+git pull origin master
+cd ../../../..
+cargo test -p markuplint-html-parser
+```
+
+If new tests fail, either fix the parser or add the test to `SKIP_TESTS` in `html5lib_tree.rs` with a documented reason. The test harness enforces `assert_eq!(total_failed, 0)` — no numeric thresholds.
 
 ## Prerequisites
 

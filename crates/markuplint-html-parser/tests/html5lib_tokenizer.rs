@@ -286,10 +286,10 @@ fn run_test_file(path: &Path) -> TestFileResult {
 fn html5lib_tokenizer_test_suite() {
     let test_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tokenizer");
 
-    if !test_dir.exists() {
-        eprintln!("html5lib-tests not found. Run: git submodule update --init");
-        return;
-    }
+    assert!(
+        test_dir.exists(),
+        "html5lib-tests not found at {test_dir:?}. Run: git submodule update --init --recursive"
+    );
 
     let mut total_passed = 0;
     let mut total_failed = 0;

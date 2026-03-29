@@ -299,10 +299,10 @@ fn run_test_file(path: &Path) -> TreeFileResult {
 fn html5lib_tree_construction_test_suite() {
     let test_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tree-construction");
 
-    if !test_dir.exists() {
-        eprintln!("html5lib-tests not found. Run: git submodule update --init");
-        return;
-    }
+    assert!(
+        test_dir.exists(),
+        "html5lib-tests not found at {test_dir:?}. Run: git submodule update --init --recursive"
+    );
 
     // Skipped files: features not yet implemented (each documented).
     let skip_files: [&str; 0] = [];
@@ -397,13 +397,11 @@ fn adoption_agency_basic() {
     assert_eq!(actual, expected, "Tree mismatch for {html:?}");
 }
 
-/// Smoke test: tests1.dat must have 111/111 pass, 0 fail, 0 skip.
+/// Smoke test: tests1.dat must have 112/112 pass, 0 fail, 0 skip.
 #[test]
 fn html5lib_tree_smoke_test() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/html5lib-tests/tree-construction/tests1.dat");
-    if !path.exists() {
-        return;
-    }
+    assert!(path.exists(), "html5lib-tests not found. Run: git submodule update --init --recursive");
     let result = run_test_file(&path);
     eprintln!(
         "tests1.dat: {} passed, {} failed, {} skipped",
