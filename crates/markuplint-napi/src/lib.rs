@@ -405,6 +405,33 @@ pub struct NapiViolation {
     pub raw: String,
 }
 
+fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiViolation> {
+    result
+        .violations
+        .into_iter()
+        .map(|v| NapiViolation {
+            rule_id: v.rule_id,
+            severity: match v.severity {
+                markuplint_rules::violation::Severity::Error => "error".to_string(),
+                markuplint_rules::violation::Severity::Warning => "warning".to_string(),
+                markuplint_rules::violation::Severity::Info => "info".to_string(),
+            },
+            message: v.message,
+            line: v.line,
+            col: v.col,
+            raw: v.raw,
+        })
+        .collect()
+}
+
+fn parse_config(config_json: &str, spec_json: &str) -> napi::Result<(markuplint_types::spec::types::MLMLSpec, markuplint_rules::lint::LintConfig)> {
+    let spec = markuplint_types::spec::load_spec(spec_json)
+        .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
+    let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(config_json)
+        .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
+    Ok((spec, config))
+}
+
 /// Run Rust-native lint rules on an MLAST document.
 ///
 /// Takes MLAST JSON (from any markuplint parser), a rule config JSON, and
@@ -420,31 +447,9 @@ pub struct NapiViolation {
 pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
     let arena = builder::build_from_json(&mlast_json)
         .map_err(|e| napi::Error::from_reason(format!("MLAST parse error: {e}")))?;
-    let spec = markuplint_types::spec::load_spec(&spec_json)
-        .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
-    let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(&config_json)
-        .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
-
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
-
-    let violations = result
-        .violations
-        .into_iter()
-        .map(|v| NapiViolation {
-            rule_id: v.rule_id,
-            severity: match v.severity {
-                markuplint_rules::violation::Severity::Error => "error".to_string(),
-                markuplint_rules::violation::Severity::Warning => "warning".to_string(),
-                markuplint_rules::violation::Severity::Info => "info".to_string(),
-            },
-            message: v.message,
-            line: v.line,
-            col: v.col,
-            raw: v.raw,
-        })
-        .collect::<Vec<_>>();
-
-    Ok(violations)
+    Ok(to_napi_violations(result))
 }
 
 /// Run Rust-native lint rules on raw HTML (full Rust path).
@@ -468,30 +473,7 @@ pub fn lint_html(html: String, config_json: String, spec_json: String) -> napi::
         markuplint_html_parser::parse_document(&html)
     };
     let arena = html_builder::build_from_html_arena(&html, &parser_arena, is_fragment);
-
-    let spec = markuplint_types::spec::load_spec(&spec_json)
-        .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
-    let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(&config_json)
-        .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
-
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
-
-    let violations = result
-        .violations
-        .into_iter()
-        .map(|v| NapiViolation {
-            rule_id: v.rule_id,
-            severity: match v.severity {
-                markuplint_rules::violation::Severity::Error => "error".to_string(),
-                markuplint_rules::violation::Severity::Warning => "warning".to_string(),
-                markuplint_rules::violation::Severity::Info => "info".to_string(),
-            },
-            message: v.message,
-            line: v.line,
-            col: v.col,
-            raw: v.raw,
-        })
-        .collect::<Vec<_>>();
-
-    Ok(violations)
+    Ok(to_napi_violations(result))
 }
