@@ -126,9 +126,24 @@ The Rust DOM is exposed as `@markuplint/core` (TS package). It is currently `pri
 
 `markuplint-types` is the Rust counterpart of `@markuplint/types`. It will be exposed via napi-rs in Phase 1B-4 to replace the CSS validation portion of the TypeScript package.
 
+## Known behavioral differences (Rust vs TS)
+
+The Rust `permitted-contents` rule aims for full parity with
+`@markuplint/rules/src/permitted-contents/`. Remaining differences:
+
+| Area | Rust behavior | TS behavior |
+|------|---------------|-------------|
+| `:has()` descent in non-transparent models | Reports the container that fails `:has()` | Reports the deeply nested descendant via `descendants()` |
+| Per-element rule config | Not yet supported | `rule: [{ tag, contents }]` overrides |
+| Framework parser tests | Skipped (26 tests) | All pass with JSX/Vue/Svelte/etc. parsers |
+
+See `permitted_contents.rs` module doc for the full TS↔Rust
+correspondence table.
+
 ## References
 
 - [napi-rs documentation](https://napi.rs/)
 - [markuplint ARCHITECTURE.md](../docs/architectures/ARCHITECTURE.md)
 - MLAST type definitions: `packages/@markuplint/ml-ast/src/types.ts`
 - TS MLDOM: `packages/@markuplint/ml-core/src/ml-dom/`
+- TS permitted-contents: `packages/@markuplint/rules/src/permitted-contents/`

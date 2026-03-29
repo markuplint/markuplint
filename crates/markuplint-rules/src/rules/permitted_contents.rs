@@ -1,4 +1,28 @@
 //! `permitted-contents` rule: validates element children against HTML spec content models.
+//!
+//! Rust port of `@markuplint/rules/src/permitted-contents/`.
+//!
+//! ## TS → Rust correspondence
+//!
+//! | TS file | Rust function |
+//! |---------|---------------|
+//! | `start.ts` | [`PermittedContents::verify`] |
+//! | `represent-transparent-nodes.ts` | [`represent_transparent_nodes`] |
+//! | `order.ts` / matching engine | `matching::validate_content_model` (in `matching.rs`) |
+//! | `utils.ts::matches()` | [`matches_transparent_constraint`] |
+//! | `index.ts` (message formatting) | inline in `verify()` match arms |
+//! | `getContentModel()` conditional eval | [`resolve_content_model`] / [`evaluate_condition`] |
+//!
+//! ## Known behavioral differences from TS
+//!
+//! - **`:has()` descent in non-transparent contexts**: When a content model
+//!   uses `:has()` (e.g., `address`'s `:not(:has(address))`), the TS engine
+//!   reports the deeply nested violator via selector `descendants()` traversal.
+//!   Rust reports the intermediate container that fails `:has()`. Both detect
+//!   the same violation count; the target element differs.
+//! - **Per-element rule config**: TS supports `rule: [{ tag: 'x-container',
+//!   contents: [...] }]` for custom element content models. Rust `lint()`
+//!   does not yet accept per-element overrides.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;

@@ -57,18 +57,32 @@ When `@markuplint/ml-ast` types change:
 3. Run serde tests: `cargo test -p markuplint-core`
 4. Fix any DOM builder changes in `crates/markuplint-dom/src/builder.rs`
 
-## Build
+## Build & Test
 
 ```bash
-# Rust tests
-cargo test --manifest-path crates/Cargo.toml
+# Rust tests (from crates/ directory)
+cargo test
+cargo clippy -- -D warnings
 
-# napi binary (release)
-yarn workspace @markuplint/core run build:napi
+# napi binary (from packages/@markuplint/core/)
+npx napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform
 
-# E2E tests
+# E2E: DOM tests
 npx vitest run packages/@markuplint/core/e2e.spec.ts
+
+# E2E: permitted-contents rule (requires napi build first)
+node packages/@markuplint/core/e2e-permitted-contents.mjs
 ```
+
+### E2E permitted-contents test details
+
+`e2e-permitted-contents.mjs` runs 118 test cases ported from
+`@markuplint/rules/src/permitted-contents/index.spec.ts`.
+It requires the napi debug binary to be built first.
+
+- 88 pass: HTML-only tests executed via NAPI `lint()`
+- 30 skip: 26 framework parser dependent, 3 parser circular
+  reference bugs, 1 per-element rule config not yet supported
 
 ## Important Notes
 
