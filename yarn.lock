@@ -2513,7 +2513,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/core@workspace:packages/@markuplint/core"
   dependencies:
-    "@napi-rs/cli": "npm:^3.0.0"
+    "@napi-rs/cli": "npm:3.5.1"
   languageName: unknown
   linkType: soft
 
@@ -3009,7 +3009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/cli@npm:^3.0.0":
+"@napi-rs/cli@npm:3.5.1":
   version: 3.5.1
   resolution: "@napi-rs/cli@npm:3.5.1"
   dependencies:

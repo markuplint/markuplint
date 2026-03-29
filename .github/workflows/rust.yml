@@ -29,12 +29,12 @@ jobs:
                   submodules: recursive
 
             - name: Install Rust
-              uses: dtolnay/rust-toolchain@stable
+              uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
               with:
                   components: rustfmt, clippy
 
             - name: Cache cargo
-              uses: actions/cache@v4
+              uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
                   path: |
                       ~/.cargo/registry
@@ -65,7 +65,7 @@ jobs:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
             - name: Install Rust
-              uses: dtolnay/rust-toolchain@stable
+              uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
 
             - name: Use Node.js
               uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
@@ -73,7 +73,7 @@ jobs:
                   node-version: 22
 
             - name: Cache cargo
-              uses: actions/cache@v4
+              uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
                   path: |
                       ~/.cargo/registry
