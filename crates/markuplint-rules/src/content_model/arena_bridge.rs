@@ -106,7 +106,13 @@ fn build_children(
                         col: 0,
                         node_name: name.clone(),
                         spaces_before_name: empty_token(),
-                        name: MLASTToken { uuid: String::new(), raw: name.clone(), offset: 0, line: 0, col: 0 },
+                        name: MLASTToken {
+                            uuid: String::new(),
+                            raw: name.clone(),
+                            offset: 0,
+                            line: 0,
+                            col: 0,
+                        },
                         spaces_before_equal: empty_token(),
                         equal: empty_token(),
                         spaces_after_equal: empty_token(),
@@ -199,7 +205,13 @@ fn make_base(id: NodeId, node_name: &str, parent: Option<NodeId>, depth: u32) ->
 }
 
 fn empty_token() -> MLASTToken {
-    MLASTToken { uuid: String::new(), raw: String::new(), offset: 0, line: 0, col: 0 }
+    MLASTToken {
+        uuid: String::new(),
+        raw: String::new(),
+        offset: 0,
+        line: 0,
+        col: 0,
+    }
 }
 
 fn node_base_mut(node: &mut DomNode) -> Option<&mut NodeBase> {

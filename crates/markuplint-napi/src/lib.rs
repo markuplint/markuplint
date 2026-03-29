@@ -424,7 +424,13 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiVio
         .collect()
 }
 
-fn parse_config(config_json: &str, spec_json: &str) -> napi::Result<(markuplint_types::spec::types::MLMLSpec, markuplint_rules::lint::LintConfig)> {
+fn parse_config(
+    config_json: &str,
+    spec_json: &str,
+) -> napi::Result<(
+    markuplint_types::spec::types::MLMLSpec,
+    markuplint_rules::lint::LintConfig,
+)> {
     let spec = markuplint_types::spec::load_spec(spec_json)
         .map_err(|e| napi::Error::from_reason(format!("Spec parse error: {e}")))?;
     let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(config_json)
