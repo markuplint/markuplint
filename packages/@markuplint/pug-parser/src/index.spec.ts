@@ -765,7 +765,7 @@ a(href=url) Another link
 - var btnType = 'info'
 - var btnSize = 'lg'
 button(type='button' class='btn btn-' + btnType + ' btn-' + btnSize)
-button(type='button' class=\`btn btn-$\{btnType} btn-$\{btnSize}\`)
+button(type='button' class=\`btn btn-\${btnType} btn-\${btnSize}\`)
 			`,
 		);
 		const map = nodeListToDebugMaps(doc.nodeList, true);
