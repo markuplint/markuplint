@@ -120,10 +120,14 @@ export function activate(
 		config.get('workingDirectories') ?? undefined;
 	const workspaceFolders = (workspace.workspaceFolders ?? []).map(f => f.uri.fsPath);
 
+	const gitConfig = workspace.getConfiguration('git');
+	const gitPath: string | undefined = gitConfig.get('path') || undefined;
+
 	const initializationOptions: InitializationOptions = {
 		langConfigs,
 		workingDirectories,
 		workspaceFolders,
+		gitPath,
 	};
 
 	const clientOptions: LanguageClientOptions = {
