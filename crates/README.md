@@ -39,7 +39,7 @@ Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-s
 
 Content model validation rules. Bridges `markuplint-types` (spec data) and `markuplint-selector` (CSS selector matching) — exists as a separate crate to avoid a circular dependency between those two.
 
-- **Content model matching engine**: order, choice, quantifiers, backtracking (ported from `@markuplint/rules/permitted-contents/`)
+- **Content model matching engine**: order, choice, quantifiers, transparent model, conditional content model, namespace-aware lookup, backtracking (ported from `@markuplint/rules/permitted-contents/`)
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`

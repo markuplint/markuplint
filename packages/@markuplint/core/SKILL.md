@@ -1,8 +1,10 @@
 ---
-description: Maintenance tasks for @markuplint/core — Rust-based MLDOM and CSS type validation exposed to Node.js via napi-rs
+description: Maintenance tasks for @markuplint/core — Rust-based MLDOM, lint engine, and type validation exposed to Node.js via napi-rs
 globs:
   - crates/markuplint-core/src/**/*.rs
   - crates/markuplint-dom/src/**/*.rs
+  - crates/markuplint-rules/src/**/*.rs
+  - crates/markuplint-selector/src/**/*.rs
   - crates/markuplint-types/src/**/*.rs
   - crates/markuplint-napi/src/**/*.rs
   - crates/**/Cargo.toml
@@ -16,11 +18,13 @@ You are maintaining `@markuplint/core`, the Rust-based DOM engine for markuplint
 
 ## Architecture
 
-This package is a Node.js native addon built with napi-rs v3. It wraps four Rust crates:
+This package is a Node.js native addon built with napi-rs v3. It wraps six Rust crates:
 
 - **markuplint-core** (`crates/markuplint-core/`) — MLAST serde types
 - **markuplint-dom** (`crates/markuplint-dom/`) — Arena-based DOM builder and traversal
-- **markuplint-types** (`crates/markuplint-types/`) — Type validators and CSS value matching engine
+- **markuplint-rules** (`crates/markuplint-rules/`) — Lint engine, rule trait, built-in rules (permitted-contents, attr-duplication)
+- **markuplint-selector** (`crates/markuplint-selector/`) — CSS selector parser and matcher
+- **markuplint-types** (`crates/markuplint-types/`) — Type validators, CSS value matching, spec data
 - **markuplint-napi** (`crates/markuplint-napi/`) — napi bridge exposing all of the above to JS
 
 See `crates/README.md` for the full architecture diagram.
