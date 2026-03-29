@@ -8,6 +8,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [],
 		});
 		expect(result).toEqual([]);
@@ -18,6 +19,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [
 				{
 					severity: 'error',
@@ -70,6 +72,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [
 				{
 					severity: 'error',
@@ -93,6 +96,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [
 				{
 					severity: 'error',
@@ -117,6 +121,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [
 				{
 					severity: 'warning',
@@ -136,6 +141,7 @@ describe('githubReporter', () => {
 			filePath: '/path/to/file.html',
 			fixedCode: '',
 			sourceCode: '',
+			status: 'processed',
 			violations: [
 				{
 					severity: 'warning',
