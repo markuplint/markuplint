@@ -237,15 +237,6 @@ const SKIP_TESTS: &[(&str, &str, &str)] = &[
         "<div><svg><path><foreignObject><math></div>a",
         "spec/test divergence: foreign content end tag walk vs integration point nesting",
     ),
-    // Customizable <select>: end tags inside <option> need adoption agency
-    // processing (InBody-like). Current InSelect ignores non-matching end tags.
-    // Full customizable-select InBody delegation for option content is not yet
-    // implemented; requires significant changes to InSelect end-tag handling.
-    (
-        "webkit02.dat",
-        "<select><button><selectedcontent></button><option>x<i>",
-        "unimplemented: adoption agency inside <option> in customizable select",
-    ),
 ];
 
 fn should_skip_test(filename: &str, test: &TreeTest) -> Option<&'static str> {

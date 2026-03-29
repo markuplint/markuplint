@@ -693,6 +693,22 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
+    /// Check if a formatting element with the given tag name exists on the
+    /// open elements stack above the nearest `<select>` element. Used by
+    /// customizable `<select>` to decide whether to delegate end tags to `InBody`.
+    fn has_formatting_element_in_select(&self, tag_name: &str) -> bool {
+        for id in self.open_elements.iter_top_to_bottom() {
+            let node = self.arena.get(*id);
+            if node.is_html_element("select") {
+                return false; // reached select boundary without finding it
+            }
+            if node.is_html_element(tag_name) {
+                return true;
+            }
+        }
+        false
+    }
+
     pub(super) fn set_end_tag_span(&mut self, tag_name: &str, span: Span) {
         // Find the matching open element and set its end_tag_span.
         for id in self.open_elements.iter_top_to_bottom() {
@@ -1804,6 +1820,10 @@ impl<'a> TreeBuilder<'a> {
         match &token {
             Token::Character { ch, offset, line, col } => {
                 if *ch != '\0' {
+                    // Customizable <select>: reconstruct active formatting
+                    // elements so that text inside formatted option content
+                    // gets wrapped in the correct elements (e.g. <b>).
+                    self.reconstruct_active_formatting_elements();
                     self.insert_character(
                         *ch,
                         Position {
@@ -1974,7 +1994,16 @@ impl<'a> TreeBuilder<'a> {
                         }
                     }
                     _ => {
-                        // Parse error. Ignore.
+                        // Customizable <select>: formatting end tags inside
+                        // <option> need InBody-style processing (adoption agency),
+                        // but only if the element is INSIDE the select (above it
+                        // on the stack). Elements below the select must be ignored.
+                        if crate::tables::is_formatting_element(tag_name)
+                            && self.has_formatting_element_in_select(tag_name)
+                        {
+                            self.process_in_body(token);
+                        }
+                        // Other end tags: parse error, ignore.
                     }
                 }
             }
