@@ -8,7 +8,7 @@ import type { FixSummary, MLEngine as _MLEngine } from 'markuplint';
 import type { CodeActionParams, Position, TextDocumentIdentifier, CodeAction } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import { isFatalError } from '@markuplint/shared';
+import { isFatalError } from 'markuplint/suppressions';
 
 import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';

@@ -5,8 +5,7 @@ import type { Log } from '../types.js';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 
-import { isFatalError } from '@markuplint/shared';
-import { readSuppressionsFile, analyzeForDowngrade, applyDowngrade } from 'markuplint/suppressions';
+import { isFatalError, readSuppressionsFile, analyzeForDowngrade, applyDowngrade } from 'markuplint/suppressions';
 
 export type { DowngradedViolation } from 'markuplint/suppressions';
 
