@@ -221,7 +221,12 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub(super) fn process_token(&mut self, token: Token) {
-        // Guard against infinite reprocessing.
+        // Guard against infinite reprocessing (e.g. breakout loop at
+        // a foreign fragment root with no integration point). The depth
+        // counter is reset to 0 before each new token in `run()`, so
+        // this limit is per-token, not cumulative. 50 is well above the
+        // deepest legitimate reprocessing chain (~10 for nested template
+        // EOF cleanup).
         self.reprocess_depth += 1;
         if self.reprocess_depth > 50 {
             return;
@@ -652,6 +657,7 @@ impl<'a> TreeBuilder<'a> {
             }
         }
         let Some(select_id) = select_id else {
+            self.selectedcontent_element = None;
             return;
         };
         // Walk select's descendants to find option elements.
@@ -693,10 +699,11 @@ impl<'a> TreeBuilder<'a> {
         }
     }
 
-    /// Check if a formatting element with the given tag name exists on the
-    /// open elements stack above the nearest `<select>` element. Used by
-    /// customizable `<select>` to decide whether to delegate end tags to `InBody`.
-    fn has_formatting_element_in_select(&self, tag_name: &str) -> bool {
+    /// Check if an element with the given tag name exists on the open
+    /// elements stack above the nearest `<select>` element. Used by
+    /// customizable `<select>` to scope formatting end tag delegation:
+    /// only tags INSIDE the select should be processed by `InBody`.
+    fn is_element_above_select_on_stack(&self, tag_name: &str) -> bool {
         for id in self.open_elements.iter_top_to_bottom() {
             let node = self.arena.get(*id);
             if node.is_html_element("select") {
@@ -1999,7 +2006,7 @@ impl<'a> TreeBuilder<'a> {
                         // but only if the element is INSIDE the select (above it
                         // on the stack). Elements below the select must be ignored.
                         if crate::tables::is_formatting_element(tag_name)
-                            && self.has_formatting_element_in_select(tag_name)
+                            && self.is_element_above_select_on_stack(tag_name)
                         {
                             self.process_in_body(token);
                         }
@@ -2321,9 +2328,13 @@ impl<'a> TreeBuilder<'a> {
                         return;
                     }
                     "template" => {
-                        if let Some(&mode) = self.template_insertion_modes.last() {
-                            self.mode = mode;
-                        }
+                        // WHATWG: use the current template insertion mode.
+                        // Fallback to InBody if the stack is unexpectedly empty.
+                        self.mode = self
+                            .template_insertion_modes
+                            .last()
+                            .copied()
+                            .unwrap_or(InsertionMode::InBody);
                         return;
                     }
                     "head" => {

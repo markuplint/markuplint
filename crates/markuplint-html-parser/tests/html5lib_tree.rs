@@ -229,9 +229,20 @@ struct TreeFileResult {
 /// Tests that are skipped with documented reasons.
 /// Each entry: (file_name, test_data_prefix, reason).
 const SKIP_TESTS: &[(&str, &str, &str)] = &[
-    // WHATWG §13.2.6.5 end-tag walk pops <div> including SVG/MathML descendants.
-    // html5lib expects <div> to remain open inside foreignObject>math.
-    // Spec/test divergence for deeply nested foreign-in-integration-point.
+    // Spec/test divergence: `</div>` in foreign content, deeply nested.
+    //
+    // WHATWG §13.2.6.5 "any other end tag": walks the stack, finds <div>
+    // (HTML namespace), processes via InBody, which closes div and pops
+    // everything above it (svg, path, foreignObject, math).
+    //
+    // html5lib-tests expects <div> to remain open and "a" to become a
+    // child of <math>. Our output places "a" as a sibling of <math>
+    // inside <foreignObject> (div is closed by InBody).
+    //
+    // Expected: foreignObject > math > "a"
+    // Actual:   foreignObject > math + "a"  (div closed)
+    //
+    // Both behaviors are defensible interpretations. We follow WHATWG.
     (
         "tests10.dat",
         "<div><svg><path><foreignObject><math></div>a",

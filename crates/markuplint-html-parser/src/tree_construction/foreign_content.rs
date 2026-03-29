@@ -275,7 +275,7 @@ impl TreeBuilder<'_> {
                         {
                             break;
                         }
-                        if self.open_elements.len() <= 1 {
+                        if self.is_fragment && self.open_elements.len() <= 1 {
                             hit_fragment_root = true;
                             break;
                         }
@@ -343,7 +343,7 @@ impl TreeBuilder<'_> {
                         {
                             break;
                         }
-                        if self.open_elements.len() <= 1 {
+                        if self.is_fragment && self.open_elements.len() <= 1 {
                             hit_fragment_root = true;
                             break;
                         }
