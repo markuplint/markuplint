@@ -16,7 +16,8 @@
 		},
 		"./suppressions": {
 			"import": "./lib/suppressions/index.js",
-			"types": "./lib/suppressions/index.d.ts"
+			"types": "./lib/suppressions/index.d.ts",
+			"default": "./lib/suppressions/index.js"
 		},
 		"./package.json": "./package.json"
 	},
