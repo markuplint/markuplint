@@ -38,6 +38,23 @@ pub fn is_document_fragment(html: &str) -> bool {
     true
 }
 
+/// Detect whether the input should be parsed as a document for linting.
+///
+/// More aggressive than `is_document_fragment`: also treats `<head>` and
+/// `<body>` as document-level inputs. In fragment mode, the WHATWG parser
+/// drops these tags (they are absorbed into the implicit body context),
+/// which loses parent context that rules like `permitted-contents` depend on.
+#[must_use]
+pub fn should_parse_as_document(html: &str) -> bool {
+    let trimmed = html.trim_start();
+    let lower = trimmed.to_ascii_lowercase();
+
+    lower.starts_with("<!doctype")
+        || lower.starts_with("<html")
+        || lower.starts_with("<head")
+        || lower.starts_with("<body")
+}
+
 /// Parse an HTML string into an internal tree.
 ///
 /// Automatically detects whether the input is a full document or a fragment.
