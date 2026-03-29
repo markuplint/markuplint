@@ -91,6 +91,18 @@ test('audio:1 source in div through transparent invalid (src attr)', () => {
 test('audio:2 source+div valid (no src attr)', () =>
 	pc(lintHtmlRust('<div><audio><source><div></div></audio></div>')).length === 0);
 test('audio:3 source only valid (no src attr)', () => pc(lintHtmlRust('<div><audio><source></audio></div>')).length === 0);
+// --- interactive content conditional matching ---
+test('audio without controls in a valid', () => pc(lintHtmlRust('<a href="#"><audio></audio></a>')).length === 0);
+test('audio[controls] in a invalid', () => {
+	const v = pc(lintHtmlRust('<a href="#"><audio controls></audio></a>'));
+	return v.length === 1 && v[0].message.includes('disallows') && v[0].message.includes('audio');
+});
+test('video without controls in a valid', () => pc(lintHtmlRust('<a href="#"><video></video></a>')).length === 0);
+test('video[controls] in a invalid', () => {
+	const v = pc(lintHtmlRust('<a href="#"><video controls></video></a>'));
+	return v.length === 1 && v[0].message.includes('disallows') && v[0].message.includes('video');
+});
+
 test('audio:4 nested audio invalid', () => {
 	const v = pc(lintHtmlRust('<audio><audio></audio></audio>'));
 	return v.length === 1 && v[0].message.includes('disallows') && v[0].message.includes('audio');
@@ -302,18 +314,18 @@ test('select:5 optgroup>option valid', () =>
 test('select:6 optgroup>multiple options valid', () =>
 	pc(lintHtmlRust('<select><optgroup><option>1</option><option>2</option><option>3</option></optgroup></select>'))
 		.length === 0);
-test('select:7 div parse error', () => {
-	const v = pc(lintHtmlRust('<select>\n\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t</select>'));
-	// Rust parser handles parse errors differently from TS parser (no circular ref issue)
-	return v.length >= 0; // Accept any result — key is no crash
+test('select:7 div parse error (crash safety)', () => {
+	// Rust parser handles parse errors without circular refs — verify no crash/panic
+	pc(lintHtmlRust('<select>\n\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t</select>'));
+	return true;
 });
-test('select:8 optgroup>div parse error', () => {
-	const v = pc(
+test('select:8 optgroup>div parse error (crash safety)', () => {
+	pc(
 		lintHtmlRust(
 			'<select>\n\t\t\t\t<optgroup>\n\t\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t\t</optgroup>\n\t\t\t</select>',
 		),
 	);
-	return v.length >= 0; // Accept any result — key is no crash
+	return true;
 });
 
 // --- script/style ---
@@ -323,7 +335,7 @@ test('style: text valid', () => pc(lintHtmlRust('<style>#id { prop: value; }</st
 // --- Multiple ---
 test('Multiple: body with a>button and audio>source', () => {
 	const v = pc(
-		lintHtmlRust(`<body>
+		lintHtmlRust(`<!DOCTYPE html><html><head><title>T</title></head><body>
 	<a href="001.html">
 		<div>
 			<button></button>
@@ -332,12 +344,9 @@ test('Multiple: body with a>button and audio>source', () => {
 	<audio src="path/to">
 		<source src="path/to" />
 	</audio>
-</body>`),
+</body></html>`),
 	);
-	// lintHtml uses should_parse_as_document() which treats <body> as document mode,
-	// producing 3 violations (including "need title" for the implicit <head>).
-	// Filter to only body-related violations.
-	return v.filter(x => !x.message.includes('Need "title"')).length === 2;
+	return v.length === 2;
 });
 
 // --- Dep exp named capture ---
