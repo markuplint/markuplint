@@ -17,7 +17,7 @@ import { resolveWorkingDirectory } from '../utils/resolve-working-directory.js';
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
 import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
-import { applySuppressionsToViolations, loadSuppressions, invalidateSuppressionCache } from './suppression-support.js';
+import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
 
 /**
  * Snapshot of the latest lint result for a document, used to produce Code Actions.
@@ -150,8 +150,14 @@ export async function onDidOpen(
 		async function lint() {
 			diagnosticsLog(`Lint: ${document.uri}`);
 
-			// Apply bulk suppression severity downgrade
-			const effectiveViolations = await applyBulkSuppressions(absoluteFilePath, violations, workspace, log);
+			// Apply bulk suppression severity downgrade and prefix suppressed messages
+			const suppressedPrefix = t('[suppressed] this warning is suppressed but should be fixed:');
+			const downgraded = await applyBulkSuppressions(absoluteFilePath, violations, workspace, log);
+			const effectiveViolations = downgraded.map(v =>
+				'originalSeverity' in v && v.originalSeverity
+					? { ...v, message: `${suppressedPrefix} ${v.message}` }
+					: v,
+			);
 
 			const errors = effectiveViolations.filter(v => v.severity === 'error');
 			const warns = effectiveViolations.filter(v => v.severity === 'warning');
@@ -389,15 +395,6 @@ export function onCodeAction(params: CodeActionParams): CodeAction[] {
 	const fixAll = createFixAllAction(uri, params.context.diagnostics, fixState);
 
 	return fixAll ? [...quickFixes, fixAll] : quickFixes;
-}
-
-/**
- * Notifies the suppression support layer that a suppression file may have changed.
- *
- * @param workspace - The workspace directory
- */
-export function onSuppressionsFileChanged(workspace: string): void {
-	invalidateSuppressionCache(workspace);
 }
 
 /**

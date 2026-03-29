@@ -157,36 +157,7 @@ async function getBlameForLines(filePath: string, lines: readonly number[], log:
 		args.push('--', filePath);
 
 		const stdout = await execGit(args, path.dirname(filePath));
-
-		// Parse porcelain output.
-		// In porcelain format, the first occurrence of a commit SHA includes full
-		// header (author-time, etc.), but subsequent occurrences of the same SHA
-		// only include the abbreviated header (no author-time).
-		// We cache timestamps by SHA to handle repeated commits.
-		const commitTimestamps = new Map<string, Date>();
-		const shaLinePattern = /^([0-9a-f]{40}) \d+ (\d+)/gm;
-		const authorTimePattern = /^author-time (\d+)$/gm;
-
-		let shaMatch: RegExpExecArray | null;
-		while ((shaMatch = shaLinePattern.exec(stdout)) !== null) {
-			const sha = shaMatch[1]!;
-			const lineNo = Number.parseInt(shaMatch[2]!, 10);
-
-			// Look for author-time after this SHA line but before the next SHA line
-			if (!commitTimestamps.has(sha)) {
-				authorTimePattern.lastIndex = shaMatch.index;
-				const timeMatch = authorTimePattern.exec(stdout);
-				if (timeMatch) {
-					const timestamp = Number.parseInt(timeMatch[1]!, 10);
-					commitTimestamps.set(sha, new Date(timestamp * 1000));
-				}
-			}
-
-			const date = commitTimestamps.get(sha);
-			if (date) {
-				result.set(lineNo, date);
-			}
-		}
+		return parseBlamePorcelain(stdout);
 	} catch (error) {
 		if (isFatalError(error)) {
 			throw error;
@@ -255,6 +226,44 @@ export async function applySuppressionsToViolations(
 	}
 
 	return applyDowngrade(violations, downgradeIndices);
+}
+
+/**
+ * @experimental
+ * Parses git blame porcelain output into a Map of line number → commit date.
+ *
+ * In porcelain format, the first occurrence of a commit SHA includes full
+ * header (author-time, etc.), but subsequent occurrences of the same SHA
+ * only include the abbreviated header (no author-time).
+ * We cache timestamps by SHA to handle repeated commits.
+ */
+export function parseBlamePorcelain(stdout: string): Map<number, Date> {
+	const result = new Map<number, Date>();
+	const commitTimestamps = new Map<string, Date>();
+	const shaLinePattern = /^([0-9a-f]{40}) \d+ (\d+)/gm;
+	const authorTimePattern = /^author-time (\d+)$/gm;
+
+	let shaMatch: RegExpExecArray | null;
+	while ((shaMatch = shaLinePattern.exec(stdout)) !== null) {
+		const sha = shaMatch[1]!;
+		const lineNo = Number.parseInt(shaMatch[2]!, 10);
+
+		if (!commitTimestamps.has(sha)) {
+			authorTimePattern.lastIndex = shaMatch.index;
+			const timeMatch = authorTimePattern.exec(stdout);
+			if (timeMatch) {
+				const timestamp = Number.parseInt(timeMatch[1]!, 10);
+				commitTimestamps.set(sha, new Date(timestamp * 1000));
+			}
+		}
+
+		const date = commitTimestamps.get(sha);
+		if (date) {
+			result.set(lineNo, date);
+		}
+	}
+
+	return result;
 }
 
 /** Timeout for git commands (log, blame) in milliseconds. */
