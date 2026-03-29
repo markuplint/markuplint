@@ -1,6 +1,4 @@
 //! Stack of open elements per WHATWG §13.2.4.2.
-//!
-//! Stub — will be implemented in Phase 5.
 
 use crate::tree::node::NodeId;
 

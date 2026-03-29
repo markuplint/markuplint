@@ -892,7 +892,7 @@ impl<'a> Tokenizer<'a> {
     }
 
     // ========================================================================
-    // §13.2.5.15–31 Script data states (stub — emit characters for now)
+    // §13.2.5.15–31 Script data states
     // ========================================================================
     fn state_script_data_less_than_sign(&mut self) {
         match self.input.next_char() {
@@ -997,7 +997,7 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    // Script data escape states (§13.2.5.18–31) — stubs
+    // Script data escape states (§13.2.5.18–31)
     fn state_script_data_escape_start(&mut self) {
         if self.input.peek() == Some('-') {
             self.input.next_char();

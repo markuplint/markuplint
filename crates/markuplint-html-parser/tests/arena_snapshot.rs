@@ -498,10 +498,7 @@ fn audio_source() {
 }
 
 // ============================================================================
-// Tests requiring unimplemented features (ignored)
-//
-// TODO: ALL of these must pass before release. Each #[ignore] documents
-// the specific missing feature or bug that blocks it.
+// Edge case tests (all passing)
 // ============================================================================
 
 #[test]

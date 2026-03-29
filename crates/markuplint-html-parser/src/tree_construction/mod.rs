@@ -2173,7 +2173,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     // ========================================================================
-    // Frameset modes (stubs)
+    // §13.2.6.4.20–21 Frameset modes
     // ========================================================================
     fn process_in_frameset(&mut self, token: Token) {
         match &token {
