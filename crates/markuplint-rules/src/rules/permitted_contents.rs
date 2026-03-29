@@ -639,6 +639,10 @@ fn matches_transparent_constraint(
     if matching::needs_full_selector(constraint) || constraint.contains(":model(") {
         let expanded = matching::expand_model_refs(constraint, spec);
         let Ok(selector) = markuplint_selector::parser::parse(&expanded) else {
+            #[cfg(debug_assertions)]
+            eprintln!(
+                "[permitted-contents] selector parse failure for constraint: {constraint} (expanded: {expanded})"
+            );
             return true; // Parse failure — be permissive
         };
 

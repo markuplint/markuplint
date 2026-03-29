@@ -302,7 +302,7 @@ test('select:6 optgroup>multiple options valid', () =>
 test('select:7 div parse error invalid', () => {
 	try {
 		const v = pc(lintHtml('<select>\n\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t</select>'));
-		return v.length > 0;
+		return v.length === 1;
 	} catch (error) {
 		if (error.message?.includes('circular structure')) {
 			// Known parser bug: circular reference on parse errors in select
@@ -320,7 +320,7 @@ test('select:8 optgroup>div parse error invalid', () => {
 				'<select>\n\t\t\t\t<optgroup>\n\t\t\t\t\t<div><!-- Parse Error --></div>\n\t\t\t\t</optgroup>\n\t\t\t</select>',
 			),
 		);
-		return v.length > 0;
+		return v.length === 1;
 	} catch (error) {
 		if (error.message?.includes('circular structure')) {
 			skip++;
