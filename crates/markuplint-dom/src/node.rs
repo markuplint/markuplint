@@ -17,6 +17,7 @@ pub enum DomNode {
     Doctype(DoctypeData),
     PSBlock(PSBlockData),
     Invalid(InvalidData),
+    EndTag(EndTagData),
 }
 
 impl DomNode {
@@ -31,6 +32,7 @@ impl DomNode {
             Self::Doctype(d) => Some(&d.base),
             Self::PSBlock(d) => Some(&d.base),
             Self::Invalid(d) => Some(&d.base),
+            Self::EndTag(d) => Some(&d.base),
         }
     }
 
@@ -54,6 +56,7 @@ impl DomNode {
             Self::Doctype(d) => d.base.id,
             Self::PSBlock(d) => d.base.id,
             Self::Invalid(d) => d.base.id,
+            Self::EndTag(d) => d.base.id,
         }
     }
 
@@ -68,6 +71,7 @@ impl DomNode {
             Self::Doctype(d) => d.base.parent,
             Self::PSBlock(d) => d.base.parent,
             Self::Invalid(d) => d.base.parent,
+            Self::EndTag(d) => d.base.parent,
         }
     }
 
@@ -77,7 +81,7 @@ impl DomNode {
         match self {
             Self::Document(d) => &d.children,
             Self::Element(d) => &d.base.children,
-            Self::Text(_) | Self::Comment(_) | Self::Doctype(_) | Self::Invalid(_) => &[],
+            Self::Text(_) | Self::Comment(_) | Self::Doctype(_) | Self::Invalid(_) | Self::EndTag(_) => &[],
             Self::PSBlock(d) => &d.base.children,
         }
     }
@@ -164,6 +168,15 @@ pub struct PSBlockData {
     pub is_fragment: bool,
     pub block_behavior: Option<MLASTBlockBehavior>,
     pub is_bogus: bool,
+}
+
+/// End tag node data (e.g., `</li>`).
+///
+/// End tags appear in the MLAST as children of their parent element.
+/// They carry no semantic content but are preserved for position tracking.
+#[derive(Debug)]
+pub struct EndTagData {
+    pub base: NodeBase,
 }
 
 /// Invalid node data.
