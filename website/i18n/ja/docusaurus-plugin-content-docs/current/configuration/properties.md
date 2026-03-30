@@ -34,21 +34,21 @@
 }
 ```
 
-| プロパティ                              | 初期ガイド                                                                                                                    | インターフェイス                              |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                    | [インターフェイス](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [カスタムルールの適用](/docs/guides/applying-rules#applying-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                                                                    | [インターフェイス](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                             | [インターフェイス](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                                                                    | [インターフェイス](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                    | [インターフェイス](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                             | [インターフェイス](#severity/interface)       |
-| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                               | [インターフェイス](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                               | [インターフェイス](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                               | [インターフェイス](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                                                               | [インターフェイス](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overrides/interface)      |
+| プロパティ                              | 初期ガイド                                                                                                                 | インターフェイス                              |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                 | [インターフェイス](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [カスタムルールを使う](/docs/guides/applying-rules#using-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                          | [インターフェイス](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                 | [インターフェイス](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                          | [インターフェイス](#severity/interface)       |
+| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                            | [インターフェイス](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                                                            | [インターフェイス](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overrides/interface)      |
 
 ## パスの解決 {#resolving-specified-paths}
 
