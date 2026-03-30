@@ -92,7 +92,7 @@ Extended pseudo-classes are dispatched through the `ExtendedPseudoClass` registr
 | `has name`    | Matches if `getAccname(el)` returns a non-empty string |
 | `has no name` | Matches if `getAccname(el)` returns an empty string    |
 
-Supports version syntax: `:aria(has name|1.2)` (version parameter is parsed but not yet used for filtering).
+Supports version syntax: `:aria(has name|1.2)`. The version is passed to `getAccname()` for ARIA-version-specific name computation.
 
 #### `:role(roleName)` / `:role(roleName|version)`
 

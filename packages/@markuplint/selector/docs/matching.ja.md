@@ -92,7 +92,7 @@ div > .class:not(.other) span
 | `has name`    | `getAccname(el)` が空でない文字列を返す場合にマッチ |
 | `has no name` | `getAccname(el)` が空文字列を返す場合にマッチ       |
 
-バージョン構文をサポート: `:aria(has name|1.2)`（バージョンパラメータはパースされますが、フィルタリングにはまだ使用されていません）。
+バージョン構文をサポート: `:aria(has name|1.2)`。バージョンは `getAccname()` に渡され、ARIA バージョン固有の名前計算に使用されます。
 
 #### `:role(roleName)` / `:role(roleName|version)`
 
