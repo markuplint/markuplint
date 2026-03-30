@@ -1,6 +1,6 @@
 # セレクタの理解
 
-[部分的な適用](applying-rules#applying-to-some)をする場合には、**セレクタ**を設定する必要があります。セレクタの構文は、**CSSセレクタ**と同じものや、Markuplint独自の拡張構文などをサポートしています。そのため、とても柔軟に要素を選択できます。
+[特定の要素にルールを適用する](applying-rules#applying-rules-to-specific-elements)場合、`nodeRules` や `childNodeRules` プロパティで**セレクタ**を使います。Markuplintのセレクタ構文は **CSSセレクタ**、拡張擬似クラス、正規表現をサポートしており、ルール適用対象の要素を柔軟に制御できます。
 
 ## CSSセレクタ
 
@@ -95,7 +95,7 @@
 
 ## 詳細度
 
-**CSSセレクタ**と同じく**詳細度**がを適用されます。これにより、ルールを適用する優先順位を制御できます。
+**CSSセレクタ**と同じく**詳細度**が適用されます。これにより、ルールを適用する優先順位を制御できます。
 
 ```json class=config title="優先順位の制御"
 {
@@ -155,25 +155,29 @@
 
 Markuplint独自の擬似クラスに似た拡張セレクタをつかうことができます。
 
-- [`:closest`](./selectors#ex-selector-closest)
+- [~~`:closest`~~](./selectors#ex-selector-closest)（**非推奨** — 代わりに `:is()` を使用）
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
 
 | 構文                  | 機能                                                                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:closest(selectors)` | [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0)メソッド                                              |
+| `:closest(selectors)` | **非推奨。** 代わりに `:is(selectors *)` を使用。[移行ガイド](#ex-selector-closest)を参照。                                                 |
 | `:aria(has name)`     | [ARIA擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                      |
 | `:role(heading)`      | [ARIAロール擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                |
 | `:model(interactive)` | [コンテンツモデル擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
 
 :::info
 
-このセレクタは、あくまでも**実験的な機能**です。もちろん、互換性はありません。CSSセレクタと競合した場合は、次のメジャーバージョンで即座に削除されます。
+このセレクタは**実験的な機能**であり、互換性は保証されません。CSSセレクタと競合した場合は、次のメジャーバージョンで削除される可能性があります。
 
 :::
 
 ### `:closest` {#ex-selector-closest}
+
+:::caution 非推奨
+`:closest()` は非推奨です。次のメジャーバージョンで削除されます。代わりに標準の `:is()` 擬似クラスと子孫結合子を使用してください。
+:::
 
 **[`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0)メソッドの擬似クラス版**
 
@@ -182,6 +186,14 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 ```
 
 セレクタにマッチする祖先を持つ要素に適用されます。
+
+**移行方法:** `:closest(X)` を `:is(X *)` に置き換えてください:
+
+| 変更前                              | 変更後                        |
+| ----------------------------------- | ----------------------------- |
+| `:closest(nav)`                     | `:is(nav *)`                  |
+| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
+| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |
 
 ### `:aria` {#ex-selector-aria}
 
@@ -240,10 +252,16 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 }
 ```
 
-より複雑な要素を選択できます。詳しくは[`regexSelector`](/docs/configuration/properties#regexselector)の設定方法を参照してください。
+より複雑なマッチングパターンについては、[`regexSelector` プロパティリファレンス](/docs/configuration/properties#regexselector)を参照してください。
 
 :::caution
 
-`regexSelector`と`selector`は同時に指定できません。`regexSelector`よりも`selector`が優先されます。
+`regexSelector` と `selector` は同時に使用できません。両方が指定された場合、`selector` が優先されます。
 
 :::
+
+## 次のステップ
+
+- **[ルールを適用する](/docs/guides/applying-rules)** — `nodeRules` と `childNodeRules` でセレクタを使う
+- **[ユースケース](/docs/configuration/usecases)** — セレクタや正規表現セレクタを使った実例
+- **[設定プロパティ](/docs/configuration/properties)** — `nodeRules`、`childNodeRules`、`regexSelector` のリファレンス

@@ -1,10 +1,10 @@
 # Understanding Selectors
 
-It should set **selector** to [apply to some](applying-rules#applying-to-some). The selector syntax supports the same as **CSS Selectors**, Markuplint specific extended syntaxes, and more. So you can select elements quite flexibly.
+When you want to [apply rules to specific elements](applying-rules#applying-rules-to-specific-elements), you use **selectors** in the `nodeRules` or `childNodeRules` properties. Markuplint's selector syntax supports **CSS Selectors**, extended pseudo-classes, and regular expressions — giving you flexible control over which elements a rule targets.
 
 ## CSS Selectors
 
-It supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/selectors-4/).
+Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/selectors-4/).
 
 <details>
 <summary>Supported selector syntaxes and operators</summary>
@@ -67,7 +67,7 @@ It supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/selectors
 
 :::tip
 
-It supports **`:has` selector**. You can select elements flexibly if you do it with combinator operators.
+Markuplint supports the **`:has` selector**. Combined with combinator operators, it allows very flexible element selection.
 
 ```json class=config title=":has selector with Subsequent-sibling combinator"
 {
@@ -87,7 +87,7 @@ It supports **`:has` selector**. You can select elements flexibly if you do it w
 
 ## Specificity
 
-It applies **specificity** same as **CSS Selectors**. By doing this, you can control priority to apply rules.
+Markuplint applies **specificity** the same way as **CSS Selectors**, allowing you to control the priority of rule application.
 
 ```json class=config title="Control priority"
 {
@@ -111,11 +111,11 @@ It applies **specificity** same as **CSS Selectors**. By doing this, you can con
 ```
 
 :::info
-Apply according to settings **in order** when selectors are the same specificity.
+When selectors have the same specificity, rules are applied **in order** of their settings.
 :::
 
 :::tip
-It supports **`:where` selector**. The selector always has zero specificity.
+Markuplint supports the **`:where` selector**, which always has zero specificity.
 
 ```json class=config title="Control priority"
 {
@@ -142,27 +142,31 @@ It supports **`:where` selector**. The selector always has zero specificity.
 
 ## Extended selectors
 
-You can use selectors like pseudo-class that Markuplint extended.
+Markuplint provides extended pseudo-class-like selectors for HTML-specific matching.
 
-- [`:closest`](./selectors#ex-selector-closest)
+- [~~`:closest`~~](./selectors#ex-selector-closest) (**Deprecated** — use `:is()` instead)
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
 
 | Syntax                | Description                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:closest(selectors)` | Concept: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method                                      |
+| `:closest(selectors)` | **Deprecated.** Use `:is(selectors *)` instead. See [migration guide](#ex-selector-closest).                                                |
 | `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                   |
 | `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)              |
 | `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
 
 :::info
 
-This selectors are **experemental features**. It goes without saying these are not compatibility. It will drop these in the next major version immediately if they conflict with CSS Selectors.
+These selectors are **experimental features** and do not guarantee compatibility. They may be removed in the next major version if they conflict with CSS Selectors.
 
 :::
 
 ### `:closest` {#ex-selector-closest}
+
+:::caution Deprecated
+`:closest()` is deprecated and will be removed in the next major version. Use the standard `:is()` pseudo-class with the descendant combinator instead.
+:::
 
 **Concept**: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method
 
@@ -170,7 +174,15 @@ This selectors are **experemental features**. It goes without saying these are n
 :closest(selectors)
 ```
 
-It applies to elements that have ancestors that match the selectors.
+Matches elements that have an ancestor matching the given selectors.
+
+**Migration:** Replace `:closest(X)` with `:is(X *)`:
+
+| Before                              | After                         |
+| ----------------------------------- | ----------------------------- |
+| `:closest(nav)`                     | `:is(nav *)`                  |
+| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
+| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |
 
 ### `:aria` {#ex-selector-aria}
 
@@ -210,8 +222,7 @@ For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, 
 
 ## Regular expression selector
 
-Use **regular expressions** to select elements.
-Specify it to match the **node name**, **attribute name**, or **attribute value**, or combine each.
+Use **regular expressions** to select elements by matching the **node name**, **attribute name**, **attribute value**, or a combination of these.
 
 ```json class=config
 {
@@ -230,8 +241,14 @@ Specify it to match the **node name**, **attribute name**, or **attribute value*
 }
 ```
 
-You can select elements more complexly. See explained configuring [`regexSelector`](/docs/configuration/properties#regexselector) if you want details.
+For more complex matching patterns, see the [`regexSelector` property reference](/docs/configuration/properties#regexselector).
 
 :::caution
-Cannot specify `regexSelector` together with `selector`. It prioritizes `selector` over `regexSelector`.
+`regexSelector` and `selector` cannot be used together. If both are specified, `selector` takes priority.
 :::
+
+## Next steps
+
+- **[Applying Rules](/docs/guides/applying-rules)** — Use selectors in `nodeRules` and `childNodeRules`
+- **[Usecases](/docs/configuration/usecases)** — Real-world examples using selectors and regex selectors
+- **[Configuration Properties](/docs/configuration/properties)** — Full reference for `nodeRules`, `childNodeRules`, and `regexSelector`

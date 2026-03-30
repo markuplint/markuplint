@@ -22,9 +22,10 @@ const sidebars: SidebarsConfig = {
         id: 'guides/index',
       },
       items: [
+        'guides/ai',
+        'guides/beyond-html',
         'guides/applying-rules',
         'guides/selectors',
-        'guides/besides-html',
         'guides/presets',
         'guides/custom-rule',
         'guides/ignoring-code',
@@ -74,6 +75,11 @@ const sidebars: SidebarsConfig = {
           },
           items: [
             //
+            'configuration/usecases/react-project',
+            'configuration/usecases/vue-project',
+            'configuration/usecases/monorepo',
+            'configuration/usecases/ci-cd',
+            'configuration/usecases/accessibility',
             'configuration/usecases/architected-css',
             'configuration/usecases/consistent-image-file-naming',
           ],

@@ -8,11 +8,9 @@ $ markuplint target.html target2.html
 $ markuplint "**/*.html"
 ```
 
-The CLI takes target HTML files as variadic arguments.
-Or it accepts glob formats.
+The CLI takes target HTML files as arguments. Glob patterns are also accepted.
 
-It returns the exit code `0` when it succeeded.
-And returns `1` if the result has problems one or more.
+It returns exit code `0` on success, and `1` if one or more violations are found.
 
 ## Options
 
@@ -22,12 +20,12 @@ And returns `1` if the result has problems one or more.
 | `--fix`                    | none         | none                                     | false                          | Fix target files if the rule supports.                                       |
 | `--fix-dry-run`            | none         | none                                     | false                          | Preview what `--fix` would change without modifying files.                   |
 | `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard`                     | Select output format.                                                        |
-| `--no-search-config`       | none         | none                                     | false                          | No search a configure file automatically.                                    |
-| `--ignore-ext`             | none         | none                                     | false                          | Evaluate files that are received even though the type of extension.          |
-| `--no-import-preset-rules` | none         | none                                     | false                          | No import preset rules.                                                      |
-| `--locale`                 | none         | Language code (example: `en`)            | OS setting                     | Locale of the message of violation.                                          |
-| `--no-color`               | none         | none                                     | false                          | Output no color.                                                             |
-| `--problem-only`           | `-p`         | none                                     | false                          | Output only problems.                                                        |
+| `--no-search-config`       | none         | none                                     | false                          | Skip automatic configuration file search.                                    |
+| `--ignore-ext`             | none         | none                                     | false                          | Evaluate files regardless of their extension.                                |
+| `--no-import-preset-rules` | none         | none                                     | false                          | Do not import preset rules.                                                  |
+| `--locale`                 | none         | Language code (example: `en`)            | OS setting                     | Locale for violation messages.                                               |
+| `--no-color`               | none         | none                                     | false                          | Disable colored output.                                                      |
+| `--problem-only`           | `-p`         | none                                     | false                          | Output only violations.                                                      |
 | `--allow-warnings`         | none         | none                                     | true                           | Return status code 0 even if there are warnings.                             |
 | `--no-allow-empty-input`   | none         | none                                     | false                          | Return status code 1 even if there are no input files.                       |
 | `--show-config`            | none         | empty, `details`                         | none                           | Output computed configuration of the target file.                            |
@@ -50,18 +48,17 @@ Show help. (Short option: `-h`)
 
 ### `--version`
 
-Show installed version. (Short option: `-v`)
+Show the installed version. (Short option: `-v`)
 
 ### `--init`
 
-Initialization; Create a [configuration](configuration/index.md) file and install dependencies.
+Create a [configuration](/docs/configuration) file and install dependencies interactively.
 
 ```shell
 $ npx markuplint --init
 ```
 
-Answer questions interactively.
-Then it installs modules needed.
+Answer the interactive questions and the required modules will be installed automatically.
 
 ### `--max-count`
 
@@ -183,3 +180,9 @@ Remove stale entries from the suppressions file after fixing violations.
 ```shell
 $ markuplint "**/*.html" --prune-suppressions
 ```
+
+## Next steps
+
+- **[Ignoring Code](/docs/guides/ignoring-code)** — Suppress violations, disable rules for specific elements or files
+- **[Configuration](/docs/configuration)** — Configuration file formats and properties
+- **[FAQ](/docs/guides/faq)** — Common questions and troubleshooting

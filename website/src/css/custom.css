@@ -194,6 +194,12 @@
   --ifm-link-decoration: underline;
 }
 
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--ifm-global-radius);
+}
+
 .DocSearch {
   --docsearch-searchbox-background: var(--ifm-navbar-background-color);
   --docsearch-muted-color: var(--ifm-color-content-secondary);

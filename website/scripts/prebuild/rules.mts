@@ -183,6 +183,8 @@ async function crateRuleIndexDoc(index: RuleIndexContents, ruleDocsDistDir: stri
     'sidebar_class_name: hidden',
     '---',
     //
+    'The complete list of built-in rules. Most users don\'t need to configure these individually — [presets](/docs/guides/presets) enable them for you. See [Applying Rules](/docs/guides/applying-rules) to customize.',
+    '',
     '## Conformance checking',
     ...table(index.validation),
     '## Accessibility',

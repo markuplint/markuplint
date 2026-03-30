@@ -195,7 +195,11 @@ const config: Config = {
           },
           {
             from: '/setting-for-other-languages',
-            to: '/docs/guides/besides-html',
+            to: '/docs/guides/beyond-html',
+          },
+          {
+            from: '/docs/guides/besides-html',
+            to: '/docs/guides/beyond-html',
           },
           {
             from: '/cli',
