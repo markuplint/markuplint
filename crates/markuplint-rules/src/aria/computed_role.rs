@@ -302,7 +302,7 @@ fn get_implicit_role(
         for (selector_str, override_value) in conditions {
             // Parse and match selector against the element
             if let Ok(selector) = markuplint_selector::parser::parse(selector_str)
-                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec))
+                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None)
             {
                 // Condition matched — override implicit role from the condition value
                 // The condition value contains an ARIA override (implicitRole, etc.)

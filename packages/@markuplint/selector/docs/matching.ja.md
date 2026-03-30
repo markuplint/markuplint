@@ -92,11 +92,11 @@ div > .class:not(.other) span
 | `has name`    | `getAccname(el)` が空でない文字列を返す場合にマッチ |
 | `has no name` | `getAccname(el)` が空文字列を返す場合にマッチ       |
 
-バージョン構文をサポート: `:aria(has name|1.2)`（バージョンパラメータはパースされますが、フィルタリングにはまだ使用されていません）。
+バージョン構文をサポート: `:aria(has name|1.2)`。バージョンは `getAccname()` に渡され、ARIA バージョン固有の名前計算に使用されます。未知の構文は `SyntaxError` をスローします。
 
 #### `:role(roleName)` / `:role(roleName|version)`
 
-`getComputedRole(specs, el, version)` が返すロールの `name` が指定された `roleName` と一致する場合にマッチします。バージョンのデフォルトは `ARIA_RECOMMENDED_VERSION` です。
+`getComputedRole(specs, el, version)` が返すロールの `name` が指定された `roleName` と一致する場合にマッチします（大文字小文字を区別しない比較）。バージョンのデフォルトは `ARIA_RECOMMENDED_VERSION` です。サポートされていないバージョン文字列は `SyntaxError` をスローします。
 
 #### `:model(category)`
 

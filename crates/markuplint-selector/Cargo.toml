@@ -8,6 +8,9 @@ publish = false
 markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
 markuplint-types = { path = "../markuplint-types" }
+regex = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [lints]
 workspace = true

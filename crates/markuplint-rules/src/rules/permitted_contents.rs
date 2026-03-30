@@ -644,7 +644,7 @@ fn matches_transparent_constraint(child: &ChildNodeInfo, constraint: &str, spec:
             return true;
         };
 
-        return markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
+        return markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None);
     }
 
     // Simple selector: exact tag name or category
@@ -1288,7 +1288,7 @@ mod tests {
         let bridge = crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(&child));
         let node_id = bridge.child_ids[0];
 
-        let result = markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None);
+        let result = markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None);
         // button is interactive → :not(interactive) should be false
         assert!(!result, "button should NOT match :not(:model(interactive), ...)");
     }

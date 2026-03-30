@@ -351,10 +351,12 @@ impl<'a> Parser<'a> {
                 }
                 "role" => {
                     let content = self.parse_paren_content()?;
+                    validate_role_content(&content)?;
                     Ok(PseudoClassSelector::Role(content))
                 }
                 "aria" => {
                     let content = self.parse_paren_content()?;
+                    validate_aria_content(&content)?;
                     Ok(PseudoClassSelector::Aria(content))
                 }
                 _ => Err(format!("Unsupported pseudo-class :{name}()")),
@@ -411,6 +413,53 @@ fn is_ident_start(c: char) -> bool {
 
 fn is_selector_start(c: char) -> bool {
     is_ident_start(c) || matches!(c, '*' | '#' | '.' | '[' | ':')
+}
+
+/// Validate `:aria()` content at parse time.
+///
+/// Accepted syntax: `hasName`, `has name`, `hasNoName`, `has no name`
+/// with optional version suffix `|1.1`, `|1.2`, `|1.3`.
+fn validate_aria_content(content: &str) -> Result<(), String> {
+    let (query_str, version_str) = content.split_once('|').map_or((content, None), |(l, r)| (l, Some(r)));
+
+    // Validate query
+    let normalized: String = query_str.split_whitespace().collect::<String>().to_lowercase();
+    if normalized != "hasname" && normalized != "hasnoname" {
+        return Err(format!("Unsupported :aria() syntax: \"{content}\""));
+    }
+
+    // Validate version if present
+    if let Some(v) = version_str {
+        validate_aria_version(v.trim())?;
+    }
+
+    Ok(())
+}
+
+/// Validate `:role()` content at parse time.
+///
+/// Accepted syntax: `roleName` with optional version suffix `|1.1`, `|1.2`, `|1.3`.
+fn validate_role_content(content: &str) -> Result<(), String> {
+    let (role_name, version_str) = content.split_once('|').map_or((content, None), |(l, r)| (l, Some(r)));
+
+    if role_name.trim().is_empty() {
+        return Err("Empty :role() selector".to_string());
+    }
+
+    // Validate version if present
+    if let Some(v) = version_str {
+        validate_aria_version(v.trim())?;
+    }
+
+    Ok(())
+}
+
+/// Validate an ARIA version string. Accepts `1.1`, `1.2`, `1.3`.
+fn validate_aria_version(version: &str) -> Result<(), String> {
+    match version {
+        "1.1" | "1.2" | "1.3" => Ok(()),
+        _ => Err(format!("Unsupported ARIA version: \"{version}\"")),
+    }
 }
 
 #[cfg(test)]

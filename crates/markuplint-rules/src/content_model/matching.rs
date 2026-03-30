@@ -685,7 +685,7 @@ fn full_selector_match(node: &ChildNodeInfo, query: &str, spec: &MLMLSpec, cond:
     };
 
     // 5. Match using the full selector engine
-    markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None)
+    markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None)
 }
 
 /// Expand `:model(category)` references to `:is(tag1, tag2, ...)`.

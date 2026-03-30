@@ -3,6 +3,7 @@ members = ["markuplint-core", "markuplint-dom", "markuplint-html-parser", "marku
 resolver = "3"
 
 [workspace.dependencies]
+regex = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["unbounded_depth"] }
 

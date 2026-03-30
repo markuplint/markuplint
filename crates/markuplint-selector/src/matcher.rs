@@ -6,8 +6,10 @@
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::ElementData;
+use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::aria_resolver::AriaResolver;
 use crate::ast::{
     AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
     SimpleSelector, Specificity,
@@ -41,20 +43,21 @@ impl MatchResult {
 ///
 /// Returns `true` if any selector in the comma-separated list matches.
 /// `scope` is the element for `:scope` pseudo-class resolution.
-/// `spec` provides spec data for extended pseudo-classes: `:model()` resolves
-/// content model categories, `:role()` and `:aria()` are stubs (Phase 2-3).
+/// `spec` provides spec data for extended pseudo-classes like `:model()`.
+/// `aria` provides ARIA computation for `:role()` and `:aria()`.
 pub fn matches(
     selector: &SelectorList,
     arena: &DomArena,
     node_id: NodeId,
     scope: Option<NodeId>,
     spec: Option<&MLMLSpec>,
+    aria: Option<&dyn AriaResolver>,
 ) -> bool {
     let scope = scope.unwrap_or(node_id);
     selector
         .selectors
         .iter()
-        .any(|sel| match_complex(sel, arena, node_id, scope, spec).matched)
+        .any(|sel| match_complex(sel, arena, node_id, scope, spec, aria).matched)
 }
 
 /// Match a selector list and return the highest specificity, or `None` if no match.
@@ -65,11 +68,12 @@ pub fn match_specificity(
     node_id: NodeId,
     scope: Option<NodeId>,
     spec: Option<&MLMLSpec>,
+    aria: Option<&dyn AriaResolver>,
 ) -> Option<Specificity> {
     let scope = scope.unwrap_or(node_id);
     let mut best: Option<Specificity> = None;
     for sel in &selector.selectors {
-        let result = match_complex(sel, arena, node_id, scope, spec);
+        let result = match_complex(sel, arena, node_id, scope, spec, aria);
         if result.matched {
             match &best {
                 None => best = Some(result.specificity),
@@ -91,8 +95,9 @@ fn match_complex(
     node_id: NodeId,
     scope: NodeId,
     spec: Option<&MLMLSpec>,
+    aria: Option<&dyn AriaResolver>,
 ) -> MatchResult {
-    let result = match_compound(&selector.subject, arena, node_id, scope, spec);
+    let result = match_compound(&selector.subject, arena, node_id, scope, spec, aria);
     if !result.matched {
         return result;
     }
@@ -107,7 +112,7 @@ fn match_complex(
                 let mut found = false;
                 let mut ancestor_id = element_parent(arena, current_id);
                 while let Some(aid) = ancestor_id {
-                    let r = match_compound(compound, arena, aid, scope, spec);
+                    let r = match_compound(compound, arena, aid, scope, spec, aria);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = aid;
@@ -124,7 +129,7 @@ fn match_complex(
                 let Some(parent_id) = element_parent(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, parent_id, scope, spec);
+                let r = match_compound(compound, arena, parent_id, scope, spec, aria);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -135,7 +140,7 @@ fn match_complex(
                 let Some(prev_id) = prev_element_sibling(arena, current_id) else {
                     return MatchResult::unmatched();
                 };
-                let r = match_compound(compound, arena, prev_id, scope, spec);
+                let r = match_compound(compound, arena, prev_id, scope, spec, aria);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -146,7 +151,7 @@ fn match_complex(
                 let mut found = false;
                 let mut prev_id = prev_element_sibling(arena, current_id);
                 while let Some(pid) = prev_id {
-                    let r = match_compound(compound, arena, pid, scope, spec);
+                    let r = match_compound(compound, arena, pid, scope, spec, aria);
                     if r.matched {
                         add_specificity(&mut specificity, &r.specificity);
                         current_id = pid;
@@ -172,6 +177,7 @@ fn match_compound(
     node_id: NodeId,
     scope: NodeId,
     spec: Option<&MLMLSpec>,
+    aria: Option<&dyn AriaResolver>,
 ) -> MatchResult {
     let Some(node) = arena.get(node_id) else {
         return MatchResult::unmatched();
@@ -212,7 +218,7 @@ fn match_compound(
                 specificity[1] += 1;
             }
             SimpleSelector::PseudoClass(pseudo) => {
-                let r = match_pseudo_class(pseudo, arena, node_id, scope, spec);
+                let r = match_pseudo_class(pseudo, arena, node_id, scope, spec, aria);
                 if !r.matched {
                     return MatchResult::unmatched();
                 }
@@ -243,10 +249,11 @@ fn match_pseudo_class(
     node_id: NodeId,
     scope: NodeId,
     spec: Option<&MLMLSpec>,
+    aria: Option<&dyn AriaResolver>,
 ) -> MatchResult {
     match pseudo {
         PseudoClassSelector::Not(inner) => {
-            if matches(inner, arena, node_id, Some(scope), spec) {
+            if matches(inner, arena, node_id, Some(scope), spec, aria) {
                 MatchResult::unmatched()
             } else {
                 // :not() specificity = most specific selector in the list
@@ -254,7 +261,7 @@ fn match_pseudo_class(
             }
         }
         PseudoClassSelector::Is(inner) => {
-            if let Some(spec) = match_specificity(inner, arena, node_id, Some(scope), spec) {
+            if let Some(spec) = match_specificity(inner, arena, node_id, Some(scope), spec, aria) {
                 MatchResult::matched(spec)
             } else {
                 MatchResult::unmatched()
@@ -267,7 +274,7 @@ fn match_pseudo_class(
             let mut found = false;
             for desc in arena.descendants(node_id) {
                 if let Some(desc_el_id) = desc.as_element().map(|e| e.base.id)
-                    && matches(inner, arena, desc_el_id, Some(scope), spec)
+                    && matches(inner, arena, desc_el_id, Some(scope), spec, aria)
                 {
                     found = true;
                     break;
@@ -281,7 +288,7 @@ fn match_pseudo_class(
         }
         PseudoClassSelector::Where(inner) => {
             // :where() = same as :is() but zero specificity
-            if matches(inner, arena, node_id, Some(scope), spec) {
+            if matches(inner, arena, node_id, Some(scope), spec, aria) {
                 MatchResult::matched([0, 0, 0])
             } else {
                 MatchResult::unmatched()
@@ -307,7 +314,7 @@ fn match_pseudo_class(
             // :closest() — markuplint-specific: matches if any ancestor matches
             let mut ancestor_id = element_parent(arena, node_id);
             while let Some(aid) = ancestor_id {
-                if matches(inner, arena, aid, Some(scope), spec) {
+                if matches(inner, arena, aid, Some(scope), spec, aria) {
                     return MatchResult::matched([0, 1, 0]);
                 }
                 ancestor_id = element_parent(arena, aid);
@@ -325,11 +332,91 @@ fn match_pseudo_class(
                 MatchResult::unmatched()
             }
         }
-        PseudoClassSelector::Role(_) | PseudoClassSelector::Aria(_) => {
-            // :role() requires getComputedRole (Phase 2-3b)
-            // :aria() requires accessible name computation (Phase 2-3c)
-            MatchResult::unmatched()
-        }
+        PseudoClassSelector::Role(content) => match_role(content, arena, node_id, aria),
+        PseudoClassSelector::Aria(content) => match_aria(content, arena, node_id, aria),
+    }
+}
+
+// ============================================================
+// :role() / :aria() matching helpers
+// ============================================================
+
+fn match_role(content: &str, arena: &DomArena, node_id: NodeId, aria: Option<&dyn AriaResolver>) -> MatchResult {
+    let Some(aria) = aria else {
+        return MatchResult::unmatched();
+    };
+    let parsed = parse_role_content(content);
+    let role_name = aria.get_computed_role_name(arena, node_id, parsed.version);
+    if role_name.as_deref() == Some(&parsed.role) {
+        MatchResult::matched([0, 1, 0])
+    } else {
+        MatchResult::unmatched()
+    }
+}
+
+fn match_aria(content: &str, arena: &DomArena, node_id: NodeId, aria: Option<&dyn AriaResolver>) -> MatchResult {
+    let Some(aria) = aria else {
+        return MatchResult::unmatched();
+    };
+    let parsed = parse_aria_content(content);
+    let name = aria.get_accessible_name(arena, node_id, parsed.version);
+    let has_name = !name.is_empty();
+    match parsed.query {
+        AriaQuery::HasName if has_name => MatchResult::matched([0, 1, 0]),
+        AriaQuery::HasNoName if !has_name => MatchResult::matched([0, 1, 0]),
+        AriaQuery::HasName | AriaQuery::HasNoName => MatchResult::unmatched(),
+    }
+}
+
+// ============================================================
+// :role() / :aria() content parsing
+// ============================================================
+
+struct RoleParsed {
+    role: String,
+    version: ARIAVersion,
+}
+
+fn parse_role_content(content: &str) -> RoleParsed {
+    let (role_name, version) = split_version(content);
+    RoleParsed {
+        role: role_name.trim().to_ascii_lowercase(),
+        version,
+    }
+}
+
+enum AriaQuery {
+    HasName,
+    HasNoName,
+}
+
+struct AriaParsed {
+    query: AriaQuery,
+    version: ARIAVersion,
+}
+
+fn parse_aria_content(content: &str) -> AriaParsed {
+    let (query_str, version) = split_version(content);
+    let normalized: String = query_str.split_whitespace().collect::<String>().to_ascii_lowercase();
+    // Parser validates content, so only valid queries reach here
+    let query = match normalized.as_str() {
+        "hasnoname" => AriaQuery::HasNoName,
+        _ => AriaQuery::HasName,
+    };
+    AriaParsed { query, version }
+}
+
+fn split_version(content: &str) -> (&str, ARIAVersion) {
+    if let Some((left, right)) = content.split_once('|') {
+        let version = match right.trim() {
+            "1.1" => ARIAVersion::V1_1,
+            "1.2" => ARIAVersion::V1_2,
+            "1.3" => ARIAVersion::V1_3,
+            _ => ARIAVersion::RECOMMENDED,
+        };
+        (left, version)
+    } else {
+        (content, ARIAVersion::RECOMMENDED)
     }
 }
 
@@ -580,8 +667,78 @@ mod tests {
         assert!(!has_attr_value(&el, "id", "other"));
     }
 
+    // ============================================================
+    // :role() / :aria() content parsing tests
+    // ============================================================
+
+    #[test]
+    fn parse_role_simple() {
+        let parsed = parse_role_content("button");
+        assert_eq!(parsed.role, "button");
+        assert!(core::matches!(parsed.version, ARIAVersion::V1_3));
+    }
+
+    #[test]
+    fn parse_role_with_version() {
+        let parsed = parse_role_content("button|1.1");
+        assert_eq!(parsed.role, "button");
+        assert!(core::matches!(parsed.version, ARIAVersion::V1_1));
+    }
+
+    #[test]
+    fn parse_role_case_insensitive() {
+        let parsed = parse_role_content("BUTTON");
+        assert_eq!(parsed.role, "button");
+    }
+
+    #[test]
+    fn parse_aria_has_name() {
+        let parsed = parse_aria_content("has name");
+        assert!(core::matches!(parsed.query, AriaQuery::HasName));
+        assert!(core::matches!(parsed.version, ARIAVersion::V1_3));
+    }
+
+    #[test]
+    fn parse_aria_has_no_name() {
+        let parsed = parse_aria_content("has no name");
+        assert!(core::matches!(parsed.query, AriaQuery::HasNoName));
+    }
+
+    #[test]
+    fn parse_aria_with_version() {
+        let parsed = parse_aria_content("hasName|1.2");
+        assert!(core::matches!(parsed.query, AriaQuery::HasName));
+        assert!(core::matches!(parsed.version, ARIAVersion::V1_2));
+    }
+
+    #[test]
+    fn parse_aria_unknown_query_is_parse_error() {
+        // Unknown :aria() syntax is now caught at parse time
+        let result = parser::parse(":aria(hasNmae)");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn parse_role_with_invalid_version_is_parse_error() {
+        // Invalid ARIA version is now caught at parse time
+        let result = parser::parse(":role(button|9.9)");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn parse_aria_with_invalid_version_is_parse_error() {
+        let result = parser::parse(":aria(hasName|9.9)");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn parse_role_empty_is_parse_error() {
+        let result = parser::parse(":role()");
+        assert!(result.is_err());
+    }
+
     // Helper to create a minimal ElementData for testing
-    fn make_element(tag_name: &str, attrs: &[(&str, &str)]) -> ElementData {
+    pub fn make_element(tag_name: &str, attrs: &[(&str, &str)]) -> ElementData {
         use markuplint_core::mlast::MLASTToken;
 
         let empty_token = || MLASTToken {

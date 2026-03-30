@@ -401,8 +401,10 @@ dependencies = [
  "markuplint-dom",
  "markuplint-selector",
  "markuplint-types",
+ "regex",
  "serde",
  "serde_json",
+ "strsim",
 ]
 
 [[package]]
@@ -412,6 +414,9 @@ dependencies = [
  "markuplint-core",
  "markuplint-dom",
  "markuplint-types",
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

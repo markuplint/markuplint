@@ -16,7 +16,43 @@ use serde_json::Value;
 
 use crate::rule::{Rule, RuleConfig};
 use crate::rules::attr_duplication::AttrDuplication;
+use crate::rules::attr_value_quotes::AttrValueQuotes;
+use crate::rules::case_sensitive_attr_name::CaseSensitiveAttrName;
+use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
+use crate::rules::character_reference::CharacterReference;
+use crate::rules::class_naming::ClassNaming;
+use crate::rules::deprecated_attr::DeprecatedAttr;
+use crate::rules::deprecated_element::DeprecatedElement;
+use crate::rules::disallowed_element::DisallowedElement;
+use crate::rules::doctype::Doctype;
+use crate::rules::end_tag::EndTag;
+use crate::rules::heading_levels::HeadingLevels;
+use crate::rules::id_duplication::IdDuplication;
+use crate::rules::ineffective_attr::IneffectiveAttr;
+use crate::rules::invalid_attr::InvalidAttr;
+use crate::rules::label_has_control::LabelHasControl;
+use crate::rules::landmark_roles::LandmarkRoles;
+use crate::rules::neighbor_popovers::NeighborPopovers;
+use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
+use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
+use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_default_value::NoDefaultValue;
+use crate::rules::no_duplicate_dt::NoDuplicateDt;
+use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
+use crate::rules::no_hard_code_id::NoHardCodeId;
+use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
+use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
+use crate::rules::no_use_event_handler_attr::NoUseEventHandlerAttr;
 use crate::rules::permitted_contents::PermittedContents;
+use crate::rules::placeholder_label_option::PlaceholderLabelOption;
+use crate::rules::require_accessible_name::RequireAccessibleName;
+use crate::rules::require_datetime::RequireDatetime;
+use crate::rules::required_attr::RequiredAttr;
+use crate::rules::required_element::RequiredElement;
+use crate::rules::required_h1::RequiredH1;
+use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
+use crate::rules::use_list::UseList;
+use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
 
 /// Lint configuration for enabled rules.
@@ -37,6 +73,10 @@ pub struct LintResult {
 /// Run lint on MLAST JSON with the given config and spec.
 ///
 /// Returns a `LintResult` with all violations found.
+///
+/// TODO(Phase 5+): When config-based selector matching (nodeRules) is implemented,
+/// create `SpecAriaResolver` and pass it to selector matching calls so that
+/// `:role()` and `:aria()` pseudo-classes work in user config selectors.
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
     let rules = get_all_rules();
     let mut violations = Vec::new();
@@ -123,7 +163,46 @@ fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
 
 /// Get all registered rules.
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
-    vec![Box::new(AttrDuplication), Box::new(PermittedContents)]
+    vec![
+        Box::new(AttrDuplication),
+        Box::new(AttrValueQuotes),
+        Box::new(CaseSensitiveAttrName),
+        Box::new(CaseSensitiveTagName),
+        Box::new(CharacterReference),
+        Box::new(ClassNaming),
+        Box::new(DeprecatedAttr),
+        Box::new(DeprecatedElement),
+        Box::new(DisallowedElement),
+        Box::new(Doctype),
+        Box::new(EndTag),
+        Box::new(HeadingLevels),
+        Box::new(IdDuplication),
+        Box::new(IneffectiveAttr),
+        Box::new(LabelHasControl),
+        Box::new(LandmarkRoles),
+        Box::new(NeighborPopovers),
+        Box::new(NoAmbiguousNavigableTargetNames),
+        Box::new(NoBooleanAttrValue),
+        Box::new(NoConsecutiveBr),
+        Box::new(NoDefaultValue),
+        Box::new(NoDuplicateDt),
+        Box::new(NoEmptyPalpableContent),
+        Box::new(NoHardCodeId),
+        Box::new(NoOrphanedEndTag),
+        Box::new(NoReferToNonExistentId),
+        Box::new(NoUseEventHandlerAttr),
+        Box::new(PermittedContents),
+        Box::new(PlaceholderLabelOption),
+        Box::new(RequireAccessibleName),
+        Box::new(RequireDatetime),
+        Box::new(RequiredAttr),
+        Box::new(RequiredElement),
+        Box::new(RequiredH1),
+        Box::new(TableRowColumnAlignment),
+        Box::new(UseList),
+        Box::new(InvalidAttr),
+        Box::new(WaiAria),
+    ]
 }
 
 #[cfg(test)]
