@@ -47,6 +47,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **CSS selector integration**: `:not()`, `:has()`, `:is()` via arena bridge to `markuplint-selector`
 - **Arena bridge**: converts lightweight `ChildNodeInfo` to minimal `DomArena` for selector evaluation
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
+- **AriaResolver trait bridge**: `markuplint-selector` defines an `AriaResolver` trait for `:role()` / `:aria()` pseudo-class resolution. `markuplint-rules` implements it as `SpecAriaResolver`, breaking the circular dependency (selector → rules → selector)
 - **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
 - **Built-in rules**: `attr-duplication`, `permitted-contents` (content model validation against HTML spec)
 
