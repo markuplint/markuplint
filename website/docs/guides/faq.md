@@ -2,25 +2,21 @@
 
 ## I found a bug. What should I do?
 
-I appreciate your use. First, you must be having trouble with the current markup, and you will want to resolve that.
+Thank you for using Markuplint. First, you can **immediately [disable the rule](/docs/guides/ignoring-code#disable-by-selector)** that's causing the issue. If the problem only affects certain elements, disable the rule partially using selectors so the rest of your code stays protected.
 
-**What you can do immediately is [disable the rule](/docs/guides/ignoring-code#disable-by-selector)**. If it is a partial problem, I would recommend disabling it partially while using selectors. That way, other areas where the bug is not occurring will remain enabled, and Markuplint itself can continue to be used.
-
-We don't care if you report the bug after that. It's best to you to [create an issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix). Otherwise, it's ok you send a DM to [the author's X account](https://x.com/cloud10designs) or send a tweet with "Markuplint" in it, and we will pick it up. Please help us fix bugs and improve features.
+Then please [create an issue](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Bug&template=bug_repot.md&title=Fix) to let us know. You can also reach out on [X (Twitter)](https://x.com/cloud10designs) — we actively monitor mentions of "Markuplint".
 
 ## It's not incorrect, but I get a warning
 
-The possibility of a bug is very high, but we want something you should check before doing so.
+This is likely a bug, but please check the following first:
 
-- Using a [syntax that is not yet supported](/docs/guides/besides-html#supported-syntaxes) [#240](https://github.com/markuplint/markuplint/issues/240)
+- Are you using a [syntax with known limitations](/docs/guides/beyond-html#supported-syntaxes)? ([#240](https://github.com/markuplint/markuplint/issues/240))
 
-This is a known problem, but we are having difficulty dealing with it now. We are sorry, but we ask that you partially disable the rules.
-
-If you find any problems other than those listed above, please report them to us.
+If the issue is related to unsupported syntax, please disable the rule partially for now. If not, please report it to us.
 
 ## I am a beginner. Is it OK to use it?
 
-No problem. We encourage beginners to use it. If you want to make good use of Markuplint, you need to know Node.js and commands, but with VS Code, you can use it immediately just by installing [the extension](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint). Also, if you want to try it out, [Playground site](https://playground.markuplint.dev) is available.
+Absolutely. With VS Code, you can start immediately — just install [the extension](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) and open an HTML file. No Node.js or command line knowledge is needed. You can also try it on the [Playground](https://playground.markuplint.dev) without installing anything.
 
 ## Does Markuplint work as an accessibility checker?
 
@@ -56,7 +52,7 @@ The Open Graph protocol is a different specification from HTML and is not suppor
 
 [`invalid-attr`](/docs/rules/invalid-attr) rule warns when an attribute is specified for an element that does not exist in the HTML specification, which may be encountered frequently when using non-HTML syntax or frameworks. You can eliminate the warning by adding the attributes you want to allow. `invalid-attr` has [`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option) option to add the attribute you want to allow.
 
-For React and Vue, spec plugins have been introduced to prevent warnings on specific attributes in each syntax. (FYI: [Why need the spec plugins?](/docs/guides/besides-html#why-need-the-spec-plugins))
+For React and Vue, spec plugins have been introduced to prevent warnings on specific attributes in each syntax. (FYI: [Why need the spec plugins?](/docs/guides/beyond-html#why-need-the-spec-plugins))
 
 If you want a spec plugin that helps syntax or framework ([Next.js](https://nextjs.org/), [Nuxt](https://nuxtjs.org/), etc.), please request it from us.
 
@@ -94,7 +90,7 @@ markuplint "**/*.html"
 
 ## Can I use it with React?
 
-Of course, it can be used with React (JSX) and Vue, Svelte, Astro, Alpine.js, HTMX, Pug, PHP, etc. To use these, you need to use the official plug-ins provided by Markuplint. For more information, please refer to [Using to besides HTML](/docs/guides/besides-html).
+Of course. Markuplint supports React (JSX), Vue, Svelte, Astro, Alpine.js, HTMX, Pug, PHP, and more via official parser plugins. See [Beyond HTML](/docs/guides/beyond-html) for details.
 
 ## Does it seem that Angular is not supported?
 
@@ -114,4 +110,4 @@ markuplint "**/*.html" --format JSON
 
 ## Can it be used for E2E testing?
 
-Yes, of course. Markuplint is designed for each component checking but can also be used to check the rendered HTML. Markuplint uses a different **HTML parser** than the browser, so HTML must be passed as a string. For E2E testing, you can check either the HTML string returned by the server or the DOM tree exposed by the browser by converting it to a string and passing it to [Markuplint API](/docs/api).
+Yes. While Markuplint is primarily designed for component-level checking, it can also lint rendered HTML. Since Markuplint uses its own **HTML parser** (not a browser's), HTML must be passed as a string. For E2E testing, you can pass either the server-returned HTML string or the browser's DOM tree (serialized to a string) to the [Markuplint API](/docs/api).

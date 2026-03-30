@@ -1,10 +1,10 @@
-# HTML以外につかう
+# HTML以外で使う
 
-プラグインをつかうことで、テンプレートエンジンやフレームワークなどの**HTML以外**の構文にも適用できます。
+Markuplintは、パーサープラグインとスペックプラグインを使うことで、JSX、Vue、Svelte、Pug、PHPなど**HTML以外**の構文もリントできます。
 
 ## プラグインのインストール
 
-npmもしくはYarnで**パーサプラグイン**をインストールします。
+パッケージマネージャーで**パーサープラグイン**をインストールします。
 
 ```shell npm2yarn
 npm install -D @markuplint/pug-parser
@@ -192,7 +192,7 @@ const Component = ({ list }) => {
 ```
 <!-- prettier-ignore-end -->
 
-**プリテンダー**機能は、各コンポーネントが何としてレンダリングされるかをmarkuplintに伝えることでこれを解決します。
+**プリテンダー**機能は、各コンポーネントが何としてレンダリングされるかをMarkuplintに伝えることでこれを解決します。
 
 ### 手動設定
 
@@ -233,7 +233,7 @@ const Component = ({ list }) => {
 この機能は**実験的**であり、将来のリリースで変更される可能性があります。
 :::
 
-すべてのコンポーネントを手動でリスト化する代わりに、markuplintにコンポーネントの**ソースファイルをスキャン**させ、プリテンダーマッピングを自動的に発見させることができます。
+すべてのコンポーネントを手動でリスト化する代わりに、Markuplintにコンポーネントの**ソースファイルをスキャン**させ、プリテンダーマッピングを自動的に発見させることができます。
 
 ```json class=config
 {
@@ -247,7 +247,7 @@ const Component = ({ list }) => {
 }
 ```
 
-この1つの設定で、数十の手動プリテンダー定義を置き換えることができます。markuplintは実行時にコンポーネントファイルを解析し、以下を判定します:
+この1つの設定で、数十の手動プリテンダー定義を置き換えることができます。Markuplintは実行時にコンポーネントファイルを解析し、以下を判定します:
 
 - コンポーネントがルート要素として**レンダリングするHTML要素**
 - コンポーネントが**子要素を受け入れるか**どうか（スロット検出）
@@ -304,7 +304,7 @@ const ProfileCard = ({ children }) => {
 }
 ```
 
-これにより、markuplintは`<ProfileCard>`が[フローコンテンツ](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
+これにより、Markuplintは`<ProfileCard>`が[フローコンテンツ](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2)のみを含むことを正しく検証でき（`<article>`と同様）、`<p>`の中に`<ProfileCard>`をネストすることが不正であると判定できます。
 
 #### スキャンと手動定義の併用
 
@@ -355,3 +355,9 @@ const ProfileCard = ({ children }) => {
 <x-img src="image.png" alt="image">
 ```
 <!-- prettier-ignore-end -->
+
+## 次のステップ
+
+- **[プリセットを使う](/docs/guides/presets)** — フレームワーク別のプリセット（例: `markuplint:recommended-react`）を選ぶ
+- **[ルールを適用する](/docs/guides/applying-rules)** — プロジェクトに合わせてルールをカスタマイズする
+- **[設定プロパティ](/docs/configuration/properties)** — `parser`、`specs`、`pretenders` のリファレンス

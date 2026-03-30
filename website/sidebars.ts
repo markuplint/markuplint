@@ -23,8 +23,8 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'guides/applying-rules',
+        'guides/beyond-html',
         'guides/selectors',
-        'guides/besides-html',
         'guides/presets',
         'guides/custom-rule',
         'guides/ignoring-code',

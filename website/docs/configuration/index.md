@@ -1,10 +1,43 @@
 # Configuration
 
+## What should I configure?
+
+If you're using the [VS Code extension](/docs/guides#the-quickest-way-vs-code-extension) with plain HTML, **you don't need a configuration file** — the [recommended preset](/docs/guides/presets) is applied by default.
+
+You need a configuration file when you want to:
+
+- **Use a framework** (React, Vue, Svelte, etc.) — set up [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs)
+- **Choose a different preset** — set [`extends`](/docs/configuration/properties#extends)
+- **Customize rules** — override rules in the [`rules`](/docs/configuration/properties#rules) property
+- **Apply rules to specific elements** — use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules)
+
+A minimal configuration file looks like this:
+
+```json class=config title=".markuplintrc"
+{
+  "extends": ["markuplint:recommended"]
+}
+```
+
+For a framework project (e.g., React):
+
+```json class=config title=".markuplintrc"
+{
+  "extends": ["markuplint:recommended-react"],
+  "parser": {
+    "\\.jsx$": "@markuplint/jsx-parser"
+  },
+  "specs": {
+    "\\.jsx$": "@markuplint/react-spec"
+  }
+}
+```
+
+See [Usecases](/docs/configuration/usecases) for more real-world examples, or the [Properties reference](/docs/configuration/properties) for all available options.
+
 ## Configuration file
 
-The configuration file is for specifying the rules and options that apply to. That is usually automatic loading, but you also can load the config expected explicitly using CLI or API.
-
-The automatic loading is **recursively searching up from a directory that the target exists**. In other words, it applies the configuration files closest to each target.
+Markuplint **automatically searches** for a configuration file by recursively looking upward from the directory of the target file. It applies the configuration file closest to each target.
 
 <FileTree>
 
@@ -21,16 +54,14 @@ The automatic loading is **recursively searching up from a directory that the ta
 </FileTree>
 
 :::note
-**Markuplint** stops searching files if found it what is closest. It is **different** from the default of [**ESLint**](https://eslint.org/docs/latest/user-guide/configuring/configuration-files#cascading-and-hierarchy). Its behavior is the same as ESLint is specified as `{ "root": true }`.
+Markuplint **stops searching** when it finds the closest configuration file. This differs from [**ESLint**](https://eslint.org/docs/latest/user-guide/configuring/configuration-files#cascading-and-hierarchy)'s default behavior — it works as if `{ "root": true }` were set.
 
-Specify the `extends` field if you want to apply configuration files are upper layers more.
+Use the `extends` field if you want to inherit from configuration files in parent directories.
 :::
 
-### Format and Filename
+### Format and filename
 
-You can apply even if the filename is not `.markuplintrc`.
-
-The priority applied names are:
+The following filenames are recognized, listed by priority:
 
 - `markuplint` field in `package.json`
 - `.markuplintrc.json`
@@ -47,7 +78,7 @@ The priority applied names are:
 - `markuplint.config.ts`
 - `markuplint.config.jsonc`
 
-`.markuplintrc`'s format is JSON (with comment) and also YAML.
+`.markuplintrc` (without extension) supports JSON (with comments) and YAML formats.
 
 #### JSON
 
@@ -83,3 +114,9 @@ const config: Config = {
 
 export default config;
 ```
+
+## Next steps
+
+- **[Properties](/docs/configuration/properties)** — Full reference for all configuration properties
+- **[Usecases](/docs/configuration/usecases)** — Real-world configuration examples
+- **[Using Presets](/docs/guides/presets)** — Choose the right preset for your project

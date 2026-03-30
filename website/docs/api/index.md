@@ -1,5 +1,7 @@
 # API
 
+The Markuplint API allows you to run linting programmatically from Node.js. This is useful for CI/CD pipelines, E2E testing, or building custom integrations.
+
 ## Basic Usage
 
 ```js

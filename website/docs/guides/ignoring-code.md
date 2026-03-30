@@ -9,7 +9,7 @@ Use [`excludeFiles`](/docs/configuration/properties#excludefiles) property on th
 ### Disable by selector {#disable-by-selector}
 
 Use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules) property on the configuration.
-See [Applying to some](./applying-rules/#applying-to-some).
+See [Applying rules to specific elements](./applying-rules/#applying-rules-to-specific-elements).
 
 ```json class=config
 {
@@ -141,3 +141,9 @@ If the scope cannot be narrowed (e.g., violations span the entire document), the
 When a scope selector no longer matches any element (e.g., after refactoring), the suppression remains active and `--prune-suppressions` will recommend cleanup. **Broken scopes never cause new violations to be hidden.**
 
 For the full design rationale, see the [Bulk Suppressions design document](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md).
+
+## Next steps
+
+- **[CLI](/docs/guides/cli)** — Full list of CLI options including `--suppress` and `--prune-suppressions`
+- **[Applying Rules](/docs/guides/applying-rules)** — Fine-tune rules instead of disabling them entirely
+- **[Configuration Properties](/docs/configuration/properties)** — Reference for `excludeFiles`, `nodeRules`, `childNodeRules`, and `overrides`

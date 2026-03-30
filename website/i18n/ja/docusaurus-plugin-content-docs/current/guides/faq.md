@@ -14,7 +14,7 @@
 
 バグの可能性が大いに高いですが、その前に確認していただきたいことがあります。
 
-- [サポートが間に合っていない構文](/docs/guides/besides-html#supported-syntaxes)を使っている [#240](https://github.com/markuplint/markuplint/issues/240)
+- [サポートが間に合っていない構文](/docs/guides/beyond-html#supported-syntaxes)を使っている [#240](https://github.com/markuplint/markuplint/issues/240)
 
 これは既知の問題ですが、現在のところ対応が難航しています。申し訳ありませんが、部分的にルールの無効化をしてください。
 
@@ -66,7 +66,7 @@ Open GraphプロトコルはHTMLとは異なる仕様のため、標準で対応
 
 [`invalid-attr`](/docs/rules/invalid-attr)はHTMLの仕様に存在しない属性が要素に指定されていると警告します。HTML以外の構文や、フレームワークを利用していると頻繁に遭遇するかもしれません。`invalid-attr`には[`allowAttrs`](/docs/rules/invalid-attr#setting-allow-attrs-option)オプションがあり、そこに許可したい属性を追加することで警告をなくすことができます。
 
-また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/besides-html#why-need-the-spec-plugins)）
+また、ReactとVueに関してはスペックプラグインを導入することにより、各構文で独自に使用される属性には警告がでないように定義されています。（参考: [なぜスペックプラグインが必要なのですか](/docs/guides/beyond-html#why-need-the-spec-plugins)）
 
 もしも構文やフレームワーク（[Next.js](https://nextjs.org/)や[Nuxt](https://nuxtjs.org/)など）のスペックプラグインがあると便利になるのであれば[リクエスト](https://github.com/markuplint/markuplint/issues/new?assignees=%40YusukeHirao&labels=Features%3A+Proposal&template=feature.md&title=Supporting+for)してください。
 
@@ -107,7 +107,7 @@ markuplint "**/*.html"
 
 ## Reactで使えますか？
 
-もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Alpine.js、HTMX、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外につかう](/docs/guides/besides-html)を御覧ください。
+もちろん使えます。React（JSX）の他に、Vue、Svelte、Astro、Alpine.js、HTMX、Pug、PHPなどに対応しています。利用にはMarkuplintが公式に提供しているプラグインを併用する必要があります。詳しくは[HTML以外で使う](/docs/guides/beyond-html)をご覧ください。
 
 ## Angularに対応していないようですが？
 

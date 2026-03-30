@@ -2,34 +2,53 @@
 
 ## はじめる
 
-### 気軽につかう
+### もっとも簡単な方法: VS Code 拡張
 
-```shell
-npx markuplint target.html
+[Markuplint拡張](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)をVisual Studio Marketplaceからインストールするか、VS Codeの拡張機能パネルで「markuplint」と検索してください。
+
+**これだけです。** HTMLファイルを開けば、Markuplintがリアルタイムでチェックを始めます。インストールも設定ファイルも不要です。デフォルトで[推奨プリセット](/docs/guides/presets)が適用されます。
+
+:::tip
+[Cursor](https://www.cursor.com/)などのVS Codeベースのエディタにも対応しています。
+:::
+
+### フレームワーク（React、Vueなど）で使う
+
+プロジェクトで**JSX、Vue、Svelte**などのテンプレート構文を使っている場合は、Markuplintとパーサープラグインをプロジェクトにインストールします:
+
+```shell npm2yarn
+npm install -D markuplint @markuplint/jsx-parser @markuplint/react-spec
+```
+
+プロジェクトルートに設定ファイル（`.markuplintrc`）を作成します:
+
+```json class=config title=".markuplintrc"
+{
+  "extends": ["markuplint:recommended-react"],
+  "parser": {
+    "\\.jsx$": "@markuplint/jsx-parser"
+  },
+  "specs": {
+    "\\.jsx$": "@markuplint/react-spec"
+  }
+}
 ```
 
 :::info
-
-[設定ファイル](/docs/configuration)がない場合は[推奨プリセット](/docs/guides/presets)が適用されます。
-
+`npx markuplint --init` を実行すると、対話形式でセットアップすることもできます。
 :::
 
-### 必須スペック
+対応する構文の一覧と設定例は[HTML以外の構文で使う](/docs/guides/beyond-html)を参照してください。
 
-- **Node.js** v22.0.0以上
+### コマンドラインから使う
 
-### プロジェクトでつかう
+CIやnpmスクリプトでMarkuplintを実行したい場合は、プロジェクトにインストールします:
 
-[設定ファイル](/docs/configuration)をつくり、依存モジュールをインストールします。
-
-```shell
-npx markuplint --init
+```shell npm2yarn
+npm install -D markuplint
 ```
 
-コマンド上で対話式の質問に答えます。
-これにより`markuplint`を含む必要なモジュールがインストールされます。
-
-`package.json`の`scripts`プロパティにコマンドを追記します。
+`package.json`にスクリプトを追加します:
 
 ```json title="package.json"
 {
@@ -39,14 +58,21 @@ npx markuplint --init
 }
 ```
 
-ターゲットパスを変更したい場合は、定義プロジェクトに合わせて変更してください。
-
-以下のようにスクリプトを実行します。
-
 ```shell npm2yarn
 npm run lint:html
 ```
 
-## Visual Studio Codeでつかう
+:::info
+[設定ファイル](/docs/configuration)が見つからない場合は[推奨プリセット](/docs/guides/presets)が自動的に適用されます。
+:::
 
-[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)からインストール可能です。もしくは&ldquo;markuplint&rdquo;とVS Code拡張機能から検索してください。
+#### 必須スペック
+
+- **Node.js** v22.0.0以上
+
+## 次のステップ
+
+- **[プリセットを使う](/docs/guides/presets)** — プロジェクトに合ったプリセットを選び、有効にするルールをカスタマイズする
+- **[ルールを設定する](/docs/guides/applying-rules)** — 個別のルールを調整し、特定の要素に異なる設定を適用する
+- **[HTML以外の構文で使う](/docs/guides/beyond-html)** — JSX、Vue、Svelte、Pug、PHPなどのパーサーを設定する
+- **[設定](/docs/configuration)** — 設定ファイルの形式と利用可能なすべてのプロパティについて

@@ -20,21 +20,21 @@ The configuration has the following properties:
 }
 ```
 
-| Property                                | First guide                                                                                                                  | Interface                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                        | [Interface](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [Applying custom rules](/docs/guides/applying-rules#applying-custom-rules), [Creating custom rule](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                            | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                                    | [Interface](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                            | [Interface](#severity/interface)       |
-| [**`rules`**](#rules)                   | [Applying rules](/docs/guides/applying-rules)                                                                                | [Interface](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/besides-html#pretenders)                                                                           | [Interface](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overrides/interface)      |
+| Property                                | First guide                                                                                                               | Interface                              |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                     | [Interface](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [Using custom rules](/docs/guides/applying-rules#applying-custom-rules), [Creating custom rule](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [Beyond HTML](/docs/guides/beyond-html)                                                                                   | [Interface](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                         | [Interface](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [Beyond HTML](/docs/guides/beyond-html)                                                                                   | [Interface](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                                 | [Interface](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                         | [Interface](#severity/interface)       |
+| [**`rules`**](#rules)                   | [Applying rules](/docs/guides/applying-rules)                                                                             | [Interface](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                    | [Interface](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                    | [Interface](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/beyond-html#pretenders)                                                                         | [Interface](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                     | [Interface](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                     | [Interface](#overrides/interface)      |
 
 ## Resolving specified paths
 
@@ -137,7 +137,7 @@ interface Config {
 
 ### `parser`
 
-Specify a regex to the key, and the [**parser**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+Specify a regex to the key, and the [**parser**](/docs/guides/beyond-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json class=config
@@ -222,7 +222,7 @@ interface Config {
 
 ### `specs`
 
-Specify a regex to the key, and the [**spec**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+Specify a regex to the key, and the [**spec**](/docs/guides/beyond-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json class=config
@@ -552,7 +552,7 @@ type NamedRuleGroup = {
 
 ### `nodeRules`
 
-If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-to-some), you can specify by this property.
+If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-rules-to-specific-elements), you can specify by this property.
 Be careful to the value is an array.
 
 It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups).
@@ -827,7 +827,7 @@ interface Config {
 
 ### `pretenders`
 
-The [**Pretenders**](/docs/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered.
+The [**Pretenders**](/docs/guides/beyond-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered.
 
 The value can be either an **array** of pretender definitions or an **object** with `data`, `scan`, and other fields.
 

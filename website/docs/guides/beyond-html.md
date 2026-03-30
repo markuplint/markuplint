@@ -1,10 +1,10 @@
-# Using to besides HTML
+# Beyond HTML
 
-You can also apply it to syntaxes **besides HTML** such as template engines or frameworks if using plugins together.
+Markuplint can lint syntaxes **beyond HTML** — including JSX, Vue, Svelte, Pug, PHP, and more — by using parser and spec plugins.
 
 ## Installing plugins
 
-Install the **parser plugin** through npm or Yarn:
+Install the **parser plugin** through your package manager:
 
 ```shell npm2yarn
 npm install -D @markuplint/pug-parser
@@ -98,9 +98,7 @@ If it doesn't nest by quotations.
 
 ## Applying plugins
 
-Specify a plugin to apply to the `parser` property on the [configuration file](/docs/configuration).
-And If it has spec add to the `specs` property.
-Set a regular expression that can identify the target file name to the `parser` property key.
+Specify the plugin in the `parser` property of your [configuration file](/docs/configuration). If the syntax has a spec plugin, add it to the `specs` property as well. Use a regular expression as the key to match target file names.
 
 ```json class=config title="Use React"
 {
@@ -151,11 +149,11 @@ Set a regular expression that can identify the target file name to the `parser` 
 }
 ```
 
-See explained configuring [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs) if you want details.
+See the [`parser`](/docs/configuration/properties#parser) and [`specs`](/docs/configuration/properties#specs) property references for details.
 
 ### Why need the spec plugins? {#why-need-the-spec-plugins}
 
-For example, the `key` attribute doesn't exist in native HTML elements. But you often need to specify it when you use **React** or **Vue**. So you should specify `@markuplint/react-spec` or `@markuplint/vue-spec`.
+For example, the `key` attribute doesn't exist in native HTML elements, but it's commonly used in **React** and **Vue**. Spec plugins like `@markuplint/react-spec` and `@markuplint/vue-spec` tell Markuplint about these framework-specific attributes.
 
 ```js
 const Component = ({ list }) => {
@@ -177,11 +175,11 @@ const Component = ({ list }) => {
 </template>
 ```
 
-Besides, **spec plugins** include specific attributes and directives each owned.
+In addition, **spec plugins** include definitions for framework-specific attributes and directives.
 
 ## Pretenders
 
-In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
+In **React**, **Vue**, and more, custom components cannot be evaluated as HTML elements. This means Markuplint's content model rules — such as [`permitted-contents`](/docs/rules/permitted-contents) — have no way of knowing what a component actually renders. Without this information, a `<Button>` component that renders a `<button>` element is treated as an unknown element, and invalid nesting like `<a><Button /></a>` (interactive content inside interactive content) goes undetected.
 
 <!-- prettier-ignore-start -->
 ```jsx
@@ -193,7 +191,7 @@ In **React**, **Vue**, and more, custom components cannot be evaluated as HTML e
 ```
 <!-- prettier-ignore-end -->
 
-The **Pretenders** feature resolves that by telling markuplint what each component renders as.
+The **Pretenders** feature resolves that by telling Markuplint what each component renders as.
 
 ### Manual configuration
 
@@ -234,7 +232,7 @@ See the details of [`pretenders`](/docs/configuration/properties#pretenders) pro
 This feature is **experimental** and may change in future releases.
 :::
 
-Instead of manually listing every component, you can let markuplint **scan your component source files** and discover pretender mappings automatically.
+Instead of manually listing every component, you can let Markuplint **scan your component source files** and discover pretender mappings automatically.
 
 ```json class=config
 {
@@ -248,7 +246,7 @@ Instead of manually listing every component, you can let markuplint **scan your 
 }
 ```
 
-This single configuration replaces what might otherwise be dozens of manual pretender entries. When markuplint runs, it analyzes your component files and determines:
+This single configuration replaces what might otherwise be dozens of manual pretender entries. When Markuplint runs, it analyzes your component files and determines:
 
 - **Which HTML element** each component renders as its root element
 - **Whether the component accepts children** (slots detection)
@@ -305,7 +303,7 @@ The scanner automatically discovers that `ProfileCard` renders as `<article>` an
 }
 ```
 
-Now markuplint can correctly validate that `<ProfileCard>` contains only [flow content](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2) (as `<article>` does), and that nesting `<ProfileCard>` inside a `<p>` would be invalid.
+Now Markuplint can correctly validate that `<ProfileCard>` contains only [flow content](https://html.spec.whatwg.org/multipage/dom.html#flow-content-2) (as `<article>` does), and that nesting `<ProfileCard>` inside a `<p>` would be invalid.
 
 #### Combining scan with manual definitions
 
@@ -356,3 +354,9 @@ This evaluation also applies to its attributes that are inherited from the compo
 <x-img src="image.png" alt="image">
 ```
 <!-- prettier-ignore-end -->
+
+## Next steps
+
+- **[Using Presets](/docs/guides/presets)** — Choose a framework-specific preset (e.g., `markuplint:recommended-react`)
+- **[Applying Rules](/docs/guides/applying-rules)** — Customize rules for your project
+- **[Configuration Properties](/docs/configuration/properties)** — Full reference for `parser`, `specs`, and `pretenders`

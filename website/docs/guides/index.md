@@ -2,34 +2,53 @@
 
 ## Getting started
 
-### Instant using
+### The quickest way: VS Code extension
 
-```shell
-npx markuplint target.html
+Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
+
+**That's it.** Open any HTML file and Markuplint starts checking in real time — no installation, no configuration file needed. It applies the [recommended preset](/docs/guides/presets) by default.
+
+:::tip
+VS Code-based editors such as [Cursor](https://www.cursor.com/) are also supported.
+:::
+
+### Using with a framework (React, Vue, etc.)
+
+If your project uses **JSX, Vue, Svelte**, or other template syntaxes, you need to install Markuplint and a parser plugin into your project:
+
+```shell npm2yarn
+npm install -D markuplint @markuplint/jsx-parser @markuplint/react-spec
+```
+
+Then create a configuration file (`.markuplintrc`) in your project root:
+
+```json class=config title=".markuplintrc"
+{
+  "extends": ["markuplint:recommended-react"],
+  "parser": {
+    "\\.jsx$": "@markuplint/jsx-parser"
+  },
+  "specs": {
+    "\\.jsx$": "@markuplint/react-spec"
+  }
+}
 ```
 
 :::info
-
-It applies [recommended preset](/docs/guides/presets) if it doesn't find a [configuration file](/docs/configuration).
-
+You can also run `npx markuplint --init` to set this up interactively.
 :::
 
-### The required spec
+See [Beyond HTML](/docs/guides/beyond-html) for the full list of supported syntaxes and configuration examples.
 
-- **Node.js** v22.0.0 or later
+### Using from the command line
 
-### Using in your project
+If you want to run Markuplint in CI or as an npm script, install it into your project:
 
-Create a [configuration file](/docs/configuration) and install dependencies.
-
-```shell
-npx markuplint --init
+```shell npm2yarn
+npm install -D markuplint
 ```
 
-Answer questions interactively.
-By doing this, needed modules are installed includes `markuplint`.
-
-Add a command to the `scripts` option on `package.json`:
+Add a script to `package.json`:
 
 ```json title="package.json"
 {
@@ -39,14 +58,21 @@ Add a command to the `scripts` option on `package.json`:
 }
 ```
 
-If you want to change the target path, you can change it for your project.
-
-Execute the script:
-
 ```shell npm2yarn
 npm run lint:html
 ```
 
-## Using with Visual Studio Code
+:::info
+The [recommended preset](/docs/guides/presets) is applied automatically when no [configuration file](/docs/configuration) is found.
+:::
 
-You can install it from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint). Or search &ldquo;markuplint&rdquo; on the VS Code extension.
+#### The required spec
+
+- **Node.js** v22.0.0 or later
+
+## Next steps
+
+- **[Using Presets](/docs/guides/presets)** — Choose the right preset for your project and customize which rules are enabled
+- **[Applying Rules](/docs/guides/applying-rules)** — Fine-tune individual rules and apply different settings to specific elements
+- **[Beyond HTML](/docs/guides/beyond-html)** — Set up parsers for JSX, Vue, Svelte, Pug, PHP, and more
+- **[Configuration](/docs/configuration)** — Learn about configuration file formats and all available properties

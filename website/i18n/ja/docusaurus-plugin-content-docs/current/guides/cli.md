@@ -180,3 +180,9 @@ $ markuplint "**/*.html" --suppress --suppressions-location .config/suppressions
 ```shell
 $ markuplint "**/*.html" --prune-suppressions
 ```
+
+## 次のステップ
+
+- **[コードを無視する](/docs/guides/ignoring-code)** — 違反の抑制、特定の要素やファイルのルール無効化
+- **[設定](/docs/configuration)** — 設定ファイルの形式とプロパティ
+- **[FAQ](/docs/guides/faq)** — よくある質問とトラブルシューティング

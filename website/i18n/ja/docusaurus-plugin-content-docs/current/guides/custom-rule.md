@@ -181,3 +181,8 @@ Missing the "title" element
 現在、[辞書データ](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales)には英語の他に**日本語しか**ありません。他の言語の翻訳への[貢献](/community/contributing)も期待しています。
 
 :::
+
+## 次のステップ
+
+- **[APIドキュメント](/docs/api/)** — ルール開発のための完全なAPIリファレンス
+- **[ルールを適用する](/docs/guides/applying-rules)** — カスタムルールを設定に適用する方法

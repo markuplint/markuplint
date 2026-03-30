@@ -1,10 +1,6 @@
-# プリセットをつかう
+# プリセットを使う
 
-いくつかのプリセットがあります。ルールはそれぞれを有効にする必要があるため、これらを指定することをオススメします。
-
-## プリセットの適用
-
-[設定](/docs/configuration)の`extends`プロパティを以下のように指定します。
+プリセットは、厳選されたルールのセットを1行の設定で適用できる仕組みです。ルールをひとつずつ有効にする代わりに、`extends` プロパティにプリセットを指定します:
 
 ```json class=config
 {
@@ -12,23 +8,21 @@
 }
 ```
 
-好みに合わせて、いくつかの**基本プリセット**を選択できます。
+## どのプリセットを選ぶべきか
 
-```json class=config
-{
-  "extends": ["markuplint:html-standard", "markuplint:a11y"]
-}
-```
+プロジェクトの種類に合わせて選んでください:
 
-### 基本プリセット {#base-presets}
+| プロジェクトの種類             | 推奨プリセット                       |
+| ------------------------------ | ------------------------------------ |
+| 静的HTML（フレームワークなし） | `markuplint:recommended-static-html` |
+| React / Next.js / Preact       | `markuplint:recommended-react`       |
+| Vue / Nuxt                     | `markuplint:recommended-vue`         |
+| Svelte / SvelteKit             | `markuplint:recommended-svelte`      |
+| その他 / 汎用                  | `markuplint:recommended`             |
 
-- `markuplint:a11y`
-- `markuplint:html-standard`
-- `markuplint:performance`
-- `markuplint:rdfa`
-- `markuplint:security`
+すべての推奨プリセットは同じ**基本プリセット**（`a11y`、`html-standard`、`performance`、`rdfa`、`security`）を含み、さらにフレームワーク固有のルールが追加されます。
 
-各プリセットに含まれる[ルールセット](#rulesets-of-base-presets)を参照してください。
+## プリセットの適用
 
 ### 推奨プリセット
 
@@ -38,7 +32,25 @@
 - `markuplint:recommended-vue`
 - `markuplint:recommended-svelte`
 
-これらの**推奨プリセット**には、**すべての[基本プリセット](#base-presets)**が含まれています。また、`markuplint:recommended`以外はそれぞれ固有のルールセット（例: [`markuplint:recommended-static-html`](#preset-static-html)、[`markuplint:recommended-react`](#preset-react)）を持っています。
+これらの**推奨プリセット**には、**すべての[基本プリセット](#base-presets)**が含まれています。また、`markuplint:recommended`以外はそれぞれフレームワーク固有のルールセット（例: [`markuplint:recommended-static-html`](#preset-static-html)、[`markuplint:recommended-react`](#preset-react)）を持っています。
+
+### 基本プリセット {#base-presets}
+
+より細かく制御したい場合は、個別の基本プリセットを選択することもできます:
+
+- `markuplint:a11y`
+- `markuplint:html-standard`
+- `markuplint:performance`
+- `markuplint:rdfa`
+- `markuplint:security`
+
+```json class=config
+{
+  "extends": ["markuplint:html-standard", "markuplint:a11y"]
+}
+```
+
+各プリセットに含まれるルールは[ルールセット](#rulesets-of-base-presets)を参照してください。
 
 ## プリセット内の名前付きルール {#named-rules}
 
@@ -170,3 +182,9 @@
 | 名前付きルール           | 解説                                                                                                                                                 |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `svelte/no-hard-code-id` | IDをハードコーディングしたコンポーネントは、ドキュメント内でIDが一意でなければならないため、重複してマウントできません。動的なIDを使用してください。 |
+
+## 次のステップ
+
+- **[ルールを適用する](/docs/guides/applying-rules)** — プリセットのルールをカスタマイズしたり、個別のルールを追加する
+- **[HTML以外で使う](/docs/guides/beyond-html)** — JSX、Vue、Svelteなどのパーサーを設定する
+- **[設定](/docs/configuration)** — 設定ファイルの形式とプロパティについて

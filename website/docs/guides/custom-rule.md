@@ -1,12 +1,12 @@
-# Creating custom rule
+# Creating Custom Rules
 
-You can create a custom rule while referring to the [**API document**](/docs/api/), but it recommends you use the below command:
+You can create a custom rule by referring to the [**API documentation**](/docs/api/), but the easiest way is to use the scaffolding command:
 
 ```shell
 npx @markuplint/create-rule
 ```
 
-Please answer some questions shown.
+Answer the interactive questions:
 
 ```
 ? What purpose do you create the rule for? …
@@ -14,15 +14,13 @@ Please answer some questions shown.
   Create the rule and publish it as a package
 ```
 
-In the first question, you should answer either "**Add the rule to this project**" or "**Create the rule and publish it as a package**."
+Choose either "**Add the rule to this project**" or "**Create the rule and publish it as a package**."
 
 ## Adding to your project
 
-Please answer when it asks for a **directory name** you want. And answer a **rule name** you will create.
+The command will ask for a **directory name** and a **rule name**. Then choose between **TypeScript** or **JavaScript**, and whether to include **tests**.
 
-And choose the languages, either **TypeScript** or **JavaScript**. Then decide whether to **implement the test**.
-
-And then there are the below files created:
+The following files are created:
 
 <FileTree>
 
@@ -36,10 +34,10 @@ And then there are the below files created:
 </FileTree>
 
 :::info
-The **test** code is written in [**Vitest**](https://vitest.dev/) format. Please rewrite it you need.
+The **test** code is written in [**Vitest**](https://vitest.dev/) format. Rewrite it as needed for your test runner.
 :::
 
-Eventually, you should specify it to the configuration to apply it.
+Then specify it in your configuration to apply it:
 
 ```json class=config
 {
@@ -52,8 +50,7 @@ Eventually, you should specify it to the configuration to apply it.
 
 :::note
 
-**In the default**, the plugin name is the directory name you named which has been `[dir-name]` in the sample code.
-You can change it if you want.
+By default, the plugin name is the directory name (`[dir-name]` in the examples above). You can change it in the plugin definition:
 
 ```ts title="./[dir-name]/index.ts"
 import { createPlugin } from '@markuplint/ml-core';
@@ -74,13 +71,11 @@ export default createPlugin({
 
 :::
 
-## Creating a plugin as a npm package
+## Creating a plugin as an npm package
 
-Please answer when it asks for a **plugin name** you want. And answer a **rule name** you will create.
+The command will ask for a **plugin name** and a **rule name**. Then choose between **TypeScript** or **JavaScript**, and whether to include **tests**.
 
-And choose the languages, either **TypeScript** or **JavaScript**. Then decide whether to **implement the test**.
-
-Eventually, there are the below files created:
+The following files are created:
 
 <FileTree>
 
@@ -96,9 +91,9 @@ Eventually, there are the below files created:
 
 </FileTree>
 
-## How to basic evaluate
+## Basic evaluation
 
-Extract the target nodes that are from the `document` object. And evaluate it then pass it to the `report` function. The `document` object has the `walkOn` method and more, which is the **Markuplint-specific method**, and it also has native **DOM APIs** (the `querySelector` method, etc.) so that you can use both for different purposes in accordance to the use.
+Extract target nodes from the `document` object, evaluate them, and pass violations to the `report` function. The `document` object provides both **Markuplint-specific methods** (like `walkOn`) and native **DOM APIs** (like `querySelector`):
 
 ```ts
 createRule({
@@ -125,7 +120,7 @@ createRule({
 });
 ```
 
-There are two methods to pass a violation to the `report` function. One is passing a **node**, as mentioned above. And the other is passing the number of a **line** and a **column**, and a **string in range**.
+There are two ways to report a violation: pass a **node**, or pass the **line**, **column**, and **raw string**:
 
 ```ts
 report({
@@ -143,7 +138,7 @@ report({
 
 ## Messages <abbr title="internationalization">i18n</abbr>
 
-The `translate` function (There is an alias as `t`) translates a message.
+The `translate` function (aliased as `t`) translates messages:
 
 ```ts
 createRule({
@@ -169,10 +164,13 @@ Missing the "title" element
 「title」要素がありません
 ```
 
-Please see the details of [`@markuplint/i18n`](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/i18n#api) API if needed.
+See the [`@markuplint/i18n` API](https://github.com/markuplint/markuplint/tree/main/packages/@markuplint/i18n#api) for details.
 
 :::info
-
-There is **only Japanese** besides English in the [dictionaries](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales) currently. We expect [your contribution](/community/contributing) to translating the other languages.
-
+Currently only **Japanese** is available besides English in the [dictionaries](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/i18n/locales). [Contributions](/community/contributing) for other languages are welcome.
 :::
+
+## Next steps
+
+- **[API Documentation](/docs/api/)** — Full API reference for rule development
+- **[Applying Rules](/docs/guides/applying-rules)** — How to apply custom rules in your configuration
