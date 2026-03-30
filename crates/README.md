@@ -49,7 +49,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
 - **AriaResolver trait bridge**: `markuplint-selector` defines an `AriaResolver` trait for `:role()` / `:aria()` pseudo-class resolution. `markuplint-rules` implements it as `SpecAriaResolver`, breaking the circular dependency (selector → rules → selector)
 - **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
-- **Built-in rules**: `attr-duplication`, `permitted-contents` (content model validation against HTML spec)
+- **Built-in rules** (11): `attr-duplication`, `case-sensitive-tag-name`, `deprecated-element`, `doctype`, `end-tag`, `heading-levels`, `id-duplication`, `no-consecutive-br`, `no-hard-code-id`, `no-orphaned-end-tag`, `permitted-contents`
 
 ### markuplint-types
 
