@@ -404,6 +404,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "strsim",
 ]
 
 [[package]]

@@ -10,6 +10,7 @@ markuplint-dom = { path = "../markuplint-dom" }
 markuplint-selector = { path = "../markuplint-selector" }
 markuplint-types = { path = "../markuplint-types" }
 regex = { workspace = true }
+strsim = "0.11"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 

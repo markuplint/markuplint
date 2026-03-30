@@ -29,7 +29,10 @@ use crate::rules::end_tag::EndTag;
 use crate::rules::heading_levels::HeadingLevels;
 use crate::rules::id_duplication::IdDuplication;
 use crate::rules::ineffective_attr::IneffectiveAttr;
+use crate::rules::invalid_attr::InvalidAttr;
 use crate::rules::label_has_control::LabelHasControl;
+use crate::rules::landmark_roles::LandmarkRoles;
+use crate::rules::neighbor_popovers::NeighborPopovers;
 use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTargetNames;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
@@ -38,13 +41,18 @@ use crate::rules::no_duplicate_dt::NoDuplicateDt;
 use crate::rules::no_empty_palpable_content::NoEmptyPalpableContent;
 use crate::rules::no_hard_code_id::NoHardCodeId;
 use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
+use crate::rules::no_refer_to_non_existent_id::NoReferToNonExistentId;
 use crate::rules::no_use_event_handler_attr::NoUseEventHandlerAttr;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::rules::placeholder_label_option::PlaceholderLabelOption;
+use crate::rules::require_accessible_name::RequireAccessibleName;
 use crate::rules::require_datetime::RequireDatetime;
+use crate::rules::required_attr::RequiredAttr;
 use crate::rules::required_element::RequiredElement;
 use crate::rules::required_h1::RequiredH1;
+use crate::rules::table_row_column_alignment::TableRowColumnAlignment;
 use crate::rules::use_list::UseList;
+use crate::rules::wai_aria::WaiAria;
 use crate::violation::{Severity, Violation};
 
 /// Lint configuration for enabled rules.
@@ -171,6 +179,8 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(IdDuplication),
         Box::new(IneffectiveAttr),
         Box::new(LabelHasControl),
+        Box::new(LandmarkRoles),
+        Box::new(NeighborPopovers),
         Box::new(NoAmbiguousNavigableTargetNames),
         Box::new(NoBooleanAttrValue),
         Box::new(NoConsecutiveBr),
@@ -179,13 +189,19 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(NoEmptyPalpableContent),
         Box::new(NoHardCodeId),
         Box::new(NoOrphanedEndTag),
+        Box::new(NoReferToNonExistentId),
         Box::new(NoUseEventHandlerAttr),
         Box::new(PermittedContents),
         Box::new(PlaceholderLabelOption),
+        Box::new(RequireAccessibleName),
         Box::new(RequireDatetime),
+        Box::new(RequiredAttr),
         Box::new(RequiredElement),
         Box::new(RequiredH1),
+        Box::new(TableRowColumnAlignment),
         Box::new(UseList),
+        Box::new(InvalidAttr),
+        Box::new(WaiAria),
     ]
 }
 
