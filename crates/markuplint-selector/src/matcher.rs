@@ -364,7 +364,7 @@ fn match_aria(content: &str, arena: &DomArena, node_id: NodeId, aria: Option<&dy
     match parsed.query {
         AriaQuery::HasName if has_name => MatchResult::matched([0, 1, 0]),
         AriaQuery::HasNoName if !has_name => MatchResult::matched([0, 1, 0]),
-        AriaQuery::HasName | AriaQuery::HasNoName | AriaQuery::Unknown => MatchResult::unmatched(),
+        AriaQuery::HasName | AriaQuery::HasNoName => MatchResult::unmatched(),
     }
 }
 
@@ -388,7 +388,6 @@ fn parse_role_content(content: &str) -> RoleParsed {
 enum AriaQuery {
     HasName,
     HasNoName,
-    Unknown,
 }
 
 struct AriaParsed {
@@ -399,10 +398,10 @@ struct AriaParsed {
 fn parse_aria_content(content: &str) -> AriaParsed {
     let (query_str, version) = split_version(content);
     let normalized: String = query_str.split_whitespace().collect::<String>().to_ascii_lowercase();
+    // Parser validates content, so only valid queries reach here
     let query = match normalized.as_str() {
-        "hasname" => AriaQuery::HasName,
         "hasnoname" => AriaQuery::HasNoName,
-        _ => AriaQuery::Unknown,
+        _ => AriaQuery::HasName,
     };
     AriaParsed { query, version }
 }
@@ -713,22 +712,29 @@ mod tests {
     }
 
     #[test]
-    fn parse_aria_unknown_query() {
-        let parsed = parse_aria_content("hasNmae");
-        assert!(core::matches!(parsed.query, AriaQuery::Unknown));
+    fn parse_aria_unknown_query_is_parse_error() {
+        // Unknown :aria() syntax is now caught at parse time
+        let result = parser::parse(":aria(hasNmae)");
+        assert!(result.is_err());
     }
 
     #[test]
-    fn parse_role_with_invalid_version_falls_back() {
-        let parsed = parse_role_content("button|9.9");
-        assert_eq!(parsed.role, "button");
-        assert!(core::matches!(parsed.version, ARIAVersion::V1_3)); // RECOMMENDED
+    fn parse_role_with_invalid_version_is_parse_error() {
+        // Invalid ARIA version is now caught at parse time
+        let result = parser::parse(":role(button|9.9)");
+        assert!(result.is_err());
     }
 
     #[test]
-    fn parse_role_empty_string() {
-        let parsed = parse_role_content("");
-        assert_eq!(parsed.role, "");
+    fn parse_aria_with_invalid_version_is_parse_error() {
+        let result = parser::parse(":aria(hasName|9.9)");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn parse_role_empty_is_parse_error() {
+        let result = parser::parse(":role()");
+        assert!(result.is_err());
     }
 
     // Helper to create a minimal ElementData for testing
