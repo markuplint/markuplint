@@ -11,36 +11,36 @@ use crate::violation::Violation;
 pub struct UseList;
 
 /// Default bullet-like characters that suggest list semantics.
+/// Matches the TS `defaultValue` in `use-list/index.ts`.
 const DEFAULT_BULLETS: &[&str] = &[
-    "\u{2022}", // •
-    "\u{25E6}", // ◦
-    "\u{2023}", // ‣
-    "\u{2043}", // ⁃
-    "\u{204C}", // ⁌
-    "\u{204D}", // ⁍
-    "\u{2219}", // ∙
-    "\u{25C9}", // ◉
-    "\u{25CE}", // ◎
-    "\u{25CF}", // ●
-    "\u{25CB}", // ○
-    "\u{25A0}", // ■
-    "\u{25A1}", // □
-    "\u{25AA}", // ▪
-    "\u{25AB}", // ▫
-    "\u{2605}", // ★
-    "\u{2606}", // ☆
-    "\u{2713}", // ✓
-    "\u{2714}", // ✔
-    "\u{2715}", // ✕
-    "\u{2716}", // ✖
-    "\u{2717}", // ✗
-    "\u{2718}", // ✘
+    "\u{2022}", // • BULLET
+    "\u{2023}", // ‣ TRIANGULAR BULLET
+    "\u{2043}", // ⁃ HYPHEN BULLET
+    "\u{204C}", // ⁌ BLACK LEFTWARDS BULLET
+    "\u{204D}", // ⁍ BLACK RIGHTWARDS BULLET
+    "\u{2219}", // ∙ BULLET OPERATOR
+    "\u{25CB}", // ○ WHITE CIRCLE
+    "\u{25CF}", // ● BLACK CIRCLE
+    "\u{25D8}", // ◘ INVERSE BULLET
+    "\u{25E6}", // ◦ WHITE BULLET
+    "\u{2619}", // ☙ REVERSED ROTATED FLORAL HEART BULLET
+    "\u{2765}", // ❥ ROTATED HEAVY BLACK HEART BULLET
+    "\u{2767}", // ❧ ROTATED FLORAL HEART BULLET
+    "\u{29BE}", // ⦾ CIRCLED WHITE BULLET
+    "\u{29BF}", // ⦿ CIRCLED BULLET
+    "\u{00B7}", // · MIDDLE DOT (Japanese)
+    "\u{0387}", // · GREEK ANO TELIA
+    "\u{22C5}", // ⋅ DOT OPERATOR
+    "\u{30FB}", // ・ KATAKANA MIDDLE DOT
+    "\u{FF65}", // ・ HALFWIDTH KATAKANA MIDDLE DOT
     "-",
     "*",
-    ">",
-    "\u{203A}", // ›
-    "\u{2192}", // →
+    "+",
 ];
+
+/// Bullets that require a trailing space to be recognized as list markers.
+/// Matches the TS `defaultOptions.spaceNeededBullets`.
+const SPACE_NEEDED_BULLETS: &[&str] = &["-", "*", "+"];
 
 impl Rule for UseList {
     fn id(&self) -> &'static str {
@@ -68,14 +68,22 @@ impl Rule for UseList {
                 continue;
             };
 
-            let trimmed = text.base.raw.trim_start();
+            let trimmed = text.base.raw.trim();
             if trimmed.is_empty() {
                 continue;
             }
 
-            let starts_with_bullet = bullets.iter().any(|b| trimmed.starts_with(b));
+            // Single character only → skip (TS: text.length === 1)
+            let chars: Vec<char> = trimmed.chars().collect();
+            if chars.len() == 1 {
+                continue;
+            }
 
-            if starts_with_bullet {
+            if !is_may_list_item(trimmed, &bullets) {
+                continue;
+            }
+
+            {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     severity: config.severity.clone(),
@@ -89,6 +97,37 @@ impl Rule for UseList {
 
         violations
     }
+}
+
+/// Determines whether a text string appears to be a list item.
+///
+/// Matches TS `isMayListItem()`:
+/// - Consecutive identical chars (e.g., `--`) → not a list item
+/// - Space-needed bullets (e.g., `-`, `*`, `+`) require whitespace after → `- item` yes, `-item` no
+/// - Other bullets → always match
+fn is_may_list_item(text: &str, bullets: &[&str]) -> bool {
+    let matched_bullet = bullets.iter().find(|b| text.starts_with(**b));
+    let Some(bullet) = matched_bullet else {
+        return false;
+    };
+
+    let after_bullet = &text[bullet.len()..];
+    let chars_after: Vec<char> = after_bullet.chars().collect();
+
+    // Consecutive identical characters (e.g., `--`, `**`) → not a list item
+    if let Some(first_after) = chars_after.first() {
+        let bullet_chars: Vec<char> = bullet.chars().collect();
+        if bullet_chars.last().is_some_and(|last| first_after == last) {
+            return false;
+        }
+    }
+
+    // Space-needed bullets require whitespace after
+    if SPACE_NEEDED_BULLETS.contains(bullet) {
+        return chars_after.first().is_some_and(|c| c.is_whitespace());
+    }
+
+    true
 }
 
 #[cfg(test)]
@@ -220,14 +259,33 @@ mod tests {
     }
 
     #[test]
-    fn text_without_space_after_bullet_still_reported() {
-        // Note: The TS implementation has spaceNeededBullets logic that skips "*hello"
-        // (requires a space after *, -, +). The Rust implementation does not yet
-        // differentiate, so "*hello" is still reported as a violation.
+    fn space_needed_bullet_without_space_no_violation() {
+        // TS: spaceNeededBullets ["-", "*", "+"] require whitespace after bullet
+        // "*hello" → no violation (no space after *)
         let arena = make_text_node("*hello");
         let s = spec();
         let rule = UseList;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        assert_eq!(violations.len(), 1);
+        assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn consecutive_dashes_no_violation() {
+        // TS: consecutive identical chars (e.g., "--") → not a list item
+        let arena = make_text_node("-- separator");
+        let s = spec();
+        let rule = UseList;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn single_bullet_char_only_no_violation() {
+        // TS: text.length === 1 → skip
+        let arena = make_text_node("\u{2022}");
+        let s = spec();
+        let rule = UseList;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert!(violations.is_empty());
     }
 }

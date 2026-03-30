@@ -139,12 +139,9 @@ mod tests {
     }
 
     #[test]
-    fn role_empty_string_does_not_match() {
-        let s = spec();
-        let (arena, id) = make_arena("button", &[]);
-        let resolver = SpecAriaResolver { spec: &s };
-        let sel = parser::parse(":role()").unwrap();
-        assert!(!matcher::matches(&sel, &arena, id, None, Some(&s), Some(&resolver)));
+    fn role_empty_string_is_parse_error() {
+        // Empty :role() is caught at parse time
+        assert!(parser::parse(":role()").is_err());
     }
 
     // ============================================================
@@ -196,13 +193,9 @@ mod tests {
     }
 
     #[test]
-    fn aria_unknown_query_does_not_match() {
-        let s = spec();
-        let (arena, id) = make_arena("button", &[("aria-label", "Submit")]);
-        let resolver = SpecAriaResolver { spec: &s };
-        let sel = parser::parse(":aria(hasNmae)").unwrap();
-        // Typo: "hasNmae" is unknown, should not silently match
-        assert!(!matcher::matches(&sel, &arena, id, None, Some(&s), Some(&resolver)));
+    fn aria_unknown_query_is_parse_error() {
+        // Typo: "hasNmae" is caught at parse time (matches TS SyntaxError behavior)
+        assert!(parser::parse(":aria(hasNmae)").is_err());
     }
 
     #[test]
