@@ -92,11 +92,11 @@ Extended pseudo-classes are dispatched through the `ExtendedPseudoClass` registr
 | `has name`    | Matches if `getAccname(el)` returns a non-empty string |
 | `has no name` | Matches if `getAccname(el)` returns an empty string    |
 
-Supports version syntax: `:aria(has name|1.2)`. The version is passed to `getAccname()` for ARIA-version-specific name computation.
+Supports version syntax: `:aria(has name|1.2)`. The version is passed to `getAccname()` for ARIA-version-specific name computation. Unrecognized syntax throws `SyntaxError`.
 
 #### `:role(roleName)` / `:role(roleName|version)`
 
-Matches if `getComputedRole(specs, el, version)` returns a role whose `name` equals the specified `roleName`. The version defaults to `ARIA_RECOMMENDED_VERSION`.
+Matches if `getComputedRole(specs, el, version)` returns a role whose `name` equals the specified `roleName` (case-insensitive comparison). The version defaults to `ARIA_RECOMMENDED_VERSION`. An unsupported version string throws `SyntaxError`.
 
 #### `:model(category)`
 
