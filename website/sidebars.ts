@@ -75,6 +75,11 @@ const sidebars: SidebarsConfig = {
           },
           items: [
             //
+            'configuration/usecases/react-project',
+            'configuration/usecases/vue-project',
+            'configuration/usecases/monorepo',
+            'configuration/usecases/ci-cd',
+            'configuration/usecases/accessibility',
             'configuration/usecases/architected-css',
             'configuration/usecases/consistent-image-file-naming',
           ],
