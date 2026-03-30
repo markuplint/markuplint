@@ -11,7 +11,7 @@ crates/
 ├── markuplint-html-parser/  WHATWG-conformant HTML parser (tokenizer + tree construction)
 ├── markuplint-napi/         Node.js bridge via napi-rs v3
 ├── markuplint-rules/        Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
-├── markuplint-selector/     CSS selector parser + matcher (with :model/:role/:aria)
+├── markuplint-selector/     CSS selector + regex selector matching (with :model/:role/:aria)
 └── markuplint-types/        Type validation and spec data (serde types, lookup)
 ```
 
