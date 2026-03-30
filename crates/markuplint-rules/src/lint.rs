@@ -37,6 +37,10 @@ pub struct LintResult {
 /// Run lint on MLAST JSON with the given config and spec.
 ///
 /// Returns a `LintResult` with all violations found.
+///
+/// TODO(Phase 5+): When config-based selector matching (nodeRules) is implemented,
+/// create `SpecAriaResolver` and pass it to selector matching calls so that
+/// `:role()` and `:aria()` pseudo-classes work in user config selectors.
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
     let rules = get_all_rules();
     let mut violations = Vec::new();

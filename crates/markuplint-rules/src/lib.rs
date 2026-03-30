@@ -15,6 +15,7 @@
 //! ```
 
 pub mod aria;
+pub mod aria_resolver_impl;
 pub mod content_model;
 pub mod lint;
 pub mod rule;

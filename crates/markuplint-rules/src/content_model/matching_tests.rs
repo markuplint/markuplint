@@ -860,13 +860,13 @@ mod tests {
             let selector = parsed.unwrap();
             assert_eq!(bridge.child_ids.len(), 1, "should have 1 child");
             let span_id = bridge.child_ids[0];
-            let matched = markuplint_selector::matcher::matches(&selector, &bridge.arena, span_id, None, None);
+            let matched = markuplint_selector::matcher::matches(&selector, &bridge.arena, span_id, None, None, None);
             assert!(matched, "span should match expanded selector: {expanded}");
 
             // Also test that ruby does NOT match
             let bridge2 = crate::content_model::arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
             let ruby_id = bridge2.child_ids[0];
-            let matched2 = markuplint_selector::matcher::matches(&selector, &bridge2.arena, ruby_id, None, None);
+            let matched2 = markuplint_selector::matcher::matches(&selector, &bridge2.arena, ruby_id, None, None, None);
             assert!(!matched2, "ruby should NOT match expanded selector");
         }
     }
@@ -1178,6 +1178,7 @@ mod tests {
                 bridge.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("ruby")]);
@@ -1185,6 +1186,7 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
+                None,
                 None,
                 None,
             ));
@@ -1203,6 +1205,7 @@ mod tests {
                 bridge.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             // Without ruby child → doesn't match
@@ -1212,6 +1215,7 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
+                None,
                 None,
                 None,
             ));
@@ -1228,6 +1232,7 @@ mod tests {
                 bridge.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             let bridge2 = arena_bridge::build_arena("div", &[ChildNodeInfo::element("div")]);
@@ -1235,6 +1240,7 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
+                None,
                 None,
                 None,
             ));
@@ -1291,6 +1297,7 @@ mod tests {
                 bridge.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             // Ruby containing ruby → doesn't match
@@ -1300,6 +1307,7 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
+                None,
                 None,
                 None,
             ));
@@ -1319,6 +1327,7 @@ mod tests {
                 bridge_meta.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             let bridge_title = arena_bridge::build_arena("head", &[ChildNodeInfo::element("title")]);
@@ -1328,6 +1337,7 @@ mod tests {
                 bridge_title.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             let bridge_link = arena_bridge::build_arena("head", &[ChildNodeInfo::element("link")]);
@@ -1335,6 +1345,7 @@ mod tests {
                 &sel,
                 &bridge_link.arena,
                 bridge_link.child_ids[0],
+                None,
                 None,
                 None,
             ));
@@ -1506,6 +1517,7 @@ mod tests {
                 bridge.child_ids[0],
                 None,
                 None,
+                None,
             ));
 
             // audio without controls should NOT match audio[controls]
@@ -1515,6 +1527,7 @@ mod tests {
                 &sel,
                 &bridge2.arena,
                 bridge2.child_ids[0],
+                None,
                 None,
                 None,
             ));
