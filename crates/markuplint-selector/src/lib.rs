@@ -11,3 +11,4 @@ pub mod ast;
 pub mod extended;
 pub mod matcher;
 pub mod parser;
+pub mod regex_selector;

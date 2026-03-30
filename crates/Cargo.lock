@@ -412,6 +412,9 @@ dependencies = [
  "markuplint-core",
  "markuplint-dom",
  "markuplint-types",
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
