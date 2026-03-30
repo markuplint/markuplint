@@ -35,6 +35,9 @@ pub struct Tokenizer<'a> {
     /// Position where the current attribute name starts.
     current_attr_spaces_start: Position,
     current_attr_name_start: Position,
+    /// Position just past the last character of the current attribute name.
+    /// Set when transitioning out of `AttributeName` state.
+    current_attr_name_end: Position,
     current_attr_name: String,
     current_attr_spaces_before_eq: Span,
     current_attr_equal: Option<Span>,
@@ -83,6 +86,11 @@ impl<'a> Tokenizer<'a> {
                 col: 1,
             },
             current_attr_name_start: Position {
+                offset: 0,
+                line: 1,
+                col: 1,
+            },
+            current_attr_name_end: Position {
                 offset: 0,
                 line: 1,
                 col: 1,
@@ -233,6 +241,7 @@ impl<'a> Tokenizer<'a> {
     fn start_new_attribute(&mut self) {
         self.current_attr_spaces_start = self.input.prev_position();
         self.current_attr_name_start = self.input.prev_position();
+        self.current_attr_name_end = self.input.prev_position();
         self.current_attr_name.clear();
         self.current_attr_value.clear();
         self.current_attr_quote = None;
@@ -262,7 +271,9 @@ impl<'a> Tokenizer<'a> {
         let name_end = if self.current_attr_equal.is_some() {
             self.current_attr_spaces_before_eq.start
         } else {
-            pos
+            // Boolean attribute: use the recorded name end position,
+            // not the current position (which may be past `>` or whitespace).
+            self.current_attr_name_end
         };
         let name = Span::new(self.current_attr_name_start, name_end);
 
@@ -1340,11 +1351,16 @@ impl<'a> Tokenizer<'a> {
     fn state_attribute_name(&mut self) {
         match self.input.next_char() {
             Some('\t' | '\n' | '\x0C' | ' ' | '/' | '>') | None => {
+                // Record attribute name end before reconsuming the delimiter.
+                // prev_position() points to the delimiter char, which is the
+                // first char after the attribute name.
+                self.current_attr_name_end = self.input.prev_position();
                 self.input.reconsume();
                 self.state = State::AfterAttributeName;
             }
             Some('=') => {
                 let eq_start = self.input.prev_position();
+                self.current_attr_name_end = eq_start;
                 self.current_attr_spaces_before_eq = Span::empty(eq_start);
                 self.current_attr_equal = Some(Span::new(eq_start, self.input.position()));
                 self.state = State::BeforeAttributeValue;
@@ -2624,6 +2640,62 @@ mod tests {
                 assert_eq!(attributes[0].raw_name, "disabled");
                 assert_eq!(attributes[0].raw_value, "");
                 assert!(attributes[0].equal.is_none());
+                // name span must NOT include the trailing ">"
+                let name_raw = &"<input disabled>"[attributes[0].name.start.offset..attributes[0].name.end.offset];
+                assert_eq!(name_raw, "disabled", "name span includes trailing '>'");
+            }
+            _ => panic!("expected StartTag"),
+        }
+    }
+
+    #[test]
+    fn boolean_attribute_name_span_multiple() {
+        // Multiple boolean attributes: each name span must be exact
+        let html = "<audio controls autoplay>";
+        let tokens = tokenize(html);
+        match &tokens[0] {
+            Token::StartTag { attributes, .. } => {
+                assert_eq!(attributes.len(), 2);
+                let name0 = &html[attributes[0].name.start.offset..attributes[0].name.end.offset];
+                let name1 = &html[attributes[1].name.start.offset..attributes[1].name.end.offset];
+                assert_eq!(name0, "controls");
+                assert_eq!(name1, "autoplay");
+            }
+            _ => panic!("expected StartTag"),
+        }
+    }
+
+    #[test]
+    fn boolean_attribute_before_value_attribute() {
+        // Boolean attribute followed by a value attribute
+        let html = r#"<audio controls src="test.mp3">"#;
+        let tokens = tokenize(html);
+        match &tokens[0] {
+            Token::StartTag { attributes, .. } => {
+                assert_eq!(attributes.len(), 2);
+                let name0 = &html[attributes[0].name.start.offset..attributes[0].name.end.offset];
+                assert_eq!(name0, "controls");
+                assert_eq!(attributes[0].raw_name, "controls");
+                assert_eq!(attributes[1].raw_name, "src");
+                assert_eq!(attributes[1].raw_value, "test.mp3");
+            }
+            _ => panic!("expected StartTag"),
+        }
+    }
+
+    #[test]
+    fn boolean_attribute_self_closing() {
+        let html = "<input disabled />";
+        let tokens = tokenize(html);
+        match &tokens[0] {
+            Token::StartTag {
+                attributes,
+                self_closing,
+                ..
+            } => {
+                assert!(*self_closing);
+                let name = &html[attributes[0].name.start.offset..attributes[0].name.end.offset];
+                assert_eq!(name, "disabled");
             }
             _ => panic!("expected StartTag"),
         }
