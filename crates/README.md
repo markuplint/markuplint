@@ -49,7 +49,7 @@ Content model validation rules. Bridges `markuplint-types` (spec data) and `mark
 - **ARIA algorithms**: `get_computed_role()` (Phase 2-3b), `get_accname()` (Phase 2-3c: AccName 1.2 §4.3.2), `is_exposed()` (Phase 2-3d), `may_be_focusable()`
 - **AriaResolver trait bridge**: `markuplint-selector` defines an `AriaResolver` trait for `:role()` / `:aria()` pseudo-class resolution. `markuplint-rules` implements it as `SpecAriaResolver`, breaking the circular dependency (selector → rules → selector)
 - **Lint engine**: `Rule` trait, `lint()` function (MLAST + config + spec → violations), config parsing
-- **Built-in rules** (11): `attr-duplication`, `case-sensitive-tag-name`, `deprecated-element`, `doctype`, `end-tag`, `heading-levels`, `id-duplication`, `no-consecutive-br`, `no-hard-code-id`, `no-orphaned-end-tag`, `permitted-contents`
+- **Built-in rules** (30): `attr-duplication`, `attr-value-quotes`, `case-sensitive-attr-name`, `case-sensitive-tag-name`, `character-reference`, `class-naming`, `deprecated-attr`, `deprecated-element`, `disallowed-element`, `doctype`, `end-tag`, `heading-levels`, `id-duplication`, `ineffective-attr`, `label-has-control`, `no-ambiguous-navigable-target-names`, `no-boolean-attr-value`, `no-consecutive-br`, `no-default-value`, `no-duplicate-dt`, `no-empty-palpable-content`, `no-hard-code-id`, `no-orphaned-end-tag`, `no-use-event-handler-attr`, `permitted-contents`, `placeholder-label-option`, `require-datetime`, `required-element`, `required-h1`, `use-list`
 
 ### markuplint-types
 
