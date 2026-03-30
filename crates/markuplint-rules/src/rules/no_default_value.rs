@@ -1,0 +1,112 @@
+//! `no-default-value` rule: attributes should not be explicitly set to their default value.
+
+use markuplint_core::mlast::MLASTAttr;
+use markuplint_dom::arena::DomArena;
+use markuplint_types::spec::lookup::get_attr_specs;
+use markuplint_types::spec::types::MLMLSpec;
+
+use crate::rule::{Rule, RuleConfig};
+use crate::violation::Violation;
+
+/// The `no-default-value` rule.
+pub struct NoDefaultValue;
+
+impl Rule for NoDefaultValue {
+    fn id(&self) -> &'static str {
+        "no-default-value"
+    }
+
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+        let mut violations = Vec::new();
+
+        for (_node_id, el) in arena.elements() {
+            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+
+            for attr in &el.attributes {
+                let MLASTAttr::HTMLAttr(html_attr) = attr else {
+                    continue;
+                };
+
+                let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
+                let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {
+                    continue;
+                };
+
+                let Some(default_value) = &attr_spec.default_value else {
+                    continue;
+                };
+
+                // Case-insensitive comparison of attribute value against default
+                if html_attr
+                    .value
+                    .raw
+                    .eq_ignore_ascii_case(default_value.as_str())
+                {
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        severity: config.severity.clone(),
+                        message: "It is the default value".to_string(),
+                        line: html_attr.name.line,
+                        col: html_attr.name.col,
+                        raw: html_attr.raw.clone(),
+                    });
+                }
+            }
+        }
+
+        violations
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rules::attr_duplication::tests::make_element_with_attrs;
+    use markuplint_types::spec::load_spec;
+
+    fn spec() -> MLMLSpec {
+        load_spec(include_str!(
+            "../../../../packages/@markuplint/html-spec/index.json"
+        ))
+        .unwrap()
+    }
+
+    #[test]
+    fn default_value_violation() {
+        // <input> has type attribute with default "text"
+        let arena = make_element_with_attrs("input", &[("type", "text")]);
+        let s = spec();
+        let rule = NoDefaultValue;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "It is the default value");
+    }
+
+    #[test]
+    fn non_default_value_no_violation() {
+        let arena = make_element_with_attrs("input", &[("type", "password")]);
+        let s = spec();
+        let rule = NoDefaultValue;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn no_default_in_spec_no_violation() {
+        let arena = make_element_with_attrs("div", &[("class", "foo")]);
+        let s = spec();
+        let rule = NoDefaultValue;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn non_matching_value_no_violation() {
+        // <input type="email"> — default for type is "text", "email" is not the default
+        let arena = make_element_with_attrs("input", &[("type", "email")]);
+        let s = spec();
+        let rule = NoDefaultValue;
+        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        assert!(violations.is_empty());
+    }
+}

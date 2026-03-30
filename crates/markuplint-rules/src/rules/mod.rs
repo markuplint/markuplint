@@ -1,13 +1,32 @@
 //! Built-in lint rules.
 
 pub mod attr_duplication;
+pub mod attr_value_quotes;
+pub mod case_sensitive_attr_name;
 pub mod case_sensitive_tag_name;
+pub mod character_reference;
+pub mod class_naming;
+pub mod deprecated_attr;
 pub mod deprecated_element;
+pub mod disallowed_element;
 pub mod doctype;
 pub mod end_tag;
 pub mod heading_levels;
 pub mod id_duplication;
+pub mod ineffective_attr;
+pub mod label_has_control;
+pub mod no_ambiguous_navigable_target_names;
+pub mod no_boolean_attr_value;
 pub mod no_consecutive_br;
+pub mod no_default_value;
+pub mod no_duplicate_dt;
+pub mod no_empty_palpable_content;
 pub mod no_hard_code_id;
 pub mod no_orphaned_end_tag;
+pub mod no_use_event_handler_attr;
 pub mod permitted_contents;
+pub mod placeholder_label_option;
+pub mod require_datetime;
+pub mod required_element;
+pub mod required_h1;
+pub mod use_list;

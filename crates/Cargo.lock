@@ -401,6 +401,7 @@ dependencies = [
  "markuplint-dom",
  "markuplint-selector",
  "markuplint-types",
+ "regex",
  "serde",
  "serde_json",
 ]
