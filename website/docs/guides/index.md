@@ -6,10 +6,18 @@
 
 Install the [Markuplint extension](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint) from the Visual Studio Marketplace, or search "markuplint" in the VS Code extensions panel.
 
+![VS Code extensions panel: searching "markuplint" shows the Markuplint extension by Yusuke Hirao](/img/guides/vscode-search.png)
+
 **That's it.** Open any HTML file and Markuplint starts checking in real time — no installation, no configuration file needed. It applies the [recommended preset](/docs/guides/presets) by default.
 
+![VS Code editor with an HTML file. Line 11 has a yellow squiggly underline on a duplicated alt attribute. The Problems panel below shows the violation: "The attribute name is duplicated Markuplint(attr-duplication) Ln 11, Col 45"](/img/guides/vscode-problems.png)
+
+Hover over a warning to see the rule name and details. Click the rule name to jump to its documentation.
+
+![Hover popup on the duplicated attribute showing the message "The attribute name is duplicated Markuplint(attr-duplication)" with computed accessibility properties: role is img, name is "alternative text", focusable is false](/img/guides/vscode-hover.png)
+
 :::tip
-VS Code-based editors such as [Cursor](https://www.cursor.com/) are also supported.
+VS Code-based editors are also supported: [Cursor](https://www.cursor.com/), [Windsurf](https://codeium.com/windsurf), [VSCodium](https://vscodium.com/), and others that support VS Code extensions.
 :::
 
 ### Using with a framework (React, Vue, etc.)

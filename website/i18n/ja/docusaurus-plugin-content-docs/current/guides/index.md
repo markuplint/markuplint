@@ -6,10 +6,18 @@
 
 [Markuplint拡張](https://marketplace.visualstudio.com/items?itemName=yusukehirao.vscode-markuplint)をVisual Studio Marketplaceからインストールするか、VS Codeの拡張機能パネルで「markuplint」と検索してください。
 
+![VS Codeの拡張機能パネル: 「markuplint」で検索するとYusuke Hirao作のMarkuplint拡張が表示される](/img/guides/vscode-search.png)
+
 **これだけです。** HTMLファイルを開けば、Markuplintがリアルタイムでチェックを始めます。インストールも設定ファイルも不要です。デフォルトで[推奨プリセット](/docs/guides/presets)が適用されます。
 
+![VS CodeエディタでHTMLファイルを開いた画面。11行目のalt属性の重複箇所に黄色い波線が表示されている。下部のProblemsパネルには「The attribute name is duplicated Markuplint(attr-duplication) Ln 11, Col 45」と表示](/img/guides/vscode-problems.png)
+
+警告にホバーすると、ルール名と詳細が表示されます。ルール名をクリックするとドキュメントに飛べます。
+
+![重複属性のホバーポップアップ。「The attribute name is duplicated Markuplint(attr-duplication)」というメッセージと、計算済みアクセシビリティプロパティ（role: img、name: "alternative text"、focusable: false）が表示されている](/img/guides/vscode-hover.png)
+
 :::tip
-[Cursor](https://www.cursor.com/)などのVS Codeベースのエディタにも対応しています。
+VS Codeベースのエディタにも対応しています: [Cursor](https://www.cursor.com/)、[Windsurf](https://codeium.com/windsurf)、[VSCodium](https://vscodium.com/)など、VS Code拡張をサポートするエディタで利用できます。
 :::
 
 ### フレームワーク（React、Vueなど）で使う

@@ -22,8 +22,9 @@ const sidebars: SidebarsConfig = {
         id: 'guides/index',
       },
       items: [
-        'guides/applying-rules',
+        'guides/ai',
         'guides/beyond-html',
+        'guides/applying-rules',
         'guides/selectors',
         'guides/presets',
         'guides/custom-rule',
