@@ -16,6 +16,15 @@ use serde_json::Value;
 
 use crate::rule::{Rule, RuleConfig};
 use crate::rules::attr_duplication::AttrDuplication;
+use crate::rules::case_sensitive_tag_name::CaseSensitiveTagName;
+use crate::rules::deprecated_element::DeprecatedElement;
+use crate::rules::doctype::Doctype;
+use crate::rules::end_tag::EndTag;
+use crate::rules::heading_levels::HeadingLevels;
+use crate::rules::id_duplication::IdDuplication;
+use crate::rules::no_consecutive_br::NoConsecutiveBr;
+use crate::rules::no_hard_code_id::NoHardCodeId;
+use crate::rules::no_orphaned_end_tag::NoOrphanedEndTag;
 use crate::rules::permitted_contents::PermittedContents;
 use crate::violation::{Severity, Violation};
 
@@ -127,7 +136,19 @@ fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
 
 /// Get all registered rules.
 fn get_all_rules() -> Vec<Box<dyn Rule>> {
-    vec![Box::new(AttrDuplication), Box::new(PermittedContents)]
+    vec![
+        Box::new(AttrDuplication),
+        Box::new(CaseSensitiveTagName),
+        Box::new(DeprecatedElement),
+        Box::new(Doctype),
+        Box::new(EndTag),
+        Box::new(HeadingLevels),
+        Box::new(IdDuplication),
+        Box::new(NoConsecutiveBr),
+        Box::new(NoHardCodeId),
+        Box::new(NoOrphanedEndTag),
+        Box::new(PermittedContents),
+    ]
 }
 
 #[cfg(test)]
