@@ -49,7 +49,7 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
 
 利用可能なルールの一覧は[ルールページ](/docs/rules/)にあります。
 
-## 特定の要素にルールを適用する
+## 特定の要素にルールを適用する {#applying-rules-to-specific-elements}
 
 特定の要素にのみルールを適用するには、`nodeRules` または `childNodeRules` プロパティで[**セレクタ**](./selectors)を使います。
 
@@ -84,7 +84,7 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
 }
 ```
 
-## カスタムルールを使う
+## カスタムルールを使う {#using-custom-rules}
 
 サードパーティ製のルールや、[自作のルール](./custom-rule)を使用できます。スラッシュ区切りでプラグイン名とルール名を指定します:
 
