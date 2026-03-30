@@ -344,3 +344,43 @@ markuplint --config custom.json index.html
 ```
 
 See the [CLI migration guide](/docs/migration/v4-to-v5/cli) for more details on CLI flag changes.
+
+## `:closest()` selector deprecated
+
+:::caution Deprecated
+`:closest()` will be removed in v6. Migrate now to avoid breakage.
+:::
+
+The `:closest()` extended pseudo-class is deprecated. It is redundant because the standard `:is()` pseudo-class with the descendant combinator achieves the same result.
+
+**Before:**
+
+```json
+{
+  "nodeRules": [
+    {
+      "selector": "div:closest(nav)",
+      "rules": { "class-naming": "/^nav-/" }
+    }
+  ]
+}
+```
+
+**After:**
+
+```json
+{
+  "nodeRules": [
+    {
+      "selector": "div:is(nav *)",
+      "rules": { "class-naming": "/^nav-/" }
+    }
+  ]
+}
+```
+
+| Before                              | After                         |
+| ----------------------------------- | ----------------------------- |
+| `:closest(nav)`                     | `:is(nav *)`                  |
+| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
+| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |
