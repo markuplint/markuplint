@@ -38,10 +38,8 @@ fn find_child_elements_by_tags(arena: &DomArena, parent_id: NodeId, tags: &[&str
         .iter()
         .filter(|&&id| {
             arena.get(id).is_some_and(|n| {
-                n.as_element().is_some_and(|el| {
-                    tags.iter()
-                        .any(|t| el.base.node_name.eq_ignore_ascii_case(t))
-                })
+                n.as_element()
+                    .is_some_and(|el| tags.iter().any(|t| el.base.node_name.eq_ignore_ascii_case(t)))
             })
         })
         .copied()
@@ -89,10 +87,7 @@ fn collect_rows(arena: &DomArena, table_id: NodeId) -> Vec<NodeId> {
 
         if el.base.node_name.eq_ignore_ascii_case("tr") {
             rows.push(child_id);
-        } else if section_tags
-            .iter()
-            .any(|t| el.base.node_name.eq_ignore_ascii_case(t))
-        {
+        } else if section_tags.iter().any(|t| el.base.node_name.eq_ignore_ascii_case(t)) {
             let section_rows = find_child_elements_by_tags(arena, child_id, &["tr"]);
             rows.extend(section_rows);
         }
@@ -138,11 +133,7 @@ fn build_grid(arena: &DomArena, rows: &[NodeId]) -> Vec<Vec<CellType>> {
                     }
                 } else {
                     // Extend the row to reach actual_col
-                    let cell_type = if c == 0 {
-                        CellType::Cell
-                    } else {
-                        CellType::ColSpan
-                    };
+                    let cell_type = if c == 0 { CellType::Cell } else { CellType::ColSpan };
                     // Pad with ColSpan if needed, then push the actual cell
                     while grid[row_idx].len() < actual_col {
                         grid[row_idx].push(CellType::ColSpan);
@@ -217,9 +208,7 @@ impl Rule for TableRowColumnAlignment {
             let grid = build_grid(arena, &rows);
 
             // Check for overlaps
-            let has_overlap = grid
-                .iter()
-                .any(|row| row.contains(&CellType::Overlap));
+            let has_overlap = grid.iter().any(|row| row.contains(&CellType::Overlap));
             if has_overlap {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
@@ -393,13 +382,7 @@ mod tests {
                     attrs.push(make_html_attr("rowspan", &rowspan.to_string()));
                 }
                 let cell_line = row_line;
-                let td_id = make_element(
-                    &mut builder,
-                    "td",
-                    tr_id,
-                    cell_line,
-                    attrs,
-                );
+                let td_id = make_element(&mut builder, "td", tr_id, cell_line, attrs);
                 // Adjust col for readability
                 if let Some(DomNode::Element(e)) = builder.get_mut(td_id) {
                     e.base.col = (col_idx as u32) + 1;
@@ -444,15 +427,16 @@ mod tests {
     #[test]
     fn mismatched_column_count() {
         // Row 1: 3 cells, Row 2: 2 cells → 1 missing column
-        let arena = make_table_arena(&[
-            vec![(1, 1), (1, 1), (1, 1)],
-            vec![(1, 1), (1, 1)],
-        ]);
+        let arena = make_table_arena(&[vec![(1, 1), (1, 1), (1, 1)], vec![(1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1, "Expected 1 violation but got: {violations:?}");
-        assert!(violations[0].message.contains("missing"), "Expected missing column message: {}", violations[0].message);
+        assert!(
+            violations[0].message.contains("missing"),
+            "Expected missing column message: {}",
+            violations[0].message
+        );
     }
 
     #[test]
@@ -460,10 +444,7 @@ mod tests {
         // Row 1: 1 cell with colspan=3 → 3 columns
         // Row 2: 3 cells → 3 columns
         // Should be valid
-        let arena = make_table_arena(&[
-            vec![(3, 1)],
-            vec![(1, 1), (1, 1), (1, 1)],
-        ]);
+        let arena = make_table_arena(&[vec![(3, 1)], vec![(1, 1), (1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -473,10 +454,7 @@ mod tests {
     #[test]
     fn extra_columns_in_row() {
         // Row 1: 2 cells, Row 2: 3 cells → Row 2 has 1 extra column
-        let arena = make_table_arena(&[
-            vec![(1, 1), (1, 1)],
-            vec![(1, 1), (1, 1), (1, 1)],
-        ]);
+        let arena = make_table_arena(&[vec![(1, 1), (1, 1)], vec![(1, 1), (1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -496,10 +474,7 @@ mod tests {
         // Row 1: cell with rowspan=2, cell
         // Row 2: cell (the rowspan occupies one slot)
         // Grid: row1=[2 cols], row2=[2 cols (1 from rowspan + 1 actual)]
-        let arena = make_table_arena(&[
-            vec![(1, 2), (1, 1)],
-            vec![(1, 1)],
-        ]);
+        let arena = make_table_arena(&[vec![(1, 2), (1, 1)], vec![(1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -557,7 +532,11 @@ mod tests {
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1, "Expected 1 violation but got: {violations:?}");
-        assert!(violations[0].message.contains("missing"), "Expected missing: {}", violations[0].message);
+        assert!(
+            violations[0].message.contains("missing"),
+            "Expected missing: {}",
+            violations[0].message
+        );
     }
 
     #[test]
@@ -589,7 +568,11 @@ mod tests {
 
         let missing: Vec<_> = violations.iter().filter(|v| v.message.contains("missing")).collect();
         let extra: Vec<_> = violations.iter().filter(|v| v.message.contains("extra")).collect();
-        assert_eq!(missing.len(), 2, "Expected 2 missing-column violations, got: {missing:?}");
+        assert_eq!(
+            missing.len(),
+            2,
+            "Expected 2 missing-column violations, got: {missing:?}"
+        );
         assert_eq!(extra.len(), 1, "Expected 1 extra-column violation, got: {extra:?}");
     }
 

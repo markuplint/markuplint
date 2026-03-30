@@ -106,9 +106,6 @@ mod tests {
         let rule = DeprecatedElement;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "The \"marquee\" element is obsolete"
-        );
+        assert_eq!(violations[0].message, "The \"marquee\" element is obsolete");
     }
 }

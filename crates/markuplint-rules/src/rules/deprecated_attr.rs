@@ -36,10 +36,7 @@ impl Rule for DeprecatedAttr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         severity: config.severity.clone(),
-                        message: format!(
-                            "The \"{}\" attribute is deprecated",
-                            html_attr.node_name
-                        ),
+                        message: format!("The \"{}\" attribute is deprecated", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
@@ -48,10 +45,7 @@ impl Rule for DeprecatedAttr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         severity: config.severity.clone(),
-                        message: format!(
-                            "The \"{}\" attribute is obsolete",
-                            html_attr.node_name
-                        ),
+                        message: format!("The \"{}\" attribute is obsolete", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
@@ -71,10 +65,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]
@@ -114,9 +105,6 @@ mod tests {
         let rule = DeprecatedAttr;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "The \"charset\" attribute is deprecated"
-        );
+        assert_eq!(violations[0].message, "The \"charset\" attribute is deprecated");
     }
 }

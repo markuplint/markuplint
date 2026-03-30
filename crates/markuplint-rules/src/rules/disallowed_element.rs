@@ -19,10 +19,7 @@ impl Rule for DisallowedElement {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
         // Config value: string[] of CSS selectors
         let selectors: Vec<String> = match &config.value {
-            serde_json::Value::Array(arr) => arr
-                .iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect(),
+            serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
             serde_json::Value::String(s) => vec![s.clone()],
             _ => return vec![],
         };
@@ -65,10 +62,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

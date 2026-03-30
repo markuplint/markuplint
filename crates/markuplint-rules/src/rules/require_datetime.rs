@@ -54,10 +54,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

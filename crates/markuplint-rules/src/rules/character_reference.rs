@@ -26,8 +26,7 @@ impl Rule for CharacterReference {
         let mut violations = Vec::new();
 
         // Regex to match valid character references: &name; or &#digits; or &#xhex;
-        let entity_re =
-            Regex::new(r"&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);").expect("valid regex");
+        let entity_re = Regex::new(r"&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);").expect("valid regex");
 
         for node in arena.descendants(0) {
             let DomNode::Text(text) = node else {
@@ -47,9 +46,7 @@ impl Rule for CharacterReference {
             let raw = &text.base.raw;
 
             // Replace valid entity references with placeholder characters
-            let escaped = entity_re.replace_all(raw, |caps: &regex::Captures| {
-                "*".repeat(caps[0].len())
-            });
+            let escaped = entity_re.replace_all(raw, |caps: &regex::Captures| "*".repeat(caps[0].len()));
 
             // Check each character position for illegal characters
             let mut line = text.base.line;
@@ -60,8 +57,7 @@ impl Rule for CharacterReference {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         severity: config.severity.clone(),
-                        message: "Illegal characters must escape in character reference"
-                            .to_string(),
+                        message: "Illegal characters must escape in character reference".to_string(),
                         line,
                         col,
                         raw: ch.to_string(),
@@ -89,10 +85,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn make_text_in_element(tag: &str, text: &str) -> DomArena {
@@ -175,9 +168,7 @@ mod tests {
         let rule = CharacterReference;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert!(violations[0]
-            .message
-            .contains("Illegal characters must escape"));
+        assert!(violations[0].message.contains("Illegal characters must escape"));
     }
 
     #[test]
@@ -205,9 +196,7 @@ mod tests {
         let rule = CharacterReference;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert!(violations[0]
-            .message
-            .contains("Illegal characters must escape"));
+        assert!(violations[0].message.contains("Illegal characters must escape"));
     }
 
     #[test]
@@ -218,9 +207,7 @@ mod tests {
         let rule = CharacterReference;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert!(violations[0]
-            .message
-            .contains("Illegal characters must escape"));
+        assert!(violations[0].message.contains("Illegal characters must escape"));
         assert_eq!(violations[0].raw, ">");
     }
 

@@ -44,9 +44,7 @@ impl Rule for ClassNaming {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             severity: config.severity.clone(),
-                            message: format!(
-                                "\"{class_name}\" is unmatched with the pattern: {pattern_str}"
-                            ),
+                            message: format!("\"{class_name}\" is unmatched with the pattern: {pattern_str}"),
                             line: html_attr.name.line,
                             col: html_attr.name.col,
                             raw: html_attr.raw.clone(),
@@ -68,10 +66,7 @@ mod tests {
     use markuplint_types::spec::types::MLMLSpec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

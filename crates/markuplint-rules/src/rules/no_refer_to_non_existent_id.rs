@@ -62,8 +62,7 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 }
 
-                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true)
-                {
+                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
                     has_dynamic_id = true;
                     continue;
                 }
@@ -89,9 +88,7 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 };
 
-                if html_attr.is_dynamic_value == Some(true)
-                    || html_attr.is_directive == Some(true)
-                {
+                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
                     continue;
                 }
 
@@ -103,18 +100,8 @@ impl Rule for NoReferToNonExistentId {
                 }
 
                 // Check ARIA ID list attributes (apply to any element)
-                if ARIA_ID_LIST_ATTRS
-                    .iter()
-                    .any(|a| attr_name_lower == *a)
-                {
-                    check_space_separated_ids(
-                        value,
-                        &id_set,
-                        html_attr,
-                        self.id(),
-                        config,
-                        &mut violations,
-                    );
+                if ARIA_ID_LIST_ATTRS.iter().any(|a| attr_name_lower == *a) {
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
                     continue;
                 }
 
@@ -141,14 +128,7 @@ impl Rule for NoReferToNonExistentId {
                     .iter()
                     .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
                 {
-                    check_space_separated_ids(
-                        value,
-                        &id_set,
-                        html_attr,
-                        self.id(),
-                        config,
-                        &mut violations,
-                    );
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
                 }
             }
         }
@@ -192,10 +172,7 @@ mod tests {
     use markuplint_types::spec::types::MLMLSpec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn empty_token() -> MLASTToken {
@@ -320,10 +297,7 @@ mod tests {
     #[test]
     fn label_for_existing_id() {
         // <label for="foo"> with <input id="foo">
-        let arena = make_multi_element_arena(&[
-            ("label", &[("for", "foo")]),
-            ("input", &[("id", "foo")]),
-        ]);
+        let arena = make_multi_element_arena(&[("label", &[("for", "foo")]), ("input", &[("id", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -344,10 +318,7 @@ mod tests {
     #[test]
     fn aria_labelledby_space_separated_partial_missing() {
         // <div aria-labelledby="a b"> with only id="a" existing
-        let arena = make_multi_element_arena(&[
-            ("div", &[("aria-labelledby", "a b")]),
-            ("span", &[("id", "a")]),
-        ]);
+        let arena = make_multi_element_arena(&[("div", &[("aria-labelledby", "a b")]), ("span", &[("id", "a")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -534,10 +505,7 @@ mod tests {
     #[test]
     fn all_ids_exist_no_violation() {
         // <label for="name"><input id="name"> → no violation (all referenced IDs exist)
-        let arena = make_multi_element_arena(&[
-            ("label", &[("for", "name")]),
-            ("input", &[("id", "name")]),
-        ]);
+        let arena = make_multi_element_arena(&[("label", &[("for", "name")]), ("input", &[("id", "name")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());

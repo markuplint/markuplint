@@ -20,10 +20,7 @@ impl Rule for RequiredElement {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
         // Config value: string[] of CSS selectors for required elements
         let selectors: Vec<String> = match &config.value {
-            serde_json::Value::Array(arr) => arr
-                .iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect(),
+            serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
             serde_json::Value::String(s) => vec![s.clone()],
             _ => return vec![],
         };
@@ -40,9 +37,9 @@ impl Rule for RequiredElement {
             };
 
             // Check if any element in the document matches
-            let found = arena.elements().any(|(node_id, _el)| {
-                matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)
-            });
+            let found = arena
+                .elements()
+                .any(|(node_id, _el)| matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None));
 
             if !found {
                 // Report on document root
@@ -73,10 +70,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

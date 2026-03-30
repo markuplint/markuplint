@@ -35,8 +35,7 @@ impl Rule for NoEmptyPalpableContent {
             if ignore_if_aria_busy {
                 let has_aria_busy = el.attributes.iter().any(|attr| {
                     if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                        html_attr.node_name.eq_ignore_ascii_case("aria-busy")
-                            && html_attr.value.raw == "true"
+                        html_attr.node_name.eq_ignore_ascii_case("aria-busy") && html_attr.value.raw == "true"
                     } else {
                         false
                     }
@@ -47,13 +46,11 @@ impl Rule for NoEmptyPalpableContent {
             }
 
             // Check if element is empty: no child elements and all text is whitespace-only
-            let is_empty = arena
-                .descendants(node_id)
-                .all(|child| match child {
-                    DomNode::Text(t) => t.base.raw.trim().is_empty(),
-                    DomNode::Element(_) => false,
-                    _ => true, // comments, etc. don't count as content
-                });
+            let is_empty = arena.descendants(node_id).all(|child| match child {
+                DomNode::Text(t) => t.base.raw.trim().is_empty(),
+                DomNode::Element(_) => false,
+                _ => true, // comments, etc. don't count as content
+            });
 
             if is_empty {
                 violations.push(Violation {
@@ -81,10 +78,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

@@ -40,24 +40,26 @@ impl Rule for PlaceholderLabelOption {
             // Check first <option> child has value=""
             let has_placeholder = if let Some(children) = arena.children_of(el.base.id) {
                 // Find the first <option> child
-                children.iter().find_map(|&child_id| {
-                    if let Some(DomNode::Element(child_el)) = arena.get(child_id)
-                        && child_el.base.node_name.eq_ignore_ascii_case("option")
-                    {
-                        return Some(child_el);
-                    }
-                    None
-                }).is_some_and(|first_option| {
-                    // Check if it has value=""
-                    first_option.attributes.iter().any(|attr| {
-                        if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                            html_attr.node_name.eq_ignore_ascii_case("value")
-                                && html_attr.value.raw.is_empty()
-                        } else {
-                            false
+                children
+                    .iter()
+                    .find_map(|&child_id| {
+                        if let Some(DomNode::Element(child_el)) = arena.get(child_id)
+                            && child_el.base.node_name.eq_ignore_ascii_case("option")
+                        {
+                            return Some(child_el);
                         }
+                        None
                     })
-                })
+                    .is_some_and(|first_option| {
+                        // Check if it has value=""
+                        first_option.attributes.iter().any(|attr| {
+                            if let MLASTAttr::HTMLAttr(html_attr) = attr {
+                                html_attr.node_name.eq_ignore_ascii_case("value") && html_attr.value.raw.is_empty()
+                            } else {
+                                false
+                            }
+                        })
+                    })
             } else {
                 false
             };
@@ -88,10 +90,7 @@ mod tests {
     use markuplint_types::spec::types::MLMLSpec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn empty_token() -> MLASTToken {
@@ -319,11 +318,7 @@ mod tests {
             vec![make_attr("required", "")],
             1,
         )));
-        let option_id = builder.push(DomNode::Element(make_element(
-            "option",
-            vec![],
-            2,
-        )));
+        let option_id = builder.push(DomNode::Element(make_element("option", vec![], 2)));
 
         if let Some(DomNode::Element(e)) = builder.get_mut(select_id) {
             e.base.id = select_id;

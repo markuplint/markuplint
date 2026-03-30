@@ -136,10 +136,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn empty_token() -> MLASTToken {
@@ -258,10 +255,7 @@ mod tests {
 
         // nav2 should have "should be top level" violation
         // Both navs should have "Require unique accessible name" (2 navs, no labels)
-        let top_level_violations: Vec<_> = violations
-            .iter()
-            .filter(|v| v.message.contains("top level"))
-            .collect();
+        let top_level_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("top level")).collect();
         assert_eq!(top_level_violations.len(), 1);
         assert_eq!(top_level_violations[0].line, 2);
     }

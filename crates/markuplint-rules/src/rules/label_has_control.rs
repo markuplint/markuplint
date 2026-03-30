@@ -12,9 +12,7 @@ use crate::violation::Violation;
 pub struct LabelHasControl;
 
 /// Form control element names that can be associated with a label.
-const FORM_CONTROLS: &[&str] = &[
-    "input", "select", "textarea", "button", "output", "meter", "progress",
-];
+const FORM_CONTROLS: &[&str] = &["input", "select", "textarea", "button", "output", "meter", "progress"];
 
 impl Rule for LabelHasControl {
     fn id(&self) -> &'static str {
@@ -108,10 +106,7 @@ mod tests {
     use markuplint_types::spec::types::MLMLSpec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn empty_token() -> MLASTToken {
@@ -322,11 +317,7 @@ mod tests {
             children: vec![],
         }));
 
-        let label_id = builder.push(DomNode::Element(make_element(
-            "label",
-            vec![make_attr("for", "")],
-            1,
-        )));
+        let label_id = builder.push(DomNode::Element(make_element("label", vec![make_attr("for", "")], 1)));
 
         if let Some(DomNode::Element(e)) = builder.get_mut(label_id) {
             e.base.id = label_id;

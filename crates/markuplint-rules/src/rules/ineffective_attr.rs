@@ -54,10 +54,7 @@ impl Rule for IneffectiveAttr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         severity: config.severity.clone(),
-                        message: format!(
-                            "The \"{}\" attribute is ineffective",
-                            html_attr.node_name
-                        ),
+                        message: format!("The \"{}\" attribute is ineffective", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
@@ -77,10 +74,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

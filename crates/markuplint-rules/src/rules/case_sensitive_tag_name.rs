@@ -25,9 +25,7 @@ impl Rule for CaseSensitiveTagName {
                 continue;
             }
 
-            let message = format!(
-                "Tag names of HTML elements must be {case}case"
-            );
+            let message = format!("Tag names of HTML elements must be {case}case");
 
             // Check opening tag
             let is_correct = match case {
@@ -102,10 +100,7 @@ mod tests {
         let rule = CaseSensitiveTagName;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "Tag names of HTML elements must be lowercase"
-        );
+        assert_eq!(violations[0].message, "Tag names of HTML elements must be lowercase");
     }
 
     #[test]
@@ -119,10 +114,7 @@ mod tests {
         };
         let violations = rule.verify(&arena, &s, &config);
         assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "Tag names of HTML elements must be uppercase"
-        );
+        assert_eq!(violations[0].message, "Tag names of HTML elements must be uppercase");
     }
 
     #[test]
@@ -316,9 +308,6 @@ mod tests {
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         // Only the opening tag "DIV" is uppercase → 1 violation, no crash from missing closing tag
         assert_eq!(violations.len(), 1);
-        assert_eq!(
-            violations[0].message,
-            "Tag names of HTML elements must be lowercase"
-        );
+        assert_eq!(violations[0].message, "Tag names of HTML elements must be lowercase");
     }
 }

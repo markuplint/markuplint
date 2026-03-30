@@ -16,10 +16,7 @@ impl Rule for AttrValueQuotes {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
-        let quote_style = config
-            .value
-            .as_str()
-            .unwrap_or("double");
+        let quote_style = config.value.as_str().unwrap_or("double");
 
         let (expected_quote, message) = match quote_style {
             "single" => ("'", "Attribute value is must use single quotation mark"),
@@ -79,7 +76,13 @@ mod tests {
         }
     }
 
-    fn make_element_with_quote(tag: &str, attr_name: &str, attr_value: &str, start_quote: &str, end_quote: &str) -> DomArena {
+    fn make_element_with_quote(
+        tag: &str,
+        attr_name: &str,
+        attr_value: &str,
+        start_quote: &str,
+        end_quote: &str,
+    ) -> DomArena {
         let attributes = vec![MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
             uuid: String::new(),
             raw: format!("{attr_name}={start_quote}{attr_value}{end_quote}"),
@@ -253,7 +256,10 @@ mod tests {
         let rule = AttrValueQuotes;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Attribute value is must use double quotation mark");
+        assert_eq!(
+            violations[0].message,
+            "Attribute value is must use double quotation mark"
+        );
     }
 
     #[test]

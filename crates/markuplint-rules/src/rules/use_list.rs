@@ -33,9 +33,7 @@ const DEFAULT_BULLETS: &[&str] = &[
     "\u{22C5}", // ⋅ DOT OPERATOR
     "\u{30FB}", // ・ KATAKANA MIDDLE DOT
     "\u{FF65}", // ・ HALFWIDTH KATAKANA MIDDLE DOT
-    "-",
-    "*",
-    "+",
+    "-", "*", "+",
 ];
 
 /// Bullets that require a trailing space to be recognized as list markers.
@@ -52,10 +50,7 @@ impl Rule for UseList {
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();
         let extra_owned: Vec<String>;
         if let serde_json::Value::Array(arr) = &config.value {
-            extra_owned = arr
-                .iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect();
+            extra_owned = arr.iter().filter_map(|v| v.as_str().map(String::from)).collect();
             for s in &extra_owned {
                 bullets.push(s.as_str());
             }
@@ -139,10 +134,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn make_text_node(text: &str) -> DomArena {

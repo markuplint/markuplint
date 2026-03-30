@@ -92,12 +92,7 @@ impl Rule for RequiredAttr {
 }
 
 /// Check if the element matches a condition (CSS selector).
-fn condition_matches(
-    condition: &AttributeCondition,
-    arena: &DomArena,
-    node_id: usize,
-    spec: &MLMLSpec,
-) -> bool {
+fn condition_matches(condition: &AttributeCondition, arena: &DomArena, node_id: usize, spec: &MLMLSpec) -> bool {
     let selectors = match condition {
         AttributeCondition::Single(s) => vec![s.as_str()],
         AttributeCondition::Multiple(v) => v.iter().map(String::as_str).collect(),
@@ -119,10 +114,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]
@@ -144,10 +136,7 @@ mod tests {
         let s = spec();
         let rule = RequiredAttr;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        assert!(
-            violations.is_empty(),
-            "Expected no violations, got: {violations:?}"
-        );
+        assert!(violations.is_empty(), "Expected no violations, got: {violations:?}");
     }
 
     #[test]

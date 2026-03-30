@@ -52,8 +52,13 @@ impl Rule for InvalidAttr {
                 }
 
                 let ctx = AttrCheckContext {
-                    spec, el_name, attr_specs: &attr_specs, global_attr_names: &global_attr_names,
-                    opts: &opts, rule_id: self.id(), severity: &config.severity,
+                    spec,
+                    el_name,
+                    attr_specs: &attr_specs,
+                    global_attr_names: &global_attr_names,
+                    opts: &opts,
+                    rule_id: self.id(),
+                    severity: &config.severity,
                 };
                 if let Some(v) = check_attr(html_attr, &ctx) {
                     violations.push(v);
@@ -94,10 +99,7 @@ struct AttrCheckContext<'a> {
 }
 
 /// Check a single attribute and return a violation if invalid.
-fn check_attr(
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> Option<Violation> {
+fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Option<Violation> {
     let name = &html_attr.node_name;
     let name_lower = name.to_ascii_lowercase();
 
@@ -235,9 +237,7 @@ fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str>
 
     for candidate in candidates {
         let dist = levenshtein(name, candidate);
-        if dist <= MAX_TYPO_DISTANCE
-            && (best.is_none() || dist < best.unwrap().1)
-        {
+        if dist <= MAX_TYPO_DISTANCE && (best.is_none() || dist < best.unwrap().1) {
             best = Some((candidate, dist));
         }
     }
@@ -252,10 +252,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]
@@ -357,10 +354,7 @@ mod tests {
             ..RuleConfig::default()
         };
         let violations = rule.verify(&arena, &s, &config);
-        assert!(
-            violations.is_empty(),
-            "v- prefixed attrs should be ignored"
-        );
+        assert!(violations.is_empty(), "v- prefixed attrs should be ignored");
     }
 
     #[test]
@@ -398,10 +392,7 @@ mod tests {
         let s = spec();
         let rule = InvalidAttr;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        assert!(
-            violations.is_empty(),
-            "event handler attrs should be skipped"
-        );
+        assert!(violations.is_empty(), "event handler attrs should be skipped");
     }
 
     #[test]

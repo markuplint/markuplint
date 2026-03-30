@@ -25,10 +25,7 @@ impl Rule for Doctype {
             return vec![];
         }
 
-        let value = config
-            .value
-            .as_str()
-            .unwrap_or("always");
+        let value = config.value.as_str().unwrap_or("always");
 
         if value != "always" {
             return vec![];
@@ -80,7 +77,7 @@ mod tests {
     use super::*;
     use crate::violation::Severity;
     use markuplint_dom::arena::DomArenaBuilder;
-    use markuplint_dom::node::{DocumentData, DoctypeData, DomNode, NodeBase};
+    use markuplint_dom::node::{DoctypeData, DocumentData, DomNode, NodeBase};
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
@@ -160,7 +157,14 @@ mod tests {
 
     #[test]
     fn obsolete_doctype_denied() {
-        let arena = make_doc_with_doctype(false, Some(("html", "-//W3C//DTD HTML 4.01//EN", "http://www.w3.org/TR/html4/strict.dtd")));
+        let arena = make_doc_with_doctype(
+            false,
+            Some((
+                "html",
+                "-//W3C//DTD HTML 4.01//EN",
+                "http://www.w3.org/TR/html4/strict.dtd",
+            )),
+        );
         let s = spec();
         let rule = Doctype;
         let config = RuleConfig {

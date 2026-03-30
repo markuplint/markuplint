@@ -37,11 +37,7 @@ impl Rule for NoDefaultValue {
                 };
 
                 // Case-insensitive comparison of attribute value against default
-                if html_attr
-                    .value
-                    .raw
-                    .eq_ignore_ascii_case(default_value.as_str())
-                {
+                if html_attr.value.raw.eq_ignore_ascii_case(default_value.as_str()) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         severity: config.severity.clone(),
@@ -65,10 +61,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]

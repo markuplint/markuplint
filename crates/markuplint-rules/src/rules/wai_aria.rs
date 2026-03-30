@@ -44,11 +44,7 @@ impl Rule for WaiAria {
 
                 if html_attr.node_name.eq_ignore_ascii_case("role") {
                     role_attr = Some(html_attr);
-                } else if html_attr
-                    .node_name
-                    .to_ascii_lowercase()
-                    .starts_with("aria-")
-                {
+                } else if html_attr.node_name.to_ascii_lowercase().starts_with("aria-") {
                     aria_attrs.push(html_attr);
                 }
             }
@@ -83,9 +79,7 @@ impl Rule for WaiAria {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             severity: config.severity.clone(),
-                            message: format!(
-                                "The \"{token}\" role is the abstract role"
-                            ),
+                            message: format!("The \"{token}\" role is the abstract role"),
                             line: role_attr_node.value.line,
                             col: role_attr_node.value.col,
                             raw: role_attr_node.raw.clone(),
@@ -112,9 +106,7 @@ impl Rule for WaiAria {
             if !check_deprecated_props_disabled(&config.options) {
                 // Resolve the computed role for property checking
                 let role_value = role_attr.map(|a| a.value.raw.as_str());
-                let resolved_role = role_value.and_then(|rv| {
-                    aria::resolve_explicit_role(spec, rv, version).ok()
-                });
+                let resolved_role = role_value.and_then(|rv| aria::resolve_explicit_role(spec, rv, version).ok());
 
                 for aria_attr in &aria_attrs {
                     check_deprecated_prop(
@@ -136,10 +128,7 @@ impl Rule for WaiAria {
 
 /// Check if `permittedAriaRoles` option is disabled.
 fn check_permitted_roles_disabled(options: &serde_json::Value) -> bool {
-    options
-        .get("permittedAriaRoles")
-        .and_then(serde_json::Value::as_bool)
-        == Some(false)
+    options.get("permittedAriaRoles").and_then(serde_json::Value::as_bool) == Some(false)
 }
 
 /// Check if `checkingDeprecatedProps` option is disabled.
@@ -262,10 +251,7 @@ mod tests {
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     #[test]
@@ -353,10 +339,7 @@ mod tests {
         let rule = WaiAria;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
         // Should have a violation for non-permitted role
-        assert!(
-            !violations.is_empty(),
-            "meta element should not allow role attribute"
-        );
+        assert!(!violations.is_empty(), "meta element should not allow role attribute");
     }
 
     #[test]
@@ -367,10 +350,7 @@ mod tests {
         let s = spec();
         let rule = WaiAria;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
-        assert!(
-            !violations.is_empty(),
-            "meta element should not allow role override"
-        );
+        assert!(!violations.is_empty(), "meta element should not allow role override");
         let overwrite_violations: Vec<_> = violations
             .iter()
             .filter(|v| v.message.contains("Cannot overwrite"))

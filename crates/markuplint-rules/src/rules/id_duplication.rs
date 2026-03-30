@@ -37,9 +37,11 @@ impl Rule for IdDuplication {
                     if value.is_empty() {
                         continue;
                     }
-                    seen.entry(value)
-                        .or_default()
-                        .push((html_attr.name.line, html_attr.name.col, html_attr.raw.clone()));
+                    seen.entry(value).or_default().push((
+                        html_attr.name.line,
+                        html_attr.name.col,
+                        html_attr.raw.clone(),
+                    ));
                 }
             }
         }
@@ -186,10 +188,7 @@ mod tests {
 
     #[test]
     fn no_duplicate_ids() {
-        let arena = make_multi_element_arena(&[
-            ("div", &[("id", "a")]),
-            ("span", &[("id", "b")]),
-        ]);
+        let arena = make_multi_element_arena(&[("div", &[("id", "a")]), ("span", &[("id", "b")])]);
         let s = spec();
         let rule = IdDuplication;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -198,10 +197,7 @@ mod tests {
 
     #[test]
     fn duplicate_ids_reported() {
-        let arena = make_multi_element_arena(&[
-            ("div", &[("id", "same")]),
-            ("span", &[("id", "same")]),
-        ]);
+        let arena = make_multi_element_arena(&[("div", &[("id", "same")]), ("span", &[("id", "same")])]);
         let s = spec();
         let rule = IdDuplication;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());
@@ -235,10 +231,7 @@ mod tests {
 
     #[test]
     fn severity_from_config() {
-        let arena = make_multi_element_arena(&[
-            ("div", &[("id", "dup")]),
-            ("span", &[("id", "dup")]),
-        ]);
+        let arena = make_multi_element_arena(&[("div", &[("id", "dup")]), ("span", &[("id", "dup")])]);
         let s = spec();
         let rule = IdDuplication;
         let config = RuleConfig {
@@ -252,10 +245,7 @@ mod tests {
     #[test]
     fn empty_id_value_no_duplicate() {
         // Two elements with id="" — empty IDs are skipped per TS behavior
-        let arena = make_multi_element_arena(&[
-            ("div", &[("id", "")]),
-            ("span", &[("id", "")]),
-        ]);
+        let arena = make_multi_element_arena(&[("div", &[("id", "")]), ("span", &[("id", "")])]);
         let s = spec();
         let rule = IdDuplication;
         let violations = rule.verify(&arena, &s, &RuleConfig::default());

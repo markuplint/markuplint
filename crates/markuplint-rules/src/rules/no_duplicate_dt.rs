@@ -95,10 +95,7 @@ mod tests {
     use markuplint_types::spec::types::MLMLSpec;
 
     fn spec() -> MLMLSpec {
-        load_spec(include_str!(
-            "../../../../packages/@markuplint/html-spec/index.json"
-        ))
-        .unwrap()
+        load_spec(include_str!("../../../../packages/@markuplint/html-spec/index.json")).unwrap()
     }
 
     fn make_element(tag: &str, line: u32, col: u32) -> ElementData {
