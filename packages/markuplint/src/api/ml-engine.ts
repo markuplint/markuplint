@@ -282,7 +282,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const { configJson, ruleIdMap } = buildRustConfigJson(fabric.ruleset);
+		const configJson = buildRustConfigJson(fabric.ruleset);
 		const specJson = JSON.stringify(fabric.schemas[0]);
 
 		log('exec: rust path lintHtml');
@@ -315,9 +315,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			};
 		}
 
-		// Convert NapiViolation[] → Violation[], restoring namespaced ruleId
+		// Convert NapiViolation[] → Violation[]
 		const violations: Violation[] = napiViolations.map(v => ({
-			ruleId: ruleIdMap.get(v.ruleId) ?? v.ruleId,
+			ruleId: v.ruleId,
 			severity: v.severity as Violation['severity'],
 			message: v.message,
 			line: v.line,
@@ -677,35 +677,18 @@ async function loadNapiBinding(): Promise<NapiBinding> {
  * Converts the TS Ruleset into a JSON string that the Rust LintConfig can deserialize.
  *
  * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
+ *
+ * Namespaced rule IDs (e.g., "html-standard/attr-duplication") are passed through as-is.
+ * Rust strips the namespace prefix internally for rule lookup and preserves the original
+ * key in violation ruleIds.
  */
-function buildRustConfigJson(ruleset: Partial<Readonly<Ruleset>>): {
-	configJson: string;
-	ruleIdMap: Map<string, string>;
-} {
-	// TS rulesets from presets use namespaced rule IDs like "html-standard/attr-duplication"
-	// or "a11y/wai-aria". Rust rules expect the base name ("attr-duplication", "wai-aria").
-	// Strip the namespace prefix, keeping the last segment after '/'.
-	// Build a reverse map (baseId → namespacedId) to restore ruleIds in violations.
-	// When multiple namespaced IDs share the same base (e.g., "html-standard/id-duplication"
-	// and "a11y/id-duplication"), the last one wins in both config and ruleIdMap. Rust executes
-	// the rule once with the last config, and violations are mapped to the last namespace.
-	// This is a known limitation — TS treats them as independent virtual rules.
-	const rawRules = ruleset.rules ?? {};
-	const rules: Record<string, unknown> = {};
-	const ruleIdMap = new Map<string, string>();
-	for (const [key, value] of Object.entries(rawRules)) {
-		const baseId = key.includes('/') ? key.slice(key.lastIndexOf('/') + 1) : key;
-		rules[baseId] = value;
-		if (key.includes('/')) {
-			ruleIdMap.set(baseId, key);
-		}
-	}
-
-	const configJson = JSON.stringify({
-		rules,
+function buildRustConfigJson(
+	 
+	ruleset: Partial<Readonly<Ruleset>>,
+): string {
+	return JSON.stringify({
+		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
 	});
-
-	return { configJson, ruleIdMap };
 }
