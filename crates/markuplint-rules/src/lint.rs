@@ -90,27 +90,29 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
 
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
 
+    // Pre-index: base_id → Vec<(config_key, config_value)>
+    // Supports both plain keys ("attr-duplication") and namespaced keys
+    // ("html-standard/attr-duplication"). Each matching entry runs the rule
+    // independently with its own config, producing violations tagged with
+    // the original config key (preserving namespace in ruleId).
+    let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> =
+        std::collections::HashMap::new();
+    for (key, value) in &config.rules {
+        let base_id = if let Some(pos) = key.rfind('/') {
+            &key[pos + 1..]
+        } else {
+            key.as_str()
+        };
+        config_index
+            .entry(base_id)
+            .or_default()
+            .push((key.as_str(), value));
+    }
+
     for rule in &rules {
         let base_id = rule.id();
 
-        // Collect all config entries that match this rule's base ID.
-        // Supports both plain keys ("attr-duplication") and namespaced keys
-        // ("html-standard/attr-duplication"). Each matching entry runs the rule
-        // independently with its own config, producing violations tagged with
-        // the original config key (preserving namespace in ruleId).
-        let matching_entries: Vec<(&str, &Value)> = config
-            .rules
-            .iter()
-            .filter(|(key, _)| {
-                let effective_id = if let Some(pos) = key.rfind('/') {
-                    &key[pos + 1..]
-                } else {
-                    key.as_str()
-                };
-                effective_id == base_id
-            })
-            .map(|(k, v)| (k.as_str(), v))
-            .collect();
+        let matching_entries = config_index.get(base_id);
 
         // Check if this rule appears in any nodeRule/childNodeRule
         let in_node_rules = has_node_rules
@@ -124,12 +126,12 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
                     .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(base_id))));
 
         // Skip if not enabled anywhere
-        if matching_entries.is_empty() && !in_node_rules {
+        if matching_entries.is_none() && !in_node_rules {
             continue;
         }
 
-        // If no matching config entries but rule appears in nodeRules, run once with defaults
-        if matching_entries.is_empty() {
+        let Some(entries) = matching_entries else {
+            // No matching config entries but rule appears in nodeRules — run once with defaults
             let global_config = RuleConfig::default();
             let config_set = if in_node_rules {
                 rule_mapper::build_rule_config_set(
@@ -146,10 +148,10 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
             let rule_violations = rule.verify(arena, spec, &config_set);
             violations.extend(rule_violations);
             continue;
-        }
+        };
 
         // Run the rule once per matching config entry
-        for (config_key, config_value) in &matching_entries {
+        for (config_key, config_value) in entries {
             let Some(global_config) = parse_rule_config(config_value) else {
                 // Disabled (e.g., `false`) — skip this entry
                 continue;
