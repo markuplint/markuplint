@@ -1,6 +1,7 @@
 {
 	"name": "@markuplint/core",
 	"version": "0.0.0",
+	"description": "Rust-based linting engine for markuplint (NAPI native addon)",
 	"type": "module",
 	"main": "./index.cjs",
 	"types": "./index.d.ts",
