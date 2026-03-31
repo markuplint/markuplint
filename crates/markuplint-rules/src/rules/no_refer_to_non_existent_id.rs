@@ -4,25 +4,14 @@ use std::collections::HashSet;
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::types::MLMLSpec;
+use markuplint_types::spec::aria::{self, ARIAVersion};
+use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-refer-to-non-existent-id` rule.
 pub struct NoReferToNonExistentId;
-
-/// ARIA attributes that take space-separated ID reference lists.
-const ARIA_ID_LIST_ATTRS: &[&str] = &[
-    "aria-labelledby",
-    "aria-describedby",
-    "aria-controls",
-    "aria-owns",
-    "aria-flowto",
-    "aria-activedescendant",
-    "aria-errormessage",
-    "aria-details",
-];
 
 /// Single-ID reference attributes: (attribute name, element name or empty for any).
 const SINGLE_ID_ATTRS: &[(&str, &str)] = &[
@@ -45,9 +34,31 @@ impl Rule for NoReferToNonExistentId {
         "no-refer-to-non-existent-id"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let global = config.global();
+
+        // Read ariaVersion option (default: RECOMMENDED = 1.3)
+        let version = match global.options.get("ariaVersion").and_then(|v| v.as_str()) {
+            Some("1.1") => ARIAVersion::V1_1,
+            Some("1.2") => ARIAVersion::V1_2,
+            Some("1.3") => ARIAVersion::V1_3,
+            _ => ARIAVersion::RECOMMENDED,
+        };
+
+        // Build ARIA ID-referencing attribute set dynamically from spec
+        let aria_spec = aria::get_aria_spec(spec, version);
+        let aria_id_attrs: HashSet<String> = aria_spec
+            .props
+            .iter()
+            .filter(|p| {
+                matches!(
+                    p.value,
+                    ARIAAttributeValue::IdReference | ARIAAttributeValue::IdReferenceList
+                )
+            })
+            .map(|p| p.name.clone())
+            .collect();
 
         // Read fragmentRefersNameAttr option (default: false)
         let fragment_refers_name = global
@@ -88,8 +99,8 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 }
 
-                // Check ARIA ID list attributes (apply to any element)
-                if ARIA_ID_LIST_ATTRS.iter().any(|a| attr_name_lower == *a) {
+                // Check ARIA ID reference attributes (dynamically from spec)
+                if aria_id_attrs.contains(&attr_name_lower) {
                     check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
                     continue;
                 }
@@ -611,5 +622,35 @@ mod tests {
             violations.is_empty(),
             "Expected no violations when all referenced IDs exist, got: {violations:?}"
         );
+    }
+
+    #[test]
+    fn aria_version_option_is_read() {
+        // Verify ariaVersion option is read and used (all versions have the same
+        // ID-referencing attrs in practice, but the dynamic lookup path is exercised).
+        // aria-labelledby="missing" → violation regardless of version
+        let arena = make_multi_element_arena(&[("div", &[("aria-labelledby", "missing")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+
+        // Default version
+        let v_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(v_default.len(), 1, "Default should check aria-labelledby");
+
+        // Explicit version 1.1
+        let config_11 = RuleConfig {
+            options: serde_json::json!({ "ariaVersion": "1.1" }),
+            ..Default::default()
+        };
+        let v_11 = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_11));
+        assert_eq!(v_11.len(), 1, "ARIA 1.1 should also check aria-labelledby");
+
+        // Explicit version 1.2
+        let config_12 = RuleConfig {
+            options: serde_json::json!({ "ariaVersion": "1.2" }),
+            ..Default::default()
+        };
+        let v_12 = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_12));
+        assert_eq!(v_12.len(), 1, "ARIA 1.2 should also check aria-labelledby");
     }
 }

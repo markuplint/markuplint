@@ -491,4 +491,222 @@ mod tests {
             "prevElement=false should skip text nodes whose previous sibling is an Element"
         );
     }
+
+    #[test]
+    fn prev_comment_false_skips_comment_prev() {
+        // Build: <div><!-- comment -->- Item</div>
+        use markuplint_dom::node::CommentData;
+
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let div_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "div".to_string(),
+                raw: "<div>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "div".to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        let comment_id = builder.push(DomNode::Comment(CommentData {
+            base: NodeBase {
+                id: 0,
+                uuid: "c".to_string(),
+                raw: "<!-- comment -->".to_string(),
+                offset: 0,
+                line: 1,
+                col: 6,
+                node_name: "#comment".to_string(),
+                parent: Some(div_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 2,
+            },
+            is_bogus: false,
+        }));
+        let text_id = builder.push(DomNode::Text(TextData {
+            base: NodeBase {
+                id: 0,
+                uuid: "t".to_string(),
+                raw: "- Item".to_string(),
+                offset: 0,
+                line: 1,
+                col: 22,
+                node_name: "#text".to_string(),
+                parent: Some(div_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: Some(comment_id),
+                depth: 2,
+            },
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(div_id) {
+            e.base.id = div_id;
+            e.base.children = vec![comment_id, text_id];
+        }
+        if let Some(DomNode::Comment(c)) = builder.get_mut(comment_id) {
+            c.base.id = comment_id;
+            c.base.next_sibling = Some(text_id);
+        }
+        if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
+            t.base.id = text_id;
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![div_id];
+        }
+        let arena = builder.finish();
+        let s = spec();
+        let rule = UseList;
+
+        // Default: prevComment=true → violation
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(violations.len(), 1, "Default should report violation after comment");
+
+        // prevComment=false → no violation
+        let config = RuleConfig {
+            options: serde_json::json!({ "prevComment": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert!(
+            violations.is_empty(),
+            "prevComment=false should skip text nodes whose previous sibling is a Comment"
+        );
+    }
+
+    #[test]
+    fn prev_code_block_false_skips_psblock_prev() {
+        // Build: <div>{block}- Item</div>
+        use markuplint_dom::node::PSBlockData;
+
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let div_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "div".to_string(),
+                raw: "<div>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "div".to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        let psblock_id = builder.push(DomNode::PSBlock(PSBlockData {
+            base: NodeBase {
+                id: 0,
+                uuid: "ps".to_string(),
+                raw: "{block}".to_string(),
+                offset: 0,
+                line: 1,
+                col: 6,
+                node_name: "#ps:block".to_string(),
+                parent: Some(div_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 2,
+            },
+            is_fragment: false,
+            block_behavior: None,
+            is_bogus: false,
+        }));
+        let text_id = builder.push(DomNode::Text(TextData {
+            base: NodeBase {
+                id: 0,
+                uuid: "t".to_string(),
+                raw: "- Item".to_string(),
+                offset: 0,
+                line: 1,
+                col: 13,
+                node_name: "#text".to_string(),
+                parent: Some(div_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: Some(psblock_id),
+                depth: 2,
+            },
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(div_id) {
+            e.base.id = div_id;
+            e.base.children = vec![psblock_id, text_id];
+        }
+        if let Some(DomNode::PSBlock(p)) = builder.get_mut(psblock_id) {
+            p.base.id = psblock_id;
+            p.base.next_sibling = Some(text_id);
+        }
+        if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
+            t.base.id = text_id;
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![div_id];
+        }
+        let arena = builder.finish();
+        let s = spec();
+        let rule = UseList;
+
+        // Default: prevCodeBlock=false → no violation (PSBlock prev is skipped by default)
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert!(
+            violations.is_empty(),
+            "Default prevCodeBlock=false should skip text after PSBlock"
+        );
+
+        // prevCodeBlock=true → violation
+        let config = RuleConfig {
+            options: serde_json::json!({ "prevCodeBlock": true }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert_eq!(
+            violations.len(),
+            1,
+            "prevCodeBlock=true should report violation after PSBlock"
+        );
+    }
 }

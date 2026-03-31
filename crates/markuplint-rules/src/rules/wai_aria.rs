@@ -1211,4 +1211,33 @@ mod tests {
     fn check_aria_value_id_reference() {
         assert!(check_aria_value(&ARIAAttributeValue::IdReference, "my-id", &[]));
     }
+
+    #[test]
+    fn checking_deprecated_props_disabled() {
+        // aria-disabled is deprecated on the "alert" role.
+        // With checkingDeprecatedProps: false, no violation should be reported.
+        let arena = make_element_with_attrs("div", &[("role", "alert"), ("aria-disabled", "true")]);
+        let s = spec();
+        let rule = WaiAria;
+
+        // Default (true) — should report deprecated prop
+        let v_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let dep_violations: Vec<_> = v_default.iter().filter(|v| v.message.contains("deprecated")).collect();
+        assert!(
+            !dep_violations.is_empty(),
+            "Default should report deprecated prop, got: {v_default:?}"
+        );
+
+        // Disabled — should NOT report deprecated prop
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingDeprecatedProps": false }),
+            ..RuleConfig::default()
+        };
+        let v_disabled = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let dep_violations: Vec<_> = v_disabled.iter().filter(|v| v.message.contains("deprecated")).collect();
+        assert!(
+            dep_violations.is_empty(),
+            "checkingDeprecatedProps:false should suppress, got: {v_disabled:?}"
+        );
+    }
 }

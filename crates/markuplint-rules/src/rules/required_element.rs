@@ -30,12 +30,21 @@ impl Rule for RequiredElement {
             return vec![];
         }
 
-        // Read ignoreOmittedElements option (default: false)
+        // Read ignoreOmittedElements option (default: true per TS schema)
         let ignore_omitted = config
             .options
             .get("ignoreOmittedElements")
             .and_then(serde_json::Value::as_bool)
-            .unwrap_or(false);
+            .unwrap_or(true);
+
+        // Read ignoreHasMutableContents option (default: true per TS schema).
+        // For static HTML (Rust path), mutable contents do not exist, so this
+        // option is a no-op. We still read it to avoid "unknown option" confusion.
+        let _ignore_has_mutable_contents = config
+            .options
+            .get("ignoreHasMutableContents")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
 
         let mut violations = Vec::new();
 
@@ -164,25 +173,28 @@ mod tests {
         let s = spec();
         let rule = RequiredElement;
 
-        // Without ignoreOmittedElements, ghost nav is found
-        let config_normal = RuleConfig {
+        // Default (ignoreOmittedElements=true): ghost nav is excluded
+        let config_default = RuleConfig {
             value: serde_json::json!(["nav"]),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_normal));
-        assert!(violations.is_empty(), "Ghost nav should still match normally");
-
-        // With ignoreOmittedElements=true, ghost nav is excluded
-        let config_ignore = RuleConfig {
-            value: serde_json::json!(["nav"]),
-            options: serde_json::json!({ "ignoreOmittedElements": true }),
-            ..Default::default()
-        };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_ignore));
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_default));
         assert_eq!(
             violations.len(),
             1,
-            "ignoreOmittedElements=true should exclude ghost elements"
+            "Default ignoreOmittedElements=true should exclude ghost elements"
+        );
+
+        // With ignoreOmittedElements=false, ghost nav IS found
+        let config_include = RuleConfig {
+            value: serde_json::json!(["nav"]),
+            options: serde_json::json!({ "ignoreOmittedElements": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_include));
+        assert!(
+            violations.is_empty(),
+            "ignoreOmittedElements=false should include ghost elements"
         );
     }
 
