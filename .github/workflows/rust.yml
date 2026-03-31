@@ -92,11 +92,11 @@ jobs:
 
             - name: Smoke test (DOM)
               working-directory: packages/@markuplint/core
-              run: node -e "const {NapiDom} = require('./index.js'); const json = JSON.stringify({nodeList:[], raw:'', isFragment:false}); const dom = new NapiDom(json); console.log('napi DOM works, nodes:', dom.nodeCount)"
+              run: node -e "const {NapiDom} = require('./index.cjs'); const json = JSON.stringify({nodeList:[], raw:'', isFragment:false}); const dom = new NapiDom(json); console.log('napi DOM works, nodes:', dom.nodeCount)"
 
             - name: Smoke test (CSS value matching)
               working-directory: packages/@markuplint/core
-              run: node -e "const m = require('./index.js'); const r1 = m.matchCssSyntax('auto | none', 'auto'); if (!r1.matched) throw new Error('auto should match'); const r2 = m.matchCssSyntax('auto | none', 'invalid'); if (r2.matched) throw new Error('invalid should not match'); const r3 = m.matchCssProperty('<length> | auto', 'inherit'); if (!r3.matched) throw new Error('inherit should match as CSS-wide keyword'); const r4 = m.matchCssSyntax('<length>', 'calc(100% - 20px)'); if (!r4.matched) throw new Error('calc should match'); const r5 = m.matchCssSyntax('<length>', 'var(--x)'); if (!r5.matched) throw new Error('var should match'); console.log('napi CSS matching works')"
+              run: node -e "const m = require('./index.cjs'); const r1 = m.matchCssSyntax('auto | none', 'auto'); if (!r1.matched) throw new Error('auto should match'); const r2 = m.matchCssSyntax('auto | none', 'invalid'); if (r2.matched) throw new Error('invalid should not match'); const r3 = m.matchCssProperty('<length> | auto', 'inherit'); if (!r3.matched) throw new Error('inherit should match as CSS-wide keyword'); const r4 = m.matchCssSyntax('<length>', 'calc(100% - 20px)'); if (!r4.matched) throw new Error('calc should match'); const r5 = m.matchCssSyntax('<length>', 'var(--x)'); if (!r5.matched) throw new Error('var should match'); console.log('napi CSS matching works')"
 
             # Rust lint pipeline smoke test requires TS build (html-parser, html-spec).
             # Run locally: node packages/@markuplint/core/smoke-lint.mjs
