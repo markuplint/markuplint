@@ -62,6 +62,14 @@ impl Rule for RequiredAttr {
                 }
             }
 
+            // Read ignoreAttrs option
+            let ignore_attrs: Vec<String> = rule_config
+                .options
+                .get("ignoreAttrs")
+                .and_then(serde_json::Value::as_array)
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
             // Spec-based required attributes: only check XHTML namespace
             if el.namespace != NamespaceURI::XHTML {
                 continue;
@@ -70,6 +78,11 @@ impl Rule for RequiredAttr {
             let attr_specs = get_attr_specs(spec, &el.base.node_name);
 
             for (attr_name, attr_spec) in &attr_specs {
+                // Skip ignored attributes
+                if ignore_attrs.iter().any(|a| a.eq_ignore_ascii_case(attr_name)) {
+                    continue;
+                }
+
                 let Some(ref required) = attr_spec.required else {
                     continue;
                 };
@@ -197,6 +210,24 @@ mod tests {
         assert!(
             violations.is_empty(),
             "Expected no violations for img with src and alt, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn ignore_attrs_option() {
+        // <optgroup> requires "label", but ignoreAttrs: ["label"] should skip it
+        let arena = make_element_with_attrs("optgroup", &[]);
+        let s = spec();
+        let rule = RequiredAttr;
+        let config = RuleConfig {
+            options: serde_json::json!({ "ignoreAttrs": ["label"] }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let label_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("\"label\"")).collect();
+        assert!(
+            label_violations.is_empty(),
+            "ignoreAttrs should skip 'label' check, got: {label_violations:?}"
         );
     }
 

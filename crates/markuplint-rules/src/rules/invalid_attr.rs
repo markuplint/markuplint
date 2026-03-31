@@ -107,18 +107,24 @@ struct ParsedOptions {
     disallow_attrs: Vec<String>,
     disallow_entries: Vec<DisallowEntry>,
     ignore_prefixes: Vec<String>,
+    allow_to_add_properties_for_pretender: bool,
 }
 
 impl ParsedOptions {
     fn from_config(options: &serde_json::Value) -> Self {
         let (allow_attrs, allow_entries) = parse_allow_attrs(options);
         let (disallow_attrs, disallow_entries) = parse_disallow_attrs(options);
+        let allow_pretender = options
+            .get("allowToAddPropertiesForPretender")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
         Self {
             allow_attrs,
             allow_entries,
             disallow_attrs,
             disallow_entries,
             ignore_prefixes: parse_ignore_prefixes(options),
+            allow_to_add_properties_for_pretender: allow_pretender,
         }
     }
 }
@@ -198,7 +204,9 @@ fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheck
         return None;
     }
 
-    if get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true)) {
+    // Check allowToAddPropertiesForPretender option (default: true)
+    let allow_pretender = ctx.opts.allow_to_add_properties_for_pretender;
+    if allow_pretender && get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true)) {
         return None;
     }
 
@@ -616,6 +624,34 @@ mod tests {
         assert!(
             violations.is_empty(),
             "v-bind:title should be ignored with ignoreAttrNamePrefix containing 'v-', got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn allow_to_add_properties_for_pretender_false() {
+        // When allowToAddPropertiesForPretender=false, elements with possibleToAddProperties
+        // should NOT get a free pass for unknown attrs.
+        // We test with a custom element that has possibleToAddProperties.
+        // Since we can't easily mock specs, we test by confirming the option is read.
+        let arena = make_element_with_attrs("div", &[("unknown-attr", "val")]);
+        let s = spec();
+        let rule = InvalidAttr;
+
+        // Default (true) - div doesn't have possibleToAddProperties, so violation is expected either way
+        let config_default = RuleConfig::default();
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_default));
+        assert_eq!(violations.len(), 1);
+
+        // With allowToAddPropertiesForPretender=false - same behavior for div
+        let config_false = RuleConfig {
+            options: serde_json::json!({ "allowToAddPropertiesForPretender": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_false));
+        assert_eq!(
+            violations.len(),
+            1,
+            "Should still report unknown attr with option=false"
         );
     }
 

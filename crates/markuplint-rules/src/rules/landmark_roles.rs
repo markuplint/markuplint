@@ -40,6 +40,20 @@ impl Rule for LandmarkRoles {
         let mut violations = Vec::new();
         let version = ARIAVersion::RECOMMENDED;
 
+        // Read options from global config
+        let global = config.global();
+        let ignore_roles: Vec<String> = global
+            .options
+            .get("ignoreRoles")
+            .and_then(serde_json::Value::as_array)
+            .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let label_each_area = global
+            .options
+            .get("labelEachArea")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
+
         // Collect all landmarks: (node_id, role_name, line, col, raw)
         let mut landmarks: Vec<(NodeId, String, u32, u32, String)> = Vec::new();
 
@@ -57,6 +71,11 @@ impl Rule for LandmarkRoles {
             if let Some(role) = &computed.role
                 && is_landmark_role(&role.name)
             {
+                // Skip roles in ignoreRoles list
+                if ignore_roles.iter().any(|r| r.eq_ignore_ascii_case(&role.name)) {
+                    continue;
+                }
+
                 // Check if this is a top-level landmark (no ancestor with a landmark role)
                 if has_landmark_ancestor(arena, spec, node_id, version) {
                     violations.push(Violation {
@@ -77,6 +96,11 @@ impl Rule for LandmarkRoles {
                     el.base.raw.clone(),
                 ));
             }
+        }
+
+        // Skip label uniqueness check if labelEachArea is false
+        if !label_each_area {
+            return violations;
         }
 
         // Group landmarks by role name
@@ -423,6 +447,91 @@ mod tests {
         assert!(
             unique_name_violations.is_empty(),
             "Two navs with distinct aria-labelledby should not require unique accessible name, got: {unique_name_violations:?}"
+        );
+    }
+
+    #[test]
+    fn ignore_roles_option() {
+        // Two <nav> without labels → normally 2 "unique name" violations
+        // With ignoreRoles: ["navigation"], navs should be completely skipped
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let nav1_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 1)));
+        let nav2_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 2)));
+
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav1_id) {
+            e.base.id = nav1_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav2_id) {
+            e.base.id = nav2_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![nav1_id, nav2_id];
+        }
+
+        let arena = builder.finish();
+        let s = spec();
+        let rule = LandmarkRoles;
+        let config = RuleConfig {
+            options: serde_json::json!({ "ignoreRoles": ["navigation"] }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert!(
+            violations.is_empty(),
+            "ignoreRoles should skip navigation roles entirely, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn label_each_area_false_skips_label_check() {
+        // Two <nav> without labels, labelEachArea=false → no "unique name" violations
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let nav1_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 1)));
+        let nav2_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 2)));
+
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav1_id) {
+            e.base.id = nav1_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav2_id) {
+            e.base.id = nav2_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![nav1_id, nav2_id];
+        }
+
+        let arena = builder.finish();
+        let s = spec();
+        let rule = LandmarkRoles;
+        let config = RuleConfig {
+            options: serde_json::json!({ "labelEachArea": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let unique_name_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("unique accessible name"))
+            .collect();
+        assert!(
+            unique_name_violations.is_empty(),
+            "labelEachArea=false should skip unique name check, got: {unique_name_violations:?}"
         );
     }
 

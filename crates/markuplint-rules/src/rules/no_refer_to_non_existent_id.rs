@@ -47,36 +47,17 @@ impl Rule for NoReferToNonExistentId {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let global = config.global();
 
-        // Step 1: Collect all IDs in the document
-        let mut id_set = HashSet::new();
-        let mut has_dynamic_id = false;
+        // Read fragmentRefersNameAttr option (default: false)
+        let fragment_refers_name = global
+            .options
+            .get("fragmentRefersNameAttr")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
 
-        for (node_id, el) in arena.elements() {
-            let rule_config = config.get(node_id);
-            if rule_config.disabled {
-                continue;
-            }
-            for attr in &el.attributes {
-                let MLASTAttr::HTMLAttr(html_attr) = attr else {
-                    continue;
-                };
-
-                if !html_attr.node_name.eq_ignore_ascii_case("id") {
-                    continue;
-                }
-
-                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
-                    has_dynamic_id = true;
-                    continue;
-                }
-
-                let value = html_attr.value.raw.clone();
-                if !value.is_empty() {
-                    id_set.insert(value);
-                }
-            }
-        }
+        // Step 1: Collect all IDs (and optionally name attrs) in the document
+        let (id_set, has_dynamic_id) = collect_ids(arena, config, fragment_refers_name);
 
         // If any dynamic IDs exist, skip all checks (can't statically verify)
         if has_dynamic_id {
@@ -137,12 +118,75 @@ impl Rule for NoReferToNonExistentId {
                     .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
                 {
                     check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
+                    continue;
+                }
+
+                // Check href="#fragment" references
+                if attr_name_lower == "href"
+                    && let Some(fragment) = value.strip_prefix('#')
+                    && !fragment.is_empty()
+                    && !id_set.contains(fragment)
+                {
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        severity: rule_config.severity.clone(),
+                        message: format!("Missing \"{fragment}\" ID"),
+                        line: html_attr.value.line,
+                        col: html_attr.value.col,
+                        raw: html_attr.value.raw.clone(),
+                    });
                 }
             }
         }
 
         violations
     }
+}
+
+/// Collect all IDs (and optionally `name` attribute values) from the document.
+///
+/// Returns `(id_set, has_dynamic_id)`.
+fn collect_ids(arena: &DomArena, config: &RuleConfigSet, fragment_refers_name: bool) -> (HashSet<String>, bool) {
+    let mut id_set = HashSet::new();
+    let mut has_dynamic_id = false;
+
+    for (node_id, el) in arena.elements() {
+        let rule_config = config.get(node_id);
+        if rule_config.disabled {
+            continue;
+        }
+        for attr in &el.attributes {
+            let MLASTAttr::HTMLAttr(html_attr) = attr else {
+                continue;
+            };
+
+            if !html_attr.node_name.eq_ignore_ascii_case("id") {
+                if fragment_refers_name
+                    && html_attr.node_name.eq_ignore_ascii_case("name")
+                    && html_attr.is_dynamic_value != Some(true)
+                    && html_attr.is_directive != Some(true)
+                {
+                    let value = html_attr.value.raw.clone();
+                    if !value.is_empty() {
+                        id_set.insert(value);
+                    }
+                }
+                continue;
+            }
+
+            if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
+                has_dynamic_id = true;
+                continue;
+            }
+
+            let value = html_attr.value.raw.clone();
+            if !value.is_empty() {
+                id_set.insert(value);
+            }
+        }
+    }
+
+    (id_set, has_dynamic_id)
 }
 
 /// Check each ID in a space-separated list and report missing ones.
@@ -508,6 +552,52 @@ mod tests {
             violations.is_empty(),
             "When dynamic IDs exist, all checks should be skipped, got: {violations:?}"
         );
+    }
+
+    #[test]
+    fn fragment_refers_name_attr() {
+        // <a href="#foo"> with <div name="foo"> → no violation when fragmentRefersNameAttr=true
+        let arena = make_multi_element_arena(&[("a", &[("href", "#foo")]), ("div", &[("name", "foo")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let config = RuleConfig {
+            options: serde_json::json!({ "fragmentRefersNameAttr": true }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert!(
+            violations.is_empty(),
+            "fragmentRefersNameAttr=true should find name attrs, got: {violations:?}"
+        );
+
+        // Without the option, it should report violation
+        let violations_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(
+            violations_default.len(),
+            1,
+            "Without fragmentRefersNameAttr, href=#foo should report missing ID"
+        );
+    }
+
+    #[test]
+    fn href_fragment_missing_id() {
+        // <a href="#missing"> with no id="missing" → violation
+        let arena = make_multi_element_arena(&[("a", &[("href", "#missing")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "Missing \"missing\" ID");
+    }
+
+    #[test]
+    fn href_fragment_existing_id() {
+        // <a href="#exists"> with <div id="exists"> → no violation
+        let arena = make_multi_element_arena(&[("a", &[("href", "#exists")]), ("div", &[("id", "exists")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert!(violations.is_empty());
     }
 
     #[test]

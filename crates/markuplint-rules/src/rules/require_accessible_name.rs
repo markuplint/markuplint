@@ -21,7 +21,7 @@ impl Rule for RequireAccessibleName {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        let version = ARIAVersion::RECOMMENDED;
+        let version = parse_aria_version(config.global());
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -65,6 +65,20 @@ impl Rule for RequireAccessibleName {
 
         violations
     }
+}
+
+/// Parse ariaVersion from rule config options.
+fn parse_aria_version(config: &crate::rule::RuleConfig) -> ARIAVersion {
+    config
+        .options
+        .get("ariaVersion")
+        .and_then(serde_json::Value::as_str)
+        .map_or(ARIAVersion::RECOMMENDED, |s| match s {
+            "1.1" => ARIAVersion::V1_1,
+            "1.2" => ARIAVersion::V1_2,
+            "1.3" => ARIAVersion::V1_3,
+            _ => ARIAVersion::RECOMMENDED,
+        })
 }
 
 /// Check if the element has aria-label with a dynamic value (framework binding).
@@ -128,6 +142,24 @@ mod tests {
         let rule = RequireAccessibleName;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn aria_version_option() {
+        // With ariaVersion: "1.1", the rule should still work
+        let s = spec();
+        let (arena, _id) = make_arena("input", &[("type", "text")]);
+        let rule = RequireAccessibleName;
+        let config = RuleConfig {
+            options: serde_json::json!({ "ariaVersion": "1.1" }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert_eq!(
+            violations.len(),
+            1,
+            "ariaVersion 1.1 should still require accessible name for input[type=text]"
+        );
     }
 
     #[test]

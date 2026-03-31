@@ -49,6 +49,20 @@ impl Rule for PermittedContents {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
+        // Read framework-only options (no-op for static HTML, but acknowledged for config compat)
+        let _ignore_has_mutable_children = config
+            .global()
+            .options
+            .get("ignoreHasMutableChildren")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
+        let _evaluate_conditional_child_nodes = config
+            .global()
+            .options
+            .get("evaluateConditionalChildNodes")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
+
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
             if rule_config.disabled {
@@ -1705,5 +1719,23 @@ mod tests {
             tag_close_char: ">".to_string(),
             is_ghost: false,
         }
+    }
+
+    #[test]
+    fn framework_options_accepted() {
+        // ignoreHasMutableChildren and evaluateConditionalChildNodes are no-op for static HTML
+        // but should be accepted without error
+        let arena = make_element_with_attrs("div", &[]);
+        let s = spec();
+        let rule = PermittedContents;
+        let config = RuleConfig {
+            options: serde_json::json!({
+                "ignoreHasMutableChildren": true,
+                "evaluateConditionalChildNodes": true
+            }),
+            ..Default::default()
+        };
+        // Should not panic or error
+        let _violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
     }
 }

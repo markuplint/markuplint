@@ -4,6 +4,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::helpers::pattern_match;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -16,10 +17,27 @@ impl Rule for NoUseEventHandlerAttr {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let global = config.global();
+
         // Config value: boolean (default true). If false, rule is disabled.
-        if config.global().value == serde_json::Value::Bool(false) {
+        if global.value == serde_json::Value::Bool(false) {
             return vec![];
         }
+
+        // If value is an array of event names, only those events are disallowed
+        let target_events: Option<Vec<String>> = match &global.value {
+            serde_json::Value::Array(arr) => {
+                Some(arr.iter().filter_map(|v| v.as_str().map(str::to_lowercase)).collect())
+            }
+            _ => None,
+        };
+
+        // Read ignore list from options
+        let ignore_list: Vec<String> = match global.options.get("ignore") {
+            Some(serde_json::Value::Array(arr)) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+            Some(serde_json::Value::String(s)) => vec![s.clone()],
+            _ => vec![],
+        };
 
         let mut violations = Vec::new();
 
@@ -33,16 +51,40 @@ impl Rule for NoUseEventHandlerAttr {
                     continue;
                 };
 
-                if html_attr.node_name.len() > 2 && html_attr.node_name[..2].eq_ignore_ascii_case("on") {
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        severity: rule_config.severity.clone(),
-                        message: format!("The \"{}\" attribute is disallowed", html_attr.node_name),
-                        line: html_attr.name.line,
-                        col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
-                    });
+                if html_attr.node_name.len() <= 2 || !html_attr.node_name[..2].eq_ignore_ascii_case("on") {
+                    continue;
                 }
+
+                // Check ignore list (matches full attribute name)
+                if ignore_list
+                    .iter()
+                    .any(|pattern| pattern_match(&html_attr.node_name, pattern))
+                {
+                    continue;
+                }
+
+                // Extract event name (strip "on" prefix)
+                let event_name = html_attr.node_name[2..].to_ascii_lowercase();
+
+                // If value is an array, only report if the event is in the list
+                if let Some(ref events) = target_events {
+                    let matched = events.iter().any(|pattern| {
+                        // Support regex patterns for event names
+                        pattern_match(&event_name, pattern)
+                    });
+                    if !matched {
+                        continue;
+                    }
+                }
+
+                violations.push(Violation {
+                    rule_id: self.id().to_string(),
+                    severity: rule_config.severity.clone(),
+                    message: format!("The \"{}\" attribute is disallowed", html_attr.node_name),
+                    line: html_attr.name.line,
+                    col: html_attr.name.col,
+                    raw: html_attr.raw.clone(),
+                });
             }
         }
 
@@ -127,5 +169,34 @@ mod tests {
         };
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
+    }
+
+    #[test]
+    fn value_array_only_specified_events() {
+        // value: ["click"] → only onclick is disallowed
+        let arena = make_element_with_attrs("button", &[("onclick", "x()"), ("onload", "y()")]);
+        let s = spec();
+        let rule = NoUseEventHandlerAttr;
+        let config = RuleConfig {
+            value: serde_json::json!(["click"]),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert_eq!(violations.len(), 1);
+        assert!(violations[0].message.contains("onclick"));
+    }
+
+    #[test]
+    fn ignore_option_skips_attr() {
+        let arena = make_element_with_attrs("div", &[("onclick", "x()"), ("onload", "y()")]);
+        let s = spec();
+        let rule = NoUseEventHandlerAttr;
+        let config = RuleConfig {
+            options: serde_json::json!({ "ignore": ["onclick"] }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert_eq!(violations.len(), 1);
+        assert!(violations[0].message.contains("onload"));
     }
 }
