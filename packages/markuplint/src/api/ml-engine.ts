@@ -682,7 +682,6 @@ async function loadNapiBinding(): Promise<NapiBinding> {
  * Rust strips the namespace prefix internally for rule lookup and preserves the original
  * key in violation ruleIds.
  */
- 
 function buildRustConfigJson(ruleset: Partial<Readonly<Ruleset>>): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
