@@ -27,6 +27,7 @@
 	},
 	"dependencies": {
 		"@markuplint/cli-utils": "5.0.0-rc.1",
+		"@markuplint/core": "5.0.0-rc.1",
 		"@markuplint/file-resolver": "5.0.0-rc.1",
 		"@markuplint/html-parser": "5.0.0-rc.1",
 		"@markuplint/html-spec": "5.0.0-rc.1",
