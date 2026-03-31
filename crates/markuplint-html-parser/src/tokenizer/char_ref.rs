@@ -35,8 +35,8 @@ pub fn find_longest_match(text: &str) -> Option<(&'static [char], usize)> {
     let mut best: Option<(&'static [char], usize)> = None;
 
     for len in 2..=max_len {
-        if len > text.len() {
-            break;
+        if len > text.len() || !text.is_char_boundary(len) {
+            continue;
         }
         let candidate = &text[..len];
         if let Ok(idx) = NAMED_ENTITIES.binary_search_by_key(&candidate, |(k, _)| k.as_ref()) {
