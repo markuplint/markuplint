@@ -145,6 +145,30 @@ $ markuplint --prune-suppressions "src/**/*.html"
 
 See [ESLint's Bulk Suppressions](https://eslint.org/docs/latest/use/suppressions) for the reference design. Tracking issues: [#3503](https://github.com/markuplint/markuplint/issues/3503), [#3509](https://github.com/markuplint/markuplint/issues/3509).
 
+### Rust Linting Engine (Experimental)
+
+> **This feature is experimental and may change in future releases.**
+
+Use the `--experimental-rust-core` flag to run built-in rules through the Rust-based linting engine, which provides significant performance improvements.
+
+```bash
+$ markuplint "src/**/*.html" --experimental-rust-core
+```
+
+**Requirements:**
+
+- The `@markuplint/core` NAPI binary must be built locally (`yarn workspace @markuplint/core run build:napi`). Pre-built binaries are not yet distributed.
+
+**Known limitations:**
+
+- **HTML only** — files using framework parsers (Vue, JSX, Svelte, etc.) automatically fall back to the TypeScript engine with a warning.
+- **No fix mode** — `--fix` and `--fix-dry-run` fall back to the TypeScript engine.
+- **No custom rules** — projects with plugin rules fall back to the TypeScript engine.
+- **NamedRuleGroup expansion** — preset virtual rules (e.g., `a11y/no-accesskey`) are not yet expanded for the Rust path.
+- **Missing rules** — `redundant-accessible-name`, `require-dialog-autofocus`, `srcset-sizes-constraint`, `link-types`, `no-unsupported-features` are not yet implemented in Rust.
+
+Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for each fallback. Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+
 ## Documentation
 
 - [Getting Started](https://markuplint.dev/getting-started)
