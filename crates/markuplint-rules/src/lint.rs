@@ -95,18 +95,14 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
     // ("html-standard/attr-duplication"). Each matching entry runs the rule
     // independently with its own config, producing violations tagged with
     // the original config key (preserving namespace in ruleId).
-    let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> =
-        std::collections::HashMap::new();
+    let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> = std::collections::HashMap::new();
     for (key, value) in &config.rules {
         let base_id = if let Some(pos) = key.rfind('/') {
             &key[pos + 1..]
         } else {
             key.as_str()
         };
-        config_index
-            .entry(base_id)
-            .or_default()
-            .push((key.as_str(), value));
+        config_index.entry(base_id).or_default().push((key.as_str(), value));
     }
 
     for rule in &rules {
@@ -1419,7 +1415,10 @@ mod tests {
         let config = LintConfig {
             rules: [
                 ("html-standard/attr-duplication".to_string(), Value::Bool(true)),
-                ("a11y/attr-duplication".to_string(), Value::String("warning".to_string())),
+                (
+                    "a11y/attr-duplication".to_string(),
+                    Value::String("warning".to_string()),
+                ),
             ]
             .into_iter()
             .collect(),
