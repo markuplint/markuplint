@@ -31,7 +31,6 @@ export async function mlTest(
 		locale: locale ?? global.locale,
 		fix,
 		ignoreExt: true,
-		autoLoad: true,
 		importPresetRules: !rules,
 	});
 	const result = results[0];
@@ -154,7 +153,6 @@ export async function mlTestFile(
 		fix,
 		ignoreExt: true,
 		noSearchConfig: !!config,
-		autoLoad: true,
 		importPresetRules: !rules,
 	});
 	const result = results[0];

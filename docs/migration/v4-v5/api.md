@@ -10,6 +10,11 @@
 | Change | Impact |
 |--------|--------|
 | `exec` function removed (v1 API) | Users calling `exec()` |
+| `autoLoad` option removed | Users setting `autoLoad` in API options |
+| `MLResultInfo_v1` interface removed | Users referencing the v1 result type |
+| `getIndent()` removed from `@markuplint/ml-core` | Custom rule authors using `getIndent()` |
+| `Token.getLine()` / `Token.getCol()` removed from `@markuplint/types` | Users calling these static methods |
+| `getLine()` / `getCol()` removed from `@markuplint/parser-utils` | Parser plugin developers |
 | New: `FixSummary` on `MLResultInfo` | API users accessing fix diagnostics |
 | New: `computeCursorOffset()` exported from `@markuplint/ml-core` | Editor integration developers |
 
@@ -52,9 +57,61 @@ const result = await engine.exec();
 | `config` (object) | `config` option |
 | `defaultConfig` | `defaultConfig` option |
 | `rules` | `rules` option |
-| `rulesAutoResolve` | `autoLoad` option |
+| `rulesAutoResolve` | Removed — rules are now always auto-loaded |
 | `fix` | `fix` option |
 | `locale` | `locale` option |
+
+## `autoLoad` Option Removed
+
+The `autoLoad` option has been removed from `APIOptions`. Rules referenced in your ruleset are now always auto-loaded unconditionally. If you were explicitly setting `autoLoad: true`, simply remove it — the behavior is now the default.
+
+```ts
+// v4
+const engine = new MLEngine(file, {
+  autoLoad: true, // no longer needed
+});
+
+// v5
+const engine = new MLEngine(file, {});
+```
+
+## `MLResultInfo_v1` Removed
+
+The legacy `MLResultInfo_v1` interface has been removed. Use `MLResultInfo` instead.
+
+## `getIndent()` Removed from `@markuplint/ml-core`
+
+The deprecated `getIndent()` function has been removed from the `@markuplint/ml-core` public API.
+
+## `Token.getLine()` / `Token.getCol()` Removed
+
+The deprecated static methods `Token.getLine()` and `Token.getCol()` have been removed from `@markuplint/types`. Use `Token.getPosition()` instead:
+
+```ts
+// v4
+const line = Token.getLine(value, offset);
+const col = Token.getCol(value, offset);
+
+// v5
+const { line, column } = Token.getPosition(value, offset);
+```
+
+## `getLine()` / `getCol()` Removed from `@markuplint/parser-utils`
+
+The deprecated `getLine()` and `getCol()` functions have been removed. Use `getPosition()` instead:
+
+```ts
+// v4
+import { getLine, getCol } from '@markuplint/parser-utils';
+
+const line = getLine(rawCode, offset);
+const col = getCol(rawCode, offset);
+
+// v5
+import { getPosition } from '@markuplint/parser-utils';
+
+const { line, column } = getPosition(rawCode, offset);
+```
 
 ## New: `FixSummary` on `MLResultInfo`
 

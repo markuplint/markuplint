@@ -10,6 +10,11 @@
 | 変更内容 | 影響範囲 |
 |---------|---------|
 | `exec` 関数の削除（v1 API） | `exec()` を呼び出しているユーザー |
+| `autoLoad` オプションの削除 | API オプションで `autoLoad` を設定しているユーザー |
+| `MLResultInfo_v1` インターフェースの削除 | v1 のリザルト型を参照しているユーザー |
+| `getIndent()` を `@markuplint/ml-core` から削除 | `getIndent()` を使用しているカスタムルール作成者 |
+| `Token.getLine()` / `Token.getCol()` を `@markuplint/types` から削除 | これらの静的メソッドを呼び出しているユーザー |
+| `getLine()` / `getCol()` を `@markuplint/parser-utils` から削除 | パーサープラグイン開発者 |
 | 新機能: `MLResultInfo` に `FixSummary` | Fix 診断情報にアクセスする API ユーザー |
 | 新機能: `@markuplint/ml-core` から `computeCursorOffset()` をエクスポート | エディタ連携開発者 |
 
@@ -52,9 +57,61 @@ const result = await engine.exec();
 | `config`（オブジェクト） | `config` オプション |
 | `defaultConfig` | `defaultConfig` オプション |
 | `rules` | `rules` オプション |
-| `rulesAutoResolve` | `autoLoad` オプション |
+| `rulesAutoResolve` | 削除 — ルールは常に自動ロードされます |
 | `fix` | `fix` オプション |
 | `locale` | `locale` オプション |
+
+## `autoLoad` オプションの削除
+
+`autoLoad` オプションは `APIOptions` から削除されました。ルールセットで参照されているルールは常に自動ロードされます。明示的に `autoLoad: true` を設定していた場合は、単に削除してください — この動作がデフォルトになりました。
+
+```ts
+// v4
+const engine = new MLEngine(file, {
+  autoLoad: true, // 不要になりました
+});
+
+// v5
+const engine = new MLEngine(file, {});
+```
+
+## `MLResultInfo_v1` の削除
+
+レガシーの `MLResultInfo_v1` インターフェースは削除されました。代わりに `MLResultInfo` を使用してください。
+
+## `getIndent()` の `@markuplint/ml-core` からの削除
+
+deprecated の `getIndent()` 関数は `@markuplint/ml-core` の公開 API から削除されました。
+
+## `Token.getLine()` / `Token.getCol()` の削除
+
+deprecated の静的メソッド `Token.getLine()` と `Token.getCol()` は `@markuplint/types` から削除されました。代わりに `Token.getPosition()` を使用してください:
+
+```ts
+// v4
+const line = Token.getLine(value, offset);
+const col = Token.getCol(value, offset);
+
+// v5
+const { line, column } = Token.getPosition(value, offset);
+```
+
+## `getLine()` / `getCol()` の `@markuplint/parser-utils` からの削除
+
+deprecated の `getLine()` と `getCol()` 関数は削除されました。代わりに `getPosition()` を使用してください:
+
+```ts
+// v4
+import { getLine, getCol } from '@markuplint/parser-utils';
+
+const line = getLine(rawCode, offset);
+const col = getCol(rawCode, offset);
+
+// v5
+import { getPosition } from '@markuplint/parser-utils';
+
+const { line, column } = getPosition(rawCode, offset);
+```
 
 ## 新機能: `MLResultInfo` の `FixSummary`
 
