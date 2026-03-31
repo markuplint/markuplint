@@ -90,6 +90,7 @@ export default [
 			'vscode/test/suite/*.js',
 			'website/build/**/*',
 			'website/.docusaurus/**/*',
+			'packages/@markuplint/core/index.cjs',
 		],
 	},
 ];

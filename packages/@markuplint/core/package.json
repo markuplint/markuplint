@@ -1,7 +1,9 @@
 {
 	"name": "@markuplint/core",
 	"version": "0.0.0",
-	"private": true,
+	"type": "module",
+	"main": "./index.cjs",
+	"types": "./index.d.ts",
 	"napi": {
 		"binaryName": "markuplint-napi"
 	},
