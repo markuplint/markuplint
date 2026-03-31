@@ -2509,7 +2509,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@markuplint/core@npm:0.0.0, @markuplint/core@workspace:packages/@markuplint/core":
+"@markuplint/core@workspace:packages/@markuplint/core":
   version: 0.0.0-use.local
   resolution: "@markuplint/core@workspace:packages/@markuplint/core"
   dependencies:
@@ -13157,7 +13157,6 @@ __metadata:
   resolution: "markuplint@workspace:packages/markuplint"
   dependencies:
     "@markuplint/cli-utils": "npm:5.0.0-rc.1"
-    "@markuplint/core": "npm:0.0.0"
     "@markuplint/file-resolver": "npm:5.0.0-rc.1"
     "@markuplint/html-parser": "npm:5.0.0-rc.1"
     "@markuplint/html-spec": "npm:5.0.0-rc.1"
@@ -13176,9 +13175,6 @@ __metadata:
     strict-event-emitter: "npm:0.5.1"
     strip-ansi: "npm:7.2.0"
     type-fest: "npm:5.5.0"
-  dependenciesMeta:
-    "@markuplint/core":
-      optional: true
   bin:
     markuplint: ./bin/markuplint.mjs
   languageName: unknown
