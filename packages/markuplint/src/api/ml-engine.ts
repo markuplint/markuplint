@@ -90,8 +90,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	#configProvider: ConfigProvider;
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
+	/** Whether any plugin provides custom rules. Updated by #provide() on every exec(). */
 	#hasPluginRules = false;
 	#options?: APIOptions & MLEngineOptions;
+	/** The resolved parser module name. Updated by #provide() on every exec(). */
 	#parserModName = '@markuplint/html-parser';
 	#watcher = new FSWatcher();
 
@@ -236,7 +238,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
-		const fix = this.#options?.fix ?? false;
+		const fix = this.#options?.fix ?? this.#options?.fixDryRun ?? false;
 
 		// Fallback: fix mode not supported in Rust
 		if (fix) {
@@ -284,7 +286,34 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const specJson = JSON.stringify(fabric.schemas[0]);
 
 		log('exec: rust path lintHtml');
-		const napiViolations = lintHtml(sourceCode, configJson, specJson);
+
+		let napiViolations: NapiViolation[];
+		try {
+			napiViolations = lintHtml(sourceCode, configJson, specJson);
+		} catch (error) {
+			if (isFatalError(error)) {
+				throw error;
+			}
+			// NAPI errors (config/spec parse failures) — report as lint error
+			const message = error instanceof Error ? error.message : String(error);
+			this.emit('lint-error', this.#file.path, sourceCode, new Error(message));
+			return {
+				violations: [
+					{
+						severity: 'error',
+						message,
+						ruleId: '@markuplint/core',
+						line: 0,
+						col: 0,
+						raw: '',
+					},
+				],
+				filePath: this.#file.path,
+				sourceCode,
+				fixedCode: sourceCode,
+				status: 'processed',
+			};
+		}
 
 		// Convert NapiViolation[] → Violation[], restoring namespaced ruleId
 		const violations: Violation[] = napiViolations.map(v => ({
@@ -649,14 +678,18 @@ async function loadNapiBinding(): Promise<NapiBinding> {
  *
  * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
  */
-function buildRustConfigJson(
-	 
-	ruleset: Partial<Readonly<Ruleset>>,
-): { configJson: string; ruleIdMap: Map<string, string> } {
+function buildRustConfigJson(ruleset: Partial<Readonly<Ruleset>>): {
+	configJson: string;
+	ruleIdMap: Map<string, string>;
+} {
 	// TS rulesets from presets use namespaced rule IDs like "html-standard/attr-duplication"
 	// or "a11y/wai-aria". Rust rules expect the base name ("attr-duplication", "wai-aria").
 	// Strip the namespace prefix, keeping the last segment after '/'.
 	// Build a reverse map (baseId → namespacedId) to restore ruleIds in violations.
+	// When multiple namespaced IDs share the same base (e.g., "html-standard/id-duplication"
+	// and "a11y/id-duplication"), the last one wins in both config and ruleIdMap. Rust executes
+	// the rule once with the last config, and violations are mapped to the last namespace.
+	// This is a known limitation — TS treats them as independent virtual rules.
 	const rawRules = ruleset.rules ?? {};
 	const rules: Record<string, unknown> = {};
 	const ruleIdMap = new Map<string, string>();
