@@ -1205,4 +1205,140 @@ mod tests {
             "Expected 0 class-naming violations, got: {cn_violations:?}"
         );
     }
+
+    // --- require-datetime integration tests ---
+
+    #[test]
+    fn require_datetime_valid_content() {
+        // <time>2000-01-01</time> → valid datetime → no violation
+        let arena = html_arena("<time>2000-01-01</time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 0, "Valid datetime text should not trigger violation: {v:?}");
+    }
+
+    #[test]
+    fn require_datetime_slash_suggests_candidate() {
+        // <time>2000/01/01</time> → Need datetime="2000-01-01"
+        let arena = html_arena("<time>2000/01/01</time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 1, "Slash date should trigger violation: {v:?}");
+        assert_eq!(v[0].message, "Need datetime=\"2000-01-01\"");
+    }
+
+    #[test]
+    fn require_datetime_japanese_era() {
+        // <time>令和5年1月3日</time> → Need datetime="2023-01-03"
+        let arena = html_arena("<time>令和5年1月3日</time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 1, "Japanese era date should trigger violation: {v:?}");
+        assert_eq!(v[0].message, "Need datetime=\"2023-01-03\"");
+    }
+
+    #[test]
+    fn require_datetime_unparseable() {
+        // <time>Content</time> → Need the "datetime" attribute
+        let arena = html_arena("<time>Content</time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 1, "Unparseable text should trigger violation: {v:?}");
+        assert_eq!(v[0].message, "Need the \"datetime\" attribute");
+    }
+
+    #[test]
+    fn require_datetime_with_attr() {
+        // <time datetime="2000-01-01">anything</time> → no violation
+        let arena = html_arena(r#"<time datetime="2000-01-01">anything</time>"#);
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(
+            v.len(),
+            0,
+            "Element with datetime attr should not trigger violation: {v:?}"
+        );
+    }
+
+    #[test]
+    fn require_datetime_english_date() {
+        // <time>January 1, 2024</time> → Need datetime="2024-01-01"
+        let arena = html_arena("<time>January 1, 2024</time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 1, "English date should trigger violation: {v:?}");
+        assert_eq!(v[0].message, "Need datetime=\"2024-01-01\"");
+    }
+
+    #[test]
+    fn require_datetime_empty_time_element() {
+        // <time></time> → empty text → no violation
+        let arena = html_arena("<time></time>");
+        let spec = html_spec();
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "require-datetime": true }
+        }))
+        .unwrap();
+        let result = lint(&arena, &spec, &config);
+        let v: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "require-datetime")
+            .collect();
+        assert_eq!(v.len(), 0, "Empty time element should be skipped: {v:?}");
+    }
 }
