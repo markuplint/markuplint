@@ -19,6 +19,8 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
+use crate::aria::computed_role::{RoleComputationError, get_computed_role};
+use crate::aria::may_be_focusable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -30,6 +32,7 @@ impl Rule for WaiAria {
         "wai-aria"
     }
 
+    #[allow(clippy::too_many_lines)]
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
@@ -141,25 +144,55 @@ impl Rule for WaiAria {
                 }
             }
 
-            // TODO: checkingAllowedAccessibilityChildRoles (default: true)
-            // Requires DOM tree traversal to check child roles against
-            // role.allowed_accessibility_child_roles. Config is read but
-            // implementation deferred until DOM child iteration API is available.
+            // checkingAllowedAccessibilityChildRoles (default: true)
+            // OR checkingRequiredOwnedElements (deprecated alias, default: true)
+            if is_option_enabled(&rule_config.options, "checkingAllowedAccessibilityChildRoles", true)
+                || is_option_enabled(&rule_config.options, "checkingRequiredOwnedElements", true)
+            {
+                check_allowed_child_roles(
+                    spec,
+                    arena,
+                    node_id,
+                    el,
+                    version,
+                    &mut violations,
+                    self.id(),
+                    &rule_config.severity,
+                );
+            }
 
-            // TODO: checkingRequiredOwnedElements (default: true, deprecated alias)
-            // Same as checkingAllowedAccessibilityChildRoles.
+            // checkingRequiredAccessibilityParentRole (default: true)
+            if is_option_enabled(&rule_config.options, "checkingRequiredAccessibilityParentRole", true) {
+                check_required_parent_role(
+                    spec,
+                    arena,
+                    node_id,
+                    el,
+                    version,
+                    &mut violations,
+                    self.id(),
+                    &rule_config.severity,
+                );
+            }
 
-            // TODO: checkingRequiredAccessibilityParentRole (default: true)
-            // Requires DOM tree traversal to check parent context against
-            // role.required_accessibility_parent_role / role.required_context_role.
+            // checkingPresentationalChildren (default: false)
+            if is_option_enabled(&rule_config.options, "checkingPresentationalChildren", false) {
+                check_presentational_children(
+                    spec,
+                    arena,
+                    node_id,
+                    el,
+                    version,
+                    &mut violations,
+                    self.id(),
+                    &rule_config.severity,
+                );
+            }
 
-            // TODO: checkingPresentationalChildren (default: false)
-            // Requires DOM tree traversal to check ARIA on descendants of
-            // roles with children_presentational = true.
-
-            // TODO: checkingInteractionInHidden (default: false)
-            // Requires checking if element is focusable/interactive and
-            // within an aria-hidden subtree. Needs DOM tree traversal.
+            // checkingInteractionInHidden (default: false)
+            if is_option_enabled(&rule_config.options, "checkingInteractionInHidden", false) {
+                check_interaction_in_hidden(spec, arena, node_id, &mut violations, self.id(), &rule_config.severity);
+            }
         }
 
         violations
@@ -658,6 +691,285 @@ fn check_default_value(
             col: attr.name.col,
             raw: attr.raw.clone(),
         });
+    }
+}
+
+/// Check allowed accessibility child roles (required owned elements).
+///
+/// For elements with a computed role that has `allowedAccessibilityChildRoles`,
+/// verifies that at least one child element has one of the required roles.
+/// Skips if `aria-busy="true"` is set or if no children exist.
+#[allow(clippy::too_many_arguments)]
+fn check_allowed_child_roles(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &markuplint_dom::node::ElementData,
+    version: ARIAVersion,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    // Skip if aria-busy="true"
+    if markuplint_dom::helpers::get_attr_value(arena, node_id, "aria-busy")
+        .is_some_and(|v| v.eq_ignore_ascii_case("true"))
+    {
+        return;
+    }
+
+    let cr = get_computed_role(spec, arena, node_id, version, false);
+    let Some(ref role) = cr.role else {
+        return;
+    };
+
+    if role.allowed_accessibility_child_roles.is_empty() {
+        return;
+    }
+
+    let children = arena.children_of(node_id).unwrap_or_default();
+    if children.is_empty() {
+        return;
+    }
+
+    // Check if any child has a required role (recursing through transparent roles)
+    if has_required_child(spec, arena, node_id, &role.allowed_accessibility_child_roles, version) {
+        return;
+    }
+
+    // Check if any child has aria-busy="true"
+    for &child_id in children {
+        if markuplint_dom::helpers::get_attr_value(arena, child_id, "aria-busy")
+            .is_some_and(|v| v.eq_ignore_ascii_case("true"))
+        {
+            return;
+        }
+    }
+
+    let required_roles = role.allowed_accessibility_child_roles.join(", ");
+    violations.push(Violation {
+        rule_id: rule_id.to_string(),
+        severity: severity.clone(),
+        message: format!(
+            "The \"{}\" role expects the child element requires the role(s): {required_roles}",
+            role.name
+        ),
+        line: el.base.line,
+        col: el.base.col,
+        raw: el.base.raw.clone(),
+    });
+}
+
+/// Recursively check if any child (traversing transparent ownership roles) has a required role.
+fn has_required_child(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    parent_id: NodeId,
+    required_roles: &[String],
+    version: ARIAVersion,
+) -> bool {
+    let children = arena.children_of(parent_id).unwrap_or_default();
+    for &child_id in children {
+        let Some(child_node) = arena.get(child_id) else {
+            continue;
+        };
+        if child_node.as_element().is_none() {
+            continue;
+        }
+        let child_cr = get_computed_role(spec, arena, child_id, version, false);
+        if let Some(ref child_role) = child_cr.role {
+            if required_roles.iter().any(|r| r.eq_ignore_ascii_case(&child_role.name)) {
+                return true;
+            }
+            // If child role is transparent for ownership, recurse
+            if is_transparent_for_ownership_check(&child_role.name, version)
+                && has_required_child(spec, arena, child_id, required_roles, version)
+            {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// Check if a role is transparent for ownership (presentation/none/generic in 1.3).
+fn is_transparent_for_ownership_check(role_name: &str, version: ARIAVersion) -> bool {
+    if role_name == "presentation" || role_name == "none" {
+        return true;
+    }
+    if version == ARIAVersion::V1_3 && role_name == "generic" {
+        return true;
+    }
+    false
+}
+
+/// Check required accessibility parent role.
+///
+/// For elements with an EXPLICIT role that has `requiredContextRole`,
+/// verifies that an ancestor has one of the required context roles.
+#[allow(clippy::too_many_arguments)]
+fn check_required_parent_role(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &markuplint_dom::node::ElementData,
+    version: ARIAVersion,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    // Only check explicit roles (skip implicit)
+    let role_attr_value = markuplint_dom::helpers::get_attr_value(arena, node_id, "role");
+    let Some(role_value) = role_attr_value else {
+        return;
+    };
+
+    let cr = get_computed_role(spec, arena, node_id, version, false);
+
+    // Check if computed role returned an error indicating invalid context
+    if cr.error_type == Some(RoleComputationError::InvalidRequiredContextRole)
+        || (cr.error_type == Some(RoleComputationError::NoOwner) && cr.role.is_none())
+    {
+        // Find the role spec to get the required context role names
+        for token in role_value.split_whitespace() {
+            let role_name = token.to_ascii_lowercase();
+            let Some(role_spec) = aria::get_role_spec(spec, &role_name, version) else {
+                continue;
+            };
+
+            let parent_roles = if role_spec.required_accessibility_parent_role.is_empty() {
+                &role_spec.required_context_role
+            } else {
+                &role_spec.required_accessibility_parent_role
+            };
+
+            if !parent_roles.is_empty() {
+                let required = parent_roles.join(", ");
+                violations.push(Violation {
+                    rule_id: rule_id.to_string(),
+                    severity: severity.clone(),
+                    message: format!(
+                        "The \"{role_name}\" role requires an accessibility parent with the role(s): {required}"
+                    ),
+                    line: el.base.line,
+                    col: el.base.col,
+                    raw: el.base.raw.clone(),
+                });
+                return;
+            }
+        }
+    }
+}
+
+/// Check presentational children.
+///
+/// If an ancestor has a role with `childrenPresentational: true`,
+/// ARIA attributes on this element are ineffective.
+#[allow(clippy::too_many_arguments)]
+fn check_presentational_children(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &markuplint_dom::node::ElementData,
+    version: ARIAVersion,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    // Check if element has any role or aria-* attributes
+    let has_aria_attr = el.attributes.iter().any(|attr| {
+        if let MLASTAttr::HTMLAttr(html_attr) = attr {
+            let name = html_attr.node_name.to_ascii_lowercase();
+            name == "role" || name.starts_with("aria-")
+        } else {
+            false
+        }
+    });
+    if !has_aria_attr {
+        return;
+    }
+
+    // Walk ancestors to find one with childrenPresentational
+    for ancestor in arena.ancestors(node_id) {
+        let Some(ancestor_el) = ancestor.as_element() else {
+            continue;
+        };
+        let ancestor_id = ancestor_el.base.id;
+        let cr = get_computed_role(spec, arena, ancestor_id, version, false);
+        if let Some(ref role) = cr.role
+            && role.children_presentational
+        {
+            violations.push(Violation {
+                rule_id: rule_id.to_string(),
+                severity: severity.clone(),
+                message: format!(
+                    "It may be ineffective because it has the \"{}\" role as an ancestor that doesn't expose its descendants to the accessibility tree",
+                    role.name
+                ),
+                line: el.base.line,
+                col: el.base.col,
+                raw: el.base.raw.clone(),
+            });
+            return;
+        }
+    }
+}
+
+/// Check interaction in hidden.
+///
+/// If an element is focusable and has `aria-hidden="true"` on itself or an ancestor,
+/// reports a violation.
+fn check_interaction_in_hidden(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    if !may_be_focusable::may_be_focusable(spec, arena, node_id) {
+        return;
+    }
+
+    // Check self for aria-hidden="true"
+    if markuplint_dom::helpers::get_attr_value(arena, node_id, "aria-hidden")
+        .is_some_and(|v| v.eq_ignore_ascii_case("true"))
+    {
+        let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
+            return;
+        };
+        violations.push(Violation {
+            rule_id: rule_id.to_string(),
+            severity: severity.clone(),
+            message: "It may be focusable in spite of it has aria-hidden=true".to_string(),
+            line: el.base.line,
+            col: el.base.col,
+            raw: el.base.raw.clone(),
+        });
+        return;
+    }
+
+    // Check ancestors for aria-hidden="true"
+    for ancestor in arena.ancestors(node_id) {
+        let Some(ancestor_el) = ancestor.as_element() else {
+            continue;
+        };
+        let ancestor_id = ancestor_el.base.id;
+        if markuplint_dom::helpers::get_attr_value(arena, ancestor_id, "aria-hidden")
+            .is_some_and(|v| v.eq_ignore_ascii_case("true"))
+        {
+            let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
+                return;
+            };
+            violations.push(Violation {
+                rule_id: rule_id.to_string(),
+                severity: severity.clone(),
+                message: "It may be focusable in spite of it has the ancestor that has aria-hidden=true".to_string(),
+                line: el.base.line,
+                col: el.base.col,
+                raw: el.base.raw.clone(),
+            });
+            return;
+        }
     }
 }
 
@@ -1238,6 +1550,433 @@ mod tests {
         assert!(
             dep_violations.is_empty(),
             "checkingDeprecatedProps:false should suppress, got: {v_disabled:?}"
+        );
+    }
+
+    // --- Helper for nested DOM structures ---
+
+    /// Build a DOM arena with parent > child structure, returning the full arena.
+    fn make_nested_arena(
+        parent_tag: &str,
+        parent_attrs: &[(&str, &str)],
+        child_tag: &str,
+        child_attrs: &[(&str, &str)],
+    ) -> DomArena {
+        use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
+        use markuplint_dom::arena::DomArenaBuilder;
+        use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
+
+        let empty_token = || MLASTToken {
+            uuid: String::new(),
+            raw: String::new(),
+            offset: 0,
+            line: 1,
+            col: 1,
+        };
+
+        let make_attrs = |attrs: &[(&str, &str)]| -> Vec<MLASTAttr> {
+            attrs
+                .iter()
+                .map(|(name, value)| {
+                    MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
+                        uuid: String::new(),
+                        raw: format!("{name}=\"{value}\""),
+                        offset: 0,
+                        line: 1,
+                        col: 1,
+                        node_name: name.to_string(),
+                        spaces_before_name: empty_token(),
+                        name: MLASTToken {
+                            raw: name.to_string(),
+                            ..empty_token()
+                        },
+                        spaces_before_equal: empty_token(),
+                        equal: MLASTToken {
+                            raw: "=".to_string(),
+                            ..empty_token()
+                        },
+                        spaces_after_equal: empty_token(),
+                        start_quote: MLASTToken {
+                            raw: "\"".to_string(),
+                            ..empty_token()
+                        },
+                        value: MLASTToken {
+                            raw: value.to_string(),
+                            ..empty_token()
+                        },
+                        end_quote: MLASTToken {
+                            raw: "\"".to_string(),
+                            ..empty_token()
+                        },
+                        is_dynamic_value: None,
+                        is_directive: None,
+                        potential_name: None,
+                        potential_value: None,
+                        value_type: None,
+                        candidate: None,
+                        is_duplicatable: false,
+                    }))
+                })
+                .collect()
+        };
+
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let parent_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 1,
+                uuid: "parent".to_string(),
+                raw: format!("<{parent_tag}>"),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: parent_tag.to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: make_attrs(parent_attrs),
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        let child_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 2,
+                uuid: "child".to_string(),
+                raw: format!("<{child_tag}>"),
+                offset: 0,
+                line: 2,
+                col: 1,
+                node_name: child_tag.to_string(),
+                parent: Some(parent_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 2,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: make_attrs(child_attrs),
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: false,
+        }));
+        if let Some(DomNode::Document(doc)) = builder.get_mut(doc_id) {
+            doc.children.push(parent_id);
+        }
+        if let Some(DomNode::Element(p)) = builder.get_mut(parent_id) {
+            p.base.children.push(child_id);
+        }
+        builder.finish()
+    }
+
+    // --- checkingAllowedAccessibilityChildRoles tests ---
+
+    #[test]
+    fn child_roles_list_with_listitem_passes() {
+        // <ul role="list"><li role="listitem"> — valid
+        let arena = make_nested_arena("ul", &[], "li", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let child_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("expects")).collect();
+        assert!(
+            child_violations.is_empty(),
+            "ul with li child should pass child roles check, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn child_roles_list_without_listitem_fails() {
+        // <div role="list"><div> — missing required listitem child
+        let arena = make_nested_arena("div", &[("role", "list")], "div", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "permittedAriaRoles": false }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let child_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("expects") && v.message.contains("role"))
+            .collect();
+        assert!(
+            !child_violations.is_empty(),
+            "list without listitem child should fail, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn child_roles_aria_busy_skips() {
+        // <div role="list" aria-busy="true"><div> — aria-busy skips the check
+        let arena = make_nested_arena("div", &[("role", "list"), ("aria-busy", "true")], "div", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "permittedAriaRoles": false }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let child_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("expects") && v.message.contains("child"))
+            .collect();
+        assert!(
+            child_violations.is_empty(),
+            "aria-busy=true should skip child roles check, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn child_roles_check_disabled() {
+        // Disable both aliases
+        let arena = make_nested_arena("div", &[("role", "list")], "div", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({
+                "checkingAllowedAccessibilityChildRoles": false,
+                "checkingRequiredOwnedElements": false,
+                "permittedAriaRoles": false
+            }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let child_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("expects") && v.message.contains("child"))
+            .collect();
+        assert!(
+            child_violations.is_empty(),
+            "No child roles violation when check is disabled, got: {violations:?}"
+        );
+    }
+
+    // --- checkingRequiredAccessibilityParentRole tests ---
+
+    #[test]
+    fn parent_role_listitem_in_list_passes() {
+        // <ul><li role="listitem"> — valid context
+        let arena = make_nested_arena("ul", &[], "li", &[("role", "listitem")]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "disallowSetImplicitRole": false }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let parent_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("requires an accessibility parent"))
+            .collect();
+        assert!(
+            parent_violations.is_empty(),
+            "listitem in list should pass parent role check, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn parent_role_listitem_outside_list_fails() {
+        // <div><div role="listitem"> — no list parent
+        let arena = make_nested_arena("div", &[], "div", &[("role", "listitem")]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "permittedAriaRoles": false }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let parent_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("requires an accessibility parent"))
+            .collect();
+        assert!(
+            !parent_violations.is_empty(),
+            "listitem outside list should fail parent role check, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn parent_role_check_disabled() {
+        let arena = make_nested_arena("div", &[], "div", &[("role", "listitem")]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({
+                "checkingRequiredAccessibilityParentRole": false,
+                "permittedAriaRoles": false
+            }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let parent_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("requires an accessibility parent"))
+            .collect();
+        assert!(
+            parent_violations.is_empty(),
+            "No parent role violation when check is disabled, got: {violations:?}"
+        );
+    }
+
+    // --- checkingPresentationalChildren tests ---
+
+    #[test]
+    fn presentational_children_with_aria_on_descendant_fails() {
+        // <div role="button"><span role="img"> — button has childrenPresentational
+        // The span's role attribute is ineffective
+        let arena = make_nested_arena("div", &[("role", "button")], "span", &[("role", "img")]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingPresentationalChildren": true }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let pres_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("ineffective"))
+            .collect();
+        assert!(
+            !pres_violations.is_empty(),
+            "ARIA on descendant of presentational children role should be flagged, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn presentational_children_without_aria_passes() {
+        // <div role="button"><span> — no ARIA attrs on span, no violation
+        let arena = make_nested_arena("div", &[("role", "button")], "span", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingPresentationalChildren": true }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let pres_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("ineffective"))
+            .collect();
+        assert!(
+            pres_violations.is_empty(),
+            "No ARIA attrs on descendant should not be flagged, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn presentational_children_disabled_by_default() {
+        // Default is false — should not check
+        let arena = make_nested_arena("div", &[("role", "button")], "span", &[("role", "img")]);
+        let s = spec();
+        let rule = WaiAria;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let pres_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("ineffective"))
+            .collect();
+        assert!(
+            pres_violations.is_empty(),
+            "Presentational children check should be off by default, got: {violations:?}"
+        );
+    }
+
+    // --- checkingInteractionInHidden tests ---
+
+    #[test]
+    fn interaction_in_hidden_self_fails() {
+        // <button aria-hidden="true"> — focusable and hidden
+        let arena = make_element_with_attrs("button", &[("aria-hidden", "true")]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingInteractionInHidden": true }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let hidden_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("focusable") && v.message.contains("aria-hidden"))
+            .collect();
+        assert!(
+            !hidden_violations.is_empty(),
+            "Focusable element with aria-hidden=true should be flagged, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn interaction_in_hidden_ancestor_fails() {
+        // <div aria-hidden="true"><button> — button is focusable in hidden ancestor
+        let arena = make_nested_arena("div", &[("aria-hidden", "true")], "button", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingInteractionInHidden": true }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let hidden_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("focusable") && v.message.contains("ancestor"))
+            .collect();
+        assert!(
+            !hidden_violations.is_empty(),
+            "Focusable element in aria-hidden ancestor should be flagged, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn interaction_in_hidden_non_focusable_passes() {
+        // <div aria-hidden="true"><span> — span is not focusable
+        let arena = make_nested_arena("div", &[("aria-hidden", "true")], "span", &[]);
+        let s = spec();
+        let rule = WaiAria;
+        let config = RuleConfig {
+            options: serde_json::json!({ "checkingInteractionInHidden": true }),
+            ..RuleConfig::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let hidden_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("focusable")).collect();
+        assert!(
+            hidden_violations.is_empty(),
+            "Non-focusable element should not be flagged, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn interaction_in_hidden_disabled_by_default() {
+        // Default is false — should not check
+        let arena = make_element_with_attrs("button", &[("aria-hidden", "true")]);
+        let s = spec();
+        let rule = WaiAria;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let hidden_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("focusable") && v.message.contains("aria-hidden"))
+            .collect();
+        assert!(
+            hidden_violations.is_empty(),
+            "Interaction in hidden check should be off by default, got: {violations:?}"
         );
     }
 }
