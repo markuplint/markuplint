@@ -49,11 +49,22 @@ npx skills add markuplint/markuplint@markuplint-configure
 
 ### Available skills
 
-| Skill                  | How to use                         | Description                                                                                                                         |
-| ---------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `markuplint`           | Auto-loaded when working with HTML | Reference knowledge — violation interpretation, CLI usage, config patterns.                                                         |
-| `markuplint-setup`     | `/markuplint-setup`                | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions. |
-| `markuplint-configure` | `/markuplint-configure`            | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.            |
+| Skill                  | Type          | Description                                                                                                                                    |
+| ---------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | Auto-loaded   | Reference knowledge — violation interpretation, CLI usage, config patterns. Claude automatically references this when working with HTML files. |
+| `markuplint-setup`     | Slash command | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions.            |
+| `markuplint-configure` | Slash command | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.                       |
+
+### How to use
+
+**Auto-loaded skill (`markuplint`):** No action needed. Once installed, Claude automatically uses this knowledge when you work with HTML or Markuplint configuration. It helps Claude interpret violations, suggest fixes, and write correct configurations.
+
+**Slash command skills:** Type the command in Claude Code to start an interactive workflow:
+
+- `/markuplint-setup` — "Set up Markuplint in my project"
+- `/markuplint-setup "src/**/*.tsx"` — Set up with a specific target glob
+- `/markuplint-configure` — "I want to change a Markuplint rule"
+- `/markuplint-configure src/components/Header.tsx:15` — Adjust rules for a specific file and line
 
 ## Next steps
 
