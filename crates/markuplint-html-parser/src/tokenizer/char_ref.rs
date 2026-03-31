@@ -93,6 +93,21 @@ mod tests {
     }
 
     #[test]
+    fn longest_match_with_multibyte_chars() {
+        // Text containing multibyte UTF-8 characters after '&' should not panic.
+        // 'ホ' is 3 bytes (U+30DB), so byte indices inside it are not char boundaries.
+        let result = find_longest_match("&ホゲ");
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn longest_match_entity_before_multibyte() {
+        // Entity followed by multibyte characters should still match.
+        let result = find_longest_match("&amp;ホゲ");
+        assert_eq!(result, Some((&['&'] as &[char], 5)));
+    }
+
+    #[test]
     fn entity_table_size() {
         // WHATWG defines 2231 named entities.
         assert!(
