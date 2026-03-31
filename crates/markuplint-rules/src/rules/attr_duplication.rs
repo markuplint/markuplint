@@ -8,7 +8,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `attr-duplication` rule.
@@ -19,10 +19,14 @@ impl Rule for AttrDuplication {
         "attr-duplication"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let mut seen: HashMap<String, usize> = HashMap::new();
 
             for attr in &el.attributes {
@@ -37,7 +41,7 @@ impl Rule for AttrDuplication {
                 if *count > 1 {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: format!("The attribute \"{}\" is duplicated", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -54,6 +58,7 @@ impl Rule for AttrDuplication {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::violation::Severity;
     use markuplint_types::spec::load_spec;
 
@@ -172,7 +177,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[("class", "a"), ("id", "b")]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -181,7 +186,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].rule_id, "attr-duplication");
         assert_eq!(violations[0].message, "The attribute \"class\" is duplicated");
@@ -192,7 +197,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[("Class", "a"), ("class", "b")]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
     }
 
@@ -201,7 +206,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b"), ("id", "c")]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 2); // 2nd and 3rd are duplicates
     }
 
@@ -210,7 +215,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -223,7 +228,7 @@ pub(crate) mod tests {
             severity: Severity::Warning,
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations[0].severity, Severity::Warning);
     }
 
@@ -233,7 +238,7 @@ pub(crate) mod tests {
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
         let s = spec();
         let rule = AttrDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].line, 1);
         // col should be > 1 (after <div and first class="a")

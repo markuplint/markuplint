@@ -18,11 +18,12 @@ on:
 
 jobs:
     fmt-clippy-test:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+        # Ubuntu only: Rust layer is pure computation (string processing, data
+        # transformation) with no platform-dependent I/O, path handling, or
+        # system calls. Cross-platform concerns (file paths, line endings,
+        # Unicode normalization) are handled by the Node.js/TS layer.
+        # napi-smoke still runs on all 3 platforms to cover the FFI boundary.
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
               with:

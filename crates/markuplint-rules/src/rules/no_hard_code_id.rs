@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-hard-code-id` rule.
@@ -16,7 +16,7 @@ impl Rule for NoHardCodeId {
         "no-hard-code-id"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         // Only active for fragment documents
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,
@@ -28,7 +28,11 @@ impl Rule for NoHardCodeId {
 
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
@@ -41,7 +45,7 @@ impl Rule for NoHardCodeId {
                 if html_attr.node_name.eq_ignore_ascii_case("id") {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: "It is hard-coded".to_string(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -58,6 +62,7 @@ impl Rule for NoHardCodeId {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
@@ -175,7 +180,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("id", "my-id")]);
         let s = spec();
         let rule = NoHardCodeId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "It is hard-coded");
     }
@@ -185,7 +190,7 @@ mod tests {
         let arena = make_non_fragment_arena("div", &[("id", "my-id")]);
         let s = spec();
         let rule = NoHardCodeId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -194,7 +199,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
         let rule = NoHardCodeId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -283,7 +288,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoHardCodeId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

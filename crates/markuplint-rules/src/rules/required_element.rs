@@ -6,7 +6,7 @@ use markuplint_selector::matcher;
 use markuplint_selector::parser;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `required-element` rule.
@@ -17,7 +17,8 @@ impl Rule for RequiredElement {
         "required-element"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         // Config value: string[] of CSS selectors for required elements
         let selectors: Vec<String> = match &config.value {
             serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
@@ -29,6 +30,22 @@ impl Rule for RequiredElement {
             return vec![];
         }
 
+        // Read ignoreOmittedElements option (default: true per TS schema)
+        let ignore_omitted = config
+            .options
+            .get("ignoreOmittedElements")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
+
+        // Read ignoreHasMutableContents option (default: true per TS schema).
+        // For static HTML (Rust path), mutable contents do not exist, so this
+        // option is a no-op. We still read it to avoid "unknown option" confusion.
+        let _ignore_has_mutable_contents = config
+            .options
+            .get("ignoreHasMutableContents")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
+
         let mut violations = Vec::new();
 
         for selector_str in &selectors {
@@ -37,9 +54,13 @@ impl Rule for RequiredElement {
             };
 
             // Check if any element in the document matches
-            let found = arena
-                .elements()
-                .any(|(node_id, _el)| matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None));
+            let found = arena.elements().any(|(node_id, el)| {
+                // Skip ghost elements when ignoreOmittedElements is true
+                if ignore_omitted && el.is_ghost {
+                    return false;
+                }
+                matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)
+            });
 
             if !found {
                 // Report on document root
@@ -66,6 +87,7 @@ impl Rule for RequiredElement {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -82,7 +104,7 @@ mod tests {
             value: serde_json::json!(["div"]),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 
@@ -95,9 +117,85 @@ mod tests {
             value: serde_json::json!(["nav"]),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require the \"nav\" element");
+    }
+
+    #[test]
+    fn ignore_omitted_elements_true() {
+        // Build an arena with a ghost element "nav"
+        use markuplint_core::mlast::{ElementType, NamespaceURI};
+        use markuplint_dom::arena::DomArenaBuilder;
+        use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
+
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let nav_id = builder.push(DomNode::Element(ElementData {
+            base: NodeBase {
+                id: 0,
+                uuid: "nav".to_string(),
+                raw: "<nav>".to_string(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "nav".to_string(),
+                parent: Some(doc_id),
+                children: vec![],
+                next_sibling: None,
+                prev_sibling: None,
+                depth: 1,
+            },
+            namespace: NamespaceURI::XHTML,
+            element_type: ElementType::Html,
+            is_fragment: false,
+            attributes: vec![],
+            has_spread_attr: false,
+            block_behavior: None,
+            pair_node_id: None,
+            tag_open_char: "<".to_string(),
+            tag_close_char: ">".to_string(),
+            is_ghost: true,
+        }));
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav_id) {
+            e.base.id = nav_id;
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![nav_id];
+        }
+        let arena = builder.finish();
+        let s = spec();
+        let rule = RequiredElement;
+
+        // Default (ignoreOmittedElements=true): ghost nav is excluded
+        let config_default = RuleConfig {
+            value: serde_json::json!(["nav"]),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_default));
+        assert_eq!(
+            violations.len(),
+            1,
+            "Default ignoreOmittedElements=true should exclude ghost elements"
+        );
+
+        // With ignoreOmittedElements=false, ghost nav IS found
+        let config_include = RuleConfig {
+            value: serde_json::json!(["nav"]),
+            options: serde_json::json!({ "ignoreOmittedElements": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_include));
+        assert!(
+            violations.is_empty(),
+            "ignoreOmittedElements=false should include ghost elements"
+        );
     }
 
     #[test]
@@ -105,7 +203,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = RequiredElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `case-sensitive-attr-name` rule.
@@ -16,11 +16,15 @@ impl Rule for CaseSensitiveAttrName {
         "case-sensitive-attr-name"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
-        let case = config.value.as_str().unwrap_or("lower");
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             // Only check HTML namespace elements
             if el.namespace != NamespaceURI::XHTML {
                 continue;
@@ -53,7 +57,7 @@ impl Rule for CaseSensitiveAttrName {
                     };
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message,
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -70,6 +74,7 @@ impl Rule for CaseSensitiveAttrName {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_types::spec::load_spec;
@@ -83,7 +88,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
         let rule = CaseSensitiveAttrName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -92,7 +97,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("CLASS", "foo")]);
         let s = spec();
         let rule = CaseSensitiveAttrName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Attribute names must be lowercase");
     }
@@ -106,8 +111,9 @@ mod tests {
             severity: Severity::Error,
             value: serde_json::json!("upper"),
             options: serde_json::Value::Null,
+            disabled: false,
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Attribute names must be uppercase");
     }

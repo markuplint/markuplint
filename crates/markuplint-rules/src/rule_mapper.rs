@@ -1,0 +1,338 @@
+//! Rule mapper: resolves per-node rule configurations from nodeRules/childNodeRules.
+//!
+//! Mirrors the TS `RuleMapper` + `Document#ruleMapping()` logic:
+//! 1. Global rules apply to all nodes with specificity `[0,0,0]`
+//! 2. `nodeRules` match elements by CSS/regex selector and override with higher specificity
+//! 3. `childNodeRules` match parent elements and apply overrides to their children/descendants
+
+use std::collections::HashMap;
+
+use markuplint_dom::arena::{DomArena, NodeId};
+use markuplint_dom::node::DomNode;
+use markuplint_selector::ast::Specificity;
+use markuplint_selector::regex_selector::{self, RegexSelector};
+use markuplint_types::spec::types::MLMLSpec;
+use serde::Deserialize;
+use serde_json::Value;
+
+use crate::aria_resolver_impl::SpecAriaResolver;
+use crate::rule::{RuleConfig, RuleConfigSet};
+use crate::violation::Severity;
+
+/// A `nodeRule` or `childNodeRule` entry from the user config.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NodeRuleEntry {
+    /// CSS selector string.
+    #[serde(default)]
+    pub selector: Option<String>,
+    /// Regex-based selector.
+    #[serde(default)]
+    pub regex_selector: Option<RegexSelector>,
+    /// Rule overrides for matched nodes.
+    #[serde(default)]
+    pub rules: Option<HashMap<String, Value>>,
+    /// (`childNodeRules` only) Whether to apply to all descendants, not just direct children.
+    #[serde(default)]
+    pub inheritance: Option<bool>,
+}
+
+/// A mapping layer: tracks where a rule config came from and its specificity.
+#[derive(Debug, Clone)]
+struct MappingLayer {
+    specificity: Specificity,
+    config: RuleConfig,
+}
+
+/// Compare two specificities lexicographically.
+fn compare_specificity(a: &Specificity, b: &Specificity) -> std::cmp::Ordering {
+    a[0].cmp(&b[0]).then(a[1].cmp(&b[1])).then(a[2].cmp(&b[2]))
+}
+
+/// Build a `RuleConfigSet` for a given rule by processing global config,
+/// `nodeRules`, and `childNodeRules`.
+///
+/// This is called once per rule in the lint loop. The resulting `RuleConfigSet`
+/// contains per-node overrides that the rule can query by `NodeId`.
+pub fn build_rule_config_set(
+    rule_id: &str,
+    global_config: &RuleConfig,
+    node_rules: &[NodeRuleEntry],
+    child_node_rules: &[NodeRuleEntry],
+    arena: &DomArena,
+    spec: &MLMLSpec,
+) -> RuleConfigSet {
+    let mut node_map: HashMap<NodeId, MappingLayer> = HashMap::new();
+    let aria_resolver = SpecAriaResolver { spec };
+
+    // Process nodeRules
+    for entry in node_rules {
+        let Some(rules) = &entry.rules else {
+            continue;
+        };
+        let Some(rule_value) = rules.get(rule_id) else {
+            continue;
+        };
+
+        for (node_id, _el) in arena.elements() {
+            if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver)
+                && let Some(config) = build_node_config(rule_value, global_config, &captured)
+            {
+                set_if_higher(&mut node_map, node_id, specificity, config);
+            }
+        }
+    }
+
+    // Process childNodeRules
+    for entry in child_node_rules {
+        let Some(rules) = &entry.rules else {
+            continue;
+        };
+        let Some(rule_value) = rules.get(rule_id) else {
+            continue;
+        };
+
+        let inheritance = entry.inheritance.unwrap_or(false);
+
+        for (node_id, _el) in arena.elements() {
+            if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
+                let Some(config) = build_node_config(rule_value, global_config, &captured) else {
+                    continue;
+                };
+
+                let targets = if inheritance {
+                    collect_descendants(arena, node_id)
+                } else {
+                    collect_children(arena, node_id)
+                };
+
+                for child_id in targets {
+                    set_if_higher(&mut node_map, child_id, specificity, config.clone());
+                }
+            }
+        }
+    }
+
+    RuleConfigSet::new(
+        global_config.clone(),
+        node_map.into_iter().map(|(k, v)| (k, v.config)).collect(),
+    )
+}
+
+/// Match an entry (CSS selector or regex selector) against an element.
+/// Returns `Some((specificity, captured_data))` on match.
+fn match_entry(
+    entry: &NodeRuleEntry,
+    arena: &DomArena,
+    node_id: NodeId,
+    spec: &MLMLSpec,
+    aria: &SpecAriaResolver,
+) -> Option<(Specificity, HashMap<String, String>)> {
+    if let Some(css_selector) = &entry.selector {
+        match_css_selector(css_selector, arena, node_id, spec, aria)
+    } else if let Some(regex_sel) = &entry.regex_selector {
+        match_regex_selector(regex_sel, arena, node_id)
+    } else {
+        None
+    }
+}
+
+/// Match a CSS selector string.
+fn match_css_selector(
+    selector_str: &str,
+    arena: &DomArena,
+    node_id: NodeId,
+    spec: &MLMLSpec,
+    aria: &SpecAriaResolver,
+) -> Option<(Specificity, HashMap<String, String>)> {
+    let selector = markuplint_selector::parser::parse(selector_str).ok()?;
+    let specificity =
+        markuplint_selector::matcher::match_specificity(&selector, arena, node_id, None, Some(spec), Some(aria));
+    specificity.map(|s| (s, HashMap::new()))
+}
+
+/// Match a regex selector.
+fn match_regex_selector(
+    regex_sel: &RegexSelector,
+    arena: &DomArena,
+    node_id: NodeId,
+) -> Option<(Specificity, HashMap<String, String>)> {
+    let result = regex_selector::regex_select(arena, node_id, regex_sel);
+    if result.matched {
+        Some((result.specificity, result.data))
+    } else {
+        None
+    }
+}
+
+/// Build a per-node `RuleConfig` from the nodeRule value, merging with global.
+///
+/// Mirrors TS `mergeRule(globalRule, convertedRule)`.
+/// `captured` is used for regex capture replacement (`exchangeValueOnRule`).
+fn build_node_config(
+    rule_value: &Value,
+    global_config: &RuleConfig,
+    captured: &HashMap<String, String>,
+) -> Option<RuleConfig> {
+    let node_config = parse_node_rule_value(rule_value)?;
+    let node_config = exchange_value_on_rule(node_config, captured);
+    Some(merge_rule(global_config, &node_config))
+}
+
+/// Parse a rule value from a nodeRule entry.
+/// Same format as global rules: `true`, `false`, `"error"`, `{ severity, value, options }`.
+fn parse_node_rule_value(value: &Value) -> Option<RuleConfig> {
+    match value {
+        Value::Bool(false) => Some(RuleConfig {
+            disabled: true,
+            ..Default::default()
+        }),
+        Value::Bool(true) => Some(RuleConfig::default()),
+        Value::String(s) => {
+            if let Some(severity) = match s.as_str() {
+                "error" => Some(Severity::Error),
+                "warning" => Some(Severity::Warning),
+                "info" => Some(Severity::Info),
+                _ => None,
+            } {
+                Some(RuleConfig {
+                    severity,
+                    ..Default::default()
+                })
+            } else {
+                Some(RuleConfig {
+                    value: Value::String(s.clone()),
+                    ..Default::default()
+                })
+            }
+        }
+        Value::Object(obj) => {
+            if obj.get("value").is_some_and(|v| v == &Value::Bool(false)) {
+                return Some(RuleConfig {
+                    disabled: true,
+                    ..Default::default()
+                });
+            }
+
+            let severity = obj.get("severity").and_then(|v| v.as_str()).map(|s| match s {
+                "warning" => Severity::Warning,
+                "info" => Severity::Info,
+                _ => Severity::Error,
+            });
+            let rule_value = obj.get("value").cloned();
+            let options = obj.get("options").cloned();
+            Some(RuleConfig {
+                severity: severity.unwrap_or(Severity::Error),
+                value: rule_value.unwrap_or(Value::Bool(true)),
+                options: options.unwrap_or(Value::Null),
+                disabled: false,
+            })
+        }
+        _ => None,
+    }
+}
+
+/// Replace `{{captured_name}}` placeholders in rule config values.
+/// Mirrors TS `exchangeValueOnRule`.
+fn exchange_value_on_rule(config: RuleConfig, captured: &HashMap<String, String>) -> RuleConfig {
+    if captured.is_empty() {
+        return config;
+    }
+
+    let value = exchange_json_value(&config.value, captured);
+    let options = exchange_json_value(&config.options, captured);
+
+    RuleConfig {
+        value,
+        options,
+        ..config
+    }
+}
+
+/// Recursively replace `{{key}}` in JSON values.
+fn exchange_json_value(value: &Value, captured: &HashMap<String, String>) -> Value {
+    match value {
+        Value::String(s) => {
+            let mut result = s.clone();
+            for (key, val) in captured {
+                result = result.replace(&format!("{{{{{key}}}}}"), val);
+            }
+            Value::String(result)
+        }
+        Value::Array(arr) => Value::Array(arr.iter().map(|v| exchange_json_value(v, captured)).collect()),
+        Value::Object(obj) => {
+            let mut map = serde_json::Map::new();
+            for (k, v) in obj {
+                map.insert(k.clone(), exchange_json_value(v, captured));
+            }
+            Value::Object(map)
+        }
+        other => other.clone(),
+    }
+}
+
+/// Merge rule configs: node config overrides global config.
+/// Mirrors TS `mergeRule(a, b)`.
+fn merge_rule(global: &RuleConfig, node: &RuleConfig) -> RuleConfig {
+    if node.disabled {
+        return node.clone();
+    }
+
+    RuleConfig {
+        severity: node.severity.clone(),
+        value: if node.value != Value::Bool(true) || global.value == Value::Bool(true) {
+            node.value.clone()
+        } else {
+            global.value.clone()
+        },
+        options: if node.options == Value::Null {
+            global.options.clone()
+        } else if let (Value::Object(g), Value::Object(n)) = (&global.options, &node.options) {
+            let mut merged = g.clone();
+            for (k, v) in n {
+                merged.insert(k.clone(), v.clone());
+            }
+            Value::Object(merged)
+        } else {
+            node.options.clone()
+        },
+        disabled: false,
+    }
+}
+
+/// Set a node's config if the new specificity is >= current.
+fn set_if_higher(
+    map: &mut HashMap<NodeId, MappingLayer>,
+    node_id: NodeId,
+    specificity: Specificity,
+    config: RuleConfig,
+) {
+    if let Some(existing) = map.get(&node_id)
+        && compare_specificity(&existing.specificity, &specificity) == std::cmp::Ordering::Greater
+    {
+        return;
+    }
+    map.insert(node_id, MappingLayer { specificity, config });
+}
+
+/// Collect direct child node IDs.
+fn collect_children(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
+    arena.children_of(parent_id).map(<[NodeId]>::to_vec).unwrap_or_default()
+}
+
+/// Collect all descendant node IDs (recursive).
+fn collect_descendants(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
+    arena
+        .descendants(parent_id)
+        .map(|node| match node {
+            DomNode::Element(el) => el.base.id,
+            DomNode::Text(t) => t.base.id,
+            DomNode::Comment(c) => c.base.id,
+            DomNode::Doctype(d) => d.base.id,
+            DomNode::PSBlock(p) => p.base.id,
+            DomNode::Invalid(i) => i.base.id,
+            DomNode::EndTag(e) => e.base.id,
+            DomNode::Document(d) => d.id,
+        })
+        .collect()
+}

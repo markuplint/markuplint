@@ -4,7 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-orphaned-end-tag` rule.
@@ -15,7 +15,8 @@ impl Rule for NoOrphanedEndTag {
         "no-orphaned-end-tag"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         let mut violations = Vec::new();
 
         for i in 0..arena.len() {
@@ -38,6 +39,7 @@ impl Rule for NoOrphanedEndTag {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_dom::arena::DomArenaBuilder;
@@ -53,7 +55,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "a")]);
         let s = spec();
         let rule = NoOrphanedEndTag;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -92,7 +94,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoOrphanedEndTag;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Orphaned end tag detected");
     }
@@ -136,7 +138,7 @@ mod tests {
             severity: Severity::Warning,
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations[0].severity, Severity::Warning);
     }
 }

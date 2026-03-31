@@ -9,10 +9,16 @@ markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
 markuplint-selector = { path = "../markuplint-selector" }
 markuplint-types = { path = "../markuplint-types" }
+fancy-regex = "0.14"
 regex = { workspace = true }
 strsim = "0.11"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+whichtime = "0.1"
+
+[dev-dependencies]
+markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
+markuplint-html-parser = { path = "../markuplint-html-parser" }
 
 [lints]
 workspace = true

@@ -7,7 +7,7 @@ use markuplint_selector::parser;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::{AttributeCondition, AttributeRequired, MLMLSpec};
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `required-attr` rule.
@@ -18,16 +18,59 @@ impl Rule for RequiredAttr {
         "required-attr"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             // Skip ghost elements
             if el.is_ghost {
                 continue;
             }
 
-            // Only check XHTML namespace
+            // Check config-defined required attributes first (applies to any namespace)
+            let required_from_config = match &rule_config.value {
+                serde_json::Value::String(s) if !s.is_empty() => vec![s.clone()],
+                serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+                _ => vec![],
+            };
+
+            for attr_name in &required_from_config {
+                let has_attr = el.attributes.iter().any(|attr| {
+                    if let MLASTAttr::HTMLAttr(html_attr) = attr {
+                        html_attr.node_name.eq_ignore_ascii_case(attr_name)
+                    } else {
+                        false
+                    }
+                });
+
+                if !has_attr {
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        severity: rule_config.severity.clone(),
+                        message: format!(
+                            "The \"{}\" element expects the \"{}\" attribute",
+                            el.base.node_name, attr_name
+                        ),
+                        line: el.base.line,
+                        col: el.base.col,
+                        raw: el.base.raw.clone(),
+                    });
+                }
+            }
+
+            // Read ignoreAttrs option
+            let ignore_attrs: Vec<String> = rule_config
+                .options
+                .get("ignoreAttrs")
+                .and_then(serde_json::Value::as_array)
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            // Spec-based required attributes: only check XHTML namespace
             if el.namespace != NamespaceURI::XHTML {
                 continue;
             }
@@ -35,6 +78,11 @@ impl Rule for RequiredAttr {
             let attr_specs = get_attr_specs(spec, &el.base.node_name);
 
             for (attr_name, attr_spec) in &attr_specs {
+                // Skip ignored attributes
+                if ignore_attrs.iter().any(|a| a.eq_ignore_ascii_case(attr_name)) {
+                    continue;
+                }
+
                 let Some(ref required) = attr_spec.required else {
                     continue;
                 };
@@ -74,7 +122,7 @@ impl Rule for RequiredAttr {
                 if !has_attr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: format!(
                             "The \"{}\" element expects the \"{}\" attribute",
                             el.base.node_name, attr_name
@@ -109,7 +157,7 @@ fn condition_matches(condition: &AttributeCondition, arena: &DomArena, node_id: 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rule::RuleConfig;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -123,7 +171,7 @@ mod tests {
         let arena = make_element_with_attrs("optgroup", &[]);
         let s = spec();
         let rule = RequiredAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.iter().any(|v| v.message.contains("\"label\"")),
             "Expected violation for missing label attribute on optgroup, got: {violations:?}"
@@ -135,7 +183,7 @@ mod tests {
         let arena = make_element_with_attrs("optgroup", &[("label", "Group 1")]);
         let s = spec();
         let rule = RequiredAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "Expected no violations, got: {violations:?}");
     }
 
@@ -145,7 +193,7 @@ mod tests {
         let arena = make_element_with_attrs("track", &[]);
         let s = spec();
         let rule = RequiredAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.iter().any(|v| v.message.contains("\"src\"")),
             "Expected violation for missing src attribute on track, got: {violations:?}"
@@ -158,10 +206,28 @@ mod tests {
         let arena = make_element_with_attrs("img", &[("src", "photo.jpg"), ("alt", "A photo")]);
         let s = spec();
         let rule = RequiredAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "Expected no violations for img with src and alt, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn ignore_attrs_option() {
+        // <optgroup> requires "label", but ignoreAttrs: ["label"] should skip it
+        let arena = make_element_with_attrs("optgroup", &[]);
+        let s = spec();
+        let rule = RequiredAttr;
+        let config = RuleConfig {
+            options: serde_json::json!({ "ignoreAttrs": ["label"] }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        let label_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("\"label\"")).collect();
+        assert!(
+            label_violations.is_empty(),
+            "ignoreAttrs should skip 'label' check, got: {label_violations:?}"
         );
     }
 
@@ -174,7 +240,7 @@ mod tests {
         let arena = make_element_with_attrs("img", &[("src", "photo.jpg")]);
         let s = spec();
         let rule = RequiredAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "alt on img is not marked as required in the spec data, got: {violations:?}"

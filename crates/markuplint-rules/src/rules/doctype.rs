@@ -4,7 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `doctype` rule.
@@ -15,7 +15,8 @@ impl Rule for Doctype {
         "doctype"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         // Skip fragments
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,
@@ -35,7 +36,7 @@ impl Rule for Doctype {
             .options
             .get("denyObsoleteType")
             .and_then(serde_json::Value::as_bool)
-            .unwrap_or(false);
+            .unwrap_or(true);
 
         let mut violations = Vec::new();
         let mut found_doctype = false;
@@ -75,6 +76,7 @@ impl Rule for Doctype {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::violation::Severity;
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DoctypeData, DocumentData, DomNode, NodeBase};
@@ -132,7 +134,7 @@ mod tests {
         let arena = make_doc_with_doctype(false, Some(("html", "", "")));
         let s = spec();
         let rule = Doctype;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -141,7 +143,7 @@ mod tests {
         let arena = make_doc_with_doctype(false, None);
         let s = spec();
         let rule = Doctype;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require doctype");
     }
@@ -151,7 +153,7 @@ mod tests {
         let arena = make_doc_with_doctype(true, None);
         let s = spec();
         let rule = Doctype;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -171,10 +173,53 @@ mod tests {
             severity: Severity::Error,
             value: serde_json::json!("always"),
             options: serde_json::json!({ "denyObsoleteType": true }),
+            disabled: false,
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Never declare obsolete doctype");
+    }
+
+    #[test]
+    fn obsolete_doctype_denied_by_default() {
+        // denyObsoleteType defaults to true, so obsolete doctype should be denied without explicit config
+        let arena = make_doc_with_doctype(
+            false,
+            Some((
+                "html",
+                "-//W3C//DTD HTML 4.01//EN",
+                "http://www.w3.org/TR/html4/strict.dtd",
+            )),
+        );
+        let s = spec();
+        let rule = Doctype;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "Never declare obsolete doctype");
+    }
+
+    #[test]
+    fn obsolete_doctype_allowed_when_false() {
+        // denyObsoleteType=false should NOT deny obsolete doctype
+        let arena = make_doc_with_doctype(
+            false,
+            Some((
+                "html",
+                "-//W3C//DTD HTML 4.01//EN",
+                "http://www.w3.org/TR/html4/strict.dtd",
+            )),
+        );
+        let s = spec();
+        let rule = Doctype;
+        let config = RuleConfig {
+            options: serde_json::json!({ "denyObsoleteType": false }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert!(
+            violations.is_empty(),
+            "denyObsoleteType=false should allow obsolete doctype, got: {violations:?}"
+        );
     }
 
     #[test]
@@ -187,7 +232,7 @@ mod tests {
             value: serde_json::json!("never"),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 }

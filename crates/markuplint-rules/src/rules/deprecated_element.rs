@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::get_spec;
 use markuplint_types::spec::types::{MLMLSpec, Obsolete};
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `deprecated-element` rule.
@@ -16,10 +16,14 @@ impl Rule for DeprecatedElement {
         "deprecated-element"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             // Only check HTML and SVG namespaces
             if el.namespace != NamespaceURI::XHTML && el.namespace != NamespaceURI::SVG {
                 continue;
@@ -33,7 +37,7 @@ impl Rule for DeprecatedElement {
             if el_spec.deprecated == Some(true) {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
-                    severity: config.severity.clone(),
+                    severity: rule_config.severity.clone(),
                     message: format!("The \"{}\" element is deprecated", el.base.node_name),
                     line: el.base.line,
                     col: el.base.col,
@@ -46,7 +50,7 @@ impl Rule for DeprecatedElement {
             if let Some(Obsolete::Flag(true) | Obsolete::Info { .. }) = &el_spec.obsolete {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
-                    severity: config.severity.clone(),
+                    severity: rule_config.severity.clone(),
                     message: format!("The \"{}\" element is obsolete", el.base.node_name),
                     line: el.base.line,
                     col: el.base.col,
@@ -62,6 +66,7 @@ impl Rule for DeprecatedElement {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -74,7 +79,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -83,7 +88,7 @@ mod tests {
         let arena = make_element_with_attrs("x-custom", &[]);
         let s = spec();
         let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -93,7 +98,7 @@ mod tests {
         let arena = make_element_with_attrs("hgroup", &[]);
         let s = spec();
         let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -104,7 +109,7 @@ mod tests {
         let arena = make_element_with_attrs("marquee", &[]);
         let s = spec();
         let rule = DeprecatedElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The \"marquee\" element is obsolete");
     }

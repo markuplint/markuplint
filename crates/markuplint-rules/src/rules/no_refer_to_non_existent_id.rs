@@ -4,25 +4,14 @@ use std::collections::HashSet;
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::types::MLMLSpec;
+use markuplint_types::spec::aria::{self, ARIAVersion};
+use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-refer-to-non-existent-id` rule.
 pub struct NoReferToNonExistentId;
-
-/// ARIA attributes that take space-separated ID reference lists.
-const ARIA_ID_LIST_ATTRS: &[&str] = &[
-    "aria-labelledby",
-    "aria-describedby",
-    "aria-controls",
-    "aria-owns",
-    "aria-flowto",
-    "aria-activedescendant",
-    "aria-errormessage",
-    "aria-details",
-];
 
 /// Single-ID reference attributes: (attribute name, element name or empty for any).
 const SINGLE_ID_ATTRS: &[(&str, &str)] = &[
@@ -45,34 +34,41 @@ impl Rule for NoReferToNonExistentId {
         "no-refer-to-non-existent-id"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let global = config.global();
 
-        // Step 1: Collect all IDs in the document
-        let mut id_set = HashSet::new();
-        let mut has_dynamic_id = false;
+        // Read ariaVersion option (default: RECOMMENDED = 1.3)
+        let version = match global.options.get("ariaVersion").and_then(|v| v.as_str()) {
+            Some("1.1") => ARIAVersion::V1_1,
+            Some("1.2") => ARIAVersion::V1_2,
+            Some("1.3") => ARIAVersion::V1_3,
+            _ => ARIAVersion::RECOMMENDED,
+        };
 
-        for (_node_id, el) in arena.elements() {
-            for attr in &el.attributes {
-                let MLASTAttr::HTMLAttr(html_attr) = attr else {
-                    continue;
-                };
+        // Build ARIA ID-referencing attribute set dynamically from spec
+        let aria_spec = aria::get_aria_spec(spec, version);
+        let aria_id_attrs: HashSet<String> = aria_spec
+            .props
+            .iter()
+            .filter(|p| {
+                matches!(
+                    p.value,
+                    ARIAAttributeValue::IdReference | ARIAAttributeValue::IdReferenceList
+                )
+            })
+            .map(|p| p.name.clone())
+            .collect();
 
-                if !html_attr.node_name.eq_ignore_ascii_case("id") {
-                    continue;
-                }
+        // Read fragmentRefersNameAttr option (default: false)
+        let fragment_refers_name = global
+            .options
+            .get("fragmentRefersNameAttr")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
 
-                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
-                    has_dynamic_id = true;
-                    continue;
-                }
-
-                let value = html_attr.value.raw.clone();
-                if !value.is_empty() {
-                    id_set.insert(value);
-                }
-            }
-        }
+        // Step 1: Collect all IDs (and optionally name attrs) in the document
+        let (id_set, has_dynamic_id) = collect_ids(arena, config, fragment_refers_name);
 
         // If any dynamic IDs exist, skip all checks (can't statically verify)
         if has_dynamic_id {
@@ -80,7 +76,11 @@ impl Rule for NoReferToNonExistentId {
         }
 
         // Step 2: Check ID references
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let el_name_lower = el.base.node_name.to_ascii_lowercase();
 
             for attr in &el.attributes {
@@ -99,9 +99,9 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 }
 
-                // Check ARIA ID list attributes (apply to any element)
-                if ARIA_ID_LIST_ATTRS.iter().any(|a| attr_name_lower == *a) {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
+                // Check ARIA ID reference attributes (dynamically from spec)
+                if aria_id_attrs.contains(&attr_name_lower) {
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
                     continue;
                 }
 
@@ -113,7 +113,7 @@ impl Rule for NoReferToNonExistentId {
                     if !id_set.contains(value.as_str()) {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
-                            severity: config.severity.clone(),
+                            severity: rule_config.severity.clone(),
                             message: format!("Missing \"{value}\" ID"),
                             line: html_attr.value.line,
                             col: html_attr.value.col,
@@ -128,13 +128,76 @@ impl Rule for NoReferToNonExistentId {
                     .iter()
                     .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
                 {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
+                    continue;
+                }
+
+                // Check href="#fragment" references
+                if attr_name_lower == "href"
+                    && let Some(fragment) = value.strip_prefix('#')
+                    && !fragment.is_empty()
+                    && !id_set.contains(fragment)
+                {
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        severity: rule_config.severity.clone(),
+                        message: format!("Missing \"{fragment}\" ID"),
+                        line: html_attr.value.line,
+                        col: html_attr.value.col,
+                        raw: html_attr.value.raw.clone(),
+                    });
                 }
             }
         }
 
         violations
     }
+}
+
+/// Collect all IDs (and optionally `name` attribute values) from the document.
+///
+/// Returns `(id_set, has_dynamic_id)`.
+fn collect_ids(arena: &DomArena, config: &RuleConfigSet, fragment_refers_name: bool) -> (HashSet<String>, bool) {
+    let mut id_set = HashSet::new();
+    let mut has_dynamic_id = false;
+
+    for (node_id, el) in arena.elements() {
+        let rule_config = config.get(node_id);
+        if rule_config.disabled {
+            continue;
+        }
+        for attr in &el.attributes {
+            let MLASTAttr::HTMLAttr(html_attr) = attr else {
+                continue;
+            };
+
+            if !html_attr.node_name.eq_ignore_ascii_case("id") {
+                if fragment_refers_name
+                    && html_attr.node_name.eq_ignore_ascii_case("name")
+                    && html_attr.is_dynamic_value != Some(true)
+                    && html_attr.is_directive != Some(true)
+                {
+                    let value = html_attr.value.raw.clone();
+                    if !value.is_empty() {
+                        id_set.insert(value);
+                    }
+                }
+                continue;
+            }
+
+            if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
+                has_dynamic_id = true;
+                continue;
+            }
+
+            let value = html_attr.value.raw.clone();
+            if !value.is_empty() {
+                id_set.insert(value);
+            }
+        }
+    }
+
+    (id_set, has_dynamic_id)
 }
 
 /// Check each ID in a space-separated list and report missing ones.
@@ -164,7 +227,7 @@ fn check_space_separated_ids(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rule::RuleConfig;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -289,7 +352,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"foo\" ID");
     }
@@ -300,7 +363,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "foo")]), ("input", &[("id", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -310,7 +373,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("section", &[("aria-describedby", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"foo\" ID");
     }
@@ -321,7 +384,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("div", &[("aria-labelledby", "a b")]), ("span", &[("id", "a")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"b\" ID");
     }
@@ -495,11 +558,57 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "When dynamic IDs exist, all checks should be skipped, got: {violations:?}"
         );
+    }
+
+    #[test]
+    fn fragment_refers_name_attr() {
+        // <a href="#foo"> with <div name="foo"> → no violation when fragmentRefersNameAttr=true
+        let arena = make_multi_element_arena(&[("a", &[("href", "#foo")]), ("div", &[("name", "foo")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let config = RuleConfig {
+            options: serde_json::json!({ "fragmentRefersNameAttr": true }),
+            ..Default::default()
+        };
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
+        assert!(
+            violations.is_empty(),
+            "fragmentRefersNameAttr=true should find name attrs, got: {violations:?}"
+        );
+
+        // Without the option, it should report violation
+        let violations_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(
+            violations_default.len(),
+            1,
+            "Without fragmentRefersNameAttr, href=#foo should report missing ID"
+        );
+    }
+
+    #[test]
+    fn href_fragment_missing_id() {
+        // <a href="#missing"> with no id="missing" → violation
+        let arena = make_multi_element_arena(&[("a", &[("href", "#missing")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(violations.len(), 1);
+        assert_eq!(violations[0].message, "Missing \"missing\" ID");
+    }
+
+    #[test]
+    fn href_fragment_existing_id() {
+        // <a href="#exists"> with <div id="exists"> → no violation
+        let arena = make_multi_element_arena(&[("a", &[("href", "#exists")]), ("div", &[("id", "exists")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert!(violations.is_empty());
     }
 
     #[test]
@@ -508,10 +617,40 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "name")]), ("input", &[("id", "name")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "Expected no violations when all referenced IDs exist, got: {violations:?}"
         );
+    }
+
+    #[test]
+    fn aria_version_option_is_read() {
+        // Verify ariaVersion option is read and used (all versions have the same
+        // ID-referencing attrs in practice, but the dynamic lookup path is exercised).
+        // aria-labelledby="missing" → violation regardless of version
+        let arena = make_multi_element_arena(&[("div", &[("aria-labelledby", "missing")])]);
+        let s = spec();
+        let rule = NoReferToNonExistentId;
+
+        // Default version
+        let v_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(v_default.len(), 1, "Default should check aria-labelledby");
+
+        // Explicit version 1.1
+        let config_11 = RuleConfig {
+            options: serde_json::json!({ "ariaVersion": "1.1" }),
+            ..Default::default()
+        };
+        let v_11 = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_11));
+        assert_eq!(v_11.len(), 1, "ARIA 1.1 should also check aria-labelledby");
+
+        // Explicit version 1.2
+        let config_12 = RuleConfig {
+            options: serde_json::json!({ "ariaVersion": "1.2" }),
+            ..Default::default()
+        };
+        let v_12 = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_12));
+        assert_eq!(v_12.len(), 1, "ARIA 1.2 should also check aria-labelledby");
     }
 }

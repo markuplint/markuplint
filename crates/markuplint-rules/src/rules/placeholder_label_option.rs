@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `placeholder-label-option` rule.
@@ -16,10 +16,14 @@ impl Rule for PlaceholderLabelOption {
         "placeholder-label-option"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if !el.base.node_name.eq_ignore_ascii_case("select") {
                 continue;
             }
@@ -67,7 +71,7 @@ impl Rule for PlaceholderLabelOption {
             if !has_placeholder {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
-                    severity: config.severity.clone(),
+                    severity: rule_config.severity.clone(),
                     message: "Need the placeholder label option".to_string(),
                     line: el.base.line,
                     col: el.base.col,
@@ -83,6 +87,7 @@ impl Rule for PlaceholderLabelOption {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -218,7 +223,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = PlaceholderLabelOption;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -261,7 +266,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = PlaceholderLabelOption;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Need the placeholder label option");
     }
@@ -296,7 +301,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = PlaceholderLabelOption;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Need the placeholder label option");
     }
@@ -336,7 +341,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = PlaceholderLabelOption;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Need the placeholder label option");
     }
@@ -376,7 +381,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = PlaceholderLabelOption;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

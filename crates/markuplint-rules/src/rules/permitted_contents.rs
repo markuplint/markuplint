@@ -34,7 +34,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::content_model::child_node::{ChildNodeInfo, ChildNodeKind};
 use crate::content_model::matching::{self, validate_content_model};
 use crate::content_model::result::ResultType;
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `permitted-contents` rule.
@@ -46,10 +46,28 @@ impl Rule for PermittedContents {
     }
 
     #[allow(clippy::too_many_lines)]
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
+        // Read framework-only options (no-op for static HTML, but acknowledged for config compat)
+        let _ignore_has_mutable_children = config
+            .global()
+            .options
+            .get("ignoreHasMutableChildren")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
+        let _evaluate_conditional_child_nodes = config
+            .global()
+            .options
+            .get("evaluateConditionalChildNodes")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(false);
+
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let tag_name = &el.base.node_name;
 
             // Build namespace-prefixed spec lookup name
@@ -73,7 +91,7 @@ impl Rule for PermittedContents {
                     if non_empty {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
-                            severity: config.severity.clone(),
+                            severity: rule_config.severity.clone(),
                             message: "The element disallows contents".to_string(),
                             line: el.base.line,
                             col: el.base.col,
@@ -104,7 +122,7 @@ impl Rule for PermittedContents {
                         patterns,
                         &children,
                         spec,
-                        config,
+                        rule_config,
                         self.id(),
                         &mut violations,
                     );
@@ -147,7 +165,7 @@ impl Rule for PermittedContents {
                                 };
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
-                                    severity: config.severity.clone(),
+                                    severity: rule_config.severity.clone(),
                                     message,
                                     line: if child.line > 0 { child.line } else { el.base.line },
                                     col: if child.col > 0 { child.col } else { el.base.col },
@@ -158,7 +176,7 @@ impl Rule for PermittedContents {
                         ResultType::MissingNodeRequired => {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
-                                severity: config.severity.clone(),
+                                severity: rule_config.severity.clone(),
                                 message: format!("Require an element. (Need \"{}\")", result.query,),
                                 line: el.base.line,
                                 col: el.base.col,
@@ -179,7 +197,7 @@ impl Rule for PermittedContents {
                             };
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
-                                severity: config.severity.clone(),
+                                severity: rule_config.severity.clone(),
                                 message: format!("Require one or more elements. (Need \"{}\")", result.query,),
                                 line,
                                 col,
@@ -189,7 +207,7 @@ impl Rule for PermittedContents {
                         ResultType::Nothing => {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
-                                severity: config.severity.clone(),
+                                severity: rule_config.severity.clone(),
                                 message: "The element disallows contents".to_string(),
                                 line: el.base.line,
                                 col: el.base.col,
@@ -201,7 +219,7 @@ impl Rule for PermittedContents {
                                 let child = &children_to_validate[idx];
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
-                                    severity: config.severity.clone(),
+                                    severity: rule_config.severity.clone(),
                                     message: format!(
                                         "The \"{tag_name}\" element has a transparent content model but disallows \"{}\" in this context",
                                         child_name(child),
@@ -829,6 +847,7 @@ fn extract_attribute_names(attrs: &[markuplint_core::mlast::MLASTAttr]) -> Vec<S
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
@@ -927,7 +946,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("li", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         // ul permits li — no violation on ul
         let ul_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
         assert!(ul_violations.is_empty(), "ul > li should be valid");
@@ -938,7 +957,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("div", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("ul"))
@@ -952,7 +971,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("head", &[("meta", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let head_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<head>")).collect();
         assert!(!head_violations.is_empty(), "head without title should report missing");
     }
@@ -962,7 +981,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("head", &[("title", &[]), ("meta", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let head_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<head>")).collect();
         assert!(head_violations.is_empty(), "head with title should be valid");
     }
@@ -972,7 +991,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("div", &[("br", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let br_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<br>")).collect();
         assert!(br_violations.is_empty(), "empty br should be valid");
     }
@@ -982,7 +1001,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("select", &[("option", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let select_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<select>")).collect();
         assert!(select_violations.is_empty(), "select > option should be valid");
     }
@@ -992,7 +1011,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("table", &[("tbody", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let table_violations: Vec<_> = violations.iter().filter(|v| v.raw.contains("<table>")).collect();
         assert!(table_violations.is_empty(), "table > tbody should be valid");
     }
@@ -1002,7 +1021,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("li", &[]), ("li", &[]), ("li", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<ul>")).collect();
         assert!(v.is_empty(), "ul > li*3 should be valid");
     }
@@ -1012,7 +1031,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("li", &[]), ("div", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("ul"))
@@ -1025,7 +1044,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("dl", &[("dt", &[]), ("dd", &[]), ("dt", &[]), ("dd", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<dl>")).collect();
         assert!(v.is_empty(), "dl > dt+dd repeated should be valid");
     }
@@ -1035,7 +1054,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("details", &[("p", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<details>")).collect();
         assert!(!v.is_empty(), "details without summary should report missing");
     }
@@ -1047,7 +1066,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("div", &[("p", &[]), ("span", &[]), ("a", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<div>")).collect();
         assert!(v.is_empty(), "div allows any flow content");
     }
@@ -1059,7 +1078,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("div", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<div>")).collect();
         assert!(!v.is_empty(), "should have violation");
         assert!(
@@ -1079,7 +1098,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("head", &[("meta", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.raw.contains("<head>")).collect();
         assert!(!v.is_empty(), "should have violation");
         assert!(
@@ -1101,7 +1120,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("ul", &[("div", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.message.contains("not allowed"))
@@ -1120,7 +1139,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("head", &[("meta", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations.iter().filter(|v| v.message.contains("Require")).collect();
         assert!(!v.is_empty(), "should have violation");
         // raw should point to the parent (where content is missing)
@@ -1141,7 +1160,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("select", &[]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("select"))
@@ -1156,7 +1175,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("details", &[]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("Require"))
@@ -1171,7 +1190,7 @@ mod tests {
         let s = spec();
         let (arena, _) = make_parent_children("div", &[("svg", &[])]);
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let v: Vec<_> = violations
             .iter()
             .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("div"))
@@ -1260,7 +1279,7 @@ mod tests {
         }
         let arena = builder.finish();
         let rule = PermittedContents;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         let br_v: Vec<_> = violations.iter().filter(|v| v.raw == "<br>").collect();
         assert!(br_v.is_empty(), "br with whitespace-only text should be valid");
     }
@@ -1700,5 +1719,23 @@ mod tests {
             tag_close_char: ">".to_string(),
             is_ghost: false,
         }
+    }
+
+    #[test]
+    fn framework_options_accepted() {
+        // ignoreHasMutableChildren and evaluateConditionalChildNodes are no-op for static HTML
+        // but should be accepted without error
+        let arena = make_element_with_attrs("div", &[]);
+        let s = spec();
+        let rule = PermittedContents;
+        let config = RuleConfig {
+            options: serde_json::json!({
+                "ignoreHasMutableChildren": true,
+                "evaluateConditionalChildNodes": true
+            }),
+            ..Default::default()
+        };
+        // Should not panic or error
+        let _violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
     }
 }
