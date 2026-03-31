@@ -35,9 +35,15 @@ AI coding agents such as [Claude Code](https://claude.ai/claude-code), [Cursor](
 `npx markuplint --init` is interactive and requires manual input. AI agents should write the configuration file directly instead. See [Beyond HTML](/docs/guides/beyond-html) for the parser and spec packages to include.
 :::
 
-:::tip
-For AI agent developers: a dedicated [SKILL file for Markuplint](https://github.com/markuplint/markuplint/issues/3553) is planned to help agents use Markuplint more effectively.
-:::
+## Skills for Claude Code
+
+Markuplint provides installable [skills](https://github.com/markuplint/markuplint/tree/dev/skills) for [Claude Code](https://claude.ai/claude-code) that guide agents through common workflows:
+
+| Skill                  | Description                                                                                                                         |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | Reference knowledge — violation interpretation, CLI usage, config patterns. Auto-loaded when working with HTML.                     |
+| `markuplint-setup`     | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions. |
+| `markuplint-configure` | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.            |
 
 ## Next steps
 

@@ -35,9 +35,15 @@ AIアシスタントに、プロジェクトに合わせたMarkuplintの設定�
 `npx markuplint --init` は対話式のため、手動入力が必要です。AIエージェントは設定ファイルを直接書く方が確実です。パーサーとスペックパッケージについては[HTML以外で使う](/docs/guides/beyond-html)を参照してください。
 :::
 
-:::tip
-AIエージェント開発者向け: エージェントがMarkuplintをより効果的に利用するための[SKILLファイル](https://github.com/markuplint/markuplint/issues/3553)を計画中です。
-:::
+## Claude Code 向けスキル
+
+Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインストール可能な[スキル](https://github.com/markuplint/markuplint/tree/dev/skills)を提供しています。エージェントがよくあるワークフローをガイドします:
+
+| スキル                 | 説明                                                                                                                   |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。HTML作業時に自動読み込み。                       |
+| `markuplint-setup`     | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。 |
+| `markuplint-configure` | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                  |
 
 ## 次のステップ
 
