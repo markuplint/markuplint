@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { parser } from '@markuplint/html-parser';
 
 const require_ = createRequire(import.meta.url);
-const { lint } = require_('./index.js');
+const { lint } = require_('./index.cjs');
 const htmlSpec = require_('@markuplint/html-spec');
 const specJson = JSON.stringify(htmlSpec);
 

@@ -7,7 +7,7 @@ import { parser } from '@markuplint/html-parser';
 import { describe, it, expect } from 'vitest';
 
 const require_ = createRequire(import.meta.url);
-const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.js');
+const { NapiDom, lint, matchCssSyntax, matchCssProperty } = require_('./index.cjs');
 const htmlSpec = require_('@markuplint/html-spec');
 
 function buildDom(html: string): NapiDom {

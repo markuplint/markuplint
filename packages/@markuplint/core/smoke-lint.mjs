@@ -11,7 +11,7 @@ import { parser } from '@markuplint/html-parser';
 
 // NAPI binary must be loaded via require (native addon)
 const require_ = createRequire(import.meta.url);
-const { lint } = require_('./index.js');
+const { lint } = require_('./index.cjs');
 const htmlSpec = require_('@markuplint/html-spec');
 
 const specJson = JSON.stringify(htmlSpec);

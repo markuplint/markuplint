@@ -13,7 +13,7 @@ import { performance } from 'node:perf_hooks';
 import { mlTest } from 'markuplint';
 
 const require_ = createRequire(import.meta.url);
-const { lintHtml } = require_('./index.js');
+const { lintHtml } = require_('./index.cjs');
 const htmlSpec = require_('@markuplint/html-spec');
 const specJson = JSON.stringify(htmlSpec);
 const configJson = JSON.stringify({ rules: { 'permitted-contents': true } });

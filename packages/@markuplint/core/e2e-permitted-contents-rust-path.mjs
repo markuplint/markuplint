@@ -8,7 +8,7 @@
 import { createRequire } from 'node:module';
 
 const require_ = createRequire(import.meta.url);
-const { lintHtml } = require_('./index.js');
+const { lintHtml } = require_('./index.cjs');
 const htmlSpec = require_('@markuplint/html-spec');
 const specJson = JSON.stringify(htmlSpec);
 

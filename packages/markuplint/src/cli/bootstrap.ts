@@ -32,6 +32,8 @@ Options
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
 
+	--experimental-rust-core                [Experimental] Use the Rust linting engine for built-in rules (HTML only).
+
 	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
 	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
 	--prune-suppressions                   [Experimental] Remove stale entries from the suppressions file.
@@ -140,6 +142,10 @@ export const cli = meow(help, {
 		progressiveOutput: {
 			type: 'boolean',
 			// TODO: It will be changed to `true` in the next major version.
+			default: false,
+		},
+		experimentalRustCore: {
+			type: 'boolean',
 			default: false,
 		},
 		suppress: {

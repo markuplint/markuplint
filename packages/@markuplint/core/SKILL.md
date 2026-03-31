@@ -103,6 +103,6 @@ Both require the napi binary to be built first.
 ## Important Notes
 
 - The crate directory is `markuplint-napi` (napi-rs requires crate name to match binaryName)
-- `packages/@markuplint/core/.gitignore` excludes generated files (`*.node`, `index.js`, `index.d.ts`)
-- This package is `private: true` — not published to npm yet
+- `packages/@markuplint/core/.gitignore` excludes generated files (`*.node`, `index.cjs`, `index.d.ts`)
+- The NAPI auto-generated CJS loader is renamed from `index.js` to `index.cjs` (ESM package with `type: "module"`)
 - Rust edition 2024, minimum rustc 1.85
