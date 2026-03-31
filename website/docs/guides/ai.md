@@ -35,9 +35,36 @@ AI coding agents such as [Claude Code](https://claude.ai/claude-code), [Cursor](
 `npx markuplint --init` is interactive and requires manual input. AI agents should write the configuration file directly instead. See [Beyond HTML](/docs/guides/beyond-html) for the parser and spec packages to include.
 :::
 
-:::tip
-For AI agent developers: a dedicated [SKILL file for Markuplint](https://github.com/markuplint/markuplint/issues/3553) is planned to help agents use Markuplint more effectively.
-:::
+## Skills for Claude Code
+
+Markuplint provides installable [skills](https://github.com/markuplint/markuplint/tree/dev/skills) for [Claude Code](https://claude.ai/claude-code) that guide agents through common workflows.
+
+### Install
+
+```shell
+npx skills add markuplint/markuplint@markuplint
+npx skills add markuplint/markuplint@markuplint-setup
+npx skills add markuplint/markuplint@markuplint-configure
+```
+
+### Available skills
+
+| Skill                  | Type          | Description                                                                                                                                    |
+| ---------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | Auto-loaded   | Reference knowledge — violation interpretation, CLI usage, config patterns. Claude automatically references this when working with HTML files. |
+| `markuplint-setup`     | Slash command | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions.            |
+| `markuplint-configure` | Slash command | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.                       |
+
+### How to use
+
+**Auto-loaded skill (`markuplint`):** No action needed. Once installed, Claude automatically uses this knowledge when you work with HTML or Markuplint configuration. It helps Claude interpret violations, suggest fixes, and write correct configurations.
+
+**Slash command skills:** Type the command in Claude Code to start an interactive workflow:
+
+- `/markuplint-setup` — "Set up Markuplint in my project"
+- `/markuplint-setup "src/**/*.tsx"` — Set up with a specific target glob
+- `/markuplint-configure` — "I want to change a Markuplint rule"
+- `/markuplint-configure src/components/Header.tsx:15` — Adjust rules for a specific file and line
 
 ## Next steps
 

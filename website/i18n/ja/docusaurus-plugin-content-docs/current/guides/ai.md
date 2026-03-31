@@ -35,9 +35,36 @@ AIアシスタントに、プロジェクトに合わせたMarkuplintの設定�
 `npx markuplint --init` は対話式のため、手動入力が必要です。AIエージェントは設定ファイルを直接書く方が確実です。パーサーとスペックパッケージについては[HTML以外で使う](/docs/guides/beyond-html)を参照してください。
 :::
 
-:::tip
-AIエージェント開発者向け: エージェントがMarkuplintをより効果的に利用するための[SKILLファイル](https://github.com/markuplint/markuplint/issues/3553)を計画中です。
-:::
+## Claude Code 向けスキル
+
+Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインストール可能な[スキル](https://github.com/markuplint/markuplint/tree/dev/skills)を提供しています。エージェントがよくあるワークフローをガイドします。
+
+### インストール
+
+```shell
+npx skills add markuplint/markuplint@markuplint
+npx skills add markuplint/markuplint@markuplint-setup
+npx skills add markuplint/markuplint@markuplint-configure
+```
+
+### 利用可能なスキル
+
+| スキル                 | タイプ             | 説明                                                                                                                   |
+| ---------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | 自動読み込み       | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。HTMLファイルの作業時にClaudeが自動的に参照。     |
+| `markuplint-setup`     | スラッシュコマンド | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。 |
+| `markuplint-configure` | スラッシュコマンド | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                  |
+
+### 使い方
+
+**自動読み込みスキル（`markuplint`）:** 特別な操作は不要です。インストールすると、HTMLやMarkuplintの設定ファイルを扱う際にClaudeが自動的にこのナレッジを参照します。違反の解釈、修正の提案、正しい設定の作成に役立ちます。
+
+**スラッシュコマンドスキル:** Claude Codeでコマンドを入力すると対話型ワークフローが始まります:
+
+- `/markuplint-setup` — 「Markuplintを導入して」
+- `/markuplint-setup "src/**/*.tsx"` — ターゲットglobを指定してセットアップ
+- `/markuplint-configure` — 「Markuplintのルールを変更したい」
+- `/markuplint-configure src/components/Header.tsx:15` — 特定のファイルと行のルールを調整
 
 ## 次のステップ
 
