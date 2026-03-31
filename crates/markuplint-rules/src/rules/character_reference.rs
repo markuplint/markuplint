@@ -5,7 +5,7 @@ use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 use regex::Regex;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `character-reference` rule.
@@ -22,7 +22,8 @@ impl Rule for CharacterReference {
         "character-reference"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         let mut violations = Vec::new();
 
         // Regex to match valid character references: &name; or &#digits; or &#xhex;
@@ -79,6 +80,7 @@ impl Rule for CharacterReference {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase, TextData};
@@ -157,7 +159,7 @@ mod tests {
         let arena = make_text_in_element("p", "Hello world");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -166,7 +168,7 @@ mod tests {
         let arena = make_text_in_element("p", "A & B");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("Illegal characters must escape"));
     }
@@ -176,7 +178,7 @@ mod tests {
         let arena = make_text_in_element("p", "A &amp; B");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -185,7 +187,7 @@ mod tests {
         let arena = make_text_in_element("script", "if (a < b && c > d) {}");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -194,7 +196,7 @@ mod tests {
         let arena = make_text_in_element("p", "a < b");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("Illegal characters must escape"));
     }
@@ -205,7 +207,7 @@ mod tests {
         let arena = make_text_in_element("p", "a > b");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("Illegal characters must escape"));
         assert_eq!(violations[0].raw, ">");
@@ -216,7 +218,7 @@ mod tests {
         let arena = make_text_in_element("p", "&#9660;");
         let s = spec();
         let rule = CharacterReference;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

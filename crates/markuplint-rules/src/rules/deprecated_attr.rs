@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `deprecated-attr` rule.
@@ -16,10 +16,14 @@ impl Rule for DeprecatedAttr {
         "deprecated-attr"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let attr_specs = get_attr_specs(spec, &el.base.node_name);
 
             for attr in &el.attributes {
@@ -35,7 +39,7 @@ impl Rule for DeprecatedAttr {
                 if attr_spec.deprecated == Some(true) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" attribute is deprecated", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -44,7 +48,7 @@ impl Rule for DeprecatedAttr {
                 } else if attr_spec.obsolete == Some(true) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" attribute is obsolete", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -61,6 +65,7 @@ impl Rule for DeprecatedAttr {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -73,7 +78,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
         let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -82,7 +87,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("data-x", "y")]);
         let s = spec();
         let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -92,7 +97,7 @@ mod tests {
         let arena = make_element_with_attrs("input", &[("type", "text")]);
         let s = spec();
         let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -103,7 +108,7 @@ mod tests {
         let arena = make_element_with_attrs("link", &[("charset", "utf-8")]);
         let s = spec();
         let rule = DeprecatedAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The \"charset\" attribute is deprecated");
     }

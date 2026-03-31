@@ -17,7 +17,9 @@
 pub mod aria;
 pub mod aria_resolver_impl;
 pub mod content_model;
+pub mod helpers;
 pub mod lint;
 pub mod rule;
+pub mod rule_mapper;
 pub mod rules;
 pub mod violation;

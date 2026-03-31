@@ -6,7 +6,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `id-duplication` rule.
@@ -17,12 +17,16 @@ impl Rule for IdDuplication {
         "id-duplication"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         // Map from id value to list of (line, col, raw)
         let mut seen: HashMap<String, Vec<(u32, u32, String)>> = HashMap::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
@@ -52,7 +56,7 @@ impl Rule for IdDuplication {
                 for &(line, col, ref raw) in &locations[1..] {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: config.global().severity.clone(),
                         message: format!("\"{value}\" is duplicated"),
                         line,
                         col,
@@ -69,6 +73,7 @@ impl Rule for IdDuplication {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
@@ -191,7 +196,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("div", &[("id", "a")]), ("span", &[("id", "b")])]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -200,7 +205,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("div", &[("id", "same")]), ("span", &[("id", "same")])]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "\"same\" is duplicated");
     }
@@ -210,7 +215,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("id", "unique")]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -223,7 +228,7 @@ mod tests {
         ]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 2);
         assert_eq!(violations[0].message, "\"a\" is duplicated");
         assert_eq!(violations[1].message, "\"a\" is duplicated");
@@ -238,7 +243,7 @@ mod tests {
             severity: Severity::Warning,
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations[0].severity, Severity::Warning);
     }
 
@@ -248,7 +253,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("div", &[("id", "")]), ("span", &[("id", "")])]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -360,7 +365,7 @@ mod tests {
         ]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -373,7 +378,7 @@ mod tests {
         ]);
         let s = spec();
         let rule = IdDuplication;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

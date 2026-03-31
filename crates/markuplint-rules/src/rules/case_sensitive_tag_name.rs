@@ -4,7 +4,7 @@ use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `case-sensitive-tag-name` rule.
@@ -15,11 +15,15 @@ impl Rule for CaseSensitiveTagName {
         "case-sensitive-tag-name"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
-        let case = config.value.as_str().unwrap_or("lower");
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             // Only check HTML namespace
             if el.namespace != NamespaceURI::XHTML {
                 continue;
@@ -36,7 +40,7 @@ impl Rule for CaseSensitiveTagName {
             if !is_correct {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
-                    severity: config.severity.clone(),
+                    severity: rule_config.severity.clone(),
                     message: message.clone(),
                     line: el.base.line,
                     col: el.base.col,
@@ -56,7 +60,7 @@ impl Rule for CaseSensitiveTagName {
                 if !pair_correct {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: message.clone(),
                         line: base.line,
                         col: base.col,
@@ -73,6 +77,7 @@ impl Rule for CaseSensitiveTagName {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use crate::violation::Severity;
     use markuplint_core::mlast::{ElementType, NamespaceURI};
@@ -89,7 +94,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -98,7 +103,7 @@ mod tests {
         let arena = make_element_with_attrs("DIV", &[]);
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Tag names of HTML elements must be lowercase");
     }
@@ -112,7 +117,7 @@ mod tests {
             value: serde_json::json!("upper"),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Tag names of HTML elements must be uppercase");
     }
@@ -181,7 +186,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         // Opening tag "div" is lowercase (OK), closing tag "DIV" is uppercase (violation)
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].raw, "</DIV>");
@@ -233,7 +238,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -242,7 +247,7 @@ mod tests {
         let arena = make_element_with_attrs("xxx-hoge", &[]);
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -295,7 +300,7 @@ mod tests {
             value: serde_json::json!("upper"),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 
@@ -305,7 +310,7 @@ mod tests {
         let arena = make_element_with_attrs("DIV", &[]);
         let s = spec();
         let rule = CaseSensitiveTagName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         // Only the opening tag "DIV" is uppercase → 1 violation, no crash from missing closing tag
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Tag names of HTML elements must be lowercase");

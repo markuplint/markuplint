@@ -4,7 +4,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `attr-value-quotes` rule.
@@ -15,8 +15,8 @@ impl Rule for AttrValueQuotes {
         "attr-value-quotes"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
-        let quote_style = config.value.as_str().unwrap_or("double");
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let quote_style = config.global().value.as_str().unwrap_or("double");
 
         let (expected_quote, message) = match quote_style {
             "single" => ("'", "Attribute value is must use single quotation mark"),
@@ -25,7 +25,11 @@ impl Rule for AttrValueQuotes {
 
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
@@ -39,7 +43,7 @@ impl Rule for AttrValueQuotes {
                 if html_attr.start_quote.raw != expected_quote {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: message.to_string(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -56,6 +60,7 @@ impl Rule for AttrValueQuotes {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -245,7 +250,7 @@ mod tests {
         let arena = make_element_with_quote("div", "class", "foo", "\"", "\"");
         let s = spec();
         let rule = AttrValueQuotes;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -254,7 +259,7 @@ mod tests {
         let arena = make_element_with_quote("div", "class", "foo", "'", "'");
         let s = spec();
         let rule = AttrValueQuotes;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
@@ -271,7 +276,7 @@ mod tests {
             value: Value::String("single".to_string()),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 
@@ -280,7 +285,7 @@ mod tests {
         let arena = make_element_with_quote("div", "class", "foo", "", "");
         let s = spec();
         let rule = AttrValueQuotes;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
     }
 
@@ -289,7 +294,7 @@ mod tests {
         let arena = make_boolean_attr_element("input", "disabled");
         let s = spec();
         let rule = AttrValueQuotes;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

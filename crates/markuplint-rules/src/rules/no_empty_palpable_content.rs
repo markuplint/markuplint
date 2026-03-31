@@ -6,7 +6,7 @@ use markuplint_dom::node::DomNode;
 use markuplint_types::spec::lookup::is_palpable_element;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-empty-palpable-content` rule.
@@ -17,8 +17,9 @@ impl Rule for NoEmptyPalpableContent {
         "no-empty-palpable-content"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let ignore_if_aria_busy = config
+            .global()
             .options
             .get("ignoreIfAriaBusy")
             .and_then(serde_json::Value::as_bool)
@@ -27,6 +28,10 @@ impl Rule for NoEmptyPalpableContent {
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if !is_palpable_element(spec, &el.base.node_name) {
                 continue;
             }
@@ -55,7 +60,7 @@ impl Rule for NoEmptyPalpableContent {
             if is_empty {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
-                    severity: config.severity.clone(),
+                    severity: rule_config.severity.clone(),
                     message: "The element should not empty".to_string(),
                     line: el.base.line,
                     col: el.base.col,
@@ -71,6 +76,7 @@ impl Rule for NoEmptyPalpableContent {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
@@ -86,7 +92,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = NoEmptyPalpableContent;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The element should not empty");
     }
@@ -96,7 +102,7 @@ mod tests {
         let arena = make_element_with_attrs("br", &[]);
         let s = spec();
         let rule = NoEmptyPalpableContent;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -166,7 +172,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoEmptyPalpableContent;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -236,7 +242,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoEmptyPalpableContent;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The element should not empty");
     }
@@ -317,7 +323,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoEmptyPalpableContent;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         // div contains a child element (span), so div is NOT empty.
         // span is empty and palpable → 1 violation for span only.
         assert_eq!(violations.len(), 1);

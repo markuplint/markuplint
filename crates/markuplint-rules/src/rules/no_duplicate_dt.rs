@@ -6,7 +6,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-duplicate-dt` rule.
@@ -17,10 +17,14 @@ impl Rule for NoDuplicateDt {
         "no-duplicate-dt"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if !el.base.node_name.eq_ignore_ascii_case("dl") {
                 continue;
             }
@@ -51,7 +55,7 @@ impl Rule for NoDuplicateDt {
                     for &(line, col, ref raw) in &locations[1..] {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
-                            severity: config.severity.clone(),
+                            severity: rule_config.severity.clone(),
                             message: "The name duplicated".to_string(),
                             line,
                             col,
@@ -88,6 +92,7 @@ fn collect_text_content(arena: &DomArena, node_id: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase, TextData};
@@ -194,7 +199,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoDuplicateDt;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -246,7 +251,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoDuplicateDt;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The name duplicated");
     }
@@ -277,7 +282,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoDuplicateDt;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -329,7 +334,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoDuplicateDt;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

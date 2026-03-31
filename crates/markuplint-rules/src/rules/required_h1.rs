@@ -4,7 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `required-h1` rule.
@@ -15,7 +15,8 @@ impl Rule for RequiredH1 {
         "required-h1"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         // Check options for in-document-fragment
         let in_document_fragment = config
             .options
@@ -81,6 +82,7 @@ impl Rule for RequiredH1 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -143,7 +145,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = RequiredH1;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -170,7 +172,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = RequiredH1;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require the h1 element");
     }
@@ -204,7 +206,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = RequiredH1;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "The h1 element is duplicated");
         assert_eq!(violations[0].line, 2);
@@ -233,7 +235,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = RequiredH1;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -264,7 +266,7 @@ mod tests {
             options: serde_json::json!({"in-document-fragment": true}),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require the h1 element");
     }
@@ -302,7 +304,7 @@ mod tests {
             options: serde_json::json!({"expected-once": false}),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 
@@ -324,7 +326,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = RequiredH1;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require the h1 element");
     }

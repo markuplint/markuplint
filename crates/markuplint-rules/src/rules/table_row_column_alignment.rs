@@ -9,7 +9,7 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `table-row-column-alignment` rule.
@@ -186,7 +186,8 @@ impl Rule for TableRowColumnAlignment {
         "table-row-column-alignment"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         let mut violations = Vec::new();
 
         // Find all <table> elements
@@ -270,6 +271,7 @@ impl Rule for TableRowColumnAlignment {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, ElementData, NodeBase};
@@ -420,7 +422,7 @@ mod tests {
         ]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "Expected no violations but got: {violations:?}");
     }
 
@@ -430,7 +432,7 @@ mod tests {
         let arena = make_table_arena(&[vec![(1, 1), (1, 1), (1, 1)], vec![(1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1, "Expected 1 violation but got: {violations:?}");
         assert!(
             violations[0].message.contains("missing"),
@@ -447,7 +449,7 @@ mod tests {
         let arena = make_table_arena(&[vec![(3, 1)], vec![(1, 1), (1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "Expected no violations but got: {violations:?}");
     }
 
@@ -457,7 +459,7 @@ mod tests {
         let arena = make_table_arena(&[vec![(1, 1), (1, 1)], vec![(1, 1), (1, 1), (1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1, "Expected 1 violation but got: {violations:?}");
         // The first row has fewer columns (2 vs 3 expected), so it reports missing
         // OR the second row has extra. The base_col_length is the first row's = 2,
@@ -477,7 +479,7 @@ mod tests {
         let arena = make_table_arena(&[vec![(1, 2), (1, 1)], vec![(1, 1)]]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "Expected no violations but got: {violations:?}");
     }
 
@@ -530,7 +532,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1, "Expected 1 violation but got: {violations:?}");
         assert!(
             violations[0].message.contains("missing"),
@@ -557,7 +559,7 @@ mod tests {
         ]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
 
         // Expect 3 violations: rows 1, 2, and 4 deviate from base=4
         assert_eq!(
@@ -582,7 +584,7 @@ mod tests {
         let arena = make_table_arena(&[]);
         let s = spec();
         let rule = TableRowColumnAlignment;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "Empty table should have no violations, got: {violations:?}"

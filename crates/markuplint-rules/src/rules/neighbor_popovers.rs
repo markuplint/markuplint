@@ -6,7 +6,7 @@ use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::may_be_focusable::may_be_focusable;
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `neighbor-popovers` rule.
@@ -17,10 +17,14 @@ impl Rule for NeighborPopovers {
         "neighbor-popovers"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if el.is_ghost {
                 continue;
             }
@@ -67,7 +71,7 @@ impl Rule for NeighborPopovers {
                 if has_perceptible_content(arena, spec, sibling_id) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: "Detected perceptible content between trigger and target".to_string(),
                         line: el.base.line,
                         col: el.base.col,
@@ -129,6 +133,7 @@ fn has_perceptible_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, ElementData, NodeBase, TextData};
@@ -256,7 +261,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NeighborPopovers;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -318,7 +323,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NeighborPopovers;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
@@ -373,7 +378,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NeighborPopovers;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
@@ -439,7 +444,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NeighborPopovers;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

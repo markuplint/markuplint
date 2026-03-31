@@ -10,9 +10,10 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
+use regex::Regex;
 use strsim::levenshtein;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `invalid-attr` rule.
@@ -26,16 +27,33 @@ impl Rule for InvalidAttr {
         "invalid-attr"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
-        if config.value == serde_json::Value::Bool(false) {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        if config.global().value == serde_json::Value::Bool(false) {
             return vec![];
         }
 
         let mut violations = Vec::new();
-        let opts = ParsedOptions::from_config(&config.options);
 
-        for (_node_id, el) in arena.elements() {
-            if el.is_ghost || el.element_type != markuplint_core::mlast::ElementType::Html {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
+            if rule_config.value == serde_json::Value::Bool(false) {
+                continue;
+            }
+            if el.is_ghost {
+                continue;
+            }
+
+            let opts = ParsedOptions::from_config(&rule_config.options);
+
+            // Skip non-HTML elements unless they have explicit allow/disallow config
+            let has_explicit_config = !opts.allow_attrs.is_empty()
+                || !opts.allow_entries.is_empty()
+                || !opts.disallow_attrs.is_empty()
+                || !opts.disallow_entries.is_empty();
+            if el.element_type != markuplint_core::mlast::ElementType::Html && !has_explicit_config {
                 continue;
             }
 
@@ -58,7 +76,7 @@ impl Rule for InvalidAttr {
                     global_attr_names: &global_attr_names,
                     opts: &opts,
                     rule_id: self.id(),
-                    severity: &config.severity,
+                    severity: &rule_config.severity,
                 };
                 if let Some(v) = check_attr(html_attr, &ctx) {
                     violations.push(v);
@@ -70,18 +88,36 @@ impl Rule for InvalidAttr {
     }
 }
 
+/// A disallowed attribute entry, optionally with a value pattern.
+struct DisallowEntry {
+    name: String,
+    value_pattern: Option<regex::Regex>,
+}
+
+/// An allowed attribute entry, optionally with a type constraint.
+struct AllowEntry {
+    name: String,
+    type_constraint: Option<String>,
+}
+
 /// Parsed rule options.
 struct ParsedOptions {
     allow_attrs: Vec<String>,
+    allow_entries: Vec<AllowEntry>,
     disallow_attrs: Vec<String>,
+    disallow_entries: Vec<DisallowEntry>,
     ignore_prefixes: Vec<String>,
 }
 
 impl ParsedOptions {
     fn from_config(options: &serde_json::Value) -> Self {
+        let (allow_attrs, allow_entries) = parse_allow_attrs(options);
+        let (disallow_attrs, disallow_entries) = parse_disallow_attrs(options);
         Self {
-            allow_attrs: parse_string_list(options, "allowAttrs"),
-            disallow_attrs: parse_string_list(options, "disallowAttrs"),
+            allow_attrs,
+            allow_entries,
+            disallow_attrs,
+            disallow_entries,
             ignore_prefixes: parse_ignore_prefixes(options),
         }
     }
@@ -99,47 +135,62 @@ struct AttrCheckContext<'a> {
 }
 
 /// Check a single attribute and return a violation if invalid.
+/// Create a violation for an attribute.
+fn attr_violation(
+    ctx: &AttrCheckContext<'_>,
+    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
+    message: String,
+) -> Violation {
+    Violation {
+        rule_id: ctx.rule_id.to_string(),
+        severity: ctx.severity.clone(),
+        message,
+        line: html_attr.name.line,
+        col: html_attr.name.col,
+        raw: html_attr.raw.clone(),
+    }
+}
+
 fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Option<Violation> {
     let name = &html_attr.node_name;
     let name_lower = name.to_ascii_lowercase();
 
-    // Parser-detected candidate (typo)
     if let Some(candidate) = &html_attr.candidate {
-        return Some(Violation {
-            rule_id: ctx.rule_id.to_string(),
-            severity: ctx.severity.clone(),
-            message: format!("The \"{name}\" attribute is disallowed. Did you mean \"{candidate}\"?"),
-            line: html_attr.name.line,
-            col: html_attr.name.col,
-            raw: html_attr.raw.clone(),
-        });
+        return Some(attr_violation(
+            ctx,
+            html_attr,
+            format!("The \"{name}\" attribute is disallowed. Did you mean \"{candidate}\"?"),
+        ));
     }
 
-    // Skip known prefixes handled by other rules
     if name_lower.starts_with("data-")
         || name_lower.starts_with("aria-")
         || (name_lower.len() > 2 && name_lower.starts_with("on"))
     {
         return None;
     }
-
     if ctx.opts.ignore_prefixes.iter().any(|p| name_lower.starts_with(p)) {
         return None;
     }
 
-    // Disallow list
     if ctx.opts.disallow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name)) {
-        return Some(Violation {
-            rule_id: ctx.rule_id.to_string(),
-            severity: ctx.severity.clone(),
-            message: format!("The \"{name}\" attribute is disallowed"),
-            line: html_attr.name.line,
-            col: html_attr.name.col,
-            raw: html_attr.raw.clone(),
-        });
+        return Some(attr_violation(
+            ctx,
+            html_attr,
+            format!("The \"{name}\" attribute is disallowed"),
+        ));
     }
 
-    // Allow list / spec check / global attrs
+    if let Some(v) = check_disallow_entries(name, html_attr, ctx) {
+        return Some(v);
+    }
+
+    match check_allow_entries(name, html_attr, ctx) {
+        AllowCheckResult::Allowed => return None,
+        AllowCheckResult::Violation(v) => return Some(v),
+        AllowCheckResult::NoMatch => {}
+    }
+
     if ctx.opts.allow_attrs.iter().any(|a| a.eq_ignore_ascii_case(name))
         || ctx.attr_specs.contains_key(name_lower.as_str())
         || ctx.global_attr_names.iter().any(|a| a == &name_lower)
@@ -147,12 +198,10 @@ fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheck
         return None;
     }
 
-    // Element allows additional properties (framework components)
     if get_spec(ctx.spec, ctx.el_name).is_some_and(|s| s.possible_to_add_properties == Some(true)) {
         return None;
     }
 
-    // Unknown attr — typo suggestion
     let mut known: Vec<&str> = ctx.attr_specs.keys().copied().collect();
     for ga in ctx.global_attr_names {
         known.push(ga.as_str());
@@ -162,32 +211,158 @@ fn check_attr(html_attr: &markuplint_core::mlast::MLASTHTMLAttr, ctx: &AttrCheck
         None => format!("The \"{name}\" attribute is not allowed"),
     };
 
-    Some(Violation {
-        rule_id: ctx.rule_id.to_string(),
-        severity: ctx.severity.clone(),
-        message,
-        line: html_attr.name.line,
-        col: html_attr.name.col,
-        raw: html_attr.raw.clone(),
-    })
+    Some(attr_violation(ctx, html_attr, message))
 }
 
-/// Parse a string array from options JSON.
-fn parse_string_list(options: &serde_json::Value, key: &str) -> Vec<String> {
-    options
-        .get(key)
-        .and_then(serde_json::Value::as_array)
-        .map(|arr| {
-            arr.iter()
-                .filter_map(|v| {
-                    // Support both string items and { name: string } objects
-                    v.as_str()
-                        .map(String::from)
-                        .or_else(|| v.get("name").and_then(serde_json::Value::as_str).map(String::from))
-                })
-                .collect()
-        })
-        .unwrap_or_default()
+/// Check disallow entries with value patterns.
+fn check_disallow_entries(
+    name: &str,
+    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
+    ctx: &AttrCheckContext<'_>,
+) -> Option<Violation> {
+    for entry in &ctx.opts.disallow_entries {
+        if entry.name.eq_ignore_ascii_case(name) {
+            if let Some(ref re) = entry.value_pattern {
+                if re.is_match(&html_attr.value.raw) {
+                    return Some(attr_violation(
+                        ctx,
+                        html_attr,
+                        format!("The \"{name}\" attribute value matches a disallowed pattern"),
+                    ));
+                }
+            } else {
+                return Some(attr_violation(
+                    ctx,
+                    html_attr,
+                    format!("The \"{name}\" attribute is disallowed"),
+                ));
+            }
+        }
+    }
+    None
+}
+
+/// Result of checking allow entries.
+enum AllowCheckResult {
+    /// No matching entry found — continue other checks.
+    NoMatch,
+    /// Matched and allowed.
+    Allowed,
+    /// Matched but type constraint violated.
+    Violation(Violation),
+}
+
+/// Check allow entries with type constraints.
+fn check_allow_entries(
+    name: &str,
+    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
+    ctx: &AttrCheckContext<'_>,
+) -> AllowCheckResult {
+    for entry in &ctx.opts.allow_entries {
+        if entry.name.eq_ignore_ascii_case(name) {
+            if let Some(ref type_name) = entry.type_constraint
+                && !check_type_constraint(&html_attr.value.raw, type_name)
+            {
+                return AllowCheckResult::Violation(attr_violation(
+                    ctx,
+                    html_attr,
+                    format!(
+                        "The \"{name}\" attribute value \"{}\" does not match type \"{type_name}\"",
+                        html_attr.value.raw
+                    ),
+                ));
+            }
+            return AllowCheckResult::Allowed;
+        }
+    }
+    AllowCheckResult::NoMatch
+}
+
+/// Parse the `allowAttrs` option: string[], string, or { name: type } object.
+fn parse_allow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<AllowEntry>) {
+    let mut simple = Vec::new();
+    let mut entries = Vec::new();
+
+    match options.get("allowAttrs") {
+        Some(serde_json::Value::Array(arr)) => {
+            for v in arr {
+                if let Some(s) = v.as_str() {
+                    simple.push(s.to_string());
+                } else if let Some(name) = v.get("name").and_then(serde_json::Value::as_str) {
+                    simple.push(name.to_string());
+                }
+            }
+        }
+        Some(serde_json::Value::Object(obj)) => {
+            for (name, type_val) in obj {
+                let type_constraint = type_val.as_str().map(String::from);
+                entries.push(AllowEntry {
+                    name: name.clone(),
+                    type_constraint,
+                });
+            }
+        }
+        _ => {}
+    }
+
+    (simple, entries)
+}
+
+/// Parse the `disallowAttrs` option: string[] or object[] with optional value patterns.
+fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>, Vec<DisallowEntry>) {
+    let mut simple = Vec::new();
+    let mut entries = Vec::new();
+
+    if let Some(arr) = options.get("disallowAttrs").and_then(serde_json::Value::as_array) {
+        for v in arr {
+            if let Some(s) = v.as_str() {
+                simple.push(s.to_string());
+            } else if let Some(name) = v.get("name").and_then(serde_json::Value::as_str) {
+                let value_pattern = v
+                    .get("value")
+                    .and_then(|val| val.get("pattern"))
+                    .and_then(serde_json::Value::as_str)
+                    .and_then(parse_regex_pattern);
+                entries.push(DisallowEntry {
+                    name: name.to_string(),
+                    value_pattern,
+                });
+            }
+        }
+    }
+
+    (simple, entries)
+}
+
+/// Parse a regex pattern like `/pattern/flags` into a Regex.
+fn parse_regex_pattern(pattern: &str) -> Option<Regex> {
+    if let Some(rest) = pattern.strip_prefix('/') {
+        if let Some(last_slash) = rest.rfind('/') {
+            let regex_str = &rest[..last_slash];
+            let flags = &rest[last_slash + 1..];
+            let full_pattern = if flags.contains('i') {
+                format!("(?i){regex_str}")
+            } else {
+                regex_str.to_string()
+            };
+            Regex::new(&full_pattern).ok()
+        } else {
+            Regex::new(pattern).ok()
+        }
+    } else {
+        Regex::new(pattern).ok()
+    }
+}
+
+/// Check if a value matches a simple type constraint.
+fn check_type_constraint(value: &str, type_name: &str) -> bool {
+    match type_name {
+        "Int" | "Integer" => value.parse::<i64>().is_ok(),
+        "Float" | "Number" => value.parse::<f64>().is_ok(),
+        "Boolean" => value == "true" || value == "false",
+        "URL" => !value.is_empty(),
+        _ => true, // Unknown type — allow
+    }
 }
 
 /// Parse the `ignoreAttrNamePrefix` option (string or string[]).
@@ -248,6 +423,7 @@ fn find_closest_match<'a>(name: &str, candidates: &[&'a str]) -> Option<&'a str>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -260,7 +436,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "class is a valid attr for div");
     }
 
@@ -269,7 +445,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("data-custom", "value")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "data-* attributes should be allowed");
     }
 
@@ -278,7 +454,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("aria-label", "test")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "aria-* attributes should be skipped (handled by wai-aria)"
@@ -290,7 +466,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("foo", "bar")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("foo"));
         assert!(violations[0].message.contains("not allowed"));
@@ -303,11 +479,11 @@ mod tests {
         let rule = InvalidAttr;
         let config = RuleConfig {
             options: serde_json::json!({
-                "disallowAttrs": ["class"]
+                "disallowAttrs": ["class"],
             }),
             ..RuleConfig::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert!(violations[0].message.contains("disallowed"));
     }
@@ -320,11 +496,11 @@ mod tests {
         let rule = InvalidAttr;
         let config = RuleConfig {
             options: serde_json::json!({
-                "disallowAttrs": ["class"]
+                "disallowAttrs": ["class"],
             }),
             ..RuleConfig::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(
             violations.len(),
             1,
@@ -349,11 +525,11 @@ mod tests {
         let rule = InvalidAttr;
         let config = RuleConfig {
             options: serde_json::json!({
-                "ignoreAttrNamePrefix": "v-"
+                "ignoreAttrNamePrefix": "v-",
             }),
             ..RuleConfig::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty(), "v- prefixed attrs should be ignored");
     }
 
@@ -364,11 +540,11 @@ mod tests {
         let rule = InvalidAttr;
         let config = RuleConfig {
             options: serde_json::json!({
-                "allowAttrs": ["custom-attr"]
+                "allowAttrs": ["custom-attr"],
             }),
             ..RuleConfig::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty(), "allowed attrs should not produce violations");
     }
 
@@ -378,7 +554,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("classs", "foo")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert!(
             violations[0].message.contains("Did you mean"),
@@ -391,7 +567,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("onclick", "foo()")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "event handler attrs should be skipped");
     }
 
@@ -400,7 +576,7 @@ mod tests {
         let arena = make_element_with_attrs("input", &[("type", "text")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty(), "type is valid on input");
     }
 
@@ -413,7 +589,7 @@ mod tests {
         let arena = make_element_with_attrs("custom-element", &[("any-attr", "value")]);
         let s = spec();
         let rule = InvalidAttr;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         // Current behavior: custom elements are not in the spec, so unknown attrs
         // are flagged. The element_type is Html but get_spec returns None, and
         // possible_to_add_properties is not set.
@@ -432,11 +608,11 @@ mod tests {
         let rule = InvalidAttr;
         let config = RuleConfig {
             options: serde_json::json!({
-                "ignoreAttrNamePrefix": ["v-", ":"]
+                "ignoreAttrNamePrefix": ["v-", ":"],
             }),
             ..RuleConfig::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(
             violations.is_empty(),
             "v-bind:title should be ignored with ignoreAttrNamePrefix containing 'v-', got: {violations:?}"

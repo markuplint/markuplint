@@ -4,7 +4,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `use-list` rule.
@@ -45,7 +45,8 @@ impl Rule for UseList {
         "use-list"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         // Collect additional bullets from config value
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();
         let extra_owned: Vec<String>;
@@ -128,6 +129,7 @@ fn is_may_list_item(text: &str, bullets: &[&str]) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase, TextData};
@@ -206,7 +208,7 @@ mod tests {
         let arena = make_text_node("Hello world");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -215,7 +217,7 @@ mod tests {
         let arena = make_text_node("\u{2022} Item one");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
     }
@@ -225,7 +227,7 @@ mod tests {
         let arena = make_text_node("- Item");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
     }
@@ -235,7 +237,7 @@ mod tests {
         let arena = make_text_node("* Item one");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Use the li element");
     }
@@ -246,7 +248,7 @@ mod tests {
         let arena = make_text_node("   ");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -257,7 +259,7 @@ mod tests {
         let arena = make_text_node("*hello");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -267,7 +269,7 @@ mod tests {
         let arena = make_text_node("-- separator");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -277,7 +279,7 @@ mod tests {
         let arena = make_text_node("\u{2022}");
         let s = spec();
         let rule = UseList;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

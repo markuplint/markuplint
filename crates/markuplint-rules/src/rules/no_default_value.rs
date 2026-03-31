@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-default-value` rule.
@@ -16,10 +16,14 @@ impl Rule for NoDefaultValue {
         "no-default-value"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let attr_specs = get_attr_specs(spec, &el.base.node_name);
 
             for attr in &el.attributes {
@@ -40,7 +44,7 @@ impl Rule for NoDefaultValue {
                 if html_attr.value.raw.eq_ignore_ascii_case(default_value.as_str()) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: "It is the default value".to_string(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
@@ -57,6 +61,7 @@ impl Rule for NoDefaultValue {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -70,7 +75,7 @@ mod tests {
         let arena = make_element_with_attrs("input", &[("type", "text")]);
         let s = spec();
         let rule = NoDefaultValue;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "It is the default value");
     }
@@ -80,7 +85,7 @@ mod tests {
         let arena = make_element_with_attrs("input", &[("type", "password")]);
         let s = spec();
         let rule = NoDefaultValue;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -89,7 +94,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[("class", "foo")]);
         let s = spec();
         let rule = NoDefaultValue;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -99,7 +104,7 @@ mod tests {
         let arena = make_element_with_attrs("input", &[("type", "email")]);
         let s = spec();
         let rule = NoDefaultValue;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

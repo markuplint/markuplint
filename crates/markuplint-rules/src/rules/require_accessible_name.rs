@@ -7,7 +7,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::accname::get_accname;
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `require-accessible-name` rule.
@@ -18,12 +18,16 @@ impl Rule for RequireAccessibleName {
         "require-accessible-name"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
         let version = ARIAVersion::RECOMMENDED;
 
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if el.is_ghost {
                 continue;
             }
@@ -49,7 +53,7 @@ impl Rule for RequireAccessibleName {
                 if accname.name.is_empty() {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: "Require accessible name".to_string(),
                         line: el.base.line,
                         col: el.base.col,
@@ -79,6 +83,7 @@ fn has_dynamic_aria_label(el: &markuplint_dom::node::ElementData) -> bool {
 mod tests {
     use super::*;
     use crate::aria::may_be_focusable::tests::make_arena;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_types::spec::load_spec;
 
     fn spec() -> MLMLSpec {
@@ -91,7 +96,7 @@ mod tests {
         let s = spec();
         let (arena, _id) = make_arena("input", &[("type", "text")]);
         let rule = RequireAccessibleName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require accessible name");
     }
@@ -101,7 +106,7 @@ mod tests {
         let s = spec();
         let (arena, _id) = make_arena("input", &[("type", "text"), ("aria-label", "Username")]);
         let rule = RequireAccessibleName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -111,7 +116,7 @@ mod tests {
         let s = spec();
         let (arena, _id) = make_arena("img", &[("src", "photo.jpg")]);
         let rule = RequireAccessibleName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require accessible name");
     }
@@ -121,7 +126,7 @@ mod tests {
         let s = spec();
         let (arena, _id) = make_arena("img", &[("src", "photo.jpg"), ("alt", "A photo")]);
         let rule = RequireAccessibleName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -131,7 +136,7 @@ mod tests {
         let s = spec();
         let (arena, _id) = make_arena("input", &[("type", "hidden")]);
         let rule = RequireAccessibleName;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

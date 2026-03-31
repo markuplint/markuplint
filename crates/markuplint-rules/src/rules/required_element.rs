@@ -6,7 +6,7 @@ use markuplint_selector::matcher;
 use markuplint_selector::parser;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `required-element` rule.
@@ -17,7 +17,8 @@ impl Rule for RequiredElement {
         "required-element"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let config = config.global();
         // Config value: string[] of CSS selectors for required elements
         let selectors: Vec<String> = match &config.value {
             serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
@@ -66,6 +67,7 @@ impl Rule for RequiredElement {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::attr_duplication::tests::make_element_with_attrs;
     use markuplint_types::spec::load_spec;
 
@@ -82,7 +84,7 @@ mod tests {
             value: serde_json::json!(["div"]),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());
     }
 
@@ -95,7 +97,7 @@ mod tests {
             value: serde_json::json!(["nav"]),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &config);
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Require the \"nav\" element");
     }
@@ -105,7 +107,7 @@ mod tests {
         let arena = make_element_with_attrs("div", &[]);
         let s = spec();
         let rule = RequiredElement;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 }

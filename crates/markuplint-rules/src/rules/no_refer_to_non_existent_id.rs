@@ -6,7 +6,7 @@ use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `no-refer-to-non-existent-id` rule.
@@ -45,14 +45,18 @@ impl Rule for NoReferToNonExistentId {
         "no-refer-to-non-existent-id"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
         // Step 1: Collect all IDs in the document
         let mut id_set = HashSet::new();
         let mut has_dynamic_id = false;
 
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
@@ -80,7 +84,11 @@ impl Rule for NoReferToNonExistentId {
         }
 
         // Step 2: Check ID references
-        for (_node_id, el) in arena.elements() {
+        for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             let el_name_lower = el.base.node_name.to_ascii_lowercase();
 
             for attr in &el.attributes {
@@ -101,7 +109,7 @@ impl Rule for NoReferToNonExistentId {
 
                 // Check ARIA ID list attributes (apply to any element)
                 if ARIA_ID_LIST_ATTRS.iter().any(|a| attr_name_lower == *a) {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
                     continue;
                 }
 
@@ -113,7 +121,7 @@ impl Rule for NoReferToNonExistentId {
                     if !id_set.contains(value.as_str()) {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
-                            severity: config.severity.clone(),
+                            severity: rule_config.severity.clone(),
                             message: format!("Missing \"{value}\" ID"),
                             line: html_attr.value.line,
                             col: html_attr.value.col,
@@ -128,7 +136,7 @@ impl Rule for NoReferToNonExistentId {
                     .iter()
                     .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
                 {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), config, &mut violations);
+                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
                 }
             }
         }
@@ -164,7 +172,7 @@ fn check_space_separated_ids(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rule::RuleConfig;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -289,7 +297,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"foo\" ID");
     }
@@ -300,7 +308,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "foo")]), ("input", &[("id", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -310,7 +318,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("section", &[("aria-describedby", "foo")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"foo\" ID");
     }
@@ -321,7 +329,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("div", &[("aria-labelledby", "a b")]), ("span", &[("id", "a")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].message, "Missing \"b\" ID");
     }
@@ -495,7 +503,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "When dynamic IDs exist, all checks should be skipped, got: {violations:?}"
@@ -508,7 +516,7 @@ mod tests {
         let arena = make_multi_element_arena(&[("label", &[("for", "name")]), ("input", &[("id", "name")])]);
         let s = spec();
         let rule = NoReferToNonExistentId;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "Expected no violations when all referenced IDs exist, got: {violations:?}"

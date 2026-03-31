@@ -9,7 +9,7 @@ use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
-use crate::rule::{Rule, RuleConfig};
+use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
 /// The `landmark-roles` rule.
@@ -36,7 +36,7 @@ impl Rule for LandmarkRoles {
         "landmark-roles"
     }
 
-    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfig) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let version = ARIAVersion::RECOMMENDED;
 
@@ -44,6 +44,10 @@ impl Rule for LandmarkRoles {
         let mut landmarks: Vec<(NodeId, String, u32, u32, String)> = Vec::new();
 
         for (node_id, el) in arena.elements() {
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             if el.is_ghost {
                 continue;
             }
@@ -57,7 +61,7 @@ impl Rule for LandmarkRoles {
                 if has_landmark_ancestor(arena, spec, node_id, version) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" landmark should be top level", role.name),
                         line: el.base.line,
                         col: el.base.col,
@@ -97,7 +101,7 @@ impl Rule for LandmarkRoles {
                 if label.is_none_or(str::is_empty) && labelledby.is_none_or(str::is_empty) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
-                        severity: config.severity.clone(),
+                        severity: config.get(node_id).severity.clone(),
                         message: "Require unique accessible name".to_string(),
                         line,
                         col,
@@ -130,6 +134,7 @@ fn has_landmark_ancestor(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId, ver
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
     use markuplint_dom::node::{DocumentData, DomNode, ElementData, NodeBase};
@@ -251,7 +256,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
 
         // nav2 should have "should be top level" violation
         // Both navs should have "Require unique accessible name" (2 navs, no labels)
@@ -289,7 +294,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
 
         let unique_name_violations: Vec<_> = violations
             .iter()
@@ -335,7 +340,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
 
         let unique_name_violations: Vec<_> = violations
             .iter()
@@ -368,7 +373,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(violations.is_empty());
     }
 
@@ -409,7 +414,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
 
         let unique_name_violations: Vec<_> = violations
             .iter()
@@ -445,7 +450,7 @@ mod tests {
         let arena = builder.finish();
         let s = spec();
         let rule = LandmarkRoles;
-        let violations = rule.verify(&arena, &s, &RuleConfig::default());
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
             violations.is_empty(),
             "Single <main> at top level should have no violations, got: {violations:?}"
