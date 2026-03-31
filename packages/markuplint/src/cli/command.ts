@@ -122,6 +122,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			importPresetRules,
 			debug: verbose,
 			severity,
+			experimentalRustCore: options.experimentalRustCore,
 			...apiOptions,
 		});
 

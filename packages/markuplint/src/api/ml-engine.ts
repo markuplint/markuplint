@@ -1,7 +1,7 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { ConfigSet, MLFile, Target } from '@markuplint/file-resolver';
-import type { PlainData } from '@markuplint/ml-config';
+import type { PlainData, Violation } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric } from '@markuplint/ml-core';
 
 import {
@@ -90,7 +90,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	#configProvider: ConfigProvider;
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
+	#hasPluginRules = false;
 	#options?: APIOptions & MLEngineOptions;
+	#parserModName = '@markuplint/html-parser';
 	#watcher = new FSWatcher();
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
@@ -135,6 +137,28 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 */
 	async exec(): Promise<MLResultInfo | null> {
 		log('exec: start');
+
+		// Rust path: resolve fabric first, then decide whether to use Rust or TS
+		if (this.#options?.experimentalRustCore) {
+			const fabric = await this.#provideFabric();
+			if (!fabric) {
+				log('exec: cancel (unsetuped yet)');
+				return null;
+			}
+
+			const rustResult = await this.#tryExecRustPath(fabric);
+			if (rustResult) {
+				log('exec: end (rust path)');
+				return rustResult;
+			}
+
+			// Fall through to TS path — core will be created below
+			const core = await this.#createCore(fabric);
+			this.#core = core;
+			return this.#execWithCore(core);
+		}
+
+		// TS path (default)
 		const core = await this.#setup();
 
 		if (!core) {
@@ -142,6 +166,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
+		return this.#execWithCore(core);
+	}
+
+	/**
+	 * Executes linting using MLCore (TypeScript engine).
+	 */
+	async #execWithCore(core: MLCore): Promise<MLResultInfo> {
 		const verifyResult = await core.verify({ fix: this.#options?.fix ?? false }).catch(error => {
 			if (isFatalError(error)) {
 				throw error;
@@ -197,6 +228,97 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			status: 'processed',
 			fixSummary,
 		};
+	}
+
+	/**
+	 * Attempts to execute linting via the Rust NAPI engine.
+	 * Returns `null` if the file is not eligible (framework parser, custom rules, fix mode),
+	 * in which case the caller should fall back to the TS engine.
+	 */
+	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
+		const fix = this.#options?.fix ?? false;
+
+		// Fallback: fix mode not supported in Rust
+		if (fix) {
+			process.stderr.write(
+				`⚠ [experimental-rust-core] "${this.#file.path}" uses --fix — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
+		// Fallback: framework parser
+		if (this.#parserModName !== '@markuplint/html-parser') {
+			process.stderr.write(
+				`⚠ [experimental-rust-core] "${this.#file.path}" uses a framework parser (${this.#parserModName}) — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
+		// Fallback: custom rules from plugins
+		if (this.#hasPluginRules) {
+			process.stderr.write(
+				`⚠ [experimental-rust-core] "${this.#file.path}" has custom plugin rules — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
+		// Load NAPI binding
+		let lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
+		try {
+			const napi = await loadNapiBinding();
+			lintHtml = napi.lintHtml;
+		} catch (error) {
+			if (isFatalError(error)) {
+				throw error;
+			}
+			process.stderr.write(
+				'⚠ [experimental-rust-core] NAPI binary not found — falling back to TypeScript engine.\n',
+			);
+			return null;
+		}
+
+		const sourceCode = await this.#file.getCode();
+
+		// Build config JSON for Rust
+		const { configJson, ruleIdMap } = buildRustConfigJson(fabric.ruleset);
+		const specJson = JSON.stringify(fabric.schemas[0]);
+
+		log('exec: rust path lintHtml');
+		const napiViolations = lintHtml(sourceCode, configJson, specJson);
+
+		// Convert NapiViolation[] → Violation[], restoring namespaced ruleId
+		const violations: Violation[] = napiViolations.map(v => ({
+			ruleId: ruleIdMap.get(v.ruleId) ?? v.ruleId,
+			severity: v.severity as Violation['severity'],
+			message: v.message,
+			line: v.line,
+			col: v.col,
+			raw: v.raw,
+		}));
+
+		this.emit('lint', this.#file.path, sourceCode, violations, sourceCode, null, null);
+		return {
+			violations,
+			filePath: this.#file.path,
+			sourceCode,
+			fixedCode: sourceCode,
+			status: 'processed',
+		};
+	}
+
+	/**
+	 * Resolves fabric and emits config-errors, but does NOT create MLCore.
+	 * Used by the Rust path to get config/specs without the overhead of TS DOM construction.
+	 */
+	async #provideFabric(): Promise<MLFabric | null> {
+		const fabric = await this.#provide();
+		if (!fabric) {
+			return null;
+		}
+		if (fabric.configErrors) {
+			this.emit('config-errors', this.#file.path, fabric.configErrors);
+		}
+		return fabric;
 	}
 
 	/**
@@ -311,7 +433,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		const { parser, parserOptions, matched } = await this.#resolveParser(configSet);
+		const { parser, parserOptions, matched, parserModName } = await this.#resolveParser(configSet);
+		this.#parserModName = parserModName;
 		const checkingExt = !this.#options?.ignoreExt;
 
 		if (checkingExt && !matched) {
@@ -349,6 +472,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const rules = await this.#resolveRules(configSet.plugins, ruleset);
+		this.#hasPluginRules = configSet.plugins.some(p => p.rules && Object.keys(p.rules).length > 0);
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = i18n(this.#options?.locale);
@@ -492,4 +616,63 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		return this.#createCore(fabric);
 	}
+}
+
+// --- Rust NAPI helpers (module-level) ---
+
+type NapiViolation = {
+	ruleId: string;
+	severity: string;
+	message: string;
+	line: number;
+	col: number;
+	raw: string;
+};
+
+type NapiBinding = {
+	lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
+};
+
+let cachedNapi: NapiBinding | undefined;
+
+async function loadNapiBinding(): Promise<NapiBinding> {
+	if (cachedNapi) {
+		return cachedNapi;
+	}
+	const mod = (await import('@markuplint/core')) as NapiBinding;
+	cachedNapi = mod;
+	return cachedNapi;
+}
+
+/**
+ * Converts the TS Ruleset into a JSON string that the Rust LintConfig can deserialize.
+ *
+ * Rust LintConfig expects: `{ rules: {...}, node_rules: [...], child_node_rules: [...] }`
+ */
+function buildRustConfigJson(
+	 
+	ruleset: Partial<Readonly<Ruleset>>,
+): { configJson: string; ruleIdMap: Map<string, string> } {
+	// TS rulesets from presets use namespaced rule IDs like "html-standard/attr-duplication"
+	// or "a11y/wai-aria". Rust rules expect the base name ("attr-duplication", "wai-aria").
+	// Strip the namespace prefix, keeping the last segment after '/'.
+	// Build a reverse map (baseId → namespacedId) to restore ruleIds in violations.
+	const rawRules = ruleset.rules ?? {};
+	const rules: Record<string, unknown> = {};
+	const ruleIdMap = new Map<string, string>();
+	for (const [key, value] of Object.entries(rawRules)) {
+		const baseId = key.includes('/') ? key.slice(key.lastIndexOf('/') + 1) : key;
+		rules[baseId] = value;
+		if (key.includes('/')) {
+			ruleIdMap.set(baseId, key);
+		}
+	}
+
+	const configJson = JSON.stringify({
+		rules,
+		node_rules: ruleset.nodeRules ?? [],
+		child_node_rules: ruleset.childNodeRules ?? [],
+	});
+
+	return { configJson, ruleIdMap };
 }

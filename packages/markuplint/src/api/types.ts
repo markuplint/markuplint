@@ -20,6 +20,11 @@ export type APIOptions = {
 	readonly importPresetRules?: boolean;
 	readonly severity?: SeverityOptions;
 	/**
+	 * [Experimental] Use the Rust linting engine for built-in rules.
+	 * Falls back to the TypeScript engine for framework parsers, custom rules, and fix mode.
+	 */
+	readonly experimentalRustCore?: boolean;
+	/**
 	 * @deprecated
 	 */
 	readonly autoLoad?: boolean;
