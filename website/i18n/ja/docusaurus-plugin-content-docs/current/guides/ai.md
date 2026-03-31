@@ -37,13 +37,23 @@ AIアシスタントに、プロジェクトに合わせたMarkuplintの設定�
 
 ## Claude Code 向けスキル
 
-Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインストール可能な[スキル](https://github.com/markuplint/markuplint/tree/dev/skills)を提供しています。エージェントがよくあるワークフローをガイドします:
+Markuplintは[Claude Code](https://claude.ai/claude-code)向けのインストール可能な[スキル](https://github.com/markuplint/markuplint/tree/dev/skills)を提供しています。エージェントがよくあるワークフローをガイドします。
 
-| スキル                 | 説明                                                                                                                   |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `markuplint`           | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。HTML作業時に自動読み込み。                       |
-| `markuplint-setup`     | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。 |
-| `markuplint-configure` | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                  |
+### インストール
+
+```shell
+npx skills add markuplint/markuplint@markuplint
+npx skills add markuplint/markuplint@markuplint-setup
+npx skills add markuplint/markuplint@markuplint-configure
+```
+
+### 利用可能なスキル
+
+| スキル                 | 使い方                   | 説明                                                                                                                   |
+| ---------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | HTML作業時に自動読み込み | リファレンスナレッジ — 違反メッセージの解釈、CLI使用法、設定パターン。                                                 |
+| `markuplint-setup`     | `/markuplint-setup`      | ゼロからのセットアップ — フレームワーク検出、プリセット選択、初回リント、Bulk Suppressionsを含むルールごとの採用判断。 |
+| `markuplint-configure` | `/markuplint-configure`  | ルールの追加・削除・調整 — 適切なスコープ（プロジェクト / ファイル / 要素）を判断して設定変更を提案。                  |
 
 ## 次のステップ
 

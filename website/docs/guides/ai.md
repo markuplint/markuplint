@@ -37,13 +37,23 @@ AI coding agents such as [Claude Code](https://claude.ai/claude-code), [Cursor](
 
 ## Skills for Claude Code
 
-Markuplint provides installable [skills](https://github.com/markuplint/markuplint/tree/dev/skills) for [Claude Code](https://claude.ai/claude-code) that guide agents through common workflows:
+Markuplint provides installable [skills](https://github.com/markuplint/markuplint/tree/dev/skills) for [Claude Code](https://claude.ai/claude-code) that guide agents through common workflows.
 
-| Skill                  | Description                                                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `markuplint`           | Reference knowledge — violation interpretation, CLI usage, config patterns. Auto-loaded when working with HTML.                     |
-| `markuplint-setup`     | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions. |
-| `markuplint-configure` | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.            |
+### Install
+
+```shell
+npx skills add markuplint/markuplint@markuplint
+npx skills add markuplint/markuplint@markuplint-setup
+npx skills add markuplint/markuplint@markuplint-configure
+```
+
+### Available skills
+
+| Skill                  | How to use                         | Description                                                                                                                         |
+| ---------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `markuplint`           | Auto-loaded when working with HTML | Reference knowledge — violation interpretation, CLI usage, config patterns.                                                         |
+| `markuplint-setup`     | `/markuplint-setup`                | Set up Markuplint from scratch — framework detection, preset selection, initial lint, rule-by-rule adoption with Bulk Suppressions. |
+| `markuplint-configure` | `/markuplint-configure`            | Add, remove, or adjust rules — determines the right scope (project / file / element) and proposes configuration changes.            |
 
 ## Next steps
 
