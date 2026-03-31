@@ -13,7 +13,8 @@ on:
             - 'yarn.lock'
             - '.yarnrc.yml'
             - '.prettierrc'
-            - '.cspell.json'
+            - 'cspell.json'
+            - 'eslint.config.js'
 
 env:
     NODE_BUILD_VERSION: 24
