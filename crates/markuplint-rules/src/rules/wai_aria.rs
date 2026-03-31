@@ -1247,9 +1247,23 @@ mod tests {
     // --- checkingDeprecatedRole tests ---
 
     #[test]
+    fn deprecated_role_check_enabled() {
+        // "directory" is deprecated in ARIA 1.3 → violation by default
+        let arena = make_element_with_attrs("div", &[("role", "directory")]);
+        let s = spec();
+        let rule = WaiAria;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let dep_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("deprecated")).collect();
+        assert!(
+            !dep_violations.is_empty(),
+            "Default should report deprecated role 'directory', got: {violations:?}"
+        );
+    }
+
+    #[test]
     fn deprecated_role_check_disabled() {
-        // When checkingDeprecatedRole is false, no deprecated role violation
-        let arena = make_element_with_attrs("div", &[("role", "button")]);
+        // "directory" is deprecated, but with checkingDeprecatedRole: false → no violation
+        let arena = make_element_with_attrs("div", &[("role", "directory")]);
         let s = spec();
         let rule = WaiAria;
         let config = RuleConfig {
@@ -1257,13 +1271,10 @@ mod tests {
             ..RuleConfig::default()
         };
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
-        let dep_violations: Vec<_> = violations
-            .iter()
-            .filter(|v| v.message.contains("is deprecated"))
-            .collect();
+        let dep_violations: Vec<_> = violations.iter().filter(|v| v.message.contains("deprecated")).collect();
         assert!(
             dep_violations.is_empty(),
-            "No deprecated violation when check is disabled"
+            "No deprecated violation when check is disabled, got: {violations:?}"
         );
     }
 
@@ -1433,6 +1444,23 @@ mod tests {
     }
 
     // --- disallowSetImplicitProps tests ---
+
+    #[test]
+    fn implicit_props_check_enabled() {
+        // <input required aria-required="true"> → same semantics violation by default
+        let arena = make_element_with_attrs("input", &[("aria-required", "true"), ("required", "")]);
+        let s = spec();
+        let rule = WaiAria;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        let implicit_prop_violations: Vec<_> = violations
+            .iter()
+            .filter(|v| v.message.contains("same semantics") || v.message.contains("contradicts"))
+            .collect();
+        assert!(
+            !implicit_prop_violations.is_empty(),
+            "Default disallowSetImplicitProps=true should report same-semantics violation, got: {violations:?}"
+        );
+    }
 
     #[test]
     fn implicit_props_check_disabled() {

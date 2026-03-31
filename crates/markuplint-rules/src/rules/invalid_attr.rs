@@ -628,31 +628,38 @@ mod tests {
     }
 
     #[test]
-    fn allow_to_add_properties_for_pretender_false() {
-        // When allowToAddPropertiesForPretender=false, elements with possibleToAddProperties
-        // should NOT get a free pass for unknown attrs.
-        // We test with a custom element that has possibleToAddProperties.
-        // Since we can't easily mock specs, we test by confirming the option is read.
+    fn allow_to_add_properties_for_pretender_option_parsed() {
+        // allowToAddPropertiesForPretender controls whether elements with
+        // possibleToAddProperties in the spec can have arbitrary attributes.
+        // No standard HTML element has possibleToAddProperties in the spec JSON
+        // (it's set dynamically by the TS ml-spec layer for custom elements).
+        // This test verifies the option is parsed and the code path exists by
+        // checking that both true and false produce the same result for <div>
+        // (which lacks possibleToAddProperties), confirming the guard runs
+        // without error.
         let arena = make_element_with_attrs("div", &[("unknown-attr", "val")]);
         let s = spec();
         let rule = InvalidAttr;
 
-        // Default (true) - div doesn't have possibleToAddProperties, so violation is expected either way
-        let config_default = RuleConfig::default();
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_default));
-        assert_eq!(violations.len(), 1);
+        // Default (true)
+        let violations_default = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert_eq!(violations_default.len(), 1);
 
-        // With allowToAddPropertiesForPretender=false - same behavior for div
+        // Explicit false
         let config_false = RuleConfig {
             options: serde_json::json!({ "allowToAddPropertiesForPretender": false }),
             ..Default::default()
         };
-        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_false));
-        assert_eq!(
-            violations.len(),
-            1,
-            "Should still report unknown attr with option=false"
-        );
+        let violations_false = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_false));
+        assert_eq!(violations_false.len(), 1);
+
+        // Verify the option value is actually read (would panic on wrong type)
+        let config_explicit_true = RuleConfig {
+            options: serde_json::json!({ "allowToAddPropertiesForPretender": true }),
+            ..Default::default()
+        };
+        let violations_true = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_explicit_true));
+        assert_eq!(violations_true.len(), 1);
     }
 
     #[test]
