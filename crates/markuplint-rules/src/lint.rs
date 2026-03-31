@@ -91,53 +91,94 @@ pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResul
     let has_node_rules = !config.node_rules.is_empty() || !config.child_node_rules.is_empty();
 
     for rule in &rules {
-        let rule_id = rule.id();
+        let base_id = rule.id();
 
-        // Check if rule is enabled in config (globally or via nodeRules/childNodeRules)
-        let global_config_value = config.rules.get(rule_id);
+        // Collect all config entries that match this rule's base ID.
+        // Supports both plain keys ("attr-duplication") and namespaced keys
+        // ("html-standard/attr-duplication"). Each matching entry runs the rule
+        // independently with its own config, producing violations tagged with
+        // the original config key (preserving namespace in ruleId).
+        let matching_entries: Vec<(&str, &Value)> = config
+            .rules
+            .iter()
+            .filter(|(key, _)| {
+                let effective_id = if let Some(pos) = key.rfind('/') {
+                    &key[pos + 1..]
+                } else {
+                    key.as_str()
+                };
+                effective_id == base_id
+            })
+            .map(|(k, v)| (k.as_str(), v))
+            .collect();
 
         // Check if this rule appears in any nodeRule/childNodeRule
         let in_node_rules = has_node_rules
             && (config
                 .node_rules
                 .iter()
-                .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(rule_id)))
+                .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(base_id)))
                 || config
                     .child_node_rules
                     .iter()
-                    .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(rule_id))));
+                    .any(|nr| nr.rules.as_ref().is_some_and(|r| r.contains_key(base_id))));
 
         // Skip if not enabled anywhere
-        if global_config_value.is_none() && !in_node_rules {
+        if matching_entries.is_empty() && !in_node_rules {
             continue;
         }
 
-        // Parse global rule config (may be None if only in nodeRules)
-        let global_config = global_config_value.and_then(parse_rule_config);
-
-        // If globally disabled and not in any nodeRule, skip
-        if global_config.is_none() && !in_node_rules {
+        // If no matching config entries but rule appears in nodeRules, run once with defaults
+        if matching_entries.is_empty() {
+            let global_config = RuleConfig::default();
+            let config_set = if in_node_rules {
+                rule_mapper::build_rule_config_set(
+                    base_id,
+                    &global_config,
+                    &config.node_rules,
+                    &config.child_node_rules,
+                    arena,
+                    spec,
+                )
+            } else {
+                RuleConfigSet::global_only(global_config)
+            };
+            let rule_violations = rule.verify(arena, spec, &config_set);
+            violations.extend(rule_violations);
             continue;
         }
 
-        let global_config = global_config.unwrap_or_default();
+        // Run the rule once per matching config entry
+        for (config_key, config_value) in &matching_entries {
+            let Some(global_config) = parse_rule_config(config_value) else {
+                // Disabled (e.g., `false`) — skip this entry
+                continue;
+            };
 
-        // Build per-node config set
-        let config_set = if has_node_rules && in_node_rules {
-            rule_mapper::build_rule_config_set(
-                rule_id,
-                &global_config,
-                &config.node_rules,
-                &config.child_node_rules,
-                arena,
-                spec,
-            )
-        } else {
-            RuleConfigSet::global_only(global_config)
-        };
+            let config_set = if has_node_rules && in_node_rules {
+                rule_mapper::build_rule_config_set(
+                    base_id,
+                    &global_config,
+                    &config.node_rules,
+                    &config.child_node_rules,
+                    arena,
+                    spec,
+                )
+            } else {
+                RuleConfigSet::global_only(global_config)
+            };
 
-        let rule_violations = rule.verify(arena, spec, &config_set);
-        violations.extend(rule_violations);
+            let mut rule_violations = rule.verify(arena, spec, &config_set);
+
+            // If the config key has a namespace prefix, override the ruleId
+            if config_key.contains('/') {
+                for v in &mut rule_violations {
+                    v.rule_id = (*config_key).to_string();
+                }
+            }
+
+            violations.extend(rule_violations);
+        }
     }
 
     // Sort by line, then col
@@ -1340,5 +1381,86 @@ mod tests {
             .filter(|v| v.rule_id == "require-datetime")
             .collect();
         assert_eq!(v.len(), 0, "Empty time element should be skipped: {v:?}");
+    }
+
+    // --- Namespaced rule ID tests ---
+
+    #[test]
+    fn namespaced_rule_id_preserved_in_violations() {
+        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+
+        let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
+        let spec = html_spec();
+        let config = LintConfig {
+            rules: [("html-standard/attr-duplication".to_string(), Value::Bool(true))]
+                .into_iter()
+                .collect(),
+            node_rules: vec![],
+            child_node_rules: vec![],
+        };
+
+        let result = lint(&arena, &spec, &config);
+        assert_eq!(result.violations.len(), 1);
+        assert_eq!(
+            result.violations[0].rule_id, "html-standard/attr-duplication",
+            "Namespaced ruleId must be preserved"
+        );
+    }
+
+    #[test]
+    fn multiple_namespaces_same_base_rule_run_independently() {
+        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+
+        let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
+        let spec = html_spec();
+        // Two namespaced entries for the same base rule — both should produce violations
+        let config = LintConfig {
+            rules: [
+                ("html-standard/attr-duplication".to_string(), Value::Bool(true)),
+                ("a11y/attr-duplication".to_string(), Value::String("warning".to_string())),
+            ]
+            .into_iter()
+            .collect(),
+            node_rules: vec![],
+            child_node_rules: vec![],
+        };
+
+        let result = lint(&arena, &spec, &config);
+        let html_std: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "html-standard/attr-duplication")
+            .collect();
+        let a11y: Vec<_> = result
+            .violations
+            .iter()
+            .filter(|v| v.rule_id == "a11y/attr-duplication")
+            .collect();
+        assert_eq!(html_std.len(), 1, "html-standard namespace should find 1 violation");
+        assert_eq!(a11y.len(), 1, "a11y namespace should find 1 violation");
+        assert_eq!(html_std[0].severity, Severity::Error);
+        assert_eq!(a11y[0].severity, Severity::Warning);
+    }
+
+    #[test]
+    fn plain_rule_id_still_works() {
+        use crate::rules::attr_duplication::tests::make_element_with_attrs;
+
+        let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
+        let spec = html_spec();
+        let config = LintConfig {
+            rules: [("attr-duplication".to_string(), Value::Bool(true))]
+                .into_iter()
+                .collect(),
+            node_rules: vec![],
+            child_node_rules: vec![],
+        };
+
+        let result = lint(&arena, &spec, &config);
+        assert_eq!(result.violations.len(), 1);
+        assert_eq!(
+            result.violations[0].rule_id, "attr-duplication",
+            "Plain ruleId without namespace must be preserved"
+        );
     }
 }
