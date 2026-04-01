@@ -38,7 +38,7 @@ export async function readSuppressionsFile(filePath: string): Promise<Suppressio
 			return {};
 		}
 		if (error instanceof SyntaxError) {
-			// User may have manually edited and broken the JSON — Tier 2, not Fatal
+			 
 			throw new Error(`Failed to parse suppressions file "${filePath}": ${error.message}`, { cause: error });
 		}
 		if (isFatalError(error)) {

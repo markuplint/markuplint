@@ -24,6 +24,7 @@ export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string): Replacemen
 
 	const heads: string[] = [];
 	const bodies: string[] = [];
+	 
 	const code = rawCode.replaceAll(/(?<=<\/?)(?:head|body)(?=[\0\t\n\f />])/gi, tag => {
 		const prefix = `x-${UNDUPLICATED_CHAR}`;
 		let name: string;

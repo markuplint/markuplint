@@ -18,6 +18,7 @@ describe('RuleFixer', () => {
 
 	test('insertBefore', () => {
 		const token = { startOffset: 10, raw: 'hello' };
+		 
 		const edit = fixer.insertBefore(token, 'prefix');
 		expect(edit).toStrictEqual({ range: [10, 10], text: 'prefix' });
 	});

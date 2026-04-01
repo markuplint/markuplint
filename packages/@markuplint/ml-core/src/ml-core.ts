@@ -200,7 +200,7 @@ export class MLCore {
 		this.#schemas = schemas ?? this.#schemas;
 		this.#configErrors = [...(configErrors ?? [])];
 
-		const baseRules = rules?.slice() ?? this.#rules.filter(r => !r.baseRuleId);
+		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
 
 		// Use pre-expansion originals as fallback when ruleset is not provided
 		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;

@@ -96,6 +96,7 @@ export const svgElementList = [
 	'vkern',
 ];
 
+ 
 export const reTagName = /^[a-z][^\0\t\n\f />]*/i;
 
 export const reSplitterTag = /<[^>]+>/g;

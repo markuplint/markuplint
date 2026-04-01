@@ -62,6 +62,7 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 		rule?: Rule<T, Partial<O>>;
 		nodeRule?: NodeRule<T, Partial<O>>[];
 		childNodeRule?: ChildNodeRule<T, Partial<O>>[];
+		 
 	} = { rule: true },
 	fix = false,
 	locale = 'en',

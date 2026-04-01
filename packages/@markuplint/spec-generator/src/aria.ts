@@ -378,6 +378,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 		const defaultValue =
 			$defaultValue
 				.text()
+				 
 				.replaceAll(/\(default\)/gi, '')
 				.trim() || undefined;
 		const isGlobal = globalStatesAndProperties.has(name) || undefined;
