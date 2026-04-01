@@ -185,8 +185,8 @@ jobs:
                       packages/@markuplint/html-spec/index.json
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
-            - name: ESLint
-              run: yarn lint-check:eslint
+            - name: Lint (oxlint)
+              run: yarn lint-check:oxlint
 
     cross-os-setup:
         runs-on: ${{ matrix.os }}
