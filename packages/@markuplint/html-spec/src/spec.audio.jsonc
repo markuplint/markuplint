@@ -35,7 +35,13 @@
 		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"],
 		"#HTMLEmbededAndMediaContentAttrs": ["src", "preload", "autoplay", "loop", "muted", "controls"]
 	},
-	"attributes": {},
+	"attributes": {
+		"loading": {
+			// MDN incorrectly marks this as experimental, but it is defined in the HTML Living Standard.
+			// https://html.spec.whatwg.org/multipage/media.html#the-audio-element
+			"experimental": false
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": ["application"],
