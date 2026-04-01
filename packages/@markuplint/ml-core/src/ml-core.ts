@@ -163,6 +163,7 @@ export class MLCore {
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
 		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
@@ -230,6 +231,7 @@ export class MLCore {
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
 			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
 		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
@@ -390,6 +392,9 @@ export class MLCore {
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
+			// Collect errors from rule mapping (e.g., invalid wildcard usage)
+			this.#configErrors.push(...this.#ruleset.mappingErrors);
+			this.#ruleset.mappingErrors.length = 0;
 		} catch (error) {
 			if (error instanceof ParserError) {
 				this.#document = error;

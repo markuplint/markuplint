@@ -8,11 +8,16 @@ export class Ruleset {
 	/**
 	 * Maps base rule names to their virtual rule names created by NamedRuleGroups.
 	 * For example, if `a11y/wai-aria` wraps `wai-aria`, this maps `"wai-aria"` → `["a11y/wai-aria"]`.
-	 * Used by nodeRules/childNodeRules to propagate disable settings to virtual rules.
+	 * Used by nodeRules/childNodeRules to propagate settings to virtual rules.
 	 */
 	readonly baseRuleToVirtualNames: ReadonlyMap<string, readonly string[]>;
 	/** Rule overrides that apply to child nodes matching specific selectors */
 	readonly childNodeRules: readonly ChildNodeRule[];
+	/**
+	 * Errors collected during rule mapping (e.g., invalid wildcard usage).
+	 * Consumed by MLCore and reported as config-error violations.
+	 */
+	readonly mappingErrors: Error[] = [];
 	/** Rule overrides that apply to nodes matching specific selectors */
 	readonly nodeRules: readonly NodeRule[];
 	/** The global rule definitions */

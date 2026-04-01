@@ -3497,7 +3497,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 					}
 
 					// Namespace wildcard (e.g., "a11y/*": false)
-					if (ruleName.endsWith('/*') && rule === false) {
+					if (ruleName.endsWith('/*')) {
+						if (rule !== false) {
+							ruleset.mappingErrors.push(
+								new Error(
+									`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+								),
+							);
+							continue;
+						}
 						const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
 						for (const key of Object.keys(ruleset.rules)) {
 							if (key.startsWith(nsPrefix)) {
@@ -3526,21 +3534,18 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						rule: mergedRule,
 					});
 
-					// Propagate disable to virtual rules that wrap this base rule.
-					// Only `false` is propagated — non-false configs are NOT propagated
-					// because a base rule can be wrapped by multiple unrelated
-					// NamedRuleGroups (e.g., required-attr → html-standard/required-attr,
-					// a11y/html-lang). Use the virtual rule name for targeted overrides.
-					if (convertedRule === false) {
-						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
-						if (virtualNames) {
-							for (const vName of virtualNames) {
-								ruleMapper.set(node, vName, {
-									from: 'nodeRules',
-									specificity: matches.specificity,
-									rule: false,
-								});
-							}
+					// Propagate to virtual rules that wrap this base rule
+					const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+					if (virtualNames) {
+						for (const vName of virtualNames) {
+							const vGlobalRule = ruleset.rules[vName];
+							const vMergedRule =
+								vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+							ruleMapper.set(node, vName, {
+								from: 'nodeRules',
+								specificity: matches.specificity,
+								rule: vMergedRule,
+							});
 						}
 					}
 				}
@@ -3589,7 +3594,15 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						}
 
 						// Namespace wildcard (e.g., "a11y/*": false)
-						if (ruleName.endsWith('/*') && rule === false) {
+						if (ruleName.endsWith('/*')) {
+							if (rule !== false) {
+								ruleset.mappingErrors.push(
+									new Error(
+										`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+									),
+								);
+								continue;
+							}
 							const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
 							for (const key of Object.keys(ruleset.rules)) {
 								if (key.startsWith(nsPrefix)) {
@@ -3622,18 +3635,19 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							});
 						}
 
-						// Propagate disable to virtual rules that wrap this base rule
-						if (convertedRule === false) {
-							const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
-							if (virtualNames) {
-								for (const vName of virtualNames) {
-									for (const descendant of targetDescendants) {
-										ruleMapper.set(descendant, vName, {
-											from: 'childNodeRules',
-											specificity: matches.specificity,
-											rule: false,
-										});
-									}
+						// Propagate to virtual rules that wrap this base rule
+						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+						if (virtualNames) {
+							for (const vName of virtualNames) {
+								const vGlobalRule = ruleset.rules[vName];
+								const vMergedRule =
+									vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+								for (const descendant of targetDescendants) {
+									ruleMapper.set(descendant, vName, {
+										from: 'childNodeRules',
+										specificity: matches.specificity,
+										rule: vMergedRule,
+									});
 								}
 							}
 						}
