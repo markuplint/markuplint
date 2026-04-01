@@ -33,7 +33,7 @@
     "@docusaurus/tsconfig": "3.9.2",
     "@imgix/js-core": "3.8.0",
     "@markuplint-dev/prettier-config": "1.0.14",
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.59.0",
     "@tsconfig/strictest": "2.0.8",
     "@types/glob": "9.0.0",
     "eslint-plugin-react": "7.37.5",
