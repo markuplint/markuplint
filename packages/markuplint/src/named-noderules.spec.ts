@@ -1033,7 +1033,7 @@ describe('Named nodeRules integration', () => {
 			expect(a11yViolations).toHaveLength(0);
 		});
 
-		it('allows overriding wai-aria options via nodeRules using virtual rule name', async () => {
+		it('propagates option override from base rule name to virtual rules', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><img src="icon.svg" alt="icon" role="img" /></body></html>',
 				{
@@ -1042,8 +1042,7 @@ describe('Named nodeRules integration', () => {
 						{
 							selector: 'img[src$=".svg"]',
 							rules: {
-								// Use the virtual rule name for targeted option override
-								'a11y/wai-aria': {
+								'wai-aria': {
 									options: {
 										disallowSetImplicitRole: false,
 									},
@@ -1053,9 +1052,28 @@ describe('Named nodeRules integration', () => {
 					],
 				},
 			);
-			// With disallowSetImplicitRole: false, setting role="img" on <img> should NOT be a violation
+			// Base rule name option override propagates to a11y/wai-aria virtual rule
 			const implicitRoleViolations = violations.filter(v => v.ruleId === 'wai-aria' && v.message.includes('img'));
 			expect(implicitRoleViolations).toHaveLength(0);
+		});
+
+		it('reports config-error when wildcard is used with non-false value', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div role="foo"></div></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+					nodeRules: [
+						{
+							selector: 'div',
+							rules: {
+								'a11y/*': true,
+							},
+						},
+					],
+				},
+			);
+			const configError = violations.find(v => v.ruleId === 'config-error' && v.message.includes('a11y/*'));
+			expect(configError).toBeDefined();
 		});
 	});
 });
