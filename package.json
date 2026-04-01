@@ -12,14 +12,14 @@
 		"dev": "lerna run --parallel dev",
 		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
-		"lint": "run-p lint:oxlint lint:prettier lint:spellcheck lint:github-actions",
+		"lint": "run-p lint:oxlint lint:format lint:spellcheck lint:github-actions",
 		"lint:oxlint": "oxlint --fix -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint:prettier": "npx prettier --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint:format": "oxfmt --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
 		"lint:github-actions": "actionlint",
-		"lint-check": "run-p lint-check:oxlint lint-check:prettier lint:spellcheck",
+		"lint-check": "run-p lint-check:oxlint lint-check:format lint:spellcheck",
 		"lint-check:oxlint": "oxlint -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint-check:prettier": "npx prettier --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint-check:format": "oxfmt --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"up": "run-s up:deps up:gen up:schema",
 		"up:deps": "npx npm-check-updates --interactive --workspaces --format group",
 		"up:gen": "cd packages/\\@markuplint/html-spec/ && yarn run gen",
@@ -47,7 +47,7 @@
 	},
 	"lint-staged": {
 		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
-			"prettier --write"
+			"oxfmt --write"
 		],
 		"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}": [
 			"oxlint --fix -c .oxlintrc.json"
@@ -80,6 +80,7 @@
 		"lerna": "9.0.7",
 		"lint-staged": "16.4.0",
 		"npm-run-all2": "8.0.4",
+		"oxfmt": "^0.43.0",
 		"oxlint": "^1.58.0",
 		"textlint": "15.5.2",
 		"textlint-filter-rule-comments": "1.3.0",
