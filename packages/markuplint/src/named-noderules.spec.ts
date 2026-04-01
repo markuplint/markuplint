@@ -1057,7 +1057,31 @@ describe('Named nodeRules integration', () => {
 			expect(implicitRoleViolations).toHaveLength(0);
 		});
 
-		it('reports config-error when wildcard is used with non-false value', async () => {
+		it('propagates option override via childNodeRules to virtual rules', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div class="svg-section"><img src="icon.svg" alt="icon" role="img" /></div></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+					childNodeRules: [
+						{
+							selector: '.svg-section',
+							inheritance: true,
+							rules: {
+								'wai-aria': {
+									options: {
+										disallowSetImplicitRole: false,
+									},
+								},
+							},
+						},
+					],
+				},
+			);
+			const implicitRoleViolations = violations.filter(v => v.ruleId === 'wai-aria' && v.message.includes('img'));
+			expect(implicitRoleViolations).toHaveLength(0);
+		});
+
+		it('reports config-error when wildcard is used with non-false value in nodeRules', async () => {
 			const { violations } = await mlTest(
 				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div role="foo"></div></body></html>',
 				{
@@ -1074,6 +1098,46 @@ describe('Named nodeRules integration', () => {
 			);
 			const configError = violations.find(v => v.ruleId === 'config-error' && v.message.includes('a11y/*'));
 			expect(configError).toBeDefined();
+		});
+
+		it('reports config-error when wildcard is used with non-false value in childNodeRules', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div class="section"><div role="foo"></div></div></body></html>',
+				{
+					extends: ['markuplint:a11y'],
+					childNodeRules: [
+						{
+							selector: '.section',
+							inheritance: true,
+							rules: {
+								'a11y/*': { options: {} },
+							},
+						},
+					],
+				},
+			);
+			const configError = violations.find(v => v.ruleId === 'config-error' && v.message.includes('a11y/*'));
+			expect(configError).toBeDefined();
+		});
+
+		it('propagates disable to multiple virtual rules wrapping the same base rule', async () => {
+			const { violations } = await mlTest(
+				'<!doctype html><html lang="en"><head><meta charset="UTF-8"></head><body><div id="a"></div><div id="a"></div></body></html>',
+				{
+					extends: ['markuplint:html-standard', 'markuplint:a11y'],
+					nodeRules: [
+						{
+							selector: 'div',
+							rules: {
+								'id-duplication': false,
+							},
+						},
+					],
+				},
+			);
+			// Both a11y/id-duplication and html-standard/id-duplication should be disabled on div
+			const idViolations = violations.filter(v => v.ruleId === 'id-duplication');
+			expect(idViolations).toHaveLength(0);
 		});
 	});
 });
