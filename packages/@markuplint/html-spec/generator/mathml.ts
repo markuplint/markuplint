@@ -1,4 +1,4 @@
-import { fetch } from './fetch.js';
+import { fetch } from './fetch.ts';
 
 /**
  * Fetches the MDN MathML element index page and extracts the list of

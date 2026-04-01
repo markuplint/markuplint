@@ -3,8 +3,8 @@ import type { Element } from 'domhandler';
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
-import { fetch } from './fetch.js';
-import { sortObjectByKey } from './utils.js';
+import { fetch } from './fetch.ts';
+import { sortObjectByKey } from './utils.ts';
 
 /**
  * CSS selector for the main content area on MDN pages.

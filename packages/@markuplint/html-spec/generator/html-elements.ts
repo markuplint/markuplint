@@ -1,10 +1,10 @@
 import type { ExtendedElementSpec } from '@markuplint/ml-spec';
 
-import { getMathMLElementList } from './mathml.js';
-import { readJsons } from './read-json.js';
-import { fetchHTMLElement, fetchObsoleteElements } from './scraping.js';
-import { getSVGElementList } from './svg.js';
-import { getName, nameCompare, sortObjectByKey } from './utils.js';
+import { getMathMLElementList } from './mathml.ts';
+import { readJsons } from './read-json.ts';
+import { fetchHTMLElement, fetchObsoleteElements } from './scraping.ts';
+import { getSVGElementList } from './svg.ts';
+import { getName, nameCompare, sortObjectByKey } from './utils.ts';
 
 /**
  * List of non-conforming (obsolete) HTML elements.

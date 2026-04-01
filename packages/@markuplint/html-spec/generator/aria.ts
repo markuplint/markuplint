@@ -11,8 +11,8 @@ import type {
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { fetch } from './fetch.js';
-import { arrayUnique, nameCompare } from './utils.js';
+import { fetch } from './fetch.ts';
+import { arrayUnique, nameCompare } from './utils.ts';
 
 /**
  * Fetches and assembles the complete ARIA specification data for all supported versions (1.1, 1.2, 1.3).

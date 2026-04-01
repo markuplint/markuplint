@@ -1,5 +1,5 @@
-import { fetch } from './fetch.js';
-import { getThisOutline } from './utils.js';
+import { fetch } from './fetch.ts';
+import { getThisOutline } from './utils.ts';
 
 /**
  * Fetches the MDN SVG element index page and extracts the list of
