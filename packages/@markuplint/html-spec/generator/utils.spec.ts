@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { getName } from './utils.js';
+import { getName } from './utils.ts';
 
 describe('getName', () => {
 	test('HTML element', () => {

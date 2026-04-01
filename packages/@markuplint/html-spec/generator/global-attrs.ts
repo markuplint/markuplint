@@ -1,6 +1,6 @@
 import type { SpecDefs } from '@markuplint/ml-spec';
 
-import { readJson } from './read-json.js';
+import { readJson } from './read-json.ts';
 
 /**
  * Reads the global HTML attributes definition from a JSON file.

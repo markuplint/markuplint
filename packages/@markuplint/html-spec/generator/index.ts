@@ -10,11 +10,11 @@ import type { ExtendedElementSpec, ExtendedSpec } from '@markuplint/ml-spec';
 
 import { writeFile } from 'node:fs/promises';
 
-import { getAria } from './aria.js';
-import { getFailedUrls, getReferences } from './fetch.js';
-import { getGlobalAttrs } from './global-attrs.js';
-import { getElements } from './html-elements.js';
-import { readJson } from './read-json.js';
+import { getAria } from './aria.ts';
+import { getFailedUrls, getReferences } from './fetch.ts';
+import { getGlobalAttrs } from './global-attrs.ts';
+import { getElements } from './html-elements.ts';
+import { readJson } from './read-json.ts';
 
 /**
  * Configuration options for the spec generator.

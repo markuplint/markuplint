@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { main } from '@markuplint/spec-generator';
+import { main } from './generator/index.ts';
 
 await main({
 	outputFilePath: path.resolve(import.meta.dirname, 'index.json'),
