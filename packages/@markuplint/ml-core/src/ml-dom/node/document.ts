@@ -3496,6 +3496,21 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
+					// Namespace wildcard (e.g., "a11y/*": false)
+					if (ruleName.endsWith('/*') && rule === false) {
+						const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+						for (const key of Object.keys(ruleset.rules)) {
+							if (key.startsWith(nsPrefix)) {
+								ruleMapper.set(node, key, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
+						}
+						continue;
+					}
+
 					const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 					if (convertedRule === undefined) {
 						continue;
@@ -3510,6 +3525,24 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						specificity: matches.specificity,
 						rule: mergedRule,
 					});
+
+					// Propagate disable to virtual rules that wrap this base rule.
+					// Only `false` is propagated — non-false configs are NOT propagated
+					// because a base rule can be wrapped by multiple unrelated
+					// NamedRuleGroups (e.g., required-attr → html-standard/required-attr,
+					// a11y/html-lang). Use the virtual rule name for targeted overrides.
+					if (convertedRule === false) {
+						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+						if (virtualNames) {
+							for (const vName of virtualNames) {
+								ruleMapper.set(node, vName, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
+						}
+					}
 				}
 			}
 
@@ -3555,6 +3588,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							continue;
 						}
 
+						// Namespace wildcard (e.g., "a11y/*": false)
+						if (ruleName.endsWith('/*') && rule === false) {
+							const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+							for (const key of Object.keys(ruleset.rules)) {
+								if (key.startsWith(nsPrefix)) {
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, key, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
+								}
+							}
+							continue;
+						}
+
 						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
 							continue;
@@ -3570,6 +3620,22 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 								specificity: matches.specificity,
 								rule: mergedRule,
 							});
+						}
+
+						// Propagate disable to virtual rules that wrap this base rule
+						if (convertedRule === false) {
+							const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+							if (virtualNames) {
+								for (const vName of virtualNames) {
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, vName, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
+								}
+							}
 						}
 					}
 				}
