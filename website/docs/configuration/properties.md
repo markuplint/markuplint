@@ -587,7 +587,17 @@ type NamedRuleGroup = {
 If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-rules-to-specific-elements), you can specify by this property.
 Be careful to the value is an array.
 
-It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups).
+It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Group](#named-rule-groups) definitions (you cannot define new groups here).
+
+However, you can reference named rules by their base rule name or use namespace wildcards to control virtual rules created by presets:
+
+- **Base rule name**: `"wai-aria": false` disables the virtual rule `a11y/wai-aria` (and any other virtual rule wrapping `wai-aria`)
+- **Namespace wildcard**: `"a11y/*": false` disables all virtual rules in the `a11y/` namespace
+- **Option override**: `"wai-aria": { "options": { ... } }` propagates options to virtual rules wrapping `wai-aria`
+
+:::note
+Namespace wildcards only accept `false`. To set options, use a specific rule name (base or virtual).
+:::
 
 ```json class=config
 {
@@ -614,7 +624,7 @@ Same as [`specConformance`](#spec-conformance) in Named Rule Groups.
 
 #### `rules` {#to-some-rules}
 
-It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups). It's required.
+It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Group](#named-rule-groups) definitions. It's required. Base rule names and namespace wildcards are supported — see [nodeRules](#noderules) for details.
 
 #### `selector`
 

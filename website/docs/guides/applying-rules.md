@@ -77,12 +77,15 @@ To apply rules only to certain elements, use [**selectors**](./selectors) with t
       "selector": ".legacy-section",
       "inheritance": true,
       "rules": {
+        // Also disables virtual rules like a11y/wai-aria
         "wai-aria": false
       }
     }
   ]
 }
 ```
+
+You can use base rule names (e.g., `"wai-aria"`) and namespace wildcards (e.g., `"a11y/*": false`) in both `nodeRules` and `childNodeRules`. These automatically apply to virtual rules created by presets — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
 
 ## Using custom rules
 
