@@ -378,7 +378,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 		const defaultValue =
 			$defaultValue
 				.text()
-				 
+				// eslint-disable-next-line unicorn/prefer-string-replace-all -- Need case-insensitive flag
 				.replaceAll(/\(default\)/gi, '')
 				.trim() || undefined;
 		const isGlobal = globalStatesAndProperties.has(name) || undefined;
