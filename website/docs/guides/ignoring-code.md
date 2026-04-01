@@ -29,6 +29,26 @@ See [Applying rules to specific elements](./applying-rules/#applying-rules-to-sp
 
 Replace the `[[target-rule-id]]` portion with [the rule ID](/docs/rules) you would like to disable as appropriate.
 
+The same approach works for named rules — you can use base rule names or namespace wildcards:
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "nodeRules": [
+    {
+      "selector": ".legacy",
+      "rules": {
+        // Disable by base rule name — also disables a11y/wai-aria
+        "wai-aria": false,
+
+        // Disable all a11y/* named rules on this element
+        "a11y/*": false
+      }
+    }
+  ]
+}
+```
+
 ### Disable named rules {#disable-named-rules}
 
 Named rules defined by presets can be individually disabled by setting `false` in the `rules` property. You can also use a namespace wildcard to disable all named rules in a namespace at once, or use the base rule name to disable that specific rule inside every named rule group — see [Disabling by base rule name](/docs/configuration/properties#disable-by-base-rule-name) for details.
@@ -48,6 +68,8 @@ Named rules defined by presets can be individually disabled by setting `false` i
   }
 }
 ```
+
+These features also work in `nodeRules` and `childNodeRules` — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
 
 For the list of available named rules, see [Named rules in presets](/docs/guides/presets#named-rules).
 

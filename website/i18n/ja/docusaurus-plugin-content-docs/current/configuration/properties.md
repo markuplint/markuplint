@@ -554,7 +554,17 @@ type NamedRuleGroup = {
 
 特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
 
-`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。
+`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義（新しいグループの作成）は受け取れません。
+
+ただし、プリセットが作成した仮想ルールをベースルール名や名前空間ワイルドカードで制御できます:
+
+- **ベースルール名**: `"wai-aria": false` は仮想ルール `a11y/wai-aria`（および `wai-aria` をラップする他のすべての仮想ルール）を無効化します
+- **名前空間ワイルドカード**: `"a11y/*": false` は `a11y/` 名前空間内のすべての仮想ルールを無効化します
+- **オプション上書き**: `"wai-aria": { "options": { ... } }` は `wai-aria` をラップする仮想ルールにオプションを伝播します
+
+:::note
+名前空間ワイルドカードは `false` のみ受け付けます。オプションを指定するには、具体的なルール名（ベースまたは仮想）を使用してください。
+:::
 
 ```json class=config
 {
@@ -581,7 +591,7 @@ Named Rule Groupsの[`specConformance`](#spec-conformance)と同じです。
 
 #### `rules` {#to-some-rules}
 
-個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。必須です。
+個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義は受け取れません。必須です。ベースルール名と名前空間ワイルドカードに対応しています — 詳細は [nodeRules](#noderules) を参照してください。
 
 #### `selector`
 
