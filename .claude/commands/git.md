@@ -67,7 +67,7 @@ When committing changes that span multiple packages, always commit **from leaves
 | 11   | `markuplint`                                                                                                      |
 
 - Within the same tier, order does not matter
-- Root config changes (`.eslintrc`, `tsconfig.base.json`, CI) should be committed before any package changes
+- Root config changes (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI) should be committed before any package changes
 - Single-package changes do not need ordering -- just commit that package
 - If unsure, verify with `npx lerna list --graph`
 

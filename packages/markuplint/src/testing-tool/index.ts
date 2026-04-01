@@ -57,12 +57,13 @@ export async function mlTest(
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
 	sourceCode: string,
-	// eslint-disable-next-line unicorn/no-object-as-default-parameter
+	/* eslint-disable unicorn/no-object-as-default-parameter */
 	config: Omit<Config, 'rules' | 'nodeRules' | 'childNodeRules'> & {
 		rule?: Rule<T, Partial<O>>;
 		nodeRule?: NodeRule<T, Partial<O>>[];
 		childNodeRule?: ChildNodeRule<T, Partial<O>>[];
 	} = { rule: true },
+	/* eslint-enable unicorn/no-object-as-default-parameter */
 	fix = false,
 	locale = 'en',
 ) {

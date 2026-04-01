@@ -12,9 +12,9 @@ on:
             - 'vscode/**'
             - 'yarn.lock'
             - '.yarnrc.yml'
-            - '.prettierrc'
+            - '.oxfmtrc.json'
+            - '.oxlintrc.json'
             - 'cspell.json'
-            - 'eslint.config.js'
 
 env:
     NODE_BUILD_VERSION: 24
@@ -51,8 +51,8 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
-            - name: Prettier
-              run: yarn lint-check:prettier
+            - name: Format (oxfmt)
+              run: yarn lint-check:format
 
             - name: Spellcheck
               run: yarn lint:spellcheck

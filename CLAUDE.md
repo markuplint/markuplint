@@ -72,9 +72,9 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 
 ### Lint
 
-- **Full lint check**: `yarn lint-check` (no arguments) — runs ESLint, Prettier, and CSpell
+- **Full lint check**: `yarn lint-check` (no arguments) — runs oxlint, oxfmt, and CSpell
 - **Full lint with auto-fix**: `yarn lint` (no arguments) — same linters with auto-fix enabled
-- **NEVER run linters individually** (e.g., `npx eslint ...` alone) — always use the root scripts to ensure all linters run
+- **NEVER run linters individually** (e.g., `npx oxlint ...` alone) — always use the root scripts to ensure all linters run
 
 ### Build
 

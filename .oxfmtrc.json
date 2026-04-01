@@ -1,0 +1,27 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"printWidth": 120,
+	"tabWidth": 4,
+	"useTabs": true,
+	"singleQuote": true,
+	"trailingComma": "all",
+	"bracketSpacing": true,
+	"arrowParens": "avoid",
+	"sortPackageJson": false,
+	"overrides": [
+		{
+			"files": ["*.md", "*.mdx"],
+			"options": {
+				"tabWidth": 2,
+				"useTabs": false
+			}
+		}
+	],
+	"ignorePatterns": [
+		"packages/@markuplint/config-presets/README.md",
+		"packages/@markuplint/config-presets/preset.*.json",
+		"packages/@markuplint/i18n/cjs",
+		"packages/@markuplint/i18n/esm",
+		"vscode/out/"
+	]
+}

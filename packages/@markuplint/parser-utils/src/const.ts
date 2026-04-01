@@ -96,6 +96,7 @@ export const svgElementList = [
 	'vkern',
 ];
 
+// eslint-disable-next-line no-control-regex -- WHATWG HTML spec requires matching NULL character
 export const reTagName = /^[a-z][^\0\t\n\f />]*/i;
 
 export const reSplitterTag = /<[^>]+>/g;
