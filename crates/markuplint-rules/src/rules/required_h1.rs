@@ -54,6 +54,7 @@ impl Rule for RequiredH1 {
             if let Some(DomNode::Document(doc)) = arena.document() {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: "Require the h1 element".to_string(),
                     line: 1,
@@ -66,6 +67,7 @@ impl Rule for RequiredH1 {
             for (_id, el) in &h1_elements[1..] {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: "The h1 element is duplicated".to_string(),
                     line: el.base.line,
@@ -119,6 +121,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
