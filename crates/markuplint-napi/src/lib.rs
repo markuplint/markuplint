@@ -393,6 +393,9 @@ pub fn match_css_property(syntax: String, value: String) -> CssMatchResult {
 pub struct NapiViolation {
     /// Rule identifier (e.g., `"attr-duplication"`).
     pub rule_id: String,
+    /// Alias name for virtual rules (e.g., `"a11y/html-lang"`).
+    /// Used by TS to display the `NamedRuleGroup` name instead of the base rule ID.
+    pub name: Option<String>,
     /// Severity: `"error"`, `"warning"`, or `"info"`.
     pub severity: String,
     /// Human-readable message.
@@ -411,6 +414,7 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiVio
         .into_iter()
         .map(|v| NapiViolation {
             rule_id: v.rule_id,
+            name: v.name,
             severity: match v.severity {
                 markuplint_rules::violation::Severity::Error => "error".to_string(),
                 markuplint_rules::violation::Severity::Warning => "warning".to_string(),

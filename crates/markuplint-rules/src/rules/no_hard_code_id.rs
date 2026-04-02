@@ -45,6 +45,7 @@ impl Rule for NoHardCodeId {
                 if html_attr.node_name.eq_ignore_ascii_case("id") {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: "It is hard-coded".to_string(),
                         line: html_attr.name.line,
@@ -164,6 +165,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -278,6 +280,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;

@@ -16,6 +16,23 @@ impl DomArena {
         self.get(id).map(DomNode::children)
     }
 
+    /// Get the "pure" children IDs of a given node, filtering out bogus nodes.
+    ///
+    /// Matches TS `getPureChildNodes()` which filters out `type === 'endtag'`
+    /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
+    /// nodes with `is_bogus = true`.
+    #[must_use]
+    pub fn pure_children_of(&self, id: NodeId) -> Vec<NodeId> {
+        let Some(children) = self.children_of(id) else {
+            return Vec::new();
+        };
+        children
+            .iter()
+            .copied()
+            .filter(|&cid| !self.get(cid).is_some_and(DomNode::is_bogus))
+            .collect()
+    }
+
     /// Get the next sibling of a given node.
     #[must_use]
     pub fn next_sibling(&self, id: NodeId) -> Option<&DomNode> {
@@ -67,6 +84,15 @@ impl DomArena {
     #[must_use]
     pub fn document(&self) -> Option<&DomNode> {
         self.get(0)
+    }
+
+    /// Check if this DOM was parsed as a fragment (no doctype/full document structure).
+    #[must_use]
+    pub fn is_fragment(&self) -> bool {
+        match self.get(0) {
+            Some(DomNode::Document(doc)) => doc.is_fragment,
+            _ => true,
+        }
     }
 }
 

@@ -19,9 +19,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "npx tsc --project tsconfig.build.json",
-		"dev": "npx tsc --watch --project tsconfig.build.json",
-		"clean": "npx tsc --build --clean tsconfig.build.json"
+		"build": "echo 'spec-generator is deprecated; no build step'",
+		"dev": "echo 'spec-generator is deprecated'",
+		"clean": "echo 'spec-generator is deprecated'"
 	},
 	"dependencies": {
 		"@types/cheerio": "1.0.0",

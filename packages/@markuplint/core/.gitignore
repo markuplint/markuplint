@@ -1,3 +1,4 @@
 target/
 *.node
 index.cjs
+index.js

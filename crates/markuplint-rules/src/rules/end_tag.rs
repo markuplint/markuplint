@@ -48,6 +48,7 @@ impl Rule for EndTag {
             if el.pair_node_id.is_none() {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: rule_config.severity.clone(),
                     message: "Missing the end tag".to_string(),
                     line: el.base.line,
@@ -151,6 +152,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -201,6 +203,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: "/>".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -251,6 +254,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: "/>".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -301,6 +305,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: true,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -351,6 +356,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;

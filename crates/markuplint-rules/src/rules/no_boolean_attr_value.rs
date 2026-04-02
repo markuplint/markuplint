@@ -2,7 +2,7 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::get_attr_specs;
+use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -37,20 +37,28 @@ impl Rule for NoBooleanAttrValue {
                 }
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-                let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {
-                    continue;
-                };
 
                 // Check if the attribute type is "Boolean"
-                let is_boolean = attr_spec.attr_type.as_str() == Some("Boolean");
+                // Element-specific attrs may have the name but no type — fall back to global
+                let is_boolean = match attr_specs.get(attr_name_lower.as_str()) {
+                    Some(attr_spec) if attr_spec.attr_type.as_str() == Some("Boolean") => true,
+                    Some(attr_spec)
+                        if attr_spec.attr_type.is_null() || attr_spec.attr_type == serde_json::Value::default() =>
+                    {
+                        is_global_boolean_attr(spec, &el.base.node_name, &attr_name_lower)
+                    }
+                    Some(_) => false,
+                    None => is_global_boolean_attr(spec, &el.base.node_name, &attr_name_lower),
+                };
                 if !is_boolean {
                     continue;
                 }
 
-                // If the attribute has an equal sign and a value, report
-                if !html_attr.equal.raw.is_empty() && !html_attr.value.raw.is_empty() {
+                // If the attribute has an equal sign, report (even with empty value like disabled="")
+                if !html_attr.equal.raw.is_empty() {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!(
                             "\"{}\" is a boolean attribute. It doesn't need the value",
@@ -66,6 +74,24 @@ impl Rule for NoBooleanAttrValue {
 
         violations
     }
+}
+
+/// Check if an attribute is a Boolean type in the global attribute definitions.
+fn is_global_boolean_attr(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> bool {
+    let Some(el) = get_spec(spec, element_name) else {
+        return false;
+    };
+    for category in el.global_attrs.keys() {
+        if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
+            continue;
+        }
+        if let Some(attrs_map) = spec.def.global_attrs.get(category)
+            && let Some(attr_val) = attrs_map.get(attr_name)
+        {
+            return attr_val.get("type").and_then(serde_json::Value::as_str) == Some("Boolean");
+        }
+    }
+    false
 }
 
 #[cfg(test)]

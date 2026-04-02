@@ -135,6 +135,7 @@ fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
         tag_open_char: el.tag_open_char.clone(),
         tag_close_char: el.tag_close_char.clone(),
         is_ghost: el.is_ghost,
+        close_tag: None,
     });
     let pushed_id = arena.push(node);
     debug_assert_eq!(pushed_id, id);
@@ -169,6 +170,7 @@ fn convert_text_node(t: &mlast::MLASTText, arena: &mut DomArena) -> NodeId {
     let id = arena.len();
     let node = DomNode::Text(TextData {
         base: make_base(id, &t.uuid, &t.raw, t.offset, t.line, t.col, &t.node_name, t.depth),
+        is_bogus: false,
     });
     arena.push(node)
 }
@@ -254,6 +256,7 @@ fn convert_omitted_tag(ot: &mlast::MLASTOmittedTag, arena: &mut DomArena) -> Nod
         tag_open_char: String::new(),
         tag_close_char: String::new(),
         is_ghost: true,
+        close_tag: None,
     });
     arena.push(node)
 }
@@ -285,6 +288,7 @@ fn convert_invalid(inv: &mlast::MLASTInvalid, arena: &mut DomArena) -> NodeId {
             tag_open_char: String::new(),
             tag_close_char: String::new(),
             is_ghost: false,
+            close_tag: None,
         });
         arena.push(node)
     } else {

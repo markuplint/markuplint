@@ -91,6 +91,7 @@ impl Rule for PermittedContents {
                     if non_empty {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
+                            name: None,
                             severity: rule_config.severity.clone(),
                             message: "The element disallows contents".to_string(),
                             line: el.base.line,
@@ -165,6 +166,7 @@ impl Rule for PermittedContents {
                                 };
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
+                                    name: None,
                                     severity: rule_config.severity.clone(),
                                     message,
                                     line: if child.line > 0 { child.line } else { el.base.line },
@@ -176,6 +178,7 @@ impl Rule for PermittedContents {
                         ResultType::MissingNodeRequired => {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
+                                name: None,
                                 severity: rule_config.severity.clone(),
                                 message: format!("Require an element. (Need \"{}\")", result.query,),
                                 line: el.base.line,
@@ -197,6 +200,7 @@ impl Rule for PermittedContents {
                             };
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
+                                name: None,
                                 severity: rule_config.severity.clone(),
                                 message: format!("Require one or more elements. (Need \"{}\")", result.query,),
                                 line,
@@ -207,6 +211,7 @@ impl Rule for PermittedContents {
                         ResultType::Nothing => {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
+                                name: None,
                                 severity: rule_config.severity.clone(),
                                 message: "The element disallows contents".to_string(),
                                 line: el.base.line,
@@ -219,6 +224,7 @@ impl Rule for PermittedContents {
                                 let child = &children_to_validate[idx];
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
+                    name: None,
                                     severity: rule_config.severity.clone(),
                                     message: format!(
                                         "The \"{tag_name}\" element has a transparent content model but disallows \"{}\" in this context",
@@ -374,11 +380,9 @@ fn check_attr_condition(condition: &str, el: &markuplint_dom::node::ElementData)
 /// Recursively populates `child_nodes` for element children so that
 /// `:has()` selectors in the content model can match descendants.
 fn collect_child_nodes(arena: &DomArena, parent_id: NodeId) -> Vec<ChildNodeInfo> {
-    let Some(children) = arena.children_of(parent_id) else {
-        return vec![];
-    };
-    // Copy to avoid borrow conflicts during recursion
-    let children: Vec<NodeId> = children.to_vec();
+    // Use pure_children_of to filter out bogus nodes (EndTag, Invalid, bogus Text/Comment/PSBlock).
+    // Matches TS getPureChildNodes() which excludes invalid/bogus nodes from child iteration.
+    let children: Vec<NodeId> = arena.pure_children_of(parent_id);
 
     let mut result = Vec::new();
     for child_id in children {
@@ -520,6 +524,7 @@ fn check_own_transparent_constraint(
             {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: format!(
                         "The \"{tag_name}\" element is a transparent model but also disallows the \"{}\" element in this context",
@@ -534,6 +539,7 @@ fn check_own_transparent_constraint(
             if let Some(parent_el) = arena.get(node_id).and_then(|n| n.as_element()) {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: format!(
                         "The \"{tag_name}\" element is a transparent model but also disallows the \"{}\" element in this context",
@@ -893,6 +899,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(parent_id) {
             e.base.id = parent_id;
@@ -925,6 +932,7 @@ mod tests {
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(cid) {
                 e.base.id = cid;
@@ -1248,6 +1256,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(br_id) {
             e.base.id = br_id;
@@ -1267,6 +1276,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
             t.base.id = text_id;
@@ -1467,6 +1477,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(switch_id) {
             e.base.id = switch_id;
@@ -1496,6 +1507,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(a_id) {
             e.base.id = a_id;
@@ -1612,6 +1624,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
@@ -1718,6 +1731,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 

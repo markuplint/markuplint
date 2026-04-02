@@ -55,6 +55,7 @@ impl Rule for NoDuplicateDt {
                     for &(line, col, ref raw) in &locations[1..] {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
+                            name: None,
                             severity: rule_config.severity.clone(),
                             message: "The name duplicated".to_string(),
                             line,
@@ -129,6 +130,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
@@ -148,6 +150,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }
     }
 

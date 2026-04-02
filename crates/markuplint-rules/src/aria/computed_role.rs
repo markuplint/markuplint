@@ -111,7 +111,7 @@ fn compute_role(
         };
     };
 
-    let tag_name = &el.base.node_name;
+    let tag_name: &str = &el.base.node_name.to_ascii_lowercase();
 
     // Step 1: Get explicit role
     let explicit = get_explicit_role(spec, arena, node_id, tag_name, version);
@@ -219,10 +219,11 @@ fn get_explicit_role(
         };
     };
 
-    let permitted = aria::get_base_permitted_roles(spec, tag_name);
-    let any_permitted = aria::is_any_role_permitted(spec, tag_name);
-
+    // TS getExplicitRole checks: exists → not abstract → permitted → valid landmark
     let mut last_error = RoleComputationError::NoExplicit;
+
+    // Resolve permitted roles for this element
+    let (permitted, any_permitted) = resolve_permitted_roles(spec, arena, node_id, tag_name);
 
     for token in role_attr.split_whitespace() {
         let role_name = token.to_ascii_lowercase();
@@ -237,11 +238,15 @@ fn get_explicit_role(
             continue;
         }
 
-        // Check permitted roles
-        if !any_permitted
-            && let Some(ref permitted_list) = permitted
-            && !permitted_list.iter().any(|r| r.eq_ignore_ascii_case(&role_name))
-            && !is_presentational(&role_name)
+        // Check permitted roles (TS: if (!permittedRoles.some(r => r.name === roleName)))
+        // Note: presentation/none are handled in Presentational Roles Conflict
+        // Resolution (later in computeRole), not rejected here.
+        let is_presentational = role_name == "presentation" || role_name == "none";
+        if !is_presentational
+            && !any_permitted
+            && !permitted
+                .as_ref()
+                .is_some_and(|roles| roles.iter().any(|r| r.eq_ignore_ascii_case(&role_name)))
         {
             last_error = RoleComputationError::NoPermitted;
             continue;
@@ -267,6 +272,60 @@ fn get_explicit_role(
     }
 }
 
+/// Resolve permitted roles for an element, evaluating conditions.
+///
+/// Mirrors TS `getARIA()` condition evaluation for `permittedRoles`.
+/// Returns (condition-resolved permitted roles, any-role-permitted flag).
+pub fn resolve_permitted_roles(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    tag_name: &str,
+) -> (Option<Vec<String>>, bool) {
+    let base_permitted = aria::get_base_permitted_roles(spec, tag_name);
+    let base_any = aria::is_any_role_permitted(spec, tag_name);
+
+    let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name) else {
+        return (base_permitted, base_any);
+    };
+
+    let mut permitted = base_permitted;
+    let mut any_permitted = base_any;
+
+    if let Some(ref conditions) = el_spec.aria.conditions {
+        for (selector_str, override_value) in conditions {
+            let Ok(selector) = markuplint_selector::parser::parse(selector_str) else {
+                continue;
+            };
+            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None) {
+                continue;
+            }
+            if let Some(obj) = override_value.as_object()
+                && let Some(cond_roles) = obj.get("permittedRoles")
+            {
+                if cond_roles.as_bool() == Some(true) {
+                    any_permitted = true;
+                } else if let Some(arr) = cond_roles.as_array() {
+                    permitted = Some(arr.iter().filter_map(|v| v.as_str().map(ToString::to_string)).collect());
+                    any_permitted = false;
+                }
+            }
+        }
+    }
+
+    // TS getPermittedRoles adds the implicit role to the permitted list.
+    // This ensures setting the implicit role explicitly is always allowed
+    // (e.g., <h1 role="heading"> — "heading" is permitted because it's the implicit role).
+    if !any_permitted && let Some(implicit) = aria::get_base_implicit_role(spec, tag_name).map(str::to_string) {
+        let roles = permitted.get_or_insert_with(Vec::new);
+        if !roles.iter().any(|r| r.eq_ignore_ascii_case(&implicit)) {
+            roles.push(implicit);
+        }
+    }
+
+    (permitted, any_permitted)
+}
+
 // ============================================================
 // Implicit role
 // ============================================================
@@ -278,9 +337,38 @@ fn get_implicit_role(
     tag_name: &str,
     version: ARIAVersion,
 ) -> ComputedRole {
-    // Use base implicit role (without condition evaluation for now).
-    // TODO: Add condition evaluation via CSS selector matching when
-    // ElementARIA.conditions is typed (Phase 2-3b enhancement).
+    // Check conditions in ElementARIA.conditions FIRST (before base implicit role).
+    // Elements like <td>/<th> have implicitRole:false but condition-based overrides
+    // that set the implicit role based on context (e.g., cell when inside table).
+    // Conditions must be checked even when base implicit role is None/false.
+    if let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name)
+        && let Some(ref conditions) = el_spec.aria.conditions
+    {
+        for (selector_str, override_value) in conditions {
+            if let Ok(selector) = markuplint_selector::parser::parse(selector_str)
+                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None)
+                && let Some(override_obj) = override_value.as_object()
+                && let Some(override_role) = override_obj.get("implicitRole")
+            {
+                if let Some(false) = override_role.as_bool() {
+                    return ComputedRole {
+                        role: None,
+                        error_type: None,
+                    };
+                }
+                if let Some(newrole_name) = override_role.as_str()
+                    && let Some(new_spec) = aria::get_role_spec(spec, newrole_name, version)
+                {
+                    return ComputedRole {
+                        role: Some(resolved_from_spec(new_spec, true)),
+                        error_type: None,
+                    };
+                }
+            }
+        }
+    }
+
+    // Fall back to base implicit role
     let Some(role_name) = aria::get_base_implicit_role(spec, tag_name) else {
         return ComputedRole {
             role: None,
@@ -294,41 +382,6 @@ fn get_implicit_role(
             error_type: Some(RoleComputationError::ImplicitRoleNamespaceError),
         };
     };
-
-    // Check conditions in ElementARIA.conditions using CSS selector matching
-    if let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name)
-        && let Some(ref conditions) = el_spec.aria.conditions
-    {
-        for (selector_str, override_value) in conditions {
-            // Parse and match selector against the element
-            if let Ok(selector) = markuplint_selector::parser::parse(selector_str)
-                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None)
-            {
-                // Condition matched — override implicit role from the condition value
-                // The condition value contains an ARIA override (implicitRole, etc.)
-                // For now, extract implicitRole from the override if present
-                if let Some(override_obj) = override_value.as_object()
-                    && let Some(override_role) = override_obj.get("implicitRole")
-                {
-                    if let Some(false) = override_role.as_bool() {
-                        // implicitRole: false — no implicit role
-                        return ComputedRole {
-                            role: None,
-                            error_type: None,
-                        };
-                    }
-                    if let Some(newrole_name) = override_role.as_str()
-                        && let Some(new_spec) = aria::get_role_spec(spec, newrole_name, version)
-                    {
-                        return ComputedRole {
-                            role: Some(resolved_from_spec(new_spec, true)),
-                            error_type: None,
-                        };
-                    }
-                }
-            }
-        }
-    }
 
     ComputedRole {
         role: Some(resolved_from_spec(role_spec, true)),
@@ -758,14 +811,15 @@ mod tests {
     }
 
     #[test]
-    fn not_permitted_role_falls_through() {
+    fn not_permitted_role_falls_back_to_implicit() {
         let s = spec();
-        // <a> does not permit "heading" role
+        // TS getExplicitRole checks permitted roles. "heading" is NOT permitted
+        // on <a href>, so it falls back to the implicit role "link".
         let (arena, id) = make_arena("a", &[("role", "heading"), ("href", "#")]);
         let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_3, false);
-        // Should fall back to implicit "link"
+        // Should fall back to implicit "link" because "heading" is not permitted
         assert_eq!(cr.role.as_ref().map(|r| r.name.as_str()), Some("link"));
-        assert_eq!(cr.error_type, Some(RoleComputationError::NoPermitted));
+        assert!(cr.role.as_ref().unwrap().is_implicit);
     }
 
     #[test]

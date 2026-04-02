@@ -2,7 +2,7 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::get_attr_specs;
+use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -24,7 +24,14 @@ impl Rule for DeprecatedAttr {
             if rule_config.disabled {
                 continue;
             }
-            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+            // Use namespace-qualified name for spec lookup so SVG elements
+            // (e.g., svg:a) find the correct spec instead of the HTML element.
+            let qualified_name = match el.namespace {
+                markuplint_core::mlast::NamespaceURI::SVG => format!("svg:{}", el.base.node_name),
+                markuplint_core::mlast::NamespaceURI::MathML => format!("math:{}", el.base.node_name),
+                _ => el.base.node_name.clone(),
+            };
+            let attr_specs = get_attr_specs(spec, &qualified_name);
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -32,22 +39,29 @@ impl Rule for DeprecatedAttr {
                 };
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-                let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {
-                    continue;
+
+                // Check element-specific attrs first, then fall back to global attrs
+                let (is_deprecated, is_obsolete) = match attr_specs.get(attr_name_lower.as_str()) {
+                    Some(attr_spec) if attr_spec.deprecated == Some(true) || attr_spec.obsolete == Some(true) => {
+                        (attr_spec.deprecated == Some(true), attr_spec.obsolete == Some(true))
+                    }
+                    _ => get_global_attr_deprecated_flags(spec, &qualified_name, &attr_name_lower),
                 };
 
-                if attr_spec.deprecated == Some(true) {
+                if is_deprecated {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" attribute is deprecated", html_attr.node_name),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
                     });
-                } else if attr_spec.obsolete == Some(true) {
+                } else if is_obsolete {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" attribute is obsolete", html_attr.node_name),
                         line: html_attr.name.line,
@@ -60,6 +74,29 @@ impl Rule for DeprecatedAttr {
 
         violations
     }
+}
+
+/// Check deprecated/obsolete flags for a global attribute from the raw JSON spec.
+fn get_global_attr_deprecated_flags(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> (bool, bool) {
+    let Some(el) = get_spec(spec, element_name) else {
+        return (false, false);
+    };
+    for category in el.global_attrs.keys() {
+        if let Some(attrs_map) = spec.def.global_attrs.get(category)
+            && let Some(attr_val) = attrs_map.get(attr_name)
+        {
+            let deprecated = attr_val
+                .get("deprecated")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            let obsolete = attr_val
+                .get("obsolete")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false);
+            return (deprecated, obsolete);
+        }
+    }
+    (false, false)
 }
 
 #[cfg(test)]

@@ -277,9 +277,27 @@ impl<'a> Parser<'a> {
     fn parse_attr_value(&mut self) -> Result<String, String> {
         match self.peek() {
             Some('"' | '\'') => self.parse_quoted_string(),
-            Some(c) if is_ident_start(c) || c == '-' => self.parse_ident(),
+            Some(c) if is_ident_start(c) || c == '-' || c == '.' => self.parse_unquoted_attr_value(),
             _ => Err(format!("Expected attribute value at position {}", self.pos)),
         }
+    }
+
+    /// Parse an unquoted attribute value.
+    /// More permissive than `parse_ident` — allows dots, digits, etc.
+    /// Matches postcss-selector-parser behavior for values like `.svg`.
+    fn parse_unquoted_attr_value(&mut self) -> Result<String, String> {
+        let mut value = String::new();
+        while let Some(c) = self.peek() {
+            if c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+                break;
+            }
+            value.push(c);
+            self.advance();
+        }
+        if value.is_empty() {
+            return Err(format!("Expected attribute value at position {}", self.pos));
+        }
+        Ok(value)
     }
 
     fn parse_quoted_string(&mut self) -> Result<String, String> {

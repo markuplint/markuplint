@@ -2,7 +2,7 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::get_attr_specs;
+use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -32,18 +32,22 @@ impl Rule for NoDefaultValue {
                 };
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-                let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {
-                    continue;
-                };
 
-                let Some(default_value) = &attr_spec.default_value else {
+                // Get default value from element-specific or global attribute spec
+                // Element-specific attrs may have the name but no defaultValue — fall back
+                let default_value = match attr_specs.get(attr_name_lower.as_str()) {
+                    Some(attr_spec) if attr_spec.default_value.is_some() => attr_spec.default_value.as_deref(),
+                    _ => get_global_attr_default(spec, &el.base.node_name, &attr_name_lower),
+                };
+                let Some(default_value) = default_value else {
                     continue;
                 };
 
                 // Case-insensitive comparison of attribute value against default
-                if html_attr.value.raw.eq_ignore_ascii_case(default_value.as_str()) {
+                if html_attr.value.raw.eq_ignore_ascii_case(default_value) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: "It is the default value".to_string(),
                         line: html_attr.name.line,
@@ -56,6 +60,22 @@ impl Rule for NoDefaultValue {
 
         violations
     }
+}
+
+/// Get the default value of a global attribute from the raw JSON spec.
+fn get_global_attr_default<'a>(spec: &'a MLMLSpec, element_name: &str, attr_name: &str) -> Option<&'a str> {
+    let el = get_spec(spec, element_name)?;
+    for category in el.global_attrs.keys() {
+        if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
+            continue;
+        }
+        if let Some(attrs_map) = spec.def.global_attrs.get(category)
+            && let Some(attr_val) = attrs_map.get(attr_name)
+        {
+            return attr_val.get("defaultValue").and_then(serde_json::Value::as_str);
+        }
+    }
+    None
 }
 
 #[cfg(test)]

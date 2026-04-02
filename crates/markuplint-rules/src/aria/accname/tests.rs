@@ -118,6 +118,7 @@ fn make_with_text(tag: &str, attrs: &[(&str, &str)], text: &str) -> (markuplint_
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
         e.base.id = el_id;
@@ -140,6 +141,7 @@ fn make_with_text(tag: &str, attrs: &[(&str, &str)], text: &str) -> (markuplint_
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
             t.base.id = text_id;
@@ -199,6 +201,7 @@ fn make_two_elements(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(el1_id) {
         e.base.id = el1_id;
@@ -221,6 +224,7 @@ fn make_two_elements(
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(t1) {
             t.base.id = t1;
@@ -253,6 +257,7 @@ fn make_two_elements(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(el2_id) {
         e.base.id = el2_id;
@@ -275,6 +280,7 @@ fn make_two_elements(
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(t2) {
             t.base.id = t2;
@@ -346,6 +352,7 @@ fn make_three_elements(
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
                 e.base.id = el_id;
@@ -367,6 +374,7 @@ fn make_three_elements(
                         prev_sibling: None,
                         depth: 2,
                     },
+                    is_bogus: false,
                 }));
                 if let Some(DomNode::Text(td)) = builder.get_mut(t) {
                     td.base.id = t;
@@ -444,6 +452,7 @@ fn make_parent_with_child_element_and_text(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(parent_id) {
         e.base.id = parent_id;
@@ -474,6 +483,7 @@ fn make_parent_with_child_element_and_text(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(child_id) {
         e.base.id = child_id;
@@ -496,6 +506,7 @@ fn make_parent_with_child_element_and_text(
                 prev_sibling: None,
                 depth: 3,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
             t.base.id = text_id;
@@ -559,6 +570,7 @@ fn make_labeled_input(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(label_id) {
         e.base.id = label_id;
@@ -580,6 +592,7 @@ fn make_labeled_input(
             prev_sibling: None,
             depth: 2,
         },
+        is_bogus: false,
     }));
     if let Some(DomNode::Text(t)) = builder.get_mut(label_text_id) {
         t.base.id = label_text_id;
@@ -617,6 +630,7 @@ fn make_labeled_input(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(input_node_id) {
         e.base.id = input_node_id;
@@ -679,6 +693,7 @@ fn make_labeled_element(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(label_id) {
         e.base.id = label_id;
@@ -699,6 +714,7 @@ fn make_labeled_element(
             prev_sibling: None,
             depth: 2,
         },
+        is_bogus: false,
     }));
     if let Some(DomNode::Text(t)) = builder.get_mut(label_text_id) {
         t.base.id = label_text_id;
@@ -734,6 +750,7 @@ fn make_labeled_element(
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     if let Some(DomNode::Element(e)) = builder.get_mut(el_node_id) {
         e.base.id = el_node_id;
@@ -2196,6 +2213,7 @@ mod algorithm_tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -2219,6 +2237,7 @@ mod algorithm_tests {
                 prev_sibling: None,
                 depth,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
             t.base.id = text_id;
@@ -3247,6 +3266,7 @@ mod algorithm_tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(svg_id) {
             e.base.id = svg_id;
@@ -3276,6 +3296,7 @@ mod algorithm_tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(title_id) {
             e.base.id = title_id;
@@ -3295,6 +3316,7 @@ mod algorithm_tests {
                 prev_sibling: None,
                 depth: 3,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Text(t)) = builder.get_mut(text_id) {
             t.base.id = text_id;
@@ -3399,6 +3421,7 @@ mod algorithm_tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(svg_id) {
             e.base.id = svg_id;

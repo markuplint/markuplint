@@ -55,6 +55,7 @@ impl Rule for LabelHasControl {
 
             violations.push(Violation {
                 rule_id: self.id().to_string(),
+                name: None,
                 severity: rule_config.severity.clone(),
                 message: "The label element should associate with a control".to_string(),
                 line: el.base.line,
@@ -193,6 +194,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 

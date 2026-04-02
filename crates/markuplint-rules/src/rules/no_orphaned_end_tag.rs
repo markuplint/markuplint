@@ -20,9 +20,26 @@ impl Rule for NoOrphanedEndTag {
         let mut violations = Vec::new();
 
         for i in 0..arena.len() {
+            // Check bogus text nodes (orphaned end tags from HTML parser path)
+            // Matches TS behavior: walkOn('Text', text => { if (text.isBogus) ... })
+            if let Some(DomNode::Text(text)) = arena.get(i)
+                && text.is_bogus
+            {
+                violations.push(Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: config.severity.clone(),
+                    message: "Orphaned end tag detected".to_string(),
+                    line: text.base.line,
+                    col: text.base.col,
+                    raw: text.base.raw.clone(),
+                });
+            }
+            // Also check EndTag nodes (from MLAST JSON path)
             if let Some(DomNode::EndTag(end_tag)) = arena.get(i) {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: "Orphaned end tag detected".to_string(),
                     line: end_tag.base.line,

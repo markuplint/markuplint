@@ -80,6 +80,7 @@ impl Rule for RequireDatetime {
 
             violations.push(Violation {
                 rule_id: self.id().to_string(),
+                name: None,
                 severity: rule_config.severity.clone(),
                 message,
                 line: el.base.line,

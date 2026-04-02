@@ -57,6 +57,7 @@ impl Rule for CharacterReference {
                 if DEFAULT_CHARS.contains(&ch) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: config.severity.clone(),
                         message: "Illegal characters must escape in character reference".to_string(),
                         line,
@@ -124,6 +125,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let text_id = builder.push(DomNode::Text(TextData {
             base: NodeBase {
@@ -140,6 +142,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;

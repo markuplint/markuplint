@@ -256,13 +256,16 @@ fn match_pseudo_class(
             if matches(inner, arena, node_id, Some(scope), spec, aria) {
                 MatchResult::unmatched()
             } else {
-                // :not() specificity = most specific selector in the list
-                MatchResult::matched([0, 1, 0])
+                // :not() specificity = most specific selector in the argument list
+                // (regardless of which arguments matched)
+                MatchResult::matched(max_specificity_of_list(inner))
             }
         }
         PseudoClassSelector::Is(inner) => {
-            if let Some(spec) = match_specificity(inner, arena, node_id, Some(scope), spec, aria) {
-                MatchResult::matched(spec)
+            if matches(inner, arena, node_id, Some(scope), spec, aria) {
+                // :is() specificity = most specific selector in the argument list
+                // (regardless of which arguments matched)
+                MatchResult::matched(max_specificity_of_list(inner))
             } else {
                 MatchResult::unmatched()
             }
@@ -281,7 +284,8 @@ fn match_pseudo_class(
                 }
             }
             if found {
-                MatchResult::matched([0, 1, 0])
+                // :has() specificity = most specific selector in the argument list
+                MatchResult::matched(max_specificity_of_list(inner))
             } else {
                 MatchResult::unmatched()
             }
@@ -509,6 +513,62 @@ fn add_specificity(a: &mut Specificity, b: &Specificity) {
     a[0] += b[0];
     a[1] += b[1];
     a[2] += b[2];
+}
+
+/// Compute the max specificity of all selectors in a list (matched or not).
+///
+/// Matches TS `getSpecificity(resList)` which takes the highest specificity
+/// from all results regardless of match status. Used by `:not()`, `:is()`, `:has()`.
+fn max_specificity_of_list(list: &SelectorList) -> Specificity {
+    let mut best: Specificity = [0, 0, 0];
+    for sel in &list.selectors {
+        let s = compute_selector_specificity(sel);
+        if s > best {
+            best = s;
+        }
+    }
+    best
+}
+
+/// Compute the specificity of a complex selector without matching.
+///
+/// Matches TS behavior where `ruleset.match()` returns specificity for each
+/// selector even when not matched, and `getSpecificity()` picks the highest.
+fn compute_selector_specificity(sel: &ComplexSelector) -> Specificity {
+    let mut specificity = compute_compound_specificity(&sel.subject);
+    for (_combinator, compound) in &sel.chain {
+        add_specificity(&mut specificity, &compute_compound_specificity(compound));
+    }
+    specificity
+}
+
+/// Compute the specificity of a compound selector without matching.
+fn compute_compound_specificity(compound: &CompoundSelector) -> Specificity {
+    let mut specificity: Specificity = [0, 0, 0];
+    for part in &compound.parts {
+        match part {
+            SimpleSelector::Universal | SimpleSelector::Namespace(_) => {}
+            SimpleSelector::Type(_) => specificity[2] += 1,
+            SimpleSelector::Id(_) => specificity[0] += 1,
+            SimpleSelector::Class(_) | SimpleSelector::Attribute(_) => specificity[1] += 1,
+            SimpleSelector::PseudoClass(pseudo) => {
+                add_specificity(&mut specificity, &compute_pseudo_specificity(pseudo));
+            }
+        }
+    }
+    specificity
+}
+
+/// Compute the specificity of a pseudo-class without matching.
+fn compute_pseudo_specificity(pseudo: &PseudoClassSelector) -> Specificity {
+    match pseudo {
+        PseudoClassSelector::Not(inner) | PseudoClassSelector::Is(inner) | PseudoClassSelector::Has(inner) => {
+            max_specificity_of_list(inner)
+        }
+        PseudoClassSelector::Where(_) => [0, 0, 0],
+        // All other pseudo-classes contribute [0, 1, 0]
+        _ => [0, 1, 0],
+    }
 }
 
 #[cfg(test)]
@@ -818,6 +878,83 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
+    }
+
+    /// Helper: put a single element in an arena and return (arena, node_id).
+    fn make_arena(tag_name: &str, attrs: &[(&str, &str)]) -> (DomArena, NodeId) {
+        use markuplint_dom::arena::DomArenaBuilder;
+        use markuplint_dom::node::{DocumentData, DomNode};
+
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true,
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let el = make_element(tag_name, attrs);
+        let el_id = builder.push(DomNode::Element(el));
+        if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
+            e.base.id = el_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![el_id];
+        }
+        (builder.finish(), el_id)
+    }
+
+    /// Helper: parse selector and return specificity for a given element.
+    fn spec_of(selector_str: &str, tag_name: &str, attrs: &[(&str, &str)]) -> Option<Specificity> {
+        let sel = parser::parse(selector_str).unwrap();
+        let (arena, el_id) = make_arena(tag_name, attrs);
+        match_specificity(&sel, &arena, el_id, None, None, None)
+    }
+
+    // ============================================================
+    // Specificity tests — ported from TS selector.spec.ts
+    // ============================================================
+
+    #[test]
+    fn specificity_not() {
+        // TS: createSelector('div').match(el) => [0, 0, 1]
+        assert_eq!(spec_of("div", "div", &[]), Some([0, 0, 1]));
+        // TS: createSelector(':not(span)').match(el) => [0, 0, 1]
+        assert_eq!(spec_of(":not(span)", "div", &[]), Some([0, 0, 1]));
+        // TS: createSelector(':not(span, a)').match(el) => [0, 0, 1]
+        assert_eq!(spec_of(":not(span, a)", "div", &[]), Some([0, 0, 1]));
+        // TS: createSelector(':not(span, #foo)').match(el) => [1, 0, 0]
+        assert_eq!(spec_of(":not(span, #foo)", "div", &[]), Some([1, 0, 0]));
+    }
+
+    #[test]
+    fn specificity_is() {
+        // TS: createSelector(':is(div)').match(el) => [0, 0, 1]
+        assert_eq!(spec_of(":is(div)", "div", &[]), Some([0, 0, 1]));
+        // TS: createSelector(':is(div, span)').match(el) => [0, 0, 1]
+        assert_eq!(spec_of(":is(div, span)", "div", &[]), Some([0, 0, 1]));
+        // TS: createSelector(':is(div, #foo)').match(el) => [1, 0, 0]
+        assert_eq!(spec_of(":is(div, #foo)", "div", &[]), Some([1, 0, 0]));
+        // TS: createSelector(':is(div, #foo, .bar)').match(el) => [1, 0, 0]
+        assert_eq!(spec_of(":is(div, #foo, .bar)", "div", &[]), Some([1, 0, 0]));
+        // TS: createSelector(':is(div, #foo.bar)').match(el) => [1, 1, 0]
+        assert_eq!(spec_of(":is(div, #foo.bar)", "div", &[]), Some([1, 1, 0]));
+    }
+
+    #[test]
+    fn specificity_where() {
+        // TS: createSelector(':where(div)').match(el) => [0, 0, 0]
+        assert_eq!(spec_of(":where(div)", "div", &[]), Some([0, 0, 0]));
+        // TS: createSelector(':where(div, span)').match(el) => [0, 0, 0]
+        assert_eq!(spec_of(":where(div, span)", "div", &[]), Some([0, 0, 0]));
+        // TS: createSelector(':where(div, #foo)').match(el) => [0, 0, 0]
+        assert_eq!(spec_of(":where(div, #foo)", "div", &[]), Some([0, 0, 0]));
+        // TS: createSelector(':where(div, #foo, .bar)').match(el) => [0, 0, 0]
+        assert_eq!(spec_of(":where(div, #foo, .bar)", "div", &[]), Some([0, 0, 0]));
+        // TS: createSelector(':where(div, #foo.bar)').match(el) => [0, 0, 0]
+        assert_eq!(spec_of(":where(div, #foo.bar)", "div", &[]), Some([0, 0, 0]));
     }
 }

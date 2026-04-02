@@ -13,21 +13,7 @@ use crate::violation::Violation;
 /// The `no-refer-to-non-existent-id` rule.
 pub struct NoReferToNonExistentId;
 
-/// Single-ID reference attributes: (attribute name, element name or empty for any).
-const SINGLE_ID_ATTRS: &[(&str, &str)] = &[
-    ("for", "label"),
-    ("form", "button"),
-    ("form", "fieldset"),
-    ("form", "input"),
-    ("form", "object"),
-    ("form", "output"),
-    ("form", "select"),
-    ("form", "textarea"),
-    ("list", "input"),
-];
-
-/// Space-separated ID list attributes: (attribute name, element name).
-const SPACE_ID_LIST_ATTRS: &[(&str, &str)] = &[("headers", "td"), ("headers", "th")];
+use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 
 impl Rule for NoReferToNonExistentId {
     fn id(&self) -> &'static str {
@@ -82,6 +68,7 @@ impl Rule for NoReferToNonExistentId {
                 continue;
             }
             let el_name_lower = el.base.node_name.to_ascii_lowercase();
+            let attr_specs = get_attr_specs(spec, &el_name_lower);
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -95,7 +82,7 @@ impl Rule for NoReferToNonExistentId {
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
                 let value = &html_attr.value.raw;
 
-                if value.is_empty() {
+                if value.is_empty() || attr_name_lower == "id" {
                     continue;
                 }
 
@@ -105,31 +92,28 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 }
 
-                // Check single-ID reference attributes
-                if SINGLE_ID_ATTRS
-                    .iter()
-                    .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
-                {
-                    if !id_set.contains(value.as_str()) {
-                        violations.push(Violation {
-                            rule_id: self.id().to_string(),
-                            severity: rule_config.severity.clone(),
-                            message: format!("Missing \"{value}\" ID"),
-                            line: html_attr.value.line,
-                            col: html_attr.value.col,
-                            raw: html_attr.value.raw.clone(),
-                        });
+                // Check HTML spec attribute types dynamically:
+                // - type === "DOMID" → single ID reference
+                // - type.token === "DOMID" with separator → ID reference list
+                let id_ref_type = get_domid_type(&attr_specs, &attr_name_lower, spec, &el.base.node_name);
+                match id_ref_type {
+                    DomIdType::Single => {
+                        if !id_set.contains(value.as_str()) {
+                            violations.push(Violation {
+                                rule_id: self.id().to_string(),
+                                name: None,
+                                severity: rule_config.severity.clone(),
+                                message: format!("Missing \"{value}\" ID"),
+                                line: html_attr.value.line,
+                                col: html_attr.value.col,
+                                raw: html_attr.value.raw.clone(),
+                            });
+                        }
                     }
-                    continue;
-                }
-
-                // Check space-separated ID list attributes
-                if SPACE_ID_LIST_ATTRS
-                    .iter()
-                    .any(|(a, e)| attr_name_lower == *a && el_name_lower == *e)
-                {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
-                    continue;
+                    DomIdType::SpaceList => {
+                        check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
+                    }
+                    DomIdType::None => {}
                 }
 
                 // Check href="#fragment" references
@@ -140,6 +124,7 @@ impl Rule for NoReferToNonExistentId {
                 {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!("Missing \"{fragment}\" ID"),
                         line: html_attr.value.line,
@@ -152,6 +137,70 @@ impl Rule for NoReferToNonExistentId {
 
         violations
     }
+}
+
+/// Whether a spec attribute type is a DOMID reference.
+enum DomIdType {
+    /// Not an ID reference.
+    None,
+    /// Single DOMID (e.g., `for`, `popovertarget`).
+    Single,
+    /// Space-separated DOMID list (e.g., `headers`).
+    SpaceList,
+}
+
+/// Check if an attribute has a DOMID type in the spec (element-specific or global).
+fn get_domid_type(
+    attr_specs: &std::collections::HashMap<&str, &markuplint_types::spec::types::Attribute>,
+    attr_name: &str,
+    spec: &MLMLSpec,
+    el_name: &str,
+) -> DomIdType {
+    // Check element-specific attribute spec
+    if let Some(attr_spec) = attr_specs.get(attr_name) {
+        return classify_domid_type(&attr_spec.attr_type);
+    }
+    // Check global attribute spec
+    if let Some(el) = get_spec(spec, el_name) {
+        for category in el.global_attrs.keys() {
+            if let Some(attrs_map) = spec.def.global_attrs.get(category)
+                && let Some(attr_val) = attrs_map.get(attr_name)
+                && let Some(type_val) = attr_val.get("type")
+            {
+                return classify_domid_type(type_val);
+            }
+        }
+    }
+    DomIdType::None
+}
+
+/// Classify a JSON type value as DOMID, DOMID list, or neither.
+fn classify_domid_type(type_val: &serde_json::Value) -> DomIdType {
+    // Array of type alternatives — check if any is DOMID
+    if let serde_json::Value::Array(arr) = type_val {
+        for t in arr {
+            let result = classify_domid_type(t);
+            if !matches!(result, DomIdType::None) {
+                return result;
+            }
+        }
+        return DomIdType::None;
+    }
+    // String "DOMID" → single reference
+    if type_val.as_str() == Some("DOMID") {
+        return DomIdType::Single;
+    }
+    // Object with token: "DOMID" and separator → list
+    if let serde_json::Value::Object(obj) = type_val
+        && obj.get("token").and_then(serde_json::Value::as_str) == Some("DOMID")
+    {
+        return if obj.get("separator").and_then(serde_json::Value::as_str) == Some("space") {
+            DomIdType::SpaceList
+        } else {
+            DomIdType::Single
+        };
+    }
+    DomIdType::None
 }
 
 /// Collect all IDs (and optionally `name` attribute values) from the document.
@@ -214,6 +263,7 @@ fn check_space_separated_ids(
         if !id_set.contains(id_ref) {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                name: None,
                 severity: config.severity.clone(),
                 message: format!("Missing \"{id_ref}\" ID"),
                 line: html_attr.value.line,
@@ -333,6 +383,7 @@ mod tests {
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
                 e.base.id = el_id;
@@ -472,6 +523,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el1_id) {
             e.base.id = el1_id;
@@ -546,6 +598,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el2_id) {
             e.base.id = el2_id;

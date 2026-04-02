@@ -182,6 +182,11 @@ export interface NapiNode {
 export interface NapiViolation {
 	/** Rule identifier (e.g., `"attr-duplication"`). */
 	ruleId: string;
+	/**
+	 * Alias name for virtual rules (e.g., `"a11y/html-lang"`).
+	 * Used by TS to display the `NamedRuleGroup` name instead of the base rule ID.
+	 */
+	name?: string;
 	/** Severity: `"error"`, `"warning"`, or `"info"`. */
 	severity: string;
 	/** Human-readable message. */

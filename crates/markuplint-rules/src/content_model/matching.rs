@@ -142,27 +142,52 @@ pub(crate) fn order(
 }
 
 /// Choice (alternation) pattern matching.
+///
+/// Matches TS `choice.ts`: uses a Collection to track consumed nodes across
+/// branches. Each branch receives only unmatched nodes. If a branch partially
+/// matches, its consumed nodes are removed before trying the next branch.
 pub(crate) fn choice(
     pattern: &ChoicePattern,
     child_nodes: &[ChildNodeInfo],
     spec: &MLMLSpec,
     depth: usize,
 ) -> MatchResult {
+    let mut collection = Collection::new(child_nodes);
     let mut unmatched_results: Vec<MatchResult> = Vec::new();
 
     for branch in &pattern.choice {
-        let r = order(branch, child_nodes, spec, depth + 1);
+        let unmatched = collect_unmatched(&collection);
+        let unmatched_indices = collection.unmatched_indices();
+
+        let r = order(branch, &unmatched, spec, depth + 1);
+
+        // Remap matched indices from sub-slice back to original
+        let original_matched: Vec<usize> = r
+            .matched
+            .iter()
+            .filter_map(|&local_idx| unmatched_indices.get(local_idx).copied())
+            .collect();
 
         if r.result_type == ResultType::Matched
             || r.result_type == ResultType::MatchedZero
             || (r.result_type == ResultType::UnexpectedExtraNode && !r.matched.is_empty())
         {
-            return r;
+            return MatchResult {
+                result_type: r.result_type,
+                matched: original_matched,
+                unmatched: r.unmatched,
+                zero_match: r.zero_match,
+                query: r.query,
+                hint: r.hint,
+            };
         }
 
+        // TS: collection.addMatched(result.matched) — consume matched nodes
+        collection.add_matched(&original_matched);
         unmatched_results.push(r);
     }
 
+    // Fallback: return best barely-matched result with collection's matched/unmatched
     unmatched_results.sort_by(|a, b| {
         if a.result_type != b.result_type {
             if a.result_type == ResultType::UnexpectedExtraNode {
@@ -191,7 +216,17 @@ pub(crate) fn choice(
         b_barely.cmp(&a_barely)
     });
 
-    unmatched_results.into_iter().next().expect("Unreachable: no results")
+    let barely = unmatched_results.into_iter().next().expect("Unreachable: no results");
+
+    // TS returns collection.matched/unmatched, not the branch's
+    MatchResult {
+        result_type: barely.result_type,
+        matched: collection.matched_indices(),
+        unmatched: collection.unmatched_indices(),
+        zero_match: barely.zero_match,
+        query: barely.query,
+        hint: barely.hint,
+    }
 }
 
 /// Quantified pattern matching (require/optional/oneOrMore/zeroOrMore).

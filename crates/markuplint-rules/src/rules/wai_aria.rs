@@ -19,7 +19,7 @@ use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
-use crate::aria::computed_role::{RoleComputationError, get_computed_role};
+use crate::aria::computed_role::{ResolvedRole, RoleComputationError, get_computed_role};
 use crate::aria::may_be_focusable;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -46,7 +46,8 @@ impl Rule for WaiAria {
             }
 
             let version = resolve_version(&rule_config.options);
-            let el_name = &el.base.node_name;
+            let el_name_lc = el.base.node_name.to_ascii_lowercase();
+            let el_name = el_name_lc.as_str();
 
             // Collect role attr and aria-* attrs
             let mut role_attr: Option<&markuplint_core::mlast::MLASTHTMLAttr> = None;
@@ -80,6 +81,28 @@ impl Rule for WaiAria {
                 );
             }
 
+            // Compute the full role (matching TS getComputedRole)
+            let computed = get_computed_role(spec, arena, node_id, version, false);
+            let computed_role = computed.role.as_ref();
+            let computed_role_spec = computed_role.and_then(|cr| aria::get_role_spec(spec, &cr.name, version));
+
+            // checkingRequiredProp: check required ARIA properties for explicit roles
+            if let Some(role_attr_node) = role_attr {
+                check_required_prop(
+                    spec,
+                    arena,
+                    node_id,
+                    el,
+                    role_attr_node,
+                    computed_role,
+                    computed_role_spec,
+                    version,
+                    &mut violations,
+                    self.id(),
+                    &rule_config.severity,
+                );
+            }
+
             // Resolve the computed role for property checks
             let role_value = role_attr.map(|a| a.value.raw.as_str());
             let resolved_role = role_value.and_then(|rv| aria::resolve_explicit_role(spec, rv, version).ok());
@@ -99,12 +122,34 @@ impl Rule for WaiAria {
                 }
             }
 
+            // checkingDisallowedProp: always called (TS calls it unconditionally)
+            // disallowSetImplicitProps controls only the element-specific without check inside
+            {
+                for aria_attr in &aria_attrs {
+                    check_disallowed_prop(
+                        spec,
+                        arena,
+                        node_id,
+                        el,
+                        aria_attr,
+                        computed_role_spec,
+                        version,
+                        &rule_config.options,
+                        &mut violations,
+                        self.id(),
+                        &rule_config.severity,
+                    );
+                }
+            }
+
             // Check disallowSetImplicitProps (default: true)
             if is_option_enabled(&rule_config.options, "disallowSetImplicitProps", true) {
                 let aria_spec = aria::get_aria_spec(spec, version);
                 for aria_attr in &aria_attrs {
                     check_implicit_props(
                         spec,
+                        arena,
+                        node_id,
                         aria_attr,
                         el,
                         &aria_spec.props,
@@ -116,12 +161,13 @@ impl Rule for WaiAria {
             }
 
             // Check ARIA property values (checkingValue, default: true)
+            // TS uses computed.role (which includes implicit role) for conditional value resolution
             if is_option_enabled(&rule_config.options, "checkingValue", true) {
                 let aria_spec = aria::get_aria_spec(spec, version);
                 for aria_attr in &aria_attrs {
                     check_value(
                         aria_attr,
-                        resolved_role,
+                        computed_role_spec,
                         &aria_spec.props,
                         &mut violations,
                         self.id(),
@@ -242,6 +288,7 @@ fn check_role_attr(
         if aria::get_role_spec(spec, &role_name, version).is_none() {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                name: None,
                 severity: severity.clone(),
                 message: format!("The \"{token}\" role does not exist according to the WAI-ARIA specification."),
                 line: role_attr_node.value.line,
@@ -254,6 +301,7 @@ fn check_role_attr(
         if aria::is_abstract_role(spec, &role_name, version) {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                name: None,
                 severity: severity.clone(),
                 message: format!("The \"{token}\" role is the abstract role"),
                 line: role_attr_node.value.line,
@@ -273,6 +321,7 @@ fn check_role_attr(
             {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: severity.clone(),
                     message: format!("The \"{token}\" role is deprecated"),
                     line: role_attr_node.value.line,
@@ -296,7 +345,17 @@ fn check_role_attr(
                 .is_some_and(|t| t.eq_ignore_ascii_case(ir))
         });
         if disallow_implicit || !role_is_implicit {
-            check_permitted_roles(spec, el_name, role_attr_node, version, violations, rule_id, severity);
+            check_permitted_roles(
+                spec,
+                arena,
+                node_id,
+                el_name,
+                role_attr_node,
+                version,
+                violations,
+                rule_id,
+                severity,
+            );
         }
     }
 
@@ -306,6 +365,7 @@ fn check_role_attr(
             if token.eq_ignore_ascii_case(ir) {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: severity.clone(),
                     message: format!("The \"{token}\" role is the implicit role of the \"{el_name}\" element"),
                     line: role_attr_node.value.line,
@@ -319,8 +379,11 @@ fn check_role_attr(
 }
 
 /// Check if the role is permitted on the element.
+#[allow(clippy::too_many_arguments)]
 fn check_permitted_roles(
     spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
     element_name: &str,
     role_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     version: ARIAVersion,
@@ -328,18 +391,38 @@ fn check_permitted_roles(
     rule_id: &str,
     severity: &crate::violation::Severity,
 ) {
-    // If any role is permitted, skip
-    if aria::is_any_role_permitted(spec, element_name) {
+    // Resolve permitted roles with condition evaluation
+    let (permitted, any_permitted) =
+        crate::aria::computed_role::resolve_permitted_roles(spec, arena, node_id, element_name);
+
+    if any_permitted {
         return;
     }
 
-    let permitted = aria::get_base_permitted_roles(spec, element_name);
+    // Match TS getPermittedRoles: add implicit role to permitted list
+    let implicit_role = get_effective_implicit_role(spec, arena, node_id, element_name, version);
+    let permitted = permitted.map(|mut roles| {
+        if let Some(ref ir) = implicit_role {
+            if !roles.iter().any(|r| r.eq_ignore_ascii_case(ir)) {
+                roles.push(ir.clone());
+            }
+            // presentation/none synonyms
+            if ir == "presentation" || ir == "none" {
+                let other = if ir == "presentation" { "none" } else { "presentation" };
+                if !roles.iter().any(|r| r.eq_ignore_ascii_case(other)) {
+                    roles.push(other.to_string());
+                }
+            }
+        }
+        roles
+    });
 
     match permitted {
         // permittedRoles is an empty list → no role override allowed
         Some(ref roles) if roles.is_empty() => {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                    name: None,
                 severity: severity.clone(),
                 message: format!(
                     "Cannot overwrite the role of the \"{element_name}\" element according to ARIA in HTML specification"
@@ -360,6 +443,7 @@ fn check_permitted_roles(
                 {
                     violations.push(Violation {
                         rule_id: rule_id.to_string(),
+                    name: None,
                         severity: severity.clone(),
                         message: format!(
                             "Cannot overwrite the \"{token}\" role to the \"{element_name}\" element according to ARIA in HTML specification"
@@ -450,6 +534,7 @@ fn check_deprecated_prop(
 
         violations.push(Violation {
             rule_id: rule_id.to_string(),
+            name: None,
             severity: severity.clone(),
             message: format!(
                 "The \"{attr_name}\" ARIA {prop_type} is deprecated on the \"{}\" role",
@@ -462,9 +547,302 @@ fn check_deprecated_prop(
     }
 }
 
+/// Check required ARIA properties for explicit roles (matching TS checkingRequiredProp).
+///
+/// When an element has an explicit role, this checks that all required properties
+/// for that role are present. Implicit roles are skipped since the browser
+/// provides default semantics.
+#[allow(clippy::too_many_arguments)]
+fn check_required_prop(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &markuplint_dom::node::ElementData,
+    _role_attr_node: &markuplint_core::mlast::MLASTHTMLAttr,
+    computed_role: Option<&ResolvedRole>,
+    role_spec: Option<&markuplint_types::spec::types::ARIARoleInSchema>,
+    version: ARIAVersion,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    let Some(role) = computed_role else {
+        return;
+    };
+    // Skip implicit roles — browser provides default semantics
+    if role.is_implicit {
+        return;
+    }
+    let Some(role_spec) = role_spec else {
+        return;
+    };
+
+    let aria_spec = aria::get_aria_spec(spec, version);
+
+    for owned in &role_spec.owned_properties {
+        if owned.required != Some(true) {
+            continue;
+        }
+        // Check if element already has this attribute
+        let has = el.attributes.iter().any(|attr| {
+            let MLASTAttr::HTMLAttr(html_attr) = attr else {
+                return false;
+            };
+            html_attr.node_name.eq_ignore_ascii_case(&owned.name)
+        });
+        if has {
+            continue;
+        }
+
+        // Check for native HTML alternative via element ARIA spec properties.without
+        let without = get_element_aria_without(spec, arena, node_id, &el.base.node_name, version);
+        let alt_satisfied = without.iter().any(|w| {
+            w.name == owned.name
+                && w.alt_method.as_deref() == Some("set-attr")
+                && w.alt_target.as_ref().is_some_and(|target| {
+                    el.attributes.iter().any(|attr| {
+                        let MLASTAttr::HTMLAttr(ha) = attr else {
+                            return false;
+                        };
+                        ha.node_name.eq_ignore_ascii_case(target)
+                    })
+                })
+        });
+        if alt_satisfied {
+            continue;
+        }
+
+        let prop_type = aria_spec
+            .props
+            .iter()
+            .find(|p| p.name == owned.name)
+            .map_or("property", |p| match p.prop_type {
+                markuplint_types::spec::types::ARIAPropertyType::Property => "property",
+                markuplint_types::spec::types::ARIAPropertyType::State => "state",
+            });
+
+        // TS reports at element scope (el.line/col), not at the role attribute
+        violations.push(Violation {
+            rule_id: rule_id.to_string(),
+            name: None,
+            severity: severity.clone(),
+            message: format!(
+                "Require the \"{name}\" ARIA {prop_type} on the \"{role}\" role",
+                name = owned.name,
+                role = role.name,
+            ),
+            line: el.base.line,
+            col: el.base.col,
+            raw: el.base.raw.clone(),
+        });
+    }
+}
+
+/// Check element-specific ARIA property restrictions (matching TS checkingDisallowedProp).
+///
+/// Checks whether an ARIA property or state is disallowed on the element per
+/// ARIA in HTML specification. Also checks if property is supported by the role.
+#[allow(clippy::too_many_arguments)]
+fn check_disallowed_prop(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &markuplint_dom::node::ElementData,
+    attr: &markuplint_core::mlast::MLASTHTMLAttr,
+    role_spec: Option<&markuplint_types::spec::types::ARIARoleInSchema>,
+    version: ARIAVersion,
+    options: &serde_json::Value,
+    violations: &mut Vec<Violation>,
+    rule_id: &str,
+    severity: &crate::violation::Severity,
+) {
+    let Some(role) = role_spec else {
+        return;
+    };
+    let attr_name = attr.node_name.to_ascii_lowercase();
+    if !attr_name.starts_with("aria-") {
+        return;
+    }
+
+    let aria_spec = aria::get_aria_spec(spec, version);
+    let prop_spec = aria_spec.props.iter().find(|p| p.name == attr_name);
+    let prop_type_str = prop_spec.map_or("property", |p| match p.prop_type {
+        markuplint_types::spec::types::ARIAPropertyType::Property => "property",
+        markuplint_types::spec::types::ARIAPropertyType::State => "state",
+    });
+
+    // Check element-specific restrictions (without entries)
+    if is_option_enabled(options, "disallowSetImplicitProps", true) {
+        let without = get_element_aria_without(spec, arena, node_id, &el.base.node_name, version);
+        for w in &without {
+            if w.name != attr_name {
+                continue;
+            }
+
+            let has_native_attr = w.alt_method.as_deref() == Some("set-attr")
+                && w.alt_target.as_ref().is_some_and(|target| {
+                    el.attributes.iter().any(|a| {
+                        let MLASTAttr::HTMLAttr(ha) = a else {
+                            return false;
+                        };
+                        ha.node_name.eq_ignore_ascii_case(target)
+                    })
+                });
+
+            let restriction_msg = match w.restriction_type.as_str() {
+                "must-not" => format!(
+                    "The \"{attr_name}\" ARIA {prop_type_str} must not use on the \"{}\" element",
+                    el.base.node_name
+                ),
+                "should-not" => format!(
+                    "The \"{attr_name}\" ARIA {prop_type_str} should not use on the \"{}\" element",
+                    el.base.node_name
+                ),
+                _ => format!(
+                    "The \"{attr_name}\" ARIA {prop_type_str} is not recommended to use on the \"{}\" element",
+                    el.base.node_name
+                ),
+            };
+
+            let alt_msg = if has_native_attr {
+                format!(
+                    ". As its state is already provided by the \"{}\" attribute",
+                    w.alt_target.as_deref().unwrap_or("")
+                )
+            } else if let Some(ref target) = w.alt_target {
+                match w.alt_method.as_deref() {
+                    Some("remove-attr") => {
+                        format!(". Remove the \"{target}\" attribute if you use the ARIA {prop_type_str}")
+                    }
+                    Some("set-attr") => format!(". Add the \"{target}\" attribute if you use the ARIA {prop_type_str}"),
+                    _ => String::new(),
+                }
+            } else {
+                String::new()
+            };
+
+            violations.push(Violation {
+                rule_id: rule_id.to_string(),
+                name: None,
+                severity: severity.clone(),
+                message: format!("{restriction_msg}{alt_msg}"),
+                line: attr.name.line,
+                col: attr.name.col,
+                raw: attr.raw.clone(),
+            });
+            return;
+        }
+    }
+
+    // Check if property is supported by the role.
+    // Note: TS uses raw attr.name (case-sensitive) to match against ownedProperties.
+    // This means uppercase ARIA attrs like "ARIA-LABEL" won't match "aria-label" in
+    // ownedProperties and will be reported as disallowed. This appears to be a TS bug
+    // (see memory: suspected_ts_bug_uppercase_aria.md) but we match TS behavior for now.
+    // Use attr.name.raw to preserve the original case from source (matching TS attr.name).
+    let raw_attr_name = markuplint_dom::helpers::get_raw_attr_name(attr);
+    let is_owned = role.owned_properties.iter().any(|p| p.name == raw_attr_name);
+    if !is_owned {
+        violations.push(Violation {
+            rule_id: rule_id.to_string(),
+            name: None,
+            severity: severity.clone(),
+            message: format!(
+                "The \"{raw_attr_name}\" ARIA {prop_type_str} is disallowed on the \"{role_name}\" role",
+                role_name = role.name,
+            ),
+            line: attr.name.line,
+            col: attr.name.col,
+            raw: attr.raw.clone(),
+        });
+    }
+}
+
+/// Represents a "without" entry from element ARIA properties.
+struct WithoutEntry {
+    name: String,
+    restriction_type: String,
+    alt_method: Option<String>,
+    alt_target: Option<String>,
+}
+
+/// Get element-specific ARIA property restrictions, evaluating conditions.
+///
+/// Mirrors TS `getARIA()` condition evaluation for the `properties.without` field.
+fn get_element_aria_without(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    element_name: &str,
+    _version: ARIAVersion,
+) -> Vec<WithoutEntry> {
+    let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, element_name) else {
+        return Vec::new();
+    };
+
+    // Start with base properties
+    let mut properties = el_spec.aria.properties.clone();
+
+    // Evaluate conditions to potentially override properties
+    if let Some(ref conditions) = el_spec.aria.conditions {
+        for (selector_str, override_value) in conditions {
+            let Ok(selector) = markuplint_selector::parser::parse(selector_str) else {
+                continue;
+            };
+            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None) {
+                continue;
+            }
+            if let Some(obj) = override_value.as_object()
+                && let Some(cond_props) = obj.get("properties")
+            {
+                properties = Some(cond_props.clone());
+            }
+        }
+    }
+
+    // Parse the without entries from the resolved properties JSON
+    parse_without_entries(properties.as_ref())
+}
+
+/// Parse `without` entries from ARIA properties JSON value.
+fn parse_without_entries(properties: Option<&serde_json::Value>) -> Vec<WithoutEntry> {
+    let Some(props) = properties else {
+        return Vec::new();
+    };
+    let Some(obj) = props.as_object() else {
+        return Vec::new();
+    };
+    let Some(without) = obj.get("without") else {
+        return Vec::new();
+    };
+    let Some(arr) = without.as_array() else {
+        return Vec::new();
+    };
+
+    arr.iter()
+        .filter_map(|entry| {
+            let obj = entry.as_object()?;
+            let name = obj.get("name")?.as_str()?.to_string();
+            let restriction_type = obj.get("type")?.as_str()?.to_string();
+            let alt = obj.get("alt").and_then(|a| a.as_object());
+            let alt_method = alt.and_then(|a| a.get("method")?.as_str().map(ToString::to_string));
+            let alt_target = alt.and_then(|a| a.get("target")?.as_str().map(ToString::to_string));
+            Some(WithoutEntry {
+                name,
+                restriction_type,
+                alt_method,
+                alt_target,
+            })
+        })
+        .collect()
+}
+
 /// Check if an ARIA property duplicates semantics of an equivalent HTML attribute.
+#[allow(clippy::too_many_arguments, clippy::too_many_lines)]
 fn check_implicit_props(
     spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
     attr: &markuplint_core::mlast::MLASTHTMLAttr,
     el: &markuplint_dom::node::ElementData,
     props: &[markuplint_types::spec::types::ARIAProperty],
@@ -493,11 +871,36 @@ fn check_implicit_props(
     let el_spec = markuplint_types::spec::lookup::get_spec(spec, &el.base.node_name);
 
     for equiv in equiv_attrs {
-        // Check if the equivalent HTML attribute is valid on this element
-        // (exists in the element's attribute spec or global attrs)
-        let html_attr_exists_on_element = el_spec.is_some_and(|es| es.attributes.contains_key(&equiv.html_attr_name));
-        if !html_attr_exists_on_element {
-            // Also check global attrs — simplified: skip if attr is not on element
+        // Check if the equivalent HTML attribute is valid on this element.
+        // TS uses isValidAttr() which returns 'non-existent' when the attr
+        // doesn't exist or its condition doesn't match the element.
+        let attr_valid = el_spec.is_some_and(|es| {
+            if let Some(attr_spec) = es.attributes.get(&equiv.html_attr_name) {
+                // Check condition (e.g., checked requires [type='checkbox' i])
+                match &attr_spec.condition {
+                    None => true,
+                    Some(markuplint_types::spec::types::AttributeCondition::Single(sel_str)) => {
+                        markuplint_selector::parser::parse(sel_str).is_ok_and(|sel| {
+                            markuplint_selector::matcher::matches(&sel, arena, node_id, None, Some(spec), None)
+                        })
+                    }
+                    Some(markuplint_types::spec::types::AttributeCondition::Multiple(sels)) => {
+                        sels.iter().any(|sel_str| {
+                            markuplint_selector::parser::parse(sel_str).is_ok_and(|sel| {
+                                markuplint_selector::matcher::matches(&sel, arena, node_id, None, Some(spec), None)
+                            })
+                        })
+                    }
+                }
+            } else {
+                // Check global attrs
+                spec.def
+                    .global_attrs
+                    .iter()
+                    .any(|(name, _)| name == &equiv.html_attr_name)
+            }
+        });
+        if !attr_valid {
             continue;
         }
 
@@ -523,6 +926,7 @@ fn check_implicit_props(
             if is_same {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: severity.clone(),
                     message: format!(
                         "The \"{attr_name}\" ARIA {prop_type} has the same semantics as the current \"{0}\" attribute or the implicit \"{0}\" attribute",
@@ -547,6 +951,7 @@ fn check_implicit_props(
 
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                name: None,
                 severity: severity.clone(),
                 message: format!(
                     "The \"{attr_name}\" ARIA {prop_type} contradicts the current \"{0}\" attribute",
@@ -567,6 +972,7 @@ fn check_implicit_props(
             if is_boolean_attr {
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: severity.clone(),
                     message: format!(
                         "The \"{attr_name}\" ARIA {prop_type} contradicts the implicit \"{0}\" attribute",
@@ -625,12 +1031,14 @@ fn check_value(
             let _ = write!(message, ". Allowed values are: {}", prop_spec.enum_values.join(", "));
         }
 
+        // TS reports at scope: attr (attribute name position)
         violations.push(Violation {
             rule_id: rule_id.to_string(),
+            name: None,
             severity: severity.clone(),
             message,
-            line: attr.value.line,
-            col: attr.value.col,
+            line: attr.name.line,
+            col: attr.name.col,
             raw: attr.raw.clone(),
         });
     }
@@ -685,6 +1093,7 @@ fn check_default_value(
         };
         violations.push(Violation {
             rule_id: rule_id.to_string(),
+            name: None,
             severity: severity.clone(),
             message: format!("The \"{attr_name}\" ARIA {prop_type} is set to its default value \"{default_val}\""),
             line: attr.name.line,
@@ -727,12 +1136,11 @@ fn check_allowed_child_roles(
     }
 
     let children = arena.children_of(node_id).unwrap_or_default();
-    if children.is_empty() {
-        return;
-    }
 
     // Check if any child has a required role (recursing through transparent roles)
-    if has_required_child(spec, arena, node_id, &role.allowed_accessibility_child_roles, version) {
+    if !children.is_empty()
+        && has_required_child(spec, arena, node_id, &role.allowed_accessibility_child_roles, version)
+    {
         return;
     }
 
@@ -746,20 +1154,48 @@ fn check_allowed_child_roles(
     }
 
     let required_roles = role.allowed_accessibility_child_roles.join(", ");
-    violations.push(Violation {
-        rule_id: rule_id.to_string(),
-        severity: severity.clone(),
-        message: format!(
-            "The \"{}\" role expects the child element requires the role(s): {required_roles}",
-            role.name
-        ),
-        line: el.base.line,
-        col: el.base.col,
-        raw: el.base.raw.clone(),
-    });
+
+    // Match TS mayBeBeforeCreated: empty elements or elements with only script/template children
+    let may_be_before_created = children.is_empty()
+        || children.iter().all(|&cid| {
+            arena.get(cid).and_then(|n| n.as_element()).is_some_and(|e| {
+                let name = e.base.node_name.to_ascii_lowercase();
+                name == "script" || name == "template"
+            })
+        });
+
+    if may_be_before_created {
+        violations.push(Violation {
+            rule_id: rule_id.to_string(),
+            name: None,
+            severity: severity.clone(),
+            message: format!(
+                "The child element requires the role(s): {required_roles}. Or, require aria-busy=\"true\""
+            ),
+            line: el.base.line,
+            col: el.base.col,
+            raw: el.base.raw.clone(),
+        });
+    } else {
+        violations.push(Violation {
+            rule_id: rule_id.to_string(),
+            name: None,
+            severity: severity.clone(),
+            message: format!(
+                "The \"{}\" role expects the child element requires the role(s): {required_roles}",
+                role.name
+            ),
+            line: el.base.line,
+            col: el.base.col,
+            raw: el.base.raw.clone(),
+        });
+    }
 }
 
 /// Recursively check if any child (traversing transparent ownership roles) has a required role.
+///
+/// Matches TS `isRequiredOwnedElement` which handles `"parent > child"` query syntax
+/// (e.g., `"rowgroup > row"` means a child with role `rowgroup` that itself contains `row`).
 fn has_required_child(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -777,12 +1213,70 @@ fn has_required_child(
         }
         let child_cr = get_computed_role(spec, arena, child_id, version, false);
         if let Some(ref child_role) = child_cr.role {
-            if required_roles.iter().any(|r| r.eq_ignore_ascii_case(&child_role.name)) {
-                return true;
+            for required in required_roles {
+                if is_required_owned_match(spec, arena, child_id, &child_role.name, required, version) {
+                    return true;
+                }
             }
             // If child role is transparent for ownership, recurse
             if is_transparent_for_ownership_check(&child_role.name, version)
                 && has_required_child(spec, arena, child_id, required_roles, version)
+            {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// Check if a child element matches a required owned element query.
+///
+/// Mirrors TS `isRequiredOwnedElement`: handles `"role"` (simple) and
+/// `"parent > child"` (nested) query syntax.
+fn is_required_owned_match(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    child_id: NodeId,
+    child_role_name: &str,
+    query: &str,
+    version: ARIAVersion,
+) -> bool {
+    if let Some((base_role, owning_role)) = query.split_once(" > ") {
+        // Nested: child must have base_role, and its descendants must have owning_role
+        if !base_role.eq_ignore_ascii_case(child_role_name) {
+            return false;
+        }
+        // Check descendants for owning_role
+        has_descendant_with_role(spec, arena, child_id, owning_role, version)
+    } else {
+        // Simple: direct role match
+        query.eq_ignore_ascii_case(child_role_name)
+    }
+}
+
+/// Check if any descendant (through transparent roles) has the specified role.
+fn has_descendant_with_role(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    parent_id: NodeId,
+    target_role: &str,
+    version: ARIAVersion,
+) -> bool {
+    let children = arena.children_of(parent_id).unwrap_or_default();
+    for &child_id in children {
+        let Some(child_node) = arena.get(child_id) else {
+            continue;
+        };
+        if child_node.as_element().is_none() {
+            continue;
+        }
+        let child_cr = get_computed_role(spec, arena, child_id, version, false);
+        if let Some(ref child_role) = child_cr.role {
+            if target_role.eq_ignore_ascii_case(&child_role.name) {
+                return true;
+            }
+            if is_transparent_for_ownership_check(&child_role.name, version)
+                && has_descendant_with_role(spec, arena, child_id, target_role, version)
             {
                 return true;
             }
@@ -846,6 +1340,7 @@ fn check_required_parent_role(
                 let required = parent_roles.join(", ");
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
+                    name: None,
                     severity: severity.clone(),
                     message: format!(
                         "The \"{role_name}\" role requires an accessibility parent with the role(s): {required}"
@@ -900,6 +1395,7 @@ fn check_presentational_children(
         {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                    name: None,
                 severity: severity.clone(),
                 message: format!(
                     "It may be ineffective because it has the \"{}\" role as an ancestor that doesn't expose its descendants to the accessibility tree",
@@ -939,6 +1435,7 @@ fn check_interaction_in_hidden(
         };
         violations.push(Violation {
             rule_id: rule_id.to_string(),
+            name: None,
             severity: severity.clone(),
             message: "It may be focusable in spite of it has aria-hidden=true".to_string(),
             line: el.base.line,
@@ -962,6 +1459,7 @@ fn check_interaction_in_hidden(
             };
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
+                name: None,
                 severity: severity.clone(),
                 message: "It may be focusable in spite of it has the ancestor that has aria-hidden=true".to_string(),
                 line: el.base.line,
@@ -1681,6 +2179,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let child_id = builder.push(DomNode::Element(ElementData {
             base: NodeBase {
@@ -1707,6 +2206,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Document(doc)) = builder.get_mut(doc_id) {
             doc.children.push(parent_id);
