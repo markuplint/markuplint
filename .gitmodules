@@ -1,0 +1,5 @@
+[submodule "tests/external/validator"]
+	path = tests/external/validator
+	url = https://github.com/validator/validator.git
+	branch = main
+	shallow = true
