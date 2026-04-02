@@ -2015,6 +2015,12 @@ describe('focusgroup attribute (#3384)', () => {
 	});
 });
 
+test('empty lang attribute is valid (language set to unknown)', async () => {
+	expect((await mlRuleTest(rule, '<html lang=""></html>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<html lang></html>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div lang=""></div>')).violations).toStrictEqual([]);
+});
+
 test('script type="speculationrules" is valid', async () => {
 	expect(
 		(await mlRuleTest(rule, '<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>'))

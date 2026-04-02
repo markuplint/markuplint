@@ -233,7 +233,9 @@ export const defs: Defs = {
 			},
 		],
 		ref: 'https://tools.ietf.org/rfc/bcp/bcp47.html',
-		is: matches(isBCP47(), { reason: 'unexpected-token' }),
+		// Empty string is valid per HTML LS: "the language is set to unknown"
+		// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+		is: value => (value === '' ? matched() : matches(isBCP47(), { reason: 'unexpected-token' })(value)),
 	},
 
 	/**
