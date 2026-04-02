@@ -2014,3 +2014,10 @@ describe('focusgroup attribute (#3384)', () => {
 		expect((await mlRuleTest(rule, '<span focusgroupstart></span>')).violations).toStrictEqual([]);
 	});
 });
+
+test('script type="speculationrules" is valid', async () => {
+	expect(
+		(await mlRuleTest(rule, '<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>'))
+			.violations,
+	).toStrictEqual([]);
+});
