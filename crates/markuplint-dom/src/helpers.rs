@@ -37,3 +37,40 @@ pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Optio
 pub fn has_attr(arena: &DomArena, node_id: NodeId, attr_name: &str) -> bool {
     get_attr_value(arena, node_id, attr_name).is_some()
 }
+
+/// Extract the raw (original-case) tag name from an element's `raw` source.
+///
+/// The `raw` field contains the opening tag text (e.g., `<DIV class="foo">`).
+/// This extracts the tag name portion preserving the original case.
+/// Returns `None` if the raw text doesn't look like a tag.
+#[must_use]
+pub fn get_raw_tag_name(el: &ElementData) -> Option<&str> {
+    extract_tag_name_from_raw(&el.base.raw)
+}
+
+/// Extract tag name from a raw tag string (opening or closing).
+///
+/// Handles both `<DIV ...>` and `</DIV>` formats.
+#[must_use]
+pub fn extract_tag_name_from_raw(raw: &str) -> Option<&str> {
+    let rest = raw.strip_prefix('<')?;
+    let rest = rest.strip_prefix('/').unwrap_or(rest);
+    let end = rest
+        .find(|c: char| c.is_ascii_whitespace() || c == '>' || c == '/')
+        .unwrap_or(rest.len());
+    if end == 0 {
+        return None;
+    }
+    Some(&rest[..end])
+}
+
+/// Extract the raw (original-case) attribute name from an HTML attribute.
+///
+/// Uses the `name` token's `raw` field which preserves the original case,
+/// unlike `node_name` which is normalized to lowercase by the HTML parser.
+/// Trims whitespace because the name span may include trailing spaces when
+/// there is whitespace before `=` (e.g., `name  =viewport`).
+#[must_use]
+pub fn get_raw_attr_name(attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
+    attr.name.raw.trim()
+}

@@ -94,6 +94,23 @@ impl DomNode {
             _ => None,
         }
     }
+
+    /// Whether this node is bogus (invalid/orphaned/malformed).
+    ///
+    /// Matches TS `getPureChildNodes()` filtering: `EndTag`, `Invalid` (always bogus),
+    /// and nodes with `is_bogus = true` (`Text`, `Comment`, `PSBlock`) are excluded
+    /// from pure child iteration.
+    #[must_use]
+    pub fn is_bogus(&self) -> bool {
+        match self {
+            Self::EndTag(_) => true,
+            Self::Invalid(d) => d.is_bogus,
+            Self::Text(d) => d.is_bogus,
+            Self::Comment(d) => d.is_bogus,
+            Self::PSBlock(d) => d.is_bogus,
+            Self::Document(_) | Self::Element(_) | Self::Doctype(_) => false,
+        }
+    }
 }
 
 /// Base data shared by all non-document nodes.
@@ -137,12 +154,27 @@ pub struct ElementData {
     pub tag_open_char: String,
     pub tag_close_char: String,
     pub is_ghost: bool,
+    /// Closing tag info, if present (e.g., for `<DIV>...</DIV>` stores `</DIV>`).
+    pub close_tag: Option<CloseTagInfo>,
+}
+
+/// Info about a closing tag extracted from the source.
+#[derive(Debug, Clone)]
+pub struct CloseTagInfo {
+    /// Raw source text (e.g., `"</DIV>"`).
+    pub raw: String,
+    /// 1-based line number.
+    pub line: u32,
+    /// 1-based column number.
+    pub col: u32,
 }
 
 /// Text node data.
 #[derive(Debug)]
 pub struct TextData {
     pub base: NodeBase,
+    /// Whether this text node originates from a bogus/orphaned end tag.
+    pub is_bogus: bool,
 }
 
 /// Comment node data.
