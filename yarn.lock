@@ -1313,6 +1313,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@esbuild/linux-x64@npm:0.27.5":
+  version: 0.27.5
+  resolution: "@esbuild/linux-x64@npm:0.27.5"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@esbuild/netbsd-arm64@npm:0.27.4":
   version: 0.27.4
   resolution: "@esbuild/netbsd-arm64@npm:0.27.4"
@@ -2356,7 +2363,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@markuplint/test-tools@workspace:packages/@markuplint/test-tools"
   dependencies:
-    "@esbuild/linux-x64": "npm:0.27.4"
+    "@esbuild/linux-x64": "npm:0.27.5"
     "@esbuild/win32-x64": "npm:0.27.4"
     "@rollup/rollup-linux-x64-gnu": "npm:4.60.1"
     "@vitest/coverage-v8": "npm:4.1.2"
