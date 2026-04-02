@@ -16,6 +16,10 @@ use crate::violation::Violation;
 pub struct LandmarkRoles;
 
 /// Landmark role names.
+///
+/// Matches the TS implementation which does NOT include "search".
+/// The TS rule identifies landmarks via CSS selectors for specific elements,
+/// and "search" is not in that list (even though ARIA defines it as a landmark role).
 const LANDMARK_ROLES: &[&str] = &[
     "banner",
     "complementary",
@@ -24,7 +28,6 @@ const LANDMARK_ROLES: &[&str] = &[
     "main",
     "navigation",
     "region",
-    "search",
 ];
 
 fn is_landmark_role(role_name: &str) -> bool {
@@ -37,6 +40,11 @@ impl Rule for LandmarkRoles {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        // TS: if (document.isFragment) { return; }
+        if arena.is_fragment() {
+            return vec![];
+        }
+
         let mut violations = Vec::new();
         let version = ARIAVersion::RECOMMENDED;
 
@@ -80,6 +88,7 @@ impl Rule for LandmarkRoles {
                 if has_landmark_ancestor(arena, spec, node_id, version) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!("The \"{}\" landmark should be top level", role.name),
                         line: el.base.line,
@@ -125,6 +134,7 @@ impl Rule for LandmarkRoles {
                 if label.is_none_or(str::is_empty) && labelledby.is_none_or(str::is_empty) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: config.get(node_id).severity.clone(),
                         message: "Require unique accessible name".to_string(),
                         line,
@@ -245,6 +255,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
@@ -255,7 +266,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -296,7 +307,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -334,7 +345,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -380,7 +391,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -408,7 +419,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -458,7 +469,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -498,7 +509,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -542,7 +553,7 @@ mod tests {
         let doc_id = builder.push(DomNode::Document(DocumentData {
             id: 0,
             raw: String::new(),
-            is_fragment: true,
+            is_fragment: false,
             unknown_parse_error: None,
             children: vec![],
         }));
@@ -563,6 +574,43 @@ mod tests {
         assert!(
             violations.is_empty(),
             "Single <main> at top level should have no violations, got: {violations:?}"
+        );
+    }
+
+    #[test]
+    fn fragment_document_skipped() {
+        // TS: if (document.isFragment) { return; }
+        // Fragment documents should produce zero violations.
+        let mut builder = DomArenaBuilder::new();
+        let doc_id = builder.push(DomNode::Document(DocumentData {
+            id: 0,
+            raw: String::new(),
+            is_fragment: true, // fragment
+            unknown_parse_error: None,
+            children: vec![],
+        }));
+        let nav1_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 1)));
+        let nav2_id = builder.push(DomNode::Element(make_element_data("nav", vec![], 2)));
+
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav1_id) {
+            e.base.id = nav1_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Element(e)) = builder.get_mut(nav2_id) {
+            e.base.id = nav2_id;
+            e.base.parent = Some(doc_id);
+        }
+        if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
+            d.children = vec![nav1_id, nav2_id];
+        }
+
+        let arena = builder.finish();
+        let s = spec();
+        let rule = LandmarkRoles;
+        let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
+        assert!(
+            violations.is_empty(),
+            "Fragment documents should be skipped entirely, got: {violations:?}"
         );
     }
 }
