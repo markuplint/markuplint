@@ -53,6 +53,7 @@ impl Rule for RequireAccessibleName {
                 if accname.name.is_empty() {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: "Require accessible name".to_string(),
                         line: el.base.line,
