@@ -49213,7 +49213,8 @@
 					"description": "A Boolean attribute used to disable the capability of remote playback in devices that are attached using wired (HDMI, DVI, etc.) and wireless technologies (Miracast, Chromecast, DLNA, AirPlay, etc.). See the proposed Remote Playback API specification for more information. In Safari, you can use x-webkit-airplay=\"deny\" as a fallback."
 				},
 				"loading": {
-					"description": "Indicates how the browser should load the audio: eager Loads the audio immediately, regardless of whether or not the audio is currently within the visible viewport (this is the default value). lazy Defers loading the audio until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the audio until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. Lazy-loaded audio located in the visual viewport may not yet be downloaded when the Window load event is fired. This is because the event is fired based on eager-loaded audio only — lazy-loaded audio is not considered even if it is located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing audio in a page's markup such that a server can track how many audio are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay attribute as described in that section of this page."
+					"description": "Indicates how the browser should load the audio: eager Loads the audio immediately, regardless of whether or not the audio is currently within the visible viewport (this is the default value). lazy Defers loading the audio until it reaches a calculated distance from the viewport, as defined by the browser. Lazy loading avoids the network and storage bandwidth required to handle the audio until it's reasonably certain that it will be needed. This improves the performance in most typical use cases. Lazy-loaded audio located in the visual viewport may not yet be downloaded when the Window load event is fired. This is because the event is fired based on eager-loaded audio only — lazy-loaded audio is not considered even if it is located within the visual viewport upon initial page load. Loading is only deferred when JavaScript is enabled. This is an anti-tracking measure, because if a user agent supported lazy loading when scripting is disabled, it would still be possible for a site to track a user's approximate scroll position throughout a session, by strategically placing audio in a page's markup such that a server can track how many audio are requested and when. Note: The loading=\"lazy\" attribute also impacts the autoplay attribute as described in that section of this page.",
+					"experimental": false
 				},
 				"loop": {
 					"description": "A Boolean attribute: if specified, the audio player will automatically seek back to the start upon reaching the end of the audio."
@@ -54227,7 +54228,7 @@
 					"type": [
 						"MIMEType",
 						{
-							"enum": ["module", "importmap"],
+							"enum": ["module", "importmap", "speculationrules"],
 							"caseInsensitive": true
 						}
 					]
@@ -61432,7 +61433,7 @@
 					"defaultValue": "120%"
 				},
 				"mask-type": {
-					"description": "This attribute defines the mask mode for the contents for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
+					"description": "This attribute defines the mask mode for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
 				},
 				"maskContentUnits": {
 					"description": "This attribute defines the coordinate system for the contents of the <mask>. Value type: userSpaceOnUse | objectBoundingBox; Default value: userSpaceOnUse; Animatable: yes",
