@@ -10,6 +10,13 @@ use node::{Attribute, Namespace, NodeId, NodeKind, TreeNode};
 #[derive(Debug)]
 pub struct Arena {
     nodes: Vec<TreeNode>,
+    /// Orphaned end tags (tag name, span) encountered during tree construction.
+    /// These have no matching start tag in the open elements stack.
+    pub orphaned_end_tags: Vec<(String, Span)>,
+    /// WHATWG tree construction parse errors (tag name, message, span).
+    /// These correspond to cases where the TS parser fails with "Broke mapping nodes"
+    /// (e.g., unclosed formatting elements causing tree rearrangement).
+    pub parse_errors: Vec<(String, String, Span)>,
 }
 
 impl Arena {
@@ -28,7 +35,11 @@ impl Arena {
             end_tag_span: None,
             is_implicit: false,
         };
-        Self { nodes: vec![doc] }
+        Self {
+            nodes: vec![doc],
+            orphaned_end_tags: Vec::new(),
+            parse_errors: Vec::new(),
+        }
     }
 
     /// The document root node ID (always 0).

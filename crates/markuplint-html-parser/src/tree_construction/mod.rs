@@ -18,7 +18,7 @@ use crate::tokenizer::Tokenizer;
 use crate::tokenizer::state::State as TokenizerState;
 use crate::tokenizer::token::{RawAttribute, Token};
 use crate::tree::Arena;
-use crate::tree::node::{Attribute, Namespace, NodeId};
+use crate::tree::node::{Attribute, Namespace, NodeId, NodeKind};
 use active_formatting::{ActiveFormattingElements, FormatEntry};
 use insertion_mode::InsertionMode;
 
@@ -643,6 +643,26 @@ impl<'a> TreeBuilder<'a> {
 
     pub(super) fn close_p_element(&mut self) {
         self.generate_implied_end_tags(Some("p"));
+        // WHATWG: If the current node is not a p element, this is a parse error.
+        // TS parser fails with "Broke mapping nodes" in this case, so we track it
+        // to match TS behavior of returning only parse-error for such documents.
+        if let Some(current_id) = self.current_node() {
+            if !self.arena.get(current_id).is_html_element("p") {
+                let node = self.arena.get(current_id);
+                let tag_name = match &node.kind {
+                    NodeKind::Element { tag_name, .. } => tag_name.clone(),
+                    _ => String::new(),
+                };
+                self.arena.parse_errors.push((
+                    tag_name.clone(),
+                    format!(
+                        "The {} is invalid element ({}:{}): Broke mapping nodes.",
+                        tag_name, node.span.start.line, node.span.start.col
+                    ),
+                    node.span,
+                ));
+            }
+        }
         self.pop_until("p");
     }
 
@@ -814,8 +834,9 @@ impl<'a> TreeBuilder<'a> {
                 let _ = html_id;
                 self.mode = InsertionMode::BeforeHead;
             }
-            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "head" | "body" | "html" | "br") => {
-                // Parse error. Ignore.
+            Token::EndTag { tag_name, span, .. } if !matches!(tag_name.as_str(), "head" | "body" | "html" | "br") => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {
                 // Insert implicit <html>.
@@ -856,8 +877,9 @@ impl<'a> TreeBuilder<'a> {
                 self.head_element = Some(head_id);
                 self.mode = InsertionMode::InHead;
             }
-            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "head" | "body" | "html" | "br") => {
-                // Parse error. Ignore.
+            Token::EndTag { tag_name, span, .. } if !matches!(tag_name.as_str(), "head" | "body" | "html" | "br") => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {
                 let pos = Self::token_position(&token);
@@ -991,8 +1013,9 @@ impl<'a> TreeBuilder<'a> {
                 // Step 6: Reset the insertion mode appropriately.
                 self.reset_insertion_mode();
             }
-            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
-                // Parse error. Ignore.
+            Token::EndTag { tag_name, span, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             Token::StartTag { tag_name, .. } if tag_name == "head" => {
                 // Parse error. Ignore.
@@ -1036,8 +1059,9 @@ impl<'a> TreeBuilder<'a> {
             Token::StartTag { tag_name, .. } if matches!(tag_name.as_str(), "head" | "noscript") => {
                 // Parse error. Ignore.
             }
-            Token::EndTag { tag_name, .. } if tag_name != "br" => {
-                // Parse error. Ignore.
+            Token::EndTag { tag_name, span, .. } if tag_name != "br" => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {
                 // Parse error. Pop noscript, back to InHead, reprocess.
@@ -1130,8 +1154,9 @@ impl<'a> TreeBuilder<'a> {
             Token::EndTag { tag_name, .. } if tag_name == "template" => {
                 self.process_in_head(token);
             }
-            Token::EndTag { tag_name, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
-                // Parse error. Ignore.
+            Token::EndTag { tag_name, span, .. } if !matches!(tag_name.as_str(), "body" | "html" | "br") => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             Token::StartTag { tag_name, .. } if tag_name == "head" => {
                 // Parse error. Ignore.
@@ -1632,6 +1657,7 @@ impl<'a> TreeBuilder<'a> {
             | "div" | "dl" | "fieldset" | "figcaption" | "figure" | "footer" | "header" | "hgroup" | "listing"
             | "main" | "menu" | "nav" | "ol" | "pre" | "search" | "section" | "summary" | "ul" => {
                 if !self.has_element_in_scope(tag_name) {
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                     return;
                 }
                 self.generate_implied_end_tags(None);
@@ -1641,6 +1667,7 @@ impl<'a> TreeBuilder<'a> {
             "form" => {
                 if self.has_element_in_scope("template") {
                     if !self.has_element_in_scope("form") {
+                        self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                         return;
                     }
                     self.generate_implied_end_tags(None);
@@ -1648,6 +1675,7 @@ impl<'a> TreeBuilder<'a> {
                 } else {
                     let node = self.form_element.take();
                     if node.is_none() || !self.has_element_in_scope("form") {
+                        self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                         return;
                     }
                     self.generate_implied_end_tags(None);
@@ -1659,14 +1687,19 @@ impl<'a> TreeBuilder<'a> {
             "p" => {
                 if !self.has_element_in_button_scope("p") {
                     // Parse error. Insert implicit <p>.
+                    // Also record as orphaned end tag — TS reports these as
+                    // orphaned even though the WHATWG parser creates an
+                    // implicit element.
                     let pos = span.start;
                     self.insert_implicit_element("p", pos);
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                 }
                 self.set_end_tag_span("p", span);
                 self.close_p_element();
             }
             "li" => {
                 if !self.has_element_in_list_item_scope("li") {
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                     return;
                 }
                 self.generate_implied_end_tags(Some("li"));
@@ -1675,6 +1708,7 @@ impl<'a> TreeBuilder<'a> {
             }
             "dd" | "dt" => {
                 if !self.has_element_in_scope(tag_name) {
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                     return;
                 }
                 self.generate_implied_end_tags(Some(tag_name));
@@ -1711,6 +1745,8 @@ impl<'a> TreeBuilder<'a> {
             }
             "applet" | "marquee" | "object" => {
                 if !self.has_element_in_scope(tag_name) {
+                    // Parse error — orphaned end tag.
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                     return;
                 }
                 self.generate_implied_end_tags(None);
@@ -1719,7 +1755,8 @@ impl<'a> TreeBuilder<'a> {
                 self.active_formatting.clear_up_to_last_marker();
             }
             "br" => {
-                // Parse error. Treat as <br>.
+                // Parse error. Treat as <br>. Record as orphaned end tag.
+                self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                 self.reconstruct_active_formatting_elements();
                 self.insert_html_element("br", &[], span);
                 self.open_elements.pop();
@@ -1751,10 +1788,14 @@ impl<'a> TreeBuilder<'a> {
                     && node.namespace() == Some(Namespace::Html)
                     && tables::is_special_element_html(name)
                 {
+                    // No matching element found — this is an orphaned end tag
+                    self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
                     return;
                 }
             }
         }
+        // Reached bottom of stack without match — orphaned
+        self.arena.orphaned_end_tags.push((tag_name.to_owned(), span));
     }
 
     pub(super) fn process_in_body_start_tag_html(&mut self, new_attrs: &[RawAttribute], span: Span) {

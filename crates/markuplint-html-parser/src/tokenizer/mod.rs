@@ -306,8 +306,9 @@ impl<'a> Tokenizer<'a> {
             );
             (Some(qs), Some(v), Some(qe))
         } else if self.current_attr_equal.is_some() {
-            // Unquoted value
-            let v = Span::new(self.current_attr_value_start, pos);
+            // Unquoted value: end at prev_position (the terminating '>' or whitespace
+            // has already been consumed by next_char, so position() is past it).
+            let v = Span::new(self.current_attr_value_start, self.input.prev_position());
             (None, Some(v), None)
         } else {
             // Boolean attribute: no value
