@@ -849,3 +849,17 @@ describe('ignoreAttrs option (#690)', () => {
 		]);
 	});
 });
+
+test('bdo requires dir attribute', async () => {
+	expect((await mlRuleTest(rule, '<bdo>text</bdo>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "bdo" element expects the "dir" attribute',
+			raw: '<bdo>',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<bdo dir="ltr">text</bdo>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<bdo dir="rtl">text</bdo>')).violations).toStrictEqual([]);
+});

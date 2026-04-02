@@ -27,7 +27,7 @@ export async function getModule(log: Log): Promise<Module> {
 		markuplint = await import(modPath);
 		log(`Found package: ${modPath}`, 'debug');
 		const packageJsonPath = path.resolve(path.dirname(modPath), '..', 'package.json');
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 		pkg = require(packageJsonPath);
 		pkg = pkg.default ?? pkg;
 		isLocalModule = true;

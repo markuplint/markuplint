@@ -90,8 +90,7 @@ export function resolveAriaLabelledby(
 
 		// Each branch gets its own visited set so that one IDREF's
 		// traversal doesn't block resolution of a later IDREF.
-		const innerVisited = new Set(newVisited);
-		innerVisited.add(id);
+		const innerVisited = new Set([...newVisited, id]);
 
 		const result = computeFn(referenced, resolver, true, innerVisited);
 		if (result.name) {

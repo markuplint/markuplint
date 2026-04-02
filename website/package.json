@@ -1,52 +1,52 @@
 {
-  "name": "markuplint-website",
-  "description": "https://markuplint.dev",
-  "version": "4.0.0",
-  "private": true,
-  "scripts": {
-    "site:start": "yarn site:prebuild && docusaurus start",
-    "site:build": "yarn site:prebuild && docusaurus build",
-    "site:prebuild": "tsx scripts/prebuild/index.mts && npx prettier --write \"./src/**/*{ts,tsx,json,rc,md,mdx,css,scss}\"",
-    "site:lint": "prettier --write \"./**/*{js,ts,tsx,mdx}\" \"./*{json,rc,js}\" \"!./build/**/*\" \"!./.docusaurus/**/*\" && eslint --fix \"./{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}\" \"./*.{js,ts}\" && stylelint \"./src/**/*.css\" && textlint --fix \"./website/i18n/ja\" && cd ../ && yarn cli \"./website/**/*.tsx\"",
-    "site:screenshot": "playwright test tests/screenshot.spec.ts",
-    "site:up": "yarn upgrade-interactive --latest"
-  },
-  "author": "Yusuke Hirao",
-  "license": "MIT",
-  "dependencies": {
-    "@docusaurus/core": "3.9.2",
-    "@docusaurus/plugin-client-redirects": "3.9.2",
-    "@docusaurus/plugin-content-docs": "3.9.2",
-    "@docusaurus/preset-classic": "3.9.2",
-    "@docusaurus/remark-plugin-npm2yarn": "3.9.2",
-    "@octokit/rest": "22.0.1",
-    "clsx": "2.1.1",
-    "dotenv": "17.3.1",
-    "gray-matter": "4.0.3",
-    "prism-react-renderer": "2.4.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "unist-util-visit": "5.1.0"
-  },
-  "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.9.2",
-    "@docusaurus/tsconfig": "3.9.2",
-    "@imgix/js-core": "3.8.0",
-    "@markuplint-dev/prettier-config": "1.0.14",
-    "@playwright/test": "1.58.2",
-    "@tsconfig/strictest": "2.0.8",
-    "@types/glob": "9.0.0",
-    "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "7.0.1",
-    "stylelint": "17.6.0",
-    "stylelint-config-recess-order": "7.7.0",
-    "stylelint-config-standard": "40.0.0",
-    "stylelint-order": "8.1.1",
-    "tsx": "4.21.0",
-    "typescript": "6.0.2"
-  },
-  "engines": {
-    "node": ">=22"
-  },
-  "packageManager": "yarn@4.13.0"
+	"name": "markuplint-website",
+	"description": "https://markuplint.dev",
+	"version": "4.0.0",
+	"private": true,
+	"scripts": {
+		"site:start": "yarn site:prebuild && docusaurus start",
+		"site:build": "yarn site:prebuild && docusaurus build",
+		"site:prebuild": "tsx scripts/prebuild/index.mts && npx prettier --write \"./src/**/*{ts,tsx,json,rc,md,mdx,css,scss}\"",
+		"site:lint": "prettier --write \"./**/*{js,ts,tsx,mdx}\" \"./*{json,rc,js}\" \"!./build/**/*\" \"!./.docusaurus/**/*\" && eslint --fix \"./{community,docs,i18n,scripts,src}/**/*.{js,ts,tsx}\" \"./*.{js,ts}\" && stylelint \"./src/**/*.css\" && textlint --fix \"./website/i18n/ja\" && cd ../ && yarn cli \"./website/**/*.tsx\"",
+		"site:screenshot": "playwright test tests/screenshot.spec.ts",
+		"site:up": "yarn upgrade-interactive --latest"
+	},
+	"author": "Yusuke Hirao",
+	"license": "MIT",
+	"dependencies": {
+		"@docusaurus/core": "3.9.2",
+		"@docusaurus/plugin-client-redirects": "3.9.2",
+		"@docusaurus/plugin-content-docs": "3.9.2",
+		"@docusaurus/preset-classic": "3.9.2",
+		"@docusaurus/remark-plugin-npm2yarn": "3.9.2",
+		"@octokit/rest": "22.0.1",
+		"clsx": "2.1.1",
+		"dotenv": "17.4.0",
+		"gray-matter": "4.0.3",
+		"prism-react-renderer": "2.4.1",
+		"react": "19.2.4",
+		"react-dom": "19.2.4",
+		"unist-util-visit": "5.1.0"
+	},
+	"devDependencies": {
+		"@docusaurus/module-type-aliases": "3.9.2",
+		"@docusaurus/tsconfig": "3.9.2",
+		"@imgix/js-core": "3.8.0",
+		"@markuplint-dev/prettier-config": "1.0.14",
+		"@playwright/test": "1.59.1",
+		"@tsconfig/strictest": "2.0.8",
+		"@types/glob": "9.0.0",
+		"eslint-plugin-react": "7.37.5",
+		"eslint-plugin-react-hooks": "7.0.1",
+		"stylelint": "17.6.0",
+		"stylelint-config-recess-order": "7.7.0",
+		"stylelint-config-standard": "40.0.0",
+		"stylelint-order": "8.1.1",
+		"tsx": "4.21.0",
+		"typescript": "6.0.2"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"packageManager": "yarn@4.13.0"
 }

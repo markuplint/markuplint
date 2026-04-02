@@ -477,7 +477,7 @@ Process packages in the following tier order. Within the same tier, order does n
 - **Test-only changes**: No ordering constraint since tests do not affect other packages at build time
 - **Documentation-only changes** (README, comments): Can be batched freely, but prefer committing per-package
 - **Single-package changes**: Skip ordering -- just commit the affected package
-- **Root config changes** (`.eslintrc`, `tsconfig.base.json`, CI): Commit independently before any package changes
+- **Root config changes** (`.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.base.json`, CI): Commit independently before any package changes
 
 ## Rust Native Layer
 

@@ -4,14 +4,15 @@ Use the following skills and commands for common tasks. **Always invoke the appr
 
 ## Commands (slash commands)
 
-| Command     | Description                                                  | File                                        |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------- |
-| `/git`      | Commit rules, message format, and package commit order       | [git.md](.claude/commands/git.md)           |
-| `/pr`       | Create and push a pull request via `gh pr create`            | [pr.md](.claude/commands/pr.md)             |
-| `/doc`      | Update documentation (README, ARCHITECTURE, JSDoc)           | [doc.md](.claude/commands/doc.md)           |
-| `/release`  | Create GitHub Release notes                                  | [release.md](.claude/commands/release.md)   |
-| `/issue`    | Analyze or create a GitHub Issue and build a resolution plan | [issue.md](.claude/commands/issue.md)       |
-| `/sponsors` | Check and update GitHub Sponsors listings                    | [sponsors.md](.claude/commands/sponsors.md) |
+| Command         | Description                                                  | File                                                |
+| --------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| `/git`          | Commit rules, message format, and package commit order       | [git.md](.claude/commands/git.md)                   |
+| `/pr`           | Create and push a pull request via `gh pr create`            | [pr.md](.claude/commands/pr.md)                     |
+| `/doc`          | Update documentation (README, ARCHITECTURE, JSDoc)           | [doc.md](.claude/commands/doc.md)                   |
+| `/release`      | Create GitHub Release notes                                  | [release.md](.claude/commands/release.md)           |
+| `/issue`        | Analyze or create a GitHub Issue and build a resolution plan | [issue.md](.claude/commands/issue.md)               |
+| `/sponsors`     | Check and update GitHub Sponsors listings                    | [sponsors.md](.claude/commands/sponsors.md)         |
+| `/nu-validator` | Run nu-html-checker compatibility benchmark                  | [nu-validator.md](.claude/commands/nu-validator.md) |
 
 ## Skills
 
@@ -72,9 +73,9 @@ Each package has a `SKILL.md` with package-specific maintenance guidance.
 
 ### Lint
 
-- **Full lint check**: `yarn lint-check` (no arguments) — runs ESLint, Prettier, and CSpell
+- **Full lint check**: `yarn lint-check` (no arguments) — runs oxlint, oxfmt, and CSpell
 - **Full lint with auto-fix**: `yarn lint` (no arguments) — same linters with auto-fix enabled
-- **NEVER run linters individually** (e.g., `npx eslint ...` alone) — always use the root scripts to ensure all linters run
+- **NEVER run linters individually** (e.g., `npx oxlint ...` alone) — always use the root scripts to ensure all linters run
 
 ### Build
 

@@ -1,6 +1,20 @@
 # Configuring properties
 
-The configuration has the following properties:
+## Quick reference
+
+Most projects only need a few properties. Here's what to use based on what you want to do:
+
+| I want to...                       | Property                                                         |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| Use a preset                       | [`extends`](#extends)                                            |
+| Enable or customize a rule         | [`rules`](#rules)                                                |
+| Use a framework (React, Vue, etc.) | [`parser`](#parser) + [`specs`](#specs)                          |
+| Apply rules to specific elements   | [`nodeRules`](#noderules) or [`childNodeRules`](#childnoderules) |
+| Validate custom components         | [`pretenders`](#pretenders)                                      |
+| Exclude files from linting         | [`excludeFiles`](#excludefiles)                                  |
+| Override settings per directory    | [`overrides`](#overrides)                                        |
+
+## All properties
 
 ```json class=config
 {
@@ -20,21 +34,21 @@ The configuration has the following properties:
 }
 ```
 
-| Property                                | First guide                                                                                                                  | Interface                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                        | [Interface](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [Applying custom rules](/docs/guides/applying-rules#applying-custom-rules), [Creating custom rule](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                            | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Using to besides HTML](/docs/guides/besides-html)                                                                           | [Interface](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                                    | [Interface](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                            | [Interface](#severity/interface)       |
-| [**`rules`**](#rules)                   | [Applying rules](/docs/guides/applying-rules)                                                                                | [Interface](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [Applying to some](/docs/guides/applying-rules#applying-to-some)                                                             | [Interface](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/besides-html#pretenders)                                                                           | [Interface](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                        | [Interface](#overrides/interface)      |
+| Property                                | First guide                                                                                                             | Interface                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                   | [Interface](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [Using custom rules](/docs/guides/applying-rules#using-custom-rules), [Creating Custom Rules](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [Beyond HTML](/docs/guides/beyond-html)                                                                                 | [Interface](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                       | [Interface](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [Beyond HTML](/docs/guides/beyond-html)                                                                                 | [Interface](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                               | [Interface](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                       | [Interface](#severity/interface)       |
+| [**`rules`**](#rules)                   | [Applying Rules](/docs/guides/applying-rules)                                                                           | [Interface](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                  | [Interface](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                  | [Interface](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/beyond-html#pretenders)                                                                       | [Interface](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                   | [Interface](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                   | [Interface](#overrides/interface)      |
 
 ## Resolving specified paths
 
@@ -52,6 +66,8 @@ If it is a relative path, the basis becomes the directory that has the configura
 ## Details each property
 
 ### `extends`
+
+> **When to use:** Almost always. This is how you apply [presets](/docs/guides/presets) or share configuration across projects.
 
 If you specify other config file [paths](#resolving-specified-paths), it merges the current setting with them.
 
@@ -95,6 +111,8 @@ interface Config {
 
 ### `plugins`
 
+> **When to use:** When using [custom rules](/docs/guides/custom-rule) or third-party plugins.
+
 You can load any plugins.
 Specify a package name or a [path](#resolving-specified-paths).
 Can specify `settings` if the plugin has it.
@@ -137,7 +155,9 @@ interface Config {
 
 ### `parser`
 
-Specify a regex to the key, and the [**parser**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+> **When to use:** When linting files that are not plain HTML (JSX, Vue, Svelte, Pug, etc.). See [Beyond HTML](/docs/guides/beyond-html).
+
+Specify a regex to the key, and the [**parser**](/docs/guides/beyond-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json class=config
@@ -164,6 +184,8 @@ interface Config {
 ```
 
 ### `parserOptions`
+
+> **When to use:** Rarely. Only needed to configure parser-specific options like `authoredElementsOnly` for Svelte.
 
 ```json class=config
 {
@@ -222,7 +244,9 @@ interface Config {
 
 ### `specs`
 
-Specify a regex to the key, and the [**spec**](/docs/guides/besides-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
+> **When to use:** When using a framework that has its own attributes (React, Vue, Svelte, etc.). Usually paired with `parser`.
+
+Specify a regex to the key, and the [**spec**](/docs/guides/beyond-html#supported-syntaxes) file [path](#resolving-specified-paths) or a package name to the value.
 The regex should be specify it matches the target file (ex., the extension part).
 
 ```json class=config
@@ -267,6 +291,8 @@ You can specify it as Array or string, but it's **deprecated**.
 
 ### `excludeFiles`
 
+> **When to use:** When you want to skip linting specific files or directories (e.g., generated files, third-party code).
+
 If necessary, files can be excluded. The value requires a **relative or absolute path** from the configuration file. Paths can also be in the glob format. You can use the `!` symbol to denote negation. Entries specified later will take precedence. The pattern operates in accordance with the [specification of `.gitignore`](https://git-scm.com/docs/gitignore). (Resolved using [node-ignore](https://github.com/kaelzhang/node-ignore)).
 
 ```json class=config
@@ -284,6 +310,8 @@ interface Config {
 ```
 
 ### `severity`
+
+> **When to use:** When you want to change the default severity of parse errors or other diagnostic categories.
 
 Controls default severity levels for specific categories of diagnostics.
 
@@ -310,6 +338,8 @@ interface Config {
 ```
 
 ### `rules`
+
+> **When to use:** When you want to enable, disable, or customize individual [rules](/docs/guides/applying-rules) beyond what presets provide.
 
 Configure to enable or specify details to [rules](/docs/guides/applying-rules). The value for each rule is either string, number, and array.
 
@@ -552,10 +582,22 @@ type NamedRuleGroup = {
 
 ### `nodeRules`
 
-If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-to-some), you can specify by this property.
+> **When to use:** When you want different rules for specific elements (e.g., stricter rules for `<main>`, relaxed rules for legacy components).
+
+If you want only any specific element to [apply some rule](/docs/guides/applying-rules#applying-rules-to-specific-elements), you can specify by this property.
 Be careful to the value is an array.
 
-It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups).
+It requires either [`selector`](#selector) or [`regexSelector`](#regexselector).　And it also requires `rules` field. It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Group](#named-rule-groups) definitions (you cannot define new groups here).
+
+However, you can reference named rules by their base rule name or use namespace wildcards to control virtual rules created by presets:
+
+- **Base rule name**: `"wai-aria": false` disables the virtual rule `a11y/wai-aria` (and any other virtual rule wrapping `wai-aria`)
+- **Namespace wildcard**: `"a11y/*": false` disables all virtual rules in the `a11y/` namespace
+- **Option override**: `"wai-aria": { "options": { ... } }` propagates options to virtual rules wrapping `wai-aria`
+
+:::note
+Namespace wildcards only accept `false`. To set options, use a specific rule name (base or virtual).
+:::
 
 ```json class=config
 {
@@ -582,7 +624,7 @@ Same as [`specConformance`](#spec-conformance) in Named Rule Groups.
 
 #### `rules` {#to-some-rules}
 
-It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Groups](#named-rule-groups). It's required.
+It accepts individual rule settings (the same as entries in the [`rules`](#rules) property), but does not accept [Named Rule Group](#named-rule-groups) definitions. It's required. Base rule names and namespace wildcards are supported — see [nodeRules](#noderules) for details.
 
 #### `selector`
 
@@ -784,6 +826,8 @@ type RegexSelector = {
 
 ### `childNodeRules`
 
+> **When to use:** When you want rules to apply to all children (or descendants) of a matched element — e.g., disabling rules inside a legacy section.
+
 If you want any specific element's descendants to apply some rule, you can specify by this property.
 If specifies true to the [`inheritance`](#inheritance) field, **affects all descendant nodes** of the target element,
 if not, **affects only child nodes**. Be careful to the value is an array.
@@ -827,7 +871,9 @@ interface Config {
 
 ### `pretenders`
 
-The [**Pretenders**](/docs/guides/besides-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered.
+> **When to use:** When using frameworks with custom components (React, Vue, Svelte) and you want Markuplint to validate them as native HTML elements.
+
+The [**Pretenders**](/docs/guides/beyond-html#pretenders) feature is what a custom component pretends as a native HTML element. It helps that some rules evaluate it as an element that is the result rendered.
 
 The value can be either an **array** of pretender definitions or an **object** with `data`, `scan`, and other fields.
 
@@ -1150,6 +1196,8 @@ type PretenderScanConfig = {
 
 ### `overrideMode`
 
+> **When to use:** When using `overrides` and you want to control whether overridden settings replace or merge with the base configuration.
+
 The option controls the behavior of the [`overrides`](#overrides) section.
 By setting this option, you can specify how settings should be handled when applying different linting rules to specific parts of your project.
 
@@ -1178,6 +1226,8 @@ interface Config {
 ```
 
 ### `overrides`
+
+> **When to use:** When different directories or file patterns need different rules (e.g., relaxed rules for a legacy directory).
 
 You can override configurations to specific files if you specify the `overrides` option.
 It applies to **glob format paths** specified to a key. They are evaluated by [minimatch](https://www.npmjs.com/package/minimatch).

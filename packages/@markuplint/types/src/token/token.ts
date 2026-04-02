@@ -29,21 +29,6 @@ export class Token {
 	static readonly whitespace: ReadonlyArray<string> = ['\u0009', '\u000A', '\u000C', '\u000D', '\u0020'];
 
 	/**
-	 * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
-	 */
-	static getCol(value: string, offset: number) {
-		const lines = value.slice(0, offset).split(/\n/);
-		return (lines.at(-1) ?? '').length + 1;
-	}
-
-	/**
-	 * @deprecated Use {@link getPosition} instead. Will be removed in v5.0.0.
-	 */
-	static getLine(value: string, offset: number) {
-		return value.slice(0, offset).split(/\n/).length;
-	}
-
-	/**
 	 * Calculates the line and column position at the given offset within a string.
 	 *
 	 * @param value - The source string

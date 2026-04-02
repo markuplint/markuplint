@@ -9,7 +9,7 @@ Use [`excludeFiles`](/docs/configuration/properties#excludefiles) property on th
 ### Disable by selector {#disable-by-selector}
 
 Use [`nodeRules`](/docs/configuration/properties#noderules) or [`childNodeRules`](/docs/configuration/properties#childnoderules) property on the configuration.
-See [Applying to some](./applying-rules/#applying-to-some).
+See [Applying rules to specific elements](./applying-rules/#applying-rules-to-specific-elements).
 
 ```json class=config
 {
@@ -28,6 +28,26 @@ See [Applying to some](./applying-rules/#applying-to-some).
 ```
 
 Replace the `[[target-rule-id]]` portion with [the rule ID](/docs/rules) you would like to disable as appropriate.
+
+The same approach works for named rules — you can use base rule names or namespace wildcards:
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "nodeRules": [
+    {
+      "selector": ".legacy",
+      "rules": {
+        // Disable by base rule name — also disables a11y/wai-aria
+        "wai-aria": false,
+
+        // Disable all a11y/* named rules on this element
+        "a11y/*": false
+      }
+    }
+  ]
+}
+```
 
 ### Disable named rules {#disable-named-rules}
 
@@ -48,6 +68,8 @@ Named rules defined by presets can be individually disabled by setting `false` i
   }
 }
 ```
+
+These features also work in `nodeRules` and `childNodeRules` — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
 
 For the list of available named rules, see [Named rules in presets](/docs/guides/presets#named-rules).
 
@@ -141,3 +163,9 @@ If the scope cannot be narrowed (e.g., violations span the entire document), the
 When a scope selector no longer matches any element (e.g., after refactoring), the suppression remains active and `--prune-suppressions` will recommend cleanup. **Broken scopes never cause new violations to be hidden.**
 
 For the full design rationale, see the [Bulk Suppressions design document](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md).
+
+## Next steps
+
+- **[CLI](/docs/guides/cli)** — Full list of CLI options including `--suppress` and `--prune-suppressions`
+- **[Applying Rules](/docs/guides/applying-rules)** — Fine-tune rules instead of disabling them entirely
+- **[Configuration Properties](/docs/configuration/properties)** — Reference for `excludeFiles`, `nodeRules`, `childNodeRules`, and `overrides`

@@ -36,6 +36,6 @@ function getLocaleSet(langCode: string): LocaleSet {
 	} catch {
 		// Avoid
 	}
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 	return require('../locales/en.json');
 }

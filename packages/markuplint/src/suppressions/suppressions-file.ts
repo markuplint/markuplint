@@ -38,7 +38,7 @@ export async function readSuppressionsFile(filePath: string): Promise<Suppressio
 			return {};
 		}
 		if (error instanceof SyntaxError) {
-			// User may have manually edited and broken the JSON — Tier 2, not Fatal
+			// eslint-disable-next-line unicorn/prefer-type-error -- Not a type error; this is a JSON parse failure
 			throw new Error(`Failed to parse suppressions file "${filePath}": ${error.message}`, { cause: error });
 		}
 		if (isFatalError(error)) {

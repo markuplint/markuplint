@@ -24,6 +24,8 @@ export function optimizeStartsHeadTagOrBodyTagSetup(rawCode: string): Replacemen
 
 	const heads: string[] = [];
 	const bodies: string[] = [];
+
+	// eslint-disable-next-line no-control-regex -- WHATWG HTML spec requires matching NULL character
 	const code = rawCode.replaceAll(/(?<=<\/?)(?:head|body)(?=[\0\t\n\f />])/gi, tag => {
 		const prefix = `x-${UNDUPLICATED_CHAR}`;
 		let name: string;

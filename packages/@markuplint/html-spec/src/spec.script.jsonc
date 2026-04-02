@@ -17,47 +17,54 @@
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
+		// importmap and speculationrules must not have src
 		"src": {
-			"type": "URL"
+			"type": "URL",
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
 		"type": {
-			// When used to include data blocks the data must be embedded inline,
-			// the format of the data must be given using the type attribute,
-			// and the contents of the script element must conform to the requirements defined for the format used.
-			// The src, async, nomodule, defer, crossorigin, integrity,
-			// and referrerpolicy attributes must not be specified.
 			"type": [
 				"MIMEType",
 				{
-					"enum": ["module", "importmap"],
+					"enum": ["module", "importmap", "speculationrules"],
 					"caseInsensitive": true
 				}
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule
+		// Must not be used with type=module, importmap, or speculationrules
 		"nomodule": {
 			"type": "Boolean",
-			"condition": ":not([type='module' i])"
+			"condition": ":not([type='module' i]):not([type='importmap' i]):not([type='speculationrules' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async
+		// Must not be used with importmap or speculationrules
 		"async": {
 			"type": "Boolean",
-			"condition": ["[src]", "[type='module' i]"],
+			"condition": [":not([type='importmap' i]):not([type='speculationrules' i])[src]", "[type='module' i]"],
 			"ineffective": ":not([src]):not([type='module' i])"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
+		// Must not be used with importmap or speculationrules; requires src
+		// For type=module, defer is ineffective (not disallowed)
 		"defer": {
 			"type": "Boolean",
-			"condition": "[src]",
-			// The `defer` attribute affects the element that has the async attribute if it doesn't support the async
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]",
 			"ineffective": ["[type='module' i]", ":not([src])", "[async]"]
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-integrity
+		// Must not be used with importmap or speculationrules; requires src
 		"integrity": {
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])[src]"
+		},
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-charset
+		// Must not be used without src
+		"charset": {
 			"condition": "[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
+		// Must not be used with importmap or speculationrules
 		"blocking": {
 			"type": {
 				"token": {
@@ -65,8 +72,14 @@
 				},
 				"separator": "space",
 				"unique": true
-			}
-		}
+			},
+			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
+		},
+		// NOTE: crossorigin, referrerpolicy, and fetchpriority should be
+		// disallowed on importmap/speculationrules per spec, but overriding
+		// global category attrs here drops the type definition (enum values).
+		// This needs architecture support for per-element conditions on
+		// global attributes. See #3631.
 	},
 	"aria": {
 		"implicitRole": false,

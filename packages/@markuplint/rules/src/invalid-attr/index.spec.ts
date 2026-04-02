@@ -2014,3 +2014,115 @@ describe('focusgroup attribute (#3384)', () => {
 		expect((await mlRuleTest(rule, '<span focusgroupstart></span>')).violations).toStrictEqual([]);
 	});
 });
+
+test('empty lang attribute is valid (language set to unknown)', async () => {
+	expect((await mlRuleTest(rule, '<html lang=""></html>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<html lang></html>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div lang=""></div>')).violations).toStrictEqual([]);
+});
+
+test('script type="speculationrules" is valid', async () => {
+	expect(
+		(await mlRuleTest(rule, '<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>'))
+			.violations,
+	).toStrictEqual([]);
+});
+
+describe('script conditional attributes (#3631)', () => {
+	test('importmap must not have src', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
+
+	test('speculationrules must not have src', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="speculationrules" src="rules.json"></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'The "src" attribute is disallowed',
+				raw: 'src',
+			},
+		]);
+	});
+
+	test('importmap must not have async', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" async></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "async" attribute is disallowed',
+				raw: 'async',
+			},
+		]);
+	});
+
+	test('importmap must not have defer', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" defer></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "defer" attribute is disallowed',
+				raw: 'defer',
+			},
+		]);
+	});
+
+	test('importmap must not have nomodule', async () => {
+		const { violations } = await mlRuleTest(rule, '<script type="importmap" nomodule></script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "nomodule" attribute is disallowed',
+				raw: 'nomodule',
+			},
+		]);
+	});
+
+	test('module with defer is not disallowed (handled by ineffective-attr)', async () => {
+		// defer on module scripts is ineffective, not disallowed
+		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual(
+			[],
+		);
+	});
+
+	test('charset requires src', async () => {
+		const { violations } = await mlRuleTest(rule, '<script charset="utf-8">x</script>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "charset" attribute is disallowed',
+				raw: 'charset',
+			},
+		]);
+	});
+
+	test('valid: module with async', async () => {
+		expect((await mlRuleTest(rule, '<script type="module" async>x</script>')).violations).toStrictEqual([]);
+	});
+
+	test('valid: classic with src and defer', async () => {
+		expect((await mlRuleTest(rule, '<script src="app.js" defer></script>')).violations).toStrictEqual([]);
+	});
+
+	test('valid: classic with src and async', async () => {
+		expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
+	});
+});

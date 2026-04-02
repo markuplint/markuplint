@@ -77,7 +77,10 @@ div > .class:not(.other) span
 | `:scope`           | スコープ要素にマッチ（スコープなしの場合はルート）。詳細度 `[0, 1, 0]`。     |
 | `:root`            | `<html>` 要素にマッチ。詳細度 `[0, 1, 0]`。                                  |
 
-### カスタム: `:closest(selector)`
+### カスタム: `:closest(selector)`（非推奨）
+
+> **v5 で非推奨。v6 で削除予定。** 代わりに `:is(selector *)` を使用してください。
+> 例: `:closest(nav)` → `:is(nav *)`
 
 祖先チェーンをたどり、いずれかの祖先が内部セレクタにマッチすればマッチします。これは W3C 仕様にない markuplint の拡張です。
 
@@ -192,7 +195,7 @@ Regex セレクタの詳細度はターゲットごとに計算されます:
 - コンビネータ: 子孫（` `）、子（`>`）、隣接兄弟（`+`）、一般兄弟（`~`）
 - 複数セレクタ（`,`）
 - `:not()`、`:is()`、`:where()`、`:has()`、`:scope`、`:root`
-- `:closest()`（markuplint 拡張）
+- `:closest()`（markuplint 拡張、**非推奨**）
 - 拡張: `:aria()`、`:role()`、`:model()`
 - 名前空間セレクタ（`svg|text`、`*|div`）。注: `svg` と `*` の名前空間のみサポート。他の名前空間（例: `html`）は `InvalidSelectorError` をスローします。
 

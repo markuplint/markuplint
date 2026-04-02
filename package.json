@@ -12,14 +12,14 @@
 		"dev": "lerna run --parallel dev",
 		"test": "vitest --typecheck run",
 		"test:coverage": "vitest run --coverage",
-		"lint": "run-p lint:eslint lint:prettier lint:spellcheck lint:github-actions",
-		"lint:eslint": "npx eslint --fix \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint:prettier": "npx prettier --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint": "run-p lint:oxlint lint:format lint:spellcheck lint:github-actions",
+		"lint:oxlint": "oxlint --fix -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint:format": "oxfmt --write \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"lint:spellcheck": "cspell --no-progress --show-suggestions \"**\"",
 		"lint:github-actions": "actionlint",
-		"lint-check": "run-p lint-check:eslint lint-check:prettier lint:spellcheck",
-		"lint-check:eslint": "npx eslint \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
-		"lint-check:prettier": "npx prettier --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\" --log-level warn",
+		"lint-check": "run-p lint-check:oxlint lint-check:format lint:spellcheck",
+		"lint-check:oxlint": "oxlint -c .oxlintrc.json \"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}\"",
+		"lint-check:format": "oxfmt --check \"./{packages,vscode}/**/*.{ts,tsx,js,cjs,mjs,json,rc,md}\"",
 		"up": "run-s up:deps up:gen up:schema",
 		"up:deps": "npx npm-check-updates --interactive --workspaces --format group",
 		"up:gen": "cd packages/\\@markuplint/html-spec/ && yarn run gen",
@@ -47,10 +47,10 @@
 	},
 	"lint-staged": {
 		"./{{packages,website,vscode}/**/*,*}.{ts,tsx,js,cjs,mjs,json,md}": [
-			"prettier --write"
+			"oxfmt --write"
 		],
 		"./{packages,vscode}/**/*.{ts,mjs,cjs,spec.js}": [
-			"eslint --fix"
+			"oxlint --fix -c .oxlintrc.json"
 		],
 		"./test/**/*.{pug,html}": [
 			"yarn cli"
@@ -76,12 +76,13 @@
 		"commitizen": "4.3.1",
 		"cspell": "9.7.0",
 		"cz-conventional-changelog": "3.3.0",
-		"eslint-plugin-react": "7.37.5",
-		"eslint-plugin-react-hooks": "7.0.1",
+		"eslint-plugin-regexp": "3.1.0",
 		"husky": "9.1.7",
 		"lerna": "9.0.7",
 		"lint-staged": "16.4.0",
 		"npm-run-all2": "8.0.4",
+		"oxfmt": "0.43.0",
+		"oxlint": "1.58.0",
 		"textlint": "15.5.2",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "2.4.3",

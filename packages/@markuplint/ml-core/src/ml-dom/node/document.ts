@@ -3496,6 +3496,29 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						continue;
 					}
 
+					// Namespace wildcard (e.g., "a11y/*": false)
+					if (ruleName.endsWith('/*')) {
+						if (rule !== false) {
+							ruleset.mappingErrors.push(
+								new Error(
+									`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+								),
+							);
+							continue;
+						}
+						const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+						for (const key of Object.keys(ruleset.rules)) {
+							if (key.startsWith(nsPrefix)) {
+								ruleMapper.set(node, key, {
+									from: 'nodeRules',
+									specificity: matches.specificity,
+									rule: false,
+								});
+							}
+						}
+						continue;
+					}
+
 					const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 					if (convertedRule === undefined) {
 						continue;
@@ -3510,6 +3533,21 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 						specificity: matches.specificity,
 						rule: mergedRule,
 					});
+
+					// Propagate to virtual rules that wrap this base rule
+					const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+					if (virtualNames) {
+						for (const vName of virtualNames) {
+							const vGlobalRule = ruleset.rules[vName];
+							const vMergedRule =
+								vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+							ruleMapper.set(node, vName, {
+								from: 'nodeRules',
+								specificity: matches.specificity,
+								rule: vMergedRule,
+							});
+						}
+					}
 				}
 			}
 
@@ -3555,6 +3593,31 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 							continue;
 						}
 
+						// Namespace wildcard (e.g., "a11y/*": false)
+						if (ruleName.endsWith('/*')) {
+							if (rule !== false) {
+								ruleset.mappingErrors.push(
+									new Error(
+										`Namespace wildcard "${ruleName}" only accepts false; use a specific rule name for options`,
+									),
+								);
+								continue;
+							}
+							const nsPrefix = ruleName.slice(0, -1); // "a11y/*" → "a11y/"
+							for (const key of Object.keys(ruleset.rules)) {
+								if (key.startsWith(nsPrefix)) {
+									for (const descendant of targetDescendants) {
+										ruleMapper.set(descendant, key, {
+											from: 'childNodeRules',
+											specificity: matches.specificity,
+											rule: false,
+										});
+									}
+								}
+							}
+							continue;
+						}
+
 						const convertedRule = exchangeValueOnRule(rule, matches.data ?? {});
 						if (convertedRule === undefined) {
 							continue;
@@ -3570,6 +3633,23 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 								specificity: matches.specificity,
 								rule: mergedRule,
 							});
+						}
+
+						// Propagate to virtual rules that wrap this base rule
+						const virtualNames = ruleset.baseRuleToVirtualNames.get(ruleName);
+						if (virtualNames) {
+							for (const vName of virtualNames) {
+								const vGlobalRule = ruleset.rules[vName];
+								const vMergedRule =
+									vGlobalRule == null ? convertedRule : mergeRule(vGlobalRule, convertedRule);
+								for (const descendant of targetDescendants) {
+									ruleMapper.set(descendant, vName, {
+										from: 'childNodeRules',
+										specificity: matches.specificity,
+										rule: vMergedRule,
+									});
+								}
+							}
 						}
 					}
 				}

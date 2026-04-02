@@ -42,6 +42,11 @@ export type InitializationOptions = {
 	readonly workingDirectories?: readonly WorkingDirectoryEntry[];
 	/** Absolute paths of VS Code workspace folders */
 	readonly workspaceFolders?: readonly string[];
+	/**
+	 * Path to the git binary, resolved from VS Code's `git.path` setting.
+	 * Falls back to `'git'` (PATH lookup) when unset.
+	 */
+	readonly gitPath?: string;
 };
 
 /**

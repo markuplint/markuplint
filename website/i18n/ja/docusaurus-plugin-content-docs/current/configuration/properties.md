@@ -1,6 +1,20 @@
 # プロパティを設定する
 
-設定は、以下のプロパティを持ちます。
+## クイックリファレンス
+
+ほとんどのプロジェクトでは、いくつかのプロパティだけで十分です。やりたいことに応じて使うプロパティを選んでください:
+
+| やりたいこと                           | プロパティ                                                       |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| プリセットを使う                       | [`extends`](#extends)                                            |
+| ルールを有効化・カスタマイズする       | [`rules`](#rules)                                                |
+| フレームワーク（React、Vueなど）で使う | [`parser`](#parser) + [`specs`](#specs)                          |
+| 特定の要素にルールを適用する           | [`nodeRules`](#noderules) or [`childNodeRules`](#childnoderules) |
+| カスタムコンポーネントを検証する       | [`pretenders`](#pretenders)                                      |
+| ファイルをリント対象から除外する       | [`excludeFiles`](#excludefiles)                                  |
+| ディレクトリごとに設定を上書きする     | [`overrides`](#overrides)                                        |
+
+## すべてのプロパティ
 
 ```json class=config
 {
@@ -20,21 +34,21 @@
 }
 ```
 
-| プロパティ                              | 初期ガイド                                                                                                                    | インターフェイス                              |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                    | [インターフェイス](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [カスタムルールの適用](/docs/guides/applying-rules#applying-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [HTML以外につかう](/docs/guides/besides-html)                                                                                 | [インターフェイス](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                             | [インターフェイス](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [HTML以外につかう](/docs/guides/besides-html)                                                                                 | [インターフェイス](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                    | [インターフェイス](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                             | [インターフェイス](#severity/interface)       |
-| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                               | [インターフェイス](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-to-some)                                                                  | [インターフェイス](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/besides-html#pretenders)                                                              | [インターフェイス](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                            | [インターフェイス](#overrides/interface)      |
+| プロパティ                              | 初期ガイド                                                                                                                 | インターフェイス                              |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                 | [インターフェイス](#extends/interface)        |
+| [**`plugins`**](#plugins)               | [カスタムルールを使う](/docs/guides/applying-rules#using-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
+| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                                          | [インターフェイス](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                 | [インターフェイス](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                                          | [インターフェイス](#severity/interface)       |
+| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                            | [インターフェイス](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                                                            | [インターフェイス](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overrides/interface)      |
 
 ## パスの解決 {#resolving-specified-paths}
 
@@ -130,7 +144,7 @@ interface Config {
 
 ### `parser`
 
-キーに正規表現を、値に[パーサ](/docs/guides/besides-html#supported-syntaxes)のファイル[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
+キーに正規表現を、値に[パーサ](/docs/guides/beyond-html#supported-syntaxes)のファイル[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
 ```json class=config
 {
@@ -212,7 +226,7 @@ interface Config {
 
 ### `specs`
 
-キーに正規表現を、値に[**スペック**](/docs/guides/besides-html#supported-syntaxes)ファイルの[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
+キーに正規表現を、値に[**スペック**](/docs/guides/beyond-html#supported-syntaxes)ファイルの[パス](#resolving-specified-paths)またはパッケージ名を指定します。正規表現は、対象ファイルにマッチするものを指定します（例は拡張子を示しています）。
 
 ```json class=config
 {
@@ -538,9 +552,19 @@ type NamedRuleGroup = {
 
 ### `nodeRules`
 
-特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-to-some)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
+特定の[要素にのみルールを適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)させたい場合、このプロパティを指定します。値が配列であることに注意してください。
 
-`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。
+`selector`か`regexSelector`のどちらかが必要です。`rules`フィールドも必須です。個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義（新しいグループの作成）は受け取れません。
+
+ただし、プリセットが作成した仮想ルールをベースルール名や名前空間ワイルドカードで制御できます:
+
+- **ベースルール名**: `"wai-aria": false` は仮想ルール `a11y/wai-aria`（および `wai-aria` をラップする他のすべての仮想ルール）を無効化します
+- **名前空間ワイルドカード**: `"a11y/*": false` は `a11y/` 名前空間内のすべての仮想ルールを無効化します
+- **オプション上書き**: `"wai-aria": { "options": { ... } }` は `wai-aria` をラップする仮想ルールにオプションを伝播します
+
+:::note
+名前空間ワイルドカードは `false` のみ受け付けます。オプションを指定するには、具体的なルール名（ベースまたは仮想）を使用してください。
+:::
 
 ```json class=config
 {
@@ -567,7 +591,7 @@ Named Rule Groupsの[`specConformance`](#spec-conformance)と同じです。
 
 #### `rules` {#to-some-rules}
 
-個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)は受け取れません。必須です。
+個別のルール設定（[`rules`](#rules)プロパティのエントリと同じ形式）を受け取りますが、[名前付きルールグループ](#named-rule-groups)の定義は受け取れません。必須です。ベースルール名と名前空間ワイルドカードに対応しています — 詳細は [nodeRules](#noderules) を参照してください。
 
 #### `selector`
 
@@ -813,7 +837,7 @@ interface Config {
 
 ### `pretenders`
 
-[**プリテンダー**](/docs/guides/besides-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。
+[**プリテンダー**](/docs/guides/beyond-html#pretenders)機能は、カスタムコンポーネントをネイティブのHTML要素のように見せかける機能です。いくつかのルールで、コンポーネントをレンダリングされた結果の要素として評価するために利用します。
 
 値はプリテンダー定義の**配列**、または`data`、`scan`などのフィールドを持つ**オブジェクト**のいずれかです。
 

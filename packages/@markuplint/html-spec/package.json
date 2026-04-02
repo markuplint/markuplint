@@ -24,14 +24,19 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "npm-run-all gen:build gen:prettier",
-		"gen:build": "node build.mjs",
-		"gen:prettier": "npx prettier --write index.json"
+		"gen": "npm-run-all gen:build gen:format",
+		"gen:build": "node build.ts",
+		"gen:format": "npx oxfmt --write index.json"
 	},
 	"devDependencies": {
-		"@markuplint/spec-generator": "5.0.0-rc.1",
 		"@markuplint/test-tools": "5.0.0-rc.1",
-		"jsonc-parser": "3.3.1"
+		"@types/cheerio": "1.0.0",
+		"@types/cli-progress": "3.11.6",
+		"cheerio": "1.2.0",
+		"cli-progress": "3.12.0",
+		"glob": "13.0.6",
+		"jsonc-parser": "3.3.1",
+		"type-fest": "5.5.0"
 	},
 	"dependencies": {
 		"@markuplint/ml-spec": "5.0.0-rc.1"

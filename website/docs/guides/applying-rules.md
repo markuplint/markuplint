@@ -1,74 +1,10 @@
-# Applying rules
+# Applying Rules
 
-## Default behavior
-
-Markuplint searches a [configuration file](/docs/configuration) automatically when evaluating. It applies rules that included by [recommended preset](./presets) if it doesn't find a configuration file. If it found, apply according to it.
-
-## Setting rules
-
-It need a [configuration file](/docs/configuration). You ready it then you add [rules](/docs/rules) needed to the `rules` property.
-
-```json class=config
-{
-  "rules": {
-    // Add to here
-    "[rule-name]": true,
-    "[rule-name2]": "Any Value",
-    "[rule-name3]": {
-      "value": 12345
-    }
-  }
-}
-```
-
-It's to be enabled if specified besides `false` as the value. So it's to be disabled when specified `false` as it. The details of the value is said by [`rule`](/docs/configuration/properties#rules) property.
-
-## Applying to some
-
-If you want the part of structures only to apply rules then set with [**selector**](./selectors) to `nodeRules` or `childNodeRules` property.
-`nodeRules` affect only the target element. And `childNodeRules` affect child (includes descendants if set to `inheritance`) elements of the target element.
-
-```json class=config
-{
-  "nodeRules": [
-    {
-      // Only apply to <main>
-      "selector": "main",
-      "rules": {
-        "class-naming": "/[a-z]+(__[a-z]+)?/"
-      }
-    },
-    {
-      // Only apply to elements has "some-class-name" class
-      "selector": ".some-class-name",
-      "rules": {
-        "required-attr": true
-      }
-    }
-  ],
-  "childNodeRules": [
-    {
-      // Only apply to child nodes of elements has ".ignoreClass" class
-      "selector": ".ignoreClass",
-      "rules": {
-        "character-reference": false
-      }
-    },
-    {
-      // Only apply to descendant nodes of elements has ".ignoreA11y" class
-      "selector": ".ignoreA11y",
-      "inheritance": true,
-      "rules": {
-        "wai-aria": false
-      }
-    }
-  ]
-}
-```
+Markuplint applies the [recommended preset](/docs/guides/presets) by default when no [configuration file](/docs/configuration) is found. Once you have a configuration file, you can customize which rules are active and how they behave.
 
 ## Customizing preset rules {#customizing-preset-rules}
 
-Presets define **named rules** that you can individually customize. Named rules use the `namespace/rule-name` format and can be disabled, have their severity changed, or be bulk-disabled using a namespace wildcard.
+If you're using a [preset](/docs/guides/presets), you can override individual rules without leaving the preset. Presets define **named rules** in the `namespace/rule-name` format (e.g., `a11y/html-lang`), which you can disable, change severity, or bulk-control using a namespace wildcard:
 
 ```json class=config
 {
@@ -83,63 +19,89 @@ Presets define **named rules** that you can individually customize. Named rules 
     // Disable all named rules in a namespace
     "a11y/*": false,
 
-    // Disable by base rule name (see properties reference for details)
+    // Disable by base rule name (affects every preset containing it)
     "id-duplication": false
   }
 }
 ```
 
-When multiple presets wrap the same base rule (e.g., `a11y/id-duplication` and `html-standard/id-duplication`), both run independently. You can control each independently. Setting the base rule name to `false` disables that specific base rule inside every named rule group that contains it — see [Disabling by base rule name](/docs/configuration/properties#disable-by-base-rule-name) for details.
+When multiple presets wrap the same base rule (e.g., `a11y/id-duplication` and `html-standard/id-duplication`), both run independently. Setting the base rule name to `false` disables it inside every named rule group — see [Disabling by base rule name](/docs/configuration/properties#disable-by-base-rule-name) for details.
 
-You can also define your own [named rule groups](/docs/configuration/properties#named-rule-groups) in the `rules` property. See the [configuration reference](/docs/configuration/properties#named-rule-groups) for details.
+You can also define your own [named rule groups](/docs/configuration/properties#named-rule-groups). For the full list of preset named rules, see [Named rules in presets](/docs/guides/presets#named-rules).
 
-For the full list of preset named rules, see [Named rules in presets](/docs/guides/presets#named-rules).
+## Enabling individual rules
 
-## Build-in rules
-
-The detail of each **built-in rule** is said from the [Rules page](/docs/rules/).
-
-## Applying custom rules
-
-Naturally, you can apply the [**custom rule**](./custom-rule) created by you or 3rd party developers.
-
-It applies the rule when specifying its plugin name and rule name solidus separated.
+Add rules to the `rules` property in your configuration file. Any value other than `false` enables the rule:
 
 ```json class=config
 {
   "rules": {
-    "[plugin-name]/[rule-name]": true
+    "attr-duplication": true,
+    "class-naming": "/[a-z]+/",
+    "required-attr": {
+      "value": "true"
+    }
   }
 }
 ```
 
-The plugin name and rule name are defined below:
+Set a rule to `false` to disable it. See the [`rules` property reference](/docs/configuration/properties#rules) for the full value format.
 
-```js title="./plugin.js"
-import { createPlugin, createRule } from '@markuplint/ml-core';
+The complete list of available rules is on the [Rules page](/docs/rules/).
 
-export default createPlugin({
-  name: 'my-plugin',
-  create(settings) {
-    return {
-      rules: {
-        'my-rule': createRule({
-          verify({ report }) {
-            // Evaluation and reporting
-            report(/* ... */);
-          },
-        }),
-      },
-    };
-  },
-});
-```
+## Applying rules to specific elements
+
+To apply rules only to certain elements, use [**selectors**](./selectors) with the `nodeRules` or `childNodeRules` property.
+
+**`nodeRules`** applies rules to the matched elements only:
 
 ```json class=config
 {
-  "plugins": ["./plugin.js"],
+  "nodeRules": [
+    {
+      "selector": "main",
+      "rules": {
+        "class-naming": "/[a-z]+(__[a-z]+)?/"
+      }
+    }
+  ]
+}
+```
+
+**`childNodeRules`** applies rules to child elements of the matched elements. Set `inheritance` to `true` to include all descendants:
+
+```json class=config
+{
+  "childNodeRules": [
+    {
+      "selector": ".legacy-section",
+      "inheritance": true,
+      "rules": {
+        // Also disables virtual rules like a11y/wai-aria
+        "wai-aria": false
+      }
+    }
+  ]
+}
+```
+
+You can use base rule names (e.g., `"wai-aria"`) and namespace wildcards (e.g., `"a11y/*": false`) in both `nodeRules` and `childNodeRules`. These automatically apply to virtual rules created by presets — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
+
+## Using custom rules
+
+You can use rules created by third-party developers or [create your own](./custom-rule). Specify the plugin name and rule name separated by a slash:
+
+```json class=config
+{
+  "plugins": ["./my-plugin.js"],
   "rules": {
     "my-plugin/my-rule": true
   }
 }
 ```
+
+## Next steps
+
+- **[Selectors](/docs/guides/selectors)** — Learn the selector syntax for targeting specific elements
+- **[Using Presets](/docs/guides/presets)** — See what each preset includes and how to combine them
+- **[Configuration Properties](/docs/configuration/properties)** — Full reference for all configuration options

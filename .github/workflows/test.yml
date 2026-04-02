@@ -17,6 +17,10 @@ on:
             - 'test/**'
             - 'yarn.lock'
             - '.yarnrc.yml'
+            - '.oxfmtrc.json'
+            - '.oxlintrc.json'
+            - 'cspell.json'
+            - 'vscode/**'
 
 env:
     NODE_BUILD_VERSION: 24
@@ -144,7 +148,6 @@ jobs:
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
-        needs: [dev-setup, build]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -174,20 +177,14 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
-            - name: Cache Restore Production
-              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-              with:
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+            - name: Lint (oxlint)
+              run: yarn lint-check:oxlint
 
-            - name: ESLint
-              run: yarn lint-check:eslint
+            - name: Format (oxfmt)
+              run: yarn lint-check:format
+
+            - name: Spellcheck
+              run: yarn lint:spellcheck
 
     cross-os-setup:
         runs-on: ${{ matrix.os }}
@@ -439,22 +436,6 @@ jobs:
                   cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
                   find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
 
-            - name: Debug - Check directory structure
-              run: |
-                  echo "=== Current working directory ==="
-                  pwd
-                  echo "=== List current directory ==="
-                  find . -maxdepth 1 \( -type f -o -type d \) | sort
-                  echo "=== Check if packages directory exists ==="
-                  find packages/ -maxdepth 1 2>/dev/null | head -10 || true
-                  echo "=== Check sandbox structure ==="
-                  find ${{ github.workspace }}/../sandbox -maxdepth 3 -type d
-                  echo "=== Check if markuplint package exists ==="
-                  find packages/markuplint/ -maxdepth 1 2>/dev/null | head -5 || true
-                  echo "=== Check workspace path ==="
-                  echo "workspace: ${{ github.workspace }}"
-                  echo "parent: ${{ github.workspace }}/.."
-
             - name: Delete package manager settings
               run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
 
@@ -464,24 +445,6 @@ jobs:
               with:
                   version: latest # Use latest pnpm version
                   run_install: false
-
-            - name: Debug - Before install
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  echo "=== Current working directory ==="
-                  pwd
-                  echo "=== Check package.json ==="
-                  head -20 package.json
-                  echo "=== Check if file: paths exist ==="
-                  find ../../../../markuplint/packages/markuplint/ -maxdepth 1 2>/dev/null | head -5 || true
-                  echo "=== Test relative path calculation ==="
-                  find ../../../../markuplint/packages/@markuplint/ml-core/ -maxdepth 1 2>/dev/null | head -5 || true
-                  echo "=== Check all files in directory ==="
-                  find . -maxdepth 1 \( -type f -o -type d \) | sort
-                  echo "=== Check tsconfig.json (if exists) ==="
-                  cat tsconfig.json 2>/dev/null || echo "tsconfig.json not found"
-                  echo "=== Check markuplint.config.ts ==="
-                  cat markuplint.config.ts 2>/dev/null || echo "markuplint.config.ts not found"
 
             - name: Setup Yarn v4 for sandbox
               if: matrix.pm == 'yarn'
@@ -499,26 +462,118 @@ jobs:
                   YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
               run: ${{ matrix.pm }} install
 
-            - name: Debug - After install
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              run: |
-                  echo "=== Check if packages were installed ==="
-                  find node_modules/ -maxdepth 1 2>/dev/null | head -10 || true
-                  echo "=== Check markuplint in node_modules ==="
-                  find node_modules/markuplint/ -maxdepth 1 2>/dev/null | head -5 || echo "markuplint not found in node_modules"
-
             - name: Test
               working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
               env:
                   DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
+              run: ${{ matrix.pm }} test
+
+    test-bun:
+        needs: build
+        runs-on: ubuntu-latest
+        continue-on-error: true
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
               run: |
-                  if [ "${{ matrix.env }}" = "ts-config-ts" ]; then
-                    echo "=== Debug tsx configuration ==="
-                    echo "TSX version:"
-                    npx tsx --version
-                    echo "TypeScript configuration being used:"
-                    npx tsx --print-config index.ts 2>/dev/null || echo "Cannot print config"
-                    echo "Test TypeScript compilation:"
-                    npx tsc --noEmit --showConfig 2>/dev/null || echo "tsc showConfig failed"
-                  fi
-                  ${{ matrix.pm }} test
+                  corepack enable
+                  yarn --version
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+              with:
+                  bun-version: latest
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Test with Bun
+              run: bunx --bun vitest run
+
+    test-deno:
+        needs: build
+        runs-on: ubuntu-latest
+        continue-on-error: true
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+              with:
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2
+              with:
+                  deno-version: latest
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              with:
+                  path: |
+                      '**/node_modules'
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/**/lib
+                      packages/**/cjs
+                      packages/**/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Test with Deno
+              run: deno run -A --unstable-detect-cjs node_modules/vitest/vitest.mjs run

@@ -9,7 +9,7 @@
 ### セレクタによる無効化 {#disable-by-selector}
 
 設定の[`nodeRules`](/docs/configuration/properties#noderules)もしくは[`childNodeRules`](/docs/configuration/properties#childnoderules)プロパティを使います。
-[部分的な適用](./applying-rules/#applying-to-some)を参考にしてください。
+[特定の要素にルールを適用する](./applying-rules/#applying-rules-to-specific-elements)を参考にしてください。
 
 ```json class=config
 {
@@ -28,6 +28,26 @@
 ```
 
 `[[target-rule-id]]`の部分は無効化したい[ルールID](/docs/rules/)に適宜変えてください。
+
+名前付きルールに対しても同じ方法が使えます — ベースルール名や名前空間ワイルドカードを使用できます:
+
+```json class=config
+{
+  "extends": ["markuplint:recommended"],
+  "nodeRules": [
+    {
+      "selector": ".legacy",
+      "rules": {
+        // ベースルール名で無効化 — a11y/wai-aria も無効化されます
+        "wai-aria": false,
+
+        // この要素のすべての a11y/* 名前付きルールを無効化
+        "a11y/*": false
+      }
+    }
+  ]
+}
+```
 
 ### 名前付きルールの無効化 {#disable-named-rules}
 
@@ -48,6 +68,8 @@
   }
 }
 ```
+
+これらの機能は `nodeRules` と `childNodeRules` でも使えます — 詳細は [nodeRules リファレンス](/docs/configuration/properties#noderules) を参照してください。
 
 利用可能な名前付きルールの一覧は[プリセット内の名前付きルール](/docs/guides/presets#named-rules)を参照してください。
 
@@ -141,3 +163,9 @@ $ markuplint --prune-suppressions "src/**/*.html"
 スコープセレクタが要素にマッチしなくなった場合（例: リファクタリング後）、抑制は維持され`--prune-suppressions`がクリーンアップを推奨します。**壊れたスコープが新しい違反を隠すことはありません。**
 
 詳しい設計理念については、[Bulk Suppressions設計ドキュメント](https://github.com/markuplint/markuplint/blob/dev/docs/architectures/BULK-SUPPRESSIONS.md)を参照してください。
+
+## 次のステップ
+
+- **[CLI](/docs/guides/cli)** — `--suppress` や `--prune-suppressions` を含むCLIオプション一覧
+- **[ルールを適用する](/docs/guides/applying-rules)** — 完全に無効化する代わりにルールを調整する
+- **[設定プロパティ](/docs/configuration/properties)** — `excludeFiles`、`nodeRules`、`childNodeRules`、`overrides` のリファレンス

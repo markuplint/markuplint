@@ -597,12 +597,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	async #resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
-		const rules = await resolveRules(
-			plugins,
-			ruleset,
-			this.#options?.importPresetRules ?? true,
-			this.#options?.autoLoad ?? true,
-		);
+		const rules = await resolveRules(plugins, ruleset, this.#options?.importPresetRules ?? true);
 
 		if (this.#options?.rules) {
 			rules.push(...this.#options.rules);

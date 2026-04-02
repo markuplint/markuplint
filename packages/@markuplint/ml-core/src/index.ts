@@ -15,7 +15,6 @@ export { enableDebug } from './debug.js';
 export { computeCursorOffset } from './cursor-offset.js';
 export { applyFixes } from './fix-applier.js';
 export type { FixResult } from './fix-applier.js';
-export { getIndent } from './ml-dom/helper/get-indent.js';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';
 export * from './ml-dom/index.js';

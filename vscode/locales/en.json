@@ -1,6 +1,7 @@
 {
 	"sentences": {
 		"since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in vs code extension": "Since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in VS Code Extension",
-		"your local markuplint is incompatible with node.js 22+ due to import assertion syntax. the bundled version (v{0}) is used instead. to use your local version, upgrade to markuplint@4.10.0 or later. see: https://github.com/markuplint/markuplint/issues/2837": "Your local markuplint is incompatible with Node.js 22+ due to import assertion syntax. The bundled version (v{0}) is used instead. To use your local version, upgrade to markuplint@4.10.0 or later. See: https://github.com/markuplint/markuplint/issues/2837"
+		"your local markuplint is incompatible with node.js 22+ due to import assertion syntax. the bundled version (v{0}) is used instead. to use your local version, upgrade to markuplint@4.10.0 or later. see: https://github.com/markuplint/markuplint/issues/2837": "Your local markuplint is incompatible with Node.js 22+ due to import assertion syntax. The bundled version (v{0}) is used instead. To use your local version, upgrade to markuplint@4.10.0 or later. See: https://github.com/markuplint/markuplint/issues/2837",
+		"[suppressed] this warning is suppressed but should be fixed:": "[Suppressed] This warning is suppressed but should be fixed:"
 	}
 }

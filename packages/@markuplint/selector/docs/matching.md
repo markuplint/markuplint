@@ -77,7 +77,10 @@ When a `SelectorTarget` matches, the `StructuredSelector` follows the combinator
 | `:scope`           | Matches the scope element (or root if no scope). Specificity `[0, 1, 0]`.              |
 | `:root`            | Matches the `<html>` element. Specificity `[0, 1, 0]`.                                 |
 
-### Custom: `:closest(selector)`
+### Custom: `:closest(selector)` (Deprecated)
+
+> **Deprecated in v5. Will be removed in v6.** Use `:is(selector *)` instead.
+> For example, `:closest(nav)` → `:is(nav *)`.
 
 Walks up the ancestor chain and matches if any ancestor matches the inner selector. This is a markuplint extension not in the W3C specification.
 
@@ -192,7 +195,7 @@ Regex selector specificity is calculated per target:
 - Combinators: descendant (` `), child (`>`), next-sibling (`+`), subsequent-sibling (`~`)
 - Multiple selectors (`,`)
 - `:not()`, `:is()`, `:where()`, `:has()`, `:scope`, `:root`
-- `:closest()` (markuplint extension)
+- `:closest()` (markuplint extension, **deprecated**)
 - Extended: `:aria()`, `:role()`, `:model()`
 - Namespace selectors (`svg|text`, `*|div`). Note: only `svg` and `*` namespaces are supported; other namespaces (e.g., `html`) throw `InvalidSelectorError`.
 

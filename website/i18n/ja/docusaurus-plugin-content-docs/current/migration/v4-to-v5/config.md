@@ -344,3 +344,43 @@ markuplint --config custom.json index.html
 ```
 
 CLI フラグの変更の詳細は [CLI 移行ガイド](/docs/migration/v4-to-v5/cli)を参照してください。
+
+## `:closest()` セレクタの非推奨
+
+:::caution 非推奨
+`:closest()` は v6 で削除されます。今のうちに移行してください。
+:::
+
+拡張擬似クラス `:closest()` は非推奨です。標準の `:is()` 擬似クラスと子孫結合子で同じ結果が得られるため、冗長です。
+
+**変更前:**
+
+```json
+{
+  "nodeRules": [
+    {
+      "selector": "div:closest(nav)",
+      "rules": { "class-naming": "/^nav-/" }
+    }
+  ]
+}
+```
+
+**変更後:**
+
+```json
+{
+  "nodeRules": [
+    {
+      "selector": "div:is(nav *)",
+      "rules": { "class-naming": "/^nav-/" }
+    }
+  ]
+}
+```
+
+| 変更前                              | 変更後                        |
+| ----------------------------------- | ----------------------------- |
+| `:closest(nav)`                     | `:is(nav *)`                  |
+| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
+| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |

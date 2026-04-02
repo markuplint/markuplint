@@ -1,3 +1,8 @@
 [submodule "crates/markuplint-html-parser/tests/html5lib-tests"]
 	path = crates/markuplint-html-parser/tests/html5lib-tests
 	url = https://github.com/html5lib/html5lib-tests.git
+[submodule "tests/external/validator"]
+	path = tests/external/validator
+	url = https://github.com/validator/validator.git
+	branch = main
+	shallow = true

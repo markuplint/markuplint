@@ -18,6 +18,7 @@ describe('RuleFixer', () => {
 
 	test('insertBefore', () => {
 		const token = { startOffset: 10, raw: 'hello' };
+		// eslint-disable-next-line unicorn/prefer-modern-dom-apis -- Not a DOM API; this is RuleFixer.insertBefore
 		const edit = fixer.insertBefore(token, 'prefix');
 		expect(edit).toStrictEqual({ range: [10, 10], text: 'prefix' });
 	});

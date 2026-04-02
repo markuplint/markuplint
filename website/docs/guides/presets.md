@@ -1,10 +1,6 @@
 # Using Presets
 
-There are some presets. It recommends specifying these because rules need to enable each.
-
-## Applying presets
-
-Specify the `extends` property of the [configuration](/docs/configuration) like below:
+Presets are curated sets of rules that you can apply with a single line of configuration. Instead of enabling rules one by one, specify a preset in the `extends` property:
 
 ```json class=config
 {
@@ -12,23 +8,21 @@ Specify the `extends` property of the [configuration](/docs/configuration) like 
 }
 ```
 
-You can choose some **base presets** appropriately for your preference.
+## Which preset should I use?
 
-```json class=config
-{
-  "extends": ["markuplint:html-standard", "markuplint:a11y"]
-}
-```
+Choose based on your project type:
 
-### Base presets {#base-presets}
+| Project type               | Recommended preset                   |
+| -------------------------- | ------------------------------------ |
+| Static HTML (no framework) | `markuplint:recommended-static-html` |
+| React / Next.js / Preact   | `markuplint:recommended-react`       |
+| Vue / Nuxt                 | `markuplint:recommended-vue`         |
+| Svelte / SvelteKit         | `markuplint:recommended-svelte`      |
+| Other / General purpose    | `markuplint:recommended`             |
 
-- `markuplint:a11y`
-- `markuplint:html-standard`
-- `markuplint:performance`
-- `markuplint:rdfa`
-- `markuplint:security`
+All recommended presets include the same **base presets** (`a11y`, `html-standard`, `performance`, `rdfa`, `security`), plus framework-specific rules where applicable.
 
-See [rulesets](#rulesets-of-base-presets) what each preset include those.
+## Applying presets
 
 ### Recommended presets
 
@@ -38,7 +32,25 @@ See [rulesets](#rulesets-of-base-presets) what each preset include those.
 - `markuplint:recommended-vue`
 - `markuplint:recommended-svelte`
 
-These **recommended presets** include **all [base presets](#base-presets)**. And each has specific rulesets (e.g., [`markuplint:recommended-static-html`](#preset-static-html), [`markuplint:recommended-react`](#preset-react)) except `markuplint:recommended`.
+These **recommended presets** include **all [base presets](#base-presets)** and each has framework-specific rulesets (e.g., [`markuplint:recommended-static-html`](#preset-static-html), [`markuplint:recommended-react`](#preset-react)) except `markuplint:recommended`.
+
+### Base presets {#base-presets}
+
+You can also pick individual base presets if you want fine-grained control:
+
+- `markuplint:a11y`
+- `markuplint:html-standard`
+- `markuplint:performance`
+- `markuplint:rdfa`
+- `markuplint:security`
+
+```json class=config
+{
+  "extends": ["markuplint:html-standard", "markuplint:a11y"]
+}
+```
+
+See [rulesets](#rulesets-of-base-presets) below for what each preset includes.
 
 ## Named rules in presets {#named-rules}
 
@@ -170,3 +182,9 @@ Includes all [base presets](#base-presets) plus the following rules:
 | Named Rule               | Description                                                                                                                        |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `svelte/no-hard-code-id` | Components with hard-coded IDs cannot be mounted multiple times because IDs must be unique in a document. Use dynamic IDs instead. |
+
+## Next steps
+
+- **[Applying Rules](/docs/guides/applying-rules)** — Customize preset rules or add individual rules
+- **[Beyond HTML](/docs/guides/beyond-html)** — Set up parsers for JSX, Vue, Svelte, and more
+- **[Configuration](/docs/configuration)** — Learn about configuration file formats and properties

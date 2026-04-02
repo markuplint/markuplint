@@ -12,6 +12,7 @@
 	},
 	"sentences": {
 		"since markuplint could not be found in the node_modules of the workspace, this use the version (v{0}) installed in vs code extension": "ワークスペースのnode_modulesにmarkuplintが発見できなかったためVS Code拡張にインストールされているバージョン(v{0})を利用します",
-		"your local markuplint is incompatible with node.js 22+ due to import assertion syntax. the bundled version (v{0}) is used instead. to use your local version, upgrade to markuplint@4.10.0 or later. see: https://github.com/markuplint/markuplint/issues/2837": "ローカルのmarkuplintはimport assertion構文のためNode.js 22+と互換性がありません。代わりにバンドル版(v{0})を使用しています。ローカル版を使用するにはmarkuplint@4.10.0以降にアップグレードしてください。詳細: https://github.com/markuplint/markuplint/issues/2837"
+		"your local markuplint is incompatible with node.js 22+ due to import assertion syntax. the bundled version (v{0}) is used instead. to use your local version, upgrade to markuplint@4.10.0 or later. see: https://github.com/markuplint/markuplint/issues/2837": "ローカルのmarkuplintはimport assertion構文のためNode.js 22+と互換性がありません。代わりにバンドル版(v{0})を使用しています。ローカル版を使用するにはmarkuplint@4.10.0以降にアップグレードしてください。詳細: https://github.com/markuplint/markuplint/issues/2837",
+		"[suppressed] this warning is suppressed but should be fixed:": "[抑制中] この警告は抑制されていますが、本来は修正すべき問題です:"
 	}
 }

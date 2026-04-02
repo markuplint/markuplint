@@ -14,7 +14,13 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
+		// "The dir global content attribute is required on this element."
+		"dir": {
+			"required": true
+		}
+	},
 	"aria": {
 		"implicitRole": "generic",
 		"permittedRoles": true,

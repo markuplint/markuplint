@@ -1,4 +1,4 @@
-import type { MLRule } from './ml-rule/index.js';
+import type { AnyMLRule, MLRule } from './ml-rule/index.js';
 import type { Ruleset } from './ruleset/index.js';
 import type { MLFabric, MLSchema } from './types.js';
 import type { LocaleSet } from '@markuplint/i18n';
@@ -162,6 +162,8 @@ export class MLCore {
 			rules: resolvedRules,
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
+			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
 		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
@@ -200,7 +202,7 @@ export class MLCore {
 		this.#schemas = schemas ?? this.#schemas;
 		this.#configErrors = [...(configErrors ?? [])];
 
-		const baseRules = rules?.slice() ?? this.#rules.filter(r => !r.baseRuleId);
+		const baseRules = rules ? [...rules] : this.#rules.filter(r => !r.baseRuleId);
 
 		// Use pre-expansion originals as fallback when ruleset is not provided
 		const incomingNodeRules = ruleset?.nodeRules ?? this.#originalNodeRules;
@@ -228,6 +230,8 @@ export class MLCore {
 			rules: resolvedRules,
 			nodeRules: nodeRuleResult.transformedNodeRules,
 			childNodeRules: childNodeRuleResult.transformedNodeRules,
+			baseRuleToVirtualNames: buildBaseRuleToVirtualNames(namedRulesResult.virtualRules),
+			mappingErrors: [],
 		};
 		this.#disabledNamespaces = extractDisabledNamespaces(resolvedRules);
 		this.#configErrors.push(...namedRulesResult.errors, ...nodeRuleResult.errors, ...childNodeRuleResult.errors);
@@ -388,6 +392,9 @@ export class MLCore {
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				pretenders: this.#pretenders,
 			});
+			// Collect errors from rule mapping (e.g., invalid wildcard usage)
+			this.#configErrors.push(...this.#ruleset.mappingErrors);
+			this.#ruleset.mappingErrors.length = 0;
 		} catch (error) {
 			if (error instanceof ParserError) {
 				this.#document = error;
@@ -592,6 +599,30 @@ function extractDisabledNamespaces(rules: { readonly [key: string]: unknown }): 
 	return Object.entries(rules)
 		.filter(([key, value]) => key.endsWith('/*') && value === false)
 		.map(([key]) => key.slice(0, -1)); // "a11y/*" → "a11y/"
+}
+
+/**
+ * Builds a mapping from base rule names to virtual rule names.
+ * Used by nodeRules/childNodeRules to propagate settings (especially `false`)
+ * to virtual rules created by NamedRuleGroups.
+ */
+function buildBaseRuleToVirtualNames(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	virtualRules: readonly AnyMLRule[],
+): ReadonlyMap<string, readonly string[]> {
+	const map = new Map<string, string[]>();
+	for (const vRule of virtualRules) {
+		if (!vRule.baseRuleId) {
+			continue;
+		}
+		const list = map.get(vRule.baseRuleId);
+		if (list) {
+			list.push(vRule.name);
+		} else {
+			map.set(vRule.baseRuleId, [vRule.name]);
+		}
+	}
+	return map;
 }
 
 /**

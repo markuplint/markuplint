@@ -32,7 +32,7 @@
 		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true,
-		"#HTMLLinkAndFetchingAttrs": ["crossorigin"],
+		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"],
 		"#HTMLEmbededAndMediaContentAttrs": [
 			"src",
 			"preload",
