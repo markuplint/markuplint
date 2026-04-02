@@ -45,6 +45,7 @@ impl Rule for DisallowedElement {
                 if matcher::matches(sel, arena, node_id, Some(node_id), Some(spec), None) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: format!("\"{selector_str}\" is disallowed"),
                         line: el.base.line,
