@@ -134,6 +134,7 @@ impl Rule for UseList {
 
             violations.push(Violation {
                 rule_id: self.id().to_string(),
+                name: None,
                 severity: global.severity.clone(),
                 message: "Use the li element".to_string(),
                 line: text.base.line,
@@ -224,6 +225,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let text_id = builder.push(DomNode::Text(TextData {
             base: NodeBase {
@@ -240,6 +242,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -415,6 +418,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let span_id = builder.push(DomNode::Element(ElementData {
             base: NodeBase {
@@ -441,6 +445,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let text_id = builder.push(DomNode::Text(TextData {
             base: NodeBase {
@@ -457,6 +462,7 @@ mod tests {
                 prev_sibling: Some(span_id),
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(div_id) {
             e.base.id = div_id;
@@ -530,6 +536,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let comment_id = builder.push(DomNode::Comment(CommentData {
             base: NodeBase {
@@ -563,6 +570,7 @@ mod tests {
                 prev_sibling: Some(comment_id),
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(div_id) {
             e.base.id = div_id;
@@ -636,6 +644,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let psblock_id = builder.push(DomNode::PSBlock(PSBlockData {
             base: NodeBase {
@@ -671,6 +680,7 @@ mod tests {
                 prev_sibling: Some(psblock_id),
                 depth: 2,
             },
+            is_bogus: false,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(div_id) {
             e.base.id = div_id;
