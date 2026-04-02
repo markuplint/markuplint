@@ -318,6 +318,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		// Convert NapiViolation[] → Violation[]
 		const violations: Violation[] = napiViolations.map(v => ({
 			ruleId: v.ruleId,
+			name: v.name ?? undefined,
 			severity: v.severity as Violation['severity'],
 			message: v.message,
 			line: v.line,
@@ -646,6 +647,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 type NapiViolation = {
 	ruleId: string;
+	name?: string;
 	severity: string;
 	message: string;
 	line: number;
