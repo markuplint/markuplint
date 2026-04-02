@@ -304,10 +304,7 @@ fn slice_span(source: &str, start: usize, end: usize) -> String {
 /// Only converts the specific prefixes defined in the spec:
 /// `xlink`, `xml`, `xmlns`. Other attributes with spaces are left as-is.
 fn restore_foreign_attr_colon(name: &str) -> String {
-    if name.starts_with("xlink ")
-        || name.starts_with("xml ")
-        || name.starts_with("xmlns ")
-    {
+    if name.starts_with("xlink ") || name.starts_with("xml ") || name.starts_with("xmlns ") {
         name.replacen(' ', ":", 1)
     } else {
         name.to_string()

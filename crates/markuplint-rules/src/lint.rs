@@ -2174,9 +2174,7 @@ mod tests {
             id: 0,
             raw: String::new(),
             is_fragment: true,
-            unknown_parse_error: Some(
-                "The b is invalid element (2:5): Broke mapping nodes.".to_string(),
-            ),
+            unknown_parse_error: Some("The b is invalid element (2:5): Broke mapping nodes.".to_string()),
             children: vec![],
         }));
         let arena = builder.finish();
@@ -2230,11 +2228,7 @@ mod tests {
             result.violations
         );
 
-        let base_violations: Vec<_> = result
-            .violations
-            .iter()
-            .filter(|v| v.name.is_none())
-            .collect();
+        let base_violations: Vec<_> = result.violations.iter().filter(|v| v.name.is_none()).collect();
         assert!(
             !base_violations.is_empty(),
             "Expected base violations from the all_namespaced+nodeRule path, got: {:?}",

@@ -895,7 +895,11 @@ mod tests {
         let rule = TableRowColumnAlignment;
         let violations = rule.verify(&arena, &spec(), &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1, "Expected 1 violation, got: {violations:?}");
-        assert!(violations[0].message.contains("extra"), "Expected extra column message: {}", violations[0].message);
+        assert!(
+            violations[0].message.contains("extra"),
+            "Expected extra column message: {}",
+            violations[0].message
+        );
         // The violation should report at the td position (col=10), not the tr position (col=1)
         assert_eq!(
             violations[0].col, 10,

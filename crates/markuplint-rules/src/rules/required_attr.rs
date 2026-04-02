@@ -334,7 +334,9 @@ mod tests {
         let rule = RequiredAttr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert!(
-            violations.iter().any(|v| v.message.contains("\"src\"") || v.message.contains("\"srcset\"")),
+            violations
+                .iter()
+                .any(|v| v.message.contains("\"src\"") || v.message.contains("\"srcset\"")),
             "Expected requiredEither violation for missing src/srcset on img, got: {violations:?}"
         );
     }
