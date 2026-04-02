@@ -29,8 +29,18 @@ impl Rule for NeighborPopovers {
                 continue;
             }
 
-            // Check if element has popovertarget attribute
-            let Some(target_id_str) = helpers::get_attr_value(arena, node_id, "popovertarget") else {
+            // Check if element is a popover trigger (popovertarget or commandfor with popover command)
+            let target_id_str = helpers::get_attr_value(arena, node_id, "popovertarget").or_else(|| {
+                let cmd = helpers::get_attr_value(arena, node_id, "command")?;
+                let cmd_lower = cmd.to_ascii_lowercase();
+                if matches!(cmd_lower.as_str(), "toggle-popover" | "show-popover" | "hide-popover") {
+                    helpers::get_attr_value(arena, node_id, "commandfor")
+                } else {
+                    None
+                }
+            });
+
+            let Some(target_id_str) = target_id_str else {
                 continue;
             };
 
@@ -44,33 +54,26 @@ impl Rule for NeighborPopovers {
                 continue;
             };
 
-            // Check if trigger and target are siblings
-            let Some(parent_id) = el.base.parent else {
+            // Walk subsequent nodes in document order between trigger and target.
+            // Build flat document-order list by DFS from document root, then
+            // find nodes between trigger and target positions.
+            let doc_order = build_document_order(arena);
+            let trigger_idx = doc_order.iter().position(|&id| id == node_id);
+            let target_idx = doc_order.iter().position(|&id| id == target_node_id);
+
+            let (Some(t_idx), Some(tgt_idx)) = (trigger_idx, target_idx) else {
                 continue;
             };
-            let Some(siblings) = arena.children_of(parent_id) else {
+
+            if t_idx >= tgt_idx {
                 continue;
-            };
+            }
 
-            // Find positions of trigger and target in sibling list
-            let trigger_pos = siblings.iter().position(|&id| id == node_id);
-            let target_pos = siblings.iter().position(|&id| id == target_node_id);
-
-            let (Some(trigger_pos), Some(target_pos)) = (trigger_pos, target_pos) else {
-                continue; // Not siblings
-            };
-
-            let (start, end) = if trigger_pos < target_pos {
-                (trigger_pos + 1, target_pos)
-            } else {
-                (target_pos + 1, trigger_pos)
-            };
-
-            // Check siblings between trigger and target
-            for &sibling_id in &siblings[start..end] {
-                if has_perceptible_content(arena, spec, sibling_id) {
+            for &sub_id in &doc_order[t_idx + 1..tgt_idx] {
+                if has_perceptible_content(arena, spec, sub_id) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: "Detected perceptible content between trigger and target".to_string(),
                         line: el.base.line,
@@ -83,6 +86,28 @@ impl Rule for NeighborPopovers {
         }
 
         violations
+    }
+}
+
+/// Build a flat list of node IDs in document order (DFS pre-order).
+fn build_document_order(arena: &DomArena) -> Vec<NodeId> {
+    let mut order = Vec::new();
+    if let Some(doc) = arena.document() {
+        let doc_id = match doc {
+            DomNode::Document(d) => d.id,
+            _ => return order,
+        };
+        dfs_collect(arena, doc_id, &mut order);
+    }
+    order
+}
+
+fn dfs_collect(arena: &DomArena, node_id: NodeId, order: &mut Vec<NodeId>) {
+    order.push(node_id);
+    if let Some(children) = arena.children_of(node_id) {
+        for &child_id in children {
+            dfs_collect(arena, child_id, order);
+        }
     }
 }
 
@@ -220,6 +245,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
@@ -297,6 +323,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 1,
             },
+            is_bogus: false,
         }));
         let div_id = builder.push(DomNode::Element(make_element_data(
             "div",
@@ -418,6 +445,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 1,
             },
+            is_bogus: false,
         }));
         let div_id = builder.push(DomNode::Element(make_element_data(
             "div",
