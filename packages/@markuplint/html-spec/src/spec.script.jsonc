@@ -30,7 +30,7 @@
 			"type": [
 				"MIMEType",
 				{
-					"enum": ["module", "importmap"],
+					"enum": ["module", "importmap", "speculationrules"],
 					"caseInsensitive": true
 				}
 			]

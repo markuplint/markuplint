@@ -54228,7 +54228,7 @@
 					"type": [
 						"MIMEType",
 						{
-							"enum": ["module", "importmap"],
+							"enum": ["module", "importmap", "speculationrules"],
 							"caseInsensitive": true
 						}
 					]
@@ -61433,7 +61433,7 @@
 					"defaultValue": "120%"
 				},
 				"mask-type": {
-					"description": "This attribute defines the mask mode for the contents for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
+					"description": "This attribute defines the mask mode for the contents of the <mask>. Value type: alpha | luminance; Default value: luminance; Animatable: yes"
 				},
 				"maskContentUnits": {
 					"description": "This attribute defines the coordinate system for the contents of the <mask>. Value type: userSpaceOnUse | objectBoundingBox; Default value: userSpaceOnUse; Animatable: yes",
