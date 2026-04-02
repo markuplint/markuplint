@@ -56,6 +56,7 @@ impl Rule for IdDuplication {
                 for &(line, col, ref raw) in &locations[1..] {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: config.global().severity.clone(),
                         message: format!("\"{value}\" is duplicated"),
                         line,
@@ -178,6 +179,7 @@ mod tests {
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
                 e.base.id = el_id;
@@ -343,6 +345,7 @@ mod tests {
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
                 e.base.id = el_id;
