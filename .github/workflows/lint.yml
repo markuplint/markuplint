@@ -51,8 +51,8 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
-            - name: Prettier
-              run: yarn lint-check:prettier
+            - name: Format (oxfmt)
+              run: yarn lint-check:format
 
             - name: Spellcheck
               run: yarn lint:spellcheck
