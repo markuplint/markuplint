@@ -264,3 +264,104 @@ pub struct UnmatchedOpts {
     pub candidate: Option<String>,
     pub fallback_to: Option<String>,
 }
+
+// ============================================================
+// JSON → Type conversion
+// ============================================================
+
+/// Convert a `serde_json::Value` (from spec `attr_type`) into a `Type`.
+///
+/// Handles these JSON formats:
+/// - `"Boolean"`, `"Any"`, `"Number"`, etc. → `Type::Keyword`
+/// - `{ "enum": ["a", "b"] }` → `Type::Enum`
+/// - `{ "token": ..., "separator": "space"|"comma" }` → `Type::List`
+/// - `{ "type": "integer"|"float", ... }` → `Type::Number`
+/// - `{ "pattern": "..." }` → `Type::Pattern`
+/// - `{ "directive": [...], "token": ... }` → `Type::Directive`
+///
+/// Returns `None` for `null`, `false`, or unrecognizable values.
+#[must_use]
+pub fn value_to_type(value: &serde_json::Value) -> Option<Type> {
+    match value {
+        serde_json::Value::String(s) => Some(Type::Keyword(s.clone())),
+        serde_json::Value::Object(obj) => parse_object_type(obj),
+        _ => None,
+    }
+}
+
+/// Parse a JSON object into a `Type`.
+fn parse_object_type(obj: &serde_json::Map<String, serde_json::Value>) -> Option<Type> {
+    // Enum: { enum: [...] }
+    if let Some(enum_arr) = obj.get("enum").and_then(serde_json::Value::as_array) {
+        let enum_values: Vec<String> = enum_arr.iter().filter_map(|v| v.as_str().map(String::from)).collect();
+        let case_insensitive = obj
+            .get("caseInsensitive")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
+        return Some(Type::Enum(EnumType {
+            enum_values,
+            case_insensitive,
+            ..Default::default()
+        }));
+    }
+    // Pattern: { pattern: "..." }
+    if let Some(pattern) = obj.get("pattern").and_then(serde_json::Value::as_str) {
+        return Some(Type::Pattern(PatternType {
+            pattern: pattern.to_string(),
+        }));
+    }
+    // List: { token: ..., separator: "space"|"comma" }
+    if let Some(token_val) = obj.get("token")
+        && let Some(token_type) = value_to_type(token_val)
+    {
+        let separator = match obj.get("separator").and_then(serde_json::Value::as_str) {
+            Some("comma") => Separator::Comma,
+            _ => Separator::Space,
+        };
+        let allow_empty = obj
+            .get("allowEmpty")
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(true);
+        let unique = obj.get("unique").and_then(serde_json::Value::as_bool).unwrap_or(false);
+        let ordered = obj.get("ordered").and_then(serde_json::Value::as_bool).unwrap_or(false);
+        return Some(Type::List(ListType {
+            token: Box::new(token_type),
+            separator,
+            allow_empty,
+            unique,
+            ordered,
+            ..Default::default()
+        }));
+    }
+    // Number: { type: "integer"|"float", gt?, gte?, lt?, lte? }
+    if let Some(num_type) = obj.get("type").and_then(serde_json::Value::as_str) {
+        let kind = match num_type {
+            "float" => NumericKind::Float,
+            _ => NumericKind::Integer,
+        };
+        return Some(Type::Number(NumberType {
+            number_type: kind,
+            gt: obj.get("gt").and_then(serde_json::Value::as_f64),
+            gte: obj.get("gte").and_then(serde_json::Value::as_f64),
+            lt: obj.get("lt").and_then(serde_json::Value::as_f64),
+            lte: obj.get("lte").and_then(serde_json::Value::as_f64),
+            clampable: obj
+                .get("clampable")
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(false),
+        }));
+    }
+    // Directive: { directive: [...], token: ... }
+    if let Some(dirs) = obj.get("directive").and_then(serde_json::Value::as_array) {
+        let directive: Vec<String> = dirs.iter().filter_map(|v| v.as_str().map(String::from)).collect();
+        let token_val = obj.get("token");
+        let token = token_val.and_then(value_to_type).unwrap_or(Type::Keyword("Any".into()));
+        let ref_ = obj.get("ref").and_then(serde_json::Value::as_str).map(String::from);
+        return Some(Type::Directive(DirectiveType {
+            directive,
+            token: Box::new(token),
+            ref_,
+        }));
+    }
+    None
+}

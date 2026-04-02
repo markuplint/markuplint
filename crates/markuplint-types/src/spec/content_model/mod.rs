@@ -19,7 +19,12 @@ pub use serde_types::*;
 
 /// Get the typed content model for an element.
 pub fn get_content_model(spec: &MLMLSpec, element_name: &str) -> Option<ContentModel> {
-    let el = lookup::get_spec(spec, element_name)?;
+    // Use exact match only (no SVG/MathML prefix fallback).
+    // The caller (permitted_contents) already provides namespace-prefixed
+    // names like "svg:g". Using get_spec's prefix fallback would cause
+    // HTML-namespace elements like <g> inside <foreignObject> to incorrectly
+    // resolve to svg:g's content model.
+    let el = spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(element_name))?;
     serde_json::from_value(el.content_model.clone()).ok()
 }
 

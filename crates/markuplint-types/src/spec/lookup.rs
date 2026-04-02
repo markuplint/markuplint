@@ -11,7 +11,19 @@ use std::collections::HashMap;
 /// Handles namespace-prefixed names (e.g., `"svg:svg"` matches an element
 /// with `name == "svg:svg"`). Falls back to plain name match.
 pub fn get_spec<'a>(spec: &'a MLMLSpec, name: &str) -> Option<&'a ElementSpec> {
-    spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(name))
+    // Try exact match first
+    if let Some(el) = spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(name)) {
+        return Some(el);
+    }
+    // Try with namespace prefixes (svg:, math:) for elements that may
+    // appear without prefix in the DOM but are stored with prefix in spec
+    for prefix in &["svg", "math"] {
+        let prefixed = format!("{prefix}:{name}");
+        if let Some(el) = spec.specs.iter().find(|s| s.name.eq_ignore_ascii_case(&prefixed)) {
+            return Some(el);
+        }
+    }
+    None
 }
 
 /// Find an element spec by tag name and namespace.

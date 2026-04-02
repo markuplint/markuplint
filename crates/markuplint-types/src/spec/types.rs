@@ -301,6 +301,10 @@ pub struct Attribute {
     /// TS: `bool | AttributeCondition`
     #[serde(default)]
     pub required: Option<AttributeRequired>,
+    /// Alternative attributes: at least one of these must be present.
+    /// E.g., `img[src]` has `requiredEither: ["srcset"]` — either `src` or `srcset` is required.
+    #[serde(default, rename = "requiredEither")]
+    pub required_either: Option<Vec<String>>,
     /// Condition under which this attribute applies.
     /// TS: `AttributeCondition` (CSS selector string or array of selector strings).
     #[serde(default)]
@@ -316,6 +320,9 @@ pub struct Attribute {
     /// Animation type.
     #[serde(default, rename = "animationType")]
     pub animation_type: Option<String>,
+    /// Whether this attribute should not be used (deprecated/disallowed in spec).
+    #[serde(default, rename = "noUse")]
+    pub no_use: Option<bool>,
 }
 
 // ============================================================
