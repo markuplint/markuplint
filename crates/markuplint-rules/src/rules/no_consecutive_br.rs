@@ -44,6 +44,7 @@ impl Rule for NoConsecutiveBr {
             {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: rule_config.severity.clone(),
                     message: "Consecutive br elements detected".to_string(),
                     line: next_el.base.line,
@@ -97,6 +98,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }
     }
 
@@ -137,6 +139,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let br2_id = builder.push(DomNode::Element(make_br(0, 1, 20)));
 
@@ -230,6 +233,7 @@ mod tests {
                 prev_sibling: None,
                 depth: 1,
             },
+            is_bogus: false,
         }));
         let br2_id = builder.push(DomNode::Element(make_br(0, 2, 3)));
 
@@ -296,6 +300,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let br_id = builder.push(DomNode::Element(make_br(0, 1, 4)));
         let span_id = builder.push(DomNode::Element(ElementData {
@@ -323,6 +328,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
 
         // Wire up siblings: br -> span
