@@ -42,14 +42,10 @@ test('BrowsingContextNameOrKeyword', () => {
 });
 
 test('BCP47', () => {
-	expect(valueCheck(t, 'lang', '', 'BCP47')).toStrictEqual([
-		'the "lang" attribute must not be empty. It expects the BCP47 format (https://tools.ietf.org/rfc/bcp/bcp47.html)',
-		{
-			col: 0,
-			line: 0,
-			raw: '',
-		},
-	]);
+	// Empty string is valid per HTML LS (language set to unknown)
+	expect(valueCheck(t, 'lang', '', 'BCP47')).toBe(false);
+	// Invalid BCP47 should return error
+	expect(valueCheck(t, 'lang', ':::', 'BCP47')).not.toBe(false);
 });
 
 test('DateTime', () => {
