@@ -361,12 +361,13 @@ fn to_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
         };
         Regex::new(&pat).ok()
     } else {
-        // Plain string: exact match
-        let escaped = regex::escape(pattern.trim());
+        // TS: new RegExp(pattern) — treated as raw regex, not escaped.
+        // Patterns like "^(?<value>.+)$" must work as-is.
+        let trimmed = pattern.trim();
         let pat = if ignore_case {
-            format!("(?i)^{escaped}$")
+            format!("(?i){trimmed}")
         } else {
-            format!("^{escaped}$")
+            trimmed.to_string()
         };
         Regex::new(&pat).ok()
     }
@@ -542,6 +543,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Document(doc)) = builder.get_mut(doc_id) {
             doc.children.push(el_id);
@@ -608,10 +610,10 @@ mod tests {
     }
 
     #[test]
-    fn empty_pattern_matches_nothing() {
-        // Empty string as pattern becomes ^$ which only matches empty string
+    fn empty_pattern_matches_everything() {
+        // TS: new RegExp("") matches everything (like /(?:)/)
         assert!(regex_match("", "", false).is_some());
-        assert!(regex_match("", "div", false).is_none());
+        assert!(regex_match("", "div", false).is_some());
     }
 
     // --- uncombined_match tests ---
@@ -802,10 +804,11 @@ mod tests {
 
     #[test]
     fn to_regex_plain_string() {
+        // TS: new RegExp("foo") — substring match, not exact
         let re = to_regex("foo", false).unwrap();
         assert!(re.is_match("foo"));
-        assert!(!re.is_match("foobar"));
-        assert!(!re.is_match("barfoo"));
+        assert!(re.is_match("foobar")); // substring match
+        assert!(re.is_match("barfoo")); // substring match
     }
 
     #[test]
