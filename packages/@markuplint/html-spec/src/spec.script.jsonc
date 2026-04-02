@@ -75,19 +75,11 @@
 			},
 			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
 		},
-		// crossorigin: must not be used with importmap or speculationrules
-		// (overrides the definition from #HTMLLinkAndFetchingAttrs)
-		"crossorigin": {
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
-		},
-		// referrerpolicy: must not be used with importmap or speculationrules
-		"referrerpolicy": {
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
-		},
-		// fetchpriority: must not be used with importmap or speculationrules
-		"fetchpriority": {
-			"condition": ":not([type='importmap' i]):not([type='speculationrules' i])"
-		}
+		// NOTE: crossorigin, referrerpolicy, and fetchpriority should be
+		// disallowed on importmap/speculationrules per spec, but overriding
+		// global category attrs here drops the type definition (enum values).
+		// This needs architecture support for per-element conditions on
+		// global attributes. See #3631.
 	},
 	"aria": {
 		"implicitRole": false,
