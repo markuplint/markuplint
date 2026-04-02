@@ -48,6 +48,7 @@ impl Rule for Doctype {
                 if deny_obsolete && (!dt.public_id.is_empty() || !dt.system_id.is_empty()) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: config.severity.clone(),
                         message: "Never declare obsolete doctype".to_string(),
                         line: dt.base.line,
@@ -61,6 +62,7 @@ impl Rule for Doctype {
         if !found_doctype {
             violations.push(Violation {
                 rule_id: self.id().to_string(),
+                name: None,
                 severity: config.severity.clone(),
                 message: "Require doctype".to_string(),
                 line: 1,
