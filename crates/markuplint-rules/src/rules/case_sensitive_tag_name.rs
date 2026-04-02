@@ -2,6 +2,7 @@
 
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers::{extract_tag_name_from_raw, get_raw_tag_name};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
@@ -31,40 +32,50 @@ impl Rule for CaseSensitiveTagName {
 
             let message = format!("Tag names of HTML elements must be {case}case");
 
-            // Check opening tag
+            // Use raw tag name from source to preserve original case
+            let Some(raw_name) = get_raw_tag_name(el) else {
+                continue;
+            };
+
             let is_correct = match case {
-                "upper" => el.base.node_name == el.base.node_name.to_ascii_uppercase(),
-                _ => el.base.node_name == el.base.node_name.to_ascii_lowercase(),
+                "upper" => raw_name == raw_name.to_ascii_uppercase(),
+                _ => raw_name == raw_name.to_ascii_lowercase(),
             };
 
             if !is_correct {
+                // Report at tag name position (after '<'), with raw = tag name only
+                #[allow(clippy::cast_possible_truncation)]
+                let name_col = el.base.col + el.tag_open_char.len() as u32;
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: rule_config.severity.clone(),
                     message: message.clone(),
                     line: el.base.line,
-                    col: el.base.col,
-                    raw: el.base.raw.clone(),
+                    col: name_col,
+                    raw: raw_name.to_string(),
                 });
             }
 
-            // Check closing tag via pair_node_id
-            if let Some(pair_id) = el.pair_node_id
-                && let Some(pair_node) = arena.get(pair_id)
-                && let Some(base) = pair_node.base()
-            {
+            // Check closing tag
+            if let Some(ct) = &el.close_tag {
+                let Some(close_raw_name) = extract_tag_name_from_raw(&ct.raw) else {
+                    continue;
+                };
                 let pair_correct = match case {
-                    "upper" => base.node_name == base.node_name.to_ascii_uppercase(),
-                    _ => base.node_name == base.node_name.to_ascii_lowercase(),
+                    "upper" => close_raw_name == close_raw_name.to_ascii_uppercase(),
+                    _ => close_raw_name == close_raw_name.to_ascii_lowercase(),
                 };
                 if !pair_correct {
+                    // Report at closing tag start ('<' position), raw = entire closing tag
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message: message.clone(),
-                        line: base.line,
-                        col: base.col,
-                        raw: base.raw.clone(),
+                        line: ct.line,
+                        col: ct.col,
+                        raw: ct.raw.clone(),
                     });
                 }
             }
@@ -176,6 +187,11 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: Some(markuplint_dom::node::CloseTagInfo {
+                raw: "</DIV>".to_string(),
+                line: 1,
+                col: 6,
+            }),
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -190,6 +206,8 @@ mod tests {
         // Opening tag "div" is lowercase (OK), closing tag "DIV" is uppercase (violation)
         assert_eq!(violations.len(), 1);
         assert_eq!(violations[0].raw, "</DIV>");
+        // col should be at closing tag start ('<' position)
+        assert_eq!(violations[0].col, 6);
     }
 
     #[test]
@@ -228,6 +246,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
@@ -286,6 +305,7 @@ mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
             e.base.id = el_id;
