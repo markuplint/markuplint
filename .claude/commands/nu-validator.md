@@ -1,5 +1,6 @@
 ---
 description: Run nu-html-checker compatibility benchmark
+disable-model-invocation: true
 ---
 
 Run the nu-html-checker compatibility test suite against markuplint and generate a report.
