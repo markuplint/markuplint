@@ -10,6 +10,7 @@ import { checkSerializedPermissionsPolicy } from './w3c/check-serialized-permiss
 import { checkAutoComplete } from './whatwg/check-autocomplete.js';
 import { checkDateTime } from './whatwg/check-datetime/index.js';
 import { checkMIMEType } from './whatwg/check-mime-type.js';
+import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
 import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
 import { isCustomElementName } from './whatwg/is-custom-element-name.js';
@@ -239,21 +240,14 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * **NO IMPLEMENT NEVER**
-	 *
-	 * We can evaluate the absolute URL through WHATWG API,
-	 * but it isn't easy to check the relative URL.
-	 * And the relative URL expects almost all of the characters.
-	 * In short, this checking is meaningless.
-	 *
-	 * So it always returns the matched object.
-	 *
-	 * If you want to expect the URL without multi-byte characters,
-	 * it should use another rule.
+	 * Validates a URL (potentially surrounded by spaces) per WHATWG URL Standard.
+	 * Uses `new URL()` for structural parsing plus strict checks for illegal
+	 * whitespace, malformed percent-encoding, and C0 control characters.
+	 * Relative URLs are resolved against a dummy base for syntax validation.
 	 */
 	URL: {
 		ref: 'https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces',
-		is: () => matched(),
+		is: checkURL(),
 	},
 
 	/**
