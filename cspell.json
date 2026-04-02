@@ -156,6 +156,11 @@
 		"yearless",
 		"Yusuke",
 
+		// nu-validator test file naming convention
+		"isvalid",
+		"novalid",
+		"haswarn",
+
 		// Specs
 		"closedby",
 		"khern",

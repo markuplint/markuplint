@@ -45,7 +45,8 @@ test('BCP47', () => {
 	expect(check('en-US', 'BCP47').matched).toBe(true);
 	expect(check('ja', 'BCP47').matched).toBe(true);
 	expect(check(' ja ', 'BCP47').matched).toBe(false);
-	expect(check('', 'BCP47').matched).toBe(false);
+	// Empty string is valid per HTML LS (language set to unknown)
+	expect(check('', 'BCP47').matched).toBe(true);
 	expect(check('zh/cn', 'BCP47').matched).toBe(false);
 });
 
