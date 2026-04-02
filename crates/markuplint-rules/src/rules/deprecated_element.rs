@@ -37,6 +37,7 @@ impl Rule for DeprecatedElement {
             if el_spec.deprecated == Some(true) {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: rule_config.severity.clone(),
                     message: format!("The \"{}\" element is deprecated", el.base.node_name),
                     line: el.base.line,
@@ -50,6 +51,7 @@ impl Rule for DeprecatedElement {
             if let Some(Obsolete::Flag(true) | Obsolete::Info { .. }) = &el_spec.obsolete {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: rule_config.severity.clone(),
                     message: format!("The \"{}\" element is obsolete", el.base.node_name),
                     line: el.base.line,
