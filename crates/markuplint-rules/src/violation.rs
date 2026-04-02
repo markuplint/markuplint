@@ -15,8 +15,12 @@ pub enum Severity {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Violation {
-    /// Rule identifier (e.g., `"attr-duplication"`).
+    /// Rule identifier — always the base rule name (e.g., `"invalid-attr"`).
     pub rule_id: String,
+    /// Alias name for virtual rules (e.g., `"a11y/no-accesskey"`).
+    /// Populated when the violation originates from a `NamedRuleGroup` or named `nodeRule`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
     /// Severity level.
     pub severity: Severity,
     /// Human-readable message describing the violation.

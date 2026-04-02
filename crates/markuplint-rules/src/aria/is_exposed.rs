@@ -85,23 +85,18 @@ fn is_excluding(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
     }
 
     // 4. Descendants of elements with childrenPresentational: true
-    //    Note: Uses base implicit role lookup (no full getComputedRole yet).
-    //    Full implementation deferred to Phase 2-3b (getComputedRole).
+    //    Use getComputedRole for the parent (which checks permitted roles),
+    //    matching TS behavior where non-permitted explicit roles fall back
+    //    to implicit role (e.g., <label role="button"> falls back to no
+    //    childrenPresentational implicit role).
     {
+        use crate::aria::computed_role::get_computed_role;
         let mut current = arena.get(node_id).and_then(markuplint_dom::node::DomNode::parent_id);
         while let Some(pid) = current {
-            if let Some(parent_el) = arena.get(pid).and_then(|n| n.as_element()) {
-                let parent_tag = &parent_el.base.node_name;
-                // Check explicit role first
-                if let Some(role_attr) = helpers::get_attr_value(arena, pid, "role") {
-                    let first_role = role_attr.split_ascii_whitespace().next().unwrap_or("");
-                    if let Some(role_spec) = aria::get_role_spec(spec, first_role, version)
-                        && role_spec.children_presentational == Some(true)
-                    {
-                        return true;
-                    }
-                } else if let Some(implicit_role) = aria::get_base_implicit_role(spec, parent_tag)
-                    && let Some(role_spec) = aria::get_role_spec(spec, implicit_role, version)
+            if arena.get(pid).and_then(|n| n.as_element()).is_some() {
+                let parent_computed = get_computed_role(spec, arena, pid, version, false);
+                if let Some(ref role) = parent_computed.role
+                    && let Some(role_spec) = aria::get_role_spec(spec, &role.name, version)
                     && role_spec.children_presentational == Some(true)
                 {
                     return true;
@@ -300,6 +295,7 @@ pub(crate) mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         let child_id = builder.push(DomNode::Element(ElementData {
             base: NodeBase {
@@ -326,6 +322,7 @@ pub(crate) mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Document(doc)) = builder.get_mut(doc_id) {
             doc.children.push(parent_id);

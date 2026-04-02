@@ -23,6 +23,10 @@ use crate::violation::Severity;
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeRuleEntry {
+    /// Alias name for violations (e.g., `"a11y/no-autofocus-outside-dialog"`).
+    /// When present, violations from this entry use this name instead of the base rule ID.
+    #[serde(default)]
+    pub name: Option<String>,
     /// CSS selector string.
     #[serde(default)]
     pub selector: Option<String>,
@@ -65,8 +69,11 @@ pub fn build_rule_config_set(
     let mut node_map: HashMap<NodeId, MappingLayer> = HashMap::new();
     let aria_resolver = SpecAriaResolver { spec };
 
-    // Process nodeRules
+    // Process nodeRules (skip named entries — they run independently via lint::run_named_entries)
     for entry in node_rules {
+        if entry.name.is_some() {
+            continue;
+        }
         let Some(rules) = &entry.rules else {
             continue;
         };
@@ -75,16 +82,18 @@ pub fn build_rule_config_set(
         };
 
         for (node_id, _el) in arena.elements() {
-            if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver)
-                && let Some(config) = build_node_config(rule_value, global_config, &captured)
-            {
+            if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
+                let config = build_node_config(rule_value, global_config, &captured);
                 set_if_higher(&mut node_map, node_id, specificity, config);
             }
         }
     }
 
-    // Process childNodeRules
+    // Process childNodeRules (skip named entries — they run independently)
     for entry in child_node_rules {
+        if entry.name.is_some() {
+            continue;
+        }
         let Some(rules) = &entry.rules else {
             continue;
         };
@@ -96,9 +105,7 @@ pub fn build_rule_config_set(
 
         for (node_id, _el) in arena.elements() {
             if let Some((specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
-                let Some(config) = build_node_config(rule_value, global_config, &captured) else {
-                    continue;
-                };
+                let config = build_node_config(rule_value, global_config, &captured);
 
                 let targets = if inheritance {
                     collect_descendants(arena, node_id)
@@ -119,9 +126,65 @@ pub fn build_rule_config_set(
     )
 }
 
+/// Build a `RuleConfigSet` for a single named nodeRule executed independently.
+///
+/// Matching nodes get the nodeRule's config; all other nodes are disabled.
+/// This enables named nodeRules to run as independent rule executions
+/// (matching TS virtual rule behavior).
+pub fn build_named_rule_config_set(
+    rule_id: &str,
+    entry: &NodeRuleEntry,
+    is_child_rule: bool,
+    arena: &DomArena,
+    spec: &MLMLSpec,
+) -> Option<RuleConfigSet> {
+    let rules = entry.rules.as_ref()?;
+    let rule_value = rules.get(rule_id)?;
+
+    let aria_resolver = SpecAriaResolver { spec };
+    let base_config = RuleConfig::default();
+
+    let mut node_map: HashMap<NodeId, RuleConfig> = HashMap::new();
+
+    if is_child_rule {
+        let inheritance = entry.inheritance.unwrap_or(false);
+        for (node_id, _el) in arena.elements() {
+            if let Some((_specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
+                let config = build_node_config(rule_value, &base_config, &captured);
+                let targets = if inheritance {
+                    collect_descendants(arena, node_id)
+                } else {
+                    collect_children(arena, node_id)
+                };
+                for child_id in targets {
+                    node_map.insert(child_id, config.clone());
+                }
+            }
+        }
+    } else {
+        for (node_id, _el) in arena.elements() {
+            if let Some((_specificity, captured)) = match_entry(entry, arena, node_id, spec, &aria_resolver) {
+                let config = build_node_config(rule_value, &base_config, &captured);
+                node_map.insert(node_id, config);
+            }
+        }
+    }
+
+    if node_map.is_empty() {
+        return None;
+    }
+
+    // Global = disabled; only matching nodes are enabled via overrides
+    let disabled_global = RuleConfig {
+        disabled: true,
+        ..Default::default()
+    };
+    Some(RuleConfigSet::new(disabled_global, node_map))
+}
+
 /// Match an entry (CSS selector or regex selector) against an element.
 /// Returns `Some((specificity, captured_data))` on match.
-fn match_entry(
+pub fn match_entry(
     entry: &NodeRuleEntry,
     arena: &DomArena,
     node_id: NodeId,
@@ -169,25 +232,21 @@ fn match_regex_selector(
 ///
 /// Mirrors TS `mergeRule(globalRule, convertedRule)`.
 /// `captured` is used for regex capture replacement (`exchangeValueOnRule`).
-fn build_node_config(
-    rule_value: &Value,
-    global_config: &RuleConfig,
-    captured: &HashMap<String, String>,
-) -> Option<RuleConfig> {
-    let node_config = parse_node_rule_value(rule_value)?;
+fn build_node_config(rule_value: &Value, global_config: &RuleConfig, captured: &HashMap<String, String>) -> RuleConfig {
+    let node_config = parse_node_rule_value(rule_value);
     let node_config = exchange_value_on_rule(node_config, captured);
-    Some(merge_rule(global_config, &node_config))
+    merge_rule(global_config, &node_config)
 }
 
 /// Parse a rule value from a nodeRule entry.
 /// Same format as global rules: `true`, `false`, `"error"`, `{ severity, value, options }`.
-fn parse_node_rule_value(value: &Value) -> Option<RuleConfig> {
+fn parse_node_rule_value(value: &Value) -> RuleConfig {
     match value {
-        Value::Bool(false) => Some(RuleConfig {
+        Value::Bool(false) => RuleConfig {
             disabled: true,
             ..Default::default()
-        }),
-        Value::Bool(true) => Some(RuleConfig::default()),
+        },
+        Value::Bool(true) => RuleConfig::default(),
         Value::String(s) => {
             if let Some(severity) = match s.as_str() {
                 "error" => Some(Severity::Error),
@@ -195,23 +254,23 @@ fn parse_node_rule_value(value: &Value) -> Option<RuleConfig> {
                 "info" => Some(Severity::Info),
                 _ => None,
             } {
-                Some(RuleConfig {
+                RuleConfig {
                     severity,
                     ..Default::default()
-                })
+                }
             } else {
-                Some(RuleConfig {
+                RuleConfig {
                     value: Value::String(s.clone()),
                     ..Default::default()
-                })
+                }
             }
         }
         Value::Object(obj) => {
             if obj.get("value").is_some_and(|v| v == &Value::Bool(false)) {
-                return Some(RuleConfig {
+                return RuleConfig {
                     disabled: true,
                     ..Default::default()
-                });
+                };
             }
 
             let severity = obj.get("severity").and_then(|v| v.as_str()).map(|s| match s {
@@ -221,14 +280,18 @@ fn parse_node_rule_value(value: &Value) -> Option<RuleConfig> {
             });
             let rule_value = obj.get("value").cloned();
             let options = obj.get("options").cloned();
-            Some(RuleConfig {
+            RuleConfig {
                 severity: severity.unwrap_or(Severity::Error),
                 value: rule_value.unwrap_or(Value::Bool(true)),
                 options: options.unwrap_or(Value::Null),
                 disabled: false,
-            })
+            }
         }
-        _ => None,
+        // Arrays and other JSON values are treated as the rule value
+        other => RuleConfig {
+            value: other.clone(),
+            ..Default::default()
+        },
     }
 }
 
@@ -249,12 +312,14 @@ fn exchange_value_on_rule(config: RuleConfig, captured: &HashMap<String, String>
     }
 }
 
-/// Recursively replace `{{key}}` in JSON values.
+/// Recursively replace `{{ key }}` / `{{key}}` in JSON values.
 fn exchange_json_value(value: &Value, captured: &HashMap<String, String>) -> Value {
     match value {
         Value::String(s) => {
             let mut result = s.clone();
             for (key, val) in captured {
+                // Match both `{{ key }}` (with spaces) and `{{key}}` (without)
+                result = result.replace(&format!("{{{{ {key} }}}}"), val);
                 result = result.replace(&format!("{{{{{key}}}}}"), val);
             }
             Value::String(result)

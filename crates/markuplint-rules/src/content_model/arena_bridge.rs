@@ -52,6 +52,7 @@ pub fn build_arena(parent_tag: &str, children: &[ChildNodeInfo]) -> ArenaBridge 
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
         is_ghost: false,
+        close_tag: None,
     }));
     next_id += 1;
 
@@ -141,6 +142,7 @@ fn build_children(
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             *next_id += 1;
 
@@ -156,6 +158,7 @@ fn build_children(
         } else if child.is_text() {
             let tid = builder.push(DomNode::Text(TextData {
                 base: make_base(*next_id, "#text", Some(parent_id), depth),
+                is_bogus: false,
             }));
             *next_id += 1;
             tid

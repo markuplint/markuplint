@@ -221,6 +221,7 @@ pub(crate) mod tests {
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
             is_ghost: false,
+            close_tag: None,
         }));
         if let Some(DomNode::Document(doc)) = builder.get_mut(doc_id) {
             doc.children.push(el_id);
