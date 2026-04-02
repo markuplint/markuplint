@@ -2,6 +2,7 @@
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers::get_raw_attr_name;
 use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -37,8 +38,11 @@ impl Rule for CaseSensitiveAttrName {
                     continue;
                 };
 
+                // Use raw attr name from source to preserve original case
+                let raw_name = get_raw_attr_name(html_attr);
+
                 // If the spec says this attribute is case-sensitive, skip enforcement
-                let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
+                let attr_name_lower = raw_name.to_ascii_lowercase();
                 if let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str())
                     && attr_spec.case_sensitive == Some(true)
                 {
@@ -46,8 +50,8 @@ impl Rule for CaseSensitiveAttrName {
                 }
 
                 let is_correct = match case {
-                    "upper" => html_attr.node_name == html_attr.node_name.to_ascii_uppercase(),
-                    _ => html_attr.node_name == html_attr.node_name.to_ascii_lowercase(),
+                    "upper" => raw_name == raw_name.to_ascii_uppercase(),
+                    _ => raw_name == raw_name.to_ascii_lowercase(),
                 };
 
                 if !is_correct {
@@ -57,6 +61,7 @@ impl Rule for CaseSensitiveAttrName {
                     };
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
+                        name: None,
                         severity: rule_config.severity.clone(),
                         message,
                         line: html_attr.name.line,
