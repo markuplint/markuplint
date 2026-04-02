@@ -53,6 +53,7 @@ impl Rule for HeadingLevels {
             {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
+                    name: None,
                     severity: config.severity.clone(),
                     message: "Heading levels must not be skipped".to_string(),
                     line,
@@ -118,6 +119,7 @@ mod tests {
                 tag_open_char: "<".to_string(),
                 tag_close_char: ">".to_string(),
                 is_ghost: false,
+                close_tag: None,
             }));
             if let Some(DomNode::Element(e)) = builder.get_mut(el_id) {
                 e.base.id = el_id;
