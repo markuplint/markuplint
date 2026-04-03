@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('No skipped', async () => {
+test('[heading-levels-valid-001] No skipped', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -26,7 +26,7 @@ test('No skipped', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Skipped', async () => {
+test('[heading-levels-invalid-001] Skipped', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -61,7 +61,7 @@ test('Skipped', async () => {
 });
 
 describe('Markdown parser', () => {
-	test('HTML headings in Markdown: h1 then h3 skips h2', async () => {
+	test('[heading-levels-parser-001] HTML headings in Markdown: h1 then h3 skips h2', async () => {
 		const { violations } = await mlRuleTest(rule, '<h1>Heading 1</h1>\n\n<h3>Heading 3</h3>\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -78,7 +78,7 @@ describe('Markdown parser', () => {
 		]);
 	});
 
-	test('HTML headings in Markdown: no skip', async () => {
+	test('[heading-levels-parser-002] HTML headings in Markdown: no skip', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<h1>Heading 1</h1>\n\n<h2>Heading 2</h2>\n\n<h3>Heading 3</h3>\n',
@@ -91,7 +91,7 @@ describe('Markdown parser', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('Markdown syntax headings: h1 then h3 skips h2', async () => {
+	test('[heading-levels-parser-003] Markdown syntax headings: h1 then h3 skips h2', async () => {
 		// Markdown headings are now converted to HTML heading elements.
 		// Therefore heading-levels rule detects h1 → h3 skip.
 		const { violations } = await mlRuleTest(rule, '# Heading 1\n\n### Heading 3\n', {
@@ -110,7 +110,7 @@ describe('Markdown parser', () => {
 		]);
 	});
 
-	test('Mixed Markdown + HTML headings: h1 Markdown then h3 HTML skips h2', async () => {
+	test('[heading-levels-parser-004] Mixed Markdown + HTML headings: h1 Markdown then h3 HTML skips h2', async () => {
 		const { violations } = await mlRuleTest(rule, '# Heading 1\n\n<h3>Heading 3</h3>\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -129,7 +129,7 @@ describe('Markdown parser', () => {
 });
 
 describe('Markdown parser - multiple heading skip', () => {
-	test('h1 then h2 then h4 skips h3', async () => {
+	test('[heading-levels-parser-005] h1 then h2 then h4 skips h3', async () => {
 		const { violations } = await mlRuleTest(rule, '# Heading 1\n\n## Heading 2\n\n#### Heading 4\n', {
 			parser: {
 				'.*': '@markuplint/markdown-parser',
@@ -148,7 +148,7 @@ describe('Markdown parser - multiple heading skip', () => {
 });
 
 describe('MDX parser', () => {
-	test('HTML headings in MDX: h1 then h3 skips h2', async () => {
+	test('[heading-levels-parser-006] HTML headings in MDX: h1 then h3 skips h2', async () => {
 		const { violations } = await mlRuleTest(rule, '<h1>Heading 1</h1>\n\n<h3>Heading 3</h3>\n', {
 			parser: {
 				'.*': '@markuplint/mdx-parser',
@@ -165,7 +165,7 @@ describe('MDX parser', () => {
 		]);
 	});
 
-	test('HTML headings in MDX: no skip', async () => {
+	test('[heading-levels-parser-007] HTML headings in MDX: no skip', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<h1>Heading 1</h1>\n\n<h2>Heading 2</h2>\n\n<h3>Heading 3</h3>\n',
@@ -178,7 +178,7 @@ describe('MDX parser', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('Markdown syntax headings in MDX: h1 then h3 skips h2', async () => {
+	test('[heading-levels-parser-008] Markdown syntax headings in MDX: h1 then h3 skips h2', async () => {
 		// Markdown headings are now converted to HTML heading elements in MDX too.
 		const { violations } = await mlRuleTest(rule, '# Heading 1\n\n### Heading 3\n', {
 			parser: {

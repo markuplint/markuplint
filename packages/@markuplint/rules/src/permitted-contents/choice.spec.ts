@@ -9,7 +9,7 @@ function c(models: any, innerHtml: string) {
 	return choice(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
-test('ordered requires', () => {
+test('[permitted-contents-invalid-001] ordered requires', () => {
 	const models = {
 		choice: [
 			//
@@ -28,7 +28,7 @@ test('ordered requires', () => {
 	expect(c(models, '<d></d>').type).toBe('MISSING_NODE_REQUIRED');
 });
 
-test('optional', () => {
+test('[permitted-contents-invalid-002] optional', () => {
 	const models = {
 		choice: [
 			[
@@ -56,7 +56,7 @@ test('optional', () => {
 	expect(c(models, '<d></d>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('interleave', () => {
+test('[permitted-contents-invalid-003] interleave', () => {
 	const models = {
 		choice: [
 			[
@@ -86,7 +86,7 @@ test('interleave', () => {
 	expect(c(models, '<b></b><a></a><a></a>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('the dl element', () => {
+test('[permitted-contents-invalid-004] the dl element', () => {
 	const models = {
 		choice: [
 			[
@@ -133,7 +133,7 @@ test('the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('part of the ruby element', () => {
+test('[permitted-contents-invalid-005] part of the ruby element', () => {
 	const models = {
 		// 2. One or the other of the following:
 		choice: [
@@ -175,7 +175,7 @@ test('part of the ruby element', () => {
 });
 
 describe('Issues', () => {
-	test('#1146', () => {
+	test('[permitted-contents-issue-1146] #1146', () => {
 		const models = {
 			choice: [
 				[

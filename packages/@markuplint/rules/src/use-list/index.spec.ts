@@ -3,7 +3,7 @@ import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
-test('use bullets', async () => {
+test('[use-list-invalid-001] use bullets', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -18,7 +18,7 @@ test('use bullets', async () => {
 	).toBe(3);
 });
 
-test('use bullets (character reference)', async () => {
+test('[use-list-invalid-002] use bullets (character reference)', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -33,7 +33,7 @@ test('use bullets (character reference)', async () => {
 	).toBe(3);
 });
 
-test('use katakana middle', async () => {
+test('[use-list-invalid-003] use katakana middle', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -48,7 +48,7 @@ test('use katakana middle', async () => {
 	).toBe(3);
 });
 
-test('Markdown like', async () => {
+test('[use-list-invalid-004] Markdown like', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -63,15 +63,15 @@ test('Markdown like', async () => {
 	).toBe(3);
 });
 
-test('Markdown list marker character with no space', async () => {
+test('[use-list-valid-001] Markdown list marker character with no space', async () => {
 	expect((await mlRuleTest(rule, '<div>-MINUS</div>')).violations.length).toBe(0);
 });
 
-test('Character only', async () => {
+test('[use-list-valid-002] Character only', async () => {
 	expect((await mlRuleTest(rule, '<div>●</div>')).violations.length).toBe(0);
 });
 
-test('continuous', async () => {
+test('[use-list-invalid-005] continuous', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -84,7 +84,7 @@ test('continuous', async () => {
 	).toBe(0);
 });
 
-test('emoji (surrogate pair character)', async () => {
+test('[use-list-invalid-006] emoji (surrogate pair character)', async () => {
 	/**
 	 * surrogate pair character
 	 */
@@ -110,7 +110,7 @@ test('emoji (surrogate pair character)', async () => {
 });
 
 describe('Issues', () => {
-	test('#957', async () => {
+	test('[use-list-issue-957] #957', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {

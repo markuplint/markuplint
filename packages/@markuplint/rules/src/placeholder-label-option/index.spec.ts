@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('Valid placeholder', async () => {
+test('[placeholder-label-option-invalid-001] Valid placeholder', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -44,7 +44,7 @@ test('Valid placeholder', async () => {
 	).toStrictEqual([]);
 });
 
-test("Invalid: first option element's value is not empty", async () => {
+test("[placeholder-label-option-invalid-002] Invalid: first option element's value is not empty", async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -88,7 +88,7 @@ test("Invalid: first option element's value is not empty", async () => {
 	]);
 });
 
-test("Invalid: Invalid: first option element's parent is optgroup", async () => {
+test("[placeholder-label-option-invalid-003] Invalid: Invalid: first option element's parent is optgroup", async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -113,7 +113,7 @@ test("Invalid: Invalid: first option element's parent is optgroup", async () => 
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[placeholder-label-option-invalid-004] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(

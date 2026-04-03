@@ -9,7 +9,7 @@ function c(models: any, innerHtml: string) {
 	return recursiveBranch(models, [...el.childNodes], specs, { ignoreHasMutableChildren: true }, 0);
 }
 
-test('a', () => {
+test('[permitted-contents-invalid-001] a', () => {
 	expect(c('a', '<a></a>').type).toBe('MATCHED');
 	expect(c('a', '<b></b>').type).toBe('UNMATCHED_SELECTORS');
 	expect(c('a', '<c></c>').type).toBe('UNMATCHED_SELECTORS');
@@ -17,7 +17,7 @@ test('a', () => {
 	expect(c('a', '').type).toBe('MISSING_NODE');
 });
 
-test('#flow', () => {
+test('[permitted-contents-invalid-002] #flow', () => {
 	expect(c('#flow', '<a></a>').type).toBe('MATCHED');
 	expect(c('#flow', '<b></b>').type).toBe('MATCHED');
 	expect(c('#flow', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -25,7 +25,7 @@ test('#flow', () => {
 	expect(c('#flow', '').type).toBe('MATCHED_ZERO');
 });
 
-test('a, #flow', () => {
+test('[permitted-contents-invalid-003] a, #flow', () => {
 	expect(c(['a', '#flow'], '<a></a>').type).toBe('MATCHED');
 	expect(c(['a', '#flow'], '<b></b>').type).toBe('MATCHED');
 	expect(c(['a', '#flow'], '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -33,7 +33,7 @@ test('a, #flow', () => {
 	expect(c(['a', '#flow'], '').type).toBe('MATCHED_ZERO');
 });
 
-test('c, #flow', () => {
+test('[permitted-contents-invalid-004] c, #flow', () => {
 	expect(c(['c', '#flow'], '<a></a>').type).toBe('MATCHED');
 	expect(c(['c', '#flow'], '<b></b>').type).toBe('MATCHED');
 	expect(c(['c', '#flow'], '<c></c>').type).toBe('MATCHED');

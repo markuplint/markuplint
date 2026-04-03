@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('specifies to global rule', async () => {
+test('[disallowed-element-invalid-001] specifies to global rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><hgroup><h1>Heading</h1></hgroup></div>', {
 		rule: ['hgroup'],
 	});
@@ -18,7 +18,7 @@ test('specifies to global rule', async () => {
 	]);
 });
 
-test('specifies to node rule', async () => {
+test('[disallowed-element-invalid-002] specifies to node rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<h1><span>Title</span><small>Sub-title</small></h1>', {
 		nodeRule: [
 			{
@@ -38,7 +38,7 @@ test('specifies to node rule', async () => {
 	]);
 });
 
-test('Recommend', async () => {
+test('[disallowed-element-invalid-003] Recommend', async () => {
 	expect(
 		(
 			await mlRuleTest(

@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('canvas', async () => {
+test('[no-default-value-invalid-001] canvas', async () => {
 	const { violations } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>');
 	expect(violations).toStrictEqual([
 		{
@@ -23,7 +23,7 @@ test('canvas', async () => {
 	]);
 });
 
-test('svg|image', async () => {
+test('[no-default-value-invalid-002] svg|image', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<svg>
@@ -67,14 +67,14 @@ test('svg|image', async () => {
 	]);
 });
 
-test('Updated the hidden attribute type to Enum form Boolean', async () => {
+test('[no-default-value-valid-001] Updated the hidden attribute type to Enum form Boolean', async () => {
 	expect((await mlRuleTest(rule, '<div hidden></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden=""></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="hidden"></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="until-found"></div>')).violations.length).toBe(0);
 });
 
-test('The `as` attribute', async () => {
+test('[no-default-value-invalid-003] The `as` attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-canvas as="canvas" width="300" height="150"></x-canvas>');
 	expect(violations).toStrictEqual([
 		{
@@ -95,14 +95,14 @@ test('The `as` attribute', async () => {
 });
 
 describe('fix', () => {
-	test('remove default value attribute', async () => {
+	test('[no-default-value-fix-001] remove default value attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>', undefined, true);
 		expect(fixedCode).toBe('<canvas></canvas>');
 	});
 });
 
 describe('fix with parsers', () => {
-	test('fix: Pug remove default value', async () => {
+	test('[no-default-value-fix-002] fix: Pug remove default value', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'input(type="text")',

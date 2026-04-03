@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('warns if specified attribute value is invalid', async () => {
+test('[invalid-attr-invalid-001] warns if specified attribute value is invalid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
@@ -28,7 +28,7 @@ test('warns if specified attribute value is invalid', async () => {
 	]);
 });
 
-test('Type check', async () => {
+test('[invalid-attr-invalid-002] Type check', async () => {
 	const { violations } = await mlRuleTest(rule, '<form name=""></form>');
 
 	expect(violations).toStrictEqual([
@@ -42,7 +42,7 @@ test('Type check', async () => {
 	]);
 });
 
-test('Updated the hidden attribute type to Enum form Boolean', async () => {
+test('[invalid-attr-invalid-003] Updated the hidden attribute type to Enum form Boolean', async () => {
 	expect((await mlRuleTest(rule, '<div hidden></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden=""></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="hidden"></div>')).violations.length).toBe(0);
@@ -50,7 +50,7 @@ test('Updated the hidden attribute type to Enum form Boolean', async () => {
 	expect((await mlRuleTest(rule, '<div hidden="invalid"></div>')).violations.length).toBe(1);
 });
 
-test('complex type', async () => {
+test('[invalid-attr-invalid-004] complex type', async () => {
 	const { violations } = await mlRuleTest(rule, '<input autocomplete="section-a section-b"/>');
 
 	expect(violations).toStrictEqual([
@@ -65,7 +65,7 @@ test('complex type', async () => {
 	]);
 });
 
-test('disable', async () => {
+test('[invalid-attr-valid-001] disable', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
@@ -75,7 +75,7 @@ test('disable', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('global attribute', async () => {
+test('[invalid-attr-valid-002] global attribute', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a title="the a element"><abbr title="the abbr element">text</abbr></a>',
@@ -84,7 +84,7 @@ test('global attribute', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('the input element type case-insensitive', async () => {
+test('[invalid-attr-valid-003] the input element type case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked>');
 
 	expect(violations.length).toBe(0);
@@ -94,7 +94,7 @@ test('the input element type case-insensitive', async () => {
 	expect(violations2.length).toBe(0);
 });
 
-test('Add allow attr', async () => {
+test('[invalid-attr-invalid-005] Add allow attr', async () => {
 	expect((await mlRuleTest(rule, '<div x-attr></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -118,7 +118,7 @@ test('Add allow attr', async () => {
 	).toStrictEqual([]);
 });
 
-test('Add disallow attr', async () => {
+test('[invalid-attr-valid-004] Add disallow attr', async () => {
 	expect((await mlRuleTest(rule, '<x-div x-attr></x-div>')).violations).toStrictEqual([]);
 
 	expect(
@@ -142,7 +142,7 @@ test('Add disallow attr', async () => {
 	]);
 });
 
-test('Add disallow attr', async () => {
+test('[invalid-attr-invalid-006] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -186,7 +186,7 @@ test('Add disallow attr', async () => {
 	]);
 });
 
-test('Add disallow attr', async () => {
+test('[invalid-attr-invalid-007] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -230,7 +230,7 @@ test('Add disallow attr', async () => {
 	]);
 });
 
-test('Add disallow attr', async () => {
+test('[invalid-attr-invalid-008] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -268,7 +268,7 @@ test('Add disallow attr', async () => {
 	]);
 });
 
-test('Add disallow attr', async () => {
+test('[invalid-attr-invalid-009] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="1.1"></x-div>', {
@@ -312,7 +312,7 @@ test('Add disallow attr', async () => {
 	]);
 });
 
-test('custom rule', async () => {
+test('[invalid-attr-invalid-010] custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
 		rule: {
 			options: {
@@ -336,7 +336,7 @@ test('custom rule', async () => {
 	]);
 });
 
-test('custom rule', async () => {
+test('[invalid-attr-invalid-011] custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
 		rule: {
 			options: {
@@ -363,7 +363,7 @@ test('custom rule', async () => {
 	]);
 });
 
-test('custom rule: type', async () => {
+test('[invalid-attr-invalid-012] custom rule: type', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-el x-attr="123"></x-el><x-el x-attr="abc"></x-el>', {
 		rule: {
 			options: {
@@ -385,13 +385,13 @@ test('custom rule: type', async () => {
 	]);
 });
 
-test('custom element', async () => {
+test('[invalid-attr-valid-005] custom element', async () => {
 	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>');
 
 	expect(violations.length).toBe(0);
 });
 
-test('custom element and custom rule', async () => {
+test('[invalid-attr-invalid-013] custom element and custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
 		nodeRule: [
 			{
@@ -410,7 +410,7 @@ test('custom element and custom rule', async () => {
 	expect(violations.length).toBe(1);
 });
 
-test('custom element and custom rule', async () => {
+test('[invalid-attr-invalid-014] custom element and custom rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<custom-element any-attr="any-string"></custom-element>', {
 		nodeRule: [
 			{
@@ -432,7 +432,7 @@ test('custom element and custom rule', async () => {
 	expect(violations.length).toBe(1);
 });
 
-test('prefix attribute', async () => {
+test('[invalid-attr-invalid-015] prefix attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>');
 
 	expect(violations).toStrictEqual([
@@ -460,7 +460,7 @@ test('prefix attribute', async () => {
 	]);
 });
 
-test('ignore prefix attribute', async () => {
+test('[invalid-attr-valid-006] ignore prefix attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
 		rule: {
 			options: {
@@ -472,7 +472,7 @@ test('ignore prefix attribute', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('URL attribute', async () => {
+test('[invalid-attr-valid-007] URL attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="https://sample.com/path/to">');
 	expect(violations.length).toBe(0);
 
@@ -510,7 +510,7 @@ test('URL attribute', async () => {
 	expect(violations12.length).toBe(0);
 });
 
-test('Overwrite type', async () => {
+test('[invalid-attr-invalid-016] Overwrite type', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
@@ -552,7 +552,7 @@ test('Overwrite type', async () => {
 	]);
 });
 
-test('Overwrite type', async () => {
+test('[invalid-attr-invalid-017] Overwrite type', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<time datetime="overwrite-type"></time><time datetime="2000-01-01"></time>',
@@ -597,7 +597,7 @@ test('Overwrite type', async () => {
 	]);
 });
 
-test('custom rule: disallowed', async () => {
+test('[invalid-attr-invalid-018] custom rule: disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
 		rule: {
 			options: {
@@ -617,7 +617,7 @@ test('custom rule: disallowed', async () => {
 	]);
 });
 
-test('Foreign element', async () => {
+test('[invalid-attr-valid-008] Foreign element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
@@ -626,7 +626,7 @@ test('Foreign element', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('noUse flag', async () => {
+test('[invalid-attr-invalid-019] noUse flag', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog tabindex="-1"></dialog>');
 	expect(violations).toStrictEqual([
 		{
@@ -639,7 +639,7 @@ test('noUse flag', async () => {
 	]);
 });
 
-test('noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
+test('[invalid-attr-valid-009] noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', {
 		rule: {
 			options: {
@@ -652,7 +652,7 @@ test('noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('svg', async () => {
+test('[invalid-attr-invalid-020] svg', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -678,7 +678,7 @@ test('svg', async () => {
 	]);
 });
 
-test('svg', async () => {
+test('[invalid-attr-invalid-021] svg', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -702,7 +702,7 @@ test('svg', async () => {
 	]);
 });
 
-test('svg', async () => {
+test('[invalid-attr-invalid-022] svg', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -716,7 +716,7 @@ test('svg', async () => {
 	).toStrictEqual([]);
 });
 
-test('Pug', async () => {
+test('[invalid-attr-parser-001] Pug', async () => {
 	const { violations } = await mlRuleTest(rule, 'button(type=buttonType)', {
 		parser: {
 			'.*': '@markuplint/pug-parser',
@@ -726,7 +726,7 @@ test('Pug', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Pug class', async () => {
+test('[invalid-attr-parser-002] Pug class', async () => {
 	const { violations } = await mlRuleTest(rule, 'div.className', {
 		parser: {
 			'.*': '@markuplint/pug-parser',
@@ -736,7 +736,7 @@ test('Pug class', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Vue', async () => {
+test('[invalid-attr-parser-003] Vue', async () => {
 	const { violations: violations1 } = await mlRuleTest(
 		rule,
 		'<template><button type="buttonType"></button></template>',
@@ -766,7 +766,7 @@ test('Vue', async () => {
 	expect(violations2.length).toBe(0);
 });
 
-test('Vue iterator', async () => {
+test('[invalid-attr-parser-004] Vue iterator', async () => {
 	const { violations: violations1 } = await mlRuleTest(
 		rule,
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
@@ -796,7 +796,7 @@ test('Vue iterator', async () => {
 	expect(violations2.length).toBe(0);
 });
 
-test('Vue slot', async () => {
+test('[invalid-attr-parser-005] Vue slot', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div><slot v-bind:foo="foo">{{ foo.bar }}</slot></div></template>',
@@ -813,7 +813,7 @@ test('Vue slot', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Vue (.prop shorthand)', async () => {
+test('[invalid-attr-parser-006] Vue (.prop shorthand)', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div .someProp="value"></div></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -825,7 +825,7 @@ test('Vue (.prop shorthand)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('MDX with react-spec (className is valid via IDL resolution)', async () => {
+test('[invalid-attr-parser-007] MDX with react-spec (className is valid via IDL resolution)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div className="test">text</div>\n', {
 		parser: {
 			'.*': '@markuplint/mdx-parser',
@@ -837,7 +837,7 @@ test('MDX with react-spec (className is valid via IDL resolution)', async () => 
 	expect(violations).toStrictEqual([]);
 });
 
-test('React Component', async () => {
+test('[invalid-attr-parser-008] React Component', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
@@ -854,7 +854,7 @@ test('React Component', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('React HTML', async () => {
+test('[invalid-attr-parser-009] React HTML', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
@@ -886,7 +886,7 @@ test('React HTML', async () => {
 	]);
 });
 
-test('React', async () => {
+test('[invalid-attr-parser-010] React', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -907,7 +907,7 @@ test('React', async () => {
 	]);
 });
 
-test('React with spread attribute', async () => {
+test('[invalid-attr-parser-011] React with spread attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<a target="_blank" />', {
@@ -973,7 +973,7 @@ test('React with spread attribute', async () => {
 	]);
 });
 
-test('React spec', async () => {
+test('[invalid-attr-parser-012] React spec', async () => {
 	const jsx = `<>
 	<div value defaultValue></div>
 	<input defaultChecked />
@@ -1110,7 +1110,7 @@ test('React spec', async () => {
 	]);
 });
 
-test('React: a custom rule and a mutable attribute', async () => {
+test('[invalid-attr-parser-013] React: a custom rule and a mutable attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -1142,7 +1142,7 @@ test('React: a custom rule and a mutable attribute', async () => {
 	]);
 });
 
-test('Pretenders', async () => {
+test('[invalid-attr-invalid-023] Pretenders', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<Image objectFit alt />', {
@@ -1205,7 +1205,7 @@ test('Pretenders', async () => {
 	]);
 });
 
-test('regexSelector', async () => {
+test('[invalid-attr-invalid-024] regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<picture>
@@ -1259,7 +1259,7 @@ test('regexSelector', async () => {
 	]);
 });
 
-test('regexSelector', async () => {
+test('[invalid-attr-invalid-025] regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<picture>
@@ -1316,7 +1316,7 @@ test('regexSelector', async () => {
 	]);
 });
 
-test('Booleanish', async () => {
+test('[invalid-attr-valid-010] Booleanish', async () => {
 	expect((await mlRuleTest(rule, '<div contenteditable></div>')).violations).toStrictEqual([]);
 
 	expect(
@@ -1342,14 +1342,14 @@ test('Booleanish', async () => {
 });
 
 describe('contentEditable "inherit" (Issue #525)', () => {
-	test('HTML: contenteditable="inherit" is invalid (no spec override)', async () => {
+	test('[invalid-attr-invalid-026] HTML: contenteditable="inherit" is invalid (no spec override)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>');
 		expect(violations.length).toBe(1);
 		expect(violations[0].raw).toBe('inherit');
 		expect(violations[0].message).toMatch(/contenteditable/);
 	});
 
-	test('React: contentEditable="inherit" is valid via react-spec override', async () => {
+	test('[invalid-attr-parser-014] React: contentEditable="inherit" is valid via react-spec override', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contentEditable="inherit"></div>', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -1361,7 +1361,7 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('React: contentEditable="banana" is still invalid', async () => {
+	test('[invalid-attr-parser-015] React: contentEditable="banana" is still invalid', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contentEditable="banana"></div>', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -1375,7 +1375,7 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 		expect(violations[0].message).toMatch(/contenteditable/);
 	});
 
-	test('Svelte: contentEditable="inherit" is valid via svelte-spec override', async () => {
+	test('[invalid-attr-parser-016] Svelte: contentEditable="inherit" is valid via svelte-spec override', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contentEditable="inherit"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
@@ -1387,7 +1387,7 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Svelte: contenteditable="inherit" is valid (lowercase content attribute name)', async () => {
+	test('[invalid-attr-parser-017] Svelte: contenteditable="inherit" is valid (lowercase content attribute name)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div contenteditable="inherit"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
@@ -1401,7 +1401,7 @@ describe('contentEditable "inherit" (Issue #525)', () => {
 });
 
 describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
-	test('Svelte: class="foo" is valid (content attribute name accepted)', async () => {
+	test('[invalid-attr-issue-525-001] Svelte: class="foo" is valid (content attribute name accepted)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div class="foo"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
@@ -1413,7 +1413,7 @@ describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
+	test('[invalid-attr-issue-525-002] Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div className="foo"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
@@ -1425,7 +1425,7 @@ describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Svelte: tabIndex is valid (IDL name accepted in both mode)', async () => {
+	test('[invalid-attr-issue-525-003] Svelte: tabIndex is valid (IDL name accepted in both mode)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div tabIndex="0"></div>', {
 			parser: {
 				'.*': '@markuplint/svelte-parser',
@@ -1438,7 +1438,7 @@ describe('Svelte acceptedAttrNames: both (Issue #525)', () => {
 	});
 });
 
-test('WAI-Adapt', async () => {
+test('[invalid-attr-valid-011] WAI-Adapt', async () => {
 	expect((await mlRuleTest(rule, '<p adapt-simplification="critical"></p>')).violations).toStrictEqual([]);
 
 	expect(
@@ -1458,7 +1458,7 @@ test('WAI-Adapt', async () => {
 	).toStrictEqual([]);
 });
 
-test('Multiple Type', async () => {
+test('[invalid-attr-valid-012] Multiple Type', async () => {
 	expect((await mlRuleTest(rule, '<button command="toggle-popover"></button>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<button command="--custom"></button>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<button command="invalid"></button>')).violations).toStrictEqual([
@@ -1473,7 +1473,7 @@ test('Multiple Type', async () => {
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[invalid-attr-valid-013] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -1486,12 +1486,12 @@ test('The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
 });
 
-test('CSS Functions', async () => {
+test('[invalid-attr-valid-014] CSS Functions', async () => {
 	expect((await mlRuleTest(rule, '<div style="prop: var(--x)"></div>')).violations).toStrictEqual([]);
 });
 
 describe('Issues', () => {
-	test('#553', async () => {
+	test('[invalid-attr-issue-553] #553', async () => {
 		expect(
 			(await mlRuleTest(rule, '<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />', {}))
 				.violations,
@@ -1512,7 +1512,7 @@ describe('Issues', () => {
 	});
 
 	// https://github.com/markuplint/markuplint/issues/1987
-	test('#1987', async () => {
+	test('[invalid-attr-issue-1987] #1987', async () => {
 		// Valid preload destinations
 		expect((await mlRuleTest(rule, '<link rel="preload" as="fetch" href="/api" />')).violations).toStrictEqual([]);
 		expect(
@@ -1582,12 +1582,12 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#564', async () => {
+	test('[invalid-attr-issue-564] #564', async () => {
 		expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
 	});
 
-	test('#678', async () => {
+	test('[invalid-attr-issue-678] #678', async () => {
 		const vue = {
 			parser: {
 				'.*': '@markuplint/vue-parser',
@@ -1602,7 +1602,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#783', async () => {
+	test('[invalid-attr-issue-783] #783', async () => {
 		const vue = {
 			parser: {
 				'.*': '@markuplint/vue-parser',
@@ -1617,7 +1617,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#800', async () => {
+	test('[invalid-attr-issue-800] #800', async () => {
 		const pug = {
 			parser: {
 				'.*': '@markuplint/pug-parser',
@@ -1651,7 +1651,7 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 		).toStrictEqual([]);
 	});
 
-	test('#1078', async () => {
+	test('[invalid-attr-issue-1078] #1078', async () => {
 		expect(
 			(await mlRuleTest(rule, '<script src="foo.js" referrerpolicy="no-referrer"></script>')).violations,
 		).toStrictEqual([]);
@@ -1660,13 +1660,13 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 		).toStrictEqual([]);
 	});
 
-	test('#1357', async () => {
+	test('[invalid-attr-issue-1357] #1357', async () => {
 		expect(
 			(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
 		).toStrictEqual([]);
 	});
 
-	test('#2455', async () => {
+	test('[invalid-attr-issue-2455] #2455', async () => {
 		const sourceCode = `<picture>
   <source src="path/to" media="(query: value)">
   <source srcset="path/to" media="(query: value)">
@@ -1710,7 +1710,7 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 });
 
 describe('button command attribute', () => {
-	test('command="request-close" is valid', async () => {
+	test('[invalid-attr-valid-015] command="request-close" is valid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<dialog id="d"><button command="request-close" commandfor="d">Close</button></dialog>',
@@ -1718,7 +1718,7 @@ describe('button command attribute', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('command="close" is valid', async () => {
+	test('[invalid-attr-valid-016] command="close" is valid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<dialog id="d"><button command="close" commandfor="d">Close</button></dialog>',
@@ -1726,7 +1726,7 @@ describe('button command attribute', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('command="invalid-value" is invalid', async () => {
+	test('[invalid-attr-invalid-027] command="invalid-value" is invalid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<dialog id="d"><button command="invalid-value" commandfor="d">Close</button></dialog>',
@@ -1745,7 +1745,7 @@ describe('button command attribute', () => {
 });
 
 describe('Attribute name suggestion (#1487)', () => {
-	test('suggests similar attribute name for typo', async () => {
+	test('[invalid-attr-issue-1487-001] suggests similar attribute name for typo', async () => {
 		const { violations } = await mlRuleTest(rule, '<input nama="test">');
 		expect(violations).toStrictEqual([
 			{
@@ -1759,7 +1759,7 @@ describe('Attribute name suggestion (#1487)', () => {
 	});
 
 	// cspell:ignore clss
-	test('suggests similar attribute name for class typo', async () => {
+	test('[invalid-attr-issue-1487-002] suggests similar attribute name for class typo', async () => {
 		const { violations } = await mlRuleTest(rule, '<div clss="test"></div>');
 		expect(violations).toStrictEqual([
 			{
@@ -1772,7 +1772,7 @@ describe('Attribute name suggestion (#1487)', () => {
 		]);
 	});
 
-	test('no suggestion for completely unrelated attribute', async () => {
+	test('[invalid-attr-issue-1487-003] no suggestion for completely unrelated attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<div xyz="test"></div>');
 		expect(violations).toStrictEqual([
 			{
@@ -1787,22 +1787,22 @@ describe('Attribute name suggestion (#1487)', () => {
 });
 
 describe('headingoffset and headingreset attributes', () => {
-	test('headingoffset with valid value is valid', async () => {
+	test('[invalid-attr-valid-017] headingoffset with valid value is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<section headingoffset="1"><h2>Title</h2></section>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('headingoffset="0" is valid', async () => {
+	test('[invalid-attr-valid-018] headingoffset="0" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<div headingoffset="0"><h1>Title</h1></div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('headingoffset="8" is valid (max)', async () => {
+	test('[invalid-attr-valid-019] headingoffset="8" is valid (max)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div headingoffset="8"><h1>Title</h1></div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('headingoffset with non-integer value is invalid', async () => {
+	test('[invalid-attr-invalid-028] headingoffset with non-integer value is invalid', async () => {
 		const { violations } = await mlRuleTest(rule, '<div headingoffset="abc"><h1>Title</h1></div>');
 		expect(violations).toStrictEqual([
 			{
@@ -1816,7 +1816,7 @@ describe('headingoffset and headingreset attributes', () => {
 		]);
 	});
 
-	test('headingreset is valid', async () => {
+	test('[invalid-attr-valid-020] headingreset is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<div headingreset><h1>Title</h1></div>');
 		expect(violations).toStrictEqual([]);
 	});
@@ -1848,7 +1848,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 	const expectedMessage =
 		'The "content" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i';
 
-	test('violation: user-scalable=no', async () => {
+	test('[invalid-attr-issue-716-001] violation: user-scalable=no', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">',
@@ -1865,7 +1865,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('violation: user-scalable=0', async () => {
+	test('[invalid-attr-issue-716-002] violation: user-scalable=0', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=0">',
@@ -1882,7 +1882,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('violation: user-scalable=NO (case insensitive)', async () => {
+	test('[invalid-attr-issue-716-003] violation: user-scalable=NO (case insensitive)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=NO">',
@@ -1899,7 +1899,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('violation: spaces around = sign', async () => {
+	test('[invalid-attr-issue-716-004] violation: spaces around = sign', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable = no">',
@@ -1916,7 +1916,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('no violation: normal viewport', async () => {
+	test('[invalid-attr-issue-716-005] no violation: normal viewport', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, initial-scale=1">',
@@ -1925,7 +1925,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no violation: user-scalable=yes', async () => {
+	test('[invalid-attr-issue-716-006] no violation: user-scalable=yes', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=yes">',
@@ -1934,7 +1934,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no violation: user-scalable=1', async () => {
+	test('[invalid-attr-issue-716-007] no violation: user-scalable=1', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=1">',
@@ -1943,7 +1943,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no violation: non-viewport meta is not affected', async () => {
+	test('[invalid-attr-issue-716-008] no violation: non-viewport meta is not affected', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="description" content="user-scalable=no">',
@@ -1954,21 +1954,21 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 });
 
 describe('focusgroup attribute (#3384)', () => {
-	test('focusgroup with valid behavior keyword', async () => {
+	test('[invalid-attr-issue-3384-001] focusgroup with valid behavior keyword', async () => {
 		expect((await mlRuleTest(rule, '<div focusgroup="toolbar"></div>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroup with multiple valid tokens', async () => {
+	test('[invalid-attr-issue-3384-002] focusgroup with multiple valid tokens', async () => {
 		expect((await mlRuleTest(rule, '<div focusgroup="tablist inline wrap"></div>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroup with all valid tokens', async () => {
+	test('[invalid-attr-issue-3384-003] focusgroup with all valid tokens', async () => {
 		expect((await mlRuleTest(rule, '<ul focusgroup="menu block nowrap nomemory"></ul>')).violations).toStrictEqual(
 			[],
 		);
 	});
 
-	test('focusgroup with invalid token', async () => {
+	test('[invalid-attr-issue-3384-004] focusgroup with invalid token', async () => {
 		const { violations } = await mlRuleTest(rule, '<div focusgroup="invalid"></div>');
 		expect(violations).toStrictEqual([
 			{
@@ -1981,47 +1981,47 @@ describe('focusgroup attribute (#3384)', () => {
 		]);
 	});
 
-	test('focusgroup with valid and invalid tokens mixed', async () => {
+	test('[invalid-attr-issue-3384-005] focusgroup with valid and invalid tokens mixed', async () => {
 		const { violations } = await mlRuleTest(rule, '<div focusgroup="toolbar invalidmod"></div>');
 		expect(violations.length).toBe(1);
 		expect(violations[0]!.raw).toBe('invalidmod');
 	});
 
-	test('focusgroup="none" is valid', async () => {
+	test('[invalid-attr-issue-3384-006] focusgroup="none" is valid', async () => {
 		expect((await mlRuleTest(rule, '<li focusgroup="none"></li>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroup is case-insensitive', async () => {
+	test('[invalid-attr-issue-3384-007] focusgroup is case-insensitive', async () => {
 		expect((await mlRuleTest(rule, '<div focusgroup="TOOLBAR"></div>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<div focusgroup="Menu Inline Wrap"></div>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroup rejects duplicate tokens', async () => {
+	test('[invalid-attr-issue-3384-008] focusgroup rejects duplicate tokens', async () => {
 		const { violations } = await mlRuleTest(rule, '<div focusgroup="toolbar toolbar"></div>');
 		expect(violations.length).toBeGreaterThanOrEqual(1);
 	});
 
-	test('focusgroup with empty value is valid (zero tokens allowed)', async () => {
+	test('[invalid-attr-issue-3384-009] focusgroup with empty value is valid (zero tokens allowed)', async () => {
 		expect((await mlRuleTest(rule, '<div focusgroup=""></div>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroupstart boolean attribute is valid', async () => {
+	test('[invalid-attr-issue-3384-010] focusgroupstart boolean attribute is valid', async () => {
 		expect((await mlRuleTest(rule, '<button focusgroupstart></button>')).violations).toStrictEqual([]);
 	});
 
-	test('focusgroup on any element (global attribute)', async () => {
+	test('[invalid-attr-issue-3384-011] focusgroup on any element (global attribute)', async () => {
 		expect((await mlRuleTest(rule, '<nav focusgroup="menubar"></nav>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<span focusgroupstart></span>')).violations).toStrictEqual([]);
 	});
 });
 
-test('empty lang attribute is valid (language set to unknown)', async () => {
+test('[invalid-attr-valid-021] empty lang attribute is valid (language set to unknown)', async () => {
 	expect((await mlRuleTest(rule, '<html lang=""></html>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<html lang></html>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div lang=""></div>')).violations).toStrictEqual([]);
 });
 
-test('script type="speculationrules" is valid', async () => {
+test('[invalid-attr-invalid-029] script type="speculationrules" is valid', async () => {
 	expect(
 		(await mlRuleTest(rule, '<script type="speculationrules">{"prerender":[{"urls":["/page"]}]}</script>'))
 			.violations,
@@ -2029,7 +2029,7 @@ test('script type="speculationrules" is valid', async () => {
 });
 
 describe('script conditional attributes (#3631)', () => {
-	test('importmap must not have src', async () => {
+	test('[invalid-attr-issue-3631-001] importmap must not have src', async () => {
 		const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json"></script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2042,7 +2042,7 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('speculationrules must not have src', async () => {
+	test('[invalid-attr-issue-3631-002] speculationrules must not have src', async () => {
 		const { violations } = await mlRuleTest(rule, '<script type="speculationrules" src="rules.json"></script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2055,7 +2055,7 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('importmap must not have async', async () => {
+	test('[invalid-attr-issue-3631-003] importmap must not have async', async () => {
 		const { violations } = await mlRuleTest(rule, '<script type="importmap" async></script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2068,7 +2068,7 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('importmap must not have defer', async () => {
+	test('[invalid-attr-issue-3631-004] importmap must not have defer', async () => {
 		const { violations } = await mlRuleTest(rule, '<script type="importmap" defer></script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2081,7 +2081,7 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('importmap must not have nomodule', async () => {
+	test('[invalid-attr-issue-3631-005] importmap must not have nomodule', async () => {
 		const { violations } = await mlRuleTest(rule, '<script type="importmap" nomodule></script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2094,14 +2094,14 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('module with defer is not disallowed (handled by ineffective-attr)', async () => {
+	test('[invalid-attr-issue-3631-006] module with defer is not disallowed (handled by ineffective-attr)', async () => {
 		// defer on module scripts is ineffective, not disallowed
 		expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual(
 			[],
 		);
 	});
 
-	test('charset requires src', async () => {
+	test('[invalid-attr-issue-3631-007] charset requires src', async () => {
 		const { violations } = await mlRuleTest(rule, '<script charset="utf-8">x</script>');
 		expect(violations).toStrictEqual([
 			{
@@ -2114,15 +2114,15 @@ describe('script conditional attributes (#3631)', () => {
 		]);
 	});
 
-	test('valid: module with async', async () => {
+	test('[invalid-attr-issue-3631-008] valid: module with async', async () => {
 		expect((await mlRuleTest(rule, '<script type="module" async>x</script>')).violations).toStrictEqual([]);
 	});
 
-	test('valid: classic with src and defer', async () => {
+	test('[invalid-attr-issue-3631-009] valid: classic with src and defer', async () => {
 		expect((await mlRuleTest(rule, '<script src="app.js" defer></script>')).violations).toStrictEqual([]);
 	});
 
-	test('valid: classic with src and async', async () => {
+	test('[invalid-attr-issue-3631-010] valid: classic with src and async', async () => {
 		expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
 	});
 });

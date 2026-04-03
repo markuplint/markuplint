@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('label[for]', async () => {
+test('[no-refer-to-non-existent-id-invalid-001] label[for]', async () => {
 	const { violations } = await mlRuleTest(rule, '<label for="foo"></label>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('label[for]', async () => {
 	]);
 });
 
-test('td[headers]', async () => {
+test('[no-refer-to-non-existent-id-invalid-002] td[headers]', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<table>
@@ -43,7 +43,7 @@ test('td[headers]', async () => {
 	]);
 });
 
-test('td[headers] (Dynamic)', async () => {
+test('[no-refer-to-non-existent-id-valid-001] td[headers] (Dynamic)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<table>
@@ -62,7 +62,7 @@ test('td[headers] (Dynamic)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('td[headers] (Dynamic)', async () => {
+test('[no-refer-to-non-existent-id-valid-002] td[headers] (Dynamic)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		// cspell: disable
@@ -83,7 +83,7 @@ test('td[headers] (Dynamic)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('aria-describedby', async () => {
+test('[no-refer-to-non-existent-id-invalid-003] aria-describedby', async () => {
 	const { violations } = await mlRuleTest(rule, '<section aria-describedby="foo"></section>');
 	expect(violations).toStrictEqual([
 		{
@@ -96,7 +96,7 @@ test('aria-describedby', async () => {
 	]);
 });
 
-test('fragment', async () => {
+test('[no-refer-to-non-existent-id-valid-003] fragment', async () => {
 	expect((await mlRuleTest(rule, '<a href="#foo"></a>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -204,7 +204,7 @@ test('fragment', async () => {
 	).toStrictEqual([]);
 });
 
-test('The `as` attribute', async () => {
+test('[no-refer-to-non-existent-id-invalid-004] The `as` attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-label as="label" for="foo"></x-label>');
 	expect(violations).toStrictEqual([
 		{
@@ -218,7 +218,7 @@ test('The `as` attribute', async () => {
 });
 
 describe('Issues', () => {
-	test('#748', async () => {
+	test('[no-refer-to-non-existent-id-issue-748] #748', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -239,7 +239,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#776', async () => {
+	test('[no-refer-to-non-existent-id-issue-776] #776', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -266,7 +266,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#1611', async () => {
+	test('[no-refer-to-non-existent-id-issue-1611] #1611', async () => {
 		expect(
 			(
 				await mlRuleTest(
