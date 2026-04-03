@@ -329,7 +329,7 @@ impl Rule for TableRowColumnAlignment {
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
                                     name: None,
-                                    severity: config.severity.clone(),
+                                    severity: config.severity,
                                     message: "Exceeds available rows".to_string(),
                                     line,
                                     col,
@@ -386,7 +386,7 @@ impl Rule for TableRowColumnAlignment {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: config.severity.clone(),
+                            severity: config.severity,
                             message: format!("{diff} extra {col_word} in a row"),
                             line,
                             col,
@@ -398,7 +398,7 @@ impl Rule for TableRowColumnAlignment {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: config.severity.clone(),
+                            severity: config.severity,
                             message: format!("{diff} missing {col_word} in a row"),
                             line: row_el.base.line,
                             col: row_el.base.col,
@@ -412,7 +412,7 @@ impl Rule for TableRowColumnAlignment {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "Rowspan and colspan are causing cell overlap".to_string(),
                     line: el.base.line,
                     col: el.base.col,

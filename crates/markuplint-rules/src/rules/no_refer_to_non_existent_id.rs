@@ -102,7 +102,7 @@ impl Rule for NoReferToNonExistentId {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
-                                severity: rule_config.severity.clone(),
+                                severity: rule_config.severity,
                                 message: format!("Missing \"{value}\" ID"),
                                 line: html_attr.value.line,
                                 col: html_attr.value.col,
@@ -125,7 +125,7 @@ impl Rule for NoReferToNonExistentId {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!("Missing \"{fragment}\" ID"),
                         line: html_attr.value.line,
                         col: html_attr.value.col,
@@ -264,7 +264,7 @@ fn check_space_separated_ids(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: config.severity.clone(),
+                severity: config.severity,
                 message: format!("Missing \"{id_ref}\" ID"),
                 line: html_attr.value.line,
                 col: html_attr.value.col,

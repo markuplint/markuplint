@@ -48,7 +48,7 @@ impl Rule for NoDefaultValue {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: "It is the default value".to_string(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,

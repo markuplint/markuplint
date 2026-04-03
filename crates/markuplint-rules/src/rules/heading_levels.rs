@@ -54,7 +54,7 @@ impl Rule for HeadingLevels {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "Heading levels must not be skipped".to_string(),
                     line,
                     col,

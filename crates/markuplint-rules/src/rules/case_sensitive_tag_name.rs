@@ -49,7 +49,7 @@ impl Rule for CaseSensitiveTagName {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: message.clone(),
                     line: el.base.line,
                     col: name_col,
@@ -71,7 +71,7 @@ impl Rule for CaseSensitiveTagName {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: message.clone(),
                         line: ct.line,
                         col: ct.col,

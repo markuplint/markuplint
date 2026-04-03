@@ -38,7 +38,7 @@ impl Rule for DeprecatedElement {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: format!("The \"{}\" element is deprecated", el.base.node_name),
                     line: el.base.line,
                     col: el.base.col,
@@ -52,7 +52,7 @@ impl Rule for DeprecatedElement {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: format!("The \"{}\" element is obsolete", el.base.node_name),
                     line: el.base.line,
                     col: el.base.col,

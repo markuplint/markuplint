@@ -86,7 +86,7 @@ impl Rule for RequireDialogAutofocus {
             violations.push(Violation {
                 rule_id: self.id().to_string(),
                     name: None,
-                severity: rule_config.severity.clone(),
+                severity: rule_config.severity,
                 message: "The \"dialog\" element referenced by a \"show-modal\" command requires an element with the \"autofocus\" attribute".to_string(),
                 line: target_el.base.line,
                 col: target_el.base.col,

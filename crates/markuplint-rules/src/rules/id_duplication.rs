@@ -57,7 +57,7 @@ impl Rule for IdDuplication {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: config.global().severity.clone(),
+                        severity: config.global().severity,
                         message: format!("\"{value}\" is duplicated"),
                         line,
                         col,

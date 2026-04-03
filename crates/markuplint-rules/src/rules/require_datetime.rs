@@ -5,6 +5,8 @@
 //! a manual `YYYY/MM/DD` fallback, then suggests a candidate `datetime` value
 //! built from components that are certain.
 
+use std::sync::LazyLock;
+
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -15,6 +17,8 @@ use whichtime::{Component, Locale, WhichTime};
 
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+
+static SLASH_DATE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{4}/\d{2}/\d{2}$").unwrap());
 
 /// Default locales to try (matches TS implementation).
 const DEFAULT_LANGS: &[&str] = &["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"];
@@ -81,7 +85,7 @@ impl Rule for RequireDatetime {
             violations.push(Violation {
                 rule_id: self.id().to_string(),
                 name: None,
-                severity: rule_config.severity.clone(),
+                severity: rule_config.severity,
                 message,
                 line: el.base.line,
                 col: el.base.col,
@@ -140,8 +144,7 @@ fn str_to_locale(s: &str) -> Option<Locale> {
 
 /// Manual fallback for `YYYY/MM/DD` format (not handled by whichtime).
 fn try_slash_date_fallback(text: &str) -> Option<String> {
-    let re = Regex::new(r"^\d{4}/\d{2}/\d{2}$").ok()?;
-    if re.is_match(text) {
+    if SLASH_DATE_RE.is_match(text) {
         let candidate = text.replace('/', "-");
         if is_datetime(&candidate) {
             return Some(candidate);

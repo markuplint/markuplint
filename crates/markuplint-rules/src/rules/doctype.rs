@@ -49,7 +49,7 @@ impl Rule for Doctype {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: config.severity.clone(),
+                        severity: config.severity,
                         message: "Never declare obsolete doctype".to_string(),
                         line: dt.base.line,
                         col: dt.base.col,
@@ -63,7 +63,7 @@ impl Rule for Doctype {
             violations.push(Violation {
                 rule_id: self.id().to_string(),
                 name: None,
-                severity: config.severity.clone(),
+                severity: config.severity,
                 message: "Require doctype".to_string(),
                 line: 1,
                 col: 1,

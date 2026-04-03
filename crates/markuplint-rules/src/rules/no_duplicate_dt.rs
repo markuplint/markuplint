@@ -56,7 +56,7 @@ impl Rule for NoDuplicateDt {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: rule_config.severity.clone(),
+                            severity: rule_config.severity,
                             message: "The name duplicated".to_string(),
                             line,
                             col,

@@ -68,7 +68,7 @@ impl Rule for ClassNaming {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: rule_config.severity.clone(),
+                            severity: rule_config.severity,
                             message: format!("\"{class_name}\" is unmatched with the pattern: {display_pattern}"),
                             line: html_attr.name.line,
                             col: html_attr.name.col,

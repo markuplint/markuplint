@@ -77,7 +77,7 @@ impl Rule for WaiAria {
                     &rule_config.options,
                     &mut violations,
                     self.id(),
-                    &rule_config.severity,
+                    rule_config.severity,
                 );
             }
 
@@ -99,7 +99,7 @@ impl Rule for WaiAria {
                     version,
                     &mut violations,
                     self.id(),
-                    &rule_config.severity,
+                    rule_config.severity,
                 );
             }
 
@@ -117,7 +117,7 @@ impl Rule for WaiAria {
                         version,
                         &mut violations,
                         self.id(),
-                        &rule_config.severity,
+                        rule_config.severity,
                     );
                 }
             }
@@ -137,7 +137,7 @@ impl Rule for WaiAria {
                         &rule_config.options,
                         &mut violations,
                         self.id(),
-                        &rule_config.severity,
+                        rule_config.severity,
                     );
                 }
             }
@@ -155,7 +155,7 @@ impl Rule for WaiAria {
                         &aria_spec.props,
                         &mut violations,
                         self.id(),
-                        &rule_config.severity,
+                        rule_config.severity,
                     );
                 }
             }
@@ -171,7 +171,7 @@ impl Rule for WaiAria {
                         &aria_spec.props,
                         &mut violations,
                         self.id(),
-                        &rule_config.severity,
+                        rule_config.severity,
                     );
                 }
             }
@@ -185,7 +185,7 @@ impl Rule for WaiAria {
                         &aria_spec.props,
                         &mut violations,
                         self.id(),
-                        &rule_config.severity,
+                        rule_config.severity,
                     );
                 }
             }
@@ -203,7 +203,7 @@ impl Rule for WaiAria {
                     version,
                     &mut violations,
                     self.id(),
-                    &rule_config.severity,
+                    rule_config.severity,
                 );
             }
 
@@ -217,7 +217,7 @@ impl Rule for WaiAria {
                     version,
                     &mut violations,
                     self.id(),
-                    &rule_config.severity,
+                    rule_config.severity,
                 );
             }
 
@@ -231,13 +231,13 @@ impl Rule for WaiAria {
                     version,
                     &mut violations,
                     self.id(),
-                    &rule_config.severity,
+                    rule_config.severity,
                 );
             }
 
             // checkingInteractionInHidden (default: false)
             if is_option_enabled(&rule_config.options, "checkingInteractionInHidden", false) {
-                check_interaction_in_hidden(spec, arena, node_id, &mut violations, self.id(), &rule_config.severity);
+                check_interaction_in_hidden(spec, arena, node_id, &mut violations, self.id(), rule_config.severity);
             }
         }
 
@@ -277,7 +277,7 @@ fn check_role_attr(
     options: &serde_json::Value,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let role_value = &role_attr_node.value.raw;
 
@@ -289,7 +289,7 @@ fn check_role_attr(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!("The \"{token}\" role does not exist according to the WAI-ARIA specification."),
                 line: role_attr_node.value.line,
                 col: role_attr_node.value.col,
@@ -302,7 +302,7 @@ fn check_role_attr(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!("The \"{token}\" role is the abstract role"),
                 line: role_attr_node.value.line,
                 col: role_attr_node.value.col,
@@ -322,7 +322,7 @@ fn check_role_attr(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: severity.clone(),
+                    severity,
                     message: format!("The \"{token}\" role is deprecated"),
                     line: role_attr_node.value.line,
                     col: role_attr_node.value.col,
@@ -366,7 +366,7 @@ fn check_role_attr(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: severity.clone(),
+                    severity,
                     message: format!("The \"{token}\" role is the implicit role of the \"{el_name}\" element"),
                     line: role_attr_node.value.line,
                     col: role_attr_node.value.col,
@@ -389,7 +389,7 @@ fn check_permitted_roles(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     // Resolve permitted roles with condition evaluation
     let (permitted, any_permitted) =
@@ -423,7 +423,7 @@ fn check_permitted_roles(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                     name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!(
                     "Cannot overwrite the role of the \"{element_name}\" element according to ARIA in HTML specification"
                 ),
@@ -444,7 +444,7 @@ fn check_permitted_roles(
                     violations.push(Violation {
                         rule_id: rule_id.to_string(),
                     name: None,
-                        severity: severity.clone(),
+                        severity,
                         message: format!(
                             "Cannot overwrite the \"{token}\" role to the \"{element_name}\" element according to ARIA in HTML specification"
                         ),
@@ -508,7 +508,7 @@ fn check_deprecated_prop(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let Some(role) = role else {
         return;
@@ -535,7 +535,7 @@ fn check_deprecated_prop(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!(
                 "The \"{attr_name}\" ARIA {prop_type} is deprecated on the \"{}\" role",
                 role.name
@@ -564,7 +564,7 @@ fn check_required_prop(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let Some(role) = computed_role else {
         return;
@@ -625,7 +625,7 @@ fn check_required_prop(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!(
                 "Require the \"{name}\" ARIA {prop_type} on the \"{role}\" role",
                 name = owned.name,
@@ -654,7 +654,7 @@ fn check_disallowed_prop(
     options: &serde_json::Value,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let Some(role) = role_spec else {
         return;
@@ -724,7 +724,7 @@ fn check_disallowed_prop(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!("{restriction_msg}{alt_msg}"),
                 line: attr.name.line,
                 col: attr.name.col,
@@ -746,7 +746,7 @@ fn check_disallowed_prop(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!(
                 "The \"{raw_attr_name}\" ARIA {prop_type_str} is disallowed on the \"{role_name}\" role",
                 role_name = role.name,
@@ -848,7 +848,7 @@ fn check_implicit_props(
     props: &[markuplint_types::spec::types::ARIAProperty],
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let attr_name = attr.node_name.to_ascii_lowercase();
 
@@ -927,7 +927,7 @@ fn check_implicit_props(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: severity.clone(),
+                    severity,
                     message: format!(
                         "The \"{attr_name}\" ARIA {prop_type} has the same semantics as the current \"{0}\" attribute or the implicit \"{0}\" attribute",
                         equiv.html_attr_name
@@ -952,7 +952,7 @@ fn check_implicit_props(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!(
                     "The \"{attr_name}\" ARIA {prop_type} contradicts the current \"{0}\" attribute",
                     equiv.html_attr_name
@@ -973,7 +973,7 @@ fn check_implicit_props(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: severity.clone(),
+                    severity,
                     message: format!(
                         "The \"{attr_name}\" ARIA {prop_type} contradicts the implicit \"{0}\" attribute",
                         equiv.html_attr_name
@@ -995,7 +995,7 @@ fn check_value(
     props: &[markuplint_types::spec::types::ARIAProperty],
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let attr_name = attr.node_name.to_ascii_lowercase();
 
@@ -1035,7 +1035,7 @@ fn check_value(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message,
             line: attr.name.line,
             col: attr.name.col,
@@ -1059,12 +1059,8 @@ fn check_aria_value(value_type: &ARIAAttributeValue, value: &str, enum_values: &
         ARIAAttributeValue::TrueFalse => matches!(value, "true" | "false"),
         ARIAAttributeValue::Tristate => matches!(value, "mixed" | "true" | "false" | "undefined"),
         ARIAAttributeValue::TrueFalseUndefined => matches!(value, "true" | "false" | "undefined"),
-        ARIAAttributeValue::Integer => {
-            value.parse::<i64>().is_ok() && value.parse::<i64>().unwrap().to_string() == value
-        }
-        ARIAAttributeValue::Number => {
-            value.parse::<f64>().is_ok() && value.parse::<f64>().unwrap().to_string() == value
-        }
+        ARIAAttributeValue::Integer => value.parse::<i64>().is_ok_and(|n| n.to_string() == value),
+        ARIAAttributeValue::Number => value.parse::<f64>().is_ok_and(|n| n.to_string() == value),
     }
 }
 
@@ -1074,7 +1070,7 @@ fn check_default_value(
     props: &[markuplint_types::spec::types::ARIAProperty],
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     let attr_name = attr.node_name.to_ascii_lowercase();
 
@@ -1094,7 +1090,7 @@ fn check_default_value(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!("The \"{attr_name}\" ARIA {prop_type} is set to its default value \"{default_val}\""),
             line: attr.name.line,
             col: attr.name.col,
@@ -1117,7 +1113,7 @@ fn check_allowed_child_roles(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     // Skip if aria-busy="true"
     if markuplint_dom::helpers::get_attr_value(arena, node_id, "aria-busy")
@@ -1168,7 +1164,7 @@ fn check_allowed_child_roles(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!(
                 "The child element requires the role(s): {required_roles}. Or, require aria-busy=\"true\""
             ),
@@ -1180,7 +1176,7 @@ fn check_allowed_child_roles(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: format!(
                 "The \"{}\" role expects the child element requires the role(s): {required_roles}",
                 role.name
@@ -1309,7 +1305,7 @@ fn check_required_parent_role(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     // Only check explicit roles (skip implicit)
     let role_attr_value = markuplint_dom::helpers::get_attr_value(arena, node_id, "role");
@@ -1341,7 +1337,7 @@ fn check_required_parent_role(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: severity.clone(),
+                    severity,
                     message: format!(
                         "The \"{role_name}\" role requires an accessibility parent with the role(s): {required}"
                     ),
@@ -1368,7 +1364,7 @@ fn check_presentational_children(
     version: ARIAVersion,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     // Check if element has any role or aria-* attributes
     let has_aria_attr = el.attributes.iter().any(|attr| {
@@ -1396,7 +1392,7 @@ fn check_presentational_children(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                     name: None,
-                severity: severity.clone(),
+                severity,
                 message: format!(
                     "It may be ineffective because it has the \"{}\" role as an ancestor that doesn't expose its descendants to the accessibility tree",
                     role.name
@@ -1420,7 +1416,7 @@ fn check_interaction_in_hidden(
     node_id: NodeId,
     violations: &mut Vec<Violation>,
     rule_id: &str,
-    severity: &crate::violation::Severity,
+    severity: crate::violation::Severity,
 ) {
     if !may_be_focusable::may_be_focusable(spec, arena, node_id) {
         return;
@@ -1436,7 +1432,7 @@ fn check_interaction_in_hidden(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: severity.clone(),
+            severity,
             message: "It may be focusable in spite of it has aria-hidden=true".to_string(),
             line: el.base.line,
             col: el.base.col,
@@ -1460,7 +1456,7 @@ fn check_interaction_in_hidden(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: severity.clone(),
+                severity,
                 message: "It may be focusable in spite of it has the ancestor that has aria-hidden=true".to_string(),
                 line: el.base.line,
                 col: el.base.col,

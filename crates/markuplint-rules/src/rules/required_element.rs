@@ -122,7 +122,7 @@ fn check_required_elements(
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
-                severity: config.severity.clone(),
+                severity: config.severity,
                 message: format!("Require the \"{selector_str}\" element"),
                 line,
                 col,
