@@ -753,6 +753,18 @@
 				"onwebkittransitionend": {
 					"type": "FunctionBody",
 					"deprecated": true
+				},
+				"ontouchstart": {
+					"type": "FunctionBody"
+				},
+				"ontouchend": {
+					"type": "FunctionBody"
+				},
+				"ontouchmove": {
+					"type": "FunctionBody"
+				},
+				"ontouchcancel": {
+					"type": "FunctionBody"
 				}
 			},
 			"#HTMLLinkAndFetchingAttrs": {
