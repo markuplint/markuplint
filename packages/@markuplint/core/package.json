@@ -5,6 +5,11 @@
 	"type": "module",
 	"main": "./index.cjs",
 	"types": "./index.d.ts",
+	"files": [
+		"index.cjs",
+		"index.d.ts",
+		"*.node"
+	],
 	"napi": {
 		"binaryName": "markuplint-builder"
 	},
