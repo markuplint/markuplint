@@ -59,7 +59,7 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!(
                             "Don't use an ambiguous navigable target name. Did you mean \"{with_underscore}\"?"
                         ),

@@ -1,5 +1,7 @@
 //! `character-reference` rule: special characters should be escaped as character references.
 
+use std::sync::LazyLock;
+
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -7,6 +9,9 @@ use regex::Regex;
 
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+
+static ENTITY_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);").unwrap());
 
 /// The `character-reference` rule.
 pub struct CharacterReference;
@@ -26,8 +31,7 @@ impl Rule for CharacterReference {
         let config = config.global();
         let mut violations = Vec::new();
 
-        // Regex to match valid character references: &name; or &#digits; or &#xhex;
-        let entity_re = Regex::new(r"&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);").expect("valid regex");
+        let entity_re = &*ENTITY_RE;
 
         for node in arena.descendants(0) {
             let DomNode::Text(text) = node else {
@@ -58,7 +62,7 @@ impl Rule for CharacterReference {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: config.severity.clone(),
+                        severity: config.severity,
                         message: "Illegal characters must escape in character reference".to_string(),
                         line,
                         col,

@@ -92,7 +92,7 @@ impl Rule for PermittedContents {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: rule_config.severity.clone(),
+                            severity: rule_config.severity,
                             message: "The element disallows contents".to_string(),
                             line: el.base.line,
                             col: el.base.col,
@@ -167,7 +167,7 @@ impl Rule for PermittedContents {
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
                                     name: None,
-                                    severity: rule_config.severity.clone(),
+                                    severity: rule_config.severity,
                                     message,
                                     line: if child.line > 0 { child.line } else { el.base.line },
                                     col: if child.col > 0 { child.col } else { el.base.col },
@@ -179,7 +179,7 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
-                                severity: rule_config.severity.clone(),
+                                severity: rule_config.severity,
                                 message: format!("Require an element. (Need \"{}\")", result.query,),
                                 line: el.base.line,
                                 col: el.base.col,
@@ -201,7 +201,7 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
-                                severity: rule_config.severity.clone(),
+                                severity: rule_config.severity,
                                 message: format!("Require one or more elements. (Need \"{}\")", result.query,),
                                 line,
                                 col,
@@ -212,7 +212,7 @@ impl Rule for PermittedContents {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
-                                severity: rule_config.severity.clone(),
+                                severity: rule_config.severity,
                                 message: "The element disallows contents".to_string(),
                                 line: el.base.line,
                                 col: el.base.col,
@@ -225,7 +225,7 @@ impl Rule for PermittedContents {
                                 violations.push(Violation {
                                     rule_id: self.id().to_string(),
                     name: None,
-                                    severity: rule_config.severity.clone(),
+                                    severity: rule_config.severity,
                                     message: format!(
                                         "The \"{tag_name}\" element has a transparent content model but disallows \"{}\" in this context",
                                         child_name(child),
@@ -525,7 +525,7 @@ fn check_own_transparent_constraint(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: format!(
                         "The \"{tag_name}\" element is a transparent model but also disallows the \"{}\" element in this context",
                         violator.node_name,
@@ -540,7 +540,7 @@ fn check_own_transparent_constraint(
                 violations.push(Violation {
                     rule_id: rule_id.to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: format!(
                         "The \"{tag_name}\" element is a transparent model but also disallows the \"{}\" element in this context",
                         child_name(child),

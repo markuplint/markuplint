@@ -344,7 +344,7 @@ fn merge_rule(global: &RuleConfig, node: &RuleConfig) -> RuleConfig {
     }
 
     RuleConfig {
-        severity: node.severity.clone(),
+        severity: node.severity,
         value: if node.value != Value::Bool(true) || global.value == Value::Bool(true) {
             node.value.clone()
         } else {

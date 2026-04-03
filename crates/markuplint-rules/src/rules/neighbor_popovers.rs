@@ -74,7 +74,7 @@ impl Rule for NeighborPopovers {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: "Detected perceptible content between trigger and target".to_string(),
                         line: el.base.line,
                         col: el.base.col,

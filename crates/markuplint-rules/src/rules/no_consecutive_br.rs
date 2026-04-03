@@ -45,7 +45,7 @@ impl Rule for NoConsecutiveBr {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: "Consecutive br elements detected".to_string(),
                     line: next_el.base.line,
                     col: next_el.base.col,

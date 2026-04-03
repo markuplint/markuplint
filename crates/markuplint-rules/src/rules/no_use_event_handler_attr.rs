@@ -80,7 +80,7 @@ impl Rule for NoUseEventHandlerAttr {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: format!("The \"{}\" attribute is disallowed", html_attr.node_name),
                     line: html_attr.name.line,
                     col: html_attr.name.col,

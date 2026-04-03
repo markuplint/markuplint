@@ -28,7 +28,7 @@ impl Rule for NoOrphanedEndTag {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "Orphaned end tag detected".to_string(),
                     line: text.base.line,
                     col: text.base.col,
@@ -40,7 +40,7 @@ impl Rule for NoOrphanedEndTag {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "Orphaned end tag detected".to_string(),
                     line: end_tag.base.line,
                     col: end_tag.base.col,

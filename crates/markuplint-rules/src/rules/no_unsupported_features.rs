@@ -77,7 +77,7 @@ impl Rule for NoUnsupportedFeatures {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: format!("The \"{tag}\" element is experimental"),
                     line: el.base.line,
                     col: el.base.col,
@@ -93,7 +93,7 @@ impl Rule for NoUnsupportedFeatures {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: format!("The \"{tag}\" element is non-standard"),
                     line: el.base.line,
                     col: el.base.col,
@@ -125,7 +125,7 @@ impl Rule for NoUnsupportedFeatures {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!("The \"{attr_name}\" attribute of the \"{tag}\" element is experimental"),
                         line: html_attr.line,
                         col: html_attr.col,
@@ -140,7 +140,7 @@ impl Rule for NoUnsupportedFeatures {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!("The \"{attr_name}\" attribute of the \"{tag}\" element is non-standard"),
                         line: html_attr.line,
                         col: html_attr.col,

@@ -78,7 +78,7 @@ impl Rule for NoEmptyPalpableContent {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: rule_config.severity.clone(),
+                    severity: rule_config.severity,
                     message: "The element should not empty".to_string(),
                     line: el.base.line,
                     col: el.base.col,

@@ -55,7 +55,7 @@ impl Rule for RequiredH1 {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "Require the h1 element".to_string(),
                     line: 1,
                     col: 1,
@@ -68,7 +68,7 @@ impl Rule for RequiredH1 {
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,
-                    severity: config.severity.clone(),
+                    severity: config.severity,
                     message: "The h1 element is duplicated".to_string(),
                     line: el.base.line,
                     col: el.base.col,

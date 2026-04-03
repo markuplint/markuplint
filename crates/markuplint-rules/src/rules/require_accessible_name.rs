@@ -54,7 +54,7 @@ impl Rule for RequireAccessibleName {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: "Require accessible name".to_string(),
                         line: el.base.line,
                         col: el.base.col,

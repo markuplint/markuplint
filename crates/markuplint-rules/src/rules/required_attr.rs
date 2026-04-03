@@ -62,7 +62,7 @@ impl Rule for RequiredAttr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!(
                             "The \"{}\" element expects the \"{}\" attribute",
                             el.base.node_name, attr_name
@@ -137,7 +137,7 @@ impl Rule for RequiredAttr {
                         violations.push(Violation {
                             rule_id: self.id().to_string(),
                             name: None,
-                            severity: rule_config.severity.clone(),
+                            severity: rule_config.severity,
                             message: format!("The \"{}\" element expects {}", el.base.node_name, expects),
                             line: el.base.line,
                             col: el.base.col,
@@ -181,7 +181,7 @@ impl Rule for RequiredAttr {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!(
                             "The \"{}\" element expects the \"{}\" attribute",
                             el.base.node_name, attr_name

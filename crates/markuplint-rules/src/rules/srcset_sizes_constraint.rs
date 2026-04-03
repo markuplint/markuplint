@@ -1,6 +1,8 @@
 //! `srcset-sizes-constraint` rule: enforces WHATWG constraints between
 //! `srcset`, `sizes`, and `loading` attributes on `<img>` and `<source>` elements.
 
+use std::sync::LazyLock;
+
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
 use markuplint_dom::node::{DomNode, ElementData};
@@ -9,6 +11,9 @@ use regex::Regex;
 
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
+
+static WIDTH_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[1-9]\d*w$").unwrap());
+static DENSITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d+(?:\.\d+)?x$").unwrap());
 
 /// The `srcset-sizes-constraint` rule.
 pub struct SrcsetSizesConstraint;
@@ -113,7 +118,7 @@ fn check_element(
         violations.push(Violation {
             rule_id: rule_id.to_string(),
             name: None,
-            severity: rule_config.severity.clone(),
+            severity: rule_config.severity,
             message: "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors"
                 .to_string(),
             line: el.base.line,
@@ -135,7 +140,7 @@ fn make_violation(rule_id: &str, rule_config: &RuleConfig, message: &str, el: &E
     Violation {
         rule_id: rule_id.to_string(),
         name: None,
-        severity: rule_config.severity.clone(),
+        severity: rule_config.severity,
         message: message.to_string(),
         line: el.base.line,
         col: el.base.col,
@@ -159,9 +164,6 @@ fn parse_srcset(value: &str) -> ParseResult {
         };
     }
 
-    let width_re = Regex::new(r"^[1-9]\d*w$").unwrap();
-    let density_re = Regex::new(r"^\d+(?:\.\d+)?x$").unwrap();
-
     let mut has_width = false;
     let mut has_density = false;
     let mut has_implied = false;
@@ -173,9 +175,9 @@ fn parse_srcset(value: &str) -> ParseResult {
         }
 
         if let Some(descriptor) = tokens.get(1) {
-            if width_re.is_match(descriptor) {
+            if WIDTH_RE.is_match(descriptor) {
                 has_width = true;
-            } else if density_re.is_match(descriptor) {
+            } else if DENSITY_RE.is_match(descriptor) {
                 has_density = true;
             }
         } else {

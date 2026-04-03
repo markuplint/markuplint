@@ -89,7 +89,7 @@ impl Rule for LandmarkRoles {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: rule_config.severity.clone(),
+                        severity: rule_config.severity,
                         message: format!("The \"{}\" landmark should be top level", role.name),
                         line: el.base.line,
                         col: el.base.col,
@@ -135,7 +135,7 @@ impl Rule for LandmarkRoles {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: config.get(node_id).severity.clone(),
+                        severity: config.get(node_id).severity,
                         message: "Require unique accessible name".to_string(),
                         line,
                         col,

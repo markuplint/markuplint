@@ -135,7 +135,7 @@ impl Rule for UseList {
             violations.push(Violation {
                 rule_id: self.id().to_string(),
                 name: None,
-                severity: global.severity.clone(),
+                severity: global.severity,
                 message: "Use the li element".to_string(),
                 line: text.base.line,
                 col: text.base.col,

@@ -3,7 +3,7 @@
 use serde::Serialize;
 
 /// Severity level of a violation.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
     Error,

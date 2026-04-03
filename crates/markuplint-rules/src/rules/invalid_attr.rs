@@ -187,7 +187,7 @@ fn attr_violation(
     Violation {
         rule_id: ctx.rule_id.to_string(),
         name: None,
-        severity: ctx.severity.clone(),
+        severity: *ctx.severity,
         message,
         line: html_attr.name.line,
         col: html_attr.name.col,
@@ -206,7 +206,7 @@ fn attr_value_violation(
     Violation {
         rule_id: ctx.rule_id.to_string(),
         name: None,
-        severity: ctx.severity.clone(),
+        severity: *ctx.severity,
         message,
         line: html_attr.value.line,
         col: html_attr.value.col,
