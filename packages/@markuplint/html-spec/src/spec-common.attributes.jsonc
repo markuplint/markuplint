@@ -635,6 +635,22 @@
 		"onwebkittransitionend": {
 			"type": "FunctionBody",
 			"deprecated": true
+		},
+		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		"ontouchstart": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		"ontouchend": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		"ontouchmove": {
+			"type": "FunctionBody"
+		},
+		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		"ontouchcancel": {
+			"type": "FunctionBody"
 		}
 	},
 	"#HTMLLinkAndFetchingAttrs": {
