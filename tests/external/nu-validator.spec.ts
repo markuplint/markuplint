@@ -58,7 +58,7 @@ function generateTests(files: string[], config: Config) {
 				).toHaveLength(0);
 			});
 		}
-		// warn files are skipped — markuplint has no warn/error distinction
+		// haswarn/hasinfo files are skipped — markuplint has no warn/info distinction
 	}
 }
 
