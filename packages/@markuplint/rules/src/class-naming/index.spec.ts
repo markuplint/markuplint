@@ -3,7 +3,7 @@ import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
-test('pass class name', async () => {
+test('[class-naming-valid-001] pass class name', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -22,7 +22,7 @@ test('pass class name', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('unmatched class name', async () => {
+test('[class-naming-invalid-001] unmatched class name', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -58,7 +58,7 @@ test('unmatched class name', async () => {
 	]);
 });
 
-test('childNodeRules', async () => {
+test('[class-naming-invalid-002] childNodeRules', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -93,7 +93,7 @@ test('childNodeRules', async () => {
 	]);
 });
 
-test('unmatched class name (2)', async () => {
+test('[class-naming-invalid-003] unmatched class name (2)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -124,7 +124,7 @@ test('unmatched class name (2)', async () => {
 	]);
 });
 
-test('multi pattern', async () => {
+test('[class-naming-valid-002] multi pattern', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -143,7 +143,7 @@ test('multi pattern', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('childNodeRules multi selectors', async () => {
+test('[class-naming-invalid-004] childNodeRules multi selectors', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -192,7 +192,7 @@ test('childNodeRules multi selectors', async () => {
 	]);
 });
 
-test('childNodeRules multi selectors (No error)', async () => {
+test('[class-naming-valid-003] childNodeRules multi selectors (No error)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -233,7 +233,7 @@ test('childNodeRules multi selectors (No error)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('Dynamic value', async () => {
+test('[class-naming-valid-004] Dynamic value', async () => {
 	const { violations } = await mlRuleTest(rule, '<div className={style}></div>', {
 		rule: {
 			value: '/^c-[a-z]+/',
@@ -245,7 +245,7 @@ test('Dynamic value', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('regexSelector', async () => {
+test('[class-naming-invalid-005] regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<section class="Card">
@@ -334,7 +334,7 @@ test('regexSelector', async () => {
 	]);
 });
 
-test('regexSelector inheritance', async () => {
+test('[class-naming-invalid-006] regexSelector inheritance', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<html>
@@ -389,7 +389,7 @@ test('regexSelector inheritance', async () => {
 	]);
 });
 
-test('pug + regexSelector', async () => {
+test('[class-naming-parser-001] pug + regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`section.Card
@@ -471,7 +471,7 @@ section.Card
 });
 
 describe('Issues', () => {
-	test('#1263', async () => {
+	test('[class-naming-issue-1263] #1263', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`

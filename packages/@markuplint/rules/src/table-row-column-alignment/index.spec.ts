@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('An extra column', async () => {
+	test('[table-row-column-alignment-invalid-001] An extra column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -30,7 +30,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('Extra columns', async () => {
+	test('[table-row-column-alignment-invalid-002] Extra columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -57,7 +57,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('A missing column', async () => {
+	test('[table-row-column-alignment-invalid-003] A missing column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -90,7 +90,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('Missing columns', async () => {
+	test('[table-row-column-alignment-invalid-004] Missing columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -124,7 +124,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('Missing columns (with colspan)', async () => {
+	test('[table-row-column-alignment-invalid-005] Missing columns (with colspan)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -153,7 +153,7 @@ describe('Basic', () => {
 });
 
 describe('Complex', () => {
-	test('[rowspan]', async () => {
+	test('[table-row-column-alignment-invalid-006] [rowspan]', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -197,7 +197,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('[colspan][rowspan]', async () => {
+	test('[table-row-column-alignment-invalid-007] [colspan][rowspan]', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -236,7 +236,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('Overflow', async () => {
+	test('[table-row-column-alignment-invalid-008] Overflow', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -298,7 +298,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('Overlap', async () => {
+	test('[table-row-column-alignment-invalid-009] Overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -345,7 +345,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('User reported case - table with rowspan and colspan', async () => {
+	test('[table-row-column-alignment-valid-001] User reported case - table with rowspan and colspan', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -366,7 +366,7 @@ describe('Complex', () => {
 });
 
 describe('Edge Cases', () => {
-	test('Empty table', async () => {
+	test('[table-row-column-alignment-valid-002] Empty table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -377,7 +377,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Table with thead/tbody/tfoot sections', async () => {
+	test('[table-row-column-alignment-valid-003] Table with thead/tbody/tfoot sections', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -409,7 +409,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Table sections with mismatched columns', async () => {
+	test('[table-row-column-alignment-invalid-010] Table sections with mismatched columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -441,7 +441,7 @@ describe('Edge Cases', () => {
 		]);
 	});
 
-	test('Complex nested rowspan/colspan without overlap', async () => {
+	test('[table-row-column-alignment-valid-004] Complex nested rowspan/colspan without overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -464,7 +464,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Colspan only table', async () => {
+	test('[table-row-column-alignment-valid-005] Colspan only table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -483,7 +483,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Rowspan only table - valid structure', async () => {
+	test('[table-row-column-alignment-valid-006] Rowspan only table - valid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -503,7 +503,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Rowspan only table - invalid structure', async () => {
+	test('[table-row-column-alignment-invalid-011] Rowspan only table - invalid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -535,7 +535,7 @@ describe('Edge Cases', () => {
 		]);
 	});
 
-	test('Explicit default values (rowspan=1, colspan=1)', async () => {
+	test('[table-row-column-alignment-valid-007] Explicit default values (rowspan=1, colspan=1)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -554,7 +554,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Large table with consistent structure', async () => {
+	test('[table-row-column-alignment-valid-008] Large table with consistent structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -595,7 +595,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Table with tbody rowspan/colspan combinations', async () => {
+	test('[table-row-column-alignment-valid-009] Table with tbody rowspan/colspan combinations', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -623,7 +623,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Mixed valid and invalid rows', async () => {
+	test('[table-row-column-alignment-invalid-012] Mixed valid and invalid rows', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -661,7 +661,7 @@ describe('Edge Cases', () => {
 		]);
 	});
 
-	test('Single cell table', async () => {
+	test('[table-row-column-alignment-valid-010] Single cell table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -675,7 +675,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('Single row with colspan', async () => {
+	test('[table-row-column-alignment-valid-011] Single row with colspan', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`

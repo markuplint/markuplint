@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe('Aspect ratio mismatch', () => {
-	test('width/height do not match image aspect ratio', async () => {
+	test('[correct-aspect-ratio-invalid-001] width/height do not match image aspect ratio', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -21,28 +21,28 @@ describe('Aspect ratio mismatch', () => {
 		expect(violations[0]?.message).toContain('100:50');
 	});
 
-	test('width/height match image aspect ratio (same dimensions)', async () => {
+	test('[correct-aspect-ratio-valid-001] width/height match image aspect ratio (same dimensions)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('width/height match image aspect ratio (scaled proportionally)', async () => {
+	test('[correct-aspect-ratio-valid-002] width/height match image aspect ratio (scaled proportionally)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="200" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('square image with matching dimensions', async () => {
+	test('[correct-aspect-ratio-valid-003] square image with matching dimensions', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/50x50.png" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('square image with mismatched dimensions', async () => {
+	test('[correct-aspect-ratio-invalid-002] square image with mismatched dimensions', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/50x50.png" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -54,28 +54,28 @@ describe('Aspect ratio mismatch', () => {
 });
 
 describe('Skip conditions', () => {
-	test('no src attribute', async () => {
+	test('[correct-aspect-ratio-valid-004] no src attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no width attribute', async () => {
+	test('[correct-aspect-ratio-valid-005] no width attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('no height attribute', async () => {
+	test('[correct-aspect-ratio-valid-006] no height attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('remote URL (https)', async () => {
+	test('[correct-aspect-ratio-valid-007] remote URL (https)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="https://example.com/image.png" width="100" height="100">',
@@ -84,7 +84,7 @@ describe('Skip conditions', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('remote URL (http)', async () => {
+	test('[correct-aspect-ratio-valid-008] remote URL (http)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="http://example.com/image.png" width="100" height="100">',
@@ -93,7 +93,7 @@ describe('Skip conditions', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('data URI', async () => {
+	test('[correct-aspect-ratio-valid-009] data URI', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="data:image/png;base64,abc" width="100" height="100">',
@@ -102,7 +102,7 @@ describe('Skip conditions', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('non-img element is ignored', async () => {
+	test('[correct-aspect-ratio-valid-010] non-img element is ignored', async () => {
 		const { violations } = await mlRuleTest(rule, '<video src="/100x50.png" width="100" height="100"></video>', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -111,7 +111,7 @@ describe('Skip conditions', () => {
 });
 
 describe('File not found', () => {
-	test('nonexistent image file', async () => {
+	test('[correct-aspect-ratio-valid-011] nonexistent image file', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/nonexistent.png" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -120,14 +120,14 @@ describe('File not found', () => {
 });
 
 describe('documentRoot option', () => {
-	test('resolves absolute path with documentRoot', async () => {
+	test('[correct-aspect-ratio-invalid-003] resolves absolute path with documentRoot', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('without documentRoot, uses cwd (likely no fixture found)', async () => {
+	test('[correct-aspect-ratio-valid-012] without documentRoot, uses cwd (likely no fixture found)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">');
 		// File not found under cwd → no violation (silent skip)
 		expect(violations).toStrictEqual([]);
@@ -135,21 +135,21 @@ describe('documentRoot option', () => {
 });
 
 describe('Non-numeric width/height', () => {
-	test('width="auto" is skipped', async () => {
+	test('[correct-aspect-ratio-valid-013] width="auto" is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="auto" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('empty width is skipped', async () => {
+	test('[correct-aspect-ratio-valid-014] empty width is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('zero width is skipped', async () => {
+	test('[correct-aspect-ratio-valid-015] zero width is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="0" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -158,7 +158,7 @@ describe('Non-numeric width/height', () => {
 });
 
 describe('Dynamic values', () => {
-	test('Vue dynamic src is skipped', async () => {
+	test('[correct-aspect-ratio-parser-001] Vue dynamic src is skipped', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><img :src="imgSrc" width="100" height="100"></template>',
@@ -170,7 +170,7 @@ describe('Dynamic values', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('JSX spread props are skipped', async () => {
+	test('[correct-aspect-ratio-parser-002] JSX spread props are skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<img {...props} src="/100x50.png" width="100" height="100" />', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 			rule: { value: true, options: { documentRoot: fixturesDir } },
@@ -180,7 +180,7 @@ describe('Dynamic values', () => {
 });
 
 describe('Multiple elements', () => {
-	test('multiple img elements, only one mismatch', async () => {
+	test('[correct-aspect-ratio-invalid-004] multiple img elements, only one mismatch', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="/100x50.png" width="100" height="50"><img src="/100x50.png" width="100" height="100">',
@@ -189,7 +189,7 @@ describe('Multiple elements', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('same image referenced twice, both checked', async () => {
+	test('[correct-aspect-ratio-invalid-005] same image referenced twice, both checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="/100x50.png" width="100" height="100"><img src="/100x50.png" width="200" height="100">',
@@ -201,21 +201,21 @@ describe('Multiple elements', () => {
 });
 
 describe('Query strings and fragments', () => {
-	test('src with query string still resolves the image file', async () => {
+	test('[correct-aspect-ratio-invalid-006] src with query string still resolves the image file', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png?v=123" width="100" height="100">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('src with fragment still resolves the image file', async () => {
+	test('[correct-aspect-ratio-invalid-007] src with fragment still resolves the image file', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/50x50.png#section" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations.length).toBe(1);
 	});
 
-	test('same file with different query strings are both checked', async () => {
+	test('[correct-aspect-ratio-invalid-008] same file with different query strings are both checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="/100x50.png?v=1" width="100" height="100"><img src="/100x50.png?v=2" width="200" height="100">',
@@ -227,7 +227,7 @@ describe('Query strings and fragments', () => {
 });
 
 describe('Edge cases', () => {
-	test('negative width is skipped', async () => {
+	test('[correct-aspect-ratio-valid-016] negative width is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="-10" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
@@ -236,7 +236,7 @@ describe('Edge cases', () => {
 });
 
 describe('picture/source element', () => {
-	test('source with srcset mismatch', async () => {
+	test('[correct-aspect-ratio-invalid-009] source with srcset mismatch', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<picture><source srcset="/100x50.png" width="100" height="100"></picture>',
@@ -245,7 +245,7 @@ describe('picture/source element', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('source with srcset match', async () => {
+	test('[correct-aspect-ratio-valid-017] source with srcset match', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<picture><source srcset="/100x50.png" width="200" height="100"></picture>',
@@ -254,7 +254,7 @@ describe('picture/source element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('source inside video is skipped', async () => {
+	test('[correct-aspect-ratio-valid-018] source inside video is skipped', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<video><source srcset="/100x50.png" width="100" height="100"></video>',
@@ -263,7 +263,7 @@ describe('picture/source element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('source with multiple srcset entries', async () => {
+	test('[correct-aspect-ratio-invalid-010] source with multiple srcset entries', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<picture><source srcset="/100x50.png 1x, /50x50.png 2x" width="100" height="100"></picture>',
@@ -273,14 +273,14 @@ describe('picture/source element', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('source without width/height', async () => {
+	test('[correct-aspect-ratio-valid-019] source without width/height', async () => {
 		const { violations } = await mlRuleTest(rule, '<picture><source srcset="/100x50.png"></picture>', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('picture with img fallback (both checked)', async () => {
+	test('[correct-aspect-ratio-invalid-011] picture with img fallback (both checked)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<picture><source srcset="/100x50.png" width="100" height="100"><img src="/50x50.png" width="100" height="50"></picture>',
@@ -292,7 +292,7 @@ describe('picture/source element', () => {
 });
 
 describe('Rule disabled', () => {
-	test('no violations when rule is disabled', async () => {
+	test('[correct-aspect-ratio-valid-020] no violations when rule is disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
 			rule: false,
 		});

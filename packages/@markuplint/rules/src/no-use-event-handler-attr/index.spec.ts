@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('disallows onclick', async () => {
+test('[no-use-event-handler-attr-invalid-001] disallows onclick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('disallows onclick', async () => {
 	]);
 });
 
-test('allows onclick because ignores it', async () => {
+test('[no-use-event-handler-attr-valid-001] allows onclick because ignores it', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
 			options: {
@@ -27,7 +27,7 @@ test('allows onclick because ignores it', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('✔ onclick, ✘ onmouseleave', async () => {
+test('[no-use-event-handler-attr-invalid-002] ✔ onclick, ✘ onmouseleave', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e" onmouseleave="e => e"></div>', {
 		rule: {
 			options: {
@@ -46,7 +46,7 @@ test('✔ onclick, ✘ onmouseleave', async () => {
 	]);
 });
 
-test('ignore by regex', async () => {
+test('[no-use-event-handler-attr-valid-002] ignore by regex', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
 			options: {
@@ -57,7 +57,7 @@ test('ignore by regex', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('value: ["click"] reports only click', async () => {
+test('[no-use-event-handler-attr-invalid-003] value: ["click"] reports only click', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['click'] },
 	});
@@ -72,7 +72,7 @@ test('value: ["click"] reports only click', async () => {
 	]);
 });
 
-test('value: ["click", "keydown"] reports matching events', async () => {
+test('[no-use-event-handler-attr-invalid-004] value: ["click", "keydown"] reports matching events', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onkeydown="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['click', 'keydown'] },
 	});
@@ -94,7 +94,7 @@ test('value: ["click", "keydown"] reports matching events', async () => {
 	]);
 });
 
-test('value: ["Click"] is case-insensitive', async () => {
+test('[no-use-event-handler-attr-invalid-005] value: ["Click"] is case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()"></div>', { rule: { value: ['Click'] } });
 	expect(violations).toStrictEqual([
 		{
@@ -107,7 +107,7 @@ test('value: ["Click"] is case-insensitive', async () => {
 	]);
 });
 
-test('value: ["/^mouse/"] regex pattern', async () => {
+test('[no-use-event-handler-attr-invalid-006] value: ["/^mouse/"] regex pattern', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['/^mouse/'] },
 	});
@@ -129,7 +129,7 @@ test('value: ["/^mouse/"] regex pattern', async () => {
 	]);
 });
 
-test('value: ["click"] with ignore: "onclick" — ignore takes priority', async () => {
+test('[no-use-event-handler-attr-invalid-007] value: ["click"] with ignore: "onclick" — ignore takes priority', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()"></div>', {
 		rule: { value: ['click', 'mousedown'], options: { ignore: 'onclick' } },
 	});
@@ -144,7 +144,7 @@ test('value: ["click"] with ignore: "onclick" — ignore takes priority', async 
 	]);
 });
 
-test('value: ["click"] with JSX onClick', async () => {
+test('[no-use-event-handler-attr-parser-001] value: ["click"] with JSX onClick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onClick={fn}></div>', {
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/jsx-parser' },
@@ -160,7 +160,7 @@ test('value: ["click"] with JSX onClick', async () => {
 	]);
 });
 
-test('value: ["mousedown"] does not report JSX onClick', async () => {
+test('[no-use-event-handler-attr-parser-002] value: ["mousedown"] does not report JSX onClick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onClick={fn}></div>', {
 		rule: { value: ['mousedown'] },
 		parser: { '.*': '@markuplint/jsx-parser' },
@@ -168,22 +168,22 @@ test('value: ["mousedown"] does not report JSX onClick', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('non-event attributes are not affected', async () => {
+test('[no-use-event-handler-attr-valid-003] non-event attributes are not affected', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class="foo" id="bar"></div>', { rule: { value: ['click'] } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('value: false disables the rule', async () => {
+test('[no-use-event-handler-attr-valid-004] value: false disables the rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()"></div>', { rule: { value: false } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('"on" attribute alone is not treated as an event handler', async () => {
+test('[no-use-event-handler-attr-valid-005] "on" attribute alone is not treated as an event handler', async () => {
 	const { violations } = await mlRuleTest(rule, '<div on="handler"></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('value: ["click"] with Vue @click', async () => {
+test('[no-use-event-handler-attr-parser-003] value: ["click"] with Vue @click', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div @click="fn()"></div></template>', {
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/vue-parser' },
@@ -200,7 +200,7 @@ test('value: ["click"] with Vue @click', async () => {
 	]);
 });
 
-test('value: ["click"] with regex ignore — ignore takes priority', async () => {
+test('[no-use-event-handler-attr-invalid-008] value: ["click"] with regex ignore — ignore takes priority', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()"></div>', {
 		rule: { value: ['click', 'mousedown'], options: { ignore: '/^onclick$/' } },
 	});

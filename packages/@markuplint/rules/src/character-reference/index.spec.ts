@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('character-reference', async () => {
+test('[character-reference-invalid-001] character-reference', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>');
 	expect(violations.length).toBe(4);
 	expect(violations[0]).toStrictEqual({
@@ -21,7 +21,7 @@ test('character-reference', async () => {
 	expect(violations[3]?.raw).toBe('"');
 });
 
-test('character-reference', async () => {
+test('[character-reference-invalid-002] character-reference', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">');
 	expect(violations).toStrictEqual([
 		{
@@ -34,12 +34,12 @@ test('character-reference', async () => {
 	]);
 });
 
-test('character-reference', async () => {
+test('[character-reference-valid-001] character-reference', async () => {
 	const { violations } = await mlRuleTest(rule, '<script>if (i < 0) console.log("<markuplint>");</script>');
 	expect(violations.length).toBe(0);
 });
 
-test('in Vue', async () => {
+test('[character-reference-parser-001] in Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div v-if="a < b"></div></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -51,7 +51,7 @@ test('in Vue', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('in EJS', async () => {
+test('[character-reference-parser-002] in EJS', async () => {
 	const { violations } = await mlRuleTest(rule, '<title><%- "title" _%></title>', {
 		parser: {
 			'.*': '@markuplint/ejs-parser',
@@ -61,12 +61,12 @@ test('in EJS', async () => {
 });
 
 describe('Issues', () => {
-	test('#1575: no false positive on orphaned end tag', async () => {
+	test('[character-reference-issue-1575] #1575: no false positive on orphaned end tag', async () => {
 		const { violations } = await mlRuleTest(rule, '<div></p></div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('#1074', async () => {
+	test('[character-reference-issue-1074] #1074', async () => {
 		const { violations } = await mlRuleTest(rule, '<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>');
 		expect(violations).toStrictEqual([
 			{

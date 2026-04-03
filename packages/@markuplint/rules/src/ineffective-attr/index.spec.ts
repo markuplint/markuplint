@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('script[defer]', async () => {
+test('[ineffective-attr-invalid-001] script[defer]', async () => {
 	const { violations } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>');
 
 	expect(violations).toStrictEqual([
@@ -17,7 +17,7 @@ test('script[defer]', async () => {
 	]);
 });
 
-test('script[src][type=module][defer]', async () => {
+test('[ineffective-attr-invalid-002] script[src][type=module][defer]', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="module" src="path/to" defer></script>');
 
 	expect(violations).toStrictEqual([
@@ -32,12 +32,12 @@ test('script[src][type=module][defer]', async () => {
 });
 
 describe('fix', () => {
-	test('remove ineffective defer from inline script', async () => {
+	test('[ineffective-attr-fix-001] remove ineffective defer from inline script', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>', undefined, true);
 		expect(fixedCode).toBe('<script>const foo = "foo";</script>');
 	});
 
-	test('remove ineffective defer from module script', async () => {
+	test('[ineffective-attr-fix-002] remove ineffective defer from module script', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<script type="module" src="path/to" defer></script>',

@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('Duplicate in content', async () => {
+test('[no-duplicate-dt-invalid-001] Duplicate in content', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -29,7 +29,7 @@ test('Duplicate in content', async () => {
 	]);
 });
 
-test('Duplicate with <div>', async () => {
+test('[no-duplicate-dt-invalid-002] Duplicate with <div>', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -59,7 +59,7 @@ test('Duplicate with <div>', async () => {
 	]);
 });
 
-test('Nested', async () => {
+test('[no-duplicate-dt-invalid-003] Nested', async () => {
 	expect(
 		(
 			await mlRuleTest(

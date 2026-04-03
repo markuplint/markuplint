@@ -4,7 +4,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe("Use the role that doesn't exist in the spec", () => {
-	test('[role=hoge]', async () => {
+	test('[wai-aria-invalid-001] [role=hoge]', async () => {
 		expect((await mlRuleTest(rule, '<div role="hoge"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -26,7 +26,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 		]);
 	});
 
-	test('Graphics ARIA to HTML', async () => {
+	test('[wai-aria-invalid-002] Graphics ARIA to HTML', async () => {
 		expect((await mlRuleTest(rule, '<div role="graphics-document"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -42,7 +42,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 		);
 	});
 
-	test('DPub ARIA roles (#1490)', async () => {
+	test('[wai-aria-issue-1490] DPub ARIA roles (#1490)', async () => {
 		expect((await mlRuleTest(rule, '<div role="doc-abstract"><p>text</p></div>')).violations).toStrictEqual([]);
 
 		expect((await mlRuleTest(rule, '<div role="doc-backlink">Back</div>')).violations).toStrictEqual([]);
@@ -56,7 +56,7 @@ describe("Use the role that doesn't exist in the spec", () => {
 });
 
 describe('Use the abstract role', () => {
-	test('[role=roletype]', async () => {
+	test('[wai-aria-invalid-003] [role=roletype]', async () => {
 		expect((await mlRuleTest(rule, '<div role="roletype"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -80,7 +80,7 @@ describe('Use the abstract role', () => {
 });
 
 describe("Use the property/state that doesn't belong to a set role (or an implicit role)", () => {
-	test('[aria-checked=true]', async () => {
+	test('[wai-aria-invalid-004] [aria-checked=true]', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>');
 
 		expect(violations).toStrictEqual([
@@ -94,7 +94,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 		]);
 	});
 
-	test('[aria-checked=true]', async () => {
+	test('[wai-aria-invalid-005] [aria-checked=true]', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-checked="true"></div>', {
 			rule: {
 				options: { version: '1.1' },
@@ -112,7 +112,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 		]);
 	});
 
-	test('button[aria-checked=true]', async () => {
+	test('[wai-aria-invalid-006] button[aria-checked=true]', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-checked="true"></button>');
 
 		expect(violations).toStrictEqual([
@@ -126,7 +126,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 		]);
 	});
 
-	test('button[aria-pressed=true]', async () => {
+	test('[wai-aria-valid-001] button[aria-pressed=true]', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-pressed="true"></button>');
 
 		expect(violations.length).toBe(0);
@@ -134,7 +134,7 @@ describe("Use the property/state that doesn't belong to a set role (or an implic
 });
 
 describe('Use an invalid value of the property/state', () => {
-	test('[aria-current=foo]', async () => {
+	test('[wai-aria-invalid-007] [aria-current=foo]', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-current="foo"></div>');
 
 		expect(violations).toStrictEqual([
@@ -149,13 +149,13 @@ describe('Use an invalid value of the property/state', () => {
 		]);
 	});
 
-	test('[aria-current=page]', async () => {
+	test('[wai-aria-valid-002] [aria-current=page]', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-current="page"></div>');
 
 		expect(violations.length).toBe(0);
 	});
 
-	test('disabled', async () => {
+	test('[wai-aria-valid-003] disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-current="foo"></div>', {
 			rule: {
 				options: {
@@ -169,7 +169,7 @@ describe('Use an invalid value of the property/state', () => {
 });
 
 describe('Use the not permitted role according to ARIA in HTML', () => {
-	test('script[role=link]', async () => {
+	test('[wai-aria-invalid-008] script[role=link]', async () => {
 		const { violations } = await mlRuleTest(rule, '<script role="link"></script>');
 
 		expect(violations).toStrictEqual([
@@ -183,7 +183,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 		]);
 	});
 
-	test('a[role=document]', async () => {
+	test('[wai-aria-invalid-009] a[role=document]', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href role="document"></a>');
 
 		expect(violations).toStrictEqual([
@@ -198,7 +198,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 		]);
 	});
 
-	test('disabled', async () => {
+	test('[wai-aria-valid-004] disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<script role="link"></script>', {
 			rule: {
 				options: {
@@ -212,7 +212,7 @@ describe('Use the not permitted role according to ARIA in HTML', () => {
 });
 
 describe("Don't set the required property/state", () => {
-	test('heading needs aria-level', async () => {
+	test('[wai-aria-invalid-010] heading needs aria-level', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="heading"></div>');
 
 		expect(violations).toStrictEqual([
@@ -226,7 +226,7 @@ describe("Don't set the required property/state", () => {
 		]);
 	});
 
-	test("h1 element doesn't needs aria-level", async () => {
+	test("[wai-aria-valid-005] h1 element doesn't needs aria-level", async () => {
 		const { violations } = await mlRuleTest(rule, '<h1></h1>');
 
 		expect(violations).toStrictEqual([]);
@@ -234,7 +234,7 @@ describe("Don't set the required property/state", () => {
 });
 
 describe('Set the implicit role explicitly', () => {
-	test('a[href][role=link]', async () => {
+	test('[wai-aria-invalid-011] a[href][role=link]', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href="path/to" role="link"></a>');
 
 		expect(violations).toStrictEqual([
@@ -248,7 +248,7 @@ describe('Set the implicit role explicitly', () => {
 		]);
 	});
 
-	test('header[role=banner]', async () => {
+	test('[wai-aria-invalid-012] header[role=banner]', async () => {
 		const { violations } = await mlRuleTest(rule, '<header role="banner"></header>');
 
 		expect(violations).toStrictEqual([
@@ -278,7 +278,7 @@ describe('Set the implicit role explicitly', () => {
 		]);
 	});
 
-	test('disabled', async () => {
+	test('[wai-aria-valid-006] disabled', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href="path/to" role="link"></a>', {
 			rule: {
 				options: {
@@ -290,7 +290,7 @@ describe('Set the implicit role explicitly', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('The `as` attribute', async () => {
+	test('[wai-aria-invalid-013] The `as` attribute', async () => {
 		const { violations } = await mlRuleTest(rule, '<x-link as="a" href="path/to" role="link"></x-link>');
 		expect(violations).toStrictEqual([
 			{
@@ -305,7 +305,7 @@ describe('Set the implicit role explicitly', () => {
 });
 
 describe('Set the default value of the property/state explicitly', () => {
-	test('aria-live="off"', async () => {
+	test('[wai-aria-invalid-014] aria-live="off"', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-live="off"></div>', {
 			rule: {
 				options: {
@@ -327,7 +327,7 @@ describe('Set the default value of the property/state explicitly', () => {
 });
 
 describe('Set the deprecated property/state', () => {
-	test('aria-disabled is deprecated in article', async () => {
+	test('[wai-aria-invalid-015] aria-disabled is deprecated in article', async () => {
 		const { violations } = await mlRuleTest(rule, '<article aria-disabled="true"></article>');
 
 		expect(violations).toStrictEqual([
@@ -341,7 +341,7 @@ describe('Set the deprecated property/state', () => {
 		]);
 	});
 
-	test('aria-disabled is deprecated in article role', async () => {
+	test('[wai-aria-invalid-016] aria-disabled is deprecated in article role', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="article" aria-disabled="true"></div>');
 
 		expect(violations).toStrictEqual([
@@ -355,7 +355,7 @@ describe('Set the deprecated property/state', () => {
 		]);
 	});
 
-	test('disable', async () => {
+	test('[wai-aria-valid-007] disable', async () => {
 		const { violations } = await mlRuleTest(rule, '<article aria-disabled="true"></article>', {
 			rule: {
 				options: {
@@ -369,7 +369,7 @@ describe('Set the deprecated property/state', () => {
 });
 
 describe('Set the property/state explicitly when its element has semantic HTML attribute equivalent to it according to ARIA in HTML.', () => {
-	test('checked and aria-checked="true"', async () => {
+	test('[wai-aria-invalid-017] checked and aria-checked="true"', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="true" />');
 
 		expect(violations).toStrictEqual([
@@ -392,7 +392,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('checked and aria-checked="false"', async () => {
+	test('[wai-aria-invalid-018] checked and aria-checked="false"', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false" />');
 
 		expect(violations).toStrictEqual([
@@ -414,7 +414,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('only aria-checked="true"', async () => {
+	test('[wai-aria-invalid-019] only aria-checked="true"', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked="true" />');
 
 		expect(violations).toStrictEqual([
@@ -436,7 +436,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('check and aria-checked="mixed"', async () => {
+	test('[wai-aria-invalid-020] check and aria-checked="mixed"', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="mixed" />');
 
 		expect(violations).toStrictEqual([
@@ -451,7 +451,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('placeholder="type hints" and aria-placeholder="type hints"', async () => {
+	test('[wai-aria-invalid-021] placeholder="type hints" and aria-placeholder="type hints"', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input type="text" placeholder="type hints" aria-placeholder="type hints" />',
@@ -469,7 +469,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('placeholder="type hints" and aria-placeholder="different value"', async () => {
+	test('[wai-aria-invalid-022] placeholder="type hints" and aria-placeholder="different value"', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input type="text" placeholder="type hints" aria-placeholder="different value" />',
@@ -486,7 +486,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		]);
 	});
 
-	test('hidden vs aria-hidden', async () => {
+	test('[wai-aria-invalid-023] hidden vs aria-hidden', async () => {
 		const { violations: violations1 } = await mlRuleTest(rule, '<div hidden></div>');
 		const { violations: violations2 } = await mlRuleTest(rule, '<div hidden aria-hidden="true"></div>');
 		const { violations: violations3 } = await mlRuleTest(rule, '<div hidden aria-hidden="false"></div>');
@@ -502,7 +502,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 		expect(violations5[0]?.message).toBe(undefined);
 	});
 
-	test('disable', async () => {
+	test('[wai-aria-valid-008] disable', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="true" />', {
 			rule: {
 				options: {
@@ -516,7 +516,7 @@ describe('Set the property/state explicitly when its element has semantic HTML a
 });
 
 describe('Allowed Accessibility Child Roles', () => {
-	test('Empty content', async () => {
+	test('[wai-aria-valid-009] Empty content', async () => {
 		expect((await mlRuleTest(rule, '<div role="list"></div>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -530,7 +530,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		expect((await mlRuleTest(rule, '<div role="list" aria-busy="true"></div>')).violations).toStrictEqual([]);
 	});
 
-	test('Empty content (Implicit role)', async () => {
+	test('[wai-aria-valid-010] Empty content (Implicit role)', async () => {
 		expect((await mlRuleTest(rule, '<ul></ul>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -554,7 +554,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		expect((await mlRuleTest(rule, '<ul aria-busy="true"></ul>')).violations).toStrictEqual([]);
 	});
 
-	test('Invalid contents', async () => {
+	test('[wai-aria-valid-011] Invalid contents', async () => {
 		expect((await mlRuleTest(rule, '<table><tbody><tr><td></td></tr></tbody></table>')).violations).toStrictEqual(
 			[],
 		);
@@ -577,7 +577,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		]);
 	});
 
-	test('Invalid contents', async () => {
+	test('[wai-aria-invalid-024] Invalid contents', async () => {
 		expect((await mlRuleTest(rule, '<ul><div></div></ul>')).violations).toStrictEqual([
 			{
 				severity: 'error',
@@ -589,7 +589,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		]);
 	});
 
-	test('Valid contents', async () => {
+	test('[wai-aria-valid-012] Valid contents', async () => {
 		const jsx = {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -599,7 +599,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		expect((await mlRuleTest(rule, '<ul>\n<li /></ul>', jsx)).violations).toStrictEqual([]);
 	});
 
-	test('Preprocessor Block', async () => {
+	test('[wai-aria-valid-013] Preprocessor Block', async () => {
 		const jsx = {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -609,7 +609,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		expect((await mlRuleTest(rule, '<ul>{foo}</ul>', jsx)).violations).toStrictEqual([]);
 	});
 
-	test('Owned element has Preprocessor Block', async () => {
+	test('[wai-aria-invalid-025] Owned element has Preprocessor Block', async () => {
 		expect(
 			(await mlRuleTest(rule, '<table><tbody><tr><td>foo</td></tr></tbody></table>')).violations,
 		).toStrictEqual([]);
@@ -625,7 +625,7 @@ describe('Allowed Accessibility Child Roles', () => {
 		).toStrictEqual([]);
 	});
 
-	test('Omit <tbody>', async () => {
+	test('[wai-aria-valid-014] Omit <tbody>', async () => {
 		expect((await mlRuleTest(rule, '<table><tr><td>foo</td></tr></table>')).violations).toStrictEqual([]);
 		expect(
 			(await mlRuleTest(rule, '<table><tbody><tr><td>foo</td></tr></tbody></table>')).violations,
@@ -635,7 +635,7 @@ describe('Allowed Accessibility Child Roles', () => {
 
 describe('Presentational Children', () => {
 	const enable = { rule: { options: { checkingPresentationalChildren: true } } };
-	test('The role attribute in the button', async () => {
+	test('[wai-aria-invalid-026] The role attribute in the button', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button><div role="none">foo</div></button>', enable)).violations,
 		).toStrictEqual([
@@ -650,7 +650,7 @@ describe('Presentational Children', () => {
 		]);
 	});
 
-	test('The aria-* attribute in the tab', async () => {
+	test('[wai-aria-invalid-027] The aria-* attribute in the tab', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -674,7 +674,7 @@ describe('Presentational Children', () => {
 
 describe('Including Elements in the Accessibility Tree', () => {
 	const enable = { rule: { options: { checkingInteractionInHidden: true } } };
-	test('Parent has aria-hidden', async () => {
+	test('[wai-aria-invalid-028] Parent has aria-hidden', async () => {
 		expect(
 			(await mlRuleTest(rule, '<div aria-hidden="true"><button>foo</button></div>', enable)).violations,
 		).toStrictEqual([
@@ -688,7 +688,7 @@ describe('Including Elements in the Accessibility Tree', () => {
 		]);
 	});
 
-	test('Ancestor has aria-hidden', async () => {
+	test('[wai-aria-invalid-029] Ancestor has aria-hidden', async () => {
 		expect(
 			(await mlRuleTest(rule, '<div aria-hidden="true"><span><button>foo</button></span></div>', enable))
 				.violations,
@@ -703,7 +703,7 @@ describe('Including Elements in the Accessibility Tree', () => {
 		]);
 	});
 
-	test('Has aria-hidden', async () => {
+	test('[wai-aria-invalid-030] Has aria-hidden', async () => {
 		expect(
 			(await mlRuleTest(rule, '<div><span><button aria-hidden="true">foo</button></span></div>', enable))
 				.violations,
@@ -720,7 +720,7 @@ describe('Including Elements in the Accessibility Tree', () => {
 });
 
 describe('childNodeRules', () => {
-	test('ex. For Safari + VoiceOver', async () => {
+	test('[wai-aria-valid-015] ex. For Safari + VoiceOver', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="path/to.svg" alt="text" role="img" />', {
 			nodeRule: [
 				{
@@ -739,7 +739,7 @@ describe('childNodeRules', () => {
 });
 
 describe('Pretenders Option', () => {
-	test('list > listitem', async () => {
+	test('[wai-aria-invalid-031] list > listitem', async () => {
 		expect(
 			(
 				await mlRuleTest(rule, '<ul><Item>item</Item></ul>', {
@@ -913,7 +913,7 @@ describe('Pretenders Option', () => {
 	});
 });
 
-test('Booleanish', async () => {
+test('[wai-aria-invalid-032] Booleanish', async () => {
 	expect((await mlRuleTest(rule, '<div aria-hidden></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -954,7 +954,7 @@ test('Booleanish', async () => {
 });
 
 describe('Disallowed prop each element', () => {
-	test('disabled link', async () => {
+	test('[wai-aria-invalid-033] disabled link', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href="path/to" aria-disabled="true">disabled link</a>');
 		expect(violations).toStrictEqual([
 			{
@@ -969,7 +969,7 @@ describe('Disallowed prop each element', () => {
 	});
 
 	// https://github.com/markuplint/markuplint/issues/745
-	test('#745 Updated spec', async () => {
+	test('[wai-aria-issue-745] #745 Updated spec', async () => {
 		const { violations } = await mlRuleTest(rule, '<html><body aria-hidden="true"></body></html>');
 		expect(violations).toStrictEqual([
 			{
@@ -987,7 +987,7 @@ describe('Issues', () => {
 	// https://github.com/markuplint/markuplint/issues/397
 	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1148349418
 	// And https://github.com/markuplint/markuplint/issues/397#issuecomment-1156728358
-	test('#397', async () => {
+	test('[wai-aria-issue-397] #397', async () => {
 		{
 			const { violations } = await mlRuleTest(rule, '<table><tr><th aria-sort="ascending"></th></tr></table>');
 			expect(violations).toStrictEqual([
@@ -1012,7 +1012,7 @@ describe('Issues', () => {
 		}
 	});
 
-	test('#606', async () => {
+	test('[wai-aria-issue-606] #606', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -1140,7 +1140,7 @@ describe('Issues', () => {
 		).toStrictEqual([]);
 	});
 
-	test('#778', async () => {
+	test('[wai-aria-issue-778] #778', async () => {
 		const jsx = {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -1178,7 +1178,7 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#1084', async () => {
+	test('[wai-aria-issue-1084] #1084', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -1208,7 +1208,7 @@ describe('Issues', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('#1048', async () => {
+	test('[wai-aria-issue-1048] #1048', async () => {
 		const config = {
 			parser: {
 				'.*': '@markuplint/vue-parser',
@@ -1228,7 +1228,7 @@ describe('Issues', () => {
 		expect((await mlRuleTest(rule, sourceCode, config)).violations).toStrictEqual([]);
 	});
 
-	test('#1498', async () => {
+	test('[wai-aria-issue-1498] #1498', async () => {
 		const sourceCode = `<ol role="directory">
 	<li aria-dropeffect="none">text</li>
 </ol>`;
@@ -1243,7 +1243,7 @@ describe('Issues', () => {
 		]);
 	});
 
-	test('#1517', async () => {
+	test('[wai-aria-issue-1517] #1517', async () => {
 		const config = {
 			parser: {
 				'.*': '@markuplint/jsx-parser',
@@ -1319,7 +1319,7 @@ aria-checked={isChecked}
 });
 
 describe('button element permitted roles', () => {
-	test('button with role="separator" is valid', async () => {
+	test('[wai-aria-valid-016] button with role="separator" is valid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button role="separator" aria-valuenow="50">Drag to resize</button>',
@@ -1327,12 +1327,12 @@ describe('button element permitted roles', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('button with role="gridcell" is valid', async () => {
+	test('[wai-aria-valid-017] button with role="gridcell" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<button role="gridcell">Cell</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('button with role="slider" is valid', async () => {
+	test('[wai-aria-valid-018] button with role="slider" is valid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50</button>',
@@ -1340,17 +1340,17 @@ describe('button element permitted roles', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('button with role="treeitem" is valid', async () => {
+	test('[wai-aria-valid-019] button with role="treeitem" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<button role="treeitem">Item</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('button with role="tab" is valid', async () => {
+	test('[wai-aria-valid-020] button with role="tab" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<button role="tab">Tab 1</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('button with role="navigation" is not permitted', async () => {
+	test('[wai-aria-invalid-034] button with role="navigation" is not permitted', async () => {
 		const { violations } = await mlRuleTest(rule, '<button role="navigation">Nav</button>');
 		expect(violations).toStrictEqual([
 			{
@@ -1364,7 +1364,7 @@ describe('button element permitted roles', () => {
 		]);
 	});
 
-	test('button with role="separator" is not permitted in ARIA 1.1', async () => {
+	test('[wai-aria-invalid-035] button with role="separator" is not permitted in ARIA 1.1', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button role="separator" aria-valuenow="50">Drag to resize</button>',
@@ -1391,17 +1391,17 @@ describe('button element permitted roles', () => {
 });
 
 describe('meter element implicit role', () => {
-	test('meter has implicit role "meter"', async () => {
+	test('[wai-aria-valid-021] meter has implicit role "meter"', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100">50%</meter>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('meter with explicit role="meter" is redundant', async () => {
+	test('[wai-aria-invalid-036] meter with explicit role="meter" is redundant', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100" role="meter">50%</meter>');
 		expect(violations.length).toBeGreaterThan(0);
 	});
 
-	test('meter does not permit role overwriting', async () => {
+	test('[wai-aria-invalid-037] meter does not permit role overwriting', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="50" min="0" max="100" role="button">50%</meter>');
 		expect(violations).toStrictEqual([
 			{
@@ -1417,12 +1417,12 @@ describe('meter element implicit role', () => {
 });
 
 describe('html element implicit role', () => {
-	test('html with role="document" is valid', async () => {
+	test('[wai-aria-valid-022] html with role="document" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<html role="document"><head></head><body></body></html>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('html with role="generic" is implicit role (redundant)', async () => {
+	test('[wai-aria-invalid-038] html with role="generic" is implicit role (redundant)', async () => {
 		const { violations } = await mlRuleTest(rule, '<html role="generic"><head></head><body></body></html>');
 		expect(violations).toStrictEqual([
 			{
@@ -1435,7 +1435,7 @@ describe('html element implicit role', () => {
 		]);
 	});
 
-	test('html with role="banner" is not permitted', async () => {
+	test('[wai-aria-invalid-039] html with role="banner" is not permitted', async () => {
 		const { violations } = await mlRuleTest(rule, '<html role="banner"><head></head><body></body></html>');
 		expect(violations).toStrictEqual([
 			{
@@ -1449,7 +1449,7 @@ describe('html element implicit role', () => {
 		]);
 	});
 
-	test('html with role="document" is implicit role in ARIA 1.1 (redundant)', async () => {
+	test('[wai-aria-invalid-040] html with role="document" is implicit role in ARIA 1.1 (redundant)', async () => {
 		const { violations } = await mlRuleTest(rule, '<html role="document"><head></head><body></body></html>', {
 			rule: { options: { version: '1.1' } },
 		});
@@ -1466,12 +1466,12 @@ describe('html element implicit role', () => {
 });
 
 describe('img element permitted roles', () => {
-	test('img with role="math" is valid', async () => {
+	test('[wai-aria-valid-023] img with role="math" is valid', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="equation.png" alt="x²+y²=z²" role="math">');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('img with role="meter" is valid', async () => {
+	test('[wai-aria-valid-024] img with role="meter" is valid', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<img src="progress.png" alt="75% complete" role="meter" aria-valuenow="75">',
@@ -1479,7 +1479,7 @@ describe('img element permitted roles', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('img with role="math" is not permitted in ARIA 1.1', async () => {
+	test('[wai-aria-invalid-041] img with role="math" is not permitted in ARIA 1.1', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="equation.png" alt="x²+y²=z²" role="math">', {
 			rule: { options: { version: '1.1' } },
 		});
@@ -1495,7 +1495,7 @@ describe('img element permitted roles', () => {
 		]);
 	});
 
-	test('img with role="navigation" is not permitted', async () => {
+	test('[wai-aria-invalid-042] img with role="navigation" is not permitted', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="navigation">');
 		expect(violations).toStrictEqual([
 			{
@@ -1509,7 +1509,7 @@ describe('img element permitted roles', () => {
 		]);
 	});
 
-	test('img with role="image" is valid in ARIA 1.3 (image/img synonym)', async () => {
+	test('[wai-aria-valid-025] img with role="image" is valid in ARIA 1.3 (image/img synonym)', async () => {
 		// In ARIA 1.3, "image" is a synonym of "img". The implicit role of <img> is "img",
 		// so "image" is technically a distinct string and the implicit role checker does not flag it.
 		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
@@ -1523,12 +1523,12 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 	const v13 = { rule: { options: { version: '1.3' as const } } };
 	const v12 = { rule: { options: { version: '1.2' as const } } };
 
-	test('generic wrapper is transparent for owned elements in 1.3', async () => {
+	test('[wai-aria-valid-026] generic wrapper is transparent for owned elements in 1.3', async () => {
 		// In 1.3, <div> (generic) is transparent — <li> is reachable as owned element of <ul>
 		expect((await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations).toStrictEqual([]);
 	});
 
-	test('generic wrapper is NOT transparent for owned elements in 1.2', async () => {
+	test('[wai-aria-invalid-043] generic wrapper is NOT transparent for owned elements in 1.2', async () => {
 		// In 1.2, <div> blocks the list > listitem relationship
 		const { violations } = await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v12);
 		expect(violations).toStrictEqual([
@@ -1542,13 +1542,13 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 		]);
 	});
 
-	test('nested generic wrappers are transparent in 1.3', async () => {
+	test('[wai-aria-invalid-044] nested generic wrappers are transparent in 1.3', async () => {
 		expect((await mlRuleTest(rule, '<ul><div><div><li>item</li></div></div></ul>', v13)).violations).toStrictEqual(
 			[],
 		);
 	});
 
-	test('non-generic wrapper still blocks in 1.3', async () => {
+	test('[wai-aria-invalid-045] non-generic wrapper still blocks in 1.3', async () => {
 		// <section> has implicit role "region" (when named) or "generic" (when unnamed in some cases)
 		// but actually <nav> has implicit role "navigation" — not transparent
 		const { violations } = await mlRuleTest(rule, '<ul><nav><li>item</li></nav></ul>', v13);
@@ -1563,7 +1563,7 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 		]);
 	});
 
-	test('list > listitem via context role is valid in 1.3 with generic wrapper', async () => {
+	test('[wai-aria-valid-027] list > listitem via context role is valid in 1.3 with generic wrapper', async () => {
 		// <li> has requiredAccessibilityParentRole: ["list", "list > group"]
 		// In 1.3, the <div> (generic) is transparent so <ul> (list) is found as the parent
 		expect((await mlRuleTest(rule, '<ul><div><li>item</li></div></ul>', v13)).violations).toStrictEqual([]);
@@ -1571,7 +1571,7 @@ describe('ARIA 1.3 — Generic role transparency', () => {
 });
 
 describe('ARIA 1.3 — checkingAllowedAccessibilityChildRoles option', () => {
-	test('new option false disables the check', async () => {
+	test('[wai-aria-valid-028] new option false disables the check', async () => {
 		const { violations } = await mlRuleTest(rule, '<ul></ul>', {
 			rule: { options: { checkingAllowedAccessibilityChildRoles: false } },
 		});
@@ -1579,21 +1579,21 @@ describe('ARIA 1.3 — checkingAllowedAccessibilityChildRoles option', () => {
 		expect(violations.filter(v => v.message.includes('listitem'))).toStrictEqual([]);
 	});
 
-	test('old option false still disables the check (backward compat)', async () => {
+	test('[wai-aria-valid-029] old option false still disables the check (backward compat)', async () => {
 		const { violations } = await mlRuleTest(rule, '<ul></ul>', {
 			rule: { options: { checkingRequiredOwnedElements: false } },
 		});
 		expect(violations.filter(v => v.message.includes('listitem'))).toStrictEqual([]);
 	});
 
-	test('both options true enables the check (default)', async () => {
+	test('[wai-aria-invalid-046] both options true enables the check (default)', async () => {
 		const { violations } = await mlRuleTest(rule, '<ul></ul>');
 		expect(violations.some(v => v.message.includes('listitem'))).toBe(true);
 	});
 });
 
 describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
-	test('img element with role="image" is permitted in 1.3', async () => {
+	test('[wai-aria-valid-030] img element with role="image" is permitted in 1.3', async () => {
 		// In ARIA 1.3, "image" is a synonym for "img", so it's a valid permitted role
 		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
 			rule: { options: { version: '1.3', disallowSetImplicitRole: false } },
@@ -1601,7 +1601,7 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('img element with role="image" is NOT permitted in 1.2', async () => {
+	test('[wai-aria-invalid-047] img element with role="image" is NOT permitted in 1.2', async () => {
 		// In ARIA 1.2, the "image" role does not exist (only "img" does),
 		// so the non-existent role check fires first.
 		const { violations } = await mlRuleTest(rule, '<img src="test.png" alt="test" role="image">', {
@@ -1618,7 +1618,7 @@ describe('ARIA 1.3 — image/img synonym in permitted roles', () => {
 		]);
 	});
 
-	test('img[alt=""] with role="none" is valid in 1.3', async () => {
+	test('[wai-aria-invalid-048] img[alt=""] with role="none" is valid in 1.3', async () => {
 		// The implicit role of <img alt=""> is "presentation". Although "none" and "presentation"
 		// are synonyms, the implicit role checker compares strings, so no violation is raised.
 		expect(
@@ -1640,7 +1640,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 	const v1_2 = { rule: { options: { version: '1.2' as const } } };
 	const v1_3 = { rule: { options: { version: '1.3' as const } } };
 
-	test('grid > row > gridcell is valid (1.2)', async () => {
+	test('[wai-aria-issue-816-001] grid > row > gridcell is valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="grid"><div role="row"><div role="gridcell">Cell</div></div></div>',
@@ -1649,7 +1649,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('grid > row > gridcell is valid (1.3)', async () => {
+	test('[wai-aria-issue-816-002] grid > row > gridcell is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="grid"><div role="row"><div role="gridcell">Cell</div></div></div>',
@@ -1658,7 +1658,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('treegrid > row > gridcell is valid (1.2)', async () => {
+	test('[wai-aria-issue-816-003] treegrid > row > gridcell is valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="treegrid"><div role="row"><div role="gridcell">Cell</div></div></div>',
@@ -1667,7 +1667,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('treegrid > row > gridcell is valid (1.3)', async () => {
+	test('[wai-aria-issue-816-004] treegrid > row > gridcell is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="treegrid"><div role="row"><div role="gridcell">Cell</div></div></div>',
@@ -1676,7 +1676,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.2)', async () => {
+	test('[wai-aria-issue-816-005] table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.2)', async () => {
 		// The permittedAriaRoles check catches td being overwritten to gridcell in a table
 		const { violations } = await mlRuleTest(
 			rule,
@@ -1695,7 +1695,7 @@ describe('Issue #816 — gridcell context role validation', () => {
 		]);
 	});
 
-	test('table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.3)', async () => {
+	test('[wai-aria-issue-816-006] table > rowgroup > row > td[gridcell] is detected by permittedAriaRoles (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<table><tbody><tr><td role="gridcell">Cell</td></tr></tbody></table>',
@@ -1713,12 +1713,12 @@ describe('Issue #816 — gridcell context role validation', () => {
 		]);
 	});
 
-	test('table > row > cell is valid (1.2)', async () => {
+	test('[wai-aria-issue-816-007] table > row > cell is valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<table><tbody><tr><td>Cell</td></tr></tbody></table>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('table > row > cell is valid (1.3)', async () => {
+	test('[wai-aria-issue-816-008] table > row > cell is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<table><tbody><tr><td>Cell</td></tr></tbody></table>', v1_3);
 		expect(violations).toStrictEqual([]);
 	});
@@ -1732,7 +1732,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 	const v1_2 = { rule: { options: { version: '1.2' as const } } };
 	const v1_3 = { rule: { options: { version: '1.3' as const } } };
 
-	test('radiogroup > radio (direct child) is valid (1.2)', async () => {
+	test('[wai-aria-issue-673-001] radiogroup > radio (direct child) is valid (1.2)', async () => {
 		// radio role requires aria-checked
 		const { violations } = await mlRuleTest(
 			rule,
@@ -1742,7 +1742,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('radiogroup > radio (direct child) is valid (1.3)', async () => {
+	test('[wai-aria-issue-673-002] radiogroup > radio (direct child) is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="radiogroup"><div role="radio" aria-checked="false">Option 1</div></div>',
@@ -1751,7 +1751,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('radiogroup > li[presentation] > button[radio] — no requiredOwnedElements violation (1.2)', async () => {
+	test('[wai-aria-issue-673-003] radiogroup > li[presentation] > button[radio] — no requiredOwnedElements violation (1.2)', async () => {
 		// The only violation should be about aria-checked on the radio, NOT about
 		// radiogroup missing its required owned radio element (presentation is transparent)
 		const { violations } = await mlRuleTest(
@@ -1772,7 +1772,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 		]);
 	});
 
-	test('radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.2)', async () => {
+	test('[wai-aria-issue-673-004] radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="radiogroup"><li role="presentation"><button role="radio" aria-checked="false">Option 1</button></li></div>',
@@ -1781,7 +1781,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.3)', async () => {
+	test('[wai-aria-issue-673-005] radiogroup > li[presentation] > button[radio] with aria-checked is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="radiogroup"><li role="presentation"><button role="radio" aria-checked="false">Option 1</button></li></div>',
@@ -1790,7 +1790,7 @@ describe('Issue #673 — presentation wrapper transparency', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('radiogroup > li[none] > button[radio] with aria-checked is valid (1.2)', async () => {
+	test('[wai-aria-issue-673-006] radiogroup > li[none] > button[radio] with aria-checked is valid (1.2)', async () => {
 		// "none" is a synonym for "presentation" — should also be transparent
 		const { violations } = await mlRuleTest(
 			rule,
@@ -1810,7 +1810,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 	const v1_2 = { rule: { options: { version: '1.2' as const } } };
 	const v1_3 = { rule: { options: { version: '1.3' as const } } };
 
-	test('table without row is a violation (1.2)', async () => {
+	test('[wai-aria-issue-272-001] table without row is a violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="table"><div>content</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -1823,7 +1823,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 		]);
 	});
 
-	test('table without row is a violation (1.3)', async () => {
+	test('[wai-aria-issue-272-002] table without row is a violation (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="table"><div>content</div></div>', v1_3);
 		// 1.3 adds "caption" to the expected roles
 		expect(violations).toStrictEqual([
@@ -1837,7 +1837,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 		]);
 	});
 
-	test('list without listitem is a violation (1.2)', async () => {
+	test('[wai-aria-issue-272-003] list without listitem is a violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="list"><div>content</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -1850,7 +1850,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 		]);
 	});
 
-	test('list without listitem is a violation (1.3)', async () => {
+	test('[wai-aria-issue-272-004] list without listitem is a violation (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="list"><div>content</div></div>', v1_3);
 		expect(violations).toStrictEqual([
 			{
@@ -1863,17 +1863,17 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 		]);
 	});
 
-	test('list > listitem is valid (1.2)', async () => {
+	test('[wai-aria-issue-272-005] list > listitem is valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('list > listitem is valid (1.3)', async () => {
+	test('[wai-aria-issue-272-006] list > listitem is valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_3);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('list > div > listitem (1.2) — generic is NOT transparent', async () => {
+	test('[wai-aria-issue-272-007] list > div > listitem (1.2) — generic is NOT transparent', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="list"><div><div role="listitem">Item</div></div></div>',
@@ -1898,7 +1898,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 		]);
 	});
 
-	test('list > div > listitem (1.3) — generic IS transparent', async () => {
+	test('[wai-aria-issue-272-008] list > div > listitem (1.3) — generic IS transparent', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="list"><div><div role="listitem">Item</div></div></div>',
@@ -1909,7 +1909,7 @@ describe('Issue #272 — Allowed descendants of ARIA roles', () => {
 });
 
 describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', () => {
-	test('input[type=range] with value and aria-valuenow', async () => {
+	test('[wai-aria-issue-2465-001] input[type=range] with value and aria-valuenow', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="range" value="50" aria-valuenow="50">');
 		expect(violations).toStrictEqual([
 			{
@@ -1923,7 +1923,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('input[type=range] with aria-valuenow but no value attr', async () => {
+	test('[wai-aria-issue-2465-002] input[type=range] with aria-valuenow but no value attr', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="range" aria-valuenow="50">');
 		expect(violations).toStrictEqual([
 			{
@@ -1937,7 +1937,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('input[type=range] with value and aria-valuemax', async () => {
+	test('[wai-aria-issue-2465-003] input[type=range] with value and aria-valuemax', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="range" value="50" aria-valuemax="100">');
 		expect(violations).toStrictEqual([
 			{
@@ -1951,7 +1951,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('input[type=range] with aria-valuemax but no max attr', async () => {
+	test('[wai-aria-issue-2465-004] input[type=range] with aria-valuemax but no max attr', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="range" aria-valuemax="100">');
 		expect(violations).toStrictEqual([
 			{
@@ -1965,7 +1965,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('input[type=number] with value and aria-valuenow', async () => {
+	test('[wai-aria-issue-2465-005] input[type=number] with value and aria-valuenow', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="number" value="5" aria-valuenow="5">');
 		expect(violations).toStrictEqual([
 			{
@@ -1979,7 +1979,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('input[type=number] with aria-valuemax', async () => {
+	test('[wai-aria-issue-2465-006] input[type=number] with aria-valuemax', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="number" aria-valuemax="10">');
 		expect(violations).toStrictEqual([
 			{
@@ -1993,7 +1993,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('meter with value and aria-valuenow', async () => {
+	test('[wai-aria-issue-2465-007] meter with value and aria-valuenow', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="0.6" aria-valuenow="0.6"></meter>');
 		expect(violations).toStrictEqual([
 			{
@@ -2007,7 +2007,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('meter with value and aria-valuemax', async () => {
+	test('[wai-aria-issue-2465-008] meter with value and aria-valuemax', async () => {
 		const { violations } = await mlRuleTest(rule, '<meter value="0.6" aria-valuemax="1"></meter>');
 		expect(violations).toStrictEqual([
 			{
@@ -2021,7 +2021,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('progress with value and aria-valuenow', async () => {
+	test('[wai-aria-issue-2465-009] progress with value and aria-valuenow', async () => {
 		const { violations } = await mlRuleTest(rule, '<progress value="70" max="100" aria-valuenow="70"></progress>');
 		expect(violations).toStrictEqual([
 			{
@@ -2035,7 +2035,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('progress with value and aria-valuemax', async () => {
+	test('[wai-aria-issue-2465-010] progress with value and aria-valuemax', async () => {
 		const { violations } = await mlRuleTest(rule, '<progress value="70" max="100" aria-valuemax="100"></progress>');
 		expect(violations).toStrictEqual([
 			{
@@ -2059,7 +2059,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 
 	// #3214: option[aria-selected] inside select now works because the implicit role
 	// context check is skipped (combobox/option mismatch no longer causes false positive).
-	test('option[aria-selected] inside select reports without message (#3214)', async () => {
+	test('[wai-aria-issue-3214-001] option[aria-selected] inside select reports without message (#3214)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<select><option selected aria-selected="true">A</option></select>',
@@ -2076,7 +2076,7 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 		]);
 	});
 
-	test('select with multiple and aria-multiselectable', async () => {
+	test('[wai-aria-issue-2465-011] select with multiple and aria-multiselectable', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<select multiple aria-multiselectable="true"><option>A</option></select>',
@@ -2098,24 +2098,24 @@ describe('Issue #2465 — aria-valuenow restrictions and missing alt fields', ()
 // Required Context Role mismatch (combobox vs listbox). Fixed by skipping
 // the context role check for implicit roles.
 describe('Issue #3214 — implicit role context check skip', () => {
-	test('option inside select has correct computed role (no false positive)', async () => {
+	test('[wai-aria-issue-3214-002] option inside select has correct computed role (no false positive)', async () => {
 		// Before fix: getComputedRole returned null for option, causing checkingNoGlobalProp
 		// to fire incorrectly. After fix: option keeps its implicit role.
 		const { violations } = await mlRuleTest(rule, '<select><option>A</option></select>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('option inside datalist has correct computed role', async () => {
+	test('[wai-aria-issue-3214-003] option inside datalist has correct computed role', async () => {
 		const { violations } = await mlRuleTest(rule, '<datalist><option>A</option></datalist>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('td inside tr inside table has correct computed role', async () => {
+	test('[wai-aria-issue-3214-004] td inside tr inside table has correct computed role', async () => {
 		const { violations } = await mlRuleTest(rule, '<table><tr><td>Cell</td></tr></table>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('li inside ul has correct computed role', async () => {
+	test('[wai-aria-issue-3214-005] li inside ul has correct computed role', async () => {
 		const { violations } = await mlRuleTest(rule, '<ul><li>Item</li></ul>');
 		expect(violations).toStrictEqual([]);
 	});
@@ -2127,7 +2127,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	const v1_2 = { rule: { options: { version: '1.2' as const } } };
 	const v1_3 = { rule: { options: { version: '1.3' as const } } };
 
-	test('tab without tablist parent — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-001] tab without tablist parent — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2140,7 +2140,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('tab without tablist parent — violation (1.3)', async () => {
+	test('[wai-aria-issue-970-002] tab without tablist parent — violation (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_3);
 		expect(violations).toStrictEqual([
 			{
@@ -2153,17 +2153,17 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('tab inside tablist — valid (1.2)', async () => {
+	test('[wai-aria-issue-970-003] tab inside tablist — valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="tablist"><div role="tab">Tab</div></div>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('tab inside tablist — valid (1.3)', async () => {
+	test('[wai-aria-issue-970-004] tab inside tablist — valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="tablist"><div role="tab">Tab</div></div>', v1_3);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('listitem without list parent — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-005] listitem without list parent — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="listitem">Item</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2177,12 +2177,12 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('listitem inside list — valid (1.2)', async () => {
+	test('[wai-aria-issue-970-006] listitem inside list — valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="list"><div role="listitem">Item</div></div>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('treeitem without tree/treegrid parent — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-007] treeitem without tree/treegrid parent — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="treeitem">Item</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2195,12 +2195,12 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('treeitem inside tree — valid (1.2)', async () => {
+	test('[wai-aria-issue-970-008] treeitem inside tree — valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="tree"><div role="treeitem">Item</div></div>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('tab inside generic > tablist — valid (1.3, generic transparent)', async () => {
+	test('[wai-aria-issue-970-009] tab inside generic > tablist — valid (1.3, generic transparent)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="tablist"><div><div role="tab">Tab</div></div></div>',
@@ -2209,7 +2209,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('tab inside generic > tablist — violation in 1.2 (generic NOT transparent)', async () => {
+	test('[wai-aria-issue-970-010] tab inside generic > tablist — violation in 1.2 (generic NOT transparent)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="tablist"><div><div role="tab">Tab</div></div></div>',
@@ -2233,7 +2233,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('option with explicit role outside listbox — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-011] option with explicit role outside listbox — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="option">Opt</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2246,27 +2246,27 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		]);
 	});
 
-	test('option (implicit) inside select — no context violation (#3214)', async () => {
+	test('[wai-aria-issue-3214-006] option (implicit) inside select — no context violation (#3214)', async () => {
 		// Implicit roles skip context check — HTML spec handles this
 		const { violations } = await mlRuleTest(rule, '<select><option>A</option></select>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('disabled via option — no context violation reported', async () => {
+	test('[wai-aria-issue-970-012] disabled via option — no context violation reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', {
 			rule: { options: { version: '1.2' as const, checkingRequiredAccessibilityParentRole: false } },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('root fragment with explicit role — no violation (parentElement is null)', async () => {
+	test('[wai-aria-issue-970-013] root fragment with explicit role — no violation (parentElement is null)', async () => {
 		// A root element fragment cannot satisfy context role, but should not crash.
 		// NO_OWNER with role kept (parentElement === null) means root fragment — skip.
 		const { violations } = await mlRuleTest(rule, '<div role="tab">Tab</div>', v1_2);
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('group transparency: listbox > group > option (1.3)', async () => {
+	test('[wai-aria-issue-970-014] group transparency: listbox > group > option (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="listbox"><div role="group"><div role="option">Opt</div></div></div>',
@@ -2275,7 +2275,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('group transparency: tree > treeitem > group > treeitem (1.3)', async () => {
+	test('[wai-aria-issue-970-015] group transparency: tree > treeitem > group > treeitem (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="tree"><div role="treeitem"><div role="group"><div role="treeitem">Item</div></div></div></div>',
@@ -2284,7 +2284,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('group transparency: menu > group > menuitem (1.3)', async () => {
+	test('[wai-aria-issue-970-016] group transparency: menu > group > menuitem (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="group"><div role="menuitem">Item</div></div></div>',
@@ -2293,7 +2293,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('table > row via pure ARIA divs (1.2)', async () => {
+	test('[wai-aria-issue-970-017] table > row via pure ARIA divs (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="table"><div role="row"><div role="cell">Cell</div></div></div>',
@@ -2302,7 +2302,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('generic NOT transparent for context role in 1.2: listbox > div > option', async () => {
+	test('[wai-aria-issue-970-018] generic NOT transparent for context role in 1.2: listbox > div > option', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="listbox"><div><div role="option">Opt</div></div></div>',
@@ -2327,7 +2327,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #5: Missing role coverage — caption
-	test('caption inside table — valid (1.3)', async () => {
+	test('[wai-aria-issue-970-019] caption inside table — valid (1.3)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="table"><div role="caption">Caption</div><div role="row"><div role="cell">Cell</div></div></div>',
@@ -2336,7 +2336,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('caption outside table — violation (1.3)', async () => {
+	test('[wai-aria-issue-970-020] caption outside table — violation (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="caption">Caption</div></div>', v1_3);
 		expect(violations).toStrictEqual([
 			{
@@ -2351,7 +2351,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #5: Missing role coverage — menuitemcheckbox
-	test('menuitemcheckbox inside menu — valid (1.2)', async () => {
+	test('[wai-aria-issue-970-021] menuitemcheckbox inside menu — valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="menuitemcheckbox" aria-checked="false">Check</div></div>',
@@ -2364,7 +2364,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	// Although menuitemcheckbox requires aria-checked, the role is
 	// nullified (role: null) when the required parent context is not
 	// satisfied, so the required state check does not run.
-	test('menuitemcheckbox outside menu — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-022] menuitemcheckbox outside menu — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="menuitemcheckbox">Check</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2379,7 +2379,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #5: Missing role coverage — menuitemradio
-	test('menuitemradio inside menu — valid (1.2)', async () => {
+	test('[wai-aria-issue-970-023] menuitemradio inside menu — valid (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="menuitemradio" aria-checked="false">Radio</div></div>',
@@ -2388,7 +2388,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('menuitemradio outside menu — violation (1.2)', async () => {
+	test('[wai-aria-issue-970-024] menuitemradio outside menu — violation (1.2)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="menuitemradio">Radio</div></div>', v1_2);
 		expect(violations).toStrictEqual([
 			{
@@ -2403,7 +2403,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #9: ARIA 1.3 option explicit role test
-	test('option with explicit role outside listbox — violation (1.3)', async () => {
+	test('[wai-aria-issue-970-025] option with explicit role outside listbox — violation (1.3)', async () => {
 		const { violations } = await mlRuleTest(rule, '<div><div role="option">Opt</div></div>', v1_3);
 		expect(violations).toStrictEqual([
 			{
@@ -2418,7 +2418,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #10: ARIA 1.2 tree > treeitem > group > treeitem
-	test('group transparency: tree > treeitem > group > treeitem (1.2)', async () => {
+	test('[wai-aria-issue-970-026] group transparency: tree > treeitem > group > treeitem (1.2)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="tree"><div role="treeitem"><div role="group"><div role="treeitem">Item</div></div></div></div>',
@@ -2428,7 +2428,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #11: ARIA 1.1 basic test
-	test('tab without tablist parent — violation (1.1)', async () => {
+	test('[wai-aria-issue-970-027] tab without tablist parent — violation (1.1)', async () => {
 		const v1_1 = { rule: { options: { version: '1.1' as const } } };
 		const { violations } = await mlRuleTest(rule, '<div><div role="tab">Tab</div></div>', v1_1);
 		expect(violations).toStrictEqual([
@@ -2443,7 +2443,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// #12: presentation/none transparency in ARIA 1.2
-	test('presentation parent transparent for context role in 1.2: menu > none > menuitem', async () => {
+	test('[wai-aria-issue-970-028] presentation parent transparent for context role in 1.2: menu > none > menuitem', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="none"><div role="menuitem">Item</div></div></div>',
@@ -2453,7 +2453,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 	});
 
 	// Presentational role conflict resolution: none + focusable resolves to generic
-	test('none+focusable parent resolves to generic — violation in 1.2', async () => {
+	test('[wai-aria-issue-970-029] none+focusable parent resolves to generic — violation in 1.2', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="none" tabindex="0"><div role="menuitem">Item</div></div></div>',
@@ -2463,7 +2463,7 @@ describe('Issue #970 — Required Accessibility Parent Role check', () => {
 		expect(violations.length).toBeGreaterThan(0);
 	});
 
-	test('none+focusable parent resolves to generic — valid in 1.3', async () => {
+	test('[wai-aria-issue-970-030] none+focusable parent resolves to generic — valid in 1.3', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="menu"><div role="none" tabindex="0"><div role="menuitem">Item</div></div></div>',

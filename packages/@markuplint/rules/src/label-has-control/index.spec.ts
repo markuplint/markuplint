@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('No control', async () => {
+test('[label-has-control-invalid-001] No control', async () => {
 	const { violations } = await mlRuleTest(rule, '<label>foo</label>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('No control', async () => {
 	]);
 });
 
-test('Not single control', async () => {
+test('[label-has-control-invalid-002] Not single control', async () => {
 	const { violations } = await mlRuleTest(rule, '<label><input><select></select></label>');
 	expect(violations).toStrictEqual([
 		{
@@ -29,7 +29,7 @@ test('Not single control', async () => {
 	]);
 });
 
-test('The `as` attribute', async () => {
+test('[label-has-control-valid-001] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-label as="label"><input><select></select></x-label>')).violations).toStrictEqual(
 		[
 			{
@@ -45,7 +45,7 @@ test('The `as` attribute', async () => {
 });
 
 describe('issues', () => {
-	test('#2392', async () => {
+	test('[label-has-control-issue-2392] #2392', async () => {
 		const { violations } = await mlRuleTest(rule, '<Component></Component>', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',

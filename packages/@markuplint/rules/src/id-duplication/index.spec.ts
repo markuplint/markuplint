@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('id-duplication', async () => {
+test('[id-duplication-invalid-001] id-duplication', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"><p id="a"></p></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,22 +16,22 @@ test('id-duplication', async () => {
 	]);
 });
 
-test('id-duplication', async () => {
+test('[id-duplication-valid-001] id-duplication', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"></div>');
 	expect(violations.length).toBe(0);
 });
 
-test('id-duplication', async () => {
+test('[id-duplication-invalid-002] id-duplication', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"></div><div id="a"></div><div id="a"></div>');
 	expect(violations.length).toBe(2);
 });
 
-test('id-duplication', async () => {
+test('[id-duplication-valid-002] id-duplication', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"></div><div id="b"></div><div id="c"></div>');
 	expect(violations.length).toBe(0);
 });
 
-test('in Vue', async () => {
+test('[id-duplication-parser-001] in Vue', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<template>

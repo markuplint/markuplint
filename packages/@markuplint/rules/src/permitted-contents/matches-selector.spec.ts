@@ -10,7 +10,7 @@ function c(model: any, innerHtml: string) {
 	return matchesSelector(model, child, specs, 0);
 }
 
-test('a', () => {
+test('[permitted-contents-invalid-001] a', () => {
 	expect(c('a', '<a></a>').type).toBe('MATCHED');
 	expect(c('a', '<b></b>').type).toBe('UNMATCHED_SELECTORS');
 	expect(c('a', '<c></c>').type).toBe('UNMATCHED_SELECTORS');
@@ -18,7 +18,7 @@ test('a', () => {
 	expect(c('a', '').type).toBe('MISSING_NODE');
 });
 
-test('#flow', () => {
+test('[permitted-contents-invalid-002] #flow', () => {
 	expect(c('#flow', '<a></a>').type).toBe('MATCHED');
 	expect(c('#flow', '<b></b>').type).toBe('MATCHED');
 	expect(c('#flow', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -26,7 +26,7 @@ test('#flow', () => {
 	expect(c('#flow', '').type).toBe('MATCHED_ZERO');
 });
 
-test(':model(flow)', () => {
+test('[permitted-contents-invalid-003] :model(flow)', () => {
 	expect(c(':model(flow)', '<a></a>').type).toBe('MATCHED');
 	expect(c(':model(flow)', '<b></b>').type).toBe('MATCHED');
 	expect(c(':model(flow)', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -34,7 +34,7 @@ test(':model(flow)', () => {
 	expect(c(':model(flow)', '').type).toBe('MATCHED_ZERO');
 });
 
-test('#text', () => {
+test('[permitted-contents-invalid-004] #text', () => {
 	expect(c('#text', '<a></a>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
 	expect(c('#text', '<b></b>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
 	expect(c('#text', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
