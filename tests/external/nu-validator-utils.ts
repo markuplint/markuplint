@@ -29,29 +29,36 @@ export const allRulesConfig: Config = {
 /**
  * Determines expected test result from nu-validator filename convention:
  * - `*-novalid.html` → should have errors
- * - `*-haswarn.html` → warning expected (skipped — markuplint has no warn/error distinction)
+ * - `*-haswarn.html` → warning expected (skipped)
+ * - `*-hasinfo.html` → info expected (skipped)
  * - `*-isvalid.html` → should have no errors
  * - other            → treated as valid
  *
+ * haswarn and hasinfo files are skipped because markuplint has no
+ * warn/info severity distinction — it would either false-positive
+ * (reporting error on an info-level issue) or false-negative
+ * (not detecting the info-level issue at all).
+ *
  * @param filename - The HTML test filename (e.g., `model-novalid.html`)
  * @returns The expected result category
- * @see https://github.com/validator/validator/blob/main/tests/
+ * @see https://github.com/validator/validator/blob/main/src/nu/validator/client/TestRunner.java
  */
-export function getExpectedResult(filename: string): 'error' | 'valid' | 'warn' {
+export function getExpectedResult(filename: string): 'error' | 'valid' | 'skip' {
 	if (filename.includes('-novalid')) return 'error';
-	if (filename.includes('-haswarn')) return 'warn';
+	if (filename.includes('-haswarn')) return 'skip';
+	if (filename.includes('-hasinfo')) return 'skip';
 	if (filename.includes('-isvalid')) return 'valid';
 	return 'valid';
 }
 
 /**
- * Returns true if the file is testable (not a haswarn file).
+ * Returns true if the file is testable (not a haswarn/hasinfo file).
  *
  * @param filename - The HTML test filename
  * @returns Whether the file should be included in benchmarks
  */
 export function isTestable(filename: string): boolean {
-	return getExpectedResult(filename) !== 'warn';
+	return getExpectedResult(filename) !== 'skip';
 }
 
 /**

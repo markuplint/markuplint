@@ -52,7 +52,8 @@ Test expectations are encoded in the filename:
 |---------|---------|-------------------|
 | `*-novalid.html` | nu-validator expects an **error** | markuplint must report >= 1 violation |
 | `*-isvalid.html` | nu-validator expects **no error** | markuplint must report 0 violations |
-| `*-haswarn.html` | nu-validator expects a **warning** | **Skipped** (markuplint has no warn/error distinction) |
+| `*-haswarn.html` | nu-validator expects a **warning** | **Skipped** (markuplint has no warn/info distinction) |
+| `*-hasinfo.html` | nu-validator expects an **info** message | **Skipped** (markuplint has no warn/info distinction) |
 | Other | Treated as **valid** | markuplint must report 0 violations |
 
 Expected error messages are recorded in `validator/tests/messages.json`.
