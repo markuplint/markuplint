@@ -11,7 +11,7 @@
 		"*.node"
 	],
 	"napi": {
-		"binaryName": "markuplint-builder"
+		"binaryName": "markuplint"
 	},
 	"scripts": {
 		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform",
