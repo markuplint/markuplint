@@ -124,10 +124,35 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
               run: yarn install --immutable
+
+            - name: Setup Rust toolchain
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Cache Restore Cargo
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      crates/target
+                  key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
+                  restore-keys: ${{ runner.os }}-cargo-napi-
+
+            - name: Build napi (generates index.cjs and index.d.ts)
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              working-directory: packages/@markuplint/core
+              run: |
+                  npm install -g @napi-rs/cli
+                  napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs
 
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
@@ -145,6 +170,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
     lint:
@@ -291,6 +319,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
@@ -354,6 +385,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
@@ -425,6 +459,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
@@ -515,6 +552,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies
@@ -570,6 +610,9 @@ jobs:
                       packages/@markuplint/config-presets/preset.*.json
                       packages/@markuplint/html-spec/index.js
                       packages/@markuplint/html-spec/index.json
+                      packages/@markuplint/core/index.cjs
+                      packages/@markuplint/core/index.d.ts
+                      packages/@markuplint/core/*.node
                   key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
 
             - name: Install dependencies

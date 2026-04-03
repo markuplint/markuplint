@@ -5,12 +5,17 @@
 	"type": "module",
 	"main": "./index.cjs",
 	"types": "./index.d.ts",
+	"files": [
+		"index.cjs",
+		"index.d.ts",
+		"*.node"
+	],
 	"napi": {
-		"binaryName": "markuplint-napi"
+		"binaryName": "markuplint"
 	},
 	"scripts": {
-		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform",
-		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform"
+		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs",
+		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs"
 	},
 	"devDependencies": {
 		"@napi-rs/cli": "^3.0.0"

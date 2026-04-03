@@ -19,6 +19,7 @@
 		"**/lib/*",
 		"**/esm/*",
 		"**/cjs/*",
+		"packages/@markuplint/core/index.cjs",
 		"vscode/test/suite/*.js",
 		"website/build/**/*",
 		"website/.docusaurus/**/*"
