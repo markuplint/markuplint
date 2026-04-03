@@ -6,11 +6,11 @@
 	"main": "./index.cjs",
 	"types": "./index.d.ts",
 	"napi": {
-		"binaryName": "markuplint-napi"
+		"binaryName": "markuplint-builder"
 	},
 	"scripts": {
-		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform",
-		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-napi/Cargo.toml --output-dir . --platform"
+		"build:napi": "napi build --release --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform",
+		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform"
 	},
 	"devDependencies": {
 		"@napi-rs/cli": "^3.0.0"

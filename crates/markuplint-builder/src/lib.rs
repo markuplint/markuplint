@@ -1,4 +1,4 @@
-//! N-API bridge for markuplint Rust modules.
+//! N-API bridge for markuplint Rust modules (`markuplint-builder`).
 //!
 //! Exposes the Rust MLDOM, HTML parser, and type validators to Node.js via napi-rs.
 

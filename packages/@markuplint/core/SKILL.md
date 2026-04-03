@@ -6,7 +6,7 @@ globs:
   - crates/markuplint-rules/src/**/*.rs
   - crates/markuplint-selector/src/**/*.rs
   - crates/markuplint-types/src/**/*.rs
-  - crates/markuplint-napi/src/**/*.rs
+  - crates/markuplint-builder/src/**/*.rs
   - crates/**/Cargo.toml
   - packages/@markuplint/core/package.json
 alwaysApply: false
@@ -25,7 +25,7 @@ This package is a Node.js native addon built with napi-rs v3. It wraps six Rust 
 - **markuplint-rules** (`crates/markuplint-rules/`) — Lint engine, rule trait, built-in rules (permitted-contents, attr-duplication)
 - **markuplint-selector** (`crates/markuplint-selector/`) — CSS selector parser and matcher
 - **markuplint-types** (`crates/markuplint-types/`) — Type validators, CSS value matching, spec data
-- **markuplint-napi** (`crates/markuplint-napi/`) — napi bridge exposing all of the above to JS
+- **markuplint-builder** (`crates/markuplint-builder/`) — napi bridge exposing all of the above to JS
 
 See `crates/README.md` for the full architecture diagram.
 
@@ -37,7 +37,7 @@ Add a new method to the `NapiDom` API.
 
 1. Implement the logic in `crates/markuplint-dom/src/traversal.rs` (or `arena.rs`)
 2. Add unit tests in `crates/markuplint-dom/tests/dom_builder.rs`
-3. Expose via napi in `crates/markuplint-napi/src/lib.rs` with `#[napi]` attribute
+3. Expose via napi in `crates/markuplint-builder/src/lib.rs` with `#[napi]` attribute
 4. Add E2E test in `packages/@markuplint/core/e2e.spec.ts`
 5. Verify: `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check`
 6. Rebuild napi: `yarn workspace @markuplint/core run build:napi`
@@ -47,7 +47,7 @@ Add a new method to the `NapiDom` API.
 
 Add a property to `NapiNode` or `NapiElement`.
 
-1. Add the field to the struct in `crates/markuplint-napi/src/lib.rs`
+1. Add the field to the struct in `crates/markuplint-builder/src/lib.rs`
 2. Populate it in `to_napi_node()` or `to_napi_element()`
 3. The `index.d.ts` is auto-generated on napi build — do not edit manually
 4. Add E2E assertion in `packages/@markuplint/core/e2e.spec.ts`
@@ -102,7 +102,7 @@ Both require the napi binary to be built first.
 
 ## Important Notes
 
-- The crate directory is `markuplint-napi` (napi-rs requires crate name to match binaryName)
+- The crate directory is `markuplint-builder` (Cargo package name matches napi binaryName)
 - `packages/@markuplint/core/.gitignore` excludes generated files (`*.node`, `index.cjs`, `index.d.ts`)
 - The NAPI auto-generated CJS loader is renamed from `index.js` to `index.cjs` (ESM package with `type: "module"`)
 - Rust edition 2024, minimum rustc 1.85

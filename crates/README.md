@@ -9,7 +9,7 @@ crates/
 ├── markuplint-core/         MLAST serde types (deserialization from JSON)
 ├── markuplint-dom/          Arena-based DOM tree (builder + traversal + attr helpers)
 ├── markuplint-html-parser/  WHATWG-conformant HTML parser (tokenizer + tree construction)
-├── markuplint-napi/         Node.js bridge via napi-rs v3
+├── markuplint-builder/         Node.js bridge via napi-rs v3
 ├── markuplint-rules/        Content model matching + ARIA algorithms (isExposed, mayBeFocusable)
 ├── markuplint-selector/     CSS selector + regex selector matching (with :model/:role/:aria)
 └── markuplint-types/        Type validation and spec data (serde types, lookup)
@@ -27,7 +27,7 @@ Converts an `MLASTDocument` into an arena-based DOM tree (`DomArena`). All nodes
 
 Provides traversal: parent, children, siblings, ancestors (bottom-up), descendants (depth-first pre-order), and element iteration.
 
-### markuplint-napi
+### markuplint-builder
 
 Exposes Rust modules to Node.js via napi-rs. This crate compiles to a platform-specific `.node` binary. Provides:
 
@@ -152,7 +152,7 @@ markuplint-core                      markuplint-dom
      │                                    │
      └──────────────┬─────────────────────┘
                     ▼
-              markuplint-napi
+              markuplint-builder
          NapiDom / NapiNode / NapiElement → JavaScript
                     │
                     ▼
